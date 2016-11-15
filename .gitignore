@@ -35,6 +35,7 @@
 *.opensdf
 *.opendb
 *.vcxproj.user
+*.VC.db
 
 # =========================
 # OSX
