@@ -40,7 +40,7 @@
       <Filter>Source Files\GameStates</Filter>
     </ClCompile>
     <ClCompile Include="GameStateHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,7 +48,7 @@
       <Filter>Header Files\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="GameStateHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
