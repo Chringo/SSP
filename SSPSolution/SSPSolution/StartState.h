@@ -4,11 +4,13 @@
 class StartState :
 	public GameState
 {
+private:
 public:
 	StartState();
 	virtual ~StartState();
 
 	int Initialize();
+private:
 };
 
 #endif
