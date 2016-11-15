@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{abfeb619-b913-4eed-bfce-1c8ca27f5141}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Component">
+      <UniqueIdentifier>{a29ba0a6-f283-4c32-ad15-14e26dff5079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component">
+      <UniqueIdentifier>{7650b77a-db0a-45ad-b3fa-09fa8ebb5c67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="LevelState.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentStructs.h">
+      <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

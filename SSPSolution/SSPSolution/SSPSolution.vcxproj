@@ -162,6 +162,7 @@
     <ClCompile Include="StartState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ComponentStructs.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
     <ClInclude Include="LevelSelectState.h" />
