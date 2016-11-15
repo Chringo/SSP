@@ -42,12 +42,18 @@
     <ClCompile Include="GameStateHandler.cpp">
       <Filter>Source Files\GameStates</Filter>
     </ClCompile>
+    <ClCompile Include="StartState.cpp">
+      <Filter>Source Files\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h">
       <Filter>Header Files\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="GameStateHandler.h">
+      <Filter>Header Files\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="StartState.h">
       <Filter>Header Files\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
