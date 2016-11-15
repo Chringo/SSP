@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
+    <ClCompile Include="LevelSelectState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="StartState.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
+    <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="StartState.h" />
   </ItemGroup>
