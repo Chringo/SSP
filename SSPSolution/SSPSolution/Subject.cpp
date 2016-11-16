@@ -13,20 +13,24 @@ Subject::~Subject()
 
 int Subject::Notify(int entityID, EVENT newEvent)
 {
-	return 0;
+	int result = 0;
+	return result;
 }
 
 int Subject::AddObserver(Observer * observer)
 {
-	return 0;
+	int result = 0;
+	return result;
 }
 
 int Subject::RemoveObserver(Observer * observer)
 {
-	return 0;
+	int result = 0;
+	return result;
 }
 
 int Subject::RemoveObserver(int entityID)
 {
-	return 0;
+	int result = 0;
+	return result;
 }

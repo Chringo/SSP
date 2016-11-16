@@ -78,6 +78,9 @@
     <ClCompile Include="Observer.cpp">
       <Filter>Source Files\ObserverPattern</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h">
@@ -106,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Header Files\ObserverPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
