@@ -142,6 +142,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DeferredShaderHandler.h" />
+    <ClInclude Include="Direct3DHandler.h" />
+    <ClInclude Include="GraphicsHandler.h" />
+    <ClInclude Include="LightShaderHandler.h" />
+    <ClInclude Include="ShaderHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeferredShaderHandler.cpp" />
+    <ClCompile Include="Direct3DHandler.cpp" />
+    <ClCompile Include="GraphicsHandler.cpp" />
+    <ClCompile Include="LightShaderHandler.cpp" />
+    <ClCompile Include="ShaderHandler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
