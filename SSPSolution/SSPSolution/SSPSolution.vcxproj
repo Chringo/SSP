@@ -159,7 +159,9 @@
     <ClCompile Include="LevelState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="Observer.cpp" />
     <ClCompile Include="StartState.cpp" />
+    <ClCompile Include="Subject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentStructs.h" />
@@ -168,7 +170,9 @@
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="LevelState.h" />
     <ClInclude Include="MenuState.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="StartState.h" />
+    <ClInclude Include="Subject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

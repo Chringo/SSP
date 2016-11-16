@@ -22,12 +22,6 @@
     <Filter Include="Header Files\Physics">
       <UniqueIdentifier>{0e2e9005-6ef0-4e23-9d89-322e7df7890a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Render Pipeline">
-      <UniqueIdentifier>{37e8ccb2-68cc-4dcc-9162-0712e4899d34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Render Pipeline">
-      <UniqueIdentifier>{94e92a65-a747-4b27-bb1a-ca5f48e1d02b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{abfeb619-b913-4eed-bfce-1c8ca27f5141}</UniqueIdentifier>
     </Filter>
@@ -36,6 +30,24 @@
     </Filter>
     <Filter Include="Source Files\Component">
       <UniqueIdentifier>{7650b77a-db0a-45ad-b3fa-09fa8ebb5c67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{2c26e2c1-9edc-41f9-9175-77047f9a47e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{54cada11-fa96-4956-8b77-a6caf02e21b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RenderPipeline">
+      <UniqueIdentifier>{37e8ccb2-68cc-4dcc-9162-0712e4899d34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ObserverPattern">
+      <UniqueIdentifier>{a08bd05f-6481-4e53-ac64-5b13e84fd63a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderPipeline">
+      <UniqueIdentifier>{94e92a65-a747-4b27-bb1a-ca5f48e1d02b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ObserverPattern">
+      <UniqueIdentifier>{ac53dbde-e8c1-459c-a5ff-3e34da70effc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,8 +69,14 @@
     <ClCompile Include="LevelSelectState.cpp">
       <Filter>Source Files\GameStates</Filter>
     </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Source Files\ObserverPattern</Filter>
+    </ClCompile>
     <ClCompile Include="LevelState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Source Files\ObserverPattern</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +95,17 @@
     <ClInclude Include="LevelSelectState.h">
       <Filter>Header Files\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="LevelState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentStructs.h">
       <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Header Files\ObserverPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelState.h">
+      <Filter>Header Files\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Header Files\ObserverPattern</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
