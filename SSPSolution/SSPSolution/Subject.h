@@ -5,10 +5,15 @@
 class Subject
 {
 private:
+	std::vector<std::pair<Observer*, int>> m_observers;
 public:
 	Subject();
 	virtual ~Subject();
 
+	int Notify(int entityID, EVENT newEvent);
+	int AddObserver(Observer* observer);
+	int RemoveObserver(Observer* observer);
+	int RemoveObserver(int entityID);
 private:
 };
 
