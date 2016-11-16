@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
-enum EVENTS {
+enum EVENT {
 	COLLIDED
 };
 
@@ -25,7 +25,7 @@ struct PhysicsComponent {
 	DirectX::XMFLOAT3 rotationVelocity;
 	double gravityInfluence;
 	bool collides;
-	std::vector<EVENTS> eventList;
+	std::vector<EVENT> eventList;
 };
 
 #endif
