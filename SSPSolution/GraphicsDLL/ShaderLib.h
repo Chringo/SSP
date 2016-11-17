@@ -10,6 +10,17 @@ namespace ShaderLib
 		Animated = 2,
 		InstancedAnimated = 3
 	};
+
+	struct DeferredConstantBuffer
+	{
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX projection;
+
+		DirectX::XMFLOAT4 diffColor;
+
+		DirectX::XMFLOAT4 camPos;
+	};
 }
 
 #endif

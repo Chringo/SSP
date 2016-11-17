@@ -9,7 +9,7 @@
 
 class ShaderHandler
 {
-private:
+protected:
 	ID3D11VertexShader* m_vertexShader[4];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader* m_pixelShader;
