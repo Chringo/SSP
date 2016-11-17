@@ -26,6 +26,7 @@ public:
 	void Shutdown();
 
 	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBuffer* shaderParams);
+	int ClearRenderTargetViews(ID3D11DeviceContext* deviceContext);
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();
 };

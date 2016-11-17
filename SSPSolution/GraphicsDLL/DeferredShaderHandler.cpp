@@ -329,6 +329,26 @@ int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceConte
 	return 0;
 }
 
+int DeferredShaderHandler::ClearRenderTargetViews(ID3D11DeviceContext * deviceContext)
+{
+	float color[4];
+
+	color[0] = 0.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+
+	//Clear the render target textures
+	for (int i = 0; i < BUFFER_COUNT; i++) {
+		deviceContext->ClearRenderTargetView(this->m_deferredRenderTargetViews[i], color);
+	}
+
+	//Clear the depth buffer
+	deviceContext->ClearDepthStencilView(this->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	return 0;
+}
+
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 {
 	return this->m_deferredShaderResources;
