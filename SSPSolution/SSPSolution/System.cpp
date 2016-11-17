@@ -212,3 +212,9 @@ int System::HandleEvents()
 	}
 	return 1;
 }
+
+int System::FullscreenToggle()
+{
+	int result = 0;
+	return result;
+}
