@@ -13,9 +13,9 @@ namespace ShaderLib
 
 	struct DeferredConstantBuffer
 	{
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
+		DirectX::XMMATRIX worldMatrix;
+		DirectX::XMMATRIX viewMatrix;
+		DirectX::XMMATRIX projectionMatrix;
 
 		DirectX::XMFLOAT4 diffColor;
 
