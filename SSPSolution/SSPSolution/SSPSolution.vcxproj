@@ -164,6 +164,7 @@
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="StartState.cpp" />
     <ClCompile Include="Subject.cpp" />
+    <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentStructs.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Observer.h" />
     <ClInclude Include="StartState.h" />
     <ClInclude Include="Subject.h" />
+    <ClInclude Include="System.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
