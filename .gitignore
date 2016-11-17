@@ -1,3 +1,9 @@
+# Temporary compiled files
+*.idb
+*.tlog
+*.log
+*.lastbuildstate
+
 # Compiled Object files
 *.slo
 *.lo
