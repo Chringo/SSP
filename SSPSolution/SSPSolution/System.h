@@ -24,6 +24,7 @@ public:
 
 private:
 	int HandleEvents();
+//	int FullscreenToggle();
 };
 
 #endif

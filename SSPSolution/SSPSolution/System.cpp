@@ -63,6 +63,7 @@ int System::Run()
 	while (this->m_running)
 	{
 		result = this->HandleEvents();
+		int tempResult = 5;
 	}
 
 
