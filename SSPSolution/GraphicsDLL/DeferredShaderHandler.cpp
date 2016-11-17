@@ -226,6 +226,29 @@ int DeferredShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, Shader
 
 void DeferredShaderHandler::Shutdown()
 {
+	ShaderHandler::Shutdown();
+
+	//Release the sampler state
+	if (this->m_samplerState)
+	{
+		this->m_samplerState->Release();
+		this->m_samplerState = nullptr;
+	}
+	//Release the deferred render targets
+	for (int i = 0; i < BUFFER_COUNT; i++) {
+		if (this->m_deferredRenderTargetTextures[i]) {
+			this->m_deferredRenderTargetTextures[i]->Release();
+			this->m_deferredRenderTargetTextures[i] = nullptr;
+		}
+		if (this->m_deferredRenderTargetViews[i]) {
+			this->m_deferredRenderTargetViews[i]->Release();
+			this->m_deferredRenderTargetViews[i] = nullptr;
+		}
+		if (this->m_deferredShaderResources[i]) {
+			this->m_deferredShaderResources[i]->Release();
+			this->m_deferredShaderResources[i] = nullptr;
+		}
+	}
 }
 
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
