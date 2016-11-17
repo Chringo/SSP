@@ -216,6 +216,37 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 		}
 	}
 
+	// Create the depth buffer and view \\
+
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+
+	depthBufferDesc.Width = resolution.x;
+	depthBufferDesc.Height = resolution.y;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	depthBufferDesc.SampleDesc.Count = 1; //No MSAA
+	depthBufferDesc.SampleDesc.Quality = 0;
+
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+
+	hResult = device->CreateTexture2D(&depthBufferDesc, NULL, &this->m_depthStencilBuffer);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	hResult = device->CreateDepthStencilView(this->m_depthStencilBuffer, NULL, &this->m_depthStencilView);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -225,6 +256,9 @@ int DeferredShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, Shader
 
 	//Set the sampler state in pixel shader
 	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
+
+	//Set the render target views
+	deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRenderTargetViews, this->m_depthStencilView);
 
 	return 0;
 }

@@ -14,6 +14,9 @@ private:
 	ID3D11RenderTargetView* m_deferredRenderTargetViews[BUFFER_COUNT];
 	ID3D11Texture2D* m_deferredRenderTargetTextures[BUFFER_COUNT];
 	ID3D11ShaderResourceView* m_deferredShaderResources[BUFFER_COUNT];
+
+	ID3D11Texture2D* m_depthStencilBuffer;
+	ID3D11DepthStencilView* m_depthStencilView;
 public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
