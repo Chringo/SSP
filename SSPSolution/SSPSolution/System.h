@@ -17,7 +17,7 @@ private:
 public:
 	System();
 	~System();
-	int Cleanup();
+	int Shutdown();
 
 	int Initialize();
 	int Run();

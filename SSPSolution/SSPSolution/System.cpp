@@ -11,7 +11,7 @@ System::~System()
 {
 }
 
-int System::Cleanup()
+int System::Shutdown()
 {
 	int result = 0;
 	//Destroy the display window
