@@ -261,3 +261,13 @@ void Direct3DHandler::Shutdown()
 		this->m_gDevice = nullptr;
 	}
 }
+
+ID3D11Device * Direct3DHandler::GetDevice()
+{
+	return this->m_gDevice;
+}
+
+ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
+{
+	return this->m_gDeviceContext;
+}

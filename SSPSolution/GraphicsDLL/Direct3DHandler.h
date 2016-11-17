@@ -26,6 +26,9 @@ public:
 	int ClearDepthAndRTV();
 	int PresentScene();
 	void Shutdown();
+
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetDeviceContext();
 };
 
 #endif
