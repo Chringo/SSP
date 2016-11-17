@@ -9,11 +9,11 @@ class DeferredShaderHandler :
 	public ShaderHandler
 {
 private:
-	ID3D11SamplerState* samplerState;
+	ID3D11SamplerState* m_samplerState;
 
-	ID3D11RenderTargetView* deferredRenderTargetViews[BUFFER_COUNT];
-	ID3D11Texture2D* deferredRenderTargetTextures[BUFFER_COUNT];
-	ID3D11ShaderResourceView* deferredShaderResources[BUFFER_COUNT];
+	ID3D11RenderTargetView* m_deferredRenderTargetViews[BUFFER_COUNT];
+	ID3D11Texture2D* m_deferredRenderTargetTextures[BUFFER_COUNT];
+	ID3D11ShaderResourceView* m_deferredShaderResources[BUFFER_COUNT];
 public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
