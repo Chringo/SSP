@@ -2,6 +2,7 @@
 #define GRAPHICSDLL_DIRECT3DHANDLER
 
 #include <d3d11.h>
+#include <DirectXMath.h>
 
 class Direct3DHandler
 {
@@ -21,7 +22,7 @@ public:
 	Direct3DHandler();
 	~Direct3DHandler();
 
-	int Initialize(HWND* windowHandle);
+	int Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution);
 	int ClearDepthAndRTV();
 	int PresentScene();
 	void Shutdown();
