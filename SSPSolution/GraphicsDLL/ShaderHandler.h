@@ -17,12 +17,12 @@ protected:
 	ID3D11Buffer* m_matrixBuffer;
 
 public:
-	 ShaderHandler();
-	 virtual ~ShaderHandler();
+	ShaderHandler();
+	virtual ~ShaderHandler();
 
-	 virtual int Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution) = 0;
-	 virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
-	 virtual void Shutdown() = 0;
+	virtual int Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution) = 0;
+	virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
+	virtual void Shutdown() = 0;
 };
 
 #endif

@@ -251,6 +251,11 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
+int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBuffer shaderParams)
+{
+	return 0;
+}
+
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 {
 	return nullptr;
