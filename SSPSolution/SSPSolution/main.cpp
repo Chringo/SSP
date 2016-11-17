@@ -1,16 +1,38 @@
 //#include <SFML\Window.hpp>
 #include <SDL.h>
-
+#include <iostream>
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 640;
 int main(int argc, char** argv)
 {
 	bool fullscreen = false;
-	SDL_Surface* displayWindow = NULL;
+
+	//This is the window we render to
+	SDL_Window* displayWindow = NULL;
+	//This is the surface contained by the window
+	SDL_Surface* displaySurface = NULL;
+
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		int i = 0;
+		printf("SDL failed in initializing the window! SDL_Error: %s\n", SDL_GetError());
 	}
-
+	else
+	{
+		printf("SDL succeeded in initializing the window!\n");
+	}
 	
+	displayWindow = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (displayWindow == NULL)
+	{
+		printf("Window creation failed! SDL_ERROR: %S\n", SDL_GetError());
+	}
+	else
+	{
+		printf("Window creation succeeded!\n");
+
+		displaySurface = SDL_GetWindowSurface(displayWindow);
+		SDL_FillRect(displaySurface, NULL, SDL_MapRGB(displaySurface->format, 0xFF, 0xFF, 0xFF));
+	}
 
 	bool running = true;
 	SDL_Event m_event;

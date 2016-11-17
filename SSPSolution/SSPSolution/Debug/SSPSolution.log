@@ -1,18 +1,13 @@
-﻿Build started 2016-11-17 10:18:33.
-     1>Project "C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SSPSolution\SSPSolution.vcxproj" on node 2 (Rebuild target(s)).
+﻿Build started 2016-11-17 10:43:03.
+     1>Project "C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SSPSolution\SSPSolution.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp GameState.cpp GameStateHandler.cpp LevelSelectState.cpp LevelState.cpp main.cpp MenuState.cpp Observer.cpp StartState.cpp Subject.cpp
-         Subject.cpp
-         StartState.cpp
-         Observer.cpp
-         MenuState.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
-         LevelState.cpp
-         LevelSelectState.cpp
-         GameStateHandler.cpp
-         GameState.cpp
-         Entity.cpp
-         Generating Code...
+     1>c:\users\kim\documents\github\ssp\sspsolution\sspsolution\main.cpp(48): warning C4150: deletion of pointer to incomplete type 'SDL_Window'; no destructor called
+         c:\users\kim\documents\github\ssp\sspsolution\sdl-ssp\include\sdl_video.h(90): note: see declaration of 'SDL_Window'
+     1>c:\users\kim\documents\github\ssp\sspsolution\sspsolution\main.cpp(27): warning C4477: 'printf' : format string '%S' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\main.cpp(27): note: consider using '%hS' in the format string
+         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\main.cpp(27): note: consider using '%TS' in the format string
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SDL-SSP\lib\x86" /LIBPATH:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\lib" SDL2.lib SDL2main.lib "sfml-window-d.lib" "sfml-system-d.lib" opengl32.lib winmm.lib gdi32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameState.obj
@@ -25,8 +20,8 @@
          Debug\StartState.obj
          Debug\Subject.obj
          SSPSolution.vcxproj -> C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.exe
-     1>Done Building Project "C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SSPSolution\SSPSolution.vcxproj" (Rebuild target(s)).
+     1>Done Building Project "C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SSPSolution\SSPSolution.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.36
+Time Elapsed 00:00:01.19
