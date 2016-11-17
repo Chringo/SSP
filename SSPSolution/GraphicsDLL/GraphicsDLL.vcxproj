@@ -147,6 +147,7 @@
     <ClInclude Include="GraphicsHandler.h" />
     <ClInclude Include="LightShaderHandler.h" />
     <ClInclude Include="ShaderHandler.h" />
+    <ClInclude Include="ShaderLib.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeferredShaderHandler.cpp" />
