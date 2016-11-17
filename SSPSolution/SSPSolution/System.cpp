@@ -62,7 +62,11 @@ int System::Run()
 
 	while (this->m_running)
 	{
+		//Handle events
 		result = this->HandleEvents();
+		//Update input
+		//Update game
+		//Render
 	}
 
 
