@@ -302,5 +302,5 @@ int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceConte
 
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 {
-	return nullptr;
+	return this->m_deferredShaderResources;
 }
