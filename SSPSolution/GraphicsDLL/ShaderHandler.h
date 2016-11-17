@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
-#incldue "ShaderLib.h"
+#include "ShaderLib.h"
 
 class ShaderHandler
 {
