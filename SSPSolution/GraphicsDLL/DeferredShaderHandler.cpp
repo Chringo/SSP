@@ -221,13 +221,8 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 
 int DeferredShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
 {
-	//Set the input layout for vertex
-	deviceContext->IASetInputLayout(this->m_layout);
+	ShaderHandler::SetActive(deviceContext, shaderType);
 
-	//Set the vertex and pixel shaders that will be used to render this triangle
-	deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
-	deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-	deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 	//Set the sampler state in pixel shader
 	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
 

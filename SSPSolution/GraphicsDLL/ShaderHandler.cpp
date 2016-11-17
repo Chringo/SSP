@@ -17,6 +17,19 @@ ShaderHandler::~ShaderHandler()
 {
 }
 
+int ShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
+{
+	//Set the input layout for vertex
+	deviceContext->IASetInputLayout(this->m_layout);
+
+	//Set the vertex and pixel shaders that will be used to render this triangle
+	deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
+	deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+	deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
+
+	return 0;
+}
+
 void ShaderHandler::Shutdown()
 {
 	for (int i = 0; i < 4; i++)
