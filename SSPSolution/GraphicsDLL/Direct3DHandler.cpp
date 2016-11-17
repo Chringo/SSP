@@ -2,6 +2,16 @@
 
 Direct3DHandler::Direct3DHandler()
 {
+	this->m_activeWindow = nullptr;
+	this->m_backBufferRTV = nullptr;
+	this->m_depthStencilBuffer = nullptr;
+	this->m_depthStencilState = nullptr;
+	this->m_depthStencilView = nullptr;
+	this->m_gDevice = nullptr;
+	this->m_gDeviceContext = nullptr;
+	this->m_rasterizerState = nullptr;
+	this->m_swapChain = nullptr;
+	this->m_viewport = nullptr;
 }
 
 
@@ -171,7 +181,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution
 	}
 
 	// Create and set the viewport \\
-
+	
+	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
 	this->m_viewport->TopLeftY = 0.0f;
 	this->m_viewport->Width = resolution.x;
