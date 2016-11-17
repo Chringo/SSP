@@ -12,6 +12,8 @@ private:
 	bool m_running;
 	//The glorious window handle for the sdl window
 	HWND m_hwnd;
+	HINSTANCE m_hinstance;
+	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
 public:

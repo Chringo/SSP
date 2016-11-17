@@ -1,11 +1,15 @@
-﻿Build started 2016-11-17 13:28:37.
+﻿Build started 2016-11-17 13:46:14.
      1>Project "C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SSPSolution\SSPSolution.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt System.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt System.cpp main.cpp
          System.cpp
-     1>c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(44): warning C4477: 'printf' : format string '%S' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
-         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(44): note: consider using '%hS' in the format string
-         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(44): note: consider using '%TS' in the format string
+     1>c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(46): warning C4477: 'printf' : format string '%S' requires an argument of type 'wchar_t *', but variadic argument 1 has type 'const char *'
+         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(46): note: consider using '%hS' in the format string
+         c:\users\kim\documents\github\ssp\sspsolution\sspsolution\system.cpp(46): note: consider using '%TS' in the format string
+         Generating Code...
+         Compiling...
+         main.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SDL-SSP\lib\x86" /LIBPATH:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\SFML-SSP\lib" SDL2.lib SDL2main.lib "sfml-window-d.lib" "sfml-system-d.lib" opengl32.lib winmm.lib gdi32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Kim\Documents\GitHub\SSP\SSPSolution\Debug\SSPApplication.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameState.obj
@@ -23,4 +27,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.34
+Time Elapsed 00:00:02.94

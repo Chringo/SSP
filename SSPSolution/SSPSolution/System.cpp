@@ -27,6 +27,8 @@ int System::Initialize()
 	this->m_fullscreen = false;
 	this->m_running = true;
 	this->m_window = NULL;
+	//Get the instance if this application
+	this->m_hinstance = GetModuleHandle(NULL);
 
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
