@@ -204,4 +204,49 @@ int Direct3DHandler::PresentScene()
 
 void Direct3DHandler::Shutdown()
 {
+	if (this->m_depthStencilState)
+	{
+		this->m_depthStencilState->Release();
+		this->m_depthStencilState = nullptr;
+	}
+	if (this->m_depthStencilBuffer)
+	{
+		this->m_depthStencilBuffer->Release();
+		this->m_depthStencilBuffer = nullptr;
+	}
+	if (this->m_depthStencilView)
+	{
+		this->m_depthStencilView->Release();
+		this->m_depthStencilView = nullptr;
+	}
+
+	if (this->m_rasterizerState)
+	{
+		this->m_rasterizerState->Release();
+		this->m_rasterizerState = nullptr;
+	}
+
+	if (this->m_backBufferRTV)
+	{
+		this->m_backBufferRTV->Release();
+		this->m_backBufferRTV = nullptr;
+	}
+
+	if (this->m_swapChain)
+	{
+		this->m_swapChain->Release();
+		this->m_swapChain = nullptr;
+	}
+
+	if (this->m_gDeviceContext)
+	{
+		this->m_gDeviceContext->Release();
+		this->m_gDeviceContext = nullptr;
+	}
+
+	if (this->m_gDevice)
+	{
+		this->m_gDevice->Release();
+		this->m_gDevice = nullptr;
+	}
 }
