@@ -9,6 +9,7 @@ class System
 {
 private:
 	bool m_fullscreen;
+	bool m_running;
 	//The glorious window handle for the sdl window
 	HWND hwnd;
 	//This is the window we render to
@@ -22,6 +23,7 @@ public:
 	int Run();
 
 private:
+	int HandleEvents();
 };
 
 #endif
