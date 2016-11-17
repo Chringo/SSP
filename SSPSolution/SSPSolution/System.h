@@ -11,9 +11,9 @@ private:
 	bool m_fullscreen;
 	bool m_running;
 	//The glorious window handle for the sdl window
-	HWND hwnd;
+	HWND m_hwnd;
 	//This is the window we render to
-	SDL_Window* window;
+	SDL_Window* m_window;
 public:
 	System();
 	~System();

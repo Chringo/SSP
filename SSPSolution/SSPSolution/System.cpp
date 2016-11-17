@@ -15,7 +15,7 @@ int System::Shutdown()
 {
 	int result = 0;
 	//Destroy the display window
-	SDL_DestroyWindow(window);
+	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
 	SDL_Quit();
 	return result;
@@ -26,7 +26,7 @@ int System::Initialize()
 	int result = 1;
 	this->m_fullscreen = false;
 	this->m_running = true;
-	this->window = NULL;
+	this->m_window = NULL;
 
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -38,8 +38,8 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	if (window == NULL)
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %S\n", SDL_GetError());
 	}
@@ -49,8 +49,8 @@ int System::Initialize()
 
 		SDL_SysWMinfo wmInfo;
 		SDL_VERSION(&wmInfo.version);
-		SDL_GetWindowWMInfo(window, &wmInfo);
-		hwnd = wmInfo.info.win.window;
+		SDL_GetWindowWMInfo(m_window, &wmInfo);
+		m_hwnd = wmInfo.info.win.window;
 	}
 
 	return result;
@@ -63,7 +63,6 @@ int System::Run()
 	while (this->m_running)
 	{
 		result = this->HandleEvents();
-		int tempResult = 5;
 	}
 
 
@@ -152,6 +151,10 @@ int System::HandleEvents()
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
+			if (m_event.key.keysym.sym == SDLK_f)
+			{
+				this->FullscreenToggle();
+			}
 			break;
 		}
 		case SDL_KEYUP:
@@ -216,5 +219,9 @@ int System::HandleEvents()
 int System::FullscreenToggle()
 {
 	int result = 0;
+
+	bool IsFullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(this->m_window, IsFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+	SDL_ShowCursor(IsFullscreen);
 	return result;
 }
