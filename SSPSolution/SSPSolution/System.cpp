@@ -4,6 +4,8 @@
 
 System::System()
 {
+	this->m_inputHandler = NULL;
+	this->m_window = NULL;
 }
 
 
@@ -14,6 +16,8 @@ System::~System()
 int System::Shutdown()
 {
 	int result = 0;
+	this->m_inputHandler->Shutdown();
+	delete this->m_inputHandler;
 	//Destroy the display window
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
@@ -55,6 +59,10 @@ int System::Initialize()
 		m_hwnd = wmInfo.info.win.window;
 	}
 
+	//Initialize the InputHandler
+	this->m_inputHandler = new InputHandler();
+	this->m_inputHandler->Initialize(this->m_hinstance, this->m_hwnd, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	return result;
 }
 
@@ -67,6 +75,7 @@ int System::Run()
 		//Handle events
 		result = this->HandleEvents();
 		//Update input
+
 		//Update game
 		//Render
 	}

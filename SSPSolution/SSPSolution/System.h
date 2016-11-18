@@ -17,6 +17,8 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
+	//These are the components
+	InputHandler* m_inputHandler;
 public:
 	System();
 	~System();
