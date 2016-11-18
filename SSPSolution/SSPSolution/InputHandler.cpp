@@ -7,8 +7,6 @@ InputHandler::InputHandler()
 	this->m_screenWidth = 0;
 	this->m_screenHeight = 0;
 	this->m_lastKeyPressed = -1;
-	this->m_keyboardState = NULL;
-	this->m_oldKeyboardState = NULL;
 }
 
 InputHandler::~InputHandler()
@@ -42,15 +40,20 @@ void InputHandler::Update()
 
 }
 
+void InputHandler::SetKeyState(int key, bool state)
+{
+	this->m_keyboardState[key] = state;
+}
+
 void InputHandler::ReadKeyboard()
 {
 	//Copy the old data
 	/*for (int i = 0; i < 256; i++) {
 		this->m_oldKeyboardState[i] = this->m_keyboardState[i];
 	}*/
-	this->m_oldKeyboardState = this->m_keyboardState;
 
-	this->m_keyboardState = SDL_GetKeyboardState(NULL);
+
+
 	//Read the keyboard device
 
 

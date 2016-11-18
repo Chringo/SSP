@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <DirectXMath.h>
+#include <map>
 class InputHandler
 {
 private:
@@ -11,8 +12,8 @@ private:
 	//unsigned char m_keyboardState[256];
 	//unsigned char m_oldKeyboardState[256];
 	const int KEYBOARD_STATE_NUM = SDL_NUM_SCANCODES;
-	const Uint8* m_keyboardState;
-	const Uint8* m_oldKeyboardState;
+	std::map<int, bool> m_oldKeyboardState;
+	std::map<int, bool> m_keyboardState;
 	struct MouseButtonState {
 		bool left;
 		bool right;
@@ -32,6 +33,8 @@ public:
 	void Initialize(int screenWidth, int screenHeight);
 	void Shutdown();
 	void Update();
+
+	void SetKeyState(int key, bool state);
 
 	bool IsKeyPressed(unsigned int key);
 	bool IsKeyDown(unsigned int key);
