@@ -121,4 +121,15 @@ void ScreenQuad::SetBuffers(ID3D11DeviceContext * deviceContext)
 
 void ScreenQuad::Shutdown()
 {
+	//Release the index buffer
+	if (this->m_indexBuffer) {
+		this->m_indexBuffer->Release();
+		this->m_indexBuffer = nullptr;
+	}
+
+	//Release the vertex buffer
+	if (this->m_vertexBuffer) {
+		this->m_vertexBuffer->Release();
+		this->m_vertexBuffer = nullptr;
+	}
 }
