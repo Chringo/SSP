@@ -7,6 +7,7 @@ class LightShaderHandler :
 	public ShaderHandler
 {
 private:
+	ID3D11SamplerState* m_samplerState;
 
 public:
 	LightShaderHandler();
