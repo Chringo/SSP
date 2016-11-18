@@ -21,6 +21,13 @@ namespace ShaderLib
 
 		DirectX::XMFLOAT4 camPos;
 	};
+	struct LightConstantBuffer
+	{
+		DirectX::XMMATRIX viewMatrix;
+		DirectX::XMMATRIX projectionMatrix;
+
+		DirectX::XMFLOAT4 camPos;
+	};
 }
 
 #endif

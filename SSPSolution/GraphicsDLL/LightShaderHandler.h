@@ -11,6 +11,12 @@ private:
 public:
 	LightShaderHandler();
 	~LightShaderHandler();
+
+	int Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution);
+	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
+	void Shutdown();
+
+	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::LightConstantBuffer* shaderParams);
 };
 
 #endif
