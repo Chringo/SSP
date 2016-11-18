@@ -11,6 +11,8 @@
 *.obj
 *.pdb
 *.ilk
+*.iobj
+*.ipdb
 
 # Precompiled Headers
 *.gch
