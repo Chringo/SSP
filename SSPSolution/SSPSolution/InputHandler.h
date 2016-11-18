@@ -44,6 +44,8 @@ public:
 	bool IsMouseKeyDown(unsigned int key);
 	bool IsMouseKeyReleased(unsigned int key);
 
+	void SetMousePos(int x, int y);
+
 	DirectX::XMFLOAT2 GetMousePos();
 	DirectX::XMFLOAT2 GetMousePosInWindow();
 

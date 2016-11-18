@@ -76,8 +76,10 @@ int System::Run()
 		result = this->HandleEvents();
 		//Update input
 		this->m_inputHandler->Update();
-		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMousePosInWindow();
-
+		int xPos = 0, yPos = 0;
+		SDL_GetMouseState(&xPos, &yPos);
+		this->m_inputHandler->SetMousePos(xPos, yPos);
+		printf("%i %i \n", xPos, yPos);
 		//Update game
 		//Render
 	}

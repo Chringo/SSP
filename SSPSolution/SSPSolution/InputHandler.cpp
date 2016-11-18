@@ -25,9 +25,11 @@ void InputHandler::Initialize(HINSTANCE hInstance, HWND hwnd, int screenWidth, i
 {
 	HRESULT hr;
 	//Mouse initial starting position set to the midle of the screen
-	SetPhysicalCursorPos((GetSystemMetrics(SM_CXSCREEN)) / 2, (GetSystemMetrics(SM_CYSCREEN)) / 2);
-	this->m_mouseX = (GetSystemMetrics(SM_CXSCREEN)) / 2;
-	this->m_mouseY = (GetSystemMetrics(SM_CYSCREEN)) / 2;
+	//SetPhysicalCursorPos((GetSystemMetrics(SM_CXSCREEN)) / 2, (GetSystemMetrics(SM_CYSCREEN)) / 2);
+	//this->m_mouseX = (GetSystemMetrics(SM_CXSCREEN)) / 2;
+	//this->m_mouseY = (GetSystemMetrics(SM_CYSCREEN)) / 2;
+	this->m_mouseX = 0;
+	this->m_mouseY = 0;
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
@@ -296,6 +298,12 @@ bool InputHandler::IsMouseKeyReleased(unsigned int key)
 	}
 
 	return false;
+}
+
+void InputHandler::SetMousePos(int x, int y)
+{
+	this->m_mouseX = x;
+	this->m_mouseY = y;
 }
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
