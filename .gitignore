@@ -1,3 +1,9 @@
+# Temporary compiled files
+*.idb
+*.tlog
+*.log
+*.lastbuildstate
+
 # Compiled Object files
 *.slo
 *.lo
@@ -5,6 +11,8 @@
 *.obj
 *.pdb
 *.ilk
+*.iobj
+*.ipdb
 
 # Precompiled Headers
 *.gch
@@ -36,6 +44,9 @@
 *.opendb
 *.vcxproj.user
 *.VC.db
+
+# Git Extension
+*.orig
 
 # =========================
 # OSX
