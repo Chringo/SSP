@@ -43,6 +43,9 @@
 *.vcxproj.user
 *.VC.db
 
+# Git Extension
+*.orig
+
 # =========================
 # OSX
 .DS_Store
