@@ -244,7 +244,7 @@ void InputHandler::KeyUp(unsigned int key)
 	return;
 }
 
-bool InputHandler::isKeyDown(unsigned int key)
+bool InputHandler::IsKeyDown(unsigned int key)
 {
 	if (this->m_keyboardState[key]) {
 		return true;
@@ -253,7 +253,7 @@ bool InputHandler::isKeyDown(unsigned int key)
 	return false;
 }
 
-bool InputHandler::isKeyPressed(unsigned int key)
+bool InputHandler::IsKeyPressed(unsigned int key)
 {
 	if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key]) {
 		return true;
@@ -262,7 +262,7 @@ bool InputHandler::isKeyPressed(unsigned int key)
 	return false;
 }
 
-bool InputHandler::isKeyReleased(unsigned int key)
+bool InputHandler::IsKeyReleased(unsigned int key)
 {
 	if (this->m_oldKeyboardState[key] && !this->m_keyboardState[key]) {
 		return true;
@@ -271,7 +271,7 @@ bool InputHandler::isKeyReleased(unsigned int key)
 	return false;
 }
 
-bool InputHandler::isMouseKeyPressed(unsigned int key)
+bool InputHandler::IsMouseKeyPressed(unsigned int key)
 {
 	if (!this->m_oldDIMouseState.rgbButtons[key] && m_DIMouseState.rgbButtons[key]) {
 		return true;
@@ -280,7 +280,7 @@ bool InputHandler::isMouseKeyPressed(unsigned int key)
 	return false;
 }
 
-bool InputHandler::isMouseKeyDown(unsigned int key)
+bool InputHandler::IsMouseKeyDown(unsigned int key)
 {
 	if (this->m_DIMouseState.rgbButtons[key]) {
 		return true;
@@ -289,7 +289,7 @@ bool InputHandler::isMouseKeyDown(unsigned int key)
 	return false;
 }
 
-bool InputHandler::isMouseKeyReleased(unsigned int key)
+bool InputHandler::IsMouseKeyReleased(unsigned int key)
 {
 	if (this->m_oldDIMouseState.rgbButtons[key] && !this->m_DIMouseState.rgbButtons[key]) {
 		return true;
@@ -298,7 +298,7 @@ bool InputHandler::isMouseKeyReleased(unsigned int key)
 	return false;
 }
 
-DirectX::XMFLOAT2 InputHandler::getMousePos()
+DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
 	POINT tempP;
 	GetCursorPos(&tempP);
@@ -306,9 +306,9 @@ DirectX::XMFLOAT2 InputHandler::getMousePos()
 	return DirectX::XMFLOAT2(tempP.x, tempP.y);;
 }
 
-DirectX::XMFLOAT2 InputHandler::getMousePosInWindow()
+DirectX::XMFLOAT2 InputHandler::GetMousePosInWindow()
 {
-	DirectX::XMFLOAT2 mousePos = this->getMousePos();
+	DirectX::XMFLOAT2 mousePos = this->GetMousePos();
 	//Move the cords to the window
 	float m_mouseX = mousePos.x - (GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2;
 	float m_mouseY = mousePos.y - (GetSystemMetrics(SM_CYSCREEN) - m_screenHeight) / 2;

@@ -25,7 +25,6 @@ private:
 	int m_screenWidth;
 	int m_screenHeight;
 	unsigned int m_lastKeyPressed;
-	bool m_wasAnyKeyPressed;
 
 public:
 	InputHandler();
@@ -36,17 +35,17 @@ public:
 
 	void KeyDown(unsigned int key);
 	void KeyUp(unsigned int key);
-	bool isKeyPressed(unsigned int key);
-	bool isKeyDown(unsigned int key);
-	bool isKeyReleased(unsigned int key);
+	bool IsKeyPressed(unsigned int key);
+	bool IsKeyDown(unsigned int key);
+	bool IsKeyReleased(unsigned int key);
 
 	//0 = left, 1 = right, 2 = scroll click, 3 = "Down button" on mouse
-	bool isMouseKeyPressed(unsigned int key);
-	bool isMouseKeyDown(unsigned int key);
-	bool isMouseKeyReleased(unsigned int key);
+	bool IsMouseKeyPressed(unsigned int key);
+	bool IsMouseKeyDown(unsigned int key);
+	bool IsMouseKeyReleased(unsigned int key);
 
-	DirectX::XMFLOAT2 getMousePos();
-	DirectX::XMFLOAT2 getMousePosInWindow();
+	DirectX::XMFLOAT2 GetMousePos();
+	DirectX::XMFLOAT2 GetMousePosInWindow();
 
 private:
 	void ReadKeyboard();
