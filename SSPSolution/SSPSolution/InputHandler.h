@@ -16,9 +16,9 @@ private:
 	IDirectInputDevice8* m_DIKeyboard;
 	IDirectInputDevice8* m_DIMouse;
 	DIMOUSESTATE m_DIMouseState;
-	DIMOUSESTATE m_OldDIMouseState;
-	unsigned char m_KeyboarState[256];
-	unsigned char m_OldKeyboardState[256];
+	DIMOUSESTATE m_oldDIMouseState;
+	unsigned char m_keyboardState[256];
+	unsigned char m_oldKeyboardState[256];
 
 	int m_mouseX;
 	int m_mouseY;
