@@ -226,7 +226,7 @@ void InputHandler::ProcessInput()
 
 DirectX::XMVECTOR InputHandler::GetMouseDeltaPos()
 {
-	return DirectX::XMVectorSet(this->m_DIMouseState.lX, this->m_DIMouseState.lY, 0, 0);	//z,y is not used so set to 0
+	return DirectX::XMVectorSet(float(this->m_DIMouseState.lX), float(this->m_DIMouseState.lY), 0, 0);	//z,y is not used so set to 0
 }
 
 void InputHandler::KeyDown(unsigned int key)
@@ -303,7 +303,7 @@ DirectX::XMFLOAT2 InputHandler::GetMousePos()
 	POINT tempP;
 	GetCursorPos(&tempP);
 
-	return DirectX::XMFLOAT2(tempP.x, tempP.y);;
+	return DirectX::XMFLOAT2(float(tempP.x), float(tempP.y));;
 }
 
 DirectX::XMFLOAT2 InputHandler::GetMousePosInWindow()

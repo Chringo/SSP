@@ -37,7 +37,7 @@ int System::Initialize()
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		printf("SDL failed in initializing the window! SDL_Error: %s\n", SDL_GetError());
+		printf("SDL failed in initializing the window! SDL_Error: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -47,7 +47,7 @@ int System::Initialize()
 	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
-		printf("Window creation failed! SDL_ERROR: %S\n", SDL_GetError());
+		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -75,6 +75,8 @@ int System::Run()
 		//Handle events
 		result = this->HandleEvents();
 		//Update input
+		this->m_inputHandler->Update();
+		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMousePosInWindow();
 
 		//Update game
 		//Render
