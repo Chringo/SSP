@@ -17,6 +17,11 @@ ShaderHandler::~ShaderHandler()
 {
 }
 
+int ShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution)
+{
+	return 0;
+}
+
 int ShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
 {
 	//Set the input layout for vertex

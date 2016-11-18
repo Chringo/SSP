@@ -146,6 +146,7 @@
     <ClInclude Include="Direct3DHandler.h" />
     <ClInclude Include="GraphicsHandler.h" />
     <ClInclude Include="LightShaderHandler.h" />
+    <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="ShaderHandler.h" />
     <ClInclude Include="ShaderLib.h" />
   </ItemGroup>
@@ -154,6 +155,7 @@
     <ClCompile Include="Direct3DHandler.cpp" />
     <ClCompile Include="GraphicsHandler.cpp" />
     <ClCompile Include="LightShaderHandler.cpp" />
+    <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

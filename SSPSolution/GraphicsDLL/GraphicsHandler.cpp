@@ -32,7 +32,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, DirectX::XMFLOAT2 resolutio
 	return 0;
 }
 
-int GraphicsHandler::Render(DirectX::XMMATRIX viewMatrix, DirectX::XMFLOAT3 cameraPos)
+int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos)
 {
 	return 0;
 }

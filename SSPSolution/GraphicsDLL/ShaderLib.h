@@ -1,6 +1,9 @@
 #ifndef GRAPHICSDLL_SHADERLIB
 #define GRAPHICSDLL_SHADERLIB
 
+#include <d3d11.h>
+#include <DirectXMath.h>
+
 namespace ShaderLib
 {
 	enum ShaderType

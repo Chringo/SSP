@@ -19,7 +19,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution);
-	int Render(DirectX::XMMATRIX viewMatrix, DirectX::XMFLOAT3 cameraPos);
+	int Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos);
 	void Shutdown();
 };
 
