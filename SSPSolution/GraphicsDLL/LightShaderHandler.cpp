@@ -178,5 +178,10 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 
+	if (shaderParams->gBuffers) {
+		//Set shader texture resource for pixel shader
+		deviceContext->PSSetShaderResources(0, 4, shaderParams->gBuffers);
+	}
+
 	return 0;
 }
