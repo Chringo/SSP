@@ -2,12 +2,15 @@
 #define GRAPHICSDLL_LIGHTSHADERHANDLER
 
 #include "ShaderHandler.h"
+#include "ScreenQuad.h"
 
 class LightShaderHandler :
 	public ShaderHandler
 {
 private:
 	ID3D11SamplerState* m_samplerState;
+
+	ScreenQuad screenQuad;
 
 public:
 	LightShaderHandler();

@@ -121,6 +121,13 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, D
 		return 1;
 	}
 
+	// Create the screen quad \\
+
+	if (this->screenQuad.Initialize(device, resolution))
+	{
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -130,6 +137,8 @@ int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib
 
 	//Set the sampler state in pixel shader
 	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
+
+	this->screenQuad.SetBuffers(deviceContext);
 
 	return 0;
 }
@@ -144,6 +153,8 @@ void LightShaderHandler::Shutdown()
 		this->m_samplerState->Release();
 		this->m_samplerState = nullptr;
 	}
+
+	this->screenQuad.Shutdown();
 }
 
 int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams)

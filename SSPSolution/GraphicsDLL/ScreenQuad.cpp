@@ -8,7 +8,7 @@ ScreenQuad::~ScreenQuad()
 {
 }
 
-int ScreenQuad::Initialize(ID3D11Device * device, int screenWidth, int screenHeight)
+int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMFLOAT2 resolution)
 {
 	DirectX::XMFLOAT3 vertices[6];
 	unsigned long indices[6];
@@ -23,16 +23,16 @@ int ScreenQuad::Initialize(ID3D11Device * device, int screenWidth, int screenHei
 	bool result;
 
 	//Calculate the screen coordinates of the left side of the window
-	left = (float)((screenWidth / 2) * -1);
+	left = (float)((resolution.x / 2) * -1);
 
 	//Calculate the screen coordinates of the right side of the window
-	right = left + (float)screenWidth;
+	right = left + (float)resolution.x;
 
 	//Calculate the screen coordinates of the top of the window
-	top = (float)(screenHeight / 2);
+	top = (float)(resolution.y / 2);
 
 	//Calculate the screen coordinates of the bottom of the window
-	bottom = top - (float)screenHeight;
+	bottom = top - (float)resolution.y;
 
 	//Load the vertex array with data
 	//First triangle
