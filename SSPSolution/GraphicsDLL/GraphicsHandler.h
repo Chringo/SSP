@@ -18,7 +18,7 @@ public:
 	GraphicsHandler();
 	~GraphicsHandler();
 
-	int Initialize(HWND* windowHandle);
+	int Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution);
 	int Render();
 	void Shutdown();
 };
