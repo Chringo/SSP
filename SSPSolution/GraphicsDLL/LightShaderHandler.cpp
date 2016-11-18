@@ -126,6 +126,11 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, D
 
 int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
 {
+	ShaderHandler::SetActive(deviceContext, shaderType);
+
+	//Set the sampler state in pixel shader
+	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
+
 	return 0;
 }
 
