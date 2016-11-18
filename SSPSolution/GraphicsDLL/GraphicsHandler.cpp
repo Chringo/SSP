@@ -39,4 +39,19 @@ int GraphicsHandler::Render()
 
 void GraphicsHandler::Shutdown()
 {
+	if (this->d3dHandler)
+	{
+		this->d3dHandler->Shutdown();
+		this->d3dHandler = nullptr;
+	}
+	if (this->deferredSH)
+	{
+		this->deferredSH->Shutdown();
+		this->deferredSH = nullptr;
+	}
+	if (this->lightSH)
+	{
+		this->lightSH->Shutdown();
+		this->lightSH = nullptr;
+	}
 }
