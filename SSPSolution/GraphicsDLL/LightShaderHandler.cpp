@@ -136,6 +136,14 @@ int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib
 
 void LightShaderHandler::Shutdown()
 {
+	ShaderHandler::Shutdown();
+
+	//Release the sampler state
+	if (this->m_samplerState)
+	{
+		this->m_samplerState->Release();
+		this->m_samplerState = nullptr;
+	}
 }
 
 int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams)
