@@ -148,5 +148,35 @@ void LightShaderHandler::Shutdown()
 
 int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams)
 {
+	HRESULT hResult;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ShaderLib::LightConstantBuffer* dataPtr;
+	unsigned int bufferNumber;
+
+	//Map the constant buffer so we can write to it (denies GPU access)
+	hResult = deviceContext->Map(this->m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
+	//Get pointer to the data
+	dataPtr = (ShaderLib::LightConstantBuffer*)mappedResource.pData;
+
+	//Copy the matrices to the constant buffer
+	dataPtr->viewMatrix = shaderParams->viewMatrix;
+	dataPtr->projectionMatrix = shaderParams->projectionMatrix;
+
+	dataPtr->camPos = shaderParams->camPos;
+
+	//Unmap the constant buffer to give the GPU access agin
+	deviceContext->Unmap(this->m_matrixBuffer, 0);
+
+	//Set constant buffer position in vertex shader
+	bufferNumber = 0;
+
+	//Set the constant buffer in vertex and pixel shader with updated values
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+
 	return 0;
 }
