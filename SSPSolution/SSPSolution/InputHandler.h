@@ -8,11 +8,18 @@ class InputHandler
 private:
 	//DIMOUSESTATE m_DIMouseState;
 	//DIMOUSESTATE m_oldDIMouseState;
-	unsigned char m_keyboardState[256];
-	unsigned char m_oldKeyboardState[256];
-	Uint8* m_keyboardState;
-	Uint8* m_oldKeyboardState;
-
+	//unsigned char m_keyboardState[256];
+	//unsigned char m_oldKeyboardState[256];
+	const int KEYBOARD_STATE_NUM = SDL_NUM_SCANCODES;
+	const Uint8* m_keyboardState;
+	const Uint8* m_oldKeyboardState;
+	struct MouseButtonState {
+		bool left;
+		bool right;
+		bool middle;
+	};
+	MouseButtonState m_mouseButtonState;
+	MouseButtonState m_oldMouseButtonState;
 	int m_mouseX;
 	int m_mouseY;
 	int m_screenWidth;
@@ -26,8 +33,6 @@ public:
 	void Shutdown();
 	void Update();
 
-	void KeyDown(unsigned int key);
-	void KeyUp(unsigned int key);
 	bool IsKeyPressed(unsigned int key);
 	bool IsKeyDown(unsigned int key);
 	bool IsKeyReleased(unsigned int key);

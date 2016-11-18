@@ -7,11 +7,8 @@ InputHandler::InputHandler()
 	this->m_screenWidth = 0;
 	this->m_screenHeight = 0;
 	this->m_lastKeyPressed = -1;
-
-	for (int i = 0; i < 256; i++) {
-		this->m_keyboardState[i] = this->m_oldKeyboardState[i] = false;
-	}
-
+	this->m_keyboardState = NULL;
+	this->m_oldKeyboardState = NULL;
 }
 
 InputHandler::~InputHandler()
@@ -48,9 +45,12 @@ void InputHandler::Update()
 void InputHandler::ReadKeyboard()
 {
 	//Copy the old data
-	for (int i = 0; i < 256; i++) {
+	/*for (int i = 0; i < 256; i++) {
 		this->m_oldKeyboardState[i] = this->m_keyboardState[i];
-	}
+	}*/
+	this->m_oldKeyboardState = this->m_keyboardState;
+
+	this->m_keyboardState = SDL_GetKeyboardState(NULL);
 	//Read the keyboard device
 
 
@@ -59,13 +59,17 @@ void InputHandler::ReadKeyboard()
 
 void InputHandler::ReadMouse()
 {
+	this->m_oldMouseButtonState = this->m_mouseButtonState;
 
+	this->m_mouseButtonState.right = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+	this->m_mouseButtonState.left = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+	this->m_mouseButtonState.middle = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 	return;
 }
 
 void InputHandler::ProcessInput()
 {
-
+	return;
 }
 
 DirectX::XMVECTOR InputHandler::GetMouseDeltaPos()
@@ -73,34 +77,24 @@ DirectX::XMVECTOR InputHandler::GetMouseDeltaPos()
 	return DirectX::XMVectorSet(float(this->m_mouseX), float(this->m_mouseY), 0, 0);	//z,y is not used so set to 0
 }
 
-void InputHandler::KeyDown(unsigned int key)
-{
-	this->m_keyboardState[key] = true;
-
-	return;
-}
-
-void InputHandler::KeyUp(unsigned int key)
-{
-	this->m_keyboardState[key] = false;
-	this->m_lastKeyPressed = key;
-
-	return;
-}
-
 bool InputHandler::IsKeyDown(unsigned int key)
 {
-	if (this->m_keyboardState[key]) {
-		return true;
+	if (key > 0 && key < SDL_NUM_SCANCODES)
+	{
+		if (this->m_keyboardState[key]) {
+			return true;
+		}
 	}
-
 	return false;
 }
 
 bool InputHandler::IsKeyPressed(unsigned int key)
 {
-	if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key]) {
-		return true;
+	if (key > 0 && key < SDL_NUM_SCANCODES)
+	{
+		if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key]) {
+			return true;
+		}
 	}
 
 	return false;
@@ -108,8 +102,11 @@ bool InputHandler::IsKeyPressed(unsigned int key)
 
 bool InputHandler::IsKeyReleased(unsigned int key)
 {
-	if (this->m_oldKeyboardState[key] && !this->m_keyboardState[key]) {
-		return true;
+	if (key > 0 && key < SDL_NUM_SCANCODES)
+	{
+		if (this->m_oldKeyboardState[key] && !this->m_keyboardState[key]) {
+			return true;
+		}
 	}
 
 	return false;

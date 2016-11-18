@@ -61,7 +61,7 @@ int System::Initialize()
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
-	this->m_inputHandler->Initialize(this->m_hinstance, this->m_hwnd, SCREEN_WIDTH, SCREEN_HEIGHT);
+	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	return result;
 }
@@ -76,10 +76,14 @@ int System::Run()
 		result = this->HandleEvents();
 		//Update input
 		this->m_inputHandler->Update();
-		int xPos = 0, yPos = 0;
+		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
+		{
+			int g = 4;
+		}
+		/*int xPos = 0, yPos = 0;
 		SDL_GetMouseState(&xPos, &yPos);
 		this->m_inputHandler->SetMousePos(xPos, yPos);
-		printf("%i %i \n", xPos, yPos);
+		printf("%i %i \n", xPos, yPos);*/
 		//Update game
 		//Render
 	}
