@@ -101,6 +101,22 @@ int ScreenQuad::Initialize(ID3D11Device * device, int screenWidth, int screenHei
 
 void ScreenQuad::SetBuffers(ID3D11DeviceContext * deviceContext)
 {
+	unsigned int stride;
+	unsigned offset;
+
+	//Set vertex buffer stride and offset
+	stride = sizeof(DirectX::XMFLOAT3);
+	offset = 0;
+
+	//Set the vertex buffer to active in the input assembly so it can rendered
+	deviceContext->IASetVertexBuffers(0, 1, &this->m_vertexBuffer, &stride, &offset);
+
+	//Set the index buffer to active in the input assembler so it can be rendered
+	deviceContext->IASetIndexBuffer(this->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 }
 
 void ScreenQuad::Shutdown()
