@@ -124,27 +124,53 @@ bool InputHandler::IsKeyReleased(unsigned int key)
 
 bool InputHandler::IsMouseKeyPressed(unsigned int key)
 {
-	
-
-	return false;
+	bool result = false;
+	switch (key)
+	{
+	case 0: result = this->m_mouseButtonState.left && !this->m_oldMouseButtonState.left;
+		break;
+	case 1:	result = this->m_mouseButtonState.right && !this->m_oldMouseButtonState.right;
+		break;
+	case 2:	result = this->m_mouseButtonState.middle && !this->m_oldMouseButtonState.middle;
+		break;
+	default:
+		break;
+	}
+	return result;
 }
 
 bool InputHandler::IsMouseKeyDown(unsigned int key)
 {
-	/*if (this->m_DIMouseState.rgbButtons[key]) {
-		return true;
-	}*/
-
-	return false;
+	bool result = false;
+	switch (key)
+	{
+	case 0: result = this->m_mouseButtonState.left;
+		break;
+	case 1:	result = this->m_mouseButtonState.right;
+		break;
+	case 2:	result = this->m_mouseButtonState.middle;
+		break;
+	default:
+		break;
+	}
+	return result;
 }
 
 bool InputHandler::IsMouseKeyReleased(unsigned int key)
 {
-	/*if (this->m_oldDIMouseState.rgbButtons[key] && !this->m_DIMouseState.rgbButtons[key]) {
-		return true;
-	}*/
-
-	return false;
+	bool result = false;
+	switch (key)
+	{
+	case 0: result = !this->m_mouseButtonState.left && this->m_oldMouseButtonState.left;
+		break;
+	case 1:	result = !this->m_mouseButtonState.right && this->m_oldMouseButtonState.right;
+		break;
+	case 2:	result = !this->m_mouseButtonState.middle && this->m_oldMouseButtonState.middle;
+		break;
+	default:
+		break;
+	}
+	return result;
 }
 
 void InputHandler::SetMousePos(int x, int y)

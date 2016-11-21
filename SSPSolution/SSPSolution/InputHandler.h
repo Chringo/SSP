@@ -41,7 +41,7 @@ public:
 	bool IsKeyDown(unsigned int key);
 	bool IsKeyReleased(unsigned int key);
 
-	//0 = left, 1 = right, 2 = scroll click, 3 = "Down button" on mouse
+	//0 = left, 1 = right, 2 = scroll click
 	bool IsMouseKeyPressed(unsigned int key);
 	bool IsMouseKeyDown(unsigned int key);
 	bool IsMouseKeyReleased(unsigned int key);
