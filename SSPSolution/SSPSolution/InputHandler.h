@@ -50,6 +50,7 @@ public:
 
 	void SetMousePos(int x, int y);
 	void SetMouseWheel(int x, int y);
+	void ApplyMouseWheel(int x, int y);
 
 	DirectX::XMFLOAT2 GetMousePos();
 	DirectX::XMFLOAT2 GetMouseDelta();

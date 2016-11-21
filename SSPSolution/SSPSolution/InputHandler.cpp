@@ -190,6 +190,12 @@ void InputHandler::SetMouseWheel(int x, int y)
 	this->m_mouseWheelY = y;
 }
 
+void InputHandler::ApplyMouseWheel(int x, int y)
+{
+	this->m_mouseWheelX += x;
+	this->m_mouseWheelY += y;
+}
+
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
 	return DirectX::XMFLOAT2(m_mouseX, m_mouseY);
