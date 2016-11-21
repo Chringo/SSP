@@ -9,7 +9,7 @@ LightShaderHandler::~LightShaderHandler()
 {
 }
 
-int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, DirectX::XMFLOAT2 resolution)
+int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, const DirectX::XMFLOAT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer = nullptr;

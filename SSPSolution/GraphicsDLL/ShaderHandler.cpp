@@ -17,7 +17,7 @@ ShaderHandler::~ShaderHandler()
 {
 }
 
-int ShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution)
+int ShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMFLOAT2&  resolution)
 {
 	return 0;
 }

@@ -16,7 +16,7 @@ DeferredShaderHandler::~DeferredShaderHandler()
 {
 }
 
-int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, DirectX::XMFLOAT2 resolution)
+int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, const DirectX::XMFLOAT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };

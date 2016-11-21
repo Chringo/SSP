@@ -16,7 +16,7 @@ public:
 	LightShaderHandler();
 	~LightShaderHandler();
 
-	int Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution);
+	int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMFLOAT2& resolution);
 	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
 	void Shutdown();
 

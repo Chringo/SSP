@@ -19,7 +19,7 @@ Direct3DHandler::~Direct3DHandler()
 {
 }
 
-int Direct3DHandler::Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution)
+int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution)
 {
 	HRESULT hResult;
 

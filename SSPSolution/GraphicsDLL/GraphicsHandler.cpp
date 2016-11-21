@@ -9,7 +9,7 @@ GraphicsHandler::~GraphicsHandler()
 {
 }
 
-int GraphicsHandler::Initialize(HWND * windowHandle, DirectX::XMFLOAT2 resolution)
+int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMFLOAT2& resolution)
 {
 	this->d3dHandler = new Direct3DHandler;
 	if (this->d3dHandler->Initialize(windowHandle, resolution))

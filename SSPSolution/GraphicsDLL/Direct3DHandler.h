@@ -22,7 +22,7 @@ public:
 	Direct3DHandler();
 	~Direct3DHandler();
 
-	int Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution);
+	int Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution);
 	int ClearDepthAndRTV();
 	int PresentScene();
 	void Shutdown();
