@@ -74,6 +74,7 @@ int System::Run()
 	{
 		//Handle events
 		result = this->HandleEvents();
+		SDL_PumpEvents();
 		//Update input
 		this->m_inputHandler->Update();
 		if (this->m_inputHandler->IsKeyDown(SDLK_f))
