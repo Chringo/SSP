@@ -192,46 +192,14 @@ int System::HandleEvents()
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonUp(Event->button.x, Event->button.y);
 			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
+		}
+		case SDL_MOUSEWHEEL:
+		{
 			break;
 		}
 		}
