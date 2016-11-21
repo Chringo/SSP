@@ -48,15 +48,7 @@ void InputHandler::SetKeyState(int key, bool state)
 void InputHandler::ReadKeyboard()
 {
 	//Copy the old data
-	/*for (int i = 0; i < 256; i++) {
-		this->m_oldKeyboardState[i] = this->m_keyboardState[i];
-	}*/
-
-
-
-	//Read the keyboard device
-
-
+	this->m_oldKeyboardState = this->m_keyboardState;
 	return;
 }
 
