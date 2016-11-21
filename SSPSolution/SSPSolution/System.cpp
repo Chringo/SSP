@@ -99,6 +99,7 @@ int System::HandleEvents()
 	{
 		switch (m_event.type)
 		{
+#pragma region
 		case SDL_WINDOWEVENT:
 		{
 			switch (m_event.window.event)
@@ -166,6 +167,7 @@ int System::HandleEvents()
 			}
 			break;
 		}
+#pragma endregion window events
 		case SDL_QUIT:
 		{
 			this->m_running = false;
@@ -178,6 +180,8 @@ int System::HandleEvents()
 			{
 				this->FullscreenToggle();
 			}
+
+
 			break;
 		}
 		case SDL_KEYUP:
