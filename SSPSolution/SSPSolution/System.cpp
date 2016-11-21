@@ -73,17 +73,16 @@ int System::Run()
 	while (this->m_running)
 	{
 		//Prepare the InputHandler
-		this->m_inputHandler->SetMouseWheel(0, 0);
+		this->m_inputHandler->Update();
 		//Handle events
 		result = this->HandleEvents();
 		SDL_PumpEvents();
 		//Update input
-		this->m_inputHandler->Update();
-		if (this->m_inputHandler->IsKeyDown(SDLK_f))
+		if (this->m_inputHandler->IsKeyReleased(SDL_SCANCODE_F))
 		{
 			this->FullscreenToggle();
 		}
-		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMousePos();
+		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMouseWheel();
 		std::cout << mousePos.x << " " << mousePos.y << "\n";
 		//Update game
 		//Render
@@ -178,13 +177,13 @@ int System::HandleEvents()
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
 			
-			this->m_inputHandler->SetKeyState(m_event.key.keysym.sym, true);
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, true);
 			break;
 		}
 		case SDL_KEYUP:
 		{
 			//OnKeyUp(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			this->m_inputHandler->SetKeyState(m_event.key.keysym.sym, false);
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, false);
 			break;
 		}
 		case SDL_MOUSEMOTION:
@@ -205,7 +204,7 @@ int System::HandleEvents()
 			int scrollingX = 0, scrollingY = 0;
 			scrollingX = m_event.wheel.x;
 			scrollingY = m_event.wheel.y;
-			this->m_inputHandler->SetMouseWheel(scrollingX, scrollingY);
+			this->m_inputHandler->ApplyMouseWheel(scrollingX, scrollingY);
 			break;
 		}
 		}

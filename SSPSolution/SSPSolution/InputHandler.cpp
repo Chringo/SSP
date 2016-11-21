@@ -88,7 +88,9 @@ void InputHandler::ReadMouse()
 
 void InputHandler::ProcessInput()
 {
-
+	//Set the mousewheel to 0; 0 so the new values are not corrupted by the old state
+	this->m_mouseWheelX = 0;
+	this->m_mouseWheelY = 0;
 	return;
 }
 
@@ -107,8 +109,12 @@ bool InputHandler::IsKeyPressed(unsigned int key)
 {
 	if (key > 0 && key < SDL_NUM_SCANCODES)
 	{
-		if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key]) {
-			return true;
+		if (this->m_keyboardState[key])
+		{
+			if (!this->m_oldKeyboardState[key])
+			{
+				return true;
+			}
 		}
 	}
 
