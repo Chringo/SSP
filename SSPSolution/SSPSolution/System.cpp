@@ -81,10 +81,8 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
-		/*int xPos = 0, yPos = 0;
-		SDL_GetMouseState(&xPos, &yPos);
-		this->m_inputHandler->SetMousePos(xPos, yPos);
-		printf("%i %i \n", xPos, yPos);*/
+		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMousePos();
+		std::cout << mousePos.x << " " << mousePos.y << "\n";
 		//Update game
 		//Render
 	}

@@ -49,12 +49,12 @@ public:
 	void SetMousePos(int x, int y);
 
 	DirectX::XMFLOAT2 GetMousePos();
+	DirectX::XMFLOAT2 GetMouseDelta();
 
 private:
 	void ReadKeyboard();
 	void ReadMouse();
 	void ProcessInput();
-	DirectX::XMVECTOR GetMouseDeltaPos();
 
 };
 

@@ -87,11 +87,6 @@ void InputHandler::ProcessInput()
 	return;
 }
 
-DirectX::XMVECTOR InputHandler::GetMouseDeltaPos()
-{
-	return DirectX::XMVectorSet(float(this->m_mouseDX), float(this->m_mouseDY), 0, 0);	//z,y is not used so set to 0
-}
-
 bool InputHandler::IsKeyDown(unsigned int key)
 {
 	if (key > 0 && key < SDL_NUM_SCANCODES)
@@ -129,9 +124,7 @@ bool InputHandler::IsKeyReleased(unsigned int key)
 
 bool InputHandler::IsMouseKeyPressed(unsigned int key)
 {
-	/*if (!this->m_oldDIMouseState.rgbButtons[key] && m_DIMouseState.rgbButtons[key]) {
-		return true;
-	}*/
+	
 
 	return false;
 }
@@ -163,4 +156,9 @@ void InputHandler::SetMousePos(int x, int y)
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
 	return DirectX::XMFLOAT2(m_mouseX, m_mouseY);
+}
+
+DirectX::XMFLOAT2 InputHandler::GetMouseDelta()
+{
+	return DirectX::XMFLOAT2(this->m_mouseDX, this->m_mouseDY);
 }
