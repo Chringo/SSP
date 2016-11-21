@@ -1,17 +1,18 @@
 #ifndef GRAPHICSDLL_GRAPHICSHANDLER
 #define GRAPHICSDLL_GRAPHICSHANDLER
 
+#include "Direct3DHandler.h"
+#include "DeferredShaderHandler.h"
+#include "LightShaderHandler.h"
+
+//#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-#include "Direct3DHandler.h"
-#include "DeferredShaderHandler.h"
-#include "LightShaderHandler.h"
-
-class GraphicsHandler
+class GRAPHICSDLL_API GraphicsHandler
 {
 private:
 	Direct3DHandler* d3dHandler;
