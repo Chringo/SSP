@@ -74,16 +74,9 @@ int System::Run()
 	{
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
-		//Handle events
+		//Handle events and update inputhandler
 		result = this->HandleEvents();
 		SDL_PumpEvents();
-		//Update input
-		if (this->m_inputHandler->IsKeyReleased(SDL_SCANCODE_F))
-		{
-			this->FullscreenToggle();
-		}
-		DirectX::XMFLOAT2 mousePos = this->m_inputHandler->GetMouseWheel();
-		std::cout << mousePos.x << " " << mousePos.y << "\n";
 		//Update game
 		//Render
 	}
@@ -170,9 +163,11 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_QUIT:
 		{
+			//The big X in the corner
 			this->m_running = false;
 			break;
 		}
+#pragma region
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
@@ -186,11 +181,6 @@ int System::HandleEvents()
 			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, false);
 			break;
 		}
-		case SDL_MOUSEMOTION:
-		{
-			//OnMouseMove(Event->motion.x, Event->motion.y, Event->motion.xrel, Event->motion.yrel, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_LEFT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
-			break;
-		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
 			break;
@@ -199,12 +189,14 @@ int System::HandleEvents()
 		{
 			break;
 		}
+#pragma endregion Key / Button events
+		case SDL_MOUSEMOTION:
+		{
+			break;
+		}
 		case SDL_MOUSEWHEEL:
 		{
-			int scrollingX = 0, scrollingY = 0;
-			scrollingX = m_event.wheel.x;
-			scrollingY = m_event.wheel.y;
-			this->m_inputHandler->ApplyMouseWheel(scrollingX, scrollingY);
+			this->m_inputHandler->ApplyMouseWheel(m_event.wheel.x, m_event.wheel.y);
 			break;
 		}
 		}

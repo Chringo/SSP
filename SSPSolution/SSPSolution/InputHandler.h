@@ -38,14 +38,20 @@ public:
 	void Update();
 
 	void SetKeyState(int key, bool state);
-
+	//Use SDL_SCANCODE_[key] where [key] is the key examined
+	//Pressed means it is active but wasn't last frame
 	bool IsKeyPressed(unsigned int key);
+	//Down means it is active regardless of last frame
 	bool IsKeyDown(unsigned int key);
+	//Released means it isn't active but was last frame
 	bool IsKeyReleased(unsigned int key);
 
 	//0 = left, 1 = right, 2 = scroll click
+	//Pressed means it is active but wasn't last frame
 	bool IsMouseKeyPressed(unsigned int key);
+	//Down means it is active regardless of last frame
 	bool IsMouseKeyDown(unsigned int key);
+	//Released means it isn't active but was last frame
 	bool IsMouseKeyReleased(unsigned int key);
 
 	void SetMousePos(int x, int y);
