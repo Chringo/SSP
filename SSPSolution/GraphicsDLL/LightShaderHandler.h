@@ -8,7 +8,8 @@ class LightShaderHandler :
 	public ShaderHandler
 {
 private:
-	ID3D11SamplerState* m_samplerState;
+	ID3D11SamplerState* m_samplerStateLinear;
+	ID3D11SamplerState* m_samplerStatePoint;
 
 	ScreenQuad screenQuad;
 

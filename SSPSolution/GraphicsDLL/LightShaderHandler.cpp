@@ -115,11 +115,21 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	//Create the texture sampler state
-	hResult = device->CreateSamplerState(&samplerDesc, &this->m_samplerState);
+	hResult = device->CreateSamplerState(&samplerDesc, &this->m_samplerStatePoint);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
+
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+	//Create the texture sampler state
+	hResult = device->CreateSamplerState(&samplerDesc, &this->m_samplerStateLinear);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 
 	// Create the screen quad \\
 
@@ -136,7 +146,8 @@ int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib
 	ShaderHandler::SetActive(deviceContext, shaderType);
 
 	//Set the sampler state in pixel shader
-	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
+	deviceContext->PSSetSamplers(0, 2, &this->m_samplerStateLinear);
+	deviceContext->PSSetSamplers(1, 2, &this->m_samplerStatePoint);
 
 	this->screenQuad.SetBuffers(deviceContext);
 
@@ -148,10 +159,16 @@ void LightShaderHandler::Shutdown()
 	ShaderHandler::Shutdown();
 
 	//Release the sampler state
-	if (this->m_samplerState)
+	if (this->m_samplerStatePoint)
 	{
-		this->m_samplerState->Release();
-		this->m_samplerState = nullptr;
+		this->m_samplerStatePoint->Release();
+		this->m_samplerStatePoint = nullptr;
+	}
+
+	if (this->m_samplerStateLinear)
+	{
+		this->m_samplerStateLinear->Release();
+		this->m_samplerStateLinear = nullptr;
 	}
 
 	this->screenQuad.Shutdown();
