@@ -23,9 +23,10 @@ private:
 	MouseButtonState m_oldMouseButtonState;
 	int m_mouseX;
 	int m_mouseY;
+	int m_mouseDX;
+	int m_mouseDY;
 	int m_screenWidth;
 	int m_screenHeight;
-	unsigned int m_lastKeyPressed;
 
 public:
 	InputHandler();
@@ -48,7 +49,6 @@ public:
 	void SetMousePos(int x, int y);
 
 	DirectX::XMFLOAT2 GetMousePos();
-	DirectX::XMFLOAT2 GetMousePosInWindow();
 
 private:
 	void ReadKeyboard();

@@ -4,9 +4,14 @@ InputHandler::InputHandler()
 {
 	this->m_mouseX = 0;
 	this->m_mouseY = 0;
+	int m_mouseDX = 0;
+	int m_mouseDY = 0;
 	this->m_screenWidth = 0;
 	this->m_screenHeight = 0;
-	this->m_lastKeyPressed = -1;
+	this->m_mouseButtonState.left = 0;
+	this->m_mouseButtonState.right = 0;
+	this->m_mouseButtonState.middle = 0;
+	this->m_oldMouseButtonState = this->m_mouseButtonState;
 }
 
 InputHandler::~InputHandler()
@@ -18,6 +23,12 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 {
 	this->m_mouseX = 0;
 	this->m_mouseY = 0;
+	int m_mouseDX = 0;
+	int m_mouseDY = 0;
+	this->m_mouseButtonState.left = 0;
+	this->m_mouseButtonState.right = 0;
+	this->m_mouseButtonState.middle = 0;
+	this->m_oldMouseButtonState = this->m_mouseButtonState;
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
@@ -54,22 +65,31 @@ void InputHandler::ReadKeyboard()
 
 void InputHandler::ReadMouse()
 {
+	//Copy the old data
 	this->m_oldMouseButtonState = this->m_mouseButtonState;
-
+	//Read the new data
 	this->m_mouseButtonState.right = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
 	this->m_mouseButtonState.left = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 	this->m_mouseButtonState.middle = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+
+	int xPos = 0, yPos = 0;
+	SDL_GetMouseState(&xPos, &yPos);
+	this->m_mouseDX = xPos - this->m_mouseX;
+	this->m_mouseDY = yPos - this->m_mouseY;
+	this->m_mouseX = xPos;
+	this->m_mouseY = yPos;
 	return;
 }
 
 void InputHandler::ProcessInput()
 {
+
 	return;
 }
 
 DirectX::XMVECTOR InputHandler::GetMouseDeltaPos()
 {
-	return DirectX::XMVectorSet(float(this->m_mouseX), float(this->m_mouseY), 0, 0);	//z,y is not used so set to 0
+	return DirectX::XMVectorSet(float(this->m_mouseDX), float(this->m_mouseDY), 0, 0);	//z,y is not used so set to 0
 }
 
 bool InputHandler::IsKeyDown(unsigned int key)
@@ -142,14 +162,5 @@ void InputHandler::SetMousePos(int x, int y)
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
-
-	return DirectX::XMFLOAT2(float(0), float(0));;
-}
-
-DirectX::XMFLOAT2 InputHandler::GetMousePosInWindow()
-{
-	DirectX::XMFLOAT2 mousePos = this->GetMousePos();
-	//Move the cords to the window
-
 	return DirectX::XMFLOAT2(m_mouseX, m_mouseY);
 }
