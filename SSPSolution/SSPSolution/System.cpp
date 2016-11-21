@@ -161,6 +161,10 @@ int System::HandleEvents()
 			break;
 		}
 #pragma endregion window events
+		case SDL_MOUSEMOTION:
+		{
+			break;
+		}
 		case SDL_QUIT:
 		{
 			//The big X in the corner
@@ -190,10 +194,6 @@ int System::HandleEvents()
 			break;
 		}
 #pragma endregion Key / Button events
-		case SDL_MOUSEMOTION:
-		{
-			break;
-		}
 		case SDL_MOUSEWHEEL:
 		{
 			this->m_inputHandler->ApplyMouseWheel(m_event.wheel.x, m_event.wheel.y);
