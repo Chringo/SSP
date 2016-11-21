@@ -76,9 +76,9 @@ int System::Run()
 		result = this->HandleEvents();
 		//Update input
 		this->m_inputHandler->Update();
-		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
+		if (this->m_inputHandler->IsKeyDown(SDLK_f))
 		{
-			int g = 4;
+			this->FullscreenToggle();
 		}
 		/*int xPos = 0, yPos = 0;
 		SDL_GetMouseState(&xPos, &yPos);
@@ -176,17 +176,14 @@ int System::HandleEvents()
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			if (m_event.key.keysym.sym == SDLK_f)
-			{
-				this->FullscreenToggle();
-			}
-
-
+			
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.sym, true);
 			break;
 		}
 		case SDL_KEYUP:
 		{
 			//OnKeyUp(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.sym, false);
 			break;
 		}
 		case SDL_MOUSEMOTION:
