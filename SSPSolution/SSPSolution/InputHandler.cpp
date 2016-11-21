@@ -6,6 +6,8 @@ InputHandler::InputHandler()
 	this->m_mouseY = 0;
 	int m_mouseDX = 0;
 	int m_mouseDY = 0;
+	int m_mouseWheelX = 0;
+	int m_mouseWheelY = 0;
 	this->m_screenWidth = 0;
 	this->m_screenHeight = 0;
 	this->m_mouseButtonState.left = 0;
@@ -25,6 +27,8 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 	this->m_mouseY = 0;
 	int m_mouseDX = 0;
 	int m_mouseDY = 0;
+	int m_mouseWheelX = 0;
+	int m_mouseWheelY = 0;
 	this->m_mouseButtonState.left = 0;
 	this->m_mouseButtonState.right = 0;
 	this->m_mouseButtonState.middle = 0;
@@ -36,6 +40,7 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 
 void InputHandler::Shutdown()
 {
+
 }
 
 void InputHandler::Update()
@@ -179,6 +184,12 @@ void InputHandler::SetMousePos(int x, int y)
 	this->m_mouseY = y;
 }
 
+void InputHandler::SetMouseWheel(int x, int y)
+{
+	this->m_mouseWheelX = x;
+	this->m_mouseWheelY = y;
+}
+
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
 	return DirectX::XMFLOAT2(m_mouseX, m_mouseY);
@@ -187,4 +198,9 @@ DirectX::XMFLOAT2 InputHandler::GetMousePos()
 DirectX::XMFLOAT2 InputHandler::GetMouseDelta()
 {
 	return DirectX::XMFLOAT2(this->m_mouseDX, this->m_mouseDY);
+}
+
+DirectX::XMFLOAT2 InputHandler::GetMouseWheel()
+{
+	return DirectX::XMFLOAT2(float(this->m_mouseWheelX), float(this->m_mouseWheelY));
 }

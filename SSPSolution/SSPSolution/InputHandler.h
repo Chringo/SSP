@@ -27,6 +27,8 @@ private:
 	int m_mouseDY;
 	int m_screenWidth;
 	int m_screenHeight;
+	int m_mouseWheelX;
+	int m_mouseWheelY;
 
 public:
 	InputHandler();
@@ -47,9 +49,11 @@ public:
 	bool IsMouseKeyReleased(unsigned int key);
 
 	void SetMousePos(int x, int y);
+	void SetMouseWheel(int x, int y);
 
 	DirectX::XMFLOAT2 GetMousePos();
 	DirectX::XMFLOAT2 GetMouseDelta();
+	DirectX::XMFLOAT2 GetMouseWheel();
 
 private:
 	void ReadKeyboard();

@@ -72,6 +72,8 @@ int System::Run()
 
 	while (this->m_running)
 	{
+		//Prepare the InputHandler
+		this->m_inputHandler->SetMouseWheel(0, 0);
 		//Handle events
 		result = this->HandleEvents();
 		SDL_PumpEvents();
@@ -200,6 +202,10 @@ int System::HandleEvents()
 		}
 		case SDL_MOUSEWHEEL:
 		{
+			int scrollingX = 0, scrollingY = 0;
+			scrollingX = m_event.wheel.x;
+			scrollingY = m_event.wheel.y;
+			this->m_inputHandler->SetMouseWheel(scrollingX, scrollingY);
 			break;
 		}
 		}
