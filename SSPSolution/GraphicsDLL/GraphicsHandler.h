@@ -1,6 +1,12 @@
 #ifndef GRAPHICSDLL_GRAPHICSHANDLER
 #define GRAPHICSDLL_GRAPHICSHANDLER
 
+#ifdef GRAPHICSDLL_EXPORTS
+#define GRAPHICSDLL_API __declspec(dllexport)
+#else
+#define GRAPHICSDLL_API __declspec(dllimport)
+#endif
+
 #include "Direct3DHandler.h"
 #include "DeferredShaderHandler.h"
 #include "LightShaderHandler.h"
