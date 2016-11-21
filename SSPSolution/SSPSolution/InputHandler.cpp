@@ -98,7 +98,8 @@ bool InputHandler::IsKeyDown(unsigned int key)
 {
 	if (key > 0 && key < SDL_NUM_SCANCODES)
 	{
-		if (this->m_keyboardState[key]) {
+		if (this->m_keyboardState[key])
+		{
 			return true;
 		}
 	}
@@ -110,7 +111,8 @@ bool InputHandler::IsKeyPressed(unsigned int key)
 {
 	if (key > 0 && key < SDL_NUM_SCANCODES)
 	{
-		if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key]) {
+		if (!this->m_oldKeyboardState[key] && this->m_keyboardState[key])
+		{
 			return true;
 		}
 	}
@@ -122,7 +124,8 @@ bool InputHandler::IsKeyReleased(unsigned int key)
 {
 	if (key > 0 && key < SDL_NUM_SCANCODES)
 	{
-		if (this->m_oldKeyboardState[key] && !this->m_keyboardState[key]) {
+		if (this->m_oldKeyboardState[key] && !this->m_keyboardState[key])
+		{
 			return true;
 		}
 	}
