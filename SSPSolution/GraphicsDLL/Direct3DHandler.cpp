@@ -260,6 +260,12 @@ void Direct3DHandler::Shutdown()
 		this->m_gDevice->Release();
 		this->m_gDevice = nullptr;
 	}
+
+	if (this->m_viewport)
+	{
+		delete this->m_viewport;
+		this->m_viewport = nullptr;
+	}
 }
 
 ID3D11Device * Direct3DHandler::GetDevice()
