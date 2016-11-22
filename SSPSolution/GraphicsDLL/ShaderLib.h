@@ -31,6 +31,8 @@ namespace ShaderLib
 
 		DirectX::XMFLOAT2 resolution;
 
+		float padding[2];
+
 		DirectX::XMFLOAT3 camPos;
 	};
 }
