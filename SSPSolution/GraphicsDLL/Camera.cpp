@@ -22,17 +22,31 @@ Camera::~Camera()
 
 int Camera::Initialize()
 {
-	int result = 0;
+	int result = 1;
 
 	this->m_viewMatrix = DirectX::XMMatrixIdentity();
-	this->m_baseViewMatrix = DirectX::XMMatrixIdentity();
-	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
 	this->m_roll = 0.0f;
 	this->m_pitch = 0.0f;
 	this->m_yaw = 0.0f;
+
+	//Define the basic view matrix used in rendering the second stage of deferred rendering.
+	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+	DirectX::XMVECTOR camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+	this->m_baseViewMatrix = DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp);
+
+	//Define a transformation matrix based on the three rotations a 3D object is capable of
+	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(this->m_pitch, this->m_yaw, this->m_roll);
+	//Transform the three components of the view matrix based on the rotations
+	camPos = DirectX::XMVector3TransformCoord(this->m_cameraPos, camRotationMatrix);
+	lookAt = DirectX::XMVector3TransformCoord(this->m_lookAt, camRotationMatrix);
+	camUp = DirectX::XMVector3TransformCoord(this->m_cameraUp, camRotationMatrix);
+	//Define the view matrix based on the transformed positions and vectors
+	this->m_viewMatrix = DirectX::XMMatrixLookAtLH(this->m_cameraPos, this->m_lookAt, this->m_cameraUp);
 
 	return result;
 }
@@ -40,6 +54,9 @@ int Camera::Initialize()
 int Camera::Update()
 {
 	int result = 0;
+
+
+
 	return result;
 }
 

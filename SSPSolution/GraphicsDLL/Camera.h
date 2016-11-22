@@ -6,6 +6,10 @@ class Camera
 {
 private:
 	DirectX::XMMATRIX m_viewMatrix;
+	//The base view matrix were created with the following values
+	//Pos:		0, 0, -1
+	//LookAt:	0, 0, 0
+	//CamUp:	0, 1, 0
 	DirectX::XMMATRIX m_baseViewMatrix;
 	DirectX::XMVECTOR m_cameraPos;
 	DirectX::XMVECTOR m_lookAt;
