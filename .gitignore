@@ -14,6 +14,7 @@
 *.iobj
 *.ipdb
 *.exp
+*.cso
 
 # Precompiled Headers
 *.gch
