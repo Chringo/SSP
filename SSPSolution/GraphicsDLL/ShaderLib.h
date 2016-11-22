@@ -29,7 +29,7 @@ namespace ShaderLib
 		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX projectionMatrix;
 
-		DirectX::XMFLOAT2 resolution;
+		DirectX::XMINT2 resolution;
 
 		float padding[2];
 

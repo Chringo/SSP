@@ -13,7 +13,7 @@ public:
 	ScreenQuad();
 	~ScreenQuad();
 
-	int Initialize(ID3D11Device* device, DirectX::XMFLOAT2 resolution);
+	int Initialize(ID3D11Device* device, DirectX::XMINT2 resolution);
 	void SetBuffers(ID3D11DeviceContext* deviceContext);
 	void Shutdown();
 };

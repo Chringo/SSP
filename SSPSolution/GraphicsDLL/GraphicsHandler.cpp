@@ -14,7 +14,7 @@ GraphicsHandler::~GraphicsHandler()
 {
 }
 
-int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMFLOAT2& resolution)
+int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
 	this->d3dHandler = new Direct3DHandler;
 	if (this->d3dHandler->Initialize(windowHandle, resolution))
@@ -68,7 +68,7 @@ int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::
 	lShaderParams->viewMatrix = viewMatrix;
 	lShaderParams->projectionMatrix = this->projectionMatrix;
 
-	lShaderParams->resolution = DirectX::XMFLOAT2(1280, 720);
+	lShaderParams->resolution = DirectX::XMINT2(1280, 720);
 
 	lShaderParams->camPos = cameraPos;
 
@@ -128,7 +128,7 @@ int GraphicsHandler::SetTriangle()
 	D3D11_SUBRESOURCE_DATA vertexData;
 	D3D11_SUBRESOURCE_DATA indexData;
 	HRESULT hresult;
-	bool result;
+	int result = 1;
 
 	vertices[0] = DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f);  //bottom left
 
@@ -199,5 +199,5 @@ int GraphicsHandler::SetTriangle()
 	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
 	this->d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	return 0;
+	return result;
 }

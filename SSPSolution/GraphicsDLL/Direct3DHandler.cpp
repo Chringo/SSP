@@ -19,7 +19,7 @@ Direct3DHandler::~Direct3DHandler()
 {
 }
 
-int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution)
+int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 
@@ -185,8 +185,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& res
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
 	this->m_viewport->TopLeftY = 0.0f;
-	this->m_viewport->Width = resolution.x;
-	this->m_viewport->Height = resolution.y;
+	this->m_viewport->Width = float(resolution.x);
+	this->m_viewport->Height = float(resolution.y);
 	this->m_viewport->MinDepth = 0.0f;
 	this->m_viewport->MaxDepth = 1.0f;
 
