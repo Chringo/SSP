@@ -84,26 +84,31 @@ void GraphicsHandler::Shutdown()
 	if (this->d3dHandler)
 	{
 		this->d3dHandler->Shutdown();
+		delete this->d3dHandler;
 		this->d3dHandler = nullptr;
 	}
 	if (this->deferredSH)
 	{
 		this->deferredSH->Shutdown();
+		delete this->deferredSH;
 		this->deferredSH = nullptr;
 	}
 	if (this->lightSH)
 	{
 		this->lightSH->Shutdown();
+		delete this->lightSH;
 		this->lightSH = nullptr;
 	}
 	if (this->m_indexBuffer)
 	{
 		this->m_indexBuffer->Release();
+		delete this->m_indexBuffer;
 		this->m_indexBuffer = nullptr;
 	}
 	if (this->m_vertexBuffer) 
 	{
 		this->m_vertexBuffer->Release();
+		delete this->m_vertexBuffer;
 		this->m_vertexBuffer = nullptr;
 	}
 }
