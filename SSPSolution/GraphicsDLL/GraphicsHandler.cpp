@@ -7,6 +7,7 @@ GraphicsHandler::GraphicsHandler()
 	this->lightSH = nullptr;
 	this->m_indexBuffer = nullptr;
 	this->m_vertexBuffer = nullptr;
+	this->camera = nullptr;
 }
 
 
@@ -34,6 +35,9 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		return 1;
 	}
 
+	this->camera = new Camera;
+	this->camera->Initialize();
+
 	//Setup projection matrix
 	//fieldOfView = 3.141592654f / 4.0f;
 	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
@@ -44,8 +48,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	return 0;
 }
 
-int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos)
+int GraphicsHandler::Render()
 {
+	DirectX::XMMATRIX viewMatrix;
+	this->camera->GetViewMatrix(viewMatrix);
+	DirectX::XMFLOAT3 cameraPos;
+	this->camera->GetCameraPos(cameraPos);
 	this->SetTriangle();
 
 	this->deferredSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
@@ -114,6 +122,11 @@ void GraphicsHandler::Shutdown()
 	if (this->windowHandle)
 	{
 		this->windowHandle = nullptr;
+	}
+	if (this->camera)
+	{
+		delete this->camera;
+		this->camera = nullptr;
 	}
 }
 

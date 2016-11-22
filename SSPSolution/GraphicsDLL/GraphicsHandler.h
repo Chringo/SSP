@@ -4,6 +4,7 @@
 #include "Direct3DHandler.h"
 #include "DeferredShaderHandler.h"
 #include "LightShaderHandler.h"
+#include "Camera.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -22,6 +23,8 @@ private:
 
 	HWND* windowHandle;
 
+	Camera* camera;
+
 	DirectX::XMMATRIX projectionMatrix;
 
 	//temp
@@ -32,7 +35,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
-	int Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos);
+	int Render();
 	void Shutdown();
 
 	//temp
