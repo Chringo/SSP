@@ -17,7 +17,7 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
-	GraphicsHandler* graphicsHandler;
+	GraphicsHandler* m_graphicsHandler;
 public:
 	System();
 	~System();
