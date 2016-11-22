@@ -41,6 +41,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMFLOAT2& re
 
 int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos)
 {
+	this->SetTriangle();
+
 	this->deferredSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
@@ -51,6 +53,23 @@ int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::
 	shaderParams->camPos = cameraPos;
 
 	this->deferredSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), shaderParams);
+
+	this->d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+
+	this->lightSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
+
+	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
+
+	lShaderParams->viewMatrix = viewMatrix;
+	lShaderParams->projectionMatrix = this->projectionMatrix;
+
+	lShaderParams->resolution = DirectX::XMFLOAT2(1280, 720);
+
+	lShaderParams->camPos = cameraPos;
+
+	this->lightSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), lShaderParams, this->deferredSH->GetShaderResourceViews());
+
+	this->d3dHandler->GetDeviceContext()->DrawIndexed(6, 0, 0);
 
 	return 0;
 }
