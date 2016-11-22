@@ -2,6 +2,11 @@
 
 GraphicsHandler::GraphicsHandler()
 {
+	this->d3dHandler = nullptr;
+	this->deferredSH = nullptr;
+	this->lightSH = nullptr;
+	this->m_indexBuffer = nullptr;
+	this->m_vertexBuffer = nullptr;
 }
 
 
