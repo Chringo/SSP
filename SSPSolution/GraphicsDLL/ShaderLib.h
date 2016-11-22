@@ -22,18 +22,18 @@ namespace ShaderLib
 
 		DirectX::XMFLOAT4 diffColor;
 
-		DirectX::XMFLOAT4 camPos;
+		DirectX::XMFLOAT3 camPos;
 	};
 	struct LightConstantBuffer
 	{
 		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX projectionMatrix;
 
-		ID3D11ShaderResourceView** gBuffers;
-
 		DirectX::XMFLOAT2 resolution;
 
-		DirectX::XMFLOAT4 camPos;
+		float padding[2];
+
+		DirectX::XMFLOAT3 camPos;
 	};
 }
 

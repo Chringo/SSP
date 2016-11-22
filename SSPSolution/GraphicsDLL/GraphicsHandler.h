@@ -6,11 +6,11 @@
 #include "LightShaderHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
-#ifdef GRAPHICSDLL_EXPORTS
+//#ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
-#else
-#define GRAPHICSDLL_API __declspec(dllimport)
-#endif
+//#else
+//#define GRAPHICSDLL_API __declspec(dllimport)
+//#endif
 
 class GRAPHICSDLL_API GraphicsHandler
 {
@@ -21,6 +21,12 @@ private:
 	LightShaderHandler* lightSH;
 
 	HWND* windowHandle;
+
+	DirectX::XMMATRIX projectionMatrix;
+
+	//temp
+	ID3D11Buffer* m_vertexBuffer;
+	ID3D11Buffer* m_indexBuffer;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
@@ -28,6 +34,9 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution);
 	int Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos);
 	void Shutdown();
+
+	//temp
+	int SetTriangle();
 };
 
 #endif

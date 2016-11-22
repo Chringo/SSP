@@ -64,7 +64,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 
 	// Create the input layout \\
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -73,7 +73,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "NORMAL";
+	/*polygonLayout[1].SemanticName = "NORMAL";
 	polygonLayout[1].SemanticIndex = 0;
 	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
@@ -95,7 +95,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	polygonLayout[3].InputSlot = 0;
 	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[3].InstanceDataStepRate = 0;
+	polygonLayout[3].InstanceDataStepRate = 0;*/
 
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 	//Create the vertex input layout.
