@@ -5,15 +5,15 @@
 class Camera
 {
 private:
-	DirectX::XMMATRIX viewMatrix;
-	DirectX::XMMATRIX baseViewMatrix;
-	DirectX::XMVECTOR cameraPos;
-	DirectX::XMVECTOR lookAt;
-	DirectX::XMVECTOR cameraUp;
+	DirectX::XMMATRIX m_viewMatrix;
+	DirectX::XMMATRIX m_baseViewMatrix;
+	DirectX::XMVECTOR m_cameraPos;
+	DirectX::XMVECTOR m_lookAt;
+	DirectX::XMVECTOR m_cameraUp;
 
-	float roll;
-	float pitch;
-	float yaw;
+	float m_roll;
+	float m_pitch;
+	float m_yaw;
 public:
 	Camera();
 	virtual ~Camera();
@@ -23,9 +23,12 @@ public:
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	void GetBaseViewMatrix(DirectX::XMMATRIX& storeIn);
-	DirectX::XMFLOAT3 GetCameraPos();
-	DirectX::XMFLOAT3 GetLookAt();
-	DirectX::XMFLOAT3 GetCameraUp();
+	void GetCameraPos(DirectX::XMVECTOR& storeIn);
+	void GetCameraPos(DirectX::XMFLOAT3& storeIn);
+	void GetLookAt(DirectX::XMVECTOR& storeIn);
+	void GetLookAt(DirectX::XMFLOAT3& storeIn);
+	void GetCameraUp(DirectX::XMVECTOR& storeIn);
+	void GetCameraUp(DirectX::XMFLOAT3& storeIn);
 	float GetRoll();
 	float GetPitch();
 	float GetYaw();
