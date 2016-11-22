@@ -22,7 +22,7 @@ public:
 	virtual int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMFLOAT2& resolution) = 0;
 	virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
 	virtual void Shutdown() = 0;
-	virtual void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
+	virtual void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename);
 };
 
 #endif
