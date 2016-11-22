@@ -14,6 +14,7 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
+	ID3D10Blob* errorMessage;
 
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/LightVertexShader.hlsl";
@@ -21,14 +22,16 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 
 	// Compile the shaders \\
 
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
-	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 

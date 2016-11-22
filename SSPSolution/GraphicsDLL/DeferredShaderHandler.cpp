@@ -22,6 +22,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
+	ID3D10Blob* errorMessage;
 
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/DeferredVertexShader.hlsl";
@@ -30,19 +31,23 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 
 	// Compile the shaders \\
 
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], NULL);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+
 		return 1;
 	}
-	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
-	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 
