@@ -14,7 +14,8 @@ private:
 	const int KEYBOARD_STATE_NUM = SDL_NUM_SCANCODES;
 	std::map<int, bool> m_oldKeyboardState;
 	std::map<int, bool> m_keyboardState;
-	struct MouseButtonState {
+	struct MouseButtonState 
+	{
 		bool left;
 		bool right;
 		bool middle;
