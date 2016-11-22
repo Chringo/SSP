@@ -22,7 +22,7 @@ namespace ShaderLib
 
 		DirectX::XMFLOAT4 diffColor;
 
-		DirectX::XMFLOAT4 camPos;
+		DirectX::XMFLOAT3 camPos;
 	};
 	struct LightConstantBuffer
 	{
@@ -31,7 +31,7 @@ namespace ShaderLib
 
 		DirectX::XMFLOAT2 resolution;
 
-		DirectX::XMFLOAT4 camPos;
+		DirectX::XMFLOAT3 camPos;
 	};
 }
 

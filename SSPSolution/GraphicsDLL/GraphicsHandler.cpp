@@ -29,12 +29,29 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMFLOAT2& re
 		return 1;
 	}
 
+	//Setup projection matrix
+	//fieldOfView = 3.141592654f / 4.0f;
+	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
+	float screenAspect = (float)resolution.x / (float)resolution.y;
+
+	this->projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f);
+
 	return 0;
 }
 
 int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos)
 {
-	
+	this->deferredSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
+
+	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
+	shaderParams->worldMatrix = DirectX::XMMatrixIdentity();
+	shaderParams->viewMatrix = viewMatrix;
+	shaderParams->projectionMatrix = this->projectionMatrix;
+	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
+	shaderParams->camPos = cameraPos;
+
+	this->deferredSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), shaderParams);
+
 	return 0;
 }
 

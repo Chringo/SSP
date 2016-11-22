@@ -22,6 +22,8 @@ private:
 
 	HWND* windowHandle;
 
+	DirectX::XMMATRIX projectionMatrix;
+
 	//temp
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
