@@ -6,6 +6,8 @@
 
 #include "ShaderLib.h"
 
+const int BUFFER_COUNT = 4; //Color, specular, normal, worldPos
+
 class ShaderHandler
 {
 protected:

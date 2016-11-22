@@ -27,8 +27,8 @@ int Camera::Initialize()
 	this->m_viewMatrix = DirectX::XMMatrixIdentity();
 	//The three vectors that defines the new coordinate system
 	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
 	this->m_roll = 0.0f;
 	this->m_pitch = 0.0f;

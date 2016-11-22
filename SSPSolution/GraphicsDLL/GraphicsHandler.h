@@ -39,6 +39,7 @@ public:
 	void Shutdown();
 
 	//temp
+	int CreateTriangle();
 	int SetTriangle();
 };
 

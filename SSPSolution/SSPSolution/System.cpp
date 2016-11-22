@@ -86,6 +86,7 @@ int System::Run()
 		SDL_PumpEvents();
 		//Update game
 		//Render
+		this->m_graphicsHandler->Render();
 	}
 
 

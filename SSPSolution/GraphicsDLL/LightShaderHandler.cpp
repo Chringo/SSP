@@ -141,6 +141,11 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 		return 1;
 	}
 
+	this->nullResource = new ID3D11ShaderResourceView*[BUFFER_COUNT];
+	for (int i = 0; i < BUFFER_COUNT; i++) {
+		nullResource[i] = nullptr;
+	}
+
 	return 0;
 }
 
@@ -217,4 +222,9 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	}
 
 	return 0;
+}
+
+void LightShaderHandler::ResetPSShaderResources(ID3D11DeviceContext * deviceContext)
+{
+	deviceContext->PSSetShaderResources(0, BUFFER_COUNT, this->nullResource);
 }

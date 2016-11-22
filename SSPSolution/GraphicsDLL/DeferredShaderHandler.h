@@ -3,8 +3,6 @@
 
 #include "ShaderHandler.h"
 
-const int BUFFER_COUNT = 4; //Color, specular, normal, worldPos
-
 class DeferredShaderHandler :
 	public ShaderHandler
 {

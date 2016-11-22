@@ -45,15 +45,21 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f);
 
+	this->CreateTriangle();
+
 	return 0;
 }
 
 int GraphicsHandler::Render()
 {
+	this->d3dHandler->ClearDepthAndRTV();
+	this->deferredSH->ClearRenderTargetViews(this->d3dHandler->GetDeviceContext());
+
 	DirectX::XMMATRIX viewMatrix;
 	this->camera->GetViewMatrix(viewMatrix);
 	DirectX::XMFLOAT3 cameraPos;
 	this->camera->GetCameraPos(cameraPos);
+
 	this->SetTriangle();
 
 	this->deferredSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
@@ -83,6 +89,10 @@ int GraphicsHandler::Render()
 	this->lightSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), lShaderParams, this->deferredSH->GetShaderResourceViews());
 	delete lShaderParams;
 	this->d3dHandler->GetDeviceContext()->DrawIndexed(6, 0, 0);
+
+	this->lightSH->ResetPSShaderResources(this->d3dHandler->GetDeviceContext());
+
+	this->d3dHandler->PresentScene();
 
 	return 0;
 }
@@ -130,7 +140,7 @@ void GraphicsHandler::Shutdown()
 	}
 }
 
-int GraphicsHandler::SetTriangle()
+int GraphicsHandler::CreateTriangle()
 {
 	DirectX::XMFLOAT3 vertices[3];
 	unsigned long indices[3];
@@ -141,15 +151,14 @@ int GraphicsHandler::SetTriangle()
 	D3D11_SUBRESOURCE_DATA vertexData;
 	D3D11_SUBRESOURCE_DATA indexData;
 	HRESULT hresult;
-	int result = 1;
 
-	vertices[0] = DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f);  //bottom left
+	vertices[0] = DirectX::XMFLOAT3(-10.5f, -10.5f, 0.0f);  //bottom left
 
-	vertices[1] = DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f);  //top min
+	vertices[1] = DirectX::XMFLOAT3(0.0f, 10.5f, 0.0f);  //top mid
 
-	vertices[2] = DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f);  //bottom right
+	vertices[2] = DirectX::XMFLOAT3(10.5f, -10.5f, 0.0f);  //bottom right
 
-										   //Load the index array with data
+														 //Load the index array with data
 	for (int i = 0; i < sizeIndices; i++)
 	{
 		indices[i] = i;
@@ -173,7 +182,7 @@ int GraphicsHandler::SetTriangle()
 	//Create the vertex buffer
 	hresult = this->d3dHandler->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
 	//Set up the description of the static index buffer
@@ -193,9 +202,14 @@ int GraphicsHandler::SetTriangle()
 	//Create the index buffer
 	hresult = this->d3dHandler->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &this->m_indexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
+	return 0;
+}
+
+int GraphicsHandler::SetTriangle()
+{
 	unsigned int stride;
 	unsigned offset;
 
@@ -212,5 +226,5 @@ int GraphicsHandler::SetTriangle()
 	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
 	this->d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	return result;
+	return 0;
 }

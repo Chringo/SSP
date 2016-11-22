@@ -13,6 +13,8 @@ private:
 
 	ScreenQuad screenQuad;
 
+	ID3D11ShaderResourceView** nullResource;
+
 public:
 	LightShaderHandler();
 	~LightShaderHandler();
@@ -22,6 +24,8 @@ public:
 	void Shutdown();
 
 	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::LightConstantBuffer* shaderParams, ID3D11ShaderResourceView** gBuffers);
+
+	void ResetPSShaderResources(ID3D11DeviceContext* deviceContext);
 };
 
 #endif
