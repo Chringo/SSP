@@ -29,8 +29,6 @@ namespace ShaderLib
 		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX projectionMatrix;
 
-		ID3D11ShaderResourceView** gBuffers;
-
 		DirectX::XMFLOAT2 resolution;
 
 		DirectX::XMFLOAT4 camPos;

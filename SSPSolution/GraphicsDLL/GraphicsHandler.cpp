@@ -131,5 +131,21 @@ int GraphicsHandler::SetTriangle()
 		return false;
 	}
 
+	unsigned int stride;
+	unsigned offset;
+
+	//Set vertex buffer stride and offset
+	stride = sizeof(DirectX::XMFLOAT3);
+	offset = 0;
+
+	//Set the vertex buffer to active in the input assembly so it can rendered
+	this->d3dHandler->GetDeviceContext()->IASetVertexBuffers(0, 1, &this->m_vertexBuffer, &stride, &offset);
+
+	//Set the index buffer to active in the input assembler so it can be rendered
+	this->d3dHandler->GetDeviceContext()->IASetIndexBuffer(this->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
+	this->d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	return 0;
 }
