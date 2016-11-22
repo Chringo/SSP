@@ -25,6 +25,7 @@ int Camera::Initialize()
 	int result = 1;
 
 	this->m_viewMatrix = DirectX::XMMatrixIdentity();
+	//The three vectors that defines the new coordinate system
 	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -45,7 +46,7 @@ int Camera::Initialize()
 	camPos = DirectX::XMVector3TransformCoord(this->m_cameraPos, camRotationMatrix);
 	lookAt = DirectX::XMVector3TransformCoord(this->m_lookAt, camRotationMatrix);
 	camUp = DirectX::XMVector3TransformCoord(this->m_cameraUp, camRotationMatrix);
-	//Define the view matrix based on the transformed positions and vectors
+	//Define the view matrix based on the transformed positions
 	this->m_viewMatrix = DirectX::XMMatrixLookAtLH(this->m_cameraPos, this->m_lookAt, this->m_cameraUp);
 
 	return result;
@@ -55,12 +56,14 @@ int Camera::Update()
 {
 	int result = 0;
 
+	//Define a transformation matrix based on the three rotations a 3D object is capable of
 	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(this->m_pitch, this->m_yaw, this->m_roll);
-
+	//Transform the three components of the view matrix based on the rotations
 	DirectX::XMVECTOR camPos = DirectX::XMVector3TransformCoord(this->m_cameraPos, camRotationMatrix);
 	DirectX::XMVECTOR lookAt = DirectX::XMVector3TransformCoord(this->m_lookAt, camRotationMatrix);
 	DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(this->m_cameraUp, camRotationMatrix);
 
+	//Define the view matrix based on the transformed positions
 	this->m_viewMatrix = DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp);
 
 	return result;
