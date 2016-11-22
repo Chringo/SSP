@@ -30,9 +30,9 @@ PSOutput main(PSInput input)
 
 	output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
 	
-	output.specular = float4(0.0f, 0.0f, 0.0f, 1.0f);;
+	output.specular = float4(1.0f, 0.0f, 0.0f, 1.0f);;
 
-	output.normal = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	output.normal = float4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	output.worldPos = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
