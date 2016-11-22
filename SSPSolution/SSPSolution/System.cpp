@@ -62,7 +62,7 @@ int System::Initialize()
 	}
 
 	this->m_graphicsHandler = new GraphicsHandler();
-	if (this->m_graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMFLOAT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
+	if (this->m_graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
 	{
 		printf("GraphicsHandler did not work. RIP!\n");
 	}
