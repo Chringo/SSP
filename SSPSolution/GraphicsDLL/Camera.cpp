@@ -55,7 +55,13 @@ int Camera::Update()
 {
 	int result = 0;
 
+	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(this->m_pitch, this->m_yaw, this->m_roll);
 
+	DirectX::XMVECTOR camPos = DirectX::XMVector3TransformCoord(this->m_cameraPos, camRotationMatrix);
+	DirectX::XMVECTOR lookAt = DirectX::XMVector3TransformCoord(this->m_lookAt, camRotationMatrix);
+	DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(this->m_cameraUp, camRotationMatrix);
+
+	this->m_viewMatrix = DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp);
 
 	return result;
 }
