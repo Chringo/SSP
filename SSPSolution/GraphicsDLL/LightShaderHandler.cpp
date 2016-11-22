@@ -174,7 +174,7 @@ void LightShaderHandler::Shutdown()
 	this->screenQuad.Shutdown();
 }
 
-int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams)
+int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams, ID3D11ShaderResourceView** gBuffers)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -208,9 +208,9 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 
-	if (shaderParams->gBuffers) {
+	if (gBuffers) {
 		//Set shader texture resource for pixel shader
-		deviceContext->PSSetShaderResources(0, 4, shaderParams->gBuffers);
+		deviceContext->PSSetShaderResources(0, 4, gBuffers);
 	}
 
 	return 0;

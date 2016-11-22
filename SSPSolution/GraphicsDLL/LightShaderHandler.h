@@ -21,7 +21,7 @@ public:
 	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
-	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::LightConstantBuffer* shaderParams);
+	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::LightConstantBuffer* shaderParams, ID3D11ShaderResourceView** gBuffers);
 };
 
 #endif
