@@ -4,6 +4,15 @@
 
 Camera::Camera()
 {
+	this->m_viewMatrix = DirectX::XMMatrixIdentity();
+	this->m_baseViewMatrix = DirectX::XMMatrixIdentity();
+	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+	this->m_roll = 0.0f;
+	this->m_pitch = 0.0f;
+	this->m_yaw = 0.0f;
 }
 
 
@@ -14,6 +23,17 @@ Camera::~Camera()
 int Camera::Initialize()
 {
 	int result = 0;
+
+	this->m_viewMatrix = DirectX::XMMatrixIdentity();
+	this->m_baseViewMatrix = DirectX::XMMatrixIdentity();
+	this->m_cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cameraUp = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+	this->m_roll = 0.0f;
+	this->m_pitch = 0.0f;
+	this->m_yaw = 0.0f;
+
 	return result;
 }
 
