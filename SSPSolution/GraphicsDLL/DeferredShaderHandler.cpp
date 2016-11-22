@@ -38,13 +38,13 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 
 		return 1;
 	}
-	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
+	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
 		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
-	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
 		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);

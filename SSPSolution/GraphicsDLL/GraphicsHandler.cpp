@@ -94,10 +94,12 @@ void GraphicsHandler::Shutdown()
 	if (this->m_indexBuffer)
 	{
 		this->m_indexBuffer->Release();
+		this->m_indexBuffer = nullptr;
 	}
 	if (this->m_vertexBuffer) 
 	{
 		this->m_vertexBuffer->Release();
+		this->m_vertexBuffer = nullptr;
 	}
 }
 
