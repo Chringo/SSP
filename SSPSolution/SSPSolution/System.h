@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SDL_syswm.h>
 #include "../GraphicsDLL/GraphicsHandler.h"
+#include "InputHandler.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 class System
@@ -18,6 +19,8 @@ private:
 	//This is the window we render to
 	SDL_Window* m_window;
 	GraphicsHandler* m_graphicsHandler;
+	//These are the components
+	InputHandler* m_inputHandler;
 public:
 	System();
 	~System();

@@ -4,6 +4,8 @@
 
 System::System()
 {
+	this->m_inputHandler = NULL;
+	this->m_window = NULL;
 }
 
 
@@ -14,6 +16,8 @@ System::~System()
 int System::Shutdown()
 {
 	int result = 0;
+	this->m_inputHandler->Shutdown();
+	delete this->m_inputHandler;
 	//Destroy the display window
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
@@ -35,7 +39,7 @@ int System::Initialize()
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		printf("SDL failed in initializing the window! SDL_Error: %s\n", SDL_GetError());
+		printf("SDL failed in initializing the window! SDL_Error: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -45,7 +49,7 @@ int System::Initialize()
 	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
-		printf("Window creation failed! SDL_ERROR: %S\n", SDL_GetError());
+		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -63,6 +67,9 @@ int System::Initialize()
 		printf("GraphicsHandler did not work. RIP!\n");
 	}
 
+	//Initialize the InputHandler
+	this->m_inputHandler = new InputHandler();
+	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	return result;
 }
 
@@ -72,9 +79,11 @@ int System::Run()
 
 	while (this->m_running)
 	{
-		//Handle events
+		//Prepare the InputHandler
+		this->m_inputHandler->Update();
+		//Handle events and update inputhandler
 		result = this->HandleEvents();
-		//Update input
+		SDL_PumpEvents();
 		//Update game
 		//Render
 	}
@@ -90,6 +99,7 @@ int System::HandleEvents()
 	{
 		switch (m_event.type)
 		{
+#pragma region
 		case SDL_WINDOWEVENT:
 		{
 			switch (m_event.window.event)
@@ -157,72 +167,43 @@ int System::HandleEvents()
 			}
 			break;
 		}
+#pragma endregion window events
+		case SDL_MOUSEMOTION:
+		{
+			break;
+		}
 		case SDL_QUIT:
 		{
+			//The big X in the corner
 			this->m_running = false;
 			break;
 		}
+#pragma region
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			if (m_event.key.keysym.sym == SDLK_f)
-			{
-				this->FullscreenToggle();
-			}
+			
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, true);
 			break;
 		}
 		case SDL_KEYUP:
 		{
 			//OnKeyUp(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			break;
-		}
-		case SDL_MOUSEMOTION:
-		{
-			//OnMouseMove(Event->motion.x, Event->motion.y, Event->motion.xrel, Event->motion.yrel, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_LEFT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, false);
 			break;
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonUp(Event->button.x, Event->button.y);
 			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
+		}
+#pragma endregion Key / Button events
+		case SDL_MOUSEWHEEL:
+		{
+			this->m_inputHandler->ApplyMouseWheel(m_event.wheel.x, m_event.wheel.y);
 			break;
 		}
 		}
