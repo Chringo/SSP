@@ -21,6 +21,10 @@ private:
 	LightShaderHandler* lightSH;
 
 	HWND* windowHandle;
+
+	//temp
+	ID3D11Buffer* m_vertexBuffer;
+	ID3D11Buffer* m_indexBuffer;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
@@ -28,6 +32,9 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution);
 	int Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::XMFLOAT3& cameraPos);
 	void Shutdown();
+
+	//temp
+	int SetTriangle();
 };
 
 #endif
