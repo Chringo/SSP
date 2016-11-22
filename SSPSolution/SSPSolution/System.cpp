@@ -18,6 +18,7 @@ int System::Shutdown()
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
 	SDL_Quit();
+	this->graphicsHandler->Shutdown();
 	return result;
 }
 
@@ -53,6 +54,12 @@ int System::Initialize()
 		SDL_VERSION(&wmInfo.version);
 		SDL_GetWindowWMInfo(m_window, &wmInfo);
 		m_hwnd = wmInfo.info.win.window;
+	}
+
+	this->graphicsHandler = new GraphicsHandler;
+	if (this->graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMFLOAT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
+	{
+		printf("GraphicsHandler did not work. RIP!\n");
 	}
 
 	return result;

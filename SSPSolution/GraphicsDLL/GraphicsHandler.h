@@ -6,11 +6,11 @@
 #include "LightShaderHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
-//#ifdef GRAPHICSDLL_EXPORTS
+#ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
-//#else
-//#define GRAPHICSDLL_API __declspec(dllimport)
-//#endif
+#else
+#define GRAPHICSDLL_API __declspec(dllimport)
+#endif
 
 class GRAPHICSDLL_API GraphicsHandler
 {

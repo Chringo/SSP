@@ -3,8 +3,9 @@
 #include <SDL.h>
 #include <iostream>
 #include <SDL_syswm.h>
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 640;
+#include "../GraphicsDLL/GraphicsHandler.h"
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 class System
 {
 private:
@@ -16,6 +17,7 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
+	GraphicsHandler* graphicsHandler;
 public:
 	System();
 	~System();
