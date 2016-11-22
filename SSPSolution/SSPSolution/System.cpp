@@ -187,10 +187,12 @@ int System::HandleEvents()
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
+			this->m_inputHandler->SetMouseState(m_event.button.button, true);
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
+			this->m_inputHandler->SetMouseState(m_event.button.button, false);
 			break;
 		}
 #pragma endregion Key / Button events
