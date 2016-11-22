@@ -18,6 +18,8 @@ private:
 		bool left;
 		bool right;
 		bool middle;
+		bool x1;
+		bool x2;
 	};
 	MouseButtonState m_mouseButtonState;
 	MouseButtonState m_oldMouseButtonState;
@@ -37,6 +39,7 @@ public:
 	void Shutdown();
 	void Update();
 
+	void SetMouseState(int button, bool state);
 	void SetKeyState(int key, bool state);
 	//Use SDL_SCANCODE_[key] where [key] is the key examined
 	//Pressed means it is active but wasn't last frame
