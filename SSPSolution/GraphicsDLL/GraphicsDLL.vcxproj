@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="DeferredShaderHandler.h" />
     <ClInclude Include="Direct3DHandler.h" />
     <ClInclude Include="GraphicsHandler.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="ShaderLib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DeferredShaderHandler.cpp" />
     <ClCompile Include="Direct3DHandler.cpp" />
     <ClCompile Include="GraphicsHandler.cpp" />
