@@ -111,6 +111,10 @@ void GraphicsHandler::Shutdown()
 		delete this->m_vertexBuffer;
 		this->m_vertexBuffer = nullptr;
 	}
+	if (this->windowHandle)
+	{
+		this->windowHandle = nullptr;
+	}
 }
 
 int GraphicsHandler::SetTriangle()
