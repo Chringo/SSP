@@ -60,6 +60,7 @@ int Camera::Update()
 	return result;
 }
 
+#pragma region
 void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 {
 	storeIn = DirectX::XMMATRIX(this->m_viewMatrix);
@@ -122,7 +123,8 @@ float Camera::GetYaw()
 {
 	return this->m_yaw;
 }
-
+#pragma endregion getters
+#pragma region
 void Camera::SetCameraPos(DirectX::XMFLOAT3 newCamPos)
 {
 	this->m_cameraPos = DirectX::XMLoadFloat3(&newCamPos);
@@ -194,3 +196,4 @@ void Camera::ApplyYaw(float yawIncrease)
 	this->m_yaw += yawIncrease;
 	return;
 }
+#pragma endregion setters
