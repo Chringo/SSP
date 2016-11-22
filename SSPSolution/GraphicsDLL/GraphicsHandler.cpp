@@ -58,7 +58,7 @@ int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::
 	shaderParams->camPos = cameraPos;
 
 	this->deferredSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), shaderParams);
-
+	delete shaderParams;
 	this->d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
 	this->lightSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
@@ -73,7 +73,7 @@ int GraphicsHandler::Render(const DirectX::XMMATRIX& viewMatrix, const DirectX::
 	lShaderParams->camPos = cameraPos;
 
 	this->lightSH->SetShaderParameters(this->d3dHandler->GetDeviceContext(), lShaderParams, this->deferredSH->GetShaderResourceViews());
-
+	delete lShaderParams;
 	this->d3dHandler->GetDeviceContext()->DrawIndexed(6, 0, 0);
 
 	return 0;
