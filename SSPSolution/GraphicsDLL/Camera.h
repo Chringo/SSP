@@ -2,7 +2,14 @@
 #define GRAPHICSDLL_CAMERA_H
 #include <DirectXMath.h>
 
-class Camera
+//#define GRAPHICSDLL_EXPORTS
+#ifdef GRAPHICSDLL_EXPORTS
+#define GRAPHICSDLL_API __declspec(dllexport)
+#else
+#define GRAPHICSDLL_API __declspec(dllimport)
+#endif
+
+class GRAPHICSDLL_API Camera
 {
 private:
 	//The second matrix used in deferred rendering
