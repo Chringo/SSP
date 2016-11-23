@@ -277,3 +277,10 @@ ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
 {
 	return this->m_gDeviceContext;
 }
+
+int Direct3DHandler::SetBackBuffer()
+{
+	this->m_gDeviceContext->OMSetRenderTargets(1, &this->m_backBufferRTV, this->m_depthStencilView);
+
+	return 0;
+}

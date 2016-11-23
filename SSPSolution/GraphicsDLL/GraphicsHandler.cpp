@@ -75,6 +75,7 @@ int GraphicsHandler::Render()
 	delete shaderParams;
 	this->d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
+	this->d3dHandler->SetBackBuffer();
 	this->lightSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;

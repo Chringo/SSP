@@ -74,7 +74,7 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 	//Create the vertex buffer
 	hresult = device->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
 	//Set up the description of the static index buffer
@@ -94,7 +94,7 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 	//Create the index buffer
 	hresult = device->CreateBuffer(&indexBufferDesc, &indexData, &this->m_indexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
 	return 0;
