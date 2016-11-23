@@ -6,6 +6,12 @@
 
 class ScreenQuad {
 private:
+	struct quadVertex
+	{
+		DirectX::XMFLOAT3 Position;
+		DirectX::XMFLOAT2 UV;
+	};
+
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 

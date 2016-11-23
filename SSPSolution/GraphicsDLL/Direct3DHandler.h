@@ -24,12 +24,14 @@ public:
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	int ClearDepthAndRTV();
+	int ClearDepthAndRTV(ID3D11DepthStencilView*);
 	int PresentScene();
 	void Shutdown();
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 	int SetBackBuffer();
+	int SetBackBuffer(ID3D11DepthStencilView*);
 };
 
 #endif

@@ -102,6 +102,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[3].InstanceDataStepRate = 0;*/
 
+
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 	//Create the vertex input layout.
 	hResult = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout);
@@ -339,7 +340,7 @@ int DeferredShaderHandler::ClearRenderTargetViews(ID3D11DeviceContext * deviceCo
 	float color[4];
 
 	color[0] = 0.0f;
-	color[1] = 0.0f;
+	color[1] = 1.0f;
 	color[2] = 0.0f;
 	color[3] = 1.0f;
 

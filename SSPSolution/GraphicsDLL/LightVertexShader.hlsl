@@ -10,25 +10,24 @@ cbuffer LightConstantBuffer
 
 struct VSInput
 {
-	float4 position : POSITION;
+	float3 position : POSITION;
+    float2 UV : TEXCOORD0;
 };
 
 struct PSInput
 {
 	float4 position : SV_POSITION;
+    float2 UV : TEXCOORD0;
 };
 
 PSInput main(VSInput input)
 {
 	PSInput output;
 
-	//Add homogencoordinates for proper matrix multiplication
-	input.position.w = 1.0f;
 
 	//Multiply the position with world-, view- and projectionmatrix
-	output.position = mul(viewMatrix, input.position);
-	output.position = mul(projectionMatrix, output.position);
-
+	output.position = float4(input.position, 1.0f);
+    output.UV = input.UV;
 	//output will be in clip space of the light projection plane
 	return output;
 }

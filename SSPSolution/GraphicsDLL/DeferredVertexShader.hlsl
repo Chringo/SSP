@@ -29,9 +29,8 @@ GSInput main(VSInput input)
 
 	//Multiply the position with world-, view- and projectionmatrix
 	//Save the world-pos of the vertex
-	output.position = mul(worldMatrix, output.position);
-	output.position = mul(viewMatrix, output.position);
-	output.position = mul(projectionMatrix, output.position);
+	output.position = output.position;
+
 
 	return output;
 }

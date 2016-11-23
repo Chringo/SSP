@@ -19,6 +19,7 @@ cbuffer LightConstantBuffer
 struct PSInput
 {
 	float4 position : SV_POSITION;
+    float2 UV : TEXCOORD0;
 };
 
 float4 main(PSInput input) : SV_TARGET
@@ -26,7 +27,7 @@ float4 main(PSInput input) : SV_TARGET
 	float4 diffColor;
 	float2 textCoords = float2(input.position.x / resolution.x, input.position.y / resolution.y);
 
-	diffColor = diffTexture.Sample(pointSampler, textCoords);
+	diffColor = diffTexture.Sample(pointSampler, input.UV);
 
 	return diffColor;
 }

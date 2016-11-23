@@ -60,7 +60,7 @@ int GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render()
 {
-	this->d3dHandler->ClearDepthAndRTV();
+
 	this->deferredSH->ClearRenderTargetViews(this->d3dHandler->GetDeviceContext());
 
 	DirectX::XMMATRIX viewMatrix;
@@ -83,7 +83,8 @@ int GraphicsHandler::Render()
 	delete shaderParams;
 	this->d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
-	this->d3dHandler->SetBackBuffer();
+	this->d3dHandler->ClearDepthAndRTV(this->deferredSH->GetDSV());
+	this->d3dHandler->SetBackBuffer(this->deferredSH->GetDSV());
 	this->lightSH->SetActive(this->d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
@@ -161,11 +162,11 @@ int GraphicsHandler::CreateTriangle()
 	D3D11_SUBRESOURCE_DATA indexData;
 	HRESULT hresult;
 
-	vertices[0] = DirectX::XMFLOAT3(-10.5f, -10.5f, 0.0f);  //bottom left
+	vertices[0] = DirectX::XMFLOAT3(-.5f, -.5f, 0.0f);  //bottom left
 
-	vertices[1] = DirectX::XMFLOAT3(0.0f, 10.5f, 0.0f);  //top mid
+	vertices[1] = DirectX::XMFLOAT3(0.0f, .5f, 0.0f);  //top mid
 
-	vertices[2] = DirectX::XMFLOAT3(10.5f, -10.5f, 0.0f);  //bottom right
+	vertices[2] = DirectX::XMFLOAT3(.5f, -.5f, 0.0f);  //bottom right
 
 														 //Load the index array with data
 	for (int i = 0; i < sizeIndices; i++)

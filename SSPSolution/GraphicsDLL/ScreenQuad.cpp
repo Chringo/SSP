@@ -10,7 +10,7 @@ ScreenQuad::~ScreenQuad()
 
 int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 {
-	DirectX::XMFLOAT3 vertices[6];
+	
 	unsigned long indices[6];
 	int sizeVertices = 6;
 	int sizeIndices = 6;
@@ -37,18 +37,42 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 
 	//Load the vertex array with data
 	//First triangle
-	vertices[0] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
+	//vertices[0] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
 
-	vertices[1] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
+	//vertices[1] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
 
-	vertices[2] = DirectX::XMFLOAT3(left, bottom, 0.0f);  //Bottom left
+	//vertices[2] = DirectX::XMFLOAT3(left, bottom, 0.0f);  //Bottom left
 
-	//Second triangle
-	vertices[3] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
+	////Second triangle
+	//vertices[3] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
 
-	vertices[4] = DirectX::XMFLOAT3(right, top, 0.0f);  //Top right
+	//vertices[4] = DirectX::XMFLOAT3(right, top, 0.0f);  //Top right
 
-	vertices[5] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
+	//vertices[5] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
+	quadVertex vertices[6] =
+	{
+		DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f),	//v0 pos
+		DirectX::XMFLOAT2(0.0f, 1.0f),			//v0 UV
+
+		DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f),	//v1
+		DirectX::XMFLOAT2(0.0f, 0.0f),			//v1 UV
+
+		DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f), //v2
+		DirectX::XMFLOAT2(1.0f, 1.0f),			//v2 UV
+
+												//T2
+		DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f),	//v3 pos
+		DirectX::XMFLOAT2(0.0f, 0.0f),			//v3 UV
+
+		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),	//v4
+		DirectX::XMFLOAT2(1.0f, 0.0f),			//v4 UV
+
+		DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f),	//v5
+		DirectX::XMFLOAT2(1.0f, 1.0f)			//v5 UV
+	};
+
+
+
 
 	//Load the index array with data
 	for (int i = 0; i < sizeIndices; i++)
@@ -59,7 +83,7 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 	//Set the description of the static vertex buffer
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * sizeVertices;
+	vertexBufferDesc.ByteWidth = sizeof(quadVertex) * sizeVertices;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -106,7 +130,7 @@ void ScreenQuad::SetBuffers(ID3D11DeviceContext * deviceContext)
 	unsigned offset;
 
 	//Set vertex buffer stride and offset
-	stride = sizeof(DirectX::XMFLOAT3);
+	stride = sizeof(DirectX::XMFLOAT3) + sizeof(DirectX::XMFLOAT2);
 	offset = 0;
 
 	//Set the vertex buffer to active in the input assembly so it can rendered

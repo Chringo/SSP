@@ -12,7 +12,7 @@ struct PSInput
 [maxvertexcount(3)]
 void main(triangle GSInput input[3], inout TriangleStream< PSInput > output)
 {
-	PSInput element;
+	PSInput element = (PSInput)0;
 
 	for (uint i = 0; i < 3; i++)
 	{
@@ -20,4 +20,5 @@ void main(triangle GSInput input[3], inout TriangleStream< PSInput > output)
 
 		output.Append(element);
 	}
+    output.RestartStrip();
 }

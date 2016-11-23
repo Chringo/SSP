@@ -49,7 +49,7 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 
 	// Create the input layout \\
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -58,13 +58,13 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	/*polygonLayout[1].SemanticName = "TEXCOORD";
+	polygonLayout[1].SemanticName = "TEXCOORD";
 	polygonLayout[1].SemanticIndex = 0;
 	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;*/
+	polygonLayout[1].InstanceDataStepRate = 0;
 
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 	//Create the vertex input layout.
@@ -155,8 +155,8 @@ int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib
 	ShaderHandler::SetActive(deviceContext, shaderType);
 
 	//Set the sampler state in pixel shader
-	deviceContext->PSSetSamplers(0, 2, &this->m_samplerStateLinear);
-	deviceContext->PSSetSamplers(1, 2, &this->m_samplerStatePoint);
+	deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
+	deviceContext->PSSetSamplers(1, 1, &this->m_samplerStatePoint);
 
 	this->screenQuad->SetBuffers(deviceContext);
 
