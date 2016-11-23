@@ -35,6 +35,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	int SetCamera(Camera* newCamera);
 	int Render();
 	void Shutdown();
 

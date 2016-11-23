@@ -50,6 +50,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	return 0;
 }
 
+int GraphicsHandler::SetCamera(Camera * newCamera)
+{
+	int result = 1;
+	delete this->camera;
+	this->camera = newCamera;
+	return result;
+}
+
 int GraphicsHandler::Render()
 {
 	this->d3dHandler->ClearDepthAndRTV();
