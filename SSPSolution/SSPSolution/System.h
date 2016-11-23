@@ -4,6 +4,9 @@
 #include <iostream>
 #include <SDL_syswm.h>
 #include "InputHandler.h"
+#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#pragma comment (lib, "../Debug/PhysicsDLL")
+
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 class System
