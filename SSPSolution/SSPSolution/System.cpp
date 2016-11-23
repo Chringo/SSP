@@ -1,7 +1,5 @@
 #include "System.h"
 
-
-
 System::System()
 {
 	this->m_inputHandler = NULL;
@@ -66,6 +64,9 @@ int System::Initialize()
 	{
 		printf("GraphicsHandler did not work. RIP!\n");
 	}
+	this->m_camera = new Camera();
+	this->m_camera->Initialize();
+	this->m_graphicsHandler->SetCamera(this->m_camera);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
