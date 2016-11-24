@@ -1,11 +1,12 @@
 #ifndef SSPAPPLICATION_CORE_SYSTEM_H
 #define SSPAPPLICATION_CORE_SYSTEM_H
 #include <SDL.h>
-#include <iostream>
 #include <SDL_syswm.h>
+#include <iostream>
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
+#include <chrono>
 
 
 const int SCREEN_WIDTH = 1280;
@@ -33,6 +34,7 @@ public:
 
 	int Initialize();
 	int Run();
+	int Update(float deltaTime);
 
 private:
 	int HandleEvents();

@@ -77,20 +77,46 @@ int System::Initialize()
 int System::Run()
 {
 	int result = 0;
-
+	LARGE_INTEGER frequency, currTime, prevTime, elapsedTime;
+	QueryPerformanceFrequency(&frequency);
+	//QueryPerformanceCounter(&prevTime);
+	float totalTime = 0.0f;
+	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+		prevTime = currTime;
+		QueryPerformanceCounter(&currTime);
+		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
+		elapsedTime.QuadPart *= 1000000;
+		elapsedTime.QuadPart /= frequency.QuadPart;
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
-		//Handle events and update inputhandler
+		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
 		SDL_PumpEvents();
 		//Update game
+		if (!this->Update((float)elapsedTime.QuadPart))
+		{
+			this->m_running = false;
+		}
+		totalTime += elapsedTime.QuadPart / 1000000.0f;
+		std::cout << int(totalTime) << "\n";
 		//Render
 		this->m_graphicsHandler->Render();
+
+		//printf("%i", elapsedTime.QuadPart / 1000000);
 	}
 
 
+	return result;
+}
+
+int System::Update(float deltaTime)
+{
+	int result = 1;
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
+	{
+	}
 	return result;
 }
 
