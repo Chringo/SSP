@@ -88,17 +88,19 @@
     <FxCompile Include="LightPixelShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBuffer.hlsl">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\GBuffer\GBufferVS.hlsl">
       <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBufferVS.hlsl">
+    </None>
+    <None Include="Shaders\GBuffer\GBuffer.hlsl">
       <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl">
+    </None>
+    <None Include="Shaders\PBR\PbrLightVS.hlsl">
       <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightVS.hlsl">
+    </None>
+    <None Include="Shaders\PBR\PbrLightPass.hlsl">
       <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>
