@@ -9,6 +9,8 @@ DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
 		this->m_deferredRenderTargetViews[i] = nullptr;
 		this->m_deferredShaderResources[i] = nullptr;
 	}
+
+	this->m_depthStencilView = nullptr;
 }
 
 

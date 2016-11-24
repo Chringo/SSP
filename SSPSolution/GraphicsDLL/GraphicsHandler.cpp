@@ -92,8 +92,6 @@ int GraphicsHandler::Render()
 	lShaderParams->viewMatrix = viewMatrix;
 	lShaderParams->projectionMatrix = this->m_projectionMatrix;
 
-	lShaderParams->resolution = DirectX::XMINT2(1280, 720);
-
 	lShaderParams->camPos = cameraPos;
 
 	this->m_lightSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), lShaderParams, this->m_deferredSH->GetShaderResourceViews());

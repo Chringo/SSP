@@ -11,8 +11,6 @@ cbuffer LightConstantBuffer
 	matrix viewMatrix;
 	matrix projectionMatrix;
 
-	float2 resolution;
-
 	float4 camPos;
 };
 
@@ -25,8 +23,7 @@ struct PSInput
 float4 main(PSInput input) : SV_TARGET
 {
 	float4 diffColor;
-	float2 textCoords = float2(input.position.x / resolution.x, input.position.y / resolution.y);
-
+	
 	diffColor = diffTexture.Sample(pointSampler, input.UV);
 
 	return diffColor;

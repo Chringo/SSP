@@ -208,8 +208,6 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	dataPtr->viewMatrix = shaderParams->viewMatrix;
 	dataPtr->projectionMatrix = shaderParams->projectionMatrix;
 
-	dataPtr->resolution = shaderParams->resolution;
-
 	dataPtr->camPos = shaderParams->camPos;
 
 	//Unmap the constant buffer to give the GPU access agin
