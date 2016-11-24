@@ -10,75 +10,14 @@ ScreenQuad::~ScreenQuad()
 
 int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 {
-	
-	unsigned long indices[6];
 	int sizeVertices = 6;
 	int sizeIndices = 6;
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_BUFFER_DESC indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
 	D3D11_SUBRESOURCE_DATA indexData;
-	float left, right, top, bottom;
-	left = right = top = bottom = 0.0f;
 	HRESULT hresult;
 	int result = 0;
-
-	//Calculate the screen coordinates of the left side of the window
-	left = (float)((resolution.x / 2) * -1);
-
-	//Calculate the screen coordinates of the right side of the window
-	right = left + (float)resolution.x;
-
-	//Calculate the screen coordinates of the top of the window
-	top = (float)(resolution.y / 2);
-
-	//Calculate the screen coordinates of the bottom of the window
-	bottom = top - (float)resolution.y;
-
-	//Load the vertex array with data
-	//First triangle
-	//vertices[0] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
-
-	//vertices[1] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
-
-	//vertices[2] = DirectX::XMFLOAT3(left, bottom, 0.0f);  //Bottom left
-
-	////Second triangle
-	//vertices[3] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
-
-	//vertices[4] = DirectX::XMFLOAT3(right, top, 0.0f);  //Top right
-
-	//vertices[5] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
-	quadVertex vertices[6] =
-	{
-		DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f),	//v0 pos
-		DirectX::XMFLOAT2(0.0f, 1.0f),			//v0 UV
-
-		DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f),	//v1
-		DirectX::XMFLOAT2(0.0f, 0.0f),			//v1 UV
-
-		DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f), //v2
-		DirectX::XMFLOAT2(1.0f, 1.0f),			//v2 UV
-
-												//T2
-		DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f),	//v3 pos
-		DirectX::XMFLOAT2(0.0f, 0.0f),			//v3 UV
-
-		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),	//v4
-		DirectX::XMFLOAT2(1.0f, 0.0f),			//v4 UV
-
-		DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f),	//v5
-		DirectX::XMFLOAT2(1.0f, 1.0f)			//v5 UV
-	};
-
-
-
-
-	//Load the index array with data
-	for (int i = 0; i < sizeIndices; i++)
-	{
-		indices[i] = i;
-	}
 
 	//Set the description of the static vertex buffer
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
