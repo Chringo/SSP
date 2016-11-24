@@ -1,5 +1,4 @@
 #include "System.h"
-
 System::System()
 {
 	this->m_inputHandler = NULL;
@@ -115,8 +114,39 @@ int System::Run()
 int System::Update(float deltaTime)
 {
 	int result = 1;
+	int translateCameraX = 0, translateCameraY = 0;
+	int rotateCameraY = 0;
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
+	{
+		translateCameraY++;
+	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
+		translateCameraY--;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
+	{
+		translateCameraX++;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_A))
+	{
+		translateCameraX--;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
+	{
+		rotateCameraY++;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
+	{
+		rotateCameraY--;
+	}
+	if (translateCameraY || translateCameraX || rotateCameraY)
+	{
+		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), 0.0f);
+		this->m_camera->AddToCameraPos(posTranslation);
+		this->m_camera->AddToLookAt(posTranslation);
+		this->m_camera->SetYaw(float(rotateCameraY) * (3.14f / 2) * (deltaTime / 1000000.0f));
+		this->m_camera->Update();
 	}
 	return result;
 }

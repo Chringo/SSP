@@ -35,7 +35,7 @@ public:
 	//Creates the base camera views
 	int Initialize();
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
-	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in rool, pitch and yaw.
+	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	int Update();
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
