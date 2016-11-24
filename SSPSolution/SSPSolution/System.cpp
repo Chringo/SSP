@@ -22,6 +22,7 @@ int System::Shutdown()
 	SDL_Quit();
 	this->m_graphicsHandler->Shutdown();
 	delete this->m_graphicsHandler;
+	delete this->m_camera;
 	return result;
 }
 
