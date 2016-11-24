@@ -24,10 +24,8 @@ private:
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
 
-	//The three rotational values a 3D object is capable of
-	float m_roll;
-	float m_pitch;
-	float m_yaw;
+	//The 4 values of a quaternion  
+	DirectX::XMFLOAT4 m_rotation;
 public:
 	Camera();
 	virtual ~Camera();
@@ -49,9 +47,7 @@ public:
 	void GetCameraUp(DirectX::XMVECTOR& storeIn);
 	void GetCameraUp(DirectX::XMFLOAT4& storeIn);
 	void GetCameraUp(DirectX::XMFLOAT3& storeIn);
-	float GetRoll();
-	float GetPitch();
-	float GetYaw();
+
 #pragma endregion getters
 #pragma region
 	void SetCameraPos(DirectX::XMFLOAT4 newCamPos);
@@ -60,6 +56,7 @@ public:
 	void SetLookAt(DirectX::XMVECTOR newLookAt);
 	void SetCameraUp(DirectX::XMFLOAT4 newCamUp);
 	void SetCameraUp(DirectX::XMVECTOR newCamUp);
+	void SetRotation(DirectX::XMFLOAT4 newRotation);
 	//Additional value control methods
 	void AddToCameraPos(DirectX::XMFLOAT3 applyValue);
 	void AddToLookAt(DirectX::XMFLOAT3 applyValue);
@@ -68,12 +65,6 @@ public:
 	void MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
 
-	void SetRoll(float roll);
-	void ApplyRoll(float rollIncrease);
-	void SetPitch(float pitch);
-	void ApplyPitch(float pitchIncrease);
-	void SetYaw(float yaw);
-	void ApplyYaw(float yawIncrease);
 #pragma endregion setters
 private:
 };

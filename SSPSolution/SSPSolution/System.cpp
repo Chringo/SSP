@@ -145,7 +145,10 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), 0.0f);
 		this->m_camera->AddToCameraPos(posTranslation);
 		this->m_camera->AddToLookAt(posTranslation);
-		this->m_camera->SetYaw(float(rotateCameraY) * (3.14f / 2) * (deltaTime / 1000000.0f));
+		float rotationAmount = DirectX::XM_PI / 8;
+		rotationAmount *= deltaTime / 1000000.0f;
+		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(DirectX::XMScalarCos(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f);
+		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
 	}
 	return result;

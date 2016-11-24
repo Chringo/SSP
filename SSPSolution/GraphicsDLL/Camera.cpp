@@ -9,10 +9,7 @@ Camera::Camera()
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	this->m_roll = 0.0f;
-	this->m_pitch = 0.0f;
-	this->m_yaw = 0.0f;
+	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 
@@ -29,10 +26,8 @@ int Camera::Initialize()
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	this->m_roll = 0.0f;
-	this->m_pitch = 0.0f;
-	this->m_yaw = 0.0f;
 
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -41,12 +36,12 @@ int Camera::Initialize()
 	DirectX::XMStoreFloat4x4(&this->m_baseViewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
-	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(this->m_pitch, this->m_yaw, this->m_roll);
+	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
 	//Transform the three components of the view matrix based on the rotations
 	camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
 	lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
 	camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
-	//Define the view matrix based on the transformed positions
+	////Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 
 	return result;
@@ -54,10 +49,11 @@ int Camera::Initialize()
 
 int Camera::Update()
 {
-	int result = 0;
+	int result = 1;
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
-	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(this->m_pitch, this->m_yaw, this->m_roll);
+	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
+	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	//Transform the three components of the view matrix based on the rotations
 	DirectX::XMVECTOR camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
 	DirectX::XMVECTOR lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
@@ -67,6 +63,7 @@ int Camera::Update()
 	DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
 	//Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
+
 	return result;
 }
 
@@ -135,21 +132,6 @@ void Camera::GetCameraUp(DirectX::XMFLOAT3 & storeIn)
 	storeIn = DirectX::XMFLOAT3(this->m_cameraUp.x, this->m_cameraUp.y, this->m_cameraUp.z);
 	return;
 }
-
-float Camera::GetRoll()
-{
-	return this->m_roll;
-}
-
-float Camera::GetPitch()
-{
-	return this->m_pitch;
-}
-
-float Camera::GetYaw()
-{
-	return this->m_yaw;
-}
 #pragma endregion getters
 #pragma region
 
@@ -192,6 +174,11 @@ void Camera::SetCameraUp(DirectX::XMVECTOR newCamUp)
 	return;
 }
 
+void Camera::SetRotation(DirectX::XMFLOAT4 newRotation)
+{
+	this->m_rotation = newRotation;
+}
+
 void Camera::AddToCameraPos(DirectX::XMFLOAT3 applyValue)
 {
 	this->m_cameraPos = DirectX::XMFLOAT4(this->m_cameraPos.x + applyValue.x, this->m_cameraPos.y + applyValue.y, this->m_cameraPos.z + applyValue.z, 1.0f);
@@ -225,42 +212,6 @@ void Camera::MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue)
 void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 {
 	this->m_cameraUp = DirectX::XMFLOAT4(this->m_cameraUp.x * multiplyValue.x, this->m_cameraUp.y * multiplyValue.y, this->m_cameraUp.z * multiplyValue.z, 1.0f);
-	return;
-}
-
-void Camera::SetRoll(float roll)
-{
-	this->m_roll = roll;
-	return;
-}
-
-void Camera::ApplyRoll(float rollIncrease)
-{
-	this->m_roll += rollIncrease;
-	return;
-}
-
-void Camera::SetPitch(float pitch)
-{
-	this->m_pitch = pitch;
-	return;
-}
-
-void Camera::ApplyPitch(float pitchIncrease)
-{
-	this->m_pitch += pitchIncrease;
-	return;
-}
-
-void Camera::SetYaw(float yaw)
-{
-	this->m_yaw = yaw;
-	return;
-}
-
-void Camera::ApplyYaw(float yawIncrease)
-{
-	this->m_yaw += yawIncrease;
 	return;
 }
 #pragma endregion setters
