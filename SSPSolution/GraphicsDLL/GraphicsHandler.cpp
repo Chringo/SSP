@@ -160,11 +160,11 @@ int GraphicsHandler::CreateTriangle()
 	D3D11_SUBRESOURCE_DATA indexData;
 	HRESULT hresult;
 
-	vertices[0] = DirectX::XMFLOAT3(-.5f, -.5f, 0.0f);  //bottom left
+	vertices[0] = DirectX::XMFLOAT3(-.5f, -.5f, 2.0f);  //bottom left
 
-	vertices[1] = DirectX::XMFLOAT3(0.0f, .5f, 0.0f);  //top mid
-
-	vertices[2] = DirectX::XMFLOAT3(.5f, -.5f, 0.0f);  //bottom right
+	vertices[1] = DirectX::XMFLOAT3(0.0f, .5f, 2.0f);  //top mid
+											   
+	vertices[2] = DirectX::XMFLOAT3(.5f, -.5f, 2.0f);  //bottom right
 
 														 //Load the index array with data
 	for (int i = 0; i < sizeIndices; i++)
