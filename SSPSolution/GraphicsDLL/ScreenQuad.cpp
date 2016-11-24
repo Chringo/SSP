@@ -30,7 +30,7 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 
 	//Give the subresource structure a pointer to the vertex data
 	ZeroMemory(&vertexData, sizeof(vertexData));
-	vertexData.pSysMem = &vertices;
+	vertexData.pSysMem = &m_vertices;
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -50,7 +50,7 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 	indexBufferDesc.StructureByteStride = 0;
 
 	ZeroMemory(&indexData, sizeof(indexData));
-	indexData.pSysMem = &indices;
+	indexData.pSysMem = &m_indices;
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 

@@ -136,15 +136,15 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 
 	// Create the screen quad \\
 
-	this->screenQuad = new ScreenQuad();
-	if (this->screenQuad->Initialize(device, resolution))
+	this->m_screenQuad = new ScreenQuad();
+	if (this->m_screenQuad->Initialize(device, resolution))
 	{
 		return 1;
 	}
 
-	this->nullResource = new ID3D11ShaderResourceView*[BUFFER_COUNT];
+	this->m_nullResources = new ID3D11ShaderResourceView*[BUFFER_COUNT];
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		nullResource[i] = nullptr;
+		m_nullResources[i] = nullptr;
 	}
 
 	return 0;
@@ -158,7 +158,7 @@ int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib
 	deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
 	deviceContext->PSSetSamplers(1, 1, &this->m_samplerStatePoint);
 
-	this->screenQuad->SetBuffers(deviceContext);
+	this->m_screenQuad->SetBuffers(deviceContext);
 
 	return 0;
 }
@@ -180,11 +180,11 @@ void LightShaderHandler::Shutdown()
 		this->m_samplerStateLinear = nullptr;
 	}
 
-	if (this->screenQuad)
+	if (this->m_screenQuad)
 	{
-		this->screenQuad->Shutdown();
-		delete this->screenQuad;
-		this->screenQuad = nullptr;
+		this->m_screenQuad->Shutdown();
+		delete this->m_screenQuad;
+		this->m_screenQuad = nullptr;
 	}
 }
 
@@ -232,5 +232,5 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 
 void LightShaderHandler::ResetPSShaderResources(ID3D11DeviceContext * deviceContext)
 {
-	deviceContext->PSSetShaderResources(0, BUFFER_COUNT, this->nullResource);
+	deviceContext->PSSetShaderResources(0, BUFFER_COUNT, this->m_nullResources);
 }

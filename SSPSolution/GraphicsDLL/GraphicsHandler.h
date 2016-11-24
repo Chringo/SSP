@@ -16,16 +16,16 @@
 class GRAPHICSDLL_API GraphicsHandler
 {
 private:
-	Direct3DHandler* d3dHandler;
+	Direct3DHandler* m_d3dHandler;
 
-	DeferredShaderHandler* deferredSH;
-	LightShaderHandler* lightSH;
+	DeferredShaderHandler* m_deferredSH;
+	LightShaderHandler* m_lightSH;
 
-	HWND* windowHandle;
+	HWND* m_windowHandle;
 
-	Camera* camera;
+	Camera* m_camera;
 
-	DirectX::XMMATRIX projectionMatrix;
+	DirectX::XMMATRIX m_projectionMatrix;
 
 	//temp
 	ID3D11Buffer* m_vertexBuffer;

@@ -12,7 +12,7 @@ private:
 		DirectX::XMFLOAT2 UV;
 	};
 
-	const quadVertex vertices[6] =
+	const quadVertex m_vertices[6] =
 	{
 		DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f),	//v0 pos
 		DirectX::XMFLOAT2(0.0f, 1.0f),			//v0 UV
@@ -34,7 +34,7 @@ private:
 		DirectX::XMFLOAT2(1.0f, 1.0f)			//v5 UV
 	};
 
-	const unsigned int indices[6] =
+	const unsigned int m_indices[6] =
 	{
 		0, 1, 2, 3, 4, 5
 	};

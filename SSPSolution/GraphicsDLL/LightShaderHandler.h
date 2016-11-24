@@ -11,9 +11,9 @@ private:
 	ID3D11SamplerState* m_samplerStateLinear;
 	ID3D11SamplerState* m_samplerStatePoint;
 
-	ScreenQuad* screenQuad;
+	ScreenQuad* m_screenQuad;
 
-	ID3D11ShaderResourceView** nullResource;
+	ID3D11ShaderResourceView** m_nullResources;
 
 public:
 	LightShaderHandler();
