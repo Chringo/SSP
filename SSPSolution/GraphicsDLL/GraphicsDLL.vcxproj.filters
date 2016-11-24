@@ -16,6 +16,12 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{7118aa5f-6603-4080-b226-1f3c853fd205}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\PBR">
+      <UniqueIdentifier>{084e614c-40d4-4846-a579-648dc3e44203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\GBuffer">
+      <UniqueIdentifier>{569bd10a-b0a8-4ffb-85f8-e98263085c71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsHandler.h">
@@ -81,6 +87,18 @@
     </FxCompile>
     <FxCompile Include="LightPixelShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBuffer\GBuffer.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBuffer\GBufferVS.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl">
+      <Filter>Resource Files\Shaders\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PBR\PbrLightVS.hlsl">
+      <Filter>Resource Files\Shaders\PBR</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
