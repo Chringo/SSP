@@ -103,14 +103,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
@@ -149,11 +149,27 @@ int GraphicsHandler::Render()
 	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
 	shaderParams->camPos = cameraPos;
 
+
+	/*TEMP*/
+	Resources::Model* modelPtr;
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(65156),modelPtr);
+
+	Resources::Mesh* meshPtr = modelPtr->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
+	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+	/********/
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
 		shaderParams->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
 		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
-		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+
+		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
 	delete shaderParams;

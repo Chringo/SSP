@@ -13,6 +13,9 @@ cbuffer CBPerObj
 struct VSInput
 {
 	float3 position : POSITION;
+	float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float2 UV : TEXCOORD0;
 };
 
 struct GSInput
