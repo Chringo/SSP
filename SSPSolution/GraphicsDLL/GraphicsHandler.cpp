@@ -8,7 +8,7 @@ int GraphicsHandler::IncreaseArraySize()
 	{
 		newArray[i] = this->m_graphicsComponents[i];
 	}
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 	this->m_maxGraphicsComponents += ARRAY_INC;
 
@@ -33,7 +33,7 @@ int GraphicsHandler::DecreaseArraySize()
 		}
 	}
 
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 
 	return 1;
@@ -103,6 +103,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_nrOfGraphicsComponents++;
 
 	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
@@ -212,11 +213,11 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	if (this->m_camera)
+	/*if (this->m_camera)
 	{
 		delete this->m_camera;
 		this->m_camera = nullptr;
-	}
+	}*/
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i])
@@ -225,7 +226,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 }
 
 int GraphicsHandler::CreateTriangle()
