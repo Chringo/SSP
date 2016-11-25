@@ -5,6 +5,7 @@
 #include "DeferredShaderHandler.h"
 #include "LightShaderHandler.h"
 #include "Camera.h"
+#include "GraphicsComponent.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -26,6 +27,8 @@ private:
 	Camera* m_camera;
 
 	DirectX::XMMATRIX m_projectionMatrix;
+
+	GraphicsComponent** m_graphicsComponents;
 
 	//temp
 	ID3D11Buffer* m_vertexBuffer;

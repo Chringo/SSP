@@ -149,7 +149,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     f90 = 0.16f * metalness * metalness;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
-    float3 linearRough = (saturate(met_rough_ao_Samp.g + EPSILON));
+    float linearRough = (saturate(met_rough_ao_Samp.g + EPSILON));
     float roughness =  linearRough * linearRough;
     float sRGBrough = linearToSRGB(met_rough_ao_Samp.g).g; //takes float3, could cause error
 
