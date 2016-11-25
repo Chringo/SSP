@@ -17,7 +17,26 @@ int GraphicsHandler::IncreaseArraySize()
 
 int GraphicsHandler::DecreaseArraySize()
 {
-	return 0;
+	this->m_maxGraphicsComponents -= ARRAY_INC;
+	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents];
+
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	{
+		newArray[i] = this->m_graphicsComponents[i];
+	}
+
+	for (int i = this->m_maxGraphicsComponents; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+		}
+	}
+
+	delete this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+
+	return 1;
 }
 
 GraphicsHandler::GraphicsHandler()
