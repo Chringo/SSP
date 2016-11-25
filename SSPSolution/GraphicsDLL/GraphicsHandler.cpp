@@ -1,5 +1,25 @@
 #include "GraphicsHandler.h"
 
+int GraphicsHandler::IncreaseArraySize()
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
+
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	{
+		newArray[i] = this->m_graphicsComponents[i];
+	}
+	delete this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySize()
+{
+	return 0;
+}
+
 GraphicsHandler::GraphicsHandler()
 {
 	this->m_d3dHandler = nullptr;
@@ -9,6 +29,8 @@ GraphicsHandler::GraphicsHandler()
 	this->m_vertexBuffer = nullptr;
 	this->m_camera = nullptr;
 	this->m_graphicsComponents = nullptr;
+	this->m_nrOfGraphicsComponents = 0;
+	this->m_maxGraphicsComponents = 5;
 }
 
 
@@ -47,6 +69,11 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f);
 
 	this->CreateTriangle();
+
+	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
+		this->m_graphicsComponents[i] = nullptr;
+	}
 
 	return 0;
 }
