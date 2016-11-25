@@ -8,6 +8,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_indexBuffer = nullptr;
 	this->m_vertexBuffer = nullptr;
 	this->m_camera = nullptr;
+	this->m_graphicsComponents = nullptr;
 }
 
 
