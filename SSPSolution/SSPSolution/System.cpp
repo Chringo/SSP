@@ -59,10 +59,12 @@ int System::Initialize()
 		m_hwnd = wmInfo.info.win.window;
 	}
 
+	//Initialize the PhysicsHandler
+	this->m_physicsHandler.Initialize();
+
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	return result;
 }
 
@@ -72,6 +74,7 @@ int System::Run()
 
 	while (this->m_running)
 	{
+		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler
