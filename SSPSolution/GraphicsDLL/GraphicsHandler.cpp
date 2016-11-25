@@ -120,12 +120,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	return 0;
 }
 
-int GraphicsHandler::SetCamera(Camera * newCamera)
+Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 {
 	int result = 1;
-	delete this->m_camera;
+	Camera* tempCam = this->m_camera;
 	this->m_camera = newCamera;
-	return result;
+	return tempCam;
 }
 
 int GraphicsHandler::Render()
@@ -213,11 +213,6 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	/*if (this->m_camera)
-	{
-		delete this->m_camera;
-		this->m_camera = nullptr;
-	}*/
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i])

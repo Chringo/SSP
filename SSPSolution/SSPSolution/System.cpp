@@ -13,8 +13,6 @@ System::~System()
 int System::Shutdown()
 {
 	int result = 0;
-	this->m_inputHandler->Shutdown();
-	delete this->m_inputHandler;
 	//Destroy the display window
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
@@ -22,6 +20,8 @@ int System::Shutdown()
 	this->m_graphicsHandler->Shutdown();
 	delete this->m_graphicsHandler;
 	delete this->m_camera;
+	this->m_inputHandler->Shutdown();
+	delete this->m_inputHandler;
 	return result;
 }
 
@@ -66,8 +66,9 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
-	this->m_graphicsHandler->SetCamera(this->m_camera);
-
+	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
+	delete oldCam;
+	oldCam = nullptr;
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -145,9 +146,13 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), 0.0f);
 		this->m_camera->AddToCameraPos(posTranslation);
 		this->m_camera->AddToLookAt(posTranslation);
-		this->m_camera->SetYaw(float(rotateCameraY) * (3.14f / 2) * (deltaTime / 1000000.0f));
+		float rotationAmount = DirectX::XM_PI / 8;
+		rotationAmount *= deltaTime / 1000000.0f;
+		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
+		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
 	}
+	//
 	return result;
 }
 
