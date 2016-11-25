@@ -1,25 +1,37 @@
 #ifndef PHYSICSDLL_PHYSICS_PHYSICSHANDLER_H
 #define PHYSICSDLL_PHYSICS_PHYSICSHANDLER_H
 
-//#pragma once
-//#define PHYSICSLIBRARY_EXPORTS
 #ifdef PHYSICSLIBRARY_EXPORTS
 #define PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API __declspec(dllexport)
 #else
 #define PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API __declspec(dllimport)
 #endif
 
-#include "PhysicsComponent.h"
+#include <DirectXMath.h>
+#include <vector>
+
+__declspec(align(16)) struct PhysicsComponent
+{
+	DirectX::XMVECTOR m_pos;
+	DirectX::XMVECTOR m_velocity;
+	DirectX::XMVECTOR m_rotationVelocity;
+	double m_gravityInfluence;
+	int m_active;
+	int m_entityID;
+	float m_mass;
+	bool m_is_Static;
+	bool m_coolides;
+	//AABB m_looseBoundingBox
+	//BoundingVolume* m_tightBoundingVolume; 
+	//std::vector<int entityID, event EVENT> m_eventlist;
+
+};
 
 class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 {
 private:
-	//Chain m_chain;
-
-	PhysicsComponent* m_components;
-	int m_capacity;
-	int m_nrOfComponents;
-	//std::vector<Plane> m_walls;
+	
+	std::vector<PhysicsComponent*> m_dynamicComponents;
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -35,11 +47,8 @@ public:
 	void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
 	int getNrOfComponents()const;
-	PhysicsComponent* getPComponents()const;
+	PhysicsComponent* getDynamicComponents(int index)const;
 
-
-	//bool SpherePlaneIntersevtion(PhysicsComponent* pComponent, float radius, Plane plane, float dt);
-	//bool PointInTriangleTest(DirectX::XMVECTOR point, Triangle triangle);
 
 
 };
