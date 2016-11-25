@@ -94,6 +94,27 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		this->m_graphicsComponents[i] = nullptr;
 	}
 
+	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
+	//DirectX::XMFLOAT4X4 worldMatrix;
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 0.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
 	return 0;
 }
 
@@ -120,15 +141,19 @@ int GraphicsHandler::Render()
 	this->m_deferredSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
-	shaderParams->worldMatrix = DirectX::XMMatrixIdentity();
 	shaderParams->viewMatrix = viewMatrix;
 	shaderParams->projectionMatrix = this->m_projectionMatrix;
 	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
 	shaderParams->camPos = cameraPos;
 
-	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
+	{
+		shaderParams->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
+		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+	}
+
 	delete shaderParams;
-	this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
 	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
