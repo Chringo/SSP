@@ -96,6 +96,10 @@ int System::Run()
 		result = this->HandleEvents();
 		SDL_PumpEvents();
 		//Update game
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		{
+			this->m_running = false;
+		}
 		if (!this->Update((float)elapsedTime.QuadPart))
 		{
 			this->m_running = false;
