@@ -186,6 +186,11 @@ void LightShaderHandler::Shutdown()
 		delete this->m_screenQuad;
 		this->m_screenQuad = nullptr;
 	}
+	if (this->m_nullResources)
+	{
+		delete[] this->m_nullResources;
+		this->m_nullResources = nullptr;
+	}
 }
 
 int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::LightConstantBuffer * shaderParams, ID3D11ShaderResourceView** gBuffers)
