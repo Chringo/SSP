@@ -15,8 +15,8 @@ private:
 	//The second matrix used in deferred rendering
 	DirectX::XMFLOAT4X4 m_viewMatrix;
 	//The base view matrix were created with the following values
-	//Pos:		0, 0, -1
-	//LookAt:	0, 0, 0
+	//Pos:		0, 0, 0
+	//LookAt:	0, 0, 1
 	//CamUp:	0, 1, 0
 	DirectX::XMFLOAT4X4 m_baseViewMatrix;
 	//The three vectors that defines the new coordinate system

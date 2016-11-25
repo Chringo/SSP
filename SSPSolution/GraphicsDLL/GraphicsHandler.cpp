@@ -51,12 +51,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	return 0;
 }
 
-int GraphicsHandler::SetCamera(Camera * newCamera)
+Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 {
 	int result = 1;
-	delete this->m_camera;
+	Camera* tempCam = this->m_camera;
 	this->m_camera = newCamera;
-	return result;
+	return tempCam;
 }
 
 int GraphicsHandler::Render()
@@ -129,23 +129,18 @@ void GraphicsHandler::Shutdown()
 	if (this->m_indexBuffer)
 	{
 		this->m_indexBuffer->Release();
-		delete this->m_indexBuffer;
+		//delete this->m_indexBuffer;
 		this->m_indexBuffer = nullptr;
 	}
 	if (this->m_vertexBuffer) 
 	{
 		this->m_vertexBuffer->Release();
-		delete this->m_vertexBuffer;
+		//delete this->m_vertexBuffer;
 		this->m_vertexBuffer = nullptr;
 	}
 	if (this->m_windowHandle)
 	{
 		this->m_windowHandle = nullptr;
-	}
-	if (this->m_camera)
-	{
-		delete this->m_camera;
-		this->m_camera = nullptr;
 	}
 }
 

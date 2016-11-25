@@ -66,8 +66,9 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
-	this->m_graphicsHandler->SetCamera(this->m_camera);
-
+	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
+	delete oldCam;
+	oldCam = nullptr;
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
