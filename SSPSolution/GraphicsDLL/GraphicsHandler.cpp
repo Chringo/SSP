@@ -222,7 +222,7 @@ void GraphicsHandler::Shutdown()
 		if (this->m_graphicsComponents[i])
 		{
 			delete this->m_graphicsComponents[i];
-			this->m_graphicsComponents = nullptr;
+			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
 	delete this->m_graphicsComponents;
