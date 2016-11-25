@@ -48,6 +48,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsHandler.cpp">
@@ -88,17 +91,9 @@
     <FxCompile Include="LightPixelShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBufferVS.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBuffer.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl">
-      <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightVS.hlsl">
-      <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
+    <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl" />
+    <FxCompile Include="Shaders\PBR\PbrLightVS.hlsl" />
+    <FxCompile Include="Shaders\GBuffer\GBuffer.hlsl" />
+    <FxCompile Include="Shaders\GBuffer\GBufferVS.hlsl" />
   </ItemGroup>
 </Project>

@@ -148,6 +148,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DeferredShaderHandler.h" />
     <ClInclude Include="Direct3DHandler.h" />
+    <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="GraphicsHandler.h" />
     <ClInclude Include="LightShaderHandler.h" />
     <ClInclude Include="ScreenQuad.h" />

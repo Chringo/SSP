@@ -1,5 +1,44 @@
 #include "GraphicsHandler.h"
 
+int GraphicsHandler::IncreaseArraySize()
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
+
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	{
+		newArray[i] = this->m_graphicsComponents[i];
+	}
+	delete this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySize()
+{
+	this->m_maxGraphicsComponents -= ARRAY_INC;
+	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents];
+
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	{
+		newArray[i] = this->m_graphicsComponents[i];
+	}
+
+	for (int i = this->m_maxGraphicsComponents; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+		}
+	}
+
+	delete this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+
+	return 1;
+}
+
 GraphicsHandler::GraphicsHandler()
 {
 	this->m_d3dHandler = nullptr;
@@ -8,6 +47,9 @@ GraphicsHandler::GraphicsHandler()
 	this->m_indexBuffer = nullptr;
 	this->m_vertexBuffer = nullptr;
 	this->m_camera = nullptr;
+	this->m_graphicsComponents = nullptr;
+	this->m_nrOfGraphicsComponents = 0;
+	this->m_maxGraphicsComponents = 5;
 }
 
 
@@ -47,6 +89,33 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->CreateTriangle();
 
+	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
+		this->m_graphicsComponents[i] = nullptr;
+	}
+
+	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
+	//DirectX::XMFLOAT4X4 worldMatrix;
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 0.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
+
 	return 0;
 }
 
@@ -73,15 +142,19 @@ int GraphicsHandler::Render()
 	this->m_deferredSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
-	shaderParams->worldMatrix = DirectX::XMMatrixIdentity();
 	shaderParams->viewMatrix = viewMatrix;
 	shaderParams->projectionMatrix = this->m_projectionMatrix;
 	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
 	shaderParams->camPos = cameraPos;
 
-	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
+	{
+		shaderParams->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
+		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+	}
+
 	delete shaderParams;
-	this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
 	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
@@ -128,13 +201,11 @@ void GraphicsHandler::Shutdown()
 	if (this->m_indexBuffer)
 	{
 		this->m_indexBuffer->Release();
-		delete this->m_indexBuffer;
 		this->m_indexBuffer = nullptr;
 	}
 	if (this->m_vertexBuffer) 
 	{
 		this->m_vertexBuffer->Release();
-		delete this->m_vertexBuffer;
 		this->m_vertexBuffer = nullptr;
 	}
 	if (this->m_windowHandle)
@@ -146,6 +217,15 @@ void GraphicsHandler::Shutdown()
 		delete this->m_camera;
 		this->m_camera = nullptr;
 	}
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+			this->m_graphicsComponents[i] = nullptr;
+		}
+	}
+	delete this->m_graphicsComponents;
 }
 
 int GraphicsHandler::CreateTriangle()
