@@ -162,6 +162,21 @@ int GraphicsHandler::Render()
 	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
 	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+
+	Resources::Material * mat  = modelPtr->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
 	/********/
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
