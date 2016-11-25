@@ -13,8 +13,6 @@ System::~System()
 int System::Shutdown()
 {
 	int result = 0;
-	this->m_inputHandler->Shutdown();
-	delete this->m_inputHandler;
 	//Destroy the display window
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
@@ -22,6 +20,8 @@ int System::Shutdown()
 	this->m_graphicsHandler->Shutdown();
 	delete this->m_graphicsHandler;
 	delete this->m_camera;
+	this->m_inputHandler->Shutdown();
+	delete this->m_inputHandler;
 	return result;
 }
 
