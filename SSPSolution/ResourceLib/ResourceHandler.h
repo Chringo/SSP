@@ -19,14 +19,14 @@ namespace Resources
 		ID3D11DeviceContext* m_context = nullptr;
 
 		unsigned int loadedLevel = 0;
-	public:
 		ResourceHandler();
 		ResourceHandler(ID3D11Device* device, ID3D11DeviceContext* context);
+	public:
 		virtual ~ResourceHandler();
 
 		Resources::Status LoadLevel(unsigned int id);
 
-
+		static ResourceHandler* GetInstance();
 		/* Set */
 		void SetDeviceAndContext(ID3D11Device* device, ID3D11DeviceContext* context);
 		void SetDevice(ID3D11Device* device);

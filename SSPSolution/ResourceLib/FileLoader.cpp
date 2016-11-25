@@ -6,8 +6,8 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("ResourceLib/AssetFiles/pillar.BBF");
-	filePaths[REG_FILE] = std::string("ResourceLib/AssetFiles/regfile.reg");
+	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/pillar.BBF");
+	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
 
 	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 	fileHandles[REG_FILE].rdbuf()->pubsetbuf(0, 0);			 //Disable streaming buffers

@@ -93,6 +93,12 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 	return Resources::Status::ST_OK;
 }
 
+Resources::ResourceHandler * Resources::ResourceHandler::GetInstance()
+{
+	static ResourceHandler instance;
+	return &instance;
+}
+
 
 
 void Resources::ResourceHandler::SetDeviceAndContext(ID3D11Device * device, ID3D11DeviceContext * context)
