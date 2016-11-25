@@ -65,6 +65,8 @@ public:
 	void MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
 
+	void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
+
 #pragma endregion setters
 private:
 };

@@ -9,7 +9,7 @@ Camera::Camera()
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 
@@ -26,7 +26,7 @@ int Camera::Initialize()
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
@@ -53,16 +53,19 @@ int Camera::Update()
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
 	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
+	DirectX::XMVECTOR generatedRotation;
+	//DirectX::XMMatrixDecompose(NULL, &generatedRotation, NULL, camRotationMatrix);
+	generatedRotation = DirectX::XMQuaternionRotationMatrix(camRotationMatrix);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	//Transform the three components of the view matrix based on the rotations
-	DirectX::XMVECTOR camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
+	//DirectX::XMVECTOR camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
 	DirectX::XMVECTOR lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
 	DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
-	DirectX::XMStoreFloat4(&this->m_cameraPos, camPos);
+
 	DirectX::XMStoreFloat4(&this->m_lookAt, lookAt);
 	DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
 	//Define the view matrix based on the transformed positions
-	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
+	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), lookAt, camUp));
 
 	return result;
 }
@@ -212,6 +215,12 @@ void Camera::MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue)
 void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 {
 	this->m_cameraUp = DirectX::XMFLOAT4(this->m_cameraUp.x * multiplyValue.x, this->m_cameraUp.y * multiplyValue.y, this->m_cameraUp.z * multiplyValue.z, 1.0f);
+	return;
+}
+void Camera::ApplyRotation(DirectX::XMFLOAT4 rotationAddition)
+{
+	//this->m_rotation = DirectX::XMFLOAT4(this->m_rotation.x + rotationAddition.x, this->m_rotation.y + rotationAddition.y, this->m_rotation.z + rotationAddition.z, this->m_rotation.w + rotationAddition.w);
+	DirectX::XMStoreFloat4(&this->m_rotation, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&rotationAddition), DirectX::XMLoadFloat4(&this->m_rotation)));
 	return;
 }
 #pragma endregion setters
