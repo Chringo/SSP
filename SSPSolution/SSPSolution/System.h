@@ -22,6 +22,8 @@ private:
 	SDL_Window* m_window;
 	//These are the components
 	InputHandler* m_inputHandler;
+	//this is a physicsHandler
+	PhysicsHandler m_physicsHandler;
 public:
 	System();
 	~System();
