@@ -14,6 +14,8 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+const int ARRAY_INC = 5;
+
 class GRAPHICSDLL_API GraphicsHandler
 {
 private:
@@ -29,10 +31,16 @@ private:
 	DirectX::XMMATRIX m_projectionMatrix;
 
 	GraphicsComponent** m_graphicsComponents;
+	int m_nrOfGraphicsComponents;
+	int m_maxGraphicsComponents;
 
 	//temp
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
+
+	//Helper functions
+	int IncreaseArraySize();
+	int DecreaseArraySize();
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
