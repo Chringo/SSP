@@ -189,7 +189,7 @@ bool Resources::TextureHandler::LoadPlaceHolderTexture()
 	if (st != ST_OK)
 		return false;
 
-	std::string path_S = std::string("PLACEHOLDER_MODEL_ALBEDO.dds");
+	std::string path_S = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
 
 	size_t length = strlen(path_S.c_str());
 	wchar_t path[256];
