@@ -36,7 +36,7 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 Resources::TextureHandler::~TextureHandler()
 {
-	delete placeHolder;
+	delete[] placeHolder;
 	placeHolder = nullptr;
 }
 
@@ -154,16 +154,16 @@ Resources::Status Resources::TextureHandler::UnloadTexture(const unsigned int & 
 	return Resources::Status::ST_OK;
 }
 
-Resources::Texture * Resources::TextureHandler::GetPlaceHolderTexture()
+Resources::Texture * Resources::TextureHandler::GetPlaceHolderTextures()
 {
 	if (this->placeHolder == nullptr)
 	{
-		LoadPlaceHolderTexture();
+		LoadPlaceHolderTextures();
 	}
 	return placeHolder;
 }
 
-bool Resources::TextureHandler::LoadPlaceHolderTexture()
+bool Resources::TextureHandler::LoadPlaceHolderTextures()
 {
 
 	if (placeHolder != nullptr)
@@ -183,48 +183,67 @@ bool Resources::TextureHandler::LoadPlaceHolderTexture()
 	temp.m_name[3] = '\0';
 	temp.m_id = 7869;
 	/***************/
-
-	placeHolder = new Texture();
-	Status st = placeHolder->Create(&temp);
-	if (st != ST_OK)
-		return false;
-
-	std::string path_S = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
-
-	size_t length = strlen(path_S.c_str());
-	wchar_t path[256];
-	mbstowcs_s(&length, path, path_S.c_str(), length);
-
-	ID3D11ShaderResourceView* textureView   = nullptr;
-	ID3D11Resource*			textureResource = nullptr;
-	HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
-		path,
-		&textureResource,
-		&textureView,
-		size_t(0),
-		(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
-	if (FAILED(hr))
+	Status st;
+	placeHolder = new Texture[5];
+	for (size_t i = 0; i < 5; i++)
 	{
+			 st = placeHolder[i].Create(&temp);
+			if (st != ST_OK)
+				return false;
+		}
+#pragma region Load Albedo
+		std::string path_str[5];
+		wchar_t path[5][256];
+		size_t length[5];
+		ID3D11ShaderResourceView* textureView[5];
+		ID3D11Resource*			textureResource[5];
+		path_str[0] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
+		path_str[1] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_METALLIC.dds");
+		path_str[2] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ROUGHNESS.dds");
+		path_str[3] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_NORMAL.dds");
+		path_str[4] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_AO.dds");
+
+		for (size_t i = 0; i < 5; i++)
+		{
+
+		 length[i] = strlen(path_str[i].c_str());
+		
+		mbstowcs_s(&length[i], path[i], path_str[i].c_str(), length[i]);
+
+		
+		
+
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
+			path[i],
+			&textureResource[i],
+			&textureView[i],
+			size_t(0),
+			(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
+
+		if (FAILED(hr))
+		{
 #ifdef _DEBUG
-		std::cout << "Could not open texture file : " << path << std::endl;
+			std::cout << "Could not open texture file : " << path << std::endl;
 #endif // _DEBUG
-		return false;
-	}
-	else {
+			return false;
+		}
+		else {
 #ifdef _DEBUG
-		std::cout << "Opened file : " << path_S << std::endl;
+			std::cout << "Opened file : " << path_str[i] << std::endl;
 #endif // _DEBUG
+		}
+
+
+
+		st = placeHolder[i].SetTexture(textureView[i], textureResource[i]);
+		if (st != ST_OK)
+		{
+			Resources::SAFE_RELEASE(textureView[i]);
+			Resources::SAFE_RELEASE(textureResource[i]);
+			return false;
+		}
 	}
-
-
-
-	st = placeHolder->SetTexture(textureView, textureResource);
-	if (st != ST_OK)
-	{
-		Resources::SAFE_RELEASE(textureView);
-		Resources::SAFE_RELEASE(textureResource);
-		return false;
-	}
+#pragma endregion
 
 	return true;
 }
@@ -233,3 +252,4 @@ void Resources::TextureHandler::SetDevice(ID3D11Device * device)
 {
 	this->m_device = device;
 }
+

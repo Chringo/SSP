@@ -27,9 +27,9 @@ namespace Resources
 
 		void SetDevice(ID3D11Device* device);
 
-		Texture* GetPlaceHolderTexture();
+		Texture* GetPlaceHolderTextures();
 	private:
-		bool LoadPlaceHolderTexture();
+		bool LoadPlaceHolderTextures();
 	};
 }
 

@@ -91,7 +91,7 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 			if (st == ST_RES_MISSING) {
 				st = m_textureHandler->LoadTexture(id, temp);
 				if (st != ST_OK)
-					newMaterial->SetTexture(m_textureHandler->GetPlaceHolderTexture(), TextureType(i));
+					newMaterial->SetTexture(m_textureHandler->GetPlaceHolderTextures(), TextureType(i));
 				else
 					newMaterial->SetTexture((Texture*)temp->resource, TextureType(i));
 			}
@@ -171,9 +171,12 @@ Resources::Status Resources::MaterialHandler::CreatePlaceHolder()
 		data.m_id = -11;
 		data.m_resType = RES_MATERIAL;
 		m_placeholder->Create(&data);
-		Texture* placeHolderTexture = m_textureHandler->GetPlaceHolderTexture();
-		
-		Status st = m_placeholder->SetTexture(placeHolderTexture, TextureType::TEXTURE_ALBEDO);
+		Texture* textures = m_textureHandler->GetPlaceHolderTextures();
+		Status st = Status::ST_OK;
+		for (size_t i = 0; i < 5; i++)
+		{
+		 st = m_placeholder->SetTexture(&textures[i], TextureType(i));
+		}
 
 		return st;
 	}
