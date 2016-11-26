@@ -4,6 +4,8 @@ Texture2D diffTexture : register(t0);
 Texture2D specularTexture : register(t1);
 Texture2D normalTexture: register(t2);
 Texture2D worldPosTexture: register(t3);
+
+
 cbuffer CBPerObj
 {
 	matrix worldMatrix;

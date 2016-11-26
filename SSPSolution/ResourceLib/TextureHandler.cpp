@@ -199,8 +199,8 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 		ID3D11Resource*			textureResource[5];
 		path_str[0] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
 		path_str[1] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_METALLIC.dds");
-		path_str[2] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ROUGHNESS.dds");
-		path_str[3] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_NORMAL.dds");
+		path_str[2] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_NORMAL.dds");
+		path_str[3] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ROUGHNESS.dds");
 		path_str[4] = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_AO.dds");
 
 		for (size_t i = 0; i < 5; i++)

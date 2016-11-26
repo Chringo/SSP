@@ -12,10 +12,11 @@ cbuffer worldMatrix : register(b0)
     matrix worldMatrix;
 }
 
+
 struct VS_OUT
 {
     float4 Pos : SV_POSITION;
-    float3 Normal : Normal;
+    float3 Normal : NORMAL;
     float3 Tangent : TANGENT0;
     float2 UV : TEXCOORD0;
 
@@ -83,12 +84,12 @@ void GS_main(triangle VS_OUT input[3],
     for (uint vertex = 0; vertex < 3; vertex++)
     {
         element.Pos = input[vertex].Pos;
-        element.Normal = mul(float4(input[vertex].Normal, 0.0), worldMatrix).rgb;
+        element.Normal = mul(float4(input[vertex].Normal, 0.0), worldMatrix);
         element.UV = input[vertex].UV;
        
         element.wPos = input[vertex].wPos;
 
-        element.tangent = mul(float4(input[vertex].Tangent, 0.0), worldMatrix).rgb;
+        element.tangent = mul(float4(input[vertex].Tangent, 0.0), worldMatrix);
 
         element.biTangent = -cross(element.Normal, element.tangent);
 

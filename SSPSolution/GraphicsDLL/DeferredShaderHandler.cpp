@@ -346,7 +346,6 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ShaderLib::DeferredConstantBufferWorld * dataPtr;
-	unsigned int bufferNumber;
 
 
 	//Map the constant buffer so we can write to it (denies GPU access)
@@ -364,11 +363,10 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	//Unmap the constant buffer to give the GPU access agin
 	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
 
-	//Set constant buffer position in vertex shader
-	bufferNumber = 0;
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_worldMatrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+	deviceContext->GSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
 
 	return 0;
 }
@@ -378,7 +376,6 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * devic
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ShaderLib::DeferredConstantBufferVP * dataPtr;
-	unsigned int bufferNumber;
 
 
 	//Map the constant buffer so we can write to it (denies GPU access)
@@ -396,11 +393,8 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * devic
 	//Unmap the constant buffer to give the GPU access agin
 	deviceContext->Unmap(this->m_viewProjMatrixBuffer, 0);
 
-	//Set constant buffer position in vertex shader
-	bufferNumber = 1;
-
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->GSSetConstantBuffers(bufferNumber, 1, &this->m_viewProjMatrixBuffer);
+	deviceContext->VSSetConstantBuffers(1, 1, &this->m_viewProjMatrixBuffer);
 
 
 	return 0;
