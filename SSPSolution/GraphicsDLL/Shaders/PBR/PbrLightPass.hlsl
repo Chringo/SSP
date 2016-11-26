@@ -6,14 +6,15 @@ Texture2D wPosTex : register(t3);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-cbuffer worldMatrix : register(b0)
-{
-	matrix worldMatrix;
-}
+//cbuffer worldMatrix : register(b0)
+//{
+//	matrix worldMatrix;
+//}
 
-cbuffer camera
+cbuffer camera : register(b0)
 {
     float3 camPosition;
+    float padding;
 }
 
 struct VS_OUT

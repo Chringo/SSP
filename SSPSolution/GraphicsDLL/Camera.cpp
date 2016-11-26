@@ -77,6 +77,11 @@ void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 	return;
 }
 
+DirectX::XMFLOAT4X4 * Camera::GetViewMatrix()
+{
+	return &this->m_viewMatrix;
+}
+
 void Camera::GetBaseViewMatrix(DirectX::XMMATRIX & storeIn)
 {
 	storeIn = DirectX::XMLoadFloat4x4(&this->m_baseViewMatrix);

@@ -85,7 +85,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
 	float screenAspect = (float)resolution.x / (float)resolution.y;
 
-	this->m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f);
+	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
 
 	this->CreateTriangle();
 
@@ -141,30 +141,30 @@ int GraphicsHandler::Render()
 
 	this->m_deferredSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
-	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
-	shaderParams->viewMatrix = viewMatrix;
-	shaderParams->projectionMatrix = this->m_projectionMatrix;
-	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
-	shaderParams->camPos = cameraPos;
+	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
+	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
+
+
+	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
+	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
+
+	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsVP, ShaderLib::VIEW_PROJECTION);
 
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
-		shaderParams->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
-		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
+		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
 		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 	}
 
-	delete shaderParams;
+	delete shaderParamsVP;
+	delete shaderParamsWorld;
 
 	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
 	this->m_lightSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
-
-	lShaderParams->viewMatrix = viewMatrix;
-	lShaderParams->projectionMatrix = this->m_projectionMatrix;
-
 	lShaderParams->camPos = cameraPos;
 
 	this->m_lightSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), lShaderParams, this->m_deferredSH->GetShaderResourceViews());

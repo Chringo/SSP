@@ -39,6 +39,7 @@ public:
 	int Update();
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
+	DirectX::XMFLOAT4X4 * GetViewMatrix();
 	void GetBaseViewMatrix(DirectX::XMMATRIX& storeIn);
 	void GetCameraPos(DirectX::XMVECTOR& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT4& storeIn);

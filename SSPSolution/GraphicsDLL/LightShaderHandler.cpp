@@ -17,18 +17,18 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 	ID3D10Blob* errorMessage;
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/LightVertexShader.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/LightPixelShader.hlsl";
+	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightVS.hlsl";
+	WCHAR* psFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightPass.hlsl";
 
 	// Compile the shaders \\
 
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer, &errorMessage);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
 		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
-	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
 		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
@@ -152,7 +152,7 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 
 int LightShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
 {
-	ShaderHandler::SetActive(deviceContext, shaderType);
+	int b = ShaderHandler::SetActive(deviceContext, shaderType);
 
 	//Set the sampler state in pixel shader
 	deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
@@ -204,9 +204,6 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	//Get pointer to the data
 	dataPtr = (ShaderLib::LightConstantBuffer*)mappedResource.pData;
 
-	//Copy the matrices to the constant buffer
-	dataPtr->viewMatrix = shaderParams->viewMatrix;
-	dataPtr->projectionMatrix = shaderParams->projectionMatrix;
 
 	dataPtr->camPos = shaderParams->camPos;
 
@@ -218,7 +215,7 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 
 	//Set the constant buffer in vertex and pixel shader with updated values
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+	//deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 
 	if (gBuffers) {
 		//Set shader texture resource for pixel shader
