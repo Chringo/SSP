@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "../ResourceLib/ResourceHandler.h"
+#pragma comment (lib,"../Debug/ResourceLib")
 
 class Direct3DHandler
 {

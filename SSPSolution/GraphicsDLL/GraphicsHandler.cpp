@@ -8,7 +8,7 @@ int GraphicsHandler::IncreaseArraySize()
 	{
 		newArray[i] = this->m_graphicsComponents[i];
 	}
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 	this->m_maxGraphicsComponents += ARRAY_INC;
 
@@ -33,7 +33,7 @@ int GraphicsHandler::DecreaseArraySize()
 		}
 	}
 
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 
 	return 1;
@@ -64,7 +64,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
-
+	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+	
 	this->m_deferredSH = new DeferredShaderHandler;
 	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, resolution))
 	{
@@ -102,13 +103,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
@@ -119,12 +121,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	return 0;
 }
 
-int GraphicsHandler::SetCamera(Camera * newCamera)
+Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 {
 	int result = 1;
-	delete this->m_camera;
+	Camera* tempCam = this->m_camera;
 	this->m_camera = newCamera;
-	return result;
+	return tempCam;
 }
 
 int GraphicsHandler::Render()
@@ -150,11 +152,42 @@ int GraphicsHandler::Render()
 
 	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsVP, ShaderLib::VIEW_PROJECTION);
 
+
+	/*TEMP*/
+	Resources::Model* modelPtr;
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337),modelPtr);
+
+	Resources::Mesh* meshPtr = modelPtr->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
+	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+
+	Resources::Material * mat  = modelPtr->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
+	/********/
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
 		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
 		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
-		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+
+		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
 	delete shaderParamsVP;
@@ -212,11 +245,6 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	if (this->m_camera)
-	{
-		delete this->m_camera;
-		this->m_camera = nullptr;
-	}
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i])
@@ -225,7 +253,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
-	delete this->m_graphicsComponents;
+	delete[] this->m_graphicsComponents;
 }
 
 int GraphicsHandler::CreateTriangle()

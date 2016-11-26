@@ -192,6 +192,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	this->m_gDeviceContext->RSSetViewports(1, this->m_viewport);
 
+	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
+
 	return 0;
 }
 

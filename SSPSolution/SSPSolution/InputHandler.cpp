@@ -40,7 +40,8 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 
 void InputHandler::Shutdown()
 {
-
+	this->m_oldKeyboardState.clear();
+	this->m_keyboardState.clear();
 }
 
 void InputHandler::Update()
