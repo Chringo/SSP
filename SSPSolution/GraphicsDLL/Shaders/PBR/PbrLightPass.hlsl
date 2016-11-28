@@ -13,8 +13,10 @@ SamplerState pointSampler : register(s1);
 
 cbuffer camera : register(b0)
 {
-    float3 camPosition;
-    float padding;
+    float3 camPos;
+    float3 camDir;
+    float padding1;
+    float padding2;
 }
 
 struct VS_OUT
@@ -120,10 +122,6 @@ float GGX(float NdotH, float m)
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
-   
-    float3 camPos = float3(0.0f, 0.0f, -1.5f);
-    float3 camDir = float3(0.0f, 0.0f, 1.0f);
-
     uint lightCount = 3;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
@@ -140,7 +138,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
     float3 met_rough_ao_Samp = (met_rough_ao.Sample(linearSampler, input.UV)).rgb;
     float3 colorSamp = (colorTex.Sample(linearSampler, input.UV)).rgb;
-    float3 N = (normalTex.Sample(linearSampler, input.UV)).rgb;
+    float3 N = (normalTex.Sample(linearSampler, input.UV));
 
 
 
@@ -152,17 +150,17 @@ float4 PS_main(VS_OUT input) : SV_Target
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     float linearRough = (saturate(met_rough_ao_Samp.g + EPSILON));
     float roughness =  linearRough * linearRough;
-    float sRGBrough = linearToSRGB(met_rough_ao_Samp.g).g; //takes float3, could cause error
+    //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
     //AO
     float AO = met_rough_ao_Samp.b;
 
     //DIFFUSE & SPECULAR
     float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, metalness);
-    float3 f0 = lerp(0.03F.rrr, colorSamp.rgb, metalness);
+    float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, metalness);
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
-    N = normalize(N);
+    //N = normalize(N);
     float3 V = normalize(camDir); //camDir
     float NdotV = abs(dot(N, V)) + EPSILON;
     
@@ -203,7 +201,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
 
-        //return vis.rrrr;
+        return N.rgbr;
     }
 
 

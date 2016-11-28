@@ -211,6 +211,7 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 
 
 	dataPtr->camPos = shaderParams->camPos;
+	dataPtr->camDir = shaderParams->camDir;
 
 	//Unmap the constant buffer to give the GPU access agin
 	deviceContext->Unmap(this->m_matrixBuffer, 0);
@@ -219,7 +220,7 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 	bufferNumber = 0;
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 	//deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
 
 	if (gBuffers) {

@@ -23,7 +23,7 @@ int Camera::Initialize()
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixIdentity());
 	//The three vectors that defines the new coordinate system
-	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, -2.5f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -106,6 +106,11 @@ void Camera::GetCameraPos(DirectX::XMFLOAT3 & storeIn)
 	return;
 }
 
+DirectX::XMFLOAT3 Camera::GetCameraPos()
+{
+	return DirectX::XMFLOAT3(m_cameraPos.x, m_cameraPos.y, m_cameraPos.z);
+}
+
 void Camera::GetLookAt(DirectX::XMVECTOR & storeIn)
 {
 	storeIn = DirectX::XMLoadFloat4(&this->m_lookAt);
@@ -122,6 +127,11 @@ void Camera::GetLookAt(DirectX::XMFLOAT3 & storeIn)
 {
 	storeIn = DirectX::XMFLOAT3(this->m_lookAt.x, this->m_lookAt.y, this->m_lookAt.z);
 	return;
+}
+
+DirectX::XMFLOAT3 Camera::GetLookAt()
+{
+	return DirectX::XMFLOAT3(m_lookAt.x, m_lookAt.y, m_lookAt.z);
 }
 
 void Camera::GetCameraUp(DirectX::XMVECTOR & storeIn)

@@ -42,9 +42,11 @@ public:
 	void GetCameraPos(DirectX::XMVECTOR& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT4& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT3& storeIn);
+	DirectX::XMFLOAT3 GetCameraPos();
 	void GetLookAt(DirectX::XMVECTOR& storeIn);
 	void GetLookAt(DirectX::XMFLOAT4& storeIn);
 	void GetLookAt(DirectX::XMFLOAT3& storeIn);
+	DirectX::XMFLOAT3 GetLookAt();
 	void GetCameraUp(DirectX::XMVECTOR& storeIn);
 	void GetCameraUp(DirectX::XMFLOAT4& storeIn);
 	void GetCameraUp(DirectX::XMFLOAT3& storeIn);

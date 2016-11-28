@@ -136,8 +136,8 @@ int GraphicsHandler::Render()
 
 	DirectX::XMMATRIX viewMatrix;
 	this->m_camera->GetViewMatrix(viewMatrix);
-	DirectX::XMFLOAT3 cameraPos;
-	this->m_camera->GetCameraPos(cameraPos);
+
+	
 
 	this->SetTriangle();
 
@@ -181,8 +181,16 @@ int GraphicsHandler::Render()
 	}
 	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
 	/********/
+
+	////TEST ROTATION
+	//static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
+	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000000005f));
+	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
+	////END TEST ROTATION
+
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
+
 		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
 		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
 		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
@@ -198,7 +206,8 @@ int GraphicsHandler::Render()
 	this->m_lightSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
-	lShaderParams->camPos = cameraPos;
+	lShaderParams->camPos = this->m_camera->GetCameraPos();
+	lShaderParams->camDir = this->m_camera->GetLookAt();
 
 	this->m_lightSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), lShaderParams, this->m_deferredSH->GetShaderResourceViews());
 	delete lShaderParams;

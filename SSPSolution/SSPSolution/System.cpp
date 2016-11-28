@@ -105,7 +105,7 @@ int System::Run()
 			this->m_running = false;
 		}
 		totalTime += elapsedTime.QuadPart / 1000000.0f;
-		std::cout << int(totalTime) << "\n";
+		//std::cout << int(totalTime) << "\n";
 		//Render
 		this->m_graphicsHandler->Render();
 

@@ -35,7 +35,9 @@ namespace ShaderLib
 	struct LightConstantBuffer
 	{
 		DirectX::XMFLOAT3 camPos;
-		float padding;
+		DirectX::XMFLOAT3 camDir;
+		float padding1;
+		float padding2;
 	};
 }
 
