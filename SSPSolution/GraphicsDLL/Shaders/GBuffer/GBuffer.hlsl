@@ -1,7 +1,7 @@
 Texture2D albedoTex		 : register(t0);
 Texture2D metalTex		 : register(t1);
-Texture2D normalTex		 : register(t2);
-Texture2D roughTex		 : register(t3);
+Texture2D roughTex		 : register(t2);
+Texture2D normalTex		 : register(t3);
 Texture2D aoTex			 : register(t4);
 
 SamplerState linearSampler : register(s0);
