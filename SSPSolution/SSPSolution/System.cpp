@@ -104,6 +104,8 @@ int System::Run()
 		{
 			this->m_running = false;
 		}
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
+			this->FullscreenToggle();
 		totalTime += elapsedTime.QuadPart / 1000000.0f;
 		std::cout << int(totalTime) << "\n";
 		//Render
@@ -111,7 +113,8 @@ int System::Run()
 
 		//printf("%i", elapsedTime.QuadPart / 1000000);
 	}
-
+	if (this->m_fullscreen)
+		this->FullscreenToggle();
 
 	return result;
 }
@@ -282,9 +285,8 @@ int System::HandleEvents()
 int System::FullscreenToggle()
 {
 	int result = 0;
-
-	bool IsFullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
-	SDL_SetWindowFullscreen(this->m_window, IsFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
-	SDL_ShowCursor(IsFullscreen);
+	this->m_fullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(this->m_window, this->m_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+	this->m_fullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
 	return result;
 }
