@@ -13,6 +13,8 @@
 *.ilk
 *.iobj
 *.ipdb
+*.exp
+*.cso
 
 # Precompiled Headers
 *.gch
@@ -47,6 +49,9 @@
 
 # Git Extension
 *.orig
+
+# Maya
+*.mll
 
 # =========================
 # OSX
