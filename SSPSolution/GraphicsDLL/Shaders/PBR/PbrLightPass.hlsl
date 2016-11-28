@@ -132,9 +132,9 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 specularLight = float4(0, 0, 0, 0);
 
     LIGHT light[3]; 
-    light[0] = initCustomLight(float3(0.0, 0.0, -1.0), float3(1., 1., 1.));
-    light[1] = initCustomLight(float3(0.0, 0.0, -1.5), float3(1., 1., 1.));
-    light[2] = initCustomLight(float3(0.5, 1.2, -1.0), float3(1., 1., 1.));
+    light[0] = initCustomLight(float3(0.0, 0.0, -3.0), float3(1., 1., 1.));
+    light[1] = initCustomLight(float3(0.0, 0.0, -3.5), float3(1., 1., 1.));
+    light[2] = initCustomLight(float3(0.5, 1.2, -2.0), float3(1., 1., 1.));
 
     //SAMPLING
     float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
