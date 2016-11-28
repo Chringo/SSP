@@ -75,13 +75,13 @@ int System::Initialize()
 	return result;
 }
 
+//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 int System::Run()
 {
 	int result = 0;
 	LARGE_INTEGER frequency, currTime, prevTime, elapsedTime;
 	QueryPerformanceFrequency(&frequency);
 	//QueryPerformanceCounter(&prevTime);
-	float totalTime = 0.0f;
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
@@ -106,12 +106,9 @@ int System::Run()
 		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
 			this->FullscreenToggle();
-		totalTime += elapsedTime.QuadPart / 1000000.0f;
-		std::cout << int(totalTime) << "\n";
 		//Render
 		this->m_graphicsHandler->Render();
 
-		//printf("%i", elapsedTime.QuadPart / 1000000);
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();

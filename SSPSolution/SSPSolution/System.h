@@ -6,7 +6,6 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
-#include <chrono>
 
 
 const int SCREEN_WIDTH = 1280;
@@ -33,6 +32,7 @@ public:
 	int Shutdown();
 
 	int Initialize();
+	//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 	int Run();
 	int Update(float deltaTime);
 
