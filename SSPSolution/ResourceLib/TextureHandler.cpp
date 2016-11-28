@@ -217,7 +217,7 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 			path[i],
 			&textureResource[i],
 			&textureView[i],
-			size_t(0),
+			size_t(2048),
 			(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
 
 		if (FAILED(hr))
