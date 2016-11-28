@@ -14,22 +14,30 @@ namespace ShaderLib
 		InstancedAnimated = 3
 	};
 
-	struct DeferredConstantBuffer
+	enum CBuffer
 	{
-		DirectX::XMMATRIX worldMatrix;
-		DirectX::XMMATRIX viewMatrix;
-		DirectX::XMMATRIX projectionMatrix;
-
-		DirectX::XMFLOAT4 diffColor;
-
-		DirectX::XMFLOAT3 camPos;
+		WORLD,
+		VIEW_PROJECTION,
+		CAMERA
 	};
+
+	struct DeferredConstantBufferWorld
+	{
+		DirectX::XMFLOAT4X4 worldMatrix;
+	};
+
+	struct DeferredConstantBufferVP
+	{
+		DirectX::XMFLOAT4X4 viewMatrix;
+		DirectX::XMFLOAT4X4 projectionMatrix;
+	};
+
 	struct LightConstantBuffer
 	{
-		DirectX::XMMATRIX viewMatrix;
-		DirectX::XMMATRIX projectionMatrix;
-
 		DirectX::XMFLOAT3 camPos;
+		DirectX::XMFLOAT3 camDir;
+		float padding1;
+		float padding2;
 	};
 }
 

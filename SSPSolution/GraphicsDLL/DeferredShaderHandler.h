@@ -8,6 +8,8 @@ class DeferredShaderHandler :
 {
 private:
 	ID3D11SamplerState* m_samplerState;
+	ID3D11Buffer * m_worldMatrixBuffer;
+	ID3D11Buffer * m_viewProjMatrixBuffer;
 
 	ID3D11RenderTargetView* m_deferredRenderTargetViews[BUFFER_COUNT];
 	ID3D11Texture2D* m_deferredRenderTargetTextures[BUFFER_COUNT];
@@ -23,7 +25,9 @@ public:
 	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
-	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBuffer* shaderParams);
+	int SetShaderParameters(ID3D11DeviceContext* deviceContext, void* shaderParams, ShaderLib::CBuffer type);
+	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorld * world);
+	int BindViewProjectionCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection);
 	int ClearRenderTargetViews(ID3D11DeviceContext* deviceContext);
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
 

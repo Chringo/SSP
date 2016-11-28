@@ -28,7 +28,7 @@ private:
 
 	Camera* m_camera;
 
-	DirectX::XMMATRIX m_projectionMatrix;
+	DirectX::XMFLOAT4X4 m_projectionMatrix;
 
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;

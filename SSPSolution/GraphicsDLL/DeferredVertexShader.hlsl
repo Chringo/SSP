@@ -13,11 +13,17 @@ cbuffer CBPerObj
 struct VSInput
 {
 	float3 position : POSITION;
+	float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float2 UV : TEXCOORD0;
 };
 
 struct GSInput
 {
 	float4 position : SV_POSITION;
+	float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float2 UV : TEXCOORD0;
 };
 
 GSInput main(VSInput input)
@@ -32,6 +38,7 @@ GSInput main(VSInput input)
 	//Multiply the position with world-, view- and projectionmatrix
 	//Save the world-pos of the vertex
 	output.position = output.position;
+	output.UV = input.UV;
 
 
 	return output;

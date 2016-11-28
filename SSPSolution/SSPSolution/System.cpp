@@ -105,7 +105,7 @@ int System::Run()
 			this->m_running = false;
 		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
-			this->FullscreenToggle();
+		//std::cout << int(totalTime) << "\n";
 		//Render
 		this->m_graphicsHandler->Render();
 

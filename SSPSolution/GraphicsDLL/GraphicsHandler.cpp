@@ -64,7 +64,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
-
+	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+	
 	this->m_deferredSH = new DeferredShaderHandler;
 	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, resolution))
 	{
@@ -85,7 +86,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
 	float screenAspect = (float)resolution.x / (float)resolution.y;
 
-	this->m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f);
+	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
 
 	this->CreateTriangle();
 
@@ -102,14 +103,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 0.f);
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
@@ -135,38 +136,78 @@ int GraphicsHandler::Render()
 
 	DirectX::XMMATRIX viewMatrix;
 	this->m_camera->GetViewMatrix(viewMatrix);
-	DirectX::XMFLOAT3 cameraPos;
-	this->m_camera->GetCameraPos(cameraPos);
+
+	
 
 	this->SetTriangle();
 
 	this->m_deferredSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
-	ShaderLib::DeferredConstantBuffer* shaderParams = new ShaderLib::DeferredConstantBuffer;
-	shaderParams->viewMatrix = viewMatrix;
-	shaderParams->projectionMatrix = this->m_projectionMatrix;
-	shaderParams->diffColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f);
-	shaderParams->camPos = cameraPos;
+	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
+	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
+
+
+	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
+	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
+
+	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsVP, ShaderLib::VIEW_PROJECTION);
+
+
+	/*TEMP*/
+	Resources::Model* modelPtr;
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337),modelPtr);
+
+	Resources::Mesh* meshPtr = modelPtr->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
+	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+
+	Resources::Material * mat  = modelPtr->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
+	/********/
+
+	////TEST ROTATION
+	//static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
+	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000000005f));
+	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
+	////END TEST ROTATION
 
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
-		shaderParams->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
-		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParams);
-		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+
+		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
+		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+
+		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
-	delete shaderParams;
+	delete shaderParamsVP;
+	delete shaderParamsWorld;
 
 	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
 	this->m_lightSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
 
 	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
-
-	lShaderParams->viewMatrix = viewMatrix;
-	lShaderParams->projectionMatrix = this->m_projectionMatrix;
-
-	lShaderParams->camPos = cameraPos;
+	lShaderParams->camPos = this->m_camera->GetCameraPos();
+	lShaderParams->camDir = this->m_camera->GetLookAt();
 
 	this->m_lightSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), lShaderParams, this->m_deferredSH->GetShaderResourceViews());
 	delete lShaderParams;
