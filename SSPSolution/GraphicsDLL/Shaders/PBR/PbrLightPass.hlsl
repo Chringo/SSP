@@ -132,7 +132,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 specularLight = float4(0, 0, 0, 0);
 
     LIGHT light[1]; 
-    light[0] = initCustomLight(float3(0.0, 0.0, -2.0), float3(1., 1., 1.));
+    light[0] = initCustomLight(float3(0.0, 0.0, -1.0), float3(1., 1., 1.));
     //light[1] = initCustomLight(float3(0.0, 0.0, -1.5), float3(1., 1., 1.));
     //light[2] = initCustomLight(float3(0.5, 1.2, -1.0), float3(1., 1., 1.));
 
@@ -165,7 +165,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
     //N = normalize(N);
-    float3 V = normalize(camPos - wPosSamp.xyz); //camDir
+    float3 V = normalize(wPosSamp.xyz - camPos); //camDir
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
