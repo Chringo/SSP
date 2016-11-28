@@ -1,7 +1,9 @@
 Texture2D colorTex		: register(t0);
-Texture2D met_rough_ao  : register(t1);
-Texture2D normalTex		: register(t2);
-Texture2D wPosTex		: register(t3);
+Texture2D metal         : register(t1);
+Texture2D rough         : register(t2);
+Texture2D AO            : register(t3);
+Texture2D normalTex		: register(t4);
+Texture2D wPosTex		: register(t5);
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
@@ -14,7 +16,7 @@ SamplerState pointSampler : register(s1);
 cbuffer camera : register(b0)
 {
     float3 camPos;
-    float3 camDir;
+    float3 camTarget;
     float padding1;
     float padding2;
 }
@@ -121,39 +123,41 @@ float GGX(float NdotH, float m)
 
 float4 PS_main(VS_OUT input) : SV_Target
 {
-
-    uint lightCount = 3;
+    float3 camDir = camTarget - camPos;
+    uint lightCount = 1;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 
     float4 diffuseLight = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
 
-    LIGHT light[3]; 
-    light[0] = initCustomLight(float3(0.0, -0.8, -1.3), float3(1., 1., 1.));
-    light[1] = initCustomLight(float3(0.0, 0.0, -1.5), float3(1., 1., 1.));
-    light[2] = initCustomLight(float3(0.5, 1.2, -1.0), float3(1., 1., 1.));
+    LIGHT light[1]; 
+    light[0] = initCustomLight(float3(0.0, 0.0, -2.0), float3(1., 1., 1.));
+    //light[1] = initCustomLight(float3(0.0, 0.0, -1.5), float3(1., 1., 1.));
+    //light[2] = initCustomLight(float3(0.5, 1.2, -1.0), float3(1., 1., 1.));
 
     //SAMPLING
     float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
-    float3 met_rough_ao_Samp = (met_rough_ao.Sample(linearSampler, input.UV)).rgb;
-    float3 colorSamp = (colorTex.Sample(linearSampler, input.UV)).rgb;
-    float3 N = (normalTex.Sample(linearSampler, input.UV));
+    float3 metalSamp = (metal.Sample(pointSampler, input.UV));
+    float3 roughSamp = (rough.Sample(pointSampler, input.UV));
+    float3 AOSamp = (AO.Sample(pointSampler, input.UV)).rgb;
+    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV));
+    float3 N = (normalTex.Sample(pointSampler, input.UV));
 
 
 
     //METALNESS (F90)
-    float metalness = met_rough_ao_Samp.r;
+    float metalness = metalSamp.r;
     float f90 = metalness;
     f90 = 0.16f * metalness * metalness;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
-    float linearRough = (saturate(met_rough_ao_Samp.g + EPSILON));
+    float linearRough = (saturate(roughSamp + EPSILON)).r;
     float roughness =  linearRough * linearRough;
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
     //AO
-    float AO = met_rough_ao_Samp.b;
+    float AO = AOSamp.b;
 
     //DIFFUSE & SPECULAR
     float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, metalness);
@@ -161,7 +165,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
     //N = normalize(N);
-    float3 V = normalize(camDir); //camDir
+    float3 V = normalize(camPos - wPosSamp.xyz); //camDir
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
@@ -173,7 +177,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         float lightPower = 0;
 
         float LdotH = saturate((dot(L, H)));
-        float NdotH = saturate(abs(dot(N, H)));
+        float NdotH = saturate((dot(N, H)));
         float NdotL = saturate((dot(N, L)));
         float VdotH = saturate((dot(V, H)));
 
@@ -189,7 +193,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         //DO SHADOW STUFF HERE
 
         //DIFFUSE
-        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
+        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r); //roughness should be linear
         diffuseLight += float4(fd.xxx * light[i].lightColor * lightPower * diffuseColor.rgb, 1);
 
         //SPECULAR
@@ -201,7 +205,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
 
-     //   return N.rgbr;
+        //return V.rgbr;
     }
 
 

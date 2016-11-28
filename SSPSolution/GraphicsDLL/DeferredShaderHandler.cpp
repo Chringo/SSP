@@ -166,10 +166,10 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	//samplerDesc.BorderColor[0] = 0;
+	//samplerDesc.BorderColor[1] = 0;
+	//samplerDesc.BorderColor[2] = 0;
+	//samplerDesc.BorderColor[3] = 0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -347,6 +347,8 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ShaderLib::DeferredConstantBufferWorld * dataPtr;
 
+	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&world->worldMatrix));
+	DirectX::XMStoreFloat4x4(&world->worldMatrix, transposedWorld);
 
 	//Map the constant buffer so we can write to it (denies GPU access)
 	hResult = deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -356,7 +358,6 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 
 	//Get pointer to the data
 	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
-
 	//Copy the matrices to the constant buffer
 	dataPtr->worldMatrix = world->worldMatrix;
 
@@ -377,6 +378,10 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * devic
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ShaderLib::DeferredConstantBufferVP * dataPtr;
 
+	DirectX::XMMATRIX transposedView = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->viewMatrix));
+	DirectX::XMStoreFloat4x4(&viewProjection->viewMatrix, transposedView);
+	DirectX::XMMATRIX transposedProjection = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->projectionMatrix));
+	DirectX::XMStoreFloat4x4(&viewProjection->projectionMatrix, transposedProjection);
 
 	//Map the constant buffer so we can write to it (denies GPU access)
 	hResult = deviceContext->Map(this->m_viewProjMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
