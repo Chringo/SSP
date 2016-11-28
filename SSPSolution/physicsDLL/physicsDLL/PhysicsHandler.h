@@ -35,17 +35,35 @@ __declspec(align(16)) struct PhysicsComponent
 
 };
 
+__declspec(align(16)) struct PhysicsComponent2
+{
+	DirectX::XMVECTOR m_pos;
+	DirectX::XMVECTOR m_velocity;
+	DirectX::XMVECTOR m_rotationVelocity;
+	double m_gravityInfluence;
+	int m_active;
+	int m_entityID;
+	float m_mass;
+	bool m_is_Static;
+	bool m_coolides;
+
+	AABB m_AABB;
+	//AABB m_looseBoundingBox
+	//BoundingVolume* m_tightBoundingVolume; 
+	//std::vector<int entityID, event EVENT> m_eventlist;
+
+};
+
 class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 {
 private:
-	
 	std::vector<PhysicsComponent*> m_dynamicComponents;
-
+	int m_nrOfStaticObjects;
+	
 	DirectX::XMVECTOR m_gravity;
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
-	bool IntersectAABB_opt();
 public:
 	PhysicsHandler();
 	~PhysicsHandler();

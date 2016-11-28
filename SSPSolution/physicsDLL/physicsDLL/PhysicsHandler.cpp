@@ -11,20 +11,18 @@ bool PhysicsHandler::IntersectAABB()
 	bool possibleCollitionZ = false;
 	PhysicsComponent* PC_ptr = nullptr;
 	PhysicsComponent* PC_toCheck = nullptr;
-	int checkedObj = 0;
+
 
 	int nrOfComponents = this->m_dynamicComponents.size();
 	float vecToObj[3];
 
-	for (int i = 0; i < nrOfComponents; i++)
+	for (int i = 0; i < (nrOfComponents - this->m_nrOfStaticObjects); i++)
 	{
 		PC_toCheck = this->m_dynamicComponents.at(i);
 
 		for (int j = i + 1; j < nrOfComponents; j++)
 		{
 			PC_ptr = this->m_dynamicComponents.at(j);
-			//already calculated?
-			//calcAlready()
 
 			for (int axis = 0; axis < 3; axis++)
 			{
@@ -63,12 +61,14 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	PhysicsComponent* tempPtr;
+	PhysicsComponent* tempPtr = nullptr;
+	this->m_nrOfStaticObjects = 5;
 
 	this->m_gravity = DirectX::XMVectorSet(0, -0.000005, 0, 0);
 
 	//first dummy obj
 	tempPtr = new PhysicsComponent;
+
 	tempPtr->m_pos = DirectX::XMVectorSet(-1, 5, 0, 0);
 	tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 
@@ -87,6 +87,7 @@ bool PhysicsHandler::Initialize()
 	for (int i = 0; i < 50; i++)
 	{
 		tempPtr = new PhysicsComponent;
+
 		tempPtr->m_pos = DirectX::XMVectorSet(1, 5, 0, 0);
 		tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 
@@ -100,17 +101,14 @@ bool PhysicsHandler::Initialize()
 
 		this->m_dynamicComponents.push_back(tempPtr);
 	}
-
-
-	this->checkCollition();
-
 	return true;
 }
 void PhysicsHandler::Update()
 {
 	float dt = 0.01f;
+	this->checkCollition();
 
-	SimpleCollition(dt);
+	//SimpleCollition(dt);
 }
 void PhysicsHandler::SimpleCollition(float dt)
 {
@@ -185,7 +183,9 @@ bool PhysicsHandler::checkCollition()
 	std::chrono::duration<double>elapsed_secounds = end - start;
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
-	printf("time elapsed%f ", elapsed_secounds.count());
+	printf("time elapsed array Order: %f ", elapsed_secounds.count());
+	printf("\n");
 
 	return result;
 }
+
