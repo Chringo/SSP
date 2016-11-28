@@ -193,7 +193,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         //DO SHADOW STUFF HERE
 
         //DIFFUSE
-        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r); //roughness should be linear
+        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
         diffuseLight += float4(fd.xxx * light[i].lightColor * lightPower * diffuseColor.rgb, 1);
 
         //SPECULAR
