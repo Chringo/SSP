@@ -179,7 +179,7 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 {
 
 
-	std::string path = "../ResourceLib/AssetFiles/placeHolder.bbf";
+	std::string path = "../ResourceLib/AssetFiles/PlaceHolder_plane.bbf";
 	char* data = nullptr;
 	size_t dataSize = 0;
 	Status st = FileLoader::GetInstance()->LoadPlaceHolderMesh(path, data, &dataSize);
