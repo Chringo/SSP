@@ -69,6 +69,9 @@ int System::Initialize()
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
+	//Initialize the PhysicsHandler
+	this->m_physicsHandler.Initialize();
+
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -90,6 +93,7 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
+		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
@@ -265,10 +269,12 @@ int System::HandleEvents()
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
+			this->m_inputHandler->SetMouseState(m_event.button.button, true);
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
+			this->m_inputHandler->SetMouseState(m_event.button.button, false);
 			break;
 		}
 #pragma endregion Key / Button events

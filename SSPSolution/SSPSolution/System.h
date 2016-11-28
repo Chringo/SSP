@@ -6,7 +6,8 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
-
+#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#pragma comment (lib, "../Debug/PhysicsDLL")
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -26,6 +27,8 @@ private:
 	//These are the subsystems
 	GraphicsHandler* m_graphicsHandler;
 	InputHandler* m_inputHandler;
+	//this is a physicsHandler
+	PhysicsHandler m_physicsHandler;
 public:
 	System();
 	~System();

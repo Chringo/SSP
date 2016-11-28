@@ -13,6 +13,8 @@ InputHandler::InputHandler()
 	this->m_mouseButtonState.left = 0;
 	this->m_mouseButtonState.right = 0;
 	this->m_mouseButtonState.middle = 0;
+	this->m_mouseButtonState.x1 = 0;
+	this->m_mouseButtonState.x2 = 0;
 	this->m_oldMouseButtonState = this->m_mouseButtonState;
 }
 
@@ -32,16 +34,20 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 	this->m_mouseButtonState.left = 0;
 	this->m_mouseButtonState.right = 0;
 	this->m_mouseButtonState.middle = 0;
+	this->m_mouseButtonState.x1 = 0;
+	this->m_mouseButtonState.x2 = 0;
 	this->m_oldMouseButtonState = this->m_mouseButtonState;
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
+	return;
 }
 
 void InputHandler::Shutdown()
 {
 	this->m_oldKeyboardState.clear();
 	this->m_keyboardState.clear();
+	return;
 }
 
 void InputHandler::Update()
@@ -54,12 +60,38 @@ void InputHandler::Update()
 	this->ReadMouse();
 
 	this->ProcessInput();
+	return;
+}
 
+void InputHandler::SetMouseState(int button, bool state)
+{
+	switch (button)
+	{
+	case 1:
+		this->m_mouseButtonState.left = state;
+		break;
+	case 2:
+		this->m_mouseButtonState.middle = state;
+		break;
+	case 3:
+		this->m_mouseButtonState.right = state;
+		break;
+	case 4:
+		this->m_mouseButtonState.x1 = state;
+		break;
+	case 5:
+		this->m_mouseButtonState.x2 = state;
+		break;
+	default:
+		break;
+	}
+	return;
 }
 
 void InputHandler::SetKeyState(int key, bool state)
 {
 	this->m_keyboardState[key] = state;
+	return;
 }
 
 void InputHandler::ReadKeyboard()
@@ -74,10 +106,6 @@ void InputHandler::ReadMouse()
 	//Copy the old data
 	this->m_oldMouseButtonState = this->m_mouseButtonState;
 	//Read the new data
-	this->m_mouseButtonState.right = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-	this->m_mouseButtonState.left = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-	this->m_mouseButtonState.middle = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
-
 	int xPos = 0, yPos = 0;
 	SDL_GetMouseState(&xPos, &yPos);
 	this->m_mouseDX = xPos - this->m_mouseX;
@@ -139,11 +167,15 @@ bool InputHandler::IsMouseKeyPressed(unsigned int key)
 	bool result = false;
 	switch (key)
 	{
-	case 0: result = this->m_mouseButtonState.left && !this->m_oldMouseButtonState.left;
+	case SDL_BUTTON_LEFT: result = this->m_mouseButtonState.left && !this->m_oldMouseButtonState.left;
 		break;
-	case 1:	result = this->m_mouseButtonState.right && !this->m_oldMouseButtonState.right;
+	case SDL_BUTTON_MIDDLE:	result = this->m_mouseButtonState.middle && !this->m_oldMouseButtonState.middle;
 		break;
-	case 2:	result = this->m_mouseButtonState.middle && !this->m_oldMouseButtonState.middle;
+	case SDL_BUTTON_RIGHT:	result = this->m_mouseButtonState.right && !this->m_oldMouseButtonState.right;
+		break;
+	case SDL_BUTTON_X1:	result = this->m_mouseButtonState.x1 && !this->m_oldMouseButtonState.x1;
+		break;
+	case SDL_BUTTON_X2:	result = this->m_mouseButtonState.x2 && !this->m_oldMouseButtonState.x2;
 		break;
 	default:
 		break;
@@ -156,11 +188,15 @@ bool InputHandler::IsMouseKeyDown(unsigned int key)
 	bool result = false;
 	switch (key)
 	{
-	case 0: result = this->m_mouseButtonState.left;
+	case SDL_BUTTON_LEFT: result = this->m_mouseButtonState.left;
 		break;
-	case 1:	result = this->m_mouseButtonState.right;
+	case SDL_BUTTON_MIDDLE:	result = this->m_mouseButtonState.middle;
 		break;
-	case 2:	result = this->m_mouseButtonState.middle;
+	case SDL_BUTTON_RIGHT:	result = this->m_mouseButtonState.right;
+		break;
+	case SDL_BUTTON_X1:	result = this->m_mouseButtonState.x1;
+		break;
+	case SDL_BUTTON_X2:	result = this->m_mouseButtonState.x2;
 		break;
 	default:
 		break;
@@ -173,11 +209,15 @@ bool InputHandler::IsMouseKeyReleased(unsigned int key)
 	bool result = false;
 	switch (key)
 	{
-	case 0: result = !this->m_mouseButtonState.left && this->m_oldMouseButtonState.left;
+	case SDL_BUTTON_LEFT: result = !this->m_mouseButtonState.left && this->m_oldMouseButtonState.left;
 		break;
-	case 1:	result = !this->m_mouseButtonState.right && this->m_oldMouseButtonState.right;
+	case SDL_BUTTON_MIDDLE:	result = !this->m_mouseButtonState.middle && this->m_oldMouseButtonState.middle;
 		break;
-	case 2:	result = !this->m_mouseButtonState.middle && this->m_oldMouseButtonState.middle;
+	case SDL_BUTTON_RIGHT:	result = !this->m_mouseButtonState.right && this->m_oldMouseButtonState.right;
+		break;
+	case SDL_BUTTON_X1:	result = !this->m_mouseButtonState.x1 && this->m_oldMouseButtonState.x1;
+		break;
+	case SDL_BUTTON_X2:	result = !this->m_mouseButtonState.x2 && this->m_oldMouseButtonState.x2;
 		break;
 	default:
 		break;
@@ -189,18 +229,21 @@ void InputHandler::SetMousePos(int x, int y)
 {
 	this->m_mouseX = x;
 	this->m_mouseY = y;
+	return;
 }
 
 void InputHandler::SetMouseWheel(int x, int y)
 {
 	this->m_mouseWheelX = x;
 	this->m_mouseWheelY = y;
+	return;
 }
 
 void InputHandler::ApplyMouseWheel(int x, int y)
 {
 	this->m_mouseWheelX += x;
 	this->m_mouseWheelY += y;
+	return;
 }
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
