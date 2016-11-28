@@ -1,15 +1,16 @@
 #ifndef GRAPHICSDLL_SHADERHANDLER
 #define GRAPHICSDLL_SHADERHANDLER
 
-#include <d3d11.h>
-#include <DirectXMath.h>
 #include <d3dcompiler.h>
+#include <fstream>
 
 #include "ShaderLib.h"
 
+const int BUFFER_COUNT = 6; //Color, specular, normal, worldPos
+
 class ShaderHandler
 {
-private:
+protected:
 	ID3D11VertexShader* m_vertexShader[4];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader* m_pixelShader;
@@ -17,12 +18,13 @@ private:
 	ID3D11Buffer* m_matrixBuffer;
 
 public:
-	 ShaderHandler();
-	 virtual ~ShaderHandler();
+	ShaderHandler();
+	virtual ~ShaderHandler();
 
-	 virtual int Initialize(ID3D11Device* device, HWND* windowHandle, DirectX::XMFLOAT2 resolution) = 0;
-	 virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
-	 virtual void Shutdown() = 0;
+	virtual int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMINT2& resolution) = 0;
+	virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
+	virtual void Shutdown() = 0;
+	virtual void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename);
 };
 
 #endif
