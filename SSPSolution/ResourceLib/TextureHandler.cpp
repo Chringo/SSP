@@ -191,17 +191,17 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 			if (st != ST_OK)
 				return false;
 		}
-#pragma region Load Albedo
+#pragma region Load Textures
 		std::string path_str[5];
 		wchar_t path[5][256];
 		size_t length[5];
 		ID3D11ShaderResourceView* textureView[5];
 		ID3D11Resource*			textureResource[5];
-		path_str[0] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
-		path_str[1] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
-		path_str[2] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
-		path_str[3] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
-		path_str[4] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
+		path_str[TEXTURE_ALBEDO]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
+		path_str[TEXTURE_SPECULAR]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
+		path_str[TEXTURE_ROUGHNESS] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
+		path_str[TEXTURE_NORMAL]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
+		path_str[TEXTURE_AO]		= std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
 
 		for (size_t i = 0; i < 5; i++)
 		{

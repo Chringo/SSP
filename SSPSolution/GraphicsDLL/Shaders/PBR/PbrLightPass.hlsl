@@ -1,7 +1,7 @@
-Texture2D colorTex : register(t0);
-Texture2D met_rough_ao : register(t1);
-Texture2D normalTex : register(t2);
-Texture2D wPosTex : register(t3);
+Texture2D colorTex		: register(t0);
+Texture2D met_rough_ao  : register(t1);
+Texture2D normalTex		: register(t2);
+Texture2D wPosTex		: register(t3);
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
