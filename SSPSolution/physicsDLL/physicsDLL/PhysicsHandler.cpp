@@ -1,5 +1,8 @@
 #include "PhysicsHandler.h"
 #include <malloc.h>
+#include <iostream>
+#include <chrono>
+#include <ctime>
 
 bool PhysicsHandler::IntersectAABB()
 {
@@ -7,49 +10,53 @@ bool PhysicsHandler::IntersectAABB()
 	bool possibleCollitionY = false;
 	bool possibleCollitionZ = false;
 	PhysicsComponent* PC_ptr = nullptr;
-
+	PhysicsComponent* PC_toCheck = nullptr;
+	int checkedObj = 0;
 
 	int nrOfComponents = this->m_dynamicComponents.size();
 	float vecToObj[3];
 
-
 	for (int i = 0; i < nrOfComponents; i++)
 	{
-		PC_ptr = this->m_dynamicComponents.at(i);
+		PC_toCheck = this->m_dynamicComponents.at(i);
 
-		//iterate through all physicscomponents 
-		for (int axis = 0; axis < 3; axis++)
+		for (int j = i + 1; j < nrOfComponents; j++)
 		{
-			vecToObj[axis] = 0; //remove clutter values, or old values
-			vecToObj[axis] = toCheck.pos[axis] - PC_ptr->m_AABB.pos[axis];
-		}
+			PC_ptr = this->m_dynamicComponents.at(j);
+			//already calculated?
+			//calcAlready()
 
-		//Fraps return the absolute value
-		//http://www.cplusplus.com/reference/cmath/fabs/
-
-		//if the extensions from objA and objB together is smaller than the vector to b, then no collition
-		possibleCollitionX = (fabs(vecToObj[0]) <= (toCheck.ext[0] + PC_ptr->m_AABB.ext[0]));
-		if (possibleCollitionX == true)
-		{
-			possibleCollitionY = (fabs(vecToObj[1]) <= (toCheck.ext[0] + PC_ptr->m_AABB.ext[0]));
-			if (possibleCollitionY == true)
+			for (int axis = 0; axis < 3; axis++)
 			{
-				possibleCollitionZ = (fabs(vecToObj[2]) <= (toCheck.ext[0] + PC_ptr->m_AABB.ext[0]));
-				if (possibleCollitionZ == true)
+				vecToObj[axis] = 0; //remove clutter values, or old values
+				vecToObj[axis] = PC_toCheck->m_AABB.pos[axis] - PC_ptr->m_AABB.pos[axis];
+			}
+			//Fraps return the absolute value
+			//http://www.cplusplus.com/reference/cmath/fabs/
+
+			//if the extensions from objA and objB together is smaller than the vector to b, then no collition
+			possibleCollitionX = (fabs(vecToObj[0]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+			if (possibleCollitionX == true)
+			{
+				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+				if (possibleCollitionY == true)
 				{
-					// apply OOB check for more precisition
-					return true;
+					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+					if (possibleCollitionZ == true)
+					{
+						// apply OOB check for more precisition
+					}
 				}
 			}
 		}
 	}
-	//collition not possible
 	return false;
 }
 
 PhysicsHandler::PhysicsHandler()
 {
 }
+
 PhysicsHandler::~PhysicsHandler()
 {
 }
@@ -76,19 +83,24 @@ bool PhysicsHandler::Initialize()
 	this->m_dynamicComponents.push_back(tempPtr);
 
 	//secound obj
-	tempPtr = new PhysicsComponent;
-	tempPtr->m_pos = DirectX::XMVectorSet(1, 5, 0, 0);
-	tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 
-	tempPtr->m_AABB.pos[0] = 2;
-	tempPtr->m_AABB.pos[1] = 0;
-	tempPtr->m_AABB.pos[2] = 0;
+	for (int i = 0; i < 50; i++)
+	{
+		tempPtr = new PhysicsComponent;
+		tempPtr->m_pos = DirectX::XMVectorSet(1, 5, 0, 0);
+		tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 
-	tempPtr->m_AABB.ext[0] = 1;
-	tempPtr->m_AABB.ext[1] = 1;
-	tempPtr->m_AABB.ext[2] = 1;
+		tempPtr->m_AABB.pos[0] = 2;
+		tempPtr->m_AABB.pos[1] = 0;
+		tempPtr->m_AABB.pos[2] = 0;
 
-	this->m_dynamicComponents.push_back(tempPtr);
+		tempPtr->m_AABB.ext[0] = 1;
+		tempPtr->m_AABB.ext[1] = 1;
+		tempPtr->m_AABB.ext[2] = 1;
+
+		this->m_dynamicComponents.push_back(tempPtr);
+	}
+
 
 	this->checkCollition();
 
@@ -162,7 +174,18 @@ PhysicsComponent* PhysicsHandler::getDynamicComponents(int index)const
 bool PhysicsHandler::checkCollition()
 {
 	bool result = false;
+
+	std::chrono::time_point<std::chrono::system_clock>start;
+	std::chrono::time_point<std::chrono::system_clock>end;
+
+	start = std::chrono::system_clock::now();
 	result = this->IntersectAABB();
+	end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double>elapsed_secounds = end - start;
+	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+	printf("time elapsed%f ", elapsed_secounds.count());
 
 	return result;
 }

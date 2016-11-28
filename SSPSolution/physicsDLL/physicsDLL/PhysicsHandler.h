@@ -10,6 +10,12 @@
 #include <DirectXMath.h>
 #include <vector>
 
+struct PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API AABB
+{
+	float pos[3];
+	float ext[3];
+};
+
 __declspec(align(16)) struct PhysicsComponent
 {
 	DirectX::XMVECTOR m_pos;
@@ -21,6 +27,8 @@ __declspec(align(16)) struct PhysicsComponent
 	float m_mass;
 	bool m_is_Static;
 	bool m_coolides;
+
+	AABB m_AABB;
 	//AABB m_looseBoundingBox
 	//BoundingVolume* m_tightBoundingVolume; 
 	//std::vector<int entityID, event EVENT> m_eventlist;
@@ -36,6 +44,8 @@ private:
 	DirectX::XMVECTOR m_gravity;
 
 	const float m_offSet = 0.5f;
+	bool IntersectAABB();
+	bool IntersectAABB_opt();
 public:
 	PhysicsHandler();
 	~PhysicsHandler();
@@ -48,6 +58,8 @@ public:
 
 	int getNrOfComponents()const;
 	PhysicsComponent* getDynamicComponents(int index)const;
+	bool checkCollition();
+
 
 
 
