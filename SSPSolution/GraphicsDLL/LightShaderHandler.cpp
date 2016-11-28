@@ -110,10 +110,10 @@ int LightShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, c
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	//samplerDesc.BorderColor[0] = 0;
+	//samplerDesc.BorderColor[1] = 0;
+	//samplerDesc.BorderColor[2] = 0;
+	//samplerDesc.BorderColor[3] = 0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -225,7 +225,7 @@ int LightShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext,
 
 	if (gBuffers) {
 		//Set shader texture resource for pixel shader
-		deviceContext->PSSetShaderResources(0, 4, gBuffers);
+		deviceContext->PSSetShaderResources(0, BUFFER_COUNT, gBuffers);
 	}
 
 	return 0;
