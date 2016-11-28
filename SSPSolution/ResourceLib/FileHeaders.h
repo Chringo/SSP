@@ -10,6 +10,7 @@ struct MeshHeader
 {
 	unsigned int numVerts;
 	unsigned int indexLength;
+	unsigned int jointCount;
 	bool skeleton;
 };
 
