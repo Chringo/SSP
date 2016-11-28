@@ -105,7 +105,9 @@ int System::Run()
 			this->m_running = false;
 		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
+		{
 			this->FullscreenToggle();
+		}
 		//Render
 		this->m_graphicsHandler->Render();
 
