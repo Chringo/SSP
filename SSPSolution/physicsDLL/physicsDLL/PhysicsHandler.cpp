@@ -103,6 +103,14 @@ bool PhysicsHandler::Initialize()
 	}
 	return true;
 }
+void PhysicsHandler::ShutDown()
+{
+	int size = this->m_dynamicComponents.size();
+	for (int i = 0; i < size; i++)
+	{
+		delete this->m_dynamicComponents.at(i);
+	}
+}
 void PhysicsHandler::Update()
 {
 	float dt = 0.01f;

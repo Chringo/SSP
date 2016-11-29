@@ -22,6 +22,7 @@ int System::Shutdown()
 	delete this->m_camera;
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
+	this->m_physicsHandler.ShutDown();
 	return result;
 }
 
