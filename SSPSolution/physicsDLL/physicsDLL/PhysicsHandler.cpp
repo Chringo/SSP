@@ -62,45 +62,9 @@ PhysicsHandler::~PhysicsHandler()
 bool PhysicsHandler::Initialize()
 {
 	PhysicsComponent* tempPtr = nullptr;
-	this->m_nrOfStaticObjects = 5;
-
+	this->m_nrOfStaticObjects = 0;
 	this->m_gravity = DirectX::XMVectorSet(0, -0.000005, 0, 0);
 
-	//first dummy obj
-	tempPtr = new PhysicsComponent;
-
-	tempPtr->m_pos = DirectX::XMVectorSet(-1, 5, 0, 0);
-	tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-
-	tempPtr->m_AABB.pos[0] = 0;
-	tempPtr->m_AABB.pos[1] = 0;
-	tempPtr->m_AABB.pos[2] = 0;
-
-	tempPtr->m_AABB.ext[0] = 1;
-	tempPtr->m_AABB.ext[1] = 1;
-	tempPtr->m_AABB.ext[2] = 1;
-
-	this->m_dynamicComponents.push_back(tempPtr);
-
-	//secound obj
-
-	for (int i = 0; i < 50; i++)
-	{
-		tempPtr = new PhysicsComponent;
-
-		tempPtr->m_pos = DirectX::XMVectorSet(1, 5, 0, 0);
-		tempPtr->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-
-		tempPtr->m_AABB.pos[0] = 2;
-		tempPtr->m_AABB.pos[1] = 0;
-		tempPtr->m_AABB.pos[2] = 0;
-
-		tempPtr->m_AABB.ext[0] = 1;
-		tempPtr->m_AABB.ext[1] = 1;
-		tempPtr->m_AABB.ext[2] = 1;
-
-		this->m_dynamicComponents.push_back(tempPtr);
-	}
 	return true;
 }
 void PhysicsHandler::ShutDown()
@@ -190,9 +154,6 @@ bool PhysicsHandler::checkCollition()
 
 	std::chrono::duration<double>elapsed_secounds = end - start;
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-	printf("time elapsed array Order: %f ", elapsed_secounds.count());
-	printf("\n");
 
 	return result;
 }
