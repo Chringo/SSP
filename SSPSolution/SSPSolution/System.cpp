@@ -70,7 +70,7 @@ int System::Initialize()
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
-	//this->m_physicsHandler.Initialize();
+	this->m_physicsHandler.Initialize();
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
