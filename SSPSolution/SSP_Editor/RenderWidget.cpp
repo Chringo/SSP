@@ -4,15 +4,12 @@ D3DRenderWidget::~D3DRenderWidget()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	delete this->m_camera;
 }
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
 	//render
 	//send a signal to render here, qt qill keep signals coming calling the render func or whichever
-	this->m_camera->Update();
 	this->m_GraphicsHandler->Render();
-
 }
 void D3DRenderWidget::Initialize(QWidget* parent)
 {
@@ -22,23 +19,32 @@ void D3DRenderWidget::Initialize(QWidget* parent)
 	//test = parent->winId();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
-	this->m_camera = new Camera();
-	this->m_camera->Initialize();
-	this->m_GraphicsHandler->SetCamera(this->m_camera);
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	: QWidget(parent) {
+	Initialize(parent);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-	this->m_Width = parent->width();
-	this->m_Height = parent->height();
-	this->m_x = parent->x();
-	this->m_y = parent->y();
-	parent->pos();
 	// Create Device
-	Initialize(parent);
 	//createDevice();
 	//properly create info that graphics handler need to make a swapchain etc here, parent IS where we want the info
 	//that means width height and more can be accessed here
+	this->m_timer = new QTimer(this);
+	connect(this->m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	this->m_timer->start(16);
+
+}
+
+void D3DRenderWidget::resizeEvent(QResizeEvent * evt)
+{
+	//releaseBuffers();
+	//swapChain_->ResizeBuffers(1, width(), height(), swapChainDesc_.BufferDesc.Format, 0);
+	//swapChain_->GetDesc(&swapChainDesc_);
+	//viewport_.Width = width();
+	//viewport_.Height = height();
+	//createBuffers();
+	//this->m_Width = width();
+	//this->m_Height = height();
+
 }

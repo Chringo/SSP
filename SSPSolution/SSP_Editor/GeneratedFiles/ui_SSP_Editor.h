@@ -42,6 +42,7 @@ public:
     QGroupBox *groupBox;
     QPushButton *pushButton;
     QTreeView *treeView;
+    QWidget *test;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -68,6 +69,8 @@ public:
         graphicsView = new QGraphicsView(centralWidget);
         graphicsView->setObjectName(QStringLiteral("graphicsView"));
         graphicsView->setGeometry(QRect(230, 30, 711, 571));
+        graphicsView->setMinimumSize(QSize(711, 571));
+        graphicsView->setMouseTracking(true);
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(230, 10, 47, 13));
@@ -80,6 +83,11 @@ public:
         treeView = new QTreeView(centralWidget);
         treeView->setObjectName(QStringLiteral("treeView"));
         treeView->setGeometry(QRect(20, 30, 201, 571));
+        test = new QWidget(centralWidget);
+        test->setObjectName(QStringLiteral("test"));
+        test->setGeometry(QRect(230, 30, 711, 571));
+        test->setMouseTracking(true);
+        test->setAcceptDrops(true);
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));

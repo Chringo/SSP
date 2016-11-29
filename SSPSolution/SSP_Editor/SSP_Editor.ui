@@ -36,6 +36,15 @@
       <height>571</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>10</width>
+      <height>10</height>
+     </size>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
@@ -84,6 +93,22 @@
       <width>201</width>
       <height>571</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="test" native="true">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>30</y>
+      <width>711</width>
+      <height>571</height>
+     </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
