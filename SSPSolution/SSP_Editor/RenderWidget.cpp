@@ -26,13 +26,14 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	Initialize(parent);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
+	
 	// Create Device
 	//createDevice();
 	//properly create info that graphics handler need to make a swapchain etc here, parent IS where we want the info
 	//that means width height and more can be accessed here
-	this->m_timer = new QTimer(this);
-	connect(this->m_timer, SIGNAL(timeout()), this, SLOT(update()));
-	this->m_timer->start(16);
+	//this->m_timer = new QTimer(this);
+	//connect(this->m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	//this->m_timer->start(16);
 
 }
 

@@ -69,7 +69,7 @@ public:
         graphicsView = new QGraphicsView(centralWidget);
         graphicsView->setObjectName(QStringLiteral("graphicsView"));
         graphicsView->setGeometry(QRect(230, 30, 711, 571));
-        graphicsView->setMinimumSize(QSize(711, 571));
+        graphicsView->setMinimumSize(QSize(10, 10));
         graphicsView->setMouseTracking(true);
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
