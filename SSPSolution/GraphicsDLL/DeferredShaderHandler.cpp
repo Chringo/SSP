@@ -18,13 +18,15 @@ DeferredShaderHandler::~DeferredShaderHandler()
 {
 }
 
-int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, const DirectX::XMINT2& resolution)
+int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
+
+	this->m_deviceContext = deviceContext;
 
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
@@ -273,15 +275,15 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	return 0;
 }
 
-int DeferredShaderHandler::SetActive(ID3D11DeviceContext * deviceContext, ShaderLib::ShaderType shaderType)
+int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 {
-	ShaderHandler::SetActive(deviceContext, shaderType);
+	ShaderHandler::SetActive(shaderType);
 
 	//Set the sampler state in pixel shader
-	deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
+	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
 
 	//Set the render target views
-	deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRenderTargetViews, this->m_depthStencilView);
+	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRenderTargetViews, this->m_depthStencilView);
 
 	return 0;
 }
@@ -313,24 +315,19 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
-int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, void* shaderParams, ShaderLib::CBuffer type)
+int DeferredShaderHandler::SetShaderParameters(void* shaderParams, ShaderLib::CBuffer type)
 {
-
-	
-
-
-
 	switch (type)
 	{
-	case ShaderLib::WORLD:
+	case ShaderLib::CB_WORLD:
 	{
 
-		this->BindWorldCbuffer(deviceContext, (ShaderLib::DeferredConstantBufferWorld *)shaderParams);
+		this->BindWorldCbuffer((ShaderLib::DeferredConstantBufferWorld *)shaderParams);
 		break;
 	}
-	case ShaderLib::VIEW_PROJECTION:
+	case ShaderLib::CB_VIEW_PROJECTION:
 	{
-		this->BindViewProjectionCbuffer(deviceContext, (ShaderLib::DeferredConstantBufferVP *)shaderParams);
+		this->BindViewProjectionCbuffer((ShaderLib::DeferredConstantBufferVP *)shaderParams);
 		break;
 	}
 	default:
@@ -342,17 +339,17 @@ int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceConte
 	return 0;
 }
 
-int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferWorld * world)
+int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ShaderLib::DeferredConstantBufferWorld * dataPtr;
 
 	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&world->worldMatrix));
-	DirectX::XMStoreFloat4x4(&world->worldMatrix, transposedWorld);
+	
 
 	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hResult = m_deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -360,20 +357,20 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	//Get pointer to the data
 	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
 	//Copy the matrices to the constant buffer
-	dataPtr->worldMatrix = world->worldMatrix;
+	DirectX::XMStoreFloat4x4(&dataPtr->worldMatrix, transposedWorld);
 
 	//Unmap the constant buffer to give the GPU access agin
-	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
+	m_deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
 
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
-	deviceContext->GSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
+	m_deviceContext->GSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
 
 	return 0;
 }
 
-int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferWorldxm * world)
+int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -383,7 +380,7 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 
 
 	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hResult = m_deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -394,17 +391,17 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	DirectX::XMStoreFloat4x4(&dataPtr->worldMatrix, world->worldMatrix);
 
 	//Unmap the constant buffer to give the GPU access agin
-	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
+	m_deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
 
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
-	deviceContext->GSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
+	m_deviceContext->GSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
 
 	return 0;
 }
 
-int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection)
+int DeferredShaderHandler::BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -416,7 +413,7 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * devic
 	DirectX::XMStoreFloat4x4(&viewProjection->projectionMatrix, transposedProjection);
 
 	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = deviceContext->Map(this->m_viewProjMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hResult = m_deviceContext->Map(this->m_viewProjMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -428,16 +425,16 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * devic
 	dataPtr->viewMatrix = viewProjection->viewMatrix;
 	dataPtr->projectionMatrix = viewProjection->projectionMatrix;
 	//Unmap the constant buffer to give the GPU access agin
-	deviceContext->Unmap(this->m_viewProjMatrixBuffer, 0);
+	m_deviceContext->Unmap(this->m_viewProjMatrixBuffer, 0);
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(1, 1, &this->m_viewProjMatrixBuffer);
+	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_VIEW_PROJECTION, 1, &this->m_viewProjMatrixBuffer);
 
 
 	return 0;
 }
 
-int DeferredShaderHandler::ClearRenderTargetViews(ID3D11DeviceContext * deviceContext)
+int DeferredShaderHandler::ClearRenderTargetViews()
 {
 	float color[4];
 
@@ -448,11 +445,11 @@ int DeferredShaderHandler::ClearRenderTargetViews(ID3D11DeviceContext * deviceCo
 
 	//Clear the render target textures
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		deviceContext->ClearRenderTargetView(this->m_deferredRenderTargetViews[i], color);
+		m_deviceContext->ClearRenderTargetView(this->m_deferredRenderTargetViews[i], color);
 	}
 
 	//Clear the depth buffer
-	deviceContext->ClearDepthStencilView(this->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_deviceContext->ClearDepthStencilView(this->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return 0;
 }

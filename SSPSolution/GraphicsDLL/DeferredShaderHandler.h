@@ -21,15 +21,15 @@ public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
 
-	int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMINT2& resolution);
-	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
+	int Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
-	int SetShaderParameters(ID3D11DeviceContext* deviceContext, void* shaderParams, ShaderLib::CBuffer type);
-	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorld * world);
-	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorldxm * world);
-	int BindViewProjectionCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection);
-	int ClearRenderTargetViews(ID3D11DeviceContext* deviceContext);
+	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
+	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
+	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world);
+	int BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection);
+	int ClearRenderTargetViews();
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();

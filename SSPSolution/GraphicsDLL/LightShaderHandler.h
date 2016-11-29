@@ -19,13 +19,13 @@ public:
 	LightShaderHandler();
 	~LightShaderHandler();
 
-	int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMINT2& resolution);
-	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
+	int Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
-	int SetShaderParameters(ID3D11DeviceContext* deviceContext, ShaderLib::LightConstantBuffer* shaderParams, ID3D11ShaderResourceView** gBuffers);
+	int SetShaderParameters(ShaderLib::LightConstantBuffer* shaderParams, ID3D11ShaderResourceView** gBuffers);
 
-	void ResetPSShaderResources(ID3D11DeviceContext* deviceContext);
+	void ResetPSShaderResources();
 };
 
 #endif

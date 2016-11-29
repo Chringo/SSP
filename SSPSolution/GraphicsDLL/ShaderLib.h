@@ -16,9 +16,9 @@ namespace ShaderLib
 
 	enum CBuffer
 	{
-		WORLD,
-		VIEW_PROJECTION,
-		CAMERA
+		CB_WORLD,
+		CB_VIEW_PROJECTION,
+		CB_CAMERA
 	};
 
 	struct DeferredConstantBufferWorld
