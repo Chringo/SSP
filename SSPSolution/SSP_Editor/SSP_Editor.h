@@ -5,7 +5,7 @@
 #include <QtWidgets\qmainwindow.h>
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
-
+#include "RenderWidget.h"
 
 	class SSP_Editor : public QMainWindow
 	{
@@ -26,5 +26,6 @@
 		Ui::SSP_EditorClass m_ui;
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
+		D3DRenderWidget* m_D3DRenderWidget;
 	};
 #endif
