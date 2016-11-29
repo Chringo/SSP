@@ -4,25 +4,45 @@ D3DRenderWidget::~D3DRenderWidget()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
+	delete this->m_EditorInputHandler;
 }
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
 	//render
 	//send a signal to render here, qt qill keep signals coming calling the render func or whichever
+	this->frameCount++;
+	if (getTime() > 1.0f)
+	{
+		this->fps = frameCount;
+		this->frameCount = 0;
+		startTimer();
+	}
+	frameTime = getFrameTime();
+
+
+	this->m_EditorInputHandler->detectInput(frameTime);
 	this->m_GraphicsHandler->Render();
+	this->update();
 }
 void D3DRenderWidget::Initialize(QWidget* parent)
 {
 	this->m_GraphicsHandler = new GraphicsHandler();
 	this->m_hwnd = (HWND)parent->winId();
+	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
+	this->m_Camera = new Camera();
+	this->m_Camera->Initialize();
+	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
+	delete oldCam;
+	oldCam = nullptr;
+	this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height);
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	: QWidget(parent) {
-	Initialize(parent);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
+	Initialize(parent);
 	// Create Device
 	//createDevice();
 	//properly create info that graphics handler need to make a swapchain etc here, parent IS where we want the info

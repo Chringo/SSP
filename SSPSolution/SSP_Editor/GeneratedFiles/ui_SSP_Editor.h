@@ -88,9 +88,14 @@ public:
         test->setMouseTracking(true);
         test->setFocusPolicy(Qt::StrongFocus);
         test->setAcceptDrops(true);
-		test->updatesEnabled();
-		test->update();
+        test->setAutoFillBackground(true);
         SSP_EditorClass->setCentralWidget(centralWidget);
+        label_2->raise();
+        label->raise();
+        groupBox->raise();
+        pushButton->raise();
+        treeView->raise();
+        test->raise();
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1122, 21));

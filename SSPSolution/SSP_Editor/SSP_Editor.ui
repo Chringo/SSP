@@ -106,7 +106,16 @@
     <property name="acceptDrops">
      <bool>true</bool>
     </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
    </widget>
+   <zorder>label_2</zorder>
+   <zorder>label</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>treeView</zorder>
+   <zorder>test</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

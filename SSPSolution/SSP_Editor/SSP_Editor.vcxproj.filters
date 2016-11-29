@@ -64,6 +64,9 @@
     <ClCompile Include="RenderWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditorInputHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -82,6 +85,9 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_SSP_Editor.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorInputHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
