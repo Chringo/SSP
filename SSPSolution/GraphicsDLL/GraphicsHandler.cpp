@@ -201,6 +201,7 @@ int GraphicsHandler::Render()
 		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
+	delete shaderParamsXM;
 	delete shaderParamsVP;
 	delete shaderParamsWorld;
 
