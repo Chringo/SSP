@@ -1,10 +1,11 @@
 #ifndef SSP_EDITOR_SSP_EDITOR_H
 #define SSP_EDITOR_SSP_EDITOR_H
 
-#include <QtWidgets/QMainWindow>
 #include "ui_SSP_Editor.h"
+#include <QtWidgets\qmainwindow.h>
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
+
 
 	class SSP_Editor : public QMainWindow
 	{
@@ -25,20 +26,5 @@
 		Ui::SSP_EditorClass m_ui;
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
-		D3DRenderWidget* m_D3DRenderWidget;
 	};
-
-	class D3DRenderWidget : public QWidget {
-		Q_OBJECT
-			Q_DISABLE_COPY(D3DRenderWidget)
-	public:
-		D3DRenderWidget(QWidget* parent = NULL);
-		virtual ~D3DRenderWidget();
-		virtual QPaintEngine* paintEngine() const { return NULL; }
-	protected:
-		virtual void resizeEvent(QResizeEvent* evt);
-		virtual void paintEvent(QPaintEvent* evt);
-		void CreateDevice();
-	};
-
 #endif
