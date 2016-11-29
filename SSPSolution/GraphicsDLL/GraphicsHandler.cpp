@@ -189,7 +189,6 @@ int GraphicsHandler::Render()
 	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
 
-	shaderParamsWorld->worldMatrix = DirectX::XMFLOAT4X4();
 
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
