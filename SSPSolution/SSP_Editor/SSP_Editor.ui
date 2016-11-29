@@ -27,25 +27,6 @@
      <string>File Editor</string>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>30</y>
-      <width>711</width>
-      <height>571</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>10</width>
-      <height>10</height>
-     </size>
-    </property>
-    <property name="mouseTracking">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -104,8 +85,23 @@
       <height>571</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>711</width>
+      <height>571</height>
+     </size>
+    </property>
     <property name="mouseTracking">
      <bool>true</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
     </property>
     <property name="acceptDrops">
      <bool>true</bool>

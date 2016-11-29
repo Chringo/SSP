@@ -183,9 +183,9 @@ int GraphicsHandler::Render()
 	/********/
 
 	////TEST ROTATION
-	//static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
-	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000000005f));
-	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
+	static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
+	rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.005f));
+	this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
 
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 

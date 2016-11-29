@@ -14,9 +14,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 void D3DRenderWidget::Initialize(QWidget* parent)
 {
 	this->m_GraphicsHandler = new GraphicsHandler();
-	//parent->createWinId();
-	//WId test;
-	//test = parent->winId();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
 }
@@ -30,10 +27,6 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	//createDevice();
 	//properly create info that graphics handler need to make a swapchain etc here, parent IS where we want the info
 	//that means width height and more can be accessed here
-	this->m_timer = new QTimer(this);
-	connect(this->m_timer, SIGNAL(timeout()), this, SLOT(update()));
-	this->m_timer->start(16);
-
 }
 
 void D3DRenderWidget::resizeEvent(QResizeEvent * evt)
