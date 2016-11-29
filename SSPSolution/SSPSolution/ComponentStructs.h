@@ -3,11 +3,13 @@
 #include <DirectXMath.h>
 #include <vector>
 
-enum EVENT {
+enum EVENT 
+{
 	COLLIDED
 };
 
-struct GraphicsComponent {
+struct GraphicsComponent 
+{
 	int active;
 	int modelID;
 	int materialID;
@@ -15,7 +17,8 @@ struct GraphicsComponent {
 	bool animated;
 };
 
-struct PhysicsComponent {
+struct PhysicsComponent 
+{
 	int active;
 	bool isDynamic;
 	int entityID;

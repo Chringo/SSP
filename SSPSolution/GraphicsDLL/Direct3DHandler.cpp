@@ -19,7 +19,7 @@ Direct3DHandler::~Direct3DHandler()
 {
 }
 
-int Direct3DHandler::Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution)
+int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 
@@ -185,19 +185,21 @@ int Direct3DHandler::Initialize(HWND* windowHandle, DirectX::XMFLOAT2 resolution
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
 	this->m_viewport->TopLeftY = 0.0f;
-	this->m_viewport->Width = resolution.x;
-	this->m_viewport->Height = resolution.y;
+	this->m_viewport->Width = float(resolution.x);
+	this->m_viewport->Height = float(resolution.y);
 	this->m_viewport->MinDepth = 0.0f;
 	this->m_viewport->MaxDepth = 1.0f;
 
 	this->m_gDeviceContext->RSSetViewports(1, this->m_viewport);
+
+	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
 
 	return 0;
 }
 
 int Direct3DHandler::ClearDepthAndRTV()
 {
-	float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float black[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 	this->m_gDeviceContext->ClearRenderTargetView(this->m_backBufferRTV, black);
 
@@ -205,6 +207,18 @@ int Direct3DHandler::ClearDepthAndRTV()
 
 	return 0;
 }
+
+int Direct3DHandler::ClearDepthAndRTV(ID3D11DepthStencilView * hejssan)
+{
+	float black[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	this->m_gDeviceContext->ClearRenderTargetView(this->m_backBufferRTV, black);
+
+	this->m_gDeviceContext->ClearDepthStencilView(hejssan, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	return 0;
+}
+
 
 int Direct3DHandler::PresentScene()
 {
@@ -260,6 +274,12 @@ void Direct3DHandler::Shutdown()
 		this->m_gDevice->Release();
 		this->m_gDevice = nullptr;
 	}
+
+	if (this->m_viewport)
+	{
+		delete this->m_viewport;
+		this->m_viewport = nullptr;
+	}
 }
 
 ID3D11Device * Direct3DHandler::GetDevice()
@@ -270,4 +290,17 @@ ID3D11Device * Direct3DHandler::GetDevice()
 ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
 {
 	return this->m_gDeviceContext;
+}
+
+int Direct3DHandler::SetBackBuffer()
+{
+	this->m_gDeviceContext->OMSetRenderTargets(1, &this->m_backBufferRTV, this->m_depthStencilView);
+
+	return 0;
+}
+int Direct3DHandler::SetBackBuffer(ID3D11DepthStencilView * hejssan)
+{
+	this->m_gDeviceContext->OMSetRenderTargets(1, &this->m_backBufferRTV, hejssan);
+
+	return 0;
 }
