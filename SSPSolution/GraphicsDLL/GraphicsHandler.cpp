@@ -147,6 +147,7 @@ int GraphicsHandler::Render()
 
 	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
 	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
+	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
 
 
 	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
@@ -192,42 +193,18 @@ int GraphicsHandler::Render()
 	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
 
-	if (this->initCheck == false)
-	{
-		DirectX::XMMATRIX gravity = DirectX::XMMatrixIdentity();
-
-		gravity = DirectX::XMMatrixMultiply(gravity, DirectX::XMMatrixTranslation(0.0f, 10.0f, 0.0f));
-		
-		this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[0]->worldMatrix);
-		this->m_graphicsComponents[1]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[1]->worldMatrix);
-		this->m_graphicsComponents[2]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[2]->worldMatrix);
-	
-		this->initCheck = true;
-		this->simpleGravity = 0.0f;
-	}
-
-
-	if (this->simpleGravity < 10.0f)
-	{
-		DirectX::XMMATRIX gravity = DirectX::XMMatrixIdentity();
-
-		gravity = DirectX::XMMatrixMultiply(gravity, DirectX::XMMatrixTranslation(0.0f, -0.05f, 0.0f));
-		this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[0]->worldMatrix);
-		this->m_graphicsComponents[1]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[1]->worldMatrix);
-		this->m_graphicsComponents[2]->worldMatrix = DirectX::XMMatrixMultiply(gravity, this->m_graphicsComponents[2]->worldMatrix);
-		this->simpleGravity += 0.05f;
-	}
-
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
+		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
 
-		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
-		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
+		//DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsXM, ShaderLib::WORLD);
 		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
 		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
+	delete shaderParamsXM;
 	delete shaderParamsVP;
 	delete shaderParamsWorld;
 
