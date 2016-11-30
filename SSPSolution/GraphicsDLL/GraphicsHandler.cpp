@@ -51,7 +51,14 @@ int GraphicsHandler::DecreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 
 	for (int i = this->m_maxGraphicsComponents; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
@@ -64,6 +71,37 @@ int GraphicsHandler::DecreaseArraySize()
 
 	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySize(int decreaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[decreaseTo];
+
+	for (int i = 0; i < decreaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = decreaseTo; i < this->m_maxGraphicsComponents; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+		}
+	}
+
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = decreaseTo;
 
 	return 1;
 }
@@ -304,6 +342,10 @@ void GraphicsHandler::Shutdown()
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
 	if (this->m_maxGraphicsComponents < newSize)
+	{
+		this->IncreaseArraySize(newSize);
+	}
+	else if (this->m_maxGraphicsComponents > newSize)
 	{
 
 	}

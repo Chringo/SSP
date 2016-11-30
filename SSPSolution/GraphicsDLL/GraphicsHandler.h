@@ -42,6 +42,7 @@ private:
 	int IncreaseArraySize();
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
+	int DecreaseArraySize(int decreaseTo);
 
 	bool initCheck;
 	float simpleGravity;
