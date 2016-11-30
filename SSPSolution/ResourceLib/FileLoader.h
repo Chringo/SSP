@@ -6,7 +6,7 @@
 namespace Resources
 {
 
-	class FileLoader{
+	class DLL_OPERATION FileLoader{
 	public:
 		enum Files{
 			RESOURCE_FILE = 0,
