@@ -27,6 +27,7 @@ public:
 
 	int SetShaderParameters(ID3D11DeviceContext* deviceContext, void* shaderParams, ShaderLib::CBuffer type);
 	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorld * world);
+	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorldxm * world);
 	int BindViewProjectionCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection);
 	int ClearRenderTargetViews(ID3D11DeviceContext* deviceContext);
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
