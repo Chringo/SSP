@@ -11,6 +11,7 @@ public:
 	~FileImporter();
 
 	void ImportFromServer();
+	void LoadImportedFiles();
 private:
 	std::vector<std::string> m_filepaths;
 };
