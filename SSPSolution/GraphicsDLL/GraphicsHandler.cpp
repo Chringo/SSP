@@ -376,6 +376,18 @@ int GraphicsHandler::SetComponentArraySize(int newSize)
 
 GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 {
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			if (!this->m_graphicsComponents[i]->active)
+			{
+				this->m_graphicsComponents[i]->active = 1;
+				return this->m_graphicsComponents[i];
+			}
+		}
+	}
+
 	return nullptr;
 }
 
