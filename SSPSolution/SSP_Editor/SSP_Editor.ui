@@ -76,7 +76,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="test" native="true">
+   <widget class="QWidget" name="RenderWidget" native="true">
     <property name="geometry">
      <rect>
       <x>230</x>
@@ -97,6 +97,9 @@
       <height>571</height>
      </size>
     </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
     <property name="mouseTracking">
      <bool>true</bool>
     </property>
@@ -115,7 +118,7 @@
    <zorder>groupBox</zorder>
    <zorder>pushButton</zorder>
    <zorder>treeView</zorder>
-   <zorder>test</zorder>
+   <zorder>RenderWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

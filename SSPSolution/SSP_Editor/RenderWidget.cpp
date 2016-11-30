@@ -17,7 +17,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 	this->m_frameTime = getFrameTime();
 
-
 	this->m_EditorInputHandler->detectInput(this->m_frameTime);
 	this->m_GraphicsHandler->Render();
 	this->update();
@@ -39,13 +38,11 @@ void D3DRenderWidget::Initialize(QWidget* parent)
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	: QWidget(parent) {
+	setAttribute(Qt::WA_DontShowOnScreen, true);
+	parent->update();
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
 	Initialize(parent);
-	// Create Device
-	//createDevice();
-	//properly create info that graphics handler need to make a swapchain etc here, parent IS where we want the info
-	//that means width height and more can be accessed here
 }
 
 void D3DRenderWidget::resizeEvent(QResizeEvent * evt)
