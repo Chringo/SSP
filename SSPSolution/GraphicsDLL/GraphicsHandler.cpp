@@ -347,7 +347,7 @@ int GraphicsHandler::SetComponentArraySize(int newSize)
 	}
 	else if (this->m_maxGraphicsComponents > newSize)
 	{
-
+		this->DecreaseArraySize(newSize);
 	}
 
 	return 0;
