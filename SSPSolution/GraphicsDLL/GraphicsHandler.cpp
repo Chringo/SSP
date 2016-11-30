@@ -4,18 +4,11 @@ int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
 
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
 	{
-		if(i < this->m_maxGraphicsComponents)
+		if (i < this->m_nrOfGraphicsComponents)
 		{
-			if (this->m_graphicsComponents[i])
-			{
-				newArray[i] = this->m_graphicsComponents[i];
-			}
-			else
-			{
-				newArray[i] = nullptr;
-			}
+			newArray[i] = this->m_graphicsComponents[i];
 		}
 		else
 		{
@@ -35,16 +28,9 @@ int GraphicsHandler::IncreaseArraySize(int increaseTo)
 
 	for (int i = 0; i < increaseTo; i++)
 	{
-		if (i < this->m_maxGraphicsComponents)
+		if (i < this->m_nrOfGraphicsComponents)
 		{
-			if (this->m_graphicsComponents[i])
-			{
-				newArray[i] = this->m_graphicsComponents[i];
-			}
-			else
-			{
-				newArray[i] = nullptr;
-			}
+			newArray[i] = this->m_graphicsComponents[i];
 		}
 		else
 		{
@@ -65,7 +51,7 @@ int GraphicsHandler::DecreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		if (this->m_graphicsComponents[i])
+		if (i < this->m_nrOfGraphicsComponents)
 		{
 			newArray[i] = this->m_graphicsComponents[i];
 		}
@@ -95,16 +81,9 @@ int GraphicsHandler::DecreaseArraySize(int decreaseTo)
 
 	for (int i = 0; i < decreaseTo; i++)
 	{
-		if (i < this->m_maxGraphicsComponents)
+		if (i < this->m_nrOfGraphicsComponents)
 		{
-			if (this->m_graphicsComponents[i])
-			{
-				newArray[i] = this->m_graphicsComponents[i];
-			}
-			else
-			{
-				newArray[i] = nullptr;
-			}
+			newArray[i] = this->m_graphicsComponents[i];
 		}
 		else
 		{
@@ -376,16 +355,15 @@ int GraphicsHandler::SetComponentArraySize(int newSize)
 
 GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 {
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	if (this->m_nrOfGraphicsComponents < this->m_maxGraphicsComponents)
 	{
-		if (this->m_graphicsComponents[i])
-		{
-			if (!this->m_graphicsComponents[i]->active)
-			{
-				this->m_graphicsComponents[i]->active = 1;
-				return this->m_graphicsComponents[i];
-			}
-		}
+		this->m_nrOfGraphicsComponents++;
+		return this->m_graphicsComponents[this->m_nrOfGraphicsComponents-1];
+	}
+	else
+	{
+		this->IncreaseArraySize();
+		return this->GetNextAvailableComponent();
 	}
 
 	return nullptr;
