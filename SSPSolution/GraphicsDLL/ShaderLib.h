@@ -21,6 +21,12 @@ namespace ShaderLib
 		CB_CAMERA
 	};
 
+	enum DrawType
+	{
+		DRAW_STANDARD,
+		DRAW_INSTANCED
+	};
+
 	struct DeferredConstantBufferWorld
 	{
 		DirectX::XMFLOAT4X4 worldMatrix;

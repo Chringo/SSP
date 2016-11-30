@@ -25,6 +25,7 @@ public:
 	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
+	int Draw(ShaderLib::DrawType drawType);
 	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
 	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
 	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world);
@@ -33,6 +34,11 @@ public:
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();
+
+private:
+	int Draw();
+	int DrawInstanced();
+
 };
 
 #endif

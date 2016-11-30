@@ -139,8 +139,6 @@ int GraphicsHandler::Render()
 
 	
 
-	this->SetTriangle();
-
 	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);
 
 	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;

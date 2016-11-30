@@ -315,6 +315,28 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
+int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
+{
+	switch (drawType)
+	{
+	case ShaderLib::DRAW_STANDARD:
+	{
+		this->Draw();
+		break;
+	}
+	case ShaderLib::DRAW_INSTANCED:
+	{
+		this->DrawInstanced();
+		break;
+	}
+	default:
+		break;
+	}
+
+
+	return 0;
+}
+
 int DeferredShaderHandler::SetShaderParameters(void* shaderParams, ShaderLib::CBuffer type)
 {
 	switch (type)
@@ -457,4 +479,14 @@ int DeferredShaderHandler::ClearRenderTargetViews()
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 {
 	return this->m_deferredShaderResources;
+}
+
+int DeferredShaderHandler::Draw(/*RESOURCE*/)
+{
+	return 0;
+}
+
+int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
+{
+	return 0;
 }

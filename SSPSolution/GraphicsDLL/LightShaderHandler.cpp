@@ -195,6 +195,12 @@ void LightShaderHandler::Shutdown()
 	}
 }
 
+int LightShaderHandler::Draw()
+{
+
+	return 0;
+}
+
 int LightShaderHandler::SetShaderParameters(ShaderLib::LightConstantBuffer * shaderParams, ID3D11ShaderResourceView** gBuffers)
 {
 	HRESULT hResult;

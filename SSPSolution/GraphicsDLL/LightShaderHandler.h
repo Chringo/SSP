@@ -23,8 +23,8 @@ public:
 	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
+	int Draw();
 	int SetShaderParameters(ShaderLib::LightConstantBuffer* shaderParams, ID3D11ShaderResourceView** gBuffers);
-
 	void ResetPSShaderResources();
 };
 
