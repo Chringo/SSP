@@ -2,8 +2,11 @@
 #define GRAPHICSDLL_SHADERHANDLER
 
 #include <d3dcompiler.h>
+#include <fstream>
 
 #include "ShaderLib.h"
+
+const int BUFFER_COUNT = 6; //Color, specular, normal, worldPos
 
 class ShaderHandler
 {
@@ -18,9 +21,10 @@ public:
 	ShaderHandler();
 	virtual ~ShaderHandler();
 
-	virtual int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMFLOAT2& resolution) = 0;
+	virtual int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMINT2& resolution) = 0;
 	virtual int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType) = 0;
 	virtual void Shutdown() = 0;
+	virtual void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename);
 };
 
 #endif

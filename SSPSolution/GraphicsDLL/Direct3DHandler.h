@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "../ResourceLib/ResourceHandler.h"
+#pragma comment (lib,"../Debug/ResourceLib")
 
 class Direct3DHandler
 {
@@ -22,13 +24,16 @@ public:
 	Direct3DHandler();
 	~Direct3DHandler();
 
-	int Initialize(HWND* windowHandle, const DirectX::XMFLOAT2& resolution);
+	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	int ClearDepthAndRTV();
+	int ClearDepthAndRTV(ID3D11DepthStencilView*);
 	int PresentScene();
 	void Shutdown();
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
+	int SetBackBuffer();
+	int SetBackBuffer(ID3D11DepthStencilView*);
 };
 
 #endif

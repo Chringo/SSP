@@ -9,6 +9,8 @@ DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
 		this->m_deferredRenderTargetViews[i] = nullptr;
 		this->m_deferredShaderResources[i] = nullptr;
 	}
+
+	this->m_depthStencilView = nullptr;
 }
 
 
@@ -16,33 +18,38 @@ DeferredShaderHandler::~DeferredShaderHandler()
 {
 }
 
-int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, const DirectX::XMFLOAT2& resolution)
+int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
+	ID3D10Blob* errorMessage;
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/DeferredVertexShader.hlsl";
-	WCHAR* gsFilename = L"../GraphicsDLL/DeferredGeometryShader.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/DeferredPixelShader.hlsl";
+	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 
 	// Compile the shaders \\
 
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], NULL);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+
 		return 1;
 	}
-	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
-	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, NULL);
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 
@@ -64,7 +71,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 
 	// Create the input layout \\
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -73,7 +80,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	/*polygonLayout[1].SemanticName = "NORMAL";
+	polygonLayout[1].SemanticName = "NORMAL";
 	polygonLayout[1].SemanticIndex = 0;
 	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
@@ -95,7 +102,8 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	polygonLayout[3].InputSlot = 0;
 	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[3].InstanceDataStepRate = 0;*/
+	polygonLayout[3].InstanceDataStepRate = 0;
+
 
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 	//Create the vertex input layout.
@@ -112,20 +120,35 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = nullptr;
 
-	// Create the matrix buffer \\
+	// Create the matrix buffers \\
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
 	//Fill the description of the dynamic matrix constant buffer that is in the vertex shader
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::DeferredConstantBuffer);
+	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::DeferredConstantBufferWorld);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_matrixBuffer);
+	hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_worldMatrixBuffer);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
+	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
+	//Fill the description of the dynamic matrix constant buffer that is in the vertex shader
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::DeferredConstantBufferVP);
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_viewProjMatrixBuffer);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -136,17 +159,17 @@ int DeferredShaderHandler::Initialize(ID3D11Device * device, HWND * windowHandle
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 
 	//Fill the texture sampler state description
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	//samplerDesc.BorderColor[0] = 0;
+	//samplerDesc.BorderColor[1] = 0;
+	//samplerDesc.BorderColor[2] = 0;
+	//samplerDesc.BorderColor[3] = 0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -290,41 +313,94 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
-int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBuffer* shaderParams)
+int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceContext, void* shaderParams, ShaderLib::CBuffer type)
+{
+
+	
+
+
+
+	switch (type)
+	{
+	case ShaderLib::WORLD:
+	{
+		this->BindWorldCbuffer(deviceContext, (ShaderLib::DeferredConstantBufferWorld *)shaderParams);
+		break;
+	}
+	case ShaderLib::VIEW_PROJECTION:
+	{
+		this->BindViewProjectionCbuffer(deviceContext, (ShaderLib::DeferredConstantBufferVP *)shaderParams);
+		break;
+	}
+	default:
+		break;
+	}
+
+
+
+	return 0;
+}
+
+int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferWorld * world)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::DeferredConstantBuffer* dataPtr;
-	unsigned int bufferNumber;
+	ShaderLib::DeferredConstantBufferWorld * dataPtr;
+
+	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&world->worldMatrix));
+	DirectX::XMStoreFloat4x4(&world->worldMatrix, transposedWorld);
 
 	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = deviceContext->Map(this->m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hResult = deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hResult)) {
 		return 1;
 	}
 
 	//Get pointer to the data
-	dataPtr = (ShaderLib::DeferredConstantBuffer*)mappedResource.pData;
-
+	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
 	//Copy the matrices to the constant buffer
-	dataPtr->worldMatrix = shaderParams->worldMatrix;
-	dataPtr->viewMatrix = shaderParams->viewMatrix;
-	dataPtr->projectionMatrix = shaderParams->projectionMatrix;
-
-	dataPtr->diffColor = shaderParams->diffColor;
-
-	dataPtr->camPos = shaderParams->camPos;
+	dataPtr->worldMatrix = world->worldMatrix;
 
 	//Unmap the constant buffer to give the GPU access agin
-	deviceContext->Unmap(this->m_matrixBuffer, 0);
+	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
 
-	//Set constant buffer position in vertex shader
-	bufferNumber = 0;
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
-	deviceContext->GSSetConstantBuffers(0, 0, nullptr);
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+	deviceContext->GSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+
+	return 0;
+}
+
+int DeferredShaderHandler::BindViewProjectionCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection)
+{
+	HRESULT hResult;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ShaderLib::DeferredConstantBufferVP * dataPtr;
+
+	DirectX::XMMATRIX transposedView = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->viewMatrix));
+	DirectX::XMStoreFloat4x4(&viewProjection->viewMatrix, transposedView);
+	DirectX::XMMATRIX transposedProjection = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->projectionMatrix));
+	DirectX::XMStoreFloat4x4(&viewProjection->projectionMatrix, transposedProjection);
+
+	//Map the constant buffer so we can write to it (denies GPU access)
+	hResult = deviceContext->Map(this->m_viewProjMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
+	//Get pointer to the data
+	dataPtr = (ShaderLib::DeferredConstantBufferVP *)mappedResource.pData;
+
+	//Copy the matrices to the constant buffer
+	dataPtr->viewMatrix = viewProjection->viewMatrix;
+	dataPtr->projectionMatrix = viewProjection->projectionMatrix;
+	//Unmap the constant buffer to give the GPU access agin
+	deviceContext->Unmap(this->m_viewProjMatrixBuffer, 0);
+
+	//Set the constant buffer in vertex and pixel shader with updated values
+	deviceContext->VSSetConstantBuffers(1, 1, &this->m_viewProjMatrixBuffer);
+
 
 	return 0;
 }
@@ -334,7 +410,7 @@ int DeferredShaderHandler::ClearRenderTargetViews(ID3D11DeviceContext * deviceCo
 	float color[4];
 
 	color[0] = 0.0f;
-	color[1] = 0.0f;
+	color[1] = 1.0f;
 	color[2] = 0.0f;
 	color[3] = 1.0f;
 

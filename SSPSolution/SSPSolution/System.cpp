@@ -1,9 +1,8 @@
 #include "System.h"
-
-
-
 System::System()
 {
+	this->m_inputHandler = NULL;
+	this->m_window = NULL;
 }
 
 
@@ -18,6 +17,11 @@ int System::Shutdown()
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
 	SDL_Quit();
+	this->m_graphicsHandler->Shutdown();
+	delete this->m_graphicsHandler;
+	delete this->m_camera;
+	this->m_inputHandler->Shutdown();
+	delete this->m_inputHandler;
 	return result;
 }
 
@@ -33,7 +37,7 @@ int System::Initialize()
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		printf("SDL failed in initializing the window! SDL_Error: %s\n", SDL_GetError());
+		printf("SDL failed in initializing the window! SDL_Error: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -43,7 +47,7 @@ int System::Initialize()
 	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
-		printf("Window creation failed! SDL_ERROR: %S\n", SDL_GetError());
+		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
 	}
 	else
 	{
@@ -55,23 +59,119 @@ int System::Initialize()
 		m_hwnd = wmInfo.info.win.window;
 	}
 
+	this->m_graphicsHandler = new GraphicsHandler();
+	if (this->m_graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
+	{
+		printf("GraphicsHandler did not work. RIP!\n");
+	}
+	this->m_camera = new Camera();
+	this->m_camera->Initialize();
+	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
+	delete oldCam;
+	oldCam = nullptr;
+	//Initialize the PhysicsHandler
+	this->m_physicsHandler.Initialize();
+
+	//Initialize the InputHandler
+	this->m_inputHandler = new InputHandler();
+	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	return result;
 }
 
+//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 int System::Run()
 {
 	int result = 0;
-
+	LARGE_INTEGER frequency, currTime, prevTime, elapsedTime;
+	QueryPerformanceFrequency(&frequency);
+	//QueryPerformanceCounter(&prevTime);
+	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
-		//Handle events
+		prevTime = currTime;
+		QueryPerformanceCounter(&currTime);
+		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
+		elapsedTime.QuadPart *= 1000000;
+		elapsedTime.QuadPart /= frequency.QuadPart;
+		this->m_physicsHandler.Update();
+		//Prepare the InputHandler
+		this->m_inputHandler->Update();
+		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
-		//Update input
+		SDL_PumpEvents();
 		//Update game
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		{
+			this->m_running = false;
+		}
+		if (!this->Update((float)elapsedTime.QuadPart))
+		{
+			this->m_running = false;
+		}
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
+		{
+			this->FullscreenToggle();
+		}
+		//std::cout << int(totalTime) << "\n";
 		//Render
+		this->m_graphicsHandler->Render();
+
 	}
+	if (this->m_fullscreen)
+		this->FullscreenToggle();
 
+	return result;
+}
 
+int System::Update(float deltaTime)
+{
+	int result = 1;
+	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
+	int rotateCameraY = 0;
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
+	{
+		translateCameraZ++;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
+	{
+		translateCameraZ--;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
+	{
+		translateCameraY++;
+		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			translateCameraY *= -1;
+		}
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
+	{
+		translateCameraX++;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_A))
+	{
+		translateCameraX--;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
+	{
+		rotateCameraY++;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
+	{
+		rotateCameraY--;
+	}
+	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
+	{
+		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
+		this->m_camera->AddToCameraPos(posTranslation);
+		this->m_camera->AddToLookAt(posTranslation);
+		float rotationAmount = DirectX::XM_PI / 8;
+		rotationAmount *= deltaTime / 1000000.0f;
+		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
+		this->m_camera->SetRotation(newRotation);
+		this->m_camera->Update();
+	}
+	//
 	return result;
 }
 
@@ -82,6 +182,7 @@ int System::HandleEvents()
 	{
 		switch (m_event.type)
 		{
+#pragma region
 		case SDL_WINDOWEVENT:
 		{
 			switch (m_event.window.event)
@@ -149,72 +250,45 @@ int System::HandleEvents()
 			}
 			break;
 		}
+#pragma endregion window events
+		case SDL_MOUSEMOTION:
+		{
+			break;
+		}
 		case SDL_QUIT:
 		{
+			//The big X in the corner
 			this->m_running = false;
 			break;
 		}
+#pragma region
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			if (m_event.key.keysym.sym == SDLK_f)
-			{
-				this->FullscreenToggle();
-			}
+			
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, true);
 			break;
 		}
 		case SDL_KEYUP:
 		{
 			//OnKeyUp(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			break;
-		}
-		case SDL_MOUSEMOTION:
-		{
-			//OnMouseMove(Event->motion.x, Event->motion.y, Event->motion.xrel, Event->motion.yrel, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_LEFT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0, (Event->motion.state&SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, false);
 			break;
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonDown(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
+			this->m_inputHandler->SetMouseState(m_event.button.button, true);
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
-			/*switch (Event->button.button)
-			{
-			case SDL_BUTTON_LEFT:
-			{
-			OnLButtonUp(Event->button.x, Event->button.y);
+			this->m_inputHandler->SetMouseState(m_event.button.button, false);
 			break;
-			}
-			case SDL_BUTTON_RIGHT:
-			{
-			OnRButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			case SDL_BUTTON_MIDDLE:
-			{
-			OnMButtonUp(Event->button.x, Event->button.y);
-			break;
-			}
-			}*/
+		}
+#pragma endregion Key / Button events
+		case SDL_MOUSEWHEEL:
+		{
+			this->m_inputHandler->ApplyMouseWheel(m_event.wheel.x, m_event.wheel.y);
 			break;
 		}
 		}
@@ -225,9 +299,8 @@ int System::HandleEvents()
 int System::FullscreenToggle()
 {
 	int result = 0;
-
-	bool IsFullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
-	SDL_SetWindowFullscreen(this->m_window, IsFullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
-	SDL_ShowCursor(IsFullscreen);
+	this->m_fullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(this->m_window, this->m_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+	this->m_fullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
 	return result;
 }

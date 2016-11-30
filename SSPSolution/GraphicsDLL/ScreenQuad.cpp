@@ -8,57 +8,21 @@ ScreenQuad::~ScreenQuad()
 {
 }
 
-int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMFLOAT2 resolution)
+int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMINT2 resolution)
 {
-	DirectX::XMFLOAT3 vertices[6];
-	unsigned long indices[6];
 	int sizeVertices = 6;
 	int sizeIndices = 6;
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_BUFFER_DESC indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
 	D3D11_SUBRESOURCE_DATA indexData;
-	float left, right, top, bottom;
 	HRESULT hresult;
-	bool result;
-
-	//Calculate the screen coordinates of the left side of the window
-	left = (float)((resolution.x / 2) * -1);
-
-	//Calculate the screen coordinates of the right side of the window
-	right = left + (float)resolution.x;
-
-	//Calculate the screen coordinates of the top of the window
-	top = (float)(resolution.y / 2);
-
-	//Calculate the screen coordinates of the bottom of the window
-	bottom = top - (float)resolution.y;
-
-	//Load the vertex array with data
-	//First triangle
-	vertices[0] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
-
-	vertices[1] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
-
-	vertices[2] = DirectX::XMFLOAT3(left, bottom, 0.0f);  //Bottom left
-
-	//Second triangle
-	vertices[3] = DirectX::XMFLOAT3(left, top, 0.0f);  //Top left
-
-	vertices[4] = DirectX::XMFLOAT3(right, top, 0.0f);  //Top right
-
-	vertices[5] = DirectX::XMFLOAT3(right, bottom, 0.0f);  //Bottom right
-
-	//Load the index array with data
-	for (int i = 0; i < sizeIndices; i++)
-	{
-		indices[i] = i;
-	}
+	int result = 0;
 
 	//Set the description of the static vertex buffer
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * sizeVertices;
+	vertexBufferDesc.ByteWidth = sizeof(quadVertex) * sizeVertices;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -66,14 +30,14 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMFLOAT2 resolution)
 
 	//Give the subresource structure a pointer to the vertex data
 	ZeroMemory(&vertexData, sizeof(vertexData));
-	vertexData.pSysMem = &vertices;
+	vertexData.pSysMem = &m_vertices;
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
 	//Create the vertex buffer
 	hresult = device->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
 	//Set up the description of the static index buffer
@@ -86,14 +50,14 @@ int ScreenQuad::Initialize(ID3D11Device * device, DirectX::XMFLOAT2 resolution)
 	indexBufferDesc.StructureByteStride = 0;
 
 	ZeroMemory(&indexData, sizeof(indexData));
-	indexData.pSysMem = &indices;
+	indexData.pSysMem = &m_indices;
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
 	//Create the index buffer
 	hresult = device->CreateBuffer(&indexBufferDesc, &indexData, &this->m_indexBuffer);
 	if (FAILED(hresult)) {
-		return false;
+		return 1;
 	}
 
 	return 0;
@@ -105,7 +69,7 @@ void ScreenQuad::SetBuffers(ID3D11DeviceContext * deviceContext)
 	unsigned offset;
 
 	//Set vertex buffer stride and offset
-	stride = sizeof(DirectX::XMFLOAT3);
+	stride = sizeof(DirectX::XMFLOAT3) + sizeof(DirectX::XMFLOAT2);
 	offset = 0;
 
 	//Set the vertex buffer to active in the input assembly so it can rendered
