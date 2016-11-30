@@ -29,7 +29,8 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	connect(m_ui.actionBuild_BPF, SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
 
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget);
-
+	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
+	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 }
 
 

@@ -41,6 +41,7 @@ public:
     QPushButton *pushButton;
     QTreeView *treeView;
     QWidget *RenderWidget;
+    QWidget *RenderWidget_2;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -90,6 +91,16 @@ public:
         RenderWidget->setFocusPolicy(Qt::StrongFocus);
         RenderWidget->setAcceptDrops(true);
         RenderWidget->setAutoFillBackground(true);
+        RenderWidget_2 = new QWidget(RenderWidget);
+        RenderWidget_2->setObjectName(QStringLiteral("RenderWidget_2"));
+        RenderWidget_2->setGeometry(QRect(450, 10, 256, 256));
+        sizePolicy.setHeightForWidth(RenderWidget_2->sizePolicy().hasHeightForWidth());
+        RenderWidget_2->setSizePolicy(sizePolicy);
+        RenderWidget_2->setCursor(QCursor(Qt::ArrowCursor));
+        RenderWidget_2->setMouseTracking(true);
+        RenderWidget_2->setFocusPolicy(Qt::StrongFocus);
+        RenderWidget_2->setAcceptDrops(true);
+        RenderWidget_2->setAutoFillBackground(true);
         SSP_EditorClass->setCentralWidget(centralWidget);
         label_2->raise();
         label->raise();

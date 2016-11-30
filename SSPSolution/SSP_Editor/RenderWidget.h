@@ -14,6 +14,7 @@ public:
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
 	virtual void resizeEvent(QResizeEvent* evt);
+	int m_test;
 	int m_Width;
 	int m_Height;
 	int m_x;
@@ -24,7 +25,7 @@ private:
 	Camera* m_Camera;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
-	void Initialize(QWidget* parent);
+	void Initialize(QWidget* parent, bool isPreview);
 
 	//widget deltatime
 private:

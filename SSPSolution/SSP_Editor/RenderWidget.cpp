@@ -4,7 +4,10 @@ D3DRenderWidget::~D3DRenderWidget()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	delete this->m_EditorInputHandler;
+	if (this->m_test == 1)
+	{
+		delete this->m_EditorInputHandler;
+	}
 }
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
@@ -17,32 +20,55 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 	this->m_frameTime = getFrameTime();
 
-	this->m_EditorInputHandler->detectInput(this->m_frameTime);
+	if (m_test == 1)
+	{
+		this->m_EditorInputHandler->detectInput(this->m_frameTime);
+	}
 	this->m_GraphicsHandler->Render();
 	this->update();
 }
 
-void D3DRenderWidget::Initialize(QWidget* parent)
+void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 {
 	this->m_GraphicsHandler = new GraphicsHandler();
 	this->m_hwnd = (HWND)parent->winId();
-	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	if (!isPreview)
+	{
+		this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+
+	}
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
 	this->m_Camera = new Camera();
 	this->m_Camera->Initialize();
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
 	delete oldCam;
 	oldCam = nullptr;
-	this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height);
+	this->m_test = 0;
+	if (!isPreview)
+	{
+		this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height);
+		this->m_test = 1;
+	}
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	: QWidget(parent) {
+
+	//COMMENT THESE OUT TO ENABLE USE OF 2 RENDER WIDGETS
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	parent->update();
+	// ***
+
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-	Initialize(parent);
+	if (parent->width() == 256)
+	{
+		Initialize(parent, true);
+	}
+	else
+	{
+		Initialize(parent, false);
+	}
 }
 
 void D3DRenderWidget::resizeEvent(QResizeEvent * evt)
