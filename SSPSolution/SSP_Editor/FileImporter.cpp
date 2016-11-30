@@ -22,7 +22,11 @@ void FileImporter::ImportFromServer()
 		while ((ent = readdir(dir)) != NULL) 
 		{
 			if (*ent->d_name != '.')
-				m_filepaths.push_back(ent->d_name);
+			{
+				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
 		}
 		closedir(dir);
 	}

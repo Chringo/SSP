@@ -166,5 +166,6 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
 	infile.read(data + offset, sizetoRead);
 	infile.close();*/
+	infile.close();
 	return Resources::Status::ST_OK;
 }

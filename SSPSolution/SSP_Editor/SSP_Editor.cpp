@@ -30,6 +30,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.test);
 	this->m_fileImporter.ImportFromServer();
+	this->m_fileImporter.LoadImportedFiles();
 }
 
 
