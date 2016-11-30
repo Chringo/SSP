@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <vector>
 #include <string>
+#include "dirent.h"
 class FileImporter
 {
 public:
@@ -11,6 +12,6 @@ public:
 
 	void ImportFromServer();
 private:
-	std::vector<WCHAR[260]> m_filepaths;
+	std::vector<std::string> m_filepaths;
 };
 #endif
