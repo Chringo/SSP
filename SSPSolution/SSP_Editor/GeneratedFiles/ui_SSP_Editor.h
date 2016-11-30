@@ -13,7 +13,6 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -37,7 +36,6 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QLabel *label;
-    QGraphicsView *graphicsView;
     QLabel *label_2;
     QGroupBox *groupBox;
     QPushButton *pushButton;
@@ -66,11 +64,6 @@ public:
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(20, 10, 47, 13));
-        graphicsView = new QGraphicsView(centralWidget);
-        graphicsView->setObjectName(QStringLiteral("graphicsView"));
-        graphicsView->setGeometry(QRect(230, 30, 711, 571));
-        graphicsView->setMinimumSize(QSize(10, 10));
-        graphicsView->setMouseTracking(true);
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(230, 10, 47, 13));
@@ -86,9 +79,23 @@ public:
         test = new QWidget(centralWidget);
         test->setObjectName(QStringLiteral("test"));
         test->setGeometry(QRect(230, 30, 711, 571));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(test->sizePolicy().hasHeightForWidth());
+        test->setSizePolicy(sizePolicy);
+        test->setMinimumSize(QSize(711, 571));
         test->setMouseTracking(true);
+        test->setFocusPolicy(Qt::StrongFocus);
         test->setAcceptDrops(true);
+        test->setAutoFillBackground(true);
         SSP_EditorClass->setCentralWidget(centralWidget);
+        label_2->raise();
+        label->raise();
+        groupBox->raise();
+        pushButton->raise();
+        treeView->raise();
+        test->raise();
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1122, 21));
