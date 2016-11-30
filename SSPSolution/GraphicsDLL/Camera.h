@@ -25,6 +25,7 @@ private:
 	DirectX::XMFLOAT4 m_cameraUp;
 	//The 4 values of a quaternion  
 	DirectX::XMFLOAT4 m_rotation;
+	DirectX::XMFLOAT4 m_rotateAroundPos;
 public:
 	Camera();
 	virtual ~Camera();
@@ -75,6 +76,8 @@ public:
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 	//
+	void SetRotationAroundPosOffset(float x, float y, float z);
+	void SetRotationAroundPos(float x, float y, float z);
 	
 #pragma endregion setters
 private:
