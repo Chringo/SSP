@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "dirent.h"
+#include "../ResourceLib/FileLoader.h"
 class FileImporter
 {
 public:
@@ -14,5 +15,6 @@ public:
 	void LoadImportedFiles();
 private:
 	std::vector<std::string> m_filepaths;
+	Resources::FileLoader *m_fileLoader;
 };
 #endif

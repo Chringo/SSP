@@ -4,6 +4,7 @@
 
 FileImporter::FileImporter()
 {
+	m_fileLoader = Resources::FileLoader::GetInstance();
 }
 
 
@@ -49,4 +50,10 @@ void FileImporter::ImportFromServer()
 
 void FileImporter::LoadImportedFiles()
 {
+	char *pek;
+	size_t length;
+	for (int i = 0; i < m_filepaths.size(); ++i)
+	{
+		m_fileLoader->LoadFile(m_filepaths.at(i), pek, &length);
+	}
 }
