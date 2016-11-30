@@ -57,6 +57,7 @@ public:
 
 	int SetComponentArraySize(int newSize);
 	GraphicsComponent* GetNextAvailableComponent();
+	int UpdateComponentList();
 
 	//temp
 	int CreateTriangle();

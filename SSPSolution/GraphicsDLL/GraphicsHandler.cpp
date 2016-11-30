@@ -369,6 +369,31 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 	return nullptr;
 }
 
+int GraphicsHandler::UpdateComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfGraphicsComponents - 1; i++)
+	{
+		if (!this->m_graphicsComponents[i]->active)
+		{
+			GraphicsComponent* tempComponentPtr = this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1];
+			this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1] = this->m_graphicsComponents[i];
+			this->m_graphicsComponents[i] = tempComponentPtr;
+			this->m_nrOfGraphicsComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1]->active)
+	{
+		this->m_nrOfGraphicsComponents--;
+		result++;
+	}
+
+	return result;
+}
+
 int GraphicsHandler::CreateTriangle()
 {
 	DirectX::XMFLOAT3 vertices[3];
