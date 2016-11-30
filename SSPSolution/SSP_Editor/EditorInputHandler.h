@@ -12,19 +12,15 @@
 class EditorInputHandler
 {
 private:
-	struct DIMOUSESTATES
-	{
-		LONG IX;
-		LONG IY;
-		LONG IZ;
-		BYTE rgbButtons[4];
-	};
 	int m_Width;
 	int m_Height;
+	int m_MouseX;
+	int m_MouseY;
+
 	DirectX::XMFLOAT3 m_PreviousPos;
 	HWND m_hwnd;
 	Camera* m_Camera;
-	DIMOUSESTATES		 m_mouseLastState;
+	DIMOUSESTATE		 m_mouseLastState;
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIKeyboard;
 	IDirectInputDevice8* DIMouse;
