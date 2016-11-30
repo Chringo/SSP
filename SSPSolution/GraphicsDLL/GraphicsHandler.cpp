@@ -145,6 +145,7 @@ int GraphicsHandler::Render()
 
 	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
 	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
+	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
 
 
 	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
@@ -188,16 +189,19 @@ int GraphicsHandler::Render()
 	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
 
+
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
+		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
 
-		DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
-		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsWorld, ShaderLib::WORLD);
+		//DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
+		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsXM, ShaderLib::WORLD);
 		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
 
 		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
+	delete shaderParamsXM;
 	delete shaderParamsVP;
 	delete shaderParamsWorld;
 
