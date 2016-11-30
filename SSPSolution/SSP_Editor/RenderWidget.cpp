@@ -8,19 +8,17 @@ D3DRenderWidget::~D3DRenderWidget()
 }
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
-	//render
-	//send a signal to render here, qt qill keep signals coming calling the render func or whichever
-	this->frameCount++;
+	this->m_frameCount++;
 	if (getTime() > 1.0f)
 	{
-		this->fps = frameCount;
-		this->frameCount = 0;
+		this->m_fps = this->m_frameCount;
+		this->m_frameCount = 0;
 		startTimer();
 	}
-	frameTime = getFrameTime();
+	this->m_frameTime = getFrameTime();
 
 
-	this->m_EditorInputHandler->detectInput(frameTime);
+	this->m_EditorInputHandler->detectInput(this->m_frameTime);
 	this->m_GraphicsHandler->Render();
 	this->update();
 }
@@ -60,4 +58,39 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * evt)
 	//this->m_Width = width();
 	//this->m_Height = height();
 
+}
+
+void D3DRenderWidget::startTimer()
+{
+	LARGE_INTEGER frequencycount;
+
+	QueryPerformanceFrequency(&frequencycount);
+	m_countsPerSecond = double(frequencycount.QuadPart);
+
+	QueryPerformanceCounter(&frequencycount);
+	m_counterStart = frequencycount.QuadPart;
+}
+
+double D3DRenderWidget::getTime()
+{
+	LARGE_INTEGER currentTime;
+	QueryPerformanceCounter(&currentTime);
+	return double(currentTime.QuadPart - m_counterStart) / m_countsPerSecond;
+}
+
+double D3DRenderWidget::getFrameTime()
+{
+	LARGE_INTEGER currentTime;
+	__int64 tickCount;
+	QueryPerformanceCounter(&currentTime);
+
+	tickCount = currentTime.QuadPart - this->m_frameTimeOld;
+	this->m_frameTimeOld = currentTime.QuadPart;
+
+	if (tickCount < 0.0f)
+	{
+		tickCount = 0.0f;
+	}
+
+	return float(tickCount) / this->m_countsPerSecond;
 }
