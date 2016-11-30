@@ -47,8 +47,8 @@ void EditorInputHandler::detectInput(double dT)
 
 	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
 
-	float speed = 15.0f * dT;
-	float speedrot = 10.0f * dT;
+	float speed = 10.0f * dT;
+	float speedrot = 5.0f * dT;
 	int result = 1;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	float yaw = 0, pitch = 0;
@@ -128,11 +128,11 @@ void EditorInputHandler::detectInput(double dT)
 		{
 			translateCameraZ -= speed;
 		}
-		if (keyBoardState[DIK_D] & 0x80)
+		if (keyBoardState[DIK_A] & 0x80)
 		{
 			translateCameraX += speed;
 		}
-		if (keyBoardState[DIK_A] & 0x80)
+		if (keyBoardState[DIK_D] & 0x80)
 		{
 			translateCameraX -= speed;
 		}
@@ -192,8 +192,13 @@ void EditorInputHandler::detectInput(double dT)
 			);
 
 		this->m_PreviousPos = this->m_Camera->GetCameraPos();
-		this->m_Camera->AddToCameraPos(posTranslation);
-		this->m_Camera->AddToLookAt(posTranslation);
+		this->m_Camera->ApplyLocalTranslation(
+			float(translateCameraZ),
+			float(translateCameraY),
+			float(translateCameraX)
+		);
+		//this->m_Camera->AddToCameraPos(posTranslation);
+		//this->m_Camera->AddToLookAt(posTranslation);
 		this->m_Camera->Update();
 	}
 

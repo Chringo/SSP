@@ -22,6 +22,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	this->m_GraphicsHandler->Render();
 	this->update();
 }
+
 void D3DRenderWidget::Initialize(QWidget* parent)
 {
 	this->m_GraphicsHandler = new GraphicsHandler();
