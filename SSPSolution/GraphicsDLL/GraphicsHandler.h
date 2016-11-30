@@ -41,6 +41,9 @@ private:
 	//Helper functions
 	int IncreaseArraySize();
 	int DecreaseArraySize();
+
+	bool initCheck;
+	float simpleGravity;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();

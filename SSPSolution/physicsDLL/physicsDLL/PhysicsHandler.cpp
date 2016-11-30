@@ -1,35 +1,86 @@
 #include "PhysicsHandler.h"
 #include <malloc.h>
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
+bool PhysicsHandler::IntersectAABB()
+{
+	bool possibleCollitionX = false;
+	bool possibleCollitionY = false;
+	bool possibleCollitionZ = false;
+	PhysicsComponent* PC_ptr = nullptr;
+	PhysicsComponent* PC_toCheck = nullptr;
+
+
+	int nrOfComponents = this->m_dynamicComponents.size();
+	float vecToObj[3];
+
+	for (int i = 0; i < (nrOfComponents - this->m_nrOfStaticObjects); i++)
+	{
+		PC_toCheck = this->m_dynamicComponents.at(i);
+
+		for (int j = i + 1; j < nrOfComponents; j++)
+		{
+			PC_ptr = this->m_dynamicComponents.at(j);
+
+			for (int axis = 0; axis < 3; axis++)
+			{
+				vecToObj[axis] = 0; //remove clutter values, or old values
+				vecToObj[axis] = PC_toCheck->m_AABB.pos[axis] - PC_ptr->m_AABB.pos[axis];
+			}
+			//Fraps return the absolute value
+			//http://www.cplusplus.com/reference/cmath/fabs/
+
+			//if the extensions from objA and objB together is smaller than the vector to b, then no collition
+			possibleCollitionX = (fabs(vecToObj[0]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+			if (possibleCollitionX == true)
+			{
+				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+				if (possibleCollitionY == true)
+				{
+					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+					if (possibleCollitionZ == true)
+					{
+						// apply OOB check for more precisition
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
 
 PhysicsHandler::PhysicsHandler()
 {
 }
+
 PhysicsHandler::~PhysicsHandler()
 {
 }
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0, -0.005, 0, 0);
-	
-
-	this->m_dynamicComponents.push_back(new PhysicsComponent);
-	this->m_dynamicComponents.push_back(new PhysicsComponent);
-
-	this->m_dynamicComponents.at(0)->m_pos = DirectX::XMVectorSet(-1, 5, 0, 0);
-	this->m_dynamicComponents.at(0)->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-
-	this->m_dynamicComponents.at(1)->m_pos = DirectX::XMVectorSet(1, 5, 0, 0);
-	this->m_dynamicComponents.at(1)->m_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-
+	PhysicsComponent* tempPtr = nullptr;
+	this->m_nrOfStaticObjects = 0;
+	this->m_gravity = DirectX::XMVectorSet(0, -0.000005, 0, 0);
 
 	return true;
+}
+void PhysicsHandler::ShutDown()
+{
+	int size = this->m_dynamicComponents.size();
+	for (int i = 0; i < size; i++)
+	{
+		delete this->m_dynamicComponents.at(i);
+	}
 }
 void PhysicsHandler::Update()
 {
 	float dt = 0.01f;
+	this->checkCollition();
 
-	SimpleCollition(dt);
+	//SimpleCollition(dt);
 }
 void PhysicsHandler::SimpleCollition(float dt)
 {
@@ -89,3 +140,21 @@ PhysicsComponent* PhysicsHandler::getDynamicComponents(int index)const
 	return nullptr;
 
 }
+
+bool PhysicsHandler::checkCollition()
+{
+	bool result = false;
+
+	std::chrono::time_point<std::chrono::system_clock>start;
+	std::chrono::time_point<std::chrono::system_clock>end;
+
+	start = std::chrono::system_clock::now();
+	result = this->IntersectAABB();
+	end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double>elapsed_secounds = end - start;
+	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+	return result;
+}
+
