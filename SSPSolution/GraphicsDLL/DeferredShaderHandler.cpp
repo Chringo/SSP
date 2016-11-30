@@ -324,6 +324,7 @@ int DeferredShaderHandler::SetShaderParameters(ID3D11DeviceContext * deviceConte
 	{
 	case ShaderLib::WORLD:
 	{
+
 		this->BindWorldCbuffer(deviceContext, (ShaderLib::DeferredConstantBufferWorld *)shaderParams);
 		break;
 	}
@@ -360,6 +361,37 @@ int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext,
 	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
 	//Copy the matrices to the constant buffer
 	dataPtr->worldMatrix = world->worldMatrix;
+
+	//Unmap the constant buffer to give the GPU access agin
+	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
+
+
+	//Set the constant buffer in vertex and pixel shader with updated values
+	deviceContext->VSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+	deviceContext->GSSetConstantBuffers(0, 1, &this->m_worldMatrixBuffer);
+
+	return 0;
+}
+
+int DeferredShaderHandler::BindWorldCbuffer(ID3D11DeviceContext * deviceContext, ShaderLib::DeferredConstantBufferWorldxm * world)
+{
+	HRESULT hResult;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ShaderLib::DeferredConstantBufferWorld * dataPtr;
+
+	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(world->worldMatrix);
+
+
+	//Map the constant buffer so we can write to it (denies GPU access)
+	hResult = deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
+	//Get pointer to the data
+	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
+	//Copy the matrices to the constant buffer
+	DirectX::XMStoreFloat4x4(&dataPtr->worldMatrix, world->worldMatrix);
 
 	//Unmap the constant buffer to give the GPU access agin
 	deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
