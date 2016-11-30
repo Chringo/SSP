@@ -23,7 +23,6 @@ private:
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
-
 	//The 4 values of a quaternion  
 	DirectX::XMFLOAT4 m_rotation;
 public:
@@ -75,7 +74,8 @@ public:
 	void ApplyLocalTranslation(float x, float y, float z);
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
-
+	//
+	
 #pragma endregion setters
 private:
 };

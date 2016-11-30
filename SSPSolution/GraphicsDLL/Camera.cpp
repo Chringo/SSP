@@ -10,6 +10,7 @@ Camera::Camera()
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 
@@ -27,7 +28,7 @@ int Camera::Initialize()
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-
+	this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -53,19 +54,20 @@ int Camera::Update()
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
 	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
-	DirectX::XMVECTOR generatedRotation;
-	//DirectX::XMMatrixDecompose(NULL, &generatedRotation, NULL, camRotationMatrix);
-	generatedRotation = DirectX::XMQuaternionRotationMatrix(camRotationMatrix);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	//Transform the three components of the view matrix based on the rotations
-	DirectX::XMFLOAT4 tempLookAt = DirectX::XMFLOAT4(this->m_lookAt.x - this->m_cameraPos.x, this->m_lookAt.y - this->m_cameraPos.y, this->m_lookAt.z - this->m_cameraPos.z, 1.0f);
+	DirectX::XMFLOAT4 tempLookAt = DirectX::XMFLOAT4(this->m_lookAt.x - this->m_cameraPos.x - this->m_rotateAroundPos.x, this->m_lookAt.y - this->m_cameraPos.y - this->m_rotateAroundPos.y, this->m_lookAt.z - this->m_cameraPos.z - this->m_rotateAroundPos.z, 1.0f);
 	DirectX::XMVECTOR lookAt = DirectX::XMVectorAdd(DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&tempLookAt), camRotationMatrix), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	lookAt = DirectX::XMVectorAdd(lookAt, DirectX::XMLoadFloat4(&this->m_rotateAroundPos));
+	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(-this->m_rotateAroundPos.x, -this->m_rotateAroundPos.y, -this->m_rotateAroundPos.z, 1.0f);
+	camPos = DirectX::XMVectorAdd(DirectX::XMVector3TransformCoord(camPos, camRotationMatrix), DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_rotateAroundPos), DirectX::XMLoadFloat4(&this->m_cameraPos)));
 	DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, lookAt);
+	DirectX::XMStoreFloat4(&this->m_cameraPos, camPos);
 	DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
 	//Define the view matrix based on the transformed positions
-	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), lookAt, camUp));
+	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 
 	return result;
 }
@@ -268,11 +270,11 @@ void Camera::ApplyLocalTranslation(float x, float y, float z)
 	//Define the three vectors that make up the cameras rotated coordinate system
 	DirectX::XMVECTOR forwards = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
 	DirectX::XMVECTOR up = DirectX::XMLoadFloat4(&this->m_cameraUp);
-	DirectX::XMVECTOR right = DirectX::XMVector3Cross(forwards, up);
+	DirectX::XMVECTOR right = DirectX::XMVector3Cross(up, forwards);
 	//The translation in along the 3 local axis
-	forwards = DirectX::XMVectorScale(forwards, x);
+	forwards = DirectX::XMVectorScale(forwards, z);
 	up = DirectX::XMVectorScale(up, y);
-	right = DirectX::XMVectorScale(right, z);
+	right = DirectX::XMVectorScale(right, x);
 	//Combine the three translations
 	DirectX::XMFLOAT4 translation;
 	DirectX::XMStoreFloat4(&translation, DirectX::XMVectorAdd(DirectX::XMVectorAdd(forwards, up), right));
@@ -287,5 +289,17 @@ void Camera::ApplyLocalTranslation(float x, float y, float z)
 void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
+}
+void Camera::SetRotationAroundPosOffset(float x, float y, float z)
+{
+	this->m_rotateAroundPos.x = x;
+	this->m_rotateAroundPos.y = y;
+	this->m_rotateAroundPos.z = z;
+}
+void Camera::SetRotationAroundPos(float x, float y, float z)
+{
+	this->m_rotateAroundPos.x = x - this->m_cameraPos.x;
+	this->m_rotateAroundPos.y = y - this->m_cameraPos.y;
+	this->m_rotateAroundPos.z = z - this->m_cameraPos.z;
 }
 #pragma endregion setters
