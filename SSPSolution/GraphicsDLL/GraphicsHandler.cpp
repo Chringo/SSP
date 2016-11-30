@@ -6,11 +6,40 @@ int GraphicsHandler::IncreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		} 
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 	this->m_maxGraphicsComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::IncreaseArraySize(int increaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[increaseTo];
+
+	for (int i = 0; i < increaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = increaseTo;
 
 	return 1;
 }
@@ -270,6 +299,21 @@ void GraphicsHandler::Shutdown()
 		}
 	}
 	delete[] this->m_graphicsComponents;
+}
+
+int GraphicsHandler::SetComponentArraySize(int newSize)
+{
+	if (this->m_maxGraphicsComponents < newSize)
+	{
+
+	}
+
+	return 0;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
+{
+	return nullptr;
 }
 
 int GraphicsHandler::CreateTriangle()

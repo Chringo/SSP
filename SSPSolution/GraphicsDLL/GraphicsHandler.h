@@ -40,6 +40,7 @@ private:
 
 	//Helper functions
 	int IncreaseArraySize();
+	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 
 	bool initCheck;
@@ -52,6 +53,9 @@ public:
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
 	void Shutdown();
+
+	int SetComponentArraySize(int newSize);
+	GraphicsComponent* GetNextAvailableComponent();
 
 	//temp
 	int CreateTriangle();
