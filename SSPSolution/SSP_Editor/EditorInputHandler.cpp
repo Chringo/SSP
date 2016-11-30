@@ -130,11 +130,11 @@ void EditorInputHandler::detectInput(double dT)
 		}
 		if (keyBoardState[DIK_A] & 0x80)
 		{
-			translateCameraX += speed;
+			translateCameraX -= speed;
 		}
 		if (keyBoardState[DIK_D] & 0x80)
 		{
-			translateCameraX -= speed;
+			translateCameraX += speed;
 		}
 		if (keyBoardState[DIK_C] & 0x80)
 		{
@@ -193,9 +193,9 @@ void EditorInputHandler::detectInput(double dT)
 
 		this->m_PreviousPos = this->m_Camera->GetCameraPos();
 		this->m_Camera->ApplyLocalTranslation(
-			float(translateCameraZ),
+			float(translateCameraX),
 			float(translateCameraY),
-			float(translateCameraX)
+			float(translateCameraZ)
 		);
 		//this->m_Camera->AddToCameraPos(posTranslation);
 		//this->m_Camera->AddToLookAt(posTranslation);
