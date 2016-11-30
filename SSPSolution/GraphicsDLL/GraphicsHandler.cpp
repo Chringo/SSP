@@ -6,10 +6,17 @@ int GraphicsHandler::IncreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		if (i < this->m_nrOfGraphicsComponents)
+		if(i < this->m_maxGraphicsComponents)
 		{
-			newArray[i] = this->m_graphicsComponents[i];
-		} 
+			if (this->m_graphicsComponents[i])
+			{
+				newArray[i] = this->m_graphicsComponents[i];
+			}
+			else
+			{
+				newArray[i] = nullptr;
+			}
+		}
 		else
 		{
 			newArray[i] = nullptr;
@@ -28,9 +35,16 @@ int GraphicsHandler::IncreaseArraySize(int increaseTo)
 
 	for (int i = 0; i < increaseTo; i++)
 	{
-		if (i < this->m_nrOfGraphicsComponents)
+		if (i < this->m_maxGraphicsComponents)
 		{
-			newArray[i] = this->m_graphicsComponents[i];
+			if (this->m_graphicsComponents[i])
+			{
+				newArray[i] = this->m_graphicsComponents[i];
+			}
+			else
+			{
+				newArray[i] = nullptr;
+			}
 		}
 		else
 		{
@@ -51,7 +65,7 @@ int GraphicsHandler::DecreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		if (i < this->m_nrOfGraphicsComponents)
+		if (this->m_graphicsComponents[i])
 		{
 			newArray[i] = this->m_graphicsComponents[i];
 		}
@@ -81,9 +95,16 @@ int GraphicsHandler::DecreaseArraySize(int decreaseTo)
 
 	for (int i = 0; i < decreaseTo; i++)
 	{
-		if (i < this->m_nrOfGraphicsComponents)
+		if (i < this->m_maxGraphicsComponents)
 		{
-			newArray[i] = this->m_graphicsComponents[i];
+			if (this->m_graphicsComponents[i])
+			{
+				newArray[i] = this->m_graphicsComponents[i];
+			}
+			else
+			{
+				newArray[i] = nullptr;
+			}
 		}
 		else
 		{
