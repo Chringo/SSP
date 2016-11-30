@@ -22,6 +22,7 @@ int System::Shutdown()
 	delete this->m_camera;
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
+	this->m_physicsHandler.ShutDown();
 	return result;
 }
 
@@ -126,15 +127,23 @@ int System::Run()
 int System::Update(float deltaTime)
 {
 	int result = 1;
-	int translateCameraX = 0, translateCameraY = 0;
+	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
-		translateCameraY++;
+		translateCameraZ++;
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
-		translateCameraY--;
+		translateCameraZ--;
+	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
+	{
+		translateCameraY++;
+		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			translateCameraY *= -1;
+		}
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
 	{
@@ -152,9 +161,9 @@ int System::Update(float deltaTime)
 	{
 		rotateCameraY--;
 	}
-	if (translateCameraY || translateCameraX || rotateCameraY)
+	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
-		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), 0.0f);
+		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
 		this->m_camera->AddToCameraPos(posTranslation);
 		this->m_camera->AddToLookAt(posTranslation);
 		float rotationAmount = DirectX::XM_PI / 8;

@@ -232,10 +232,60 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 	this->m_cameraUp = DirectX::XMFLOAT4(this->m_cameraUp.x * multiplyValue.x, this->m_cameraUp.y * multiplyValue.y, this->m_cameraUp.z * multiplyValue.z, 1.0f);
 	return;
 }
+
 void Camera::ApplyRotation(DirectX::XMFLOAT4 rotationAddition)
 {
 	//this->m_rotation = DirectX::XMFLOAT4(this->m_rotation.x + rotationAddition.x, this->m_rotation.y + rotationAddition.y, this->m_rotation.z + rotationAddition.z, this->m_rotation.w + rotationAddition.w);
 	DirectX::XMStoreFloat4(&this->m_rotation, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&rotationAddition), DirectX::XMLoadFloat4(&this->m_rotation)));
 	return;
+}
+
+void Camera::SetLocalTranslation(float x, float y, float z)
+{
+	//Define the three vectors that make up the cameras rotated coordinate system
+	DirectX::XMVECTOR forwards = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	DirectX::XMVECTOR up = DirectX::XMLoadFloat4(&this->m_cameraUp);
+	DirectX::XMVECTOR right = DirectX::XMVector3Cross(forwards, up);
+	//The translation in along the 3 local axis
+	forwards = DirectX::XMVectorScale(forwards, x);
+	up = DirectX::XMVectorScale(up, y);
+	right = DirectX::XMVectorScale(right, z);
+	//Combine the three translations
+	DirectX::XMFLOAT4 translation;
+	DirectX::XMStoreFloat4(&translation, DirectX::XMVectorAdd(DirectX::XMVectorAdd(forwards, up), right));
+	forwards = DirectX::XMVector3Normalize(forwards);
+	//Apply the translation to the camera & lookAt position
+	this->m_cameraPos.x = translation.x;
+	this->m_cameraPos.y = translation.y;
+	this->m_cameraPos.z = translation.z;
+	this->m_lookAt.x = translation.x + DirectX::XMVectorGetX(forwards);
+	this->m_lookAt.y = translation.y + DirectX::XMVectorGetY(forwards);
+	this->m_lookAt.z = translation.z + DirectX::XMVectorGetZ(forwards);
+}
+
+void Camera::ApplyLocalTranslation(float x, float y, float z)
+{
+	//Define the three vectors that make up the cameras rotated coordinate system
+	DirectX::XMVECTOR forwards = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	DirectX::XMVECTOR up = DirectX::XMLoadFloat4(&this->m_cameraUp);
+	DirectX::XMVECTOR right = DirectX::XMVector3Cross(forwards, up);
+	//The translation in along the 3 local axis
+	forwards = DirectX::XMVectorScale(forwards, x);
+	up = DirectX::XMVectorScale(up, y);
+	right = DirectX::XMVectorScale(right, z);
+	//Combine the three translations
+	DirectX::XMFLOAT4 translation;
+	DirectX::XMStoreFloat4(&translation, DirectX::XMVectorAdd(DirectX::XMVectorAdd(forwards, up), right));
+	//Apply the translation to the camera & lookAt position
+	this->m_cameraPos.x += translation.x;
+	this->m_cameraPos.y += translation.y;
+	this->m_cameraPos.z += translation.z;
+	this->m_lookAt.x += translation.x;
+	this->m_lookAt.y += translation.y;
+	this->m_lookAt.z += translation.z;
+}
+void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
+{
+	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
 #pragma endregion setters

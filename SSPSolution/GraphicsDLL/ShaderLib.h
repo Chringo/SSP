@@ -26,10 +26,21 @@ namespace ShaderLib
 		DirectX::XMFLOAT4X4 worldMatrix;
 	};
 
+	struct DeferredConstantBufferWorldxm
+	{
+		DirectX::XMMATRIX worldMatrix;
+	};
+
 	struct DeferredConstantBufferVP
 	{
 		DirectX::XMFLOAT4X4 viewMatrix;
 		DirectX::XMFLOAT4X4 projectionMatrix;
+	};
+
+	struct DeferredConstantBufferVPxm
+	{
+		DirectX::XMMATRIX viewMatrix;
+		DirectX::XMMATRIX projectionMatrix;
 	};
 
 	struct LightConstantBuffer
