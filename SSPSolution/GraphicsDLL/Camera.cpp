@@ -238,4 +238,29 @@ void Camera::ApplyRotation(DirectX::XMFLOAT4 rotationAddition)
 	DirectX::XMStoreFloat4(&this->m_rotation, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&rotationAddition), DirectX::XMLoadFloat4(&this->m_rotation)));
 	return;
 }
+void Camera::ApplyLocalTranslation(float x, float y, float z)
+{
+	//Define the three vectors that make up the cameras rotated coordinate system
+	DirectX::XMVECTOR forwards = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	DirectX::XMVECTOR up = DirectX::XMLoadFloat4(&this->m_cameraUp);
+	DirectX::XMVECTOR right = DirectX::XMVector3Cross(forwards, up);
+	//The translation in along the 3 local axis
+	forwards = DirectX::XMVectorScale(forwards, x);
+	up = DirectX::XMVectorScale(up, y);
+	right = DirectX::XMVectorScale(right, z);
+	//Combine the three translations
+	DirectX::XMFLOAT4 translation;
+	DirectX::XMStoreFloat4(&translation, DirectX::XMVectorAdd(DirectX::XMVectorAdd(forwards, up), right));
+	//Apply the translation to the camera & lookAt position
+	this->m_cameraPos.x += translation.x;
+	this->m_cameraPos.y += translation.y;
+	this->m_cameraPos.z += translation.z;
+	this->m_lookAt.x += translation.x;
+	this->m_lookAt.y += translation.y;
+	this->m_lookAt.z += translation.z;
+}
+inline void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
+{
+	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
+}
 #pragma endregion setters
