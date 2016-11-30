@@ -59,6 +59,8 @@ GraphicsHandler::~GraphicsHandler()
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
+	this->initCheck = false;
+	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
@@ -181,6 +183,8 @@ int GraphicsHandler::Render()
 		numViews += 1;
 	}
 	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
+
+
 	/********/
 
 	////TEST ROTATION
@@ -188,7 +192,6 @@ int GraphicsHandler::Render()
 	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000000005f));
 	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
-
 
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
