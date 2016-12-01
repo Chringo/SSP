@@ -4,12 +4,12 @@
 
 Resources::Skeleton::Skeleton() :Resource()
 {
-	m_animations.resize(5, nullptr);
+	m_animations.resize(MAX_ANIMATIONS, nullptr);
 }
 
 Resources::Skeleton::Skeleton(Resource::RawResourceData * resData) : Resource(*resData)
 {
-	m_animations.resize(5, nullptr);
+	m_animations.resize(MAX_ANIMATIONS, nullptr);
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;
 }
 
@@ -18,7 +18,7 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 {
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;
 	m_skelData = *skelData;
-	m_animations.resize(5,nullptr);
+	m_animations.resize(MAX_ANIMATIONS,nullptr);
 	
 }
 
@@ -26,7 +26,6 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 Resources::Skeleton::~Skeleton()
 {
 	delete m_animationIds;
-
 	m_animationIds = nullptr;
 }
 
@@ -60,6 +59,12 @@ Resources::Status Resources::Skeleton::Destroy()
 Resources::Status Resources::Skeleton::AddAnimation(Animation * anim, int index)
 {
 	//TODO. make safeguards that the vector expands if the index is out of range
+
+	if (index >= MAX_ANIMATIONS){
+#ifdef _DEBUG
+		std::cout << "Animation index is higher than Maximum animations. Check index or expand the limit" << std::endl;
+#endif // _DEBUG
+	}
 
 	if(m_animations[index] == nullptr)
 		m_numAnimations		+= 1;
