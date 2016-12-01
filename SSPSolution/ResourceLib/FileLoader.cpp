@@ -137,35 +137,22 @@ Resources::Status Resources::FileLoader::LoadPlaceHolderMesh(std::string& path, 
 
 Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& data, size_t * size)
 {
+	std::streampos fsize;
+
 	std::ifstream infile;
-	infile.open(path.c_str(), std::fstream::binary);
+	infile.open(path.c_str(), std::fstream::binary | std::ios::ate);
 	if (!infile)
 		return Status::ST_ERROR_OPENING_FILE;
 
-	MainHeader mainHeader;
-	infile.read((char*)&mainHeader, sizeof(MainHeader));
+	fsize = infile.tellg();
 
-	MeshHeader meshHeader;
-
-	/*infile.read((char*)&meshHeader, sizeof(MeshHeader));
-	size_t sizetoRead = sizeof(Resource::RawResourceData) + sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
-
-	char name[256] = { 'P','l','a','c','e','H','o','l','d','e','r','\0' };
-	Resource::RawResourceData tempRes;
-	tempRes.m_id = -11;
-	memcpy(tempRes.m_name, name, 256);
-	tempRes.m_resType = Resources::ResourceType::RES_MESH;
+	*size = static_cast<size_t>(fsize);
 
 	mem_manager.Clear(Resources::Memory::MEM_RES);
 
-	data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
-
-	memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
-	memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
-
-	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
-	infile.read(data + offset, sizetoRead);
-	infile.close();*/
+	data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
+	infile.seekg(0,std::ios::beg);
+	infile.read(data, *size);
 	infile.close();
 	return Resources::Status::ST_OK;
 }
