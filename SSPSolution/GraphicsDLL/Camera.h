@@ -67,8 +67,14 @@ public:
 	void MultiplyCameraPos(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
-
+	//Warning: As the camera uses quaternion rotations and only stores these in one position this functions can only be called once after setting a rotation and before updating.
 	void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
+	//Sets the camera position along the rotated coordinate system of the camera
+	void SetLocalTranslation(float x, float y, float z);
+	//Translates the camera along the rotated coordinate system of the camera
+	void ApplyLocalTranslation(float x, float y, float z);
+	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
+	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 
 #pragma endregion setters
 private:
