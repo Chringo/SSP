@@ -38,6 +38,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 
 	}
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
+	this->m_GraphicsHandler->InitializeGrid();
 	this->m_Camera = new Camera();
 	this->m_Camera->Initialize();
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);

@@ -121,11 +121,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	this->m_d3dHandler->InitializeGridRasterizer();
-
-
-
-	this->InitializeGrid();
+	//this->InitializeGrid();
 
 	return 0;
 	
@@ -164,10 +160,10 @@ int GraphicsHandler::Render()
 
 	/*TEMP*/
 
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelsPtr[0]);
 
 	if (m_gridEnabled)
 	{
+		Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelsPtr[0]);
 		int ett;
 		float tva;
 		this->RenderGrid(ett, tva);
