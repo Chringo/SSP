@@ -28,6 +28,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 
 	this->m_deviceContext = deviceContext;
 
+
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
 	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
@@ -275,6 +276,14 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 	return 0;
 }
 
+int DeferredShaderHandler::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
+{
+	this->m_graphicsComponents = grapicsComponents;
+	this->modelsPtr = modelsPtr;
+
+	return 0;
+}
+
 int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 {
 	ShaderHandler::SetActive(shaderType);
@@ -313,13 +322,6 @@ void DeferredShaderHandler::Shutdown()
 			this->m_deferredShaderResources[i] = nullptr;
 		}
 	}
-}
-
-int DeferredShaderHandler::InitializeGrid(ID3D11Device* device, ID3D11RasterizerState* rasterizerState)
-{
-
-
-	return 0;
 }
 
 int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
@@ -473,7 +475,7 @@ int DeferredShaderHandler::ClearRenderTargetViews()
 	float color[4];
 
 	color[0] = 0.0f;
-	color[1] = 1.0f;
+	color[1] = 0.0f;
 	color[2] = 0.0f;
 	color[3] = 1.0f;
 
@@ -495,6 +497,44 @@ ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 
 int DeferredShaderHandler::Draw(/*RESOURCE*/)
 {
+	
+	
+	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
+
+	this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
+
+	Resources::Mesh* meshPtr = this->modelsPtr[1]->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+	Resources::Material * mat = modelsPtr[1]->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+
+
+	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
+
+	for (int i = 1; i < 3; i++)
+	{
+		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
+		this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
+		this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
+	}
+
+	delete shaderParamsXM;
 	return 0;
 }
 
@@ -505,7 +545,36 @@ int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 
 int DeferredShaderHandler::DrawGrid()
 {
+	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
+	shaderParamsXM->worldMatrix = this->m_graphicsComponents[0]->worldMatrix;
+
+	this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
+
+	Resources::Mesh* meshPtr = this->modelsPtr[0]->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+	Resources::Material * mat = modelsPtr[0]->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
 	
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
+	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
+
+
+	delete shaderParamsXM;
 
 	return 0;
 }

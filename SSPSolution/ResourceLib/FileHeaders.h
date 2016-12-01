@@ -3,14 +3,15 @@
 
 struct MainHeader
 {
-	unsigned int meshes;
+	int type;
+	unsigned int id;
 };
 
 struct MeshHeader
 {
 	unsigned int numVerts;
 	unsigned int indexLength;
-	unsigned int jointCount;
+	//unsigned int jointCount;
 	bool skeleton;
 };
 

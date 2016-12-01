@@ -31,6 +31,7 @@ private:
 	DirectX::XMFLOAT4X4 m_projectionMatrix;
 
 	GraphicsComponent** m_graphicsComponents;
+	Resources::Model** modelsPtr;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
@@ -54,7 +55,7 @@ public:
 	int Render();
 
 	int InitializeGrid();
-	int RenderGrid(int align, float scale);
+	int RenderGrid(int& align, float& scale);
 	void Shutdown();
 	
 	//temp

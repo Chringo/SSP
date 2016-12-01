@@ -206,7 +206,7 @@ int Direct3DHandler::InitializeGridRasterizer()
 	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 
 	rasterizerDesc.AntialiasedLineEnable = false;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK; //Enable backface culling
+	rasterizerDesc.CullMode = D3D11_CULL_NONE; //Enable backface culling
 	rasterizerDesc.DepthBias = 0;
 	rasterizerDesc.DepthBiasClamp = 0.0f;
 	rasterizerDesc.DepthClipEnable = true;
@@ -332,12 +332,12 @@ int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
 	{
 	case D3D11_FILL_WIREFRAME:
 	{
-
+		this->m_gDeviceContext->RSSetState(this->m_rasterizerStateWireFrame);
 		break;
 	}
 	case D3D11_FILL_SOLID:
 	{
-		
+		this->m_gDeviceContext->RSSetState(this->m_rasterizerState);
 		break;
 	}
 	default:

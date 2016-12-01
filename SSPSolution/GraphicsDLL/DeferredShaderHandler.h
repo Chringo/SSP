@@ -2,6 +2,9 @@
 #define GRAPHICSDLL_DEFERREDSHADERHANDLER
 
 #include "ShaderHandler.h"
+#include "GraphicsComponent.h"
+#include "../ResourceLib/Model.h"
+#pragma comment (lib,"../Debug/ResourceLib")
 
 class DeferredShaderHandler :
 	public ShaderHandler
@@ -18,16 +21,19 @@ private:
 	ID3D11Texture2D* m_depthStencilBuffer;
 	ID3D11DepthStencilView* m_depthStencilView;
 
+	GraphicsComponent** m_graphicsComponents;
+	Resources::Model ** modelsPtr;
 public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
 
 	int Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int SetGraphicsParameters(GraphicsComponent** grapicsComponents, Resources::Model** modelsPtr);
+	
 	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
 
-	int InitializeGrid(ID3D11Device* device, ID3D11RasterizerState* rasterizerState);
 	int Draw(ShaderLib::DrawType drawType);
 	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
 	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
