@@ -7,7 +7,9 @@
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
 #include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "../NetworkDLL/ClientNetwork.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
+#pragma comment (lib, "../Debug/NetworkDLL")
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -29,6 +31,8 @@ private:
 	InputHandler* m_inputHandler;
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
+	ClientNetwork m_Client_Network;
+
 public:
 	System();
 	~System();
