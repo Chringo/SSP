@@ -21,21 +21,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClientNetwork.h">
-      <Filter>Header Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkData.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="NetworkService.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkHandler.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkModule.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientNetwork.cpp">
+    <ClCompile Include="NetworkService.cpp">
       <Filter>Source Files\Netweork</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkService.cpp">
+    <ClCompile Include="NetworkHandler.cpp">
+      <Filter>Source Files\Netweork</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkModule.cpp">
       <Filter>Source Files\Netweork</Filter>
     </ClCompile>
   </ItemGroup>

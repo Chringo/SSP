@@ -1,5 +1,5 @@
-#ifndef NETWORKMODULE_NETWORK_CLIENTNETWORK_H
-#define NETWORKMODULE_NETWORK_CLIENTNETWORK_H
+#ifndef NETWORKDLL_NETWORK_NETWORKMODULE_H
+#define NETWORKDLL_NETWORK_NETWORKMODULE_H
 
 #include "NetworkService.h"
 #include <ws2tcpip.h>
@@ -19,7 +19,7 @@
 #endif  
 
 
-class NETWORKDLL_API ClientNetwork
+class NETWORKDLL_API NetworkModule
 {
 
 private:
@@ -46,8 +46,8 @@ private:
 	DirectX::XMFLOAT3 testFloat3 = DirectX::XMFLOAT3(1.f,2.f,3.f);
 
 public:
-	ClientNetwork();
-	~ClientNetwork();
+	NetworkModule();
+	~NetworkModule();
 
 	bool Initialize();
 	bool Shutdown();    

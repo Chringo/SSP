@@ -1,17 +1,17 @@
-#include "ClientNetwork.h"
+#include "NetworkModule.h"
 
-ClientNetwork::ClientNetwork()
+NetworkModule::NetworkModule()
 {
 	this->isLocked = false;
 	this->client_id = 0;
 	this->packet_ID = 0;
 }
 
-ClientNetwork::~ClientNetwork()
+NetworkModule::~NetworkModule()
 {
 }
 
-bool ClientNetwork::Initialize()
+bool NetworkModule::Initialize()
 {
 	this->isLocked = false;
 	// create WSADATA object
@@ -99,7 +99,7 @@ bool ClientNetwork::Initialize()
 	return true;
 }
 
-bool ClientNetwork::Shutdown()
+bool NetworkModule::Shutdown()
 {
 	int i = 0;
 	i = this->connectedClients.size();
@@ -109,17 +109,17 @@ bool ClientNetwork::Shutdown()
 	return true;
 }
 
-void ClientNetwork::Update()
+void NetworkModule::Update()
 {
 	// Get any new clients
 	this->AcceptNewClient(this->client_id);
 
 	//Read messages
-	ReadMessagesFromClients();
+	this->ReadMessagesFromClients();
 
 }
 
-void ClientNetwork::Join(char* ip)
+void NetworkModule::Join(char* ip)
 {
 	addrinfo *result = NULL;
 	addrinfo *ptr = NULL;
@@ -205,7 +205,7 @@ void ClientNetwork::Join(char* ip)
 
 }
 
-void ClientNetwork::SendFlagPacket(PacketTypes type)
+void NetworkModule::SendFlagPacket(PacketTypes type)
 {
 	const unsigned int packet_size = sizeof(Packet);
 	char packet_data[packet_size];
@@ -220,7 +220,7 @@ void ClientNetwork::SendFlagPacket(PacketTypes type)
 	this->SendToAll(packet_data, packet_size);
 }
 
-void ClientNetwork::SendSyncPacket()
+void NetworkModule::SendSyncPacket()
 {
 	const unsigned int packet_size = sizeof(SyncPacket);
 	char packet_data[packet_size];
@@ -235,7 +235,7 @@ void ClientNetwork::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void ClientNetwork::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -254,7 +254,7 @@ void ClientNetwork::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-void ClientNetwork::SendAnimationPacket(unsigned int entityID)
+void NetworkModule::SendAnimationPacket(unsigned int entityID)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -269,7 +269,7 @@ void ClientNetwork::SendAnimationPacket(unsigned int entityID)
 	this->SendToAll(packet_data, packet_size);
 }
 
-void ClientNetwork::SendStatePacket(unsigned int entityID, bool newState)
+void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
 {
 	const unsigned int packet_size = sizeof(StatePacket);
 	char packet_data[packet_size];
@@ -285,7 +285,7 @@ void ClientNetwork::SendStatePacket(unsigned int entityID, bool newState)
 	this->SendToAll(packet_data, packet_size);
 }
 
-bool ClientNetwork::AcceptNewClient(unsigned int & id)
+bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
 	// if client waiting, accept the connection and save the socket
@@ -308,7 +308,7 @@ bool ClientNetwork::AcceptNewClient(unsigned int & id)
 	return false;
 }
 
-int ClientNetwork::ReceiveData(unsigned int client_id, char * recvbuf)
+int NetworkModule::ReceiveData(unsigned int client_id, char * recvbuf)
 {
 	if (this->connectedClients.find(client_id) != this->connectedClients.end())
 	{
@@ -324,7 +324,7 @@ int ClientNetwork::ReceiveData(unsigned int client_id, char * recvbuf)
 	return 0;
 }
 
-void ClientNetwork::ReadMessagesFromClients()
+void NetworkModule::ReadMessagesFromClients()
 {
 	char network_data[MAX_PACKET_SIZE];
 	bool t = true;
@@ -463,13 +463,13 @@ void ClientNetwork::ReadMessagesFromClients()
 
 }
 
-float ClientNetwork::GetTimeStamp()
+float NetworkModule::GetTimeStamp()
 {
 	this->time_current = (std::clock() - this->time_start);
 	return this->time_current;
 }
 
-void ClientNetwork::SendToAll(char * packets, int totalSize)
+void NetworkModule::SendToAll(char * packets, int totalSize)
 {
 	SOCKET currentSocket;
 	std::map<unsigned int, SOCKET>::iterator iter;
@@ -493,7 +493,7 @@ void ClientNetwork::SendToAll(char * packets, int totalSize)
 	}
 }
 
-bool ClientNetwork::RemoveClient(unsigned int clientID)
+bool NetworkModule::RemoveClient(unsigned int clientID)
 {
 			//Remove the Client from the list
 	if (this->connectedClients.erase(clientID) != 0)	//Erase returns nummber of objects deleted
@@ -508,27 +508,27 @@ bool ClientNetwork::RemoveClient(unsigned int clientID)
 	return true;
 }
 
-bool ClientNetwork::PacketBuffer_isEmpty()
+bool NetworkModule::PacketBuffer_isEmpty()
 {
 	return this->packet_Buffer.empty();
 }
 
-bool ClientNetwork::PacketBuffer_isLocked()
+bool NetworkModule::PacketBuffer_isLocked()
 {
 	return this->isLocked;
 }
 
-void ClientNetwork::PacketBuffer_Lock()
+void NetworkModule::PacketBuffer_Lock()
 {
 	this->isLocked = true;
 }
 
-void ClientNetwork::PacketBuffer_UnLock()
+void NetworkModule::PacketBuffer_UnLock()
 {
 	this->isLocked = false;
 }
 
-std::list<Packet> ClientNetwork::PacketBuffer_GetPackets()
+std::list<Packet> NetworkModule::PacketBuffer_GetPackets()
 {
 	std::list<Packet> result = this->packet_Buffer;
 
@@ -537,7 +537,7 @@ std::list<Packet> ClientNetwork::PacketBuffer_GetPackets()
 	return result;
 }
 
-std::list<EntityPacket> ClientNetwork::PacketBuffer_GetEntityPackets()
+std::list<EntityPacket> NetworkModule::PacketBuffer_GetEntityPackets()
 {
 	EntityPacket* ePP = nullptr;
 	std::list<EntityPacket> result;
@@ -566,7 +566,7 @@ std::list<EntityPacket> ClientNetwork::PacketBuffer_GetEntityPackets()
 	return result;
 }
 
-std::list<AnimationPacket> ClientNetwork::PacketBuffer_GetAnimationPackets()
+std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
 {
 	AnimationPacket* aPP = nullptr;
 	std::list<AnimationPacket> result;
@@ -595,7 +595,7 @@ std::list<AnimationPacket> ClientNetwork::PacketBuffer_GetAnimationPackets()
 	return result;
 }
 
-std::list<StatePacket> ClientNetwork::PacketBuffer_GetStatePackets()
+std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 {
 	StatePacket* sPP = nullptr;
 	std::list<StatePacket> result;
