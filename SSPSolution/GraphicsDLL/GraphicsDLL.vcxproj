@@ -64,7 +64,8 @@
       <AdditionalDependencies>d3d11.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Debug\GraphicsDLL-d.dll" "$(SolutionDir)\EditorComp\debug"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

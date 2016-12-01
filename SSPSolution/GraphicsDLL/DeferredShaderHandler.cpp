@@ -315,6 +315,13 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
+int DeferredShaderHandler::InitializeGrid(ID3D11Device* device, ID3D11RasterizerState* rasterizerState)
+{
+
+
+	return 0;
+}
+
 int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
 {
 	switch (drawType)
@@ -327,6 +334,11 @@ int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
 	case ShaderLib::DRAW_INSTANCED:
 	{
 		this->DrawInstanced();
+		break;
+	}
+	case ShaderLib::DRAW_GRID:
+	{
+		this->DrawGrid();
 		break;
 	}
 	default:
@@ -488,5 +500,12 @@ int DeferredShaderHandler::Draw(/*RESOURCE*/)
 
 int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 {
+	return 0;
+}
+
+int DeferredShaderHandler::DrawGrid()
+{
+	
+
 	return 0;
 }

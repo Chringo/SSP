@@ -50,6 +50,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_graphicsComponents = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents = 5;
+	this->m_gridEnabled = false;
 }
 
 
@@ -156,7 +157,7 @@ int GraphicsHandler::Render()
 
 	/*TEMP*/
 	Resources::Model* modelPtr;
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337),modelPtr);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337),modelPtr);
 
 	Resources::Mesh* meshPtr = modelPtr->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
@@ -191,6 +192,13 @@ int GraphicsHandler::Render()
 	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
 	////END TEST ROTATION
 
+	if (m_gridEnabled)
+	{
+		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
+		
+		this->m_deferredSH->Draw(ShaderLib::DRAW_GRID);
+	}
+
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
 	{
 		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
@@ -221,6 +229,22 @@ int GraphicsHandler::Render()
 	this->m_lightSH->ResetPSShaderResources();
 
 	this->m_d3dHandler->PresentScene();
+
+	return 0;
+}
+
+int GraphicsHandler::InitializeGrid()
+{
+	m_d3dHandler->InitializeGridRasterizer();
+	this->m_gridEnabled = true;
+	return 0;
+}
+
+int GraphicsHandler::RenderGrid(int align, float scale)
+{
+	
+
+
 
 	return 0;
 }

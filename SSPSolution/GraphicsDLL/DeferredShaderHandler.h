@@ -17,6 +17,7 @@ private:
 
 	ID3D11Texture2D* m_depthStencilBuffer;
 	ID3D11DepthStencilView* m_depthStencilView;
+
 public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
@@ -25,6 +26,8 @@ public:
 	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
+
+	int InitializeGrid(ID3D11Device* device, ID3D11RasterizerState* rasterizerState);
 	int Draw(ShaderLib::DrawType drawType);
 	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
 	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
@@ -38,6 +41,7 @@ public:
 private:
 	int Draw();
 	int DrawInstanced();
+	int DrawGrid();
 
 };
 
