@@ -93,6 +93,9 @@
     <ClCompile Include="InputHandler.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationHandler.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="InputHandler.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationHandler.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
