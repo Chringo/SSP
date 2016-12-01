@@ -2,7 +2,7 @@
 #define RESOURCELIB_MODEL_MODEL_H
 #include "Mesh.h"
 #include "Material.h"
-
+#include "Skeleton.h"
 namespace Resources {
 
 	class DLL_OPERATION Model :
@@ -20,7 +20,7 @@ namespace Resources {
 		RawModelData* m_rawData     = nullptr;
 		Mesh*	      m_modelMesh	= nullptr;
 		Material*	  m_material	= nullptr;
-		//Skeleton*	  m_skeleton	= nullptr;	
+		Skeleton*	  m_skeleton	= nullptr;	
 		//Animation*  m_animations  = nullptr;
 	public:
 		Model(Resource::RawResourceData resData);
@@ -36,6 +36,9 @@ namespace Resources {
 		Material* GetMaterial() { return this->m_material; };
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 
+		void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
+		Skeleton* GetSkeleton() { return this->m_skeleton; };
+	
 	};
 }
 
