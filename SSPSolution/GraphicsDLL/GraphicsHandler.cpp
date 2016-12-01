@@ -121,7 +121,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	//this->InitializeGrid();
+	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, modelsPtr);
+	this->InitializeGrid();
 
 	return 0;
 	
@@ -210,8 +211,7 @@ int GraphicsHandler::Render()
 int GraphicsHandler::InitializeGrid()
 {
 	m_d3dHandler->InitializeGridRasterizer();
-	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, modelsPtr);
-
+	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = true;
 	return 0;
 }

@@ -321,6 +321,9 @@ void DeferredShaderHandler::Shutdown()
 			this->m_deferredShaderResources[i]->Release();
 			this->m_deferredShaderResources[i] = nullptr;
 		}
+		if (this->m_gridPixelShader)
+			this->m_gridPixelShader->Release();
+
 	}
 }
 
@@ -545,6 +548,8 @@ int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 
 int DeferredShaderHandler::DrawGrid()
 {
+	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
+
 	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
 	shaderParamsXM->worldMatrix = this->m_graphicsComponents[0]->worldMatrix;
 
@@ -575,6 +580,42 @@ int DeferredShaderHandler::DrawGrid()
 
 
 	delete shaderParamsXM;
+	m_deviceContext->PSSetShader(this->m_pixelShader, nullptr, NULL);
+
+	return 0;
+}
+
+int DeferredShaderHandler::InitializeGridShader(ID3D11Device * device)
+{
+
+	HRESULT hResult;
+	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
+	ID3D10Blob* geoShaderBuffer = nullptr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	ID3D10Blob* errorMessage;
+
+
+
+
+	//Insert shader path here
+	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GridPS.hlsl";
+
+	// Compile the shaders \\
+
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+	if (FAILED(hResult))
+	{
+		ShaderHandler::OutputShaderErrorMessage(errorMessage, psFilename);
+		return 1;
+	}
+
+	// Create the shaders \\
+
+	hResult = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &this->m_gridPixelShader);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
 
 	return 0;
 }

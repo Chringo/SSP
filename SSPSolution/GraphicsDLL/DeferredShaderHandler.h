@@ -10,6 +10,8 @@ class DeferredShaderHandler :
 	public ShaderHandler
 {
 private:
+
+	ID3D11PixelShader* m_gridPixelShader;
 	ID3D11SamplerState* m_samplerState;
 	ID3D11Buffer * m_worldMatrixBuffer;
 	ID3D11Buffer * m_viewProjMatrixBuffer;
@@ -40,6 +42,7 @@ public:
 	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world);
 	int BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection);
 	int ClearRenderTargetViews();
+	int InitializeGridShader(ID3D11Device * device);
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();
@@ -48,7 +51,6 @@ private:
 	int Draw();
 	int DrawInstanced();
 	int DrawGrid();
-
 };
 
 #endif
