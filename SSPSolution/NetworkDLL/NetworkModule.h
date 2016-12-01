@@ -49,11 +49,11 @@ public:
 	NetworkModule();
 	~NetworkModule();
 
-	bool Initialize();
-	bool Shutdown();    
+	int Initialize();
+	int Shutdown();    
 
 	void Update();
-	void Join(char* ip);
+	int Join(char* ip);
 
 	//Public package functions (send to all other clients e.g the only other player)
 	void SendFlagPacket(PacketTypes type);

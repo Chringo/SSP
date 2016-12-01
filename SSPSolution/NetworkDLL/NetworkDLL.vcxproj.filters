@@ -27,18 +27,12 @@
     <ClInclude Include="NetworkService.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkHandler.h">
-      <Filter>Header Files\Network</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkModule.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NetworkService.cpp">
-      <Filter>Source Files\Netweork</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkHandler.cpp">
       <Filter>Source Files\Netweork</Filter>
     </ClCompile>
     <ClCompile Include="NetworkModule.cpp">

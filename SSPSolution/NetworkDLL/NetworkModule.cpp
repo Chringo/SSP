@@ -11,7 +11,7 @@ NetworkModule::~NetworkModule()
 {
 }
 
-bool NetworkModule::Initialize()
+int NetworkModule::Initialize()
 {
 	this->isLocked = false;
 	// create WSADATA object
@@ -28,7 +28,7 @@ bool NetworkModule::Initialize()
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
 		printf("WSAStartup failed with error: %d\n", iResult);
-		return false;
+		return 0;
 	}
 
 	// set address information
@@ -44,7 +44,7 @@ bool NetworkModule::Initialize()
 	if (iResult != 0) {
 		printf("getaddrinfo failed with error: %d\n", iResult);
 		WSACleanup();
-		return false;
+		return 0;
 	}
 
 	// Create a SOCKET for connecting to server
@@ -54,7 +54,7 @@ bool NetworkModule::Initialize()
 		printf("socket failed with error: %ld\n", WSAGetLastError());
 		freeaddrinfo(result);
 		WSACleanup();
-		return false;
+		return 0;
 	}
 
 	// Set the mode of the socket to be nonblocking
@@ -65,7 +65,7 @@ bool NetworkModule::Initialize()
 		printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
 		closesocket(this->listenSocket);
 		WSACleanup();
-		return false;
+		return 0;
 	}
 
 	// Setup the TCP listening socket
@@ -76,7 +76,7 @@ bool NetworkModule::Initialize()
 		freeaddrinfo(result);
 		closesocket(this->listenSocket);
 		WSACleanup();
-		return false;
+		return 0;
 	}
 
 	// no longer need address information
@@ -89,24 +89,24 @@ bool NetworkModule::Initialize()
 		printf("listen failed with error: %d\n", WSAGetLastError());
 		closesocket(this->listenSocket);
 		WSACleanup();
-		return false;
+		return 0;
 	}
 	printf("Initlized\n");
 
 	//Start the network system clock
 	this->time_start = std::clock();
 
-	return true;
+	return 1;
 }
 
-bool NetworkModule::Shutdown()
+int NetworkModule::Shutdown()
 {
 	int i = 0;
 	i = this->connectedClients.size();
 	this->connectedClients.clear();
 	printf("%d Clients has been removed on server shutdown\n", i);
 
-	return true;
+	return 1;
 }
 
 void NetworkModule::Update()
@@ -119,7 +119,7 @@ void NetworkModule::Update()
 
 }
 
-void NetworkModule::Join(char* ip)
+int NetworkModule::Join(char* ip)
 {
 	addrinfo *result = NULL;
 	addrinfo *ptr = NULL;
@@ -136,7 +136,7 @@ void NetworkModule::Join(char* ip)
 	{
 		printf("getaddrinfo failed with error: %d\n", iResult);
 		WSACleanup();
-		exit(1);
+		return 0;
 	}
 
 	// Attempt to connect to an address until one succeeds
@@ -148,7 +148,7 @@ void NetworkModule::Join(char* ip)
 		if (this->connectSocket == INVALID_SOCKET) {
 			printf("socket failed with error: %ld\n", WSAGetLastError());
 			WSACleanup();
-			exit(1);
+			return 0;
 		}
 
 		// Connect to server.
@@ -170,7 +170,7 @@ void NetworkModule::Join(char* ip)
 	{
 		printf("Unable to connect to server!\n");
 		WSACleanup();
-		exit(1);
+		return 0;
 	}
 
 	// Set the mode of the socket to be nonblocking
@@ -182,7 +182,7 @@ void NetworkModule::Join(char* ip)
 		printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
 		closesocket(this->connectSocket);
 		WSACleanup();
-		exit(1);
+		return 0;
 	}
 
 	//Send CONNECTION_REQUEST package
@@ -203,6 +203,7 @@ void NetworkModule::Join(char* ip)
 	printf("client %d has been connected to the this client\n", this->client_id);
 	this->client_id++;
 
+	return 1;
 }
 
 void NetworkModule::SendFlagPacket(PacketTypes type)

@@ -3,7 +3,6 @@ System::System()
 {
 	this->m_inputHandler = NULL;
 	this->m_window = NULL;
-	this->m_Client_Network.Join("");
 }
 
 
