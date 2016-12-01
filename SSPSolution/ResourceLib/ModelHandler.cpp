@@ -94,6 +94,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
  	m_emptyContainers.pop_front(); //remove from empty container queue
 	Model::RawModelData* modelData = (Model::RawModelData*)data;
 	unsigned int meshID = 124354234; // ((Model::RawModelData*)data)->meshId;
+
 	Resources::ResourceContainer* meshPtr = nullptr;
 
 	Resources::Status st = Status::ST_OK;
@@ -149,36 +150,29 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 		}
 #pragma endregion
 
-
+		
 #pragma region Load Skeleton
-		/*if(modelData.skeleton != 0)
-		{
-		Resources::ResourceContainer* skeletonPtr = nullptr;
-		 st = m_skeletonHandler->GetSkeleton(modelData.skeletonID, skeletonPtr);
-
-		switch (st)
-		{
-		case Status::ST_RES_MISSING: //if it doesent exist
-		{
-		Status mSt= m_skeletonHandler->LoadSkeletgon(modelData.skeltonID,skeletonPtr); //load the skeleton
-		if (mSt != ST_OK){
-		 //Panic
-		}
-		else
-		newModel->SetMesh((Mesh*)meshPtr->resource);
-		break;
-		}
-		case Status::ST_OK:
-		{
-		skeletonPtr->refCount += 1;
-		newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
-		break;
-		}
-		}
-
-
-		}
-		*/
+//		if(modelData->skeletonId != 0){
+//			Resources::ResourceContainer* skeletonPtr = nullptr;
+//			 st = m_skeletonHandler->GetSkeleton(modelData->skeletonId, skeletonPtr);
+//			switch (st){
+//				case Status::ST_RES_MISSING:{ //if it doesent exist
+//					Status mSt= m_skeletonHandler->LoadSkeleton(modelData->skeletonId,skeletonPtr); //load the skeleton
+//					if (mSt != ST_OK){
+//					 //Panic
+//					}
+//					else
+//					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
+//					break;
+//				}
+//				case Status::ST_OK:{
+//					skeletonPtr->refCount += 1;
+//					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
+//					break;
+//				}
+//			}
+//		}
+//
 #pragma endregion
 	
 	return Resources::Status::ST_OK;

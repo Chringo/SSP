@@ -9,16 +9,17 @@ struct MainHeader
 
 
 
-struct MeshHeader
-{
-	unsigned int numVerts;
-	unsigned int indexLength;
-	unsigned int jointCount;
+struct MeshHeader{
+	unsigned int numVerts    = 0;
+	unsigned int indexLength = 0;
 	bool skeleton;
 };
-
 struct SkeletonHeader {
-	unsigned int jointCount;
+	unsigned int jointCount = 0;
+	unsigned int animLayerCount = 0;
+};
+struct LayerIdHeader{
+	unsigned int id = 0;
 };
 struct JointHeader {
 	float bindPose[16];

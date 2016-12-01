@@ -22,13 +22,13 @@ namespace Resources {
 					return *this;
 				delete this->joints;
 				jointCount = other.jointCount;
-				joints = new Joint[jointCount];
+				this->joints = new Joint[jointCount];
 				memcpy(joints, other.joints, sizeof(Joint) * jointCount);
 				return *this;
 			}
 			~RawSkeletonData()
 			{
-				delete[] joints;
+				delete this->joints;
 				joints = nullptr;
 				jointCount = 0;
 			}

@@ -11,9 +11,9 @@ namespace Resources {
 	public:
 		struct RawModelData
 		{
-			unsigned int meshId;
-			unsigned int materialId;
-			
+			unsigned int meshId		= 0;
+			unsigned int materialId	= 0;
+			unsigned int skeletonId	= 0;
 		};
 
 	private:

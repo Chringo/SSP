@@ -28,10 +28,6 @@ Resources::SkeletonHandler::SkeletonHandler(size_t skelAmount, ID3D11Device * de
 	}
 
 
-	unsigned int yo = 123;
-	ResourceContainer* blah;
-	LoadSkeleton(123, blah);
-
 }
 
 Resources::Status Resources::SkeletonHandler::GetSkeleton(const unsigned int & id, ResourceContainer *& skelPtr)
@@ -79,13 +75,46 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	data += sizeof(MainHeader);
 
 	skelData.jointCount = ((SkeletonHeader*)data)->jointCount;
+	unsigned int* animCount = &((SkeletonHeader*)data)->animLayerCount;
 	data += sizeof(SkeletonHeader);
 	skelData.joints = (Skeleton::Joint*)data;
+	data += sizeof(JointHeader) * skelData.jointCount;
 
 	st = newSkeleton->Create(&resData, &skelData);
-	 
 	if (st != ST_OK)
 		return st;
+
+	skelData.joints = nullptr;
+	int animsloaded = 0;
+	//for (size_t i = 0; i < *animCount; i++)
+	//{
+	//	ResourceContainer* animPtr;
+	//	unsigned int* id = (unsigned int*)data;
+	//	//st = m_animationHandler->GetAnimation(id, &animPtr);
+	//	switch (st) {
+	//		case Status::ST_RES_MISSING: { //if it doesent exist
+	//			Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
+	//			if (mSt != ST_OK) {
+	//				continue;
+	//			}
+	//			else
+	//				newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
+	//			break;
+	//		}
+	//		case Status::ST_OK: {
+	//			animPtr->refCount += 1;
+	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
+	//			break;
+	//		}
+	//		animsloaded++;
+	//	}
+	//}
+	/*
+		Load all animations for the skeleton
+		for each anim
+		m_animationHandler
+		newSkeleton->AddAnimation
+	*/
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
 	m_emptyContainers.pop_front();							 // remove from empty container queue
 
