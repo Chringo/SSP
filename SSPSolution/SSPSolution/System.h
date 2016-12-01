@@ -31,7 +31,7 @@ private:
 	InputHandler* m_inputHandler;
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
-	NetworkModule m_Client_Network;
+	NetworkModule m_networkModule;
 
 public:
 	System();

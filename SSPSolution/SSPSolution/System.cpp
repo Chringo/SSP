@@ -35,7 +35,6 @@ int System::Initialize()
 	//Get the instance if this application
 	this->m_hinstance = GetModuleHandle(NULL);
 
-
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		printf("SDL failed in initializing the window! SDL_Error: %hS\n", SDL_GetError());
@@ -76,6 +75,10 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	//Init the network module
+	this->m_networkModule.Initialize();
+
 	return result;
 }
 

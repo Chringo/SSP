@@ -13,6 +13,8 @@ NetworkModule::~NetworkModule()
 
 int NetworkModule::Initialize()
 {
+	printf("Trying to Initialized Network module \n");
+
 	this->isLocked = false;
 	// create WSADATA object
 	WSADATA wsaData;
@@ -91,10 +93,11 @@ int NetworkModule::Initialize()
 		WSACleanup();
 		return 0;
 	}
-	printf("Initlized\n");
 
 	//Start the network system clock
 	this->time_start = std::clock();
+	
+	printf("Network module Initialized\n");
 
 	return 1;
 }
