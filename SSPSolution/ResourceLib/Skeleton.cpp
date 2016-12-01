@@ -25,8 +25,7 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 
 Resources::Skeleton::~Skeleton()
 {
-	delete m_animationIds;
-	m_animationIds = nullptr;
+
 }
 
 Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, RawSkeletonData * skelData)
@@ -49,21 +48,24 @@ Resources::Status Resources::Skeleton::Destroy()
 		m_animations.size(),
 		nullptr);
 	m_numAnimations = 0;
+	m_animationIds.insert(m_animationIds.begin(), m_animationIds.size(),unsigned int(0));
 	char name[5] = { 'N', 'O', 'N', 'E','\0' };
 	memcpy(m_resourceData.m_name, name, sizeof(char) * 5);
 	this->m_resourceData.m_id = 0;
+
+	
 
 	return Resources::Status::ST_OK;
 }
 
 Resources::Status Resources::Skeleton::AddAnimation(Animation * anim, int index)
 {
-	//TODO. make safeguards that the vector expands if the index is out of range
 
 	if (index >= MAX_ANIMATIONS){
 #ifdef _DEBUG
 		std::cout << "Animation index is higher than Maximum animations. Check index or expand the limit" << std::endl;
 #endif // _DEBUG
+		return Status::ST_MEM_FULL;
 	}
 
 	if(m_animations[index] == nullptr)

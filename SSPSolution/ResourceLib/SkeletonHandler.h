@@ -1,6 +1,8 @@
 #ifndef RESOURCELIB_SKELETONHANDLER_SKELETONHANDLER_H
 #define RESOURCELIB_SKELETONHANDLER_SKELETONHANDLER_H
 #include "Skeleton.h"
+#include "FileLoader.h"
+#include "FileHeaders.h"
 namespace Resources {
 
 	class SkeletonHandler

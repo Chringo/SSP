@@ -7,6 +7,7 @@ namespace Resources {
 	class Skeleton :
 		public Resource
 	{
+	public:
 		struct Joint {
 			float bindPose[16];
 			int jointIndex   = 0;
@@ -34,11 +35,11 @@ namespace Resources {
 		};
 
 	private:
-		const static int	 MAX_ANIMATIONS = 6;
-		RawSkeletonData		     m_skelData;
-		unsigned int		     m_numAnimations = 0;
-		std::vector<Animation*>  m_animations;
-		unsigned int*			 m_animationIds  = nullptr;
+		const static int	       MAX_ANIMATIONS = 6;
+		RawSkeletonData		       m_skelData;
+		unsigned int		       m_numAnimations = 0;
+		std::vector<Animation*>    m_animations;
+		std::vector<unsigned int>  m_animationIds;
 	public:
 		Skeleton();
 		Skeleton(Resource::RawResourceData* resData);
@@ -49,11 +50,11 @@ namespace Resources {
 		Resources::Status Destroy(); // Deincrement references to connected data, free container
 		Resources::Status AddAnimation(Animation* anim, int index);
 		
-		const unsigned int      GetNumAnimations()		 const { return m_numAnimations; };
-		const RawSkeletonData   GetSkeletonData()	     const { return m_skelData;		 };
-		const Animation*		GetAnimation(int& index) const { return (index < m_numAnimations ? m_animations[index] : nullptr); };
-
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
+		const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
+		const RawSkeletonData			  GetSkeletonData()			const { return m_skelData;		 };
+		const Animation*				  GetAnimation(int& index)  const { return (index < m_numAnimations ? m_animations[index] : nullptr); };
+		const std::vector<unsigned int> * GetAllAnimationIds()		const { return &m_animationIds; };
+		virtual std::shared_ptr<char>	  GetDataAsBinary(size_t* size, bool* result = nullptr);
 
 
 	};
