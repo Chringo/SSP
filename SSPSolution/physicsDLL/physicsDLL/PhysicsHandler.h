@@ -10,7 +10,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
-struct PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API AABB
+struct AABB
 {
 	float pos[3];
 	float ext[3];
@@ -69,6 +69,7 @@ public:
 	~PhysicsHandler();
 
 	bool Initialize();
+	void ShutDown();
 	void Update();
 
 	void SimpleCollition(float dt);

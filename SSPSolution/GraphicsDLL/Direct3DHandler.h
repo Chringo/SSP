@@ -25,6 +25,7 @@ public:
 	~Direct3DHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+
 	int ClearDepthAndRTV();
 	int ClearDepthAndRTV(ID3D11DepthStencilView*);
 	int PresentScene();
