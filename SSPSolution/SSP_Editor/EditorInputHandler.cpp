@@ -238,6 +238,7 @@ void EditorInputHandler::detectInput(double dT)
 		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
 		rayDirection = DirectX::XMVector3Normalize(rayDirection);
 		
+		//checks if we picked on a model by iterating triangles;
 		float result = Intersection(rayOrigin,rayDirection);
 		if (result != FLT_MAX)
 		{
