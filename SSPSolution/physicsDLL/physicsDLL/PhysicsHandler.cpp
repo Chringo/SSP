@@ -61,9 +61,50 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	PhysicsComponent* tempPtr = nullptr;
+	PhysicsComponent* tempObj = nullptr;
+	PhysicsComponent* tempObj2 = nullptr;
+
+	tempObj = new PhysicsComponent;
+	tempObj2 = new PhysicsComponent;
+
+	//Obj nr 1 is at position (0,0,0) with a with of 1
+	for (int i = 0; i < 3; i++)
+	{
+		tempObj->m_AABB.pos[i] = 0.0f;
+		tempObj->m_OBB.pos[i] = 0.0f;
+
+		tempObj->m_AABB.ext[i] = 1.0f;
+		tempObj->m_OBB.ext[i] = 1.0f;
+
+		tempObj->m_OBB.orth.x_axis[i] = 0.0f;
+		tempObj->m_OBB.orth.y_axis[i] = 0.0f;
+	}
+	//local axis in world space sets here x = (1,0,0) and y-axis = (0, 1, 0)
+	tempObj->m_OBB.orth.x_axis[0] = 1.0f;
+	tempObj->m_OBB.orth.y_axis[1] = 1.0f;
+
+	//Obj nr 2 is at position (3,0,0) with a width of 1
+	for (int i = 0; i < 3; i++)
+	{
+		tempObj2->m_AABB.pos[i] = 0.0f;
+		tempObj2->m_OBB.pos[i] = 0.0f;
+
+		tempObj2->m_AABB.ext[i] = 1.0f;
+		tempObj2->m_OBB.ext[i] = 1.0f;
+
+		tempObj2->m_OBB.orth.x_axis[i] = 0.0f;
+		tempObj2->m_OBB.orth.y_axis[i] = 0.0f;
+	}
+	//local axis in world space sets here x = (1,0,0) and y-axis = (0, 1, 0)
+	tempObj2->m_OBB.orth.x_axis[0] = 1.0f;
+	tempObj2->m_OBB.orth.y_axis[1] = 1.0f;
+
+
 	this->m_nrOfStaticObjects = 0;
 	this->m_gravity = DirectX::XMVectorSet(0, -0.000005, 0, 0);
+
+	this->m_dynamicComponents.push_back(tempObj);
+	this->m_dynamicComponents.push_back(tempObj2);
 
 	return true;
 }

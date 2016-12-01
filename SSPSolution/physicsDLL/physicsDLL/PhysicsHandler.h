@@ -10,6 +10,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
+#pragma region
 
 struct OrthonormalBasis
 {
@@ -31,6 +32,7 @@ struct OBB
 	OrthonormalBasis orth;
 };
 
+#pragma endregion
 
 __declspec(align(16)) struct PhysicsComponent
 {
@@ -76,9 +78,6 @@ public:
 	int getNrOfComponents()const;
 	PhysicsComponent* getDynamicComponents(int index)const;
 	bool checkCollition();
-
-
-
 
 };
 
