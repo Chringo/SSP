@@ -17,10 +17,11 @@ namespace Resources {
 		};
 
 	private:
-		RawModelData* m_rawData = nullptr;
-		Mesh* m_modelMesh		= nullptr;
-		Material* m_material	= nullptr;
-		//Skeleton* m_skeleton;
+		RawModelData* m_rawData     = nullptr;
+		Mesh*	      m_modelMesh	= nullptr;
+		Material*	  m_material	= nullptr;
+		//Skeleton*	  m_skeleton	= nullptr;	
+		//Animation*  m_animations  = nullptr;
 	public:
 		Model(Resource::RawResourceData resData);
 		Model();
