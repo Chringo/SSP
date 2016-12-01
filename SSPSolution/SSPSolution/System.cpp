@@ -100,6 +100,10 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
+
+		//Update the network module
+		this->m_networkModule.Update();
+
 		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
