@@ -24,6 +24,9 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
 	return result;
+	
+	//Shutdown Network module
+	this->m_networkModule.Shutdown();
 }
 
 int System::Initialize()
