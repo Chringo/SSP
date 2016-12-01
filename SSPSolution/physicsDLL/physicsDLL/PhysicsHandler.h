@@ -10,11 +10,27 @@
 #include <DirectXMath.h>
 #include <vector>
 
+
+struct OrthonormalBasis
+{
+	float x_axis[3];
+	float y_axis[3];
+};
+
 struct AABB
 {
 	float pos[3];
 	float ext[3];
 };
+
+struct OBB
+{
+	float pos[3];
+	float ext[3];
+
+	OrthonormalBasis orth;
+};
+
 
 __declspec(align(16)) struct PhysicsComponent
 {
