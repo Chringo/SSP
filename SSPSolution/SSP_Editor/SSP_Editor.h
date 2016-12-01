@@ -30,5 +30,6 @@
 		D3DRenderWidget* m_D3DRenderWidget;
 		FileImporter m_fileImporter;
 
+		D3DRenderWidget* m_D3DRenderWidgetPreview;
 	};
 #endif

@@ -14,6 +14,7 @@ public:
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
 	virtual void resizeEvent(QResizeEvent* evt);
+	int m_test;
 	int m_Width;
 	int m_Height;
 	int m_x;
@@ -24,53 +25,21 @@ private:
 	Camera* m_Camera;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
-	void Initialize(QWidget* parent);
+	void Initialize(QWidget* parent, bool isPreview);
 
+	//widget deltatime
+private:
+	double m_countsPerSecond = 0.0;
+	__int64 m_counterStart = 0;
 
+	int m_frameCount = 0;
+	int m_fps = 0;
 
-	double countsPerSecond = 0.0;
-	__int64 counterStart = 0;
+	__int64 m_frameTimeOld = 0;
+	double m_frameTime;
 
-	int frameCount = 0;
-	int fps = 0;
-
-	__int64 frameTimeOld = 0;
-	double frameTime;
-
-
-
-	void startTimer()
-	{
-		LARGE_INTEGER frequencycount;
-
-		QueryPerformanceFrequency(&frequencycount);
-		countsPerSecond = double(frequencycount.QuadPart);
-
-		QueryPerformanceCounter(&frequencycount);
-		counterStart = frequencycount.QuadPart;
-	}
-
-	double getTime()
-	{
-		LARGE_INTEGER currentTime;
-		QueryPerformanceCounter(&currentTime);
-		return double(currentTime.QuadPart - counterStart) / countsPerSecond;
-	}
-
-	double getFrameTime()
-	{
-		LARGE_INTEGER currentTime;
-		__int64 tickCount;
-		QueryPerformanceCounter(&currentTime);
-
-		tickCount = currentTime.QuadPart - frameTimeOld;
-		frameTimeOld = currentTime.QuadPart;
-
-		if (tickCount < 0.0f)
-		{
-			tickCount = 0.0f;
-		}
-
-		return float(tickCount) / countsPerSecond;
-	}
+private:
+	double getFrameTime();
+	void startTimer();
+	double getTime();
 };

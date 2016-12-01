@@ -47,8 +47,8 @@ void EditorInputHandler::detectInput(double dT)
 
 	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
 
-	float speed = 15.0f * dT;
-	float speedrot = 10.0f * dT;
+	float speed = 10.0f * dT;
+	float speedrot = 5.0f * dT;
 	int result = 1;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	float yaw = 0, pitch = 0;
@@ -60,6 +60,7 @@ void EditorInputHandler::detectInput(double dT)
 #pragma region SHIFT + ALT +
 
 #pragma endregion
+
 #pragma region CONTROL +
 	if (keyBoardState[DIK_LCONTROL] & 0x80)
 	{
@@ -117,6 +118,7 @@ void EditorInputHandler::detectInput(double dT)
 		}
 	}
 #pragma endregion
+
 #pragma region SHIFT +
 	if (keyBoardState[DIK_LSHIFT] & 0x80)
 	{
@@ -128,13 +130,13 @@ void EditorInputHandler::detectInput(double dT)
 		{
 			translateCameraZ -= speed;
 		}
-		if (keyBoardState[DIK_D] & 0x80)
-		{
-			translateCameraX += speed;
-		}
 		if (keyBoardState[DIK_A] & 0x80)
 		{
 			translateCameraX -= speed;
+		}
+		if (keyBoardState[DIK_D] & 0x80)
+		{
+			translateCameraX += speed;
 		}
 		if (keyBoardState[DIK_C] & 0x80)
 		{
@@ -160,6 +162,8 @@ void EditorInputHandler::detectInput(double dT)
 
 	}
 #pragma endregion
+
+#pragma region ALT +
 	if (keyBoardState[DIK_LALT] & 0x80)
 	{
 		if (mouseCurrentState.rgbButtons[0])
@@ -181,7 +185,83 @@ void EditorInputHandler::detectInput(double dT)
 			}
 		}
 	}
+#pragma endregion
 	
+#pragma region ONLY MOUSE
+	if (mouseCurrentState.rgbButtons[0] &&
+		!keyBoardState[DIK_LALT] & 0x80 ||
+		!keyBoardState[DIK_LSHIFT] & 0x80)
+	{
+		DirectX::XMVECTOR rayOrigin, rayDirection;
+		int m_MouseX = mousePos.x;
+		int m_MouseY = mousePos.y;
+		if (m_MouseX > m_Width)
+			m_MouseX = m_Width;
+		else if (m_MouseX < 0)
+			m_MouseX = 0;
+		if (m_MouseY > m_Height)
+			m_MouseY = m_Height;
+		else if (m_MouseY < 0)
+			m_MouseY = 0;
+
+		DirectX::XMVECTOR localRayDirection = 
+			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		DirectX::XMVECTOR LocalRayOrigin = 
+			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		float X, Y, Z;
+		DirectX::XMFLOAT4X4 camProjection;
+		float fieldOfView = (float)DirectX::XM_PI / 4.0f;
+		float screenAspect = (float)m_Width / (float)m_Height;
+
+		DirectX::XMStoreFloat4x4(
+			&camProjection,
+			DirectX::XMMatrixPerspectiveFovLH(
+				fieldOfView,
+				screenAspect,
+				0.1f,
+				1000.0f)
+		);
+		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
+		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
+		Z = 1.0f;
+		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
+
+		DirectX::XMMATRIX inverseCamView;
+		DirectX::XMVECTOR det = { 1,1,1,1 };
+		DirectX::XMMATRIX temp;
+		this->m_Camera->GetBaseViewMatrix(temp);
+
+		inverseCamView = DirectX::XMMatrixInverse(&det, temp);
+
+		rayOrigin = XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
+		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
+		rayDirection = DirectX::XMVector3Normalize(rayDirection);
+
+		//DO PICKING TEST TO FIND MESH IN SCENE
+		//GET POINTER?
+		//STORE AS LAST PICK
+		//NEED A GET FUNC SO OTHER CLASSES CAN GET CURRENT PICK
+		//HIGHLIGHT?
+
+
+		//DirectX::XMFLOAT4 test;
+		//DirectX::XMStoreFloat4(&test, localRayDirection);
+		//this->m_Camera->SetLookAt(test);
+	}
+#pragma endregion
+
+
+
+
+	if (keyBoardState[DIK_F] & 0x80)
+	{
+		this->m_Camera->Initialize();
+		this->m_Camera->Update();
+	}
+
+
+
+
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
 		DirectX::XMFLOAT3 posTranslation =
@@ -192,8 +272,13 @@ void EditorInputHandler::detectInput(double dT)
 			);
 
 		this->m_PreviousPos = this->m_Camera->GetCameraPos();
-		this->m_Camera->AddToCameraPos(posTranslation);
-		this->m_Camera->AddToLookAt(posTranslation);
+		this->m_Camera->ApplyLocalTranslation(
+			float(translateCameraX),
+			float(translateCameraY),
+			float(translateCameraZ)
+		);
+		//this->m_Camera->AddToCameraPos(posTranslation);
+		//this->m_Camera->AddToLookAt(posTranslation);
 		this->m_Camera->Update();
 	}
 
