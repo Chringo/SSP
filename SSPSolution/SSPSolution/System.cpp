@@ -182,7 +182,11 @@ int System::Update(float deltaTime)
 		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
 	}
-	//
+	//Network
+	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	{
+		this->m_networkModule.Join(this->m_ip);
+	}
 	return result;
 }
 
