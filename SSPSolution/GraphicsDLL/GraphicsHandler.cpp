@@ -158,7 +158,7 @@ int GraphicsHandler::Render()
 
 	/*TEMP*/
 	Resources::Model* modelPtr;
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337),modelPtr);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337),modelPtr);
 
 	Resources::Mesh* meshPtr = modelPtr->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
