@@ -171,7 +171,7 @@ int GraphicsHandler::Render()
 	}
 
 
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1111337), modelsPtr[1]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), modelsPtr[1]);
 	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
 
 	/********/
