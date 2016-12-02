@@ -58,10 +58,11 @@ private:
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
 	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
-	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
-	DirectX::X
 
-	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2);
+	//Math functions
+	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
+	DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
+	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
 public:
 	PhysicsHandler();
 	~PhysicsHandler();

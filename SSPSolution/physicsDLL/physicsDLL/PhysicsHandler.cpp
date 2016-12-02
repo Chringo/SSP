@@ -53,12 +53,6 @@ bool PhysicsHandler::IntersectAABB()
 
 bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB)
 {
-	bool possibleCollitionX = false;
-	bool possibleCollitionY = false;
-	bool possibleCollitionZ = false;
-	PhysicsComponent* PC_ptr = nullptr;
-	PhysicsComponent* PC_toCheck = nullptr;
-
 	DirectX::XMFLOAT3 transPF_v;
 	DirectX::XMFLOAT3 transPF_t;
 
@@ -77,13 +71,10 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	float rB = 0.0f;
 	float t = 0.0f;
 
+	DirectX::XMFLOAT3 L = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
 	//B's basis with respect to A's local frame
 	DirectX::XMFLOAT3X3 R;
-
-	//for converting
-	DirectX::XMFLOAT3 tempV_A;
-	DirectX::XMFLOAT3 tempV_B;
-	DirectX::XMFLOAT3 tempV_C;
 
 	//this holds the translation vector in parent frame
 	transPF_v = this->VectorSubstract(a->pos, b->pos);
@@ -142,18 +133,120 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 		}
 	}
 
-	//9 cross products
-	// L = A0 x B
+	//9 cross products??
+	/*
+	I have no clue what happening here mathwise, if time is with us, I will try to understand what is happening
+	here.
 
+	//sorce
+	http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=5
+	*/
 
+	// L = A0 x B0
 	rA = a->ext[1] * fabs(R.m[2][0]) + a->ext[2] * fabs(R.m[1][0]);
 	rB = b->ext[1] * fabs(R.m[0][2]) + b->ext[2] * fabs(R.m[0][1]);
 
 	t = fabs(T[2] * R.m[1][0] - T[1] * R.m[2][0]);
 
+	if (t > (rA + rB))
+	{
+		return false;
+	}
 
+	//L = A0 x B1
+	rA = a->ext[1] * fabs(R.m[2][1]) + a->ext[2] * fabs(R.m[1][1]);
+	rB = b->ext[0] * fabs(R.m[0][2]) + b->ext[2] * fabs(R.m[0][0]);
 
-	return false;
+	t = fabs(T[2] * R.m[1][1] - T[1] * R.m[2][1]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A0 x B2
+	rA = a->ext[1] * fabs(R.m[2][2]) + a->ext[2] * fabs(R.m[1][2]);
+	rB = b->ext[0] * fabs(R.m[0][1]) + b->ext[1] * fabs(R.m[0][0]);
+
+	t = fabs(T[2] * R.m[1][2] - T[1] * R.m[2][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	// L = A1 x B0
+	rA = a->ext[0] * fabs(R.m[2][0]) + a->ext[2] * fabs(R.m[0][0]);
+	rB = b->ext[1] * fabs(R.m[1][2]) + b->ext[2] * fabs(R.m[1][1]);
+
+	t = fabs(T[0] * R.m[2][0] - T[2] * R.m[0][0]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A1 x B1
+	rA = a->ext[0] * fabs(R.m[2][1]) + a->ext[2] * fabs(R.m[0][1]);
+	rB = b->ext[0] * fabs(R.m[1][2]) + b->ext[2] * fabs(R.m[1][0]);
+
+	t = fabs(T[0] * R.m[2][1] - T[2] * R.m[0][1]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A1 x B2
+	rA = a->ext[0] * fabs(R.m[2][2]) + a->ext[2] * fabs(R.m[0][2]);
+	rB = b->ext[0] * fabs(R.m[1][1]) + b->ext[1] * fabs(R.m[1][0]);
+
+	t = fabs(T[0] * R.m[2][2] - T[2] * R.m[0][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	// L = A2 x B0
+	rA = a->ext[0] * fabs(R.m[1][0]) + a->ext[1] * fabs(R.m[0][0]);
+
+	rB = b->ext[1] * fabs(R.m[2][2]) + b->ext[2] * fabs(R.m[2][1]);
+
+	t = fabs(T[1] * R.m[0][0] - T[0] * R.m[1][0]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A2 x B1
+	rA = a->ext[0] * fabs(R.m[2][1]) + a->ext[1] * fabs(R.m[0][1]);
+
+	rB = b->ext[0] * fabs(R.m[2][2]) + b->ext[2] * fabs(R.m[2][0]);
+
+	t = fabs(T[2] * R.m[1][1] - T[1] * R.m[2][1]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A2 x B2
+	rA = a->ext[0] * fabs(R.m[1][2]) + a->ext[1] * fabs(R.m[0][2]);
+
+	rB = b->ext[0] * fabs(R.m[2][1]) + b->ext[1] * fabs(R.m[2][0]);
+
+	t = fabs(T[1] * R.m[0][2] - T[0] * R.m[1][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+	/*no separating axis found,
+	the two boxes overlap */
+
+	return true;
 }
 
 float PhysicsHandler::DotProduct(const DirectX::XMFLOAT3 & v1, const DirectX::XMFLOAT3 & v2) const
@@ -170,7 +263,23 @@ float PhysicsHandler::DotProduct(const DirectX::XMFLOAT3 & v1, const DirectX::XM
 	return result;
 }
 
-DirectX::XMFLOAT3 PhysicsHandler::VectorSubstract(const DirectX::XMFLOAT3 & v1, const DirectX::XMFLOAT3 & v2)
+DirectX::XMFLOAT3 PhysicsHandler::CrossProduct(const DirectX::XMFLOAT3 & v1, const DirectX::XMFLOAT3 & v2) const
+{
+	DirectX::XMFLOAT3 result = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	DirectX::XMVECTOR temp1;
+	DirectX::XMVECTOR temp2;
+
+	temp1 = DirectX::XMLoadFloat3(&v1);
+	temp2 = DirectX::XMLoadFloat3(&v2);
+
+	temp1 = DirectX::XMVector2Cross(temp1, temp2);
+	DirectX::XMStoreFloat3(&result, temp1);
+	
+	return result;
+}
+
+DirectX::XMFLOAT3 PhysicsHandler::VectorSubstract(const DirectX::XMFLOAT3 & v1, const DirectX::XMFLOAT3 & v2) const
 {
 	DirectX::XMFLOAT3 result;
 	
@@ -194,8 +303,11 @@ bool PhysicsHandler::Initialize()
 	PhysicsComponent* tempObj = nullptr;
 	PhysicsComponent* tempObj2 = nullptr;
 
-	tempObj = new PhysicsComponent;
-	tempObj2 = new PhysicsComponent;
+	tempObj = new PhysicsComponent();
+	tempObj2 = new PhysicsComponent();
+
+	//tempObj.Rotate(45);
+
 
 	//Obj nr 1 is at position (0,0,0) with a with of 1
 	for (int i = 0; i < 3; i++)
@@ -204,7 +316,7 @@ bool PhysicsHandler::Initialize()
 		tempObj->m_OBB.pos = DirectX::XMFLOAT3(0, 0, 0);
 
 		tempObj->m_AABB.ext[i] = 1.0f;
-		tempObj->m_OBB.ext = DirectX::XMFLOAT3(0, 0, 0);
+		tempObj->m_OBB.ext[i] = 1.0f;
 
 		tempObj->m_OBB.orth[i] = DirectX::XMFLOAT3(0, 0, 0);
 		tempObj->m_OBB.orth[i] = DirectX::XMFLOAT3(0, 0, 0);
@@ -218,16 +330,19 @@ bool PhysicsHandler::Initialize()
 	for (int i = 0; i < 3; i++)
 	{
 		tempObj2->m_AABB.pos[i] = 0.0f;
-		tempObj2->m_OBB.pos = DirectX::XMFLOAT3(0,0,0);
+		tempObj2->m_OBB.pos = DirectX::XMFLOAT3(0, 0, 0);
 
 		tempObj2->m_AABB.ext[i] = 1.0f;
-		tempObj2->m_OBB.ext = DirectX::XMFLOAT3(0, 0, 0);
+		tempObj2->m_OBB.ext[i] = 1.0f;
 
 		tempObj2->m_OBB.orth[i] = DirectX::XMFLOAT3(0, 0, 0);
 		tempObj2->m_OBB.orth[i] = DirectX::XMFLOAT3(0, 0, 0);
 	}
 	//local axis in world space sets here x = (1,0,0), y-axis = (0, 1, 0) and z-axis = (0,0,1)
-	tempObj2->m_OBB.pos.x = 3.0f;
+	
+	
+	tempObj2->m_AABB.pos[0] = 2.0f;
+	tempObj2->m_OBB.pos.x = 2.0f;
 	
 	tempObj2->m_OBB.orth[0].x = 1.0f;
 	tempObj2->m_OBB.orth[1].y = 1.0f;
