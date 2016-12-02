@@ -58,17 +58,24 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	bool possibleCollitionZ = false;
 	PhysicsComponent* PC_ptr = nullptr;
 	PhysicsComponent* PC_toCheck = nullptr;
-	
+
 	DirectX::XMFLOAT3 transPF_v;
 	DirectX::XMFLOAT3 transPF_t;
 
+	OBB* a = nullptr;
+	OBB* b = nullptr;
+
+	a = &objA->m_OBB;
+	b = &objB->m_OBB;
+
+	float T[3];
+
 	transPF_v = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	transPF_t = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	//scalar values
 	float rA = 0.0f;
 	float rB = 0.0f;
-	float rC = 0.0f;
+	float t = 0.0f;
 
 	//B's basis with respect to A's local frame
 	DirectX::XMFLOAT3X3 R;
@@ -79,17 +86,16 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	DirectX::XMFLOAT3 tempV_C;
 
 	//this holds the translation vector in parent frame
-	transPF_v = this->VectorSubstract(objB->m_OBB.pos, objA->m_OBB.pos);
+	transPF_v = this->VectorSubstract(a->pos, b->pos);
 
-    //translation in A's frame (START)
+	//translation in A's frame (START)
 
 	//really tedious to do this, if time is given, we should make a better dot product
 	//really directX?!?!?
-	transPF_t.x = this->DotProduct(transPF_v, objA->m_OBB.orth[0]);
-	transPF_t.y = this->DotProduct(transPF_v, objA->m_OBB.orth[1]);
-	transPF_t.z = this->DotProduct(transPF_v, objA->m_OBB.orth[2]);
-
-
+	for (int i = 0; i < 3; i++)
+	{
+		T[i] = this->DotProduct(transPF_v, objA->m_OBB.orth[i]);
+	}
 
 	//translation in A's frame (END)
 
@@ -98,9 +104,55 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	{
 		for (int k = 0; k < 3; k++)
 		{
-			R.m[i][k] = this->DotProduct(objA->m_OBB.orth[i], objB->m_OBB.orth[k]);
+			R.m[i][k] = this->DotProduct(a->orth[i], b->orth[k]);
 		}
 	}
+
+	/*ALGORITHM: Use the separating axis test for all 15 potential
+	separating axes. If a separating axis could not be found, the two
+	boxes overlap. */
+
+	//A's basis vectors
+	for (int i = 0; i < 3; i++)
+	{
+		rA = a->ext[i];
+
+		rB = b->ext[0] * fabs(R.m[i][0]) + b->ext[1] * fabs(R.m[i][1]) + b->ext[2] * fabs(R.m[i][2]);
+
+		t = fabs(T[i]);
+
+		if (t > (rA + rB))
+		{
+			return false;
+		}
+	}
+
+	//B's basis vectors
+	for (int i = 0; i < 3; i++)
+	{
+		rA = a->ext[0] * fabs(R.m[0][i]) + a->ext[1] * fabs(R.m[1][i]) + a->ext[2] * fabs(R.m[2][i]);
+
+		rB = a->ext[i];
+
+		t = fabs(T[i]);
+
+		if (t > (rA + rB))
+		{
+			return false;
+		}
+	}
+
+	//9 cross products
+	// L = A0 x B
+
+
+	rA = a->ext[1] * fabs(R.m[2][0]) + a->ext[2] * fabs(R.m[1][0]);
+	rB = b->ext[1] * fabs(R.m[0][2]) + b->ext[2] * fabs(R.m[0][1]);
+
+	t = fabs(T[2] * R.m[1][0] - T[1] * R.m[2][0]);
+
+
+
 	return false;
 }
 

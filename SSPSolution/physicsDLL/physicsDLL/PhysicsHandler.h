@@ -21,7 +21,7 @@ struct AABB
 struct OBB
 {
 	DirectX::XMFLOAT3 pos;
-	DirectX::XMFLOAT3 ext;
+	float ext[3];
 	DirectX::XMFLOAT3 orth[3];
 };
 
@@ -59,6 +59,8 @@ private:
 	bool IntersectAABB();
 	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
 	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
+	DirectX::X
+
 	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2);
 public:
 	PhysicsHandler();
