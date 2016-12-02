@@ -6,7 +6,7 @@
 namespace Resources
 {
 
-	class FileLoader{
+	class DLL_OPERATION FileLoader{
 	public:
 		enum Files{
 			RESOURCE_FILE = 0,
@@ -36,6 +36,7 @@ namespace Resources
 		Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
 	
 		Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
+		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 	};
 
 }

@@ -67,6 +67,9 @@
     <ClCompile Include="EditorInputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -87,6 +90,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="EditorInputHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

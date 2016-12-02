@@ -134,3 +134,25 @@ Resources::Status Resources::FileLoader::LoadPlaceHolderMesh(std::string& path, 
 	infile.close();
 	return Resources::Status::ST_OK;
 }
+
+Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& data, size_t * size)
+{
+	std::streampos fsize;
+
+	std::ifstream infile;
+	infile.open(path.c_str(), std::fstream::binary | std::ios::ate);
+	if (!infile)
+		return Status::ST_ERROR_OPENING_FILE;
+
+	fsize = infile.tellg();
+
+	*size = static_cast<size_t>(fsize);
+
+	mem_manager.Clear(Resources::Memory::MEM_RES);
+
+	data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
+	infile.seekg(0,std::ios::beg);
+	infile.read(data, *size);
+	infile.close();
+	return Resources::Status::ST_OK;
+}

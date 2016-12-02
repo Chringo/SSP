@@ -6,6 +6,7 @@
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
 #include "RenderWidget.h"
+#include "FileImporter.h"
 
 	class SSP_Editor : public QMainWindow
 	{
@@ -27,6 +28,8 @@
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
 		D3DRenderWidget* m_D3DRenderWidget;
+		FileImporter m_fileImporter;
+
 		D3DRenderWidget* m_D3DRenderWidgetPreview;
 	};
 #endif

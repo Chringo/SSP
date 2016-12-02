@@ -100,12 +100,12 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 		indices = (unsigned int*) ((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 		
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->numVerts; i++)
-		{
-			std::cout << vertices[i].position[0] << ","
-				<< vertices[i].position[1] << ","
-				<< vertices[i].position[2] << std::endl;
-		}
+	//for (size_t i = 0; i < meshData->numVerts; i++)
+	//{
+	//	std::cout << vertices[i].position[0] << ","
+	//		<< vertices[i].position[1] << ","
+	//		<< vertices[i].position[2] << std::endl;
+	//}
 #endif // _DEBUG
 	}
 	else
@@ -120,23 +120,19 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	//		<< vertices[i].position[1] << ","
 	//		<< vertices[i].position[2] << std::endl;
 	//}
-
-
-		for (size_t i = 0; i < meshData->indexLength; i++)
-		{
-			//std::cout << vertices[i].position[0] << ","
-			//	<< vertices[i].position[1] << ","
-			//	<< vertices[i].position[2] << std::endl;
-
-
-			std::cout << indices[i] << std::endl;
-		}
+	//	for (size_t i = 0; i < meshData->indexLength; i++)
+	//	{
+	//		std::cout << indices[i] << std::endl;
+	//	}
 #endif
 	}
 
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
 
+
+	
+	
 	m_meshes[id] = ResourceContainer(newMesh, 1); // put it into the map
 	m_emptyContainers.pop_front(); //remove from empty container queue;
 
@@ -210,12 +206,12 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->numVerts; i++)
-		{
-			std::cout << vertices[i].position[0] << ","
-				<< vertices[i].position[1] << ","
-				<< vertices[i].position[2] << std::endl;
-		}
+		//for (size_t i = 0; i < meshData->numVerts; i++)
+		//{
+		//	std::cout << vertices[i].position[0] << ","
+		//		<< vertices[i].position[1] << ","
+		//		<< vertices[i].position[2] << std::endl;
+		//}
 #endif // _DEBUG
 	}
 	else{
@@ -223,10 +219,10 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		m_placeHolder->SetVertices(vertices, m_device, meshData->numVerts);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->indexLength; i++)
-		{
-			std::cout << indices[i] << std::endl;
-		}
+		//for (size_t i = 0; i < meshData->indexLength; i++)
+		//{
+		//	std::cout << indices[i] << std::endl;
+		//}
 #endif
 	}
 
