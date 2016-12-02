@@ -13,6 +13,8 @@
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+const char* IP = "192.168.1.141";	//Tobias NUC Specific local ip
+
 class System
 {
 private:
