@@ -23,6 +23,10 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 		m_materialHandler->SetDevice(device);
 		m_skeletonHandler->SetDevice(device);
 	}
+
+	UINT hej = 1;
+	ResourceContainer* yo;
+	m_skeletonHandler->LoadSkeleton(hej, yo);
 	
 }
 

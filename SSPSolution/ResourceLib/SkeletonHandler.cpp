@@ -74,11 +74,11 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	}
 	data += sizeof(MainHeader);
 
-	skelData.jointCount = ((SkeletonHeader*)data)->jointCount;
+	skelData.jointCount		= ((SkeletonHeader*)data)->jointCount;
 	unsigned int* animCount = &((SkeletonHeader*)data)->animLayerCount;
-	data += sizeof(SkeletonHeader);
-	skelData.joints = (Skeleton::Joint*)data;
-	data += sizeof(JointHeader) * skelData.jointCount;
+	data			 += sizeof(SkeletonHeader);
+	skelData.joints   = (Skeleton::Joint*)data;
+	data			 += sizeof(JointHeader) * skelData.jointCount;
 
 	st = newSkeleton->Create(&resData, &skelData);
 	if (st != ST_OK)
@@ -86,29 +86,29 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	skelData.joints = nullptr;
 	int animsloaded = 0;
-	//for (size_t i = 0; i < *animCount; i++)
-	//{
-	//	ResourceContainer* animPtr;
-	//	unsigned int* id = (unsigned int*)data;
-	//	//st = m_animationHandler->GetAnimation(id, &animPtr);
-	//	switch (st) {
-	//		case Status::ST_RES_MISSING: { //if it doesent exist
-	//			Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
-	//			if (mSt != ST_OK) {
-	//				continue;
-	//			}
-	//			else
-	//				newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
-	//			break;
-	//		}
-	//		case Status::ST_OK: {
-	//			animPtr->refCount += 1;
-	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
-	//			break;
-	//		}
-	//		animsloaded++;
-	//	}
-	//}
+	for (size_t i = 0; i < *animCount; i++)
+	{
+		ResourceContainer* animPtr;
+		unsigned int* id = &((LayerIdHeader*)data)->id;
+		//st = m_animationHandler->GetAnimation(id, &animPtr);
+		//switch (st) {
+		//	case Status::ST_RES_MISSING: { //if it doesent exist
+		//		//Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
+		//		if (mSt != ST_OK) {
+		//			continue;
+		//		}
+		//		else
+		//			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+		//		break;
+		//	}
+		//	case Status::ST_OK: {
+		//		animPtr->refCount += 1;
+		//		newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+		//		break;
+		//	}
+			animsloaded++;
+		//}
+	}
 	/*
 		Load all animations for the skeleton
 		for each anim
