@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RESOURCELIB_ANIMATION_ANIMATION_H
+#define RESOURCELIB_ANIMATION_ANIMATION_H
+
 #include "Resource.h"
 
 namespace Resources {
@@ -43,3 +45,4 @@ namespace Resources {
 	};
 }
 
+#endif
