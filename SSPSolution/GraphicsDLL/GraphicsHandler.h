@@ -31,7 +31,7 @@ private:
 	DirectX::XMFLOAT4X4 m_projectionMatrix;
 
 	GraphicsComponent** m_graphicsComponents;
-	Resources::Model** modelsPtr;
+	Resources::Model** m_modelsPtr;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
@@ -43,9 +43,7 @@ private:
 	int IncreaseArraySize();
 	int DecreaseArraySize();
 
-	bool initCheck;
 	bool m_gridEnabled;
-	float simpleGravity;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
