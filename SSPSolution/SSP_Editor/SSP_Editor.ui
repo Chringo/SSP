@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SSP_EditorClass</class>
+ <widget class="QMainWindow" name="SSP_EditorClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1131</width>
+    <height>695</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SSP_Editor</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>File Editor</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>10</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Preview</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>30</y>
+      <width>161</width>
+      <height>401</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Attributes</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>610</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reload</string>
+    </property>
+   </widget>
+   <widget class="QTreeView" name="treeView">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>201</width>
+      <height>571</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="RenderWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>30</y>
+      <width>711</width>
+      <height>571</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>711</width>
+      <height>571</height>
+     </size>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <zorder>RenderWidget_2</zorder>
+    <zorder>RenderWidget_2</zorder>
+   </widget>
+   <widget class="QWidget" name="RenderWidget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>440</y>
+      <width>161</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="acceptDrops">
+     <bool>true</bool>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <zorder>label_2</zorder>
+   <zorder>label</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>treeView</zorder>
+   <zorder>RenderWidget</zorder>
+   <zorder>RenderWidget_2</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1131</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuEditor">
+    <property name="title">
+     <string>Editor</string>
+    </property>
+    <addaction name="actionNew_scene"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_scene"/>
+    <addaction name="actionSave_scene"/>
+    <addaction name="separator"/>
+    <addaction name="actionBuild_BPF"/>
+   </widget>
+   <addaction name="menuEditor"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionNew_scene">
+   <property name="text">
+    <string>New scene</string>
+   </property>
+  </action>
+  <action name="actionLoad_scene">
+   <property name="text">
+    <string>Load scene</string>
+   </property>
+  </action>
+  <action name="actionSave_scene">
+   <property name="text">
+    <string>Save scene</string>
+   </property>
+  </action>
+  <action name="actionBuild_BPF">
+   <property name="text">
+    <string>Build .BPF</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="SSP_Editor.qrc"/>
+ </resources>
+ <connections/>
+</ui>

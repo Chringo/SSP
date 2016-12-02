@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "MeshHandler.h"
 #include "MaterialHandler.h"
+#include "SkeletonHandler.h"
 namespace Resources
 {
 
@@ -14,9 +15,10 @@ namespace Resources
 		std::deque<Model*> m_emptyContainers;
 		std::vector<Model> m_containers;
 
-		MeshHandler* m_meshHandler;
-		MaterialHandler* m_materialHandler;
-		ID3D11Device* m_device = nullptr;
+		MeshHandler*		m_meshHandler;
+		MaterialHandler*	m_materialHandler;
+		SkeletonHandler*	m_skeletonHandler;
+		ID3D11Device*		m_device = nullptr;
 
 		Model* placeHolderModel = nullptr;
 		ModelHandler();

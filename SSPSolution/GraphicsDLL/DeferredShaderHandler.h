@@ -2,11 +2,16 @@
 #define GRAPHICSDLL_DEFERREDSHADERHANDLER
 
 #include "ShaderHandler.h"
+#include "GraphicsComponent.h"
+#include "../ResourceLib/Model.h"
+#pragma comment (lib,"../Debug/ResourceLib")
 
 class DeferredShaderHandler :
 	public ShaderHandler
 {
 private:
+
+	ID3D11PixelShader* m_gridPixelShader;
 	ID3D11SamplerState* m_samplerState;
 	ID3D11Buffer * m_worldMatrixBuffer;
 	ID3D11Buffer * m_viewProjMatrixBuffer;
@@ -17,22 +22,35 @@ private:
 
 	ID3D11Texture2D* m_depthStencilBuffer;
 	ID3D11DepthStencilView* m_depthStencilView;
+
+	GraphicsComponent** m_graphicsComponents;
+	Resources::Model ** modelsPtr;
 public:
 	DeferredShaderHandler();
 	~DeferredShaderHandler();
 
-	int Initialize(ID3D11Device* device, HWND* windowHandle, const DirectX::XMINT2& resolution);
-	int SetActive(ID3D11DeviceContext* deviceContext, ShaderLib::ShaderType shaderType);
+	int Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int SetGraphicsParameters(GraphicsComponent** grapicsComponents, Resources::Model** modelsPtr);
+	
+	int SetActive(ShaderLib::ShaderType shaderType);
 	void Shutdown();
 
-	int SetShaderParameters(ID3D11DeviceContext* deviceContext, void* shaderParams, ShaderLib::CBuffer type);
-	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorld * world);
-	int BindWorldCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferWorldxm * world);
-	int BindViewProjectionCbuffer(ID3D11DeviceContext* deviceContext, ShaderLib::DeferredConstantBufferVP * viewProjection);
-	int ClearRenderTargetViews(ID3D11DeviceContext* deviceContext);
+
+	int Draw(ShaderLib::DrawType drawType);
+	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
+	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
+	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world);
+	int BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection);
+	int ClearRenderTargetViews();
+	int InitializeGridShader(ID3D11Device * device);
 	ID3D11DepthStencilView* GetDSV() { return this->m_depthStencilView; };
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();
+
+private:
+	int Draw();
+	int DrawInstanced();
+	int DrawGrid();
 };
 
 #endif

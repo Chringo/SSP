@@ -6,7 +6,7 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/standardCube.bbf");
+	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/grid.bbf");
 	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
 
 	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
@@ -131,6 +131,28 @@ Resources::Status Resources::FileLoader::LoadPlaceHolderMesh(std::string& path, 
 
 	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
 	infile.read(data + offset, sizetoRead);
+	infile.close();
+	return Resources::Status::ST_OK;
+}
+
+Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& data, size_t * size)
+{
+	std::streampos fsize;
+
+	std::ifstream infile;
+	infile.open(path.c_str(), std::fstream::binary | std::ios::ate);
+	if (!infile)
+		return Status::ST_ERROR_OPENING_FILE;
+
+	fsize = infile.tellg();
+
+	*size = static_cast<size_t>(fsize);
+
+	mem_manager.Clear(Resources::Memory::MEM_RES);
+
+	data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
+	infile.seekg(0,std::ios::beg);
+	infile.read(data, *size);
 	infile.close();
 	return Resources::Status::ST_OK;
 }
