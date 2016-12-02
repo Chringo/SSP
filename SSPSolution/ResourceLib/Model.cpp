@@ -28,14 +28,16 @@ Resources::Status Resources::Model::Create(Resource::RawResourceData* resData, R
 		delete m_rawData; m_rawData = new RawModelData; *m_rawData = *modelData;
 
 	}
-	return Resources::Status();
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status Resources::Model::Destroy()
 {
 
 	m_modelMesh = nullptr;
-	return Resources::Status();
+	m_material  = nullptr;
+	m_skeleton  = nullptr;
+	return Resources::Status::ST_OK;
 }
 
 std::shared_ptr<char> Resources::Model::GetDataAsBinary(size_t * size, bool * result)
