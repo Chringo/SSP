@@ -4,12 +4,22 @@
 
 Resources::Skeleton::Skeleton() :Resource()
 {
-	m_animations.resize(MAX_ANIMATIONS, nullptr);
+	m_animations.reserve(MAX_ANIMATIONS);
+	for (size_t i = 0; i < MAX_ANIMATIONS; i++)
+	{
+		m_animations.push_back(nullptr);
+		
+	}
+	//m_animations.insert(m_animations.cend(), MAX_ANIMATIONS, Animation* );
 }
 
 Resources::Skeleton::Skeleton(Resource::RawResourceData * resData) : Resource(*resData)
 {
-	m_animations.resize(MAX_ANIMATIONS, nullptr);
+	m_animations.reserve(MAX_ANIMATIONS);
+	for (size_t i = 0; i < MAX_ANIMATIONS; i++)
+	{
+		m_animations.push_back(nullptr);
+	}
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;
 }
 
@@ -18,7 +28,11 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 {
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;
 	m_skelData = *skelData;
-	m_animations.resize(MAX_ANIMATIONS,nullptr);
+	m_animations.reserve(MAX_ANIMATIONS);
+	for (size_t i = 0; i < MAX_ANIMATIONS; i++)
+	{
+		m_animations.push_back(nullptr);
+	}
 	
 }
 
@@ -37,16 +51,18 @@ Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resDat
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;	
 	m_skelData = *skelData;
 
+	m_animations.reserve(MAX_ANIMATIONS);
+	for (size_t i = 0; i < MAX_ANIMATIONS; i++)
+	{
+		m_animations.push_back(nullptr);
+	}
+
 	return Resources::Status::ST_OK;
 }
 
 Resources::Status Resources::Skeleton::Destroy()
 {
 	m_animations.clear();		//clear
-	m_animations.insert(		//set all to nullptr
-		m_animations.begin(),
-		m_animations.size(),
-		nullptr);
 	m_numAnimations = 0;
 	m_animationIds.insert(m_animationIds.begin(), m_animationIds.size(),unsigned int(0));
 	char name[5] = { 'N', 'O', 'N', 'E','\0' };

@@ -20,42 +20,30 @@ Resources::Animation::Animation(Resource::RawResourceData * resData, AnimationDa
 
 Resources::Animation::~Animation()
 {
-	delete m_anim.keyframes;
-	m_anim.keyframes = nullptr;
+	Destroy();
 }
 
 Resources::Status Resources::Animation::Create(Resource::RawResourceData * resData, AnimationData * animData)
 {
 	this->Destroy();
-
 	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
-	m_resourceData.m_id = resData->m_id;
-	this->m_resourceData.m_resType = ResourceType::RES_ANIMATION;
+	m_resourceData.m_id				= resData->m_id;
+	this->m_resourceData.m_resType  = ResourceType::RES_ANIMATION;
 	SetAnimationData(animData);
-
-
 	return Resources::Status::ST_OK;
 }
 
 Resources::Status Resources::Animation::Destroy()
 {
-	delete m_anim.keyframes;
-
-	m_anim.keyframes			= nullptr;
-	this->m_anim.jointCount		= 0;
-	this->m_anim.keyframeCount	= 0;
+	for (size_t i = 0; i < m_anim.jointCount; i++)
+	{
+		delete m_anim.joints[i].keyframes;
+		m_anim.joints[i].keyframes = nullptr;
+	}
+	delete m_anim.joints;
+	m_anim.joints = nullptr;
 
 	return Resources::Status::ST_OK;
-}
-
-const Resources::Animation::Keyframe * Resources::Animation::GetKeyframe(unsigned int & index)
-{
-	if (index >= m_anim.keyframeCount)
-		return nullptr;
-
-	Keyframe* ptr = m_anim.keyframes + (index * m_anim.jointCount);
-
-	return ptr;
 }
 
 std::shared_ptr<char> Resources::Animation::GetDataAsBinary(size_t * size, bool * result)
@@ -66,10 +54,16 @@ std::shared_ptr<char> Resources::Animation::GetDataAsBinary(size_t * size, bool 
 void Resources::Animation::SetAnimationData(AnimationData * anim)
 {
 
-	if (this->m_anim.keyframes != nullptr)
+	if (this->m_anim.joints != nullptr)
 		Destroy();
 	m_anim.jointCount			= anim->jointCount;
-	m_anim.keyframeCount	    = anim->keyframeCount;
-	m_anim.keyframes			= new Keyframe[m_anim.keyframeCount * m_anim.jointCount];
-	memcpy(m_anim.keyframes, anim->keyframes, sizeof(Keyframe)* (anim->jointCount * anim->keyframeCount));
+	m_anim.joints = new AnimationJoint[anim->jointCount];
+	for (size_t i = 0; i < anim->jointCount; i++)
+	{
+		m_anim.joints[i].keyframeCount  = anim->joints[i].keyframeCount;
+		m_anim.joints[i].keyframes		= new Keyframe[anim->joints[i].keyframeCount];
+		memcpy(m_anim.joints[i].keyframes,
+			anim->joints[i].keyframes,
+			sizeof(Keyframe) * anim->joints[i].keyframeCount);
+	}
 }

@@ -14,14 +14,15 @@ namespace Resources {
 			float translation[3]{0.0f,0.0f,0.0f };
 			float quaternion[4] {0.0f,0.0f,0.0f };
 			float scale[3]		{0.0f,0.0f,0.0f };
-
 		};
+		struct AnimationJoint {
+			unsigned int keyframeCount	= 0;
+			Keyframe*	 keyframes	    = nullptr;
+		}; 
 		struct AnimationData {
-			unsigned int keyframeCount  = 0;
 			unsigned int jointCount		= 0;
-			Keyframe*	 keyframes		= nullptr;
+			AnimationJoint* joints		= nullptr;
 		};
-
 	private:
 		AnimationData m_anim;
 	public:
@@ -33,9 +34,8 @@ namespace Resources {
 		Resources::Status Create(Resource::RawResourceData* resData, AnimationData* animData);
 		Resources::Status Destroy(); // Deincrement references to connected data, free container
 
-		const Keyframe* GetKeyframe(unsigned int& index);
-		const unsigned int* GetJointCount()	   { return &m_anim.jointCount;		};
-		const unsigned int* GetKeyFrameCount() { return &m_anim.keyframeCount;  };
+		const unsigned int*   GetJointCount()		   { return &m_anim.jointCount;		};
+		const AnimationJoint* GetJoint(int& index) { return (index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
 
 
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);

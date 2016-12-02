@@ -145,7 +145,7 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 			 {
 				 if (animationsIds->at(i) == 0)
 					 continue;
-				 //m_animationHandler->unloadAnimation(animationIds.at(i));
+				 m_animHandler->UnloadAnimation(animationsIds->at(i));
 			 }
 			((Skeleton*)skelRes->resource)->Destroy();
 			m_emptyContainers.push_back(((Skeleton*)skelRes->resource));
