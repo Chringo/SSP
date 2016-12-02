@@ -27,8 +27,8 @@ private:
 	EditorInputHandler* m_EditorInputHandler;
 	void Initialize(QWidget* parent, bool isPreview);
 
-	//widget deltatime
-private:
+	
+private: //for deltaTime
 	double m_countsPerSecond = 0.0;
 	__int64 m_counterStart = 0;
 

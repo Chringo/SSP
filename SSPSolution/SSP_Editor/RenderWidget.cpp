@@ -38,6 +38,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 
 	}
 	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
+	this->m_GraphicsHandler->InitializeGrid();
 	this->m_Camera = new Camera();
 	this->m_Camera->Initialize();
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
@@ -46,7 +47,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 	this->m_test = 0;
 	if (!isPreview)
 	{
-		this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height);
+		this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height, this->m_GraphicsHandler);
 		this->m_test = 1;
 	}
 }
@@ -61,7 +62,7 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-	if (parent->width() == 256)
+	if (parent->width() == 161)
 	{
 		Initialize(parent, true);
 	}
