@@ -12,6 +12,8 @@ Camera::Camera()
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	//this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_screenAspect = 0.0f;
+	this->m_fieldOfView = 0.0f;
 }
 
 
@@ -19,7 +21,7 @@ Camera::~Camera()
 {
 }
 
-int Camera::Initialize()
+int Camera::Initialize(float screenAspect = 1280 / 720, float fieldOfView = 0.0f)
 {
 	int result = 1;
 
@@ -32,6 +34,8 @@ int Camera::Initialize()
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	//this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_screenAspect = 0.0f;
+	this->m_fieldOfView = 0.0f;
 
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -47,6 +51,7 @@ int Camera::Initialize()
 	camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
 	////Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
+	
 
 	return result;
 }
@@ -70,6 +75,22 @@ int Camera::Update()
 	DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
 	//Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), lookAt, camUp));
+
+	return result;
+}
+
+int Camera::UpdateProjection()
+{
+	int result = 1;
+	if (this->m_screenAspect <= 0 || this->m_fieldOfView <= 0)
+	{
+		result = 0;
+	}
+	else
+	{
+		//Update the projection matrix
+		DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(this->m_fieldOfView, this->m_screenAspect, 0.1f, 1000.0f));
+	}
 
 	return result;
 }

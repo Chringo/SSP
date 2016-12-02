@@ -25,15 +25,19 @@ private:
 	DirectX::XMFLOAT4 m_cameraUp;
 	//The 4 values of a quaternion  
 	DirectX::XMFLOAT4 m_rotation;
+	//The values for the projection matrix
+	float m_screenAspect;
+	float m_fieldOfView;
 public:
 	Camera();
 	virtual ~Camera();
 
 	//Creates the base camera views
-	int Initialize();
+	int Initialize(float screenAspect, float fieldOfView);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	int Update();
+	int UpdateProjection();
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	DirectX::XMFLOAT4X4 * GetViewMatrix();
