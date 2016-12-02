@@ -189,6 +189,10 @@ int System::Update(float deltaTime)
 		{
 			this->m_networkModule.Join(this->m_ip);
 		}
+		else
+		{
+			printf("Join failed since this module is allready connected to other clients");
+		}
 	}
 	return result;
 }
