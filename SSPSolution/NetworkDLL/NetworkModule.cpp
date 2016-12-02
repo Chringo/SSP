@@ -627,3 +627,8 @@ std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 
 	return result;
 }
+
+int NetworkModule::GetNrOfConnectedClients()
+{
+	return this->connectedClients.size();
+}

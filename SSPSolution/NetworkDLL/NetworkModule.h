@@ -72,6 +72,8 @@ public:
 	std::list<AnimationPacket> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
 	std::list<StatePacket> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
 
+	int GetNrOfConnectedClients();
+
 };
 
 

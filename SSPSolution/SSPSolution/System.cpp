@@ -185,7 +185,10 @@ int System::Update(float deltaTime)
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
 	{
-		this->m_networkModule.Join(this->m_ip);
+		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+		{
+			this->m_networkModule.Join(this->m_ip);
+		}
 	}
 	return result;
 }
