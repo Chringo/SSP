@@ -85,6 +85,14 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 		return st;
 
 	skelData.joints = nullptr;
+
+	/*
+	Load all animations for the skeleton
+	for each anim
+	m_animationHandler
+	newSkeleton->AddAnimation
+	*/
+
 	int animsloaded = 0;
 	for (size_t i = 0; i < *animCount; i++)
 	{
@@ -109,12 +117,7 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 			animsloaded++;
 		//}
 	}
-	/*
-		Load all animations for the skeleton
-		for each anim
-		m_animationHandler
-		newSkeleton->AddAnimation
-	*/
+
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
 	m_emptyContainers.pop_front();							 // remove from empty container queue
 
