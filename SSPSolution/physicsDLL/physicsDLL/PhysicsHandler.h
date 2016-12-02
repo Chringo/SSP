@@ -12,12 +12,6 @@
 
 #pragma region
 
-struct OrthonormalBasis
-{
-	float x_axis[3];
-	float y_axis[3];
-};
-
 struct AABB
 {
 	float pos[3];
@@ -26,10 +20,9 @@ struct AABB
 
 struct OBB
 {
-	float pos[3];
-	float ext[3];
-
-	OrthonormalBasis orth;
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT3 ext;
+	DirectX::XMFLOAT3 orth[3];
 };
 
 #pragma endregion
@@ -64,6 +57,9 @@ private:
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
+	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
+	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
+	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2);
 public:
 	PhysicsHandler();
 	~PhysicsHandler();
