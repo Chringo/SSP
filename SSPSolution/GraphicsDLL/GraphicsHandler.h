@@ -3,7 +3,7 @@
 
 #include "Direct3DHandler.h"
 #include "DeferredShaderHandler.h"
-#include "LightShaderHandler.h"
+#include "FinalShaderHandler.h"
 #include "Camera.h"
 #include "GraphicsComponent.h"
 
@@ -22,20 +22,19 @@ private:
 	Direct3DHandler* m_d3dHandler;
 
 	DeferredShaderHandler* m_deferredSH;
-	LightShaderHandler* m_lightSH;
+	FinalShaderHandler* m_finalSH;
 
 	HWND* m_windowHandle;
 
-	Camera* m_camera;
-
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
+	Resources::Model** modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
-	Resources::Model** modelsPtr;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
 	//temp
+	Camera* m_camera;
+	DirectX::XMFLOAT4X4 m_projectionMatrix;
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 

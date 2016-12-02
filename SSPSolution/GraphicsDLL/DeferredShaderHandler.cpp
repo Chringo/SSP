@@ -5,12 +5,12 @@ DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
 	this->m_samplerState = nullptr;
 
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		this->m_deferredRenderTargetTextures[i] = nullptr;
-		this->m_deferredRenderTargetViews[i] = nullptr;
-		this->m_deferredShaderResources[i] = nullptr;
+		this->m_deferredT2D[i] = nullptr;
+		this->m_deferredRTV[i] = nullptr;
+		this->m_deferredSRV[i] = nullptr;
 	}
 
-	this->m_depthStencilView = nullptr;
+	this->m_DSV = nullptr;
 }
 
 
@@ -209,7 +209,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 
 	//Create the render target textures
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		hResult = device->CreateTexture2D(&renderTextureDesc, NULL, &this->m_deferredRenderTargetTextures[i]);
+		hResult = device->CreateTexture2D(&renderTextureDesc, NULL, &this->m_deferredT2D[i]);
 		if (FAILED(hResult)) {
 			return 1;
 		}
@@ -222,7 +222,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 
 	//Create the render target views
 	for (int i = 0; i<BUFFER_COUNT; i++) {
-		hResult = device->CreateRenderTargetView(this->m_deferredRenderTargetTextures[i], &renderTargetViewDesc, &this->m_deferredRenderTargetViews[i]);
+		hResult = device->CreateRenderTargetView(this->m_deferredT2D[i], &renderTargetViewDesc, &this->m_deferredRTV[i]);
 		if (FAILED(hResult)) {
 			return 1;
 		}
@@ -236,7 +236,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 
 	//Create the shader resource views
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		hResult = device->CreateShaderResourceView(this->m_deferredRenderTargetTextures[i], &shaderResourceViewDesc, &this->m_deferredShaderResources[i]);
+		hResult = device->CreateShaderResourceView(this->m_deferredT2D[i], &shaderResourceViewDesc, &this->m_deferredSRV[i]);
 		if (FAILED(hResult)) {
 			return 1;
 		}
@@ -267,7 +267,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 		return 1;
 	}
 
-	hResult = device->CreateDepthStencilView(this->m_depthStencilBuffer, NULL, &this->m_depthStencilView);
+	hResult = device->CreateDepthStencilView(this->m_depthStencilBuffer, NULL, &this->m_DSV);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -288,11 +288,12 @@ int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 {
 	ShaderHandler::SetActive(shaderType);
 
+	this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
 
 	//Set the render target views
-	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRenderTargetViews, this->m_depthStencilView);
+	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRTV, this->m_DSV);
 
 	return 0;
 }
@@ -309,17 +310,17 @@ void DeferredShaderHandler::Shutdown()
 	}
 	//Release the deferred render targets
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		if (this->m_deferredRenderTargetTextures[i]) {
-			this->m_deferredRenderTargetTextures[i]->Release();
-			this->m_deferredRenderTargetTextures[i] = nullptr;
+		if (this->m_deferredT2D[i]) {
+			this->m_deferredT2D[i]->Release();
+			this->m_deferredT2D[i] = nullptr;
 		}
-		if (this->m_deferredRenderTargetViews[i]) {
-			this->m_deferredRenderTargetViews[i]->Release();
-			this->m_deferredRenderTargetViews[i] = nullptr;
+		if (this->m_deferredRTV[i]) {
+			this->m_deferredRTV[i]->Release();
+			this->m_deferredRTV[i] = nullptr;
 		}
-		if (this->m_deferredShaderResources[i]) {
-			this->m_deferredShaderResources[i]->Release();
-			this->m_deferredShaderResources[i] = nullptr;
+		if (this->m_deferredSRV[i]) {
+			this->m_deferredSRV[i]->Release();
+			this->m_deferredSRV[i] = nullptr;
 		}
 		if (this->m_gridPixelShader)
 			this->m_gridPixelShader->Release();
@@ -473,7 +474,7 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ShaderLib::DeferredConstant
 	return 0;
 }
 
-int DeferredShaderHandler::ClearRenderTargetViews()
+int DeferredShaderHandler::Clear() //clears RTVs and DSV
 {
 	float color[4];
 
@@ -484,18 +485,18 @@ int DeferredShaderHandler::ClearRenderTargetViews()
 
 	//Clear the render target textures
 	for (int i = 0; i < BUFFER_COUNT; i++) {
-		m_deviceContext->ClearRenderTargetView(this->m_deferredRenderTargetViews[i], color);
+		m_deviceContext->ClearRenderTargetView(this->m_deferredRTV[i], color);
 	}
 
 	//Clear the depth buffer
-	m_deviceContext->ClearDepthStencilView(this->m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_deviceContext->ClearDepthStencilView(this->m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return 0;
 }
 
 ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
 {
-	return this->m_deferredShaderResources;
+	return this->m_deferredSRV;
 }
 
 int DeferredShaderHandler::Draw(/*RESOURCE*/)
