@@ -35,7 +35,7 @@ public:
 	Resources::Status Release();
 
 public:
-	std::vector<Container> getModels() {return this->m_ModelContainer};
+	std::vector<Container> getModels() { return this->m_ModelContainer; };
 	Container GetModel(unsigned int id);
 	void AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation);
 	void UpdateModel(unsigned int id, DirectX::XMVECTOR position, float rotation);

@@ -1,8 +1,7 @@
 #include "EditorInputHandler.h"
 
-EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler, Communicator* com)
+EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler)
 {
-	this->m_Communicator = com;
 	this->m_Width = w;
 	this->m_Height = h;
 	this->m_GraphicsHandler = graphicshandler;
