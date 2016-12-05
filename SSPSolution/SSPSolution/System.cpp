@@ -158,7 +158,12 @@ int System::Update(float deltaTime)
 				iter++;
 			}
 		}
+		printf("No Packets for camera\n");
 		
+	}
+	else
+	{
+		printf("PacketBuffer is empty\n");
 	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
