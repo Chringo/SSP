@@ -187,12 +187,19 @@ int System::Update(float deltaTime)
 	{
 		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
 		{
-			this->m_networkModule.Join(this->m_ip);
-			printf("Joined client with %s", this->m_ip);
+			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
+			{
+				printf("Joined client with %s\n", this->m_ip);
+			}
+			else
+			{
+				printf("Failed to connect to the client\n", this->m_ip);
+			}
+			
 		}
 		else
 		{
-			printf("Join failed since this module is allready connected to other clients");
+			printf("Join failed since this module is allready connected to other clients\n");
 		}
 	}
 	return result;

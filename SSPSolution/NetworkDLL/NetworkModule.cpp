@@ -130,85 +130,94 @@ int NetworkModule::Join(char* ip)
 	addrinfo *ptr = NULL;
 	addrinfo hints;
 
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;  //TCP
-
-	int iResult = getaddrinfo(ip, DEFAULT_PORT, &hints, &result);
-
-	if (iResult != 0)
+	if (this->my_ip == ip)	//if my_ip is the same as the ip we try to connect to
 	{
-		printf("getaddrinfo failed with error: %d\n", iResult);
-		WSACleanup();
+		printf("Cannot connect to %s as it is this machines local ip\n", ip);
 		return 0;
 	}
+	else
+	{
+		ZeroMemory(&hints, sizeof(hints));
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;  //TCP
 
-	// Attempt to connect to an address until one succeeds
-	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+		int iResult = getaddrinfo(ip, DEFAULT_PORT, &hints, &result);
 
-		// Create a SOCKET for connecting to server
-		this->connectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-
-		if (this->connectSocket == INVALID_SOCKET) {
-			printf("socket failed with error: %ld\n", WSAGetLastError());
+		if (iResult != 0)
+		{
+			printf("getaddrinfo failed with error: %d\n", iResult);
 			WSACleanup();
 			return 0;
 		}
 
-		// Connect to server.
-		iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		// Attempt to connect to an address until one succeeds
+		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 
+			// Create a SOCKET for connecting to server
+			this->connectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+
+			if (this->connectSocket == INVALID_SOCKET) {
+				printf("socket failed with error: %ld\n", WSAGetLastError());
+				WSACleanup();
+				return 0;
+			}
+
+			// Connect to server.
+			iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+
+			if (iResult == SOCKET_ERROR)
+			{
+				closesocket(this->connectSocket);
+				this->connectSocket = INVALID_SOCKET;
+				printf("The server is down... did not connect");
+			}
+		}
+
+		// no longer need address info for server
+		freeaddrinfo(result);
+
+		// if connection failed
+		if (this->connectSocket == INVALID_SOCKET)
+		{
+			printf("Unable to connect to server!\n");
+			WSACleanup();
+			return 0;
+		}
+
+		// Set the mode of the socket to be nonblocking
+		u_long iMode = 1;
+
+		iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
 		if (iResult == SOCKET_ERROR)
 		{
+			printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
 			closesocket(this->connectSocket);
-			this->connectSocket = INVALID_SOCKET;
-			printf("The server is down... did not connect");
+			WSACleanup();
+			return 0;
 		}
+
+		//Send CONNECTION_REQUEST package
+		const unsigned int packet_size = sizeof(Packet);
+		char packet_data[packet_size];
+
+		Packet packet;
+		packet.packet_type = CONNECTION_REQUEST;
+		packet.packet_ID = this->packet_ID;
+		this->packet_ID++;
+		packet.timestamp = this->GetTimeStamp();
+
+		packet.serialize(packet_data);
+		NetworkService::sendMessage(this->connectSocket, packet_data, packet_size);
+		printf("Sent CONNECTION_REQUEST to host\n");
+
+		this->connectedClients.insert(std::pair<unsigned int, SOCKET>(this->client_id, this->connectSocket));
+		printf("client %d has been connected to the this client\n", this->client_id);
+		this->client_id++;
+
+		return 1;
 	}
 
-	// no longer need address info for server
-	freeaddrinfo(result);
-
-	// if connection failed
-	if (this->connectSocket == INVALID_SOCKET)
-	{
-		printf("Unable to connect to server!\n");
-		WSACleanup();
-		return 0;
-	}
-
-	// Set the mode of the socket to be nonblocking
-	u_long iMode = 1;
-
-	iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
-	if (iResult == SOCKET_ERROR)
-	{
-		printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
-		closesocket(this->connectSocket);
-		WSACleanup();
-		return 0;
-	}
-
-	//Send CONNECTION_REQUEST package
-	const unsigned int packet_size = sizeof(Packet);
-	char packet_data[packet_size];
-
-	Packet packet;
-	packet.packet_type = CONNECTION_REQUEST;
-	packet.packet_ID = this->packet_ID; 
-	this->packet_ID++;
-	packet.timestamp = this->GetTimeStamp();
-
-	packet.serialize(packet_data);
-	NetworkService::sendMessage(this->connectSocket, packet_data, packet_size);
-	printf("Sent CONNECTION_REQUEST to host\n");
-
-	this->connectedClients.insert(std::pair<unsigned int, SOCKET>(this->client_id, this->connectSocket));
-	printf("client %d has been connected to the this client\n", this->client_id);
-	this->client_id++;
-
-	return 1;
 }
 
 void NetworkModule::SendFlagPacket(PacketTypes type)
