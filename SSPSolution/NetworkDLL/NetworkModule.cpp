@@ -108,6 +108,24 @@ int NetworkModule::Shutdown()
 {
 	int i = 0;
 	i = this->connectedClients.size();
+
+	//DISCONNECT_REQUESTs should already have been sent on disconnect,
+	//but if there still is connected clients , send a DISCONNECT_REQUEST to them and dont wait for DISCONNECT_ACCEPTED
+	if (i > 0)
+	{
+		const unsigned int packet_size = sizeof(Packet);
+		char packet_data[packet_size];
+
+		Packet packet;
+		packet.packet_type = DISCONNECT_REQUEST;
+		packet.packet_ID = this->packet_ID;
+		this->packet_ID++;
+		packet.timestamp = this->GetTimeStamp();
+
+		packet.serialize(packet_data);
+		this->SendToAll(packet_data, packet_size);
+	}
+	
 	this->connectedClients.clear();
 	printf("%d Clients has been removed on server shutdown\n", i);
 

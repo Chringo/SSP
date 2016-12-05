@@ -202,6 +202,10 @@ int System::Update(float deltaTime)
 			printf("Join failed since this module is already connected to other clients\n");
 		}
 	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	{
+		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
+	}
 	return result;
 }
 
