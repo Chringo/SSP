@@ -9,6 +9,8 @@ namespace Resources {
 	public:
 		Animation();
 		virtual ~Animation();
+
+		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 	};
 }
 

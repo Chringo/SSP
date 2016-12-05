@@ -31,6 +31,7 @@ private:
 	DirectX::XMFLOAT4X4 m_projectionMatrix;
 
 	GraphicsComponent** m_graphicsComponents;
+	Resources::Model** m_modelsPtr;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
@@ -42,8 +43,7 @@ private:
 	int IncreaseArraySize();
 	int DecreaseArraySize();
 
-	bool initCheck;
-	float simpleGravity;
+	bool m_gridEnabled;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
@@ -51,8 +51,11 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
-	void Shutdown();
 
+	int InitializeGrid();
+	int RenderGrid(int& align, float& scale);
+	void Shutdown();
+	
 	//temp
 	int CreateTriangle();
 	int SetTriangle();

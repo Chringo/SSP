@@ -11,14 +11,27 @@ namespace ShaderLib
 		Normal = 0,
 		Instanced = 1,
 		Animated = 2,
-		InstancedAnimated = 3
+		InstancedAnimated = 3,
+		Grid = 4
 	};
 
 	enum CBuffer
 	{
-		WORLD,
-		VIEW_PROJECTION,
-		CAMERA
+		CB_WORLD,
+		CB_VIEW_PROJECTION,
+		CB_CAMERA
+	};
+
+	enum DrawType
+	{
+		DRAW_STANDARD,
+		DRAW_INSTANCED,
+		DRAW_GRID
+	};
+	enum RasteriserState
+	{
+		RASTER_NORMAL,
+		RASTER_WIREFRAME
 	};
 
 	struct DeferredConstantBufferWorld
