@@ -59,5 +59,28 @@ void FileImporter::LoadImportedFiles()
 	for (int i = 0; i < m_filepaths.size(); ++i)
 	{
 		m_fileLoader->LoadFile(m_filepaths.at(i), pek, &length);
+
+		Resources::ResourceType loadedObject = (Resources::ResourceType)(*pek + sizeof(unsigned int));
+
+		switch (loadedObject)
+		{
+		case Resources::ResourceType::RES_MESH:
+			break;
+		case Resources::ResourceType::RES_ANIMATION:
+			break;
+		case Resources::ResourceType::RES_MODEL:
+			break;
+		case Resources::ResourceType::RES_TEXTURE:
+			break;
+		case Resources::ResourceType::RES_MATERIAL:
+			break;
+		case Resources::ResourceType::RES_SOUND:
+			break;
+		
+			//RES_UI
+
+		default:
+			break;
+		}
 	}
 }
