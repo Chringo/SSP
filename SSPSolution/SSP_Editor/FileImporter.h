@@ -7,6 +7,11 @@
 #include "../ResourceLib/FileLoader.h"
 class FileImporter
 {
+private:
+	/*variables*/
+	std::vector<std::string> m_filepaths;
+	Resources::FileLoader *m_fileLoader;
+
 public:
 	FileImporter();
 	~FileImporter();
@@ -14,7 +19,8 @@ public:
 	void ImportFromServer();
 	void LoadImportedFiles();
 private:
-	std::vector<std::string> m_filepaths;
-	Resources::FileLoader *m_fileLoader;
+	/*functions*/
+	void handleMesh(char * m_bbf_object);
+	void handleMat(char *m_bbf_object);
 };
 #endif

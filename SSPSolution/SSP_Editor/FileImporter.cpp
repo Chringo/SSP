@@ -54,13 +54,13 @@ void FileImporter::ImportFromServer()
 
 void FileImporter::LoadImportedFiles()
 {
-	char *pek;
+	char *m_bbf_object;
 	size_t length;
 	for (int i = 0; i < m_filepaths.size(); ++i)
 	{
-		m_fileLoader->LoadFile(m_filepaths.at(i), pek, &length);
+		m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
 
-		Resources::ResourceType loadedObject = (Resources::ResourceType)(*pek + sizeof(unsigned int));
+		Resources::ResourceType loadedObject = (Resources::ResourceType)(*m_bbf_object + sizeof(unsigned int));
 
 		switch (loadedObject)
 		{
@@ -83,4 +83,12 @@ void FileImporter::LoadImportedFiles()
 			break;
 		}
 	}
+}
+
+void FileImporter::handleMesh(char * m_bbf_object)
+{
+}
+
+void FileImporter::handleMat(char * m_bbf_object)
+{
 }
