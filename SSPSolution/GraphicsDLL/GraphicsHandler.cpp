@@ -84,13 +84,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
 
-	//Setup projection matrix
-	//fieldOfView = 3.141592654f / 4.0f;
-	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-	float screenAspect = (float)resolution.x / (float)resolution.y;
-
-	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
-
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		this->m_graphicsComponents[i] = nullptr;
@@ -152,7 +145,7 @@ int GraphicsHandler::Render()
 
 
 	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
-	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
+	shaderParamsVP->projectionMatrix = *this->m_camera->GetProjectionMatrix();
 
 	this->m_deferredSH->SetShaderParameters(shaderParamsVP, ShaderLib::CB_VIEW_PROJECTION);
 

@@ -28,8 +28,6 @@ private:
 
 	Camera* m_camera;
 
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
-
 	GraphicsComponent** m_graphicsComponents;
 	Resources::Model** m_modelsPtr;
 	int m_nrOfGraphicsComponents;
