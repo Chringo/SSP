@@ -112,10 +112,6 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
      /*T E M P*/
 	Resource::RawResourceData temp;
 	temp.m_resType = RES_TEXTURE;
-	temp.m_name[0] = 'T';
-	temp.m_name[1] = 'E';
-	temp.m_name[2] = 'X';
-	temp.m_name[3] = '\0';
 	temp.m_id = 7869;
 	newTexture->Create(&temp);   //Initialize it with data
 	/***************/
@@ -177,10 +173,6 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 	/*T E M P*/
 	Resource::RawResourceData temp;
 	temp.m_resType = RES_TEXTURE;
-	temp.m_name[0] = 'T';
-	temp.m_name[1] = 'E';
-	temp.m_name[2] = 'X';
-	temp.m_name[3] = '\0';
 	temp.m_id = 7869;
 	/***************/
 	Status st;

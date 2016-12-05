@@ -31,7 +31,6 @@ Resources::Mesh::Mesh() : Resource()
 Resources::Status Resources::Mesh::Create(Resource::RawResourceData * resData, ID3D11Device* dev , RawMeshData * meshData, bool keepRawData)
 {
 	this->Destroy();
-	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
 	m_resourceData.m_id = resData->m_id;
 	m_resourceData.m_resType = RES_MESH;
 	if (meshData != nullptr)
@@ -74,8 +73,6 @@ Resources::Status Resources::Mesh::Destroy()
 {
 	if (!EraseMeshData())
 		return Status::ST_BUFFER_ERROR;
-	char name[5] = { 'N', 'O', 'N', 'E','\0' };
-	memcpy(m_resourceData.m_name, name, sizeof(char) * 5);
 	this->m_resourceData.m_id = 0;
 
 	return Resources::Status::ST_OK;
@@ -238,7 +235,6 @@ bool Resources::Mesh::EraseMeshData()
 		Resources::OutputErrorString(this, std::string("could not release indexbuffer")); return false;
 	}
 	
-	std::cout << "Erasin mesh data on : " << this->GetName() << std::endl;
 
 
 	m_AnimVertBuffer  = nullptr;

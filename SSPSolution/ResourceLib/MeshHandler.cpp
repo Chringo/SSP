@@ -65,7 +65,8 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 
 	char* data = nullptr;
 	size_t dataSize = 0;
-	Status st = FileLoader::GetInstance()->LoadResource(id, data, &dataSize);
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.bbf";
+	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
 	if (st != ST_OK)
 		return st;
 	
@@ -88,7 +89,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 #endif // DEBUG
 
 	Mesh* newMesh = m_emptyContainers.front();		//Get an empty container
-	st = newMesh->Create((Resource::RawResourceData*)data); //Initialize it with data
+	st = newMesh->Create(resData); //Initialize it with data
 
 	if (st != ST_OK)
 		return st;
