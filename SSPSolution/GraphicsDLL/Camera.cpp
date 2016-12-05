@@ -313,6 +313,19 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
+void Camera::AlignWithRay(DirectX::XMVECTOR direction)
+{
+	//Align camera rotation with direction
+	//Define the rotation between the ray and the camera
+	DirectX::XMVECTOR cameraDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	DirectX::XMVECTOR rotateVec = DirectX::XMVector3Cross(direction, cameraDir);
+	float rotateAmount = DirectX::XMScalarACos(DirectX::XMVectorGetX(DirectX::XMVector3Dot(direction, cameraDir)));
+	float tempRotateAxis = DirectX::XMScalarASin(rotateAmount / 2);
+	//Define the rotation as a quaternion
+	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(tempRotateAxis * DirectX::XMVectorGetX(rotateVec), tempRotateAxis * DirectX::XMVectorGetY(rotateVec), tempRotateAxis * DirectX::XMVectorGetZ(rotateVec), DirectX::XMScalarACos(rotateAmount / 2));
+	DirectX::XMStoreFloat4(&this->m_rotation, rotation);
+	this->Update();
+}
 //void Camera::SetRotationAroundPosOffset(float x, float y, float z)
 //{
 //	this->m_rotateAroundPos.x = x;

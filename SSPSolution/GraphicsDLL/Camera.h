@@ -11,6 +11,12 @@
 class GRAPHICSDLL_API Camera
 {
 private:
+	struct Matrices {
+
+	};
+	struct Vectors {
+
+	};
 	//The second matrix used in deferred rendering
 	DirectX::XMFLOAT4X4 m_viewMatrix;
 	//The base view matrix were created with the following values
@@ -78,7 +84,8 @@ public:
 	void ApplyLocalTranslation(float x, float y, float z);
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
-	//
+	void AlignWithRay(DirectX::XMVECTOR direction);
+
 	/*void SetRotationAroundPosOffset(float x, float y, float z);
 	void SetRotationAroundPos(float x, float y, float z);*/
 	
