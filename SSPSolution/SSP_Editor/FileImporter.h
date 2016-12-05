@@ -5,12 +5,16 @@
 #include <string>
 #include "dirent.h"
 #include "../ResourceLib/FileLoader.h"
+#include "../ResourceLib/Model.h"
 class FileImporter
 {
 private:
 	/*variables*/
 	std::vector<std::string> m_filepaths;
 	Resources::FileLoader *m_fileLoader;
+
+	//put model vector hetrer;
+	std::vector<Resources::Model*> m_models;
 
 public:
 	FileImporter();
