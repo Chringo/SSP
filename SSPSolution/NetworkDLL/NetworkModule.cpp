@@ -400,10 +400,11 @@ void NetworkModule::ReadMessagesFromClients()
 		
 		// get data for that client
 		int data_length = this->ReceiveData(iter->first, network_data);
-		printf("We get here &d\n", data_length);
+		printf("We get here %d\n", data_length);
 		if (data_length <= 0)
 		{
 			//no data recieved exit function
+			iter++;
 			continue;
 		}
 
