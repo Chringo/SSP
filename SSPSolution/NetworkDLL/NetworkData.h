@@ -15,7 +15,8 @@ enum PacketTypes {
 	UPDATE_ENTITY = 4,
 	UPDATE_ANIMATION = 5,
 	UPDATE_STATE = 6,
-	TEST_PACKET = 7,
+	UPDATE_CAMERA = 7,
+	TEST_PACKET = 8,
 };
 
 struct Packet
@@ -98,4 +99,21 @@ struct StatePacket : public Packet
 		memcpy(this, data, sizeof(StatePacket));
 	}
 };
+
+struct CameraPacket : public Packet
+{
+	DirectX::XMFLOAT4 pos;
+	//DirectX::XMFLOAT4 rotation;
+
+	virtual void serialize(char * data)
+	{			//Turn the PacketType into bytes
+		memcpy(data, this, sizeof(CameraPacket));
+	}
+
+	virtual void deserialize(char * data)
+	{			//Turn bytes into PacketType
+		memcpy(this, data, sizeof(CameraPacket));
+	}
+};
+
 #endif

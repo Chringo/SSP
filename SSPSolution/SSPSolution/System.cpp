@@ -141,6 +141,23 @@ int System::Update(float deltaTime)
 	int result = 1;
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
+	std::list<CameraPacket> cList;
+
+	//Check for camera updates from the network
+	if (!this->m_networkModule.PacketBuffer_isEmpty())
+	{
+		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
+
+		std::list<CameraPacket>::iterator iter;
+
+		for (iter = cList.begin(); iter != cList.end();)
+		{
+			this->m_camera->SetCameraPos(iter->pos);
+		}
+	}
+
+	
+
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		translateCameraZ++;
@@ -183,6 +200,15 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
 		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
+
+		//Send updates over the network
+		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
+		{
+			DirectX::XMFLOAT4 updatePos;
+			this->m_camera->GetCameraPos(updatePos);
+			this->m_networkModule.SendCameraPacket(updatePos);
+		}
+		
 	}
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))

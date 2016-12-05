@@ -324,6 +324,22 @@ void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
 	this->SendToAll(packet_data, packet_size);
 }
 
+void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/)
+{
+	const unsigned int packet_size = sizeof(StatePacket);
+	char packet_data[packet_size];
+
+	CameraPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_CAMERA;
+	packet.pos = newPos;
+	//packet.rotation = newRotation;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
@@ -481,6 +497,17 @@ void NetworkModule::ReadMessagesFromClients()
 			iter++;
 			break;
 		
+		case UPDATE_CAMERA:
+
+			printf("Recived CAMERA_UPDATE packet\n");
+
+			sP.deserialize(network_data);
+
+			this->packet_Buffer.push_back(sP);
+
+			iter++;
+			break;
+
 		case TEST_PACKET:
 
 			printf("Recived TEST_PACKET packet\n");
@@ -489,7 +516,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
 
-			this->SendFlagPacket(TEST_PACKET);
+			//this->SendFlagPacket(TEST_PACKET);
 
 			iter++;
 			break;
@@ -682,6 +709,35 @@ std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 		{
 
 			sPP = dynamic_cast<StatePacket*>(&(*iter));
+
+			result.push_back(*sPP);
+			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
+			sPP = nullptr;
+
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
+{
+	CameraPacket* sPP = nullptr;
+	std::list<CameraPacket> result;
+	std::list<Packet>::iterator iter;
+	bool deleted = false;
+
+	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
+	{
+		if (iter->packet_type == UPDATE_STATE)
+		{
+
+			sPP = dynamic_cast<CameraPacket*>(&(*iter));
 
 			result.push_back(*sPP);
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element

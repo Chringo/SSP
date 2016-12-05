@@ -65,6 +65,7 @@ public:
 	void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
 	void SendAnimationPacket(unsigned int entityID);
 	void SendStatePacket(unsigned int entityID, bool newState);
+	void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
 
 	bool PacketBuffer_isEmpty();
 	bool PacketBuffer_isLocked();
@@ -75,6 +76,7 @@ public:
 	std::list<EntityPacket> PacketBuffer_GetEntityPackets();		//Get ALL EntityPackets in packet_Buffer	
 	std::list<AnimationPacket> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
 	std::list<StatePacket> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
+	std::list<CameraPacket> PacketBuffer_GetCameraPackets();
 
 	int GetNrOfConnectedClients();
 
