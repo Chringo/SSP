@@ -38,7 +38,7 @@ void AnimationHandler::Update(float dt)
 		{
 			/*Send the elapsed time from previous animation clip, it's index and the index to the next animation.*/
 			/*Blend between animations.*/
-			Blend(elapsedTime, currentAnimation, 0); //<---- Somehow get the new animation state as input argument here. 
+			//Blend(elapsedTime, currentAnimation, 0); //<---- Somehow get the new animation state as input argument here. 
 
 			elapsedTime = 0.0f;
 
@@ -70,11 +70,9 @@ void AnimationHandler::Update(float dt)
 			int startFrame, endFrame, duration;
 			GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
 			
-			Push(0, isLooping, 0, 0, 0);
+			Push (0, isLooping, 0, 0, 0);
 
-			Blend(elapsedTime, currentAnimation, 0);
-
-			elapsedTime = 0.0f;
+			//Blend(elapsedTime, currentAnimation, 0);
 		}
 
 		/*Call this function and check if the elapsedTime is at the start, between frames or at the end.*/
