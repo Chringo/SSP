@@ -10,6 +10,7 @@ FileImporter::FileImporter()
 
 FileImporter::~FileImporter()
 {
+	m_models.clear();
 }
 
 void FileImporter::ImportFromServer()
@@ -54,10 +55,48 @@ void FileImporter::ImportFromServer()
 
 void FileImporter::LoadImportedFiles()
 {
-	char *pek;
+	char *m_bbf_object;
 	size_t length;
 	for (int i = 0; i < m_filepaths.size(); ++i)
 	{
-		m_fileLoader->LoadFile(m_filepaths.at(i), pek, &length);
+		m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
+
+		Resources::ResourceType loadedObject = (Resources::ResourceType)(*m_bbf_object + sizeof(unsigned int));
+
+		switch (loadedObject)
+		{
+		case Resources::ResourceType::RES_MESH:
+			handleMesh(m_bbf_object);
+			break;
+		case Resources::ResourceType::RES_ANIMATION:
+			break;
+		case Resources::ResourceType::RES_MODEL:
+			break;
+		case Resources::ResourceType::RES_TEXTURE:
+			break;
+		case Resources::ResourceType::RES_MATERIAL:
+			handleMat(m_bbf_object);
+			break;
+		case Resources::ResourceType::RES_SOUND:
+			break;
+		
+			//RES_UI
+
+		default:
+			break;
+		}
 	}
+}
+
+void FileImporter::handleMesh(char * m_bbf_object)
+{
+	/*create model type here and then when reading */
+
+	/*add to the ui here*/
+
+	//Resources::Model *importedModel = new Resources::Model;
+}
+
+void FileImporter::handleMat(char * m_bbf_object)
+{
 }
