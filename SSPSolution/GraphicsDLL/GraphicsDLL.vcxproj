@@ -88,6 +88,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConstantBufferHandler.h" />
     <ClInclude Include="DeferredShaderHandler.h" />
     <ClInclude Include="Direct3DHandler.h" />
     <ClInclude Include="GraphicsComponent.h" />
@@ -99,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ConstantBufferHandler.cpp" />
     <ClCompile Include="DeferredShaderHandler.cpp" />
     <ClCompile Include="Direct3DHandler.cpp" />
     <ClCompile Include="GraphicsHandler.cpp" />

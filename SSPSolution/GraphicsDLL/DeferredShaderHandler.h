@@ -22,6 +22,7 @@ private:
 
 	ID3D11Texture2D* m_depthStencilBuffer;
 	ID3D11DepthStencilView* m_DSV;
+	ID3D11DepthStencilState* m_DSS;
 
 	GraphicsComponent** m_graphicsComponents;
 	Resources::Model ** modelsPtr;

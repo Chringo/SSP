@@ -273,6 +273,32 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 		return 1;
 	}
 
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	//Frontfacing triangles
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	//Backfacing triangles
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	hResult = device->CreateDepthStencilState(&depthStencilDesc, &this->m_DSS);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
 	return 0;
 }
 
