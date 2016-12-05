@@ -188,6 +188,7 @@ int System::Update(float deltaTime)
 		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
 		{
 			this->m_networkModule.Join(this->m_ip);
+			printf("Joined client with %s", this->m_ip);
 		}
 		else
 		{

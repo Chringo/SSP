@@ -1,12 +1,14 @@
 #ifndef NETWORKDLL_NETWORK_NETWORKMODULE_H
 #define NETWORKDLL_NETWORK_NETWORKMODULE_H
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include "NetworkService.h"
 #include <ws2tcpip.h>
 #include <map>
 #include "NetworkData.h"
+#include <sstream>
 #include <list>
-
 
 #pragma comment (lib, "Ws2_32.lib")
 
@@ -28,6 +30,7 @@ private:
 	int				packet_ID;
 	int				time_start;		//time in ms
 	int				time_current;	//nr of secounds since start (connected clients will sync to host)
+	std::string		my_ip;
 
 	SOCKET							listenSocket;	
 	SOCKET							connectSocket;		// Socket to listen for new connections	
@@ -40,6 +43,7 @@ private:
 	bool RemoveClient(unsigned int clientID);
 	void ReadMessagesFromClients();
 	float GetTimeStamp();
+	int GetMyIp();
 
 	//Test
 	int testID = 0;

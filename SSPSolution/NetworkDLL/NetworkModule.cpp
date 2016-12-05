@@ -94,6 +94,8 @@ int NetworkModule::Initialize()
 		return 0;
 	}
 
+	this->GetMyIp();
+
 	//Start the network system clock
 	this->time_start = std::clock();
 	
@@ -471,6 +473,41 @@ float NetworkModule::GetTimeStamp()
 {
 	this->time_current = (std::clock() - this->time_start);
 	return this->time_current;
+}
+
+int NetworkModule::GetMyIp()
+{
+	char ac[80];
+	struct in_addr addr;
+
+	if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) 
+	{
+		printf("failed to get local ip");
+		0;
+	}
+
+	struct hostent *phe = gethostbyname(ac);
+	if (phe == 0) {
+		printf("failed to get local ip");
+		0;
+	}
+
+	for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
+		
+		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+	}
+	unsigned char b1 = addr.S_un.S_un_b.s_b1;
+	unsigned char b2 = addr.S_un.S_un_b.s_b2;
+	unsigned char b3 = addr.S_un.S_un_b.s_b3;
+	unsigned char b4 = addr.S_un.S_un_b.s_b4;
+
+	//stream the data as int into the string
+	std::stringstream ss;
+	ss << (int)b1 << "." << (int)b2 << "." << (int)b3 << "." << (int)b4;
+	
+	this->my_ip.append(ss.str());
+
+	return 1;
 }
 
 void NetworkModule::SendToAll(char * packets, int totalSize)
