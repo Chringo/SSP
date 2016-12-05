@@ -390,6 +390,7 @@ void NetworkModule::ReadMessagesFromClients()
 	EntityPacket eP;
 	AnimationPacket aP;
 	StatePacket sP;
+	CameraPacket cP;
 
 	// go through all clients
 	std::map<unsigned int, SOCKET>::iterator iter;
@@ -501,9 +502,9 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived CAMERA_UPDATE packet\n");
 
-			sP.deserialize(network_data);
+			cP.deserialize(network_data);
 
-			this->packet_Buffer.push_back(sP);
+			this->packet_Buffer.push_back(cP);
 
 			iter++;
 			break;
