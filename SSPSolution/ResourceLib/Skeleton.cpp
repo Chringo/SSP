@@ -45,8 +45,6 @@ Resources::Skeleton::~Skeleton()
 Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, RawSkeletonData * skelData)
 {
 	this->Destroy();
-
-	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
 	m_resourceData.m_id = resData->m_id;
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;	
 	m_skelData = *skelData;
@@ -65,8 +63,6 @@ Resources::Status Resources::Skeleton::Destroy()
 	m_animations.clear();		//clear
 	m_numAnimations = 0;
 	m_animationIds.insert(m_animationIds.begin(), m_animationIds.size(),unsigned int(0));
-	char name[5] = { 'N', 'O', 'N', 'E','\0' };
-	memcpy(m_resourceData.m_name, name, sizeof(char) * 5);
 	this->m_resourceData.m_id = 0;
 
 	

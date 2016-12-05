@@ -46,7 +46,7 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/pCube1.skel";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.skel";
  	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;
@@ -135,7 +135,6 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 	Status st = GetSkeleton(id, skelRes);
 	switch (st)
 	{
-
 	case ST_OK:
 		skelRes->refCount -= 1;
 		if (skelRes->refCount <= 0)
@@ -157,7 +156,6 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 	default:
 		return st;
 	}
-
 	return Resources::Status::ST_OK;
 }
 

@@ -86,8 +86,6 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 	/*T E M P*/ 
 	Resource::RawResourceData temp;
 	temp.m_resType = RES_MODEL;
-	temp.m_name[0] = 'p';
-	temp.m_name[1] = '\0';
 	temp.m_id = 1337;
 	newModel->Create(&temp); //Initialize it with data
 	/***************/
@@ -244,8 +242,6 @@ bool Resources::ModelHandler::CreatePlaceHolder()
 		delete placeHolderModel;
 		this->placeHolderModel = new Model();
 		Resource::RawResourceData data;
-		char name[256] = { 'P','l','a','c','e','H','o','l','d','e','r','\0' };
-		memcpy(data.m_name, name, 256);
 		data.m_id = -11;
 		data.m_resType = RES_MODEL;
 		placeHolderModel->Create(&data);

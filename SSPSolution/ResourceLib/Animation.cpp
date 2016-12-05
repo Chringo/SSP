@@ -26,7 +26,6 @@ Resources::Animation::~Animation()
 Resources::Status Resources::Animation::Create(Resource::RawResourceData * resData, AnimationData * animData)
 {
 	this->Destroy();
-	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
 	m_resourceData.m_id				= resData->m_id;
 	this->m_resourceData.m_resType  = ResourceType::RES_ANIMATION;
 	SetAnimationData(animData);
