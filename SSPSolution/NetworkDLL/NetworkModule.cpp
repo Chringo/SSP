@@ -517,7 +517,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
 
-			//this->SendFlagPacket(TEST_PACKET);
+			this->SendFlagPacket(TEST_PACKET);
 
 			iter++;
 			break;

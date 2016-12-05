@@ -141,7 +141,7 @@ int System::Update(float deltaTime)
 	int result = 1;
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
-	std::list<CameraPacket> cList;
+	//std::list<CameraPacket> cList;
 
 	//Check for camera updates from the network
 	//if (!this->m_networkModule.PacketBuffer_isEmpty())
