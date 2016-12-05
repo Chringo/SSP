@@ -404,7 +404,7 @@ void NetworkModule::ReadMessagesFromClients()
 		if (data_length <= 0)
 		{
 			//no data recieved exit function
-			iter++;
+			continue;
 		}
 
 		//Read the header (skip the first 4 bytes since it is virtual function information)
