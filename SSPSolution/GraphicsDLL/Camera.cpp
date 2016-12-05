@@ -323,6 +323,7 @@ void Camera::AlignWithRay(DirectX::XMVECTOR direction)
 	float tempRotateAxis = DirectX::XMScalarASin(rotateAmount / 2);
 	//Define the rotation as a quaternion
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(tempRotateAxis * DirectX::XMVectorGetX(rotateVec), tempRotateAxis * DirectX::XMVectorGetY(rotateVec), tempRotateAxis * DirectX::XMVectorGetZ(rotateVec), DirectX::XMScalarACos(rotateAmount / 2));
+	//Apply the rotation
 	DirectX::XMStoreFloat4(&this->m_rotation, rotation);
 	this->Update();
 }
