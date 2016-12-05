@@ -6,6 +6,7 @@
 #include "FinalShaderHandler.h"
 #include "Camera.h"
 #include "GraphicsComponent.h"
+#include "ConstantBufferHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -20,7 +21,7 @@ class GRAPHICSDLL_API GraphicsHandler
 {
 private:
 	Direct3DHandler* m_d3dHandler;
-
+	ConstantBufferHandler * m_constantBufferHandler;
 	DeferredShaderHandler* m_deferredSH;
 	FinalShaderHandler* m_finalSH;
 

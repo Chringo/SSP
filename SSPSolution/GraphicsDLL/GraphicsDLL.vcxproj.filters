@@ -97,5 +97,8 @@
     <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl">
       <Filter>Resource Files\Shaders\PBR</Filter>
     </FxCompile>
+    <FxCompile Include="AnimVS.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

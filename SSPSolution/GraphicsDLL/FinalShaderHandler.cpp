@@ -255,7 +255,7 @@ int FinalShaderHandler::SetShaderParameters(ShaderLib::CameraConstantBuffer * sh
 	bufferNumber = 0;
 
 	//Set the constant buffer in vertex and pixel shader with updated values
-	m_deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
+	m_deviceContext->PSSetConstantBuffers(3, 1, &this->m_matrixBuffer);
 
 	if (this->m_gBufferRTVs) {
 		//Set shader texture resource for pixel shader

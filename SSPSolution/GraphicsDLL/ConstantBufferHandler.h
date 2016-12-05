@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include "ShaderLib.h"
 
 #ifndef CONSTANT_BUFFER_HANDLER_H
 
@@ -12,6 +13,7 @@ class ConstantBufferHandler
 		CB_CAMERA_B2,
 		CB_MATERIAL_B3,
 		CB_LIGHT_B4, 
+		CB_SKELETON_B5,
 
 		CB_TYPE_COUNT
 	};
@@ -51,6 +53,7 @@ class ConstantBufferHandler
 		BufferData cbCamera;
 		BufferData cbMaterial;
 		BufferData cbLight;
+		BufferData cbSkeleton;
 
 		ConstantBuffer() {};
 		~ConstantBuffer()
@@ -65,6 +68,8 @@ class ConstantBufferHandler
 				cbMaterial.D3DBuffer->Release();
 			if (cbLight.D3DBuffer)
 				cbLight.D3DBuffer->Release();
+			if (cbSkeleton.D3DBuffer)
+				cbSkeleton.D3DBuffer->Release();
 		}
 
 	};

@@ -64,6 +64,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->initCheck = false;
 	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
+	
 	this->modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
@@ -87,6 +88,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
+
+	//ConstantBufferHandler::Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();

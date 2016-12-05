@@ -13,7 +13,7 @@ SamplerState pointSampler : register(s1);
 //	matrix worldMatrix;
 //}
 
-cbuffer camera : register(b0)
+cbuffer camera : register(b3)
 {
     float3 camPos;
     float3 camTarget;

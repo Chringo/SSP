@@ -39,6 +39,11 @@ namespace ShaderLib
 		DirectX::XMFLOAT4X4 worldMatrix;
 	};
 
+	struct WorldConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 worldMatrix;
+	};
+
 	struct DeferredConstantBufferWorldxm
 	{
 		DirectX::XMMATRIX worldMatrix;
@@ -50,10 +55,21 @@ namespace ShaderLib
 		DirectX::XMFLOAT4X4 projectionMatrix;
 	};
 
+	struct VPConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 viewMatrix;
+		DirectX::XMFLOAT4X4 projectionMatrix;
+	};
+
 	struct DeferredConstantBufferVPxm
 	{
 		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX projectionMatrix;
+	};
+
+	struct SkeletonConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 joint[32];
 	};
 
 	struct CameraConstantBuffer
