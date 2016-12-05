@@ -176,8 +176,16 @@ int NetworkModule::Join(char* ip)
 			}
 
 			// Connect to server.
-			iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+			std::clock_t start = std::clock();
+			double dt = 0;
+			iResult = SOCKET_ERROR;
 
+			printf("Trying to connect to host...\n");
+			while (dt <= 10 && iResult == SOCKET_ERROR) //Try to connect for 10 seconds
+			{
+				iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);	
+				dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+			}
 			if (iResult == SOCKET_ERROR)
 			{
 				closesocket(this->connectSocket);
