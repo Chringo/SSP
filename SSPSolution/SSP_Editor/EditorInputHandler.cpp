@@ -1,7 +1,8 @@
 #include "EditorInputHandler.h"
 
-EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler)
+EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler, Communicator* com)
 {
+	this->m_Communicator = com;
 	this->m_Width = w;
 	this->m_Height = h;
 	this->m_GraphicsHandler = graphicshandler;
@@ -48,8 +49,8 @@ void EditorInputHandler::detectInput(double dT)
 
 	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
 
-	float speed = 10.0f * dT;
-	float speedrot = 5.0f * dT;
+	float speed = 5.0f * dT;
+	float speedrot = 2.5f * dT;
 	int result = 1;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	float yaw = 0, pitch = 0;
@@ -293,14 +294,12 @@ void EditorInputHandler::detectInput(double dT)
 				0.0f,
 				DirectX::XMScalarCos(rotationAmount / 2.0f)
 			);
-
 		this->m_Camera->SetRotation(newRotation);
-		this->m_Camera->Update();
 	this->m_Camera->Update();
 }
 float EditorInputHandler::Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection)
 {
-	//for (int i = 0; i < MODELAMT / 3; i++)
+	//for (int i = 0; i <  this->m_Communicator/ 3; i++)
 	//{
 	//
 	//	//Triangle's vertices, V1, V2, V3

@@ -64,11 +64,11 @@
       <AdditionalDependencies>d3d11.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /Y $(SolutionDir)Debug\GraphicsDLL-d.dll $(SolutionDir)EditorComp\debug</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>copy /Y $(SolutionDir)Debug\GraphicsDLL-d.dll $(SolutionDir)EditorComp\debug</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

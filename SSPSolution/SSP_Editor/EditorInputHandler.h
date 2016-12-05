@@ -7,6 +7,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 
 #include "../ResourceLib/ResourceHandler.h"
+#include "EditorCommunicator.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
 #pragma comment(lib,"dinput8.lib")
@@ -28,6 +29,7 @@ private:
 	DirectX::XMFLOAT3 m_PreviousPos;
 	HWND m_hwnd;
 	GraphicsHandler* m_GraphicsHandler;
+	Communicator* m_Communicator;
 	HasPicked m_Picked;
 	Camera* m_Camera;
 	DIMOUSESTATE		 m_mouseLastState;
@@ -37,7 +39,7 @@ private:
 	float Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection);
 	bool checkPointInTriangle(const DirectX::XMVECTOR& point, const DirectX::XMVECTOR& triangleV1, const DirectX::XMVECTOR& triangleV2, const DirectX::XMVECTOR& triangleV3);
 public:
-	EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int, int, GraphicsHandler* graphicshandler);
+	EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int, int, GraphicsHandler* graphicshandler, Communicator* com);
 	~EditorInputHandler();
 	void detectInput(double dT);
 };

@@ -113,7 +113,6 @@ void Communicator::RemoveModel(unsigned int id)
 	{
 		if (this->m_ModelContainer.at(i).internalId == id)
 		{
-			//this->m_ModelContainer.clear.at(i);
 			this->m_ModelContainer.at(i).internalId = 0;
 		}
 	}
