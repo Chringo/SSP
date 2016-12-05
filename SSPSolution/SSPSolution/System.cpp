@@ -189,7 +189,7 @@ int System::Update(float deltaTime)
 		{
 			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
 			{
-				printf("Joined client with %s\n", this->m_ip);
+				printf("Joined client with the ip %s\n", this->m_ip);
 			}
 			else
 			{
@@ -199,7 +199,7 @@ int System::Update(float deltaTime)
 		}
 		else
 		{
-			printf("Join failed since this module is allready connected to other clients\n");
+			printf("Join failed since this module is already connected to other clients\n");
 		}
 	}
 	return result;
