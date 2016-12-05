@@ -163,34 +163,19 @@ int NetworkModule::Join(char* ip)
 				return 0;
 			}
 
-			// Set the mode of the socket to be nonblocking
-			u_long iMode = 1;
-
-			iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
-			if (iResult == SOCKET_ERROR)
-			{
-				printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
-				closesocket(this->connectSocket);
-				WSACleanup();
-				return 0;
-			}
-
 			// Connect to server.
 			std::clock_t start = std::clock();
 			double dt = 0;
 			iResult = SOCKET_ERROR;
 
 			printf("Trying to connect to host...\n");
-			while (dt <= 10 && iResult == SOCKET_ERROR) //Try to connect for 10 seconds
-			{
-				iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);	
-				dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-			}
+
+			iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);	
 			if (iResult == SOCKET_ERROR)
 			{
 				closesocket(this->connectSocket);
 				this->connectSocket = INVALID_SOCKET;
-				printf("The server is down... did not connect\n");
+				printf("The host %s is down... did not connect\n", ip);
 				return 0;
 			}
 		}
@@ -202,6 +187,18 @@ int NetworkModule::Join(char* ip)
 		if (this->connectSocket == INVALID_SOCKET)
 		{
 			printf("Unable to connect to server!\n");
+			WSACleanup();
+			return 0;
+		}
+
+		// Set the mode of the socket to be nonblocking
+		u_long iMode = 1;
+
+		iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
+		if (iResult == SOCKET_ERROR)
+		{
+			printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
+			closesocket(this->connectSocket);
 			WSACleanup();
 			return 0;
 		}
