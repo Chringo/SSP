@@ -735,7 +735,7 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 
 	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
 	{
-		if (iter->packet_type == UPDATE_STATE)
+		if (iter->packet_type == UPDATE_CAMERA)
 		{
 
 			sPP = dynamic_cast<CameraPacket*>(&(*iter));
