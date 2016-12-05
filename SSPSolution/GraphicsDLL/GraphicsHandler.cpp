@@ -178,6 +178,9 @@ int GraphicsHandler::Render()
 	{
 		if (textures[i] == nullptr)
 			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
 	}
 
 	if (m_gridEnabled)
