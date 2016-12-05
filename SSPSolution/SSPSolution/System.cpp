@@ -148,16 +148,18 @@ int System::Update(float deltaTime)
 	{
 		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
 
-		std::list<CameraPacket>::iterator iter;
-
-		for (iter = cList.begin(); iter != cList.end();)
+		if (!cList.empty())
 		{
-			this->m_camera->SetCameraPos(iter->pos);
-			iter++;
-		}
-	}
+			std::list<CameraPacket>::iterator iter;
 
-	
+			for (iter = cList.begin(); iter != cList.end();)
+			{
+				this->m_camera->SetCameraPos(iter->pos);
+				iter++;
+			}
+		}
+		
+	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
