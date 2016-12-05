@@ -728,7 +728,7 @@ std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 
 std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 {
-	CameraPacket* sPP = nullptr;
+	CameraPacket* cPP = nullptr;
 	std::list<CameraPacket> result;
 	std::list<Packet>::iterator iter;
 	bool deleted = false;
@@ -738,11 +738,11 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 		if (iter->packet_type == UPDATE_CAMERA)
 		{
 
-			sPP = dynamic_cast<CameraPacket*>(&(*iter));
+			cPP = dynamic_cast<CameraPacket*>(&(*iter));
 
-			result.push_back(*sPP);
+			result.push_back(*cPP);
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
-			sPP = nullptr;
+			cPP = nullptr;
 
 		}
 		else

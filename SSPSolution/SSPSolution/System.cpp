@@ -146,10 +146,12 @@ int System::Update(float deltaTime)
 	//Check for camera updates from the network
 	if (!this->m_networkModule.PacketBuffer_isEmpty())
 	{
+		printf("There is a message\n");
 		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
 
 		if (!cList.empty())
 		{
+			printf("The message is for the camera");
 			std::list<CameraPacket>::iterator iter;
 
 			for (iter = cList.begin(); iter != cList.end();)
