@@ -397,14 +397,14 @@ void NetworkModule::ReadMessagesFromClients()
 
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end();)
 	{
-		printf("We get here");
+		printf("We get here\n");
 		// get data for that client
 		int data_length = this->ReceiveData(iter->first, network_data);
 
 		if (data_length <= 0)
 		{
 			//no data recieved exit function
-			continue;
+			iter++;
 		}
 
 		//Read the header (skip the first 4 bytes since it is virtual function information)
