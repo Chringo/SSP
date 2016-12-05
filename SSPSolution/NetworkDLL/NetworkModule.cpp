@@ -397,6 +397,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end();)
 	{
+		printf("We get here");
 		// get data for that client
 		int data_length = this->ReceiveData(iter->first, network_data);
 
