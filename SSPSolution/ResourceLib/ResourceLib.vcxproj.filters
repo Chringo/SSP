@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Resource">
+      <UniqueIdentifier>{4096c745-be41-4640-b30b-b73581f8a303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Resource">
+      <UniqueIdentifier>{290a91ab-6014-47d3-9cdd-86ede25d6e39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mesh">
+      <UniqueIdentifier>{acce8013-1e1b-4027-ba61-5f09e507be04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mesh">
+      <UniqueIdentifier>{75f3e27c-4787-4017-aa69-5cca0233c213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model">
+      <UniqueIdentifier>{4b6eecbe-655b-4dea-8797-2f3d7775b1e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model">
+      <UniqueIdentifier>{bdfc809f-cc9b-4fbf-9f27-72004b3f5fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FileLoader">
+      <UniqueIdentifier>{acdaa07c-53bd-40db-a8d6-66a4c17b8262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FileLoader">
+      <UniqueIdentifier>{1ca23524-60ea-4c60-b55b-9027c747a73b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Material">
+      <UniqueIdentifier>{61b5c664-9caf-4d30-b274-c8c563dbfab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Material">
+      <UniqueIdentifier>{d0560bc3-99c8-420d-a6f2-650a9445da57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{321a9d19-9828-4a4d-b9b1-353a4fedf6c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{fb8d4d3f-784f-4a6a-9515-331540b5f8bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers">
+      <UniqueIdentifier>{b2d77a30-5a3a-4add-8f8c-ca6815b40ffd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\TextureHandler">
+      <UniqueIdentifier>{64c05fd0-1efe-45d8-a53b-3759ae458454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\ResourceHandler">
+      <UniqueIdentifier>{63838877-b91e-4312-9b14-76fce530641a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\MaterialHandler">
+      <UniqueIdentifier>{dfa8a5e3-9321-48bc-b293-405d34b5131c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\ModelHandler">
+      <UniqueIdentifier>{c5daedae-6c04-451a-a37e-ebec0a29ce99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\MeshHandler">
+      <UniqueIdentifier>{7bd5a757-dc01-4615-9aef-49d4ae43e7c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\MemoryManager">
+      <UniqueIdentifier>{426c13b7-8b44-4c7a-9017-c907069986a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers">
+      <UniqueIdentifier>{86b851f9-8f7b-4a01-affb-b3d7ff2c8b31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\MaterialHandler">
+      <UniqueIdentifier>{cc69706d-4aec-4f11-bd2e-9debbe57b006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\ModelHandler">
+      <UniqueIdentifier>{30895d52-f962-4beb-8726-1d07429d688e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\MeshHandler">
+      <UniqueIdentifier>{4a0dc2a6-0ba3-4615-97cf-5e8b7a06b214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\MemoryManager">
+      <UniqueIdentifier>{cacdc6e5-37b5-46eb-8566-447229e7a776}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\TextureHandler">
+      <UniqueIdentifier>{5caa0c32-29d8-4729-8453-6971217bb0ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\ResourceHandler">
+      <UniqueIdentifier>{a679878e-9fa7-49da-be4f-ceef8665a34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\SkeletonHandler">
+      <UniqueIdentifier>{5c42de40-7c1a-4bf7-a4b7-242f9afee202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\SkeletonHandler">
+      <UniqueIdentifier>{b32fcec1-6c52-4f08-b0dc-872759f16f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Skeleton">
+      <UniqueIdentifier>{52e8b2b6-7d6c-41da-9571-9fb99221e12e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Skeleton">
+      <UniqueIdentifier>{d9f704c1-bde1-48b4-96a5-42918440cf7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Animation">
+      <UniqueIdentifier>{50e96805-83ab-4f21-801c-22d473ce8d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{9fb466d7-8ff9-4351-94a7-9421b50cc07d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\AnimationHandler">
+      <UniqueIdentifier>{9b846bf4-9a07-4b24-aa97-974528fa3185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\AnimationHandler">
+      <UniqueIdentifier>{00710940-5a88-4d27-a119-804b93941e9f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DefineHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceHandler.h">
+      <Filter>Header Files\Handlers\ResourceHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumerations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelHandler.h">
+      <Filter>Header Files\Handlers\ModelHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshHandler.h">
+      <Filter>Header Files\Handlers\MeshHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="FileLoader.h">
+      <Filter>Header Files\FileLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>Header Files\Handlers\MemoryManager</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialHandler.h">
+      <Filter>Header Files\Handlers\MaterialHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureHandler.h">
+      <Filter>Header Files\Handlers\TextureHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonHandler.h">
+      <Filter>Header Files\Handlers\SkeletonHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationHandler.h">
+      <Filter>Header Files\Handlers\AnimationHandler</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceHandler.cpp">
+      <Filter>Source Files\Handlers\ResourceHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelHandler.cpp">
+      <Filter>Source Files\Handlers\ModelHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshHandler.cpp">
+      <Filter>Source Files\Handlers\MeshHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="FileLoader.cpp">
+      <Filter>Source Files\FileLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryManager.cpp">
+      <Filter>Source Files\Handlers\MemoryManager</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialHandler.cpp">
+      <Filter>Source Files\Handlers\MaterialHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureHandler.cpp">
+      <Filter>Source Files\Handlers\TextureHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader\DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonHandler.cpp">
+      <Filter>Source Files\Handlers\SkeletonHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationHandler.cpp">
+      <Filter>Source Files\Handlers\AnimationHandler</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
