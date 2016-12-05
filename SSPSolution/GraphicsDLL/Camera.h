@@ -11,12 +11,6 @@
 class GRAPHICSDLL_API Camera
 {
 private:
-	struct Matrices {
-
-	};
-	struct Vectors {
-
-	};
 	//The second matrix used in deferred rendering
 	DirectX::XMFLOAT4X4 m_viewMatrix;
 	//The base view matrix were created with the following values
