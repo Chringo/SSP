@@ -8,6 +8,7 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
+
 class GRAPHICSDLL_API Camera
 {
 private:
@@ -18,31 +19,26 @@ private:
 	//LookAt:	0, 0, 1
 	//CamUp:	0, 1, 0
 	DirectX::XMFLOAT4X4 m_baseViewMatrix;
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
-	//The three vectors used to define the new coordinate system
+	//The three vectors that defines the new coordinate system
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
 	//The 4 values of a quaternion  
 	DirectX::XMFLOAT4 m_rotation;
-	//The values for the projection matrix
-	float m_screenAspect;
-	float m_fieldOfView;
+	DirectX::XMFLOAT4 m_rotateAroundPos;
 public:
 	Camera();
 	virtual ~Camera();
 
 	//Creates the base camera views
-	int Initialize(float screenAspect = 1280 / 720, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	int Initialize();
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	int Update();
-	int UpdateProjection();
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	DirectX::XMFLOAT4X4 * GetViewMatrix();
 	void GetBaseViewMatrix(DirectX::XMMATRIX& storeIn);
-	DirectX::XMFLOAT4X4 * GetProjectionMatrix();
 	void GetCameraPos(DirectX::XMVECTOR& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT4& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT3& storeIn);
@@ -79,8 +75,9 @@ public:
 	void ApplyLocalTranslation(float x, float y, float z);
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
-	void AlignWithRay(DirectX::XMVECTOR direction);
-
+	//
+	void SetRotationAroundPosOffset(float x, float y, float z);
+	void SetRotationAroundPos(float x, float y, float z);
 	
 #pragma endregion setters
 private:

@@ -56,13 +56,15 @@ GraphicsHandler::GraphicsHandler()
 
 GraphicsHandler::~GraphicsHandler()
 {
-	delete[] this->m_modelsPtr;
+	
 }
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
+	this->initCheck = false;
+	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
-	this->m_modelsPtr = new Resources::Model*[2];
+	this->modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
@@ -88,6 +90,13 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
+
+	//Setup projection matrix
+	//fieldOfView = 3.141592654f / 4.0f;
+	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
+	float screenAspect = (float)resolution.x / (float)resolution.y;
+
+	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
@@ -117,7 +126,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, modelsPtr);
 	this->InitializeGrid();
 	
 	/*TEMP MODELS*/
@@ -150,7 +159,6 @@ int GraphicsHandler::Render()
 	/********************/
 
 
-	shaderParamsVP->projectionMatrix = *this->m_camera->GetProjectionMatrix();
 
 	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);
 	this->m_deferredSH->SetShaderParameters(shaderParamsVP, ShaderLib::CB_VIEW_PROJECTION);
@@ -159,12 +167,10 @@ int GraphicsHandler::Render()
 	/*TEMP*/
 	if (m_gridEnabled)
 	{
-		Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), this->m_modelsPtr[0]);
 		int ett;
 		float tva;
 		this->RenderGrid(ett, tva);
 	}
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), this->m_modelsPtr[1]);
 	/********/
 
  
