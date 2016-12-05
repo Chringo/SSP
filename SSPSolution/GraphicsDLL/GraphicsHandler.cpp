@@ -158,7 +158,28 @@ int GraphicsHandler::Render()
 
 
 	/*TEMP*/
+	Resources::Model* modelPtr;
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(133712),modelPtr);
 
+	Resources::Mesh* meshPtr = modelPtr->GetMesh();
+	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
+	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
+	UINT32 size = sizeof(Resources::Mesh::Vertex);
+	UINT32 offset = 0;
+	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
+	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+
+	Resources::Material * mat  = modelPtr->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+	}
 
 	if (m_gridEnabled)
 	{

@@ -3,6 +3,7 @@
 #include "Skeleton.h"
 #include "FileLoader.h"
 #include "FileHeaders.h"
+#include "AnimationHandler.h"
 namespace Resources {
 
 	class SkeletonHandler
@@ -14,6 +15,7 @@ namespace Resources {
 		std::deque <Skeleton*> m_emptyContainers;
 		std::vector<Skeleton>  m_containers;
 		ID3D11Device*		   m_device		 = nullptr;
+		AnimationHandler*	   m_animHandler = nullptr;
 		Skeleton*			   m_placeHolder = nullptr;
 		SkeletonHandler();
 	public:
