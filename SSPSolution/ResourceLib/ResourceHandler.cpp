@@ -57,7 +57,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::RESOURCE_FILE))
-		return ST_ERROR_OPENING_FILE;
+		//return ST_ERROR_OPENING_FILE;
 		// for each model in level
 	{
 		//Get id of the model from the level Instructions
