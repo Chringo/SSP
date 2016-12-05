@@ -10,6 +10,7 @@ Direct3DHandler::Direct3DHandler()
 	this->m_gDevice = nullptr;
 	this->m_gDeviceContext = nullptr;
 	this->m_rasterizerState = nullptr;
+	this->m_rasterizerStateWireFrame = nullptr;
 	this->m_swapChain = nullptr;
 	this->m_viewport = nullptr;
 }
@@ -197,6 +198,33 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	return 0;
 }
 
+int Direct3DHandler::InitializeGridRasterizer()
+{
+	HRESULT hResult;
+
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
+
+	rasterizerDesc.AntialiasedLineEnable = false;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE; //Enable backface culling
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.MultisampleEnable = false;
+	rasterizerDesc.ScissorEnable = false;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+
+	hResult = this->m_gDevice->CreateRasterizerState(&rasterizerDesc, &this->m_rasterizerStateWireFrame);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 int Direct3DHandler::ClearDepthAndRTV()
 {
 	float black[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
@@ -251,6 +279,12 @@ void Direct3DHandler::Shutdown()
 		this->m_rasterizerState = nullptr;
 	}
 
+	if (this->m_rasterizerState)
+	{
+		this->m_rasterizerState->Release();
+		this->m_rasterizerState = nullptr;
+	}
+
 	if (this->m_backBufferRTV)
 	{
 		this->m_backBufferRTV->Release();
@@ -290,6 +324,27 @@ ID3D11Device * Direct3DHandler::GetDevice()
 ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
 {
 	return this->m_gDeviceContext;
+}
+
+int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
+{
+	switch (mode)
+	{
+	case D3D11_FILL_WIREFRAME:
+	{
+		this->m_gDeviceContext->RSSetState(this->m_rasterizerStateWireFrame);
+		break;
+	}
+	case D3D11_FILL_SOLID:
+	{
+		this->m_gDeviceContext->RSSetState(this->m_rasterizerState);
+		break;
+	}
+	default:
+		break;
+	}
+
+	return 0;
 }
 
 int Direct3DHandler::SetBackBuffer()

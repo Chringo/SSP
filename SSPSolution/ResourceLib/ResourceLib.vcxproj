@@ -83,6 +83,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationHandler.h" />
     <ClInclude Include="DefineHeader.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="FileHeaders.h" />
@@ -96,12 +98,16 @@
     <ClInclude Include="ModelHandler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceHandler.h" />
+    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="SkeletonHandler.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationHandler.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -121,6 +127,8 @@
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceHandler.cpp" />
     <ClCompile Include="ResourceLib.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="SkeletonHandler.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureHandler.cpp" />
