@@ -67,7 +67,6 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
-	this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
