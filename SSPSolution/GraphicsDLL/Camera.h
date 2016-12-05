@@ -33,7 +33,7 @@ public:
 	virtual ~Camera();
 
 	//Creates the base camera views
-	int Initialize(float screenAspect, float fieldOfView);
+	int Initialize(float screenAspect = 1280 / 720, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	int Update();
@@ -42,6 +42,7 @@ public:
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	DirectX::XMFLOAT4X4 * GetViewMatrix();
 	void GetBaseViewMatrix(DirectX::XMMATRIX& storeIn);
+	DirectX::XMFLOAT4X4 * GetProjectionMatrix();
 	void GetCameraPos(DirectX::XMVECTOR& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT4& storeIn);
 	void GetCameraPos(DirectX::XMFLOAT3& storeIn);

@@ -21,7 +21,7 @@ Camera::~Camera()
 {
 }
 
-int Camera::Initialize(float screenAspect = 1280 / 720, float fieldOfView = 0.0f)
+int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, float farPlane)
 {
 	int result = 1;
 
@@ -49,10 +49,11 @@ int Camera::Initialize(float screenAspect = 1280 / 720, float fieldOfView = 0.0f
 	camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
 	lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
 	camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
-	////Define the view matrix based on the transformed positions
+	//Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 	
-
+	//Create the projection matrix
+	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
 	return result;
 }
 
@@ -111,6 +112,11 @@ void Camera::GetBaseViewMatrix(DirectX::XMMATRIX & storeIn)
 {
 	storeIn = DirectX::XMLoadFloat4x4(&this->m_baseViewMatrix);
 	return;
+}
+
+DirectX::XMFLOAT4X4 * Camera::GetProjectionMatrix()
+{
+	return &this->m_projectionMatrix;
 }
 
 void Camera::GetCameraPos(DirectX::XMVECTOR & storeIn)
