@@ -80,8 +80,6 @@ public:
 	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 	void AlignWithRay(DirectX::XMVECTOR direction);
 
-	/*void SetRotationAroundPosOffset(float x, float y, float z);
-	void SetRotationAroundPos(float x, float y, float z);*/
 	
 #pragma endregion setters
 private:
