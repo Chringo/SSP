@@ -23,10 +23,12 @@ int System::Shutdown()
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
-	return result;
-	
+
 	//Shutdown Network module
 	this->m_networkModule.Shutdown();
+	return result;
+	
+
 }
 
 int System::Initialize()
