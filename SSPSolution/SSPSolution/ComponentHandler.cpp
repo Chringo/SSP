@@ -30,3 +30,9 @@ void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
 }
+
+void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
+{
+	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
+	return;
+}
