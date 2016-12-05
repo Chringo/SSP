@@ -33,7 +33,7 @@ private:
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
 	NetworkModule m_networkModule;
-	char* m_ip = "192.168.1.141";	//Tobias NUC Specific local ip
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 
 public:
 	System();

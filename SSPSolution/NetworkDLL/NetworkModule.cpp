@@ -163,6 +163,18 @@ int NetworkModule::Join(char* ip)
 				return 0;
 			}
 
+			// Set the mode of the socket to be nonblocking
+			u_long iMode = 1;
+
+			iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
+			if (iResult == SOCKET_ERROR)
+			{
+				printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
+				closesocket(this->connectSocket);
+				WSACleanup();
+				return 0;
+			}
+
 			// Connect to server.
 			iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 
@@ -170,7 +182,8 @@ int NetworkModule::Join(char* ip)
 			{
 				closesocket(this->connectSocket);
 				this->connectSocket = INVALID_SOCKET;
-				printf("The server is down... did not connect");
+				printf("The server is down... did not connect\n");
+				return 0;
 			}
 		}
 
@@ -181,18 +194,6 @@ int NetworkModule::Join(char* ip)
 		if (this->connectSocket == INVALID_SOCKET)
 		{
 			printf("Unable to connect to server!\n");
-			WSACleanup();
-			return 0;
-		}
-
-		// Set the mode of the socket to be nonblocking
-		u_long iMode = 1;
-
-		iResult = ioctlsocket(this->connectSocket, FIONBIO, &iMode);
-		if (iResult == SOCKET_ERROR)
-		{
-			printf("ioctlsocket failed with error: %d\n", WSAGetLastError());
-			closesocket(this->connectSocket);
 			WSACleanup();
 			return 0;
 		}
