@@ -24,9 +24,7 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 		m_skeletonHandler->SetDevice(device);
 	}
 
-	UINT hej = 1;
-	ResourceContainer* yo;
-	m_skeletonHandler->LoadSkeleton(hej, yo);
+
 	
 }
 
@@ -156,6 +154,11 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 
 		
 #pragma region Load Skeleton
+		/*TEMP*/
+		UINT hej = 1;
+		ResourceContainer* yo;
+		m_skeletonHandler->LoadSkeleton(hej, yo);
+		newModel->SetSkeleton((Skeleton*)yo->resource);
 //		if(modelData->skeletonId != 0){
 //			Resources::ResourceContainer* skeletonPtr = nullptr;
 //			 st = m_skeletonHandler->GetSkeleton(modelData->skeletonId, skeletonPtr);

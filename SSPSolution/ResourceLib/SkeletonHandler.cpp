@@ -71,11 +71,11 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	}
 	data += sizeof(MainHeader);
 
-	skelData.jointCount		= ((SkeletonHeader*)data)->jointCount;
-	unsigned int* animCount = &((SkeletonHeader*)data)->animLayerCount;
-	data			 += sizeof(SkeletonHeader);
-	skelData.joints   = (Skeleton::Joint*)data;
-	data			 += sizeof(JointHeader) * skelData.jointCount;
+	skelData.jointCount		 = ((SkeletonHeader*)data)->jointCount;
+	unsigned int* animCount  = &((SkeletonHeader*)data)->animLayerCount;
+	data					+= sizeof(SkeletonHeader);
+	skelData.joints		     = (Skeleton::Joint*)data;
+	data				    += sizeof(JointHeader) * skelData.jointCount;
 
 	st = newSkeleton->Create(&resData, &skelData);
 	if (st != ST_OK)
