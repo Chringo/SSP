@@ -144,29 +144,29 @@ int System::Update(float deltaTime)
 	std::list<CameraPacket> cList;
 
 	//Check for camera updates from the network
-	if (!this->m_networkModule.PacketBuffer_isEmpty())
-	{
-		printf("There is a message\n");
-		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
+	//if (!this->m_networkModule.PacketBuffer_isEmpty())
+	//{
+	//	printf("There is a message\n");
+	//	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
 
-		if (!cList.empty())
-		{
-			printf("The message is for the camera");
-			std::list<CameraPacket>::iterator iter;
+	//	if (!cList.empty())
+	//	{
+	//		printf("The message is for the camera");
+	//		std::list<CameraPacket>::iterator iter;
 
-			for (iter = cList.begin(); iter != cList.end();)
-			{
-				this->m_camera->SetCameraPos(iter->pos);
-				iter++;
-			}
-		}
-		printf("No Packets for camera\n");
-		
-	}
-	else
-	{
-		printf("PacketBuffer is empty\n");
-	}
+	//		for (iter = cList.begin(); iter != cList.end();)
+	//		{
+	//			this->m_camera->SetCameraPos(iter->pos);
+	//			iter++;
+	//		}
+	//	}
+	//	printf("No Packets for camera\n");
+	//	
+	//}
+	//else
+	//{
+	//	printf("PacketBuffer is empty\n");
+	//}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -212,12 +212,12 @@ int System::Update(float deltaTime)
 		this->m_camera->Update();
 
 		//Send updates over the network
-		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
+		/*if (this->m_networkModule.GetNrOfConnectedClients() != 0)
 		{
 			DirectX::XMFLOAT4 updatePos;
 			this->m_camera->GetCameraPos(updatePos);
 			this->m_networkModule.SendCameraPacket(updatePos);
-		}
+		}*/
 		
 	}
 	//Network
