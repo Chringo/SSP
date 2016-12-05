@@ -326,7 +326,7 @@ void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
 
 void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/)
 {
-	const unsigned int packet_size = sizeof(StatePacket);
+	const unsigned int packet_size = sizeof(CameraPacket);
 	char packet_data[packet_size];
 
 	CameraPacket packet;
