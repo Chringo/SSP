@@ -18,13 +18,14 @@ void FileImporter::ImportFromServer()
 	DIR *dir;
 	struct dirent *ent;
 	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes")) != NULL) 
+	//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL) 
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes";
+				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes/";
 				pathName += ent->d_name;
 				m_filepaths.push_back(pathName);
 			}
@@ -63,7 +64,8 @@ void FileImporter::LoadImportedFiles()
 
 		if (res != Resources::Status::ST_ERROR_OPENING_FILE)
 		{
-			Resources::ResourceType loadedObject = (Resources::ResourceType)(*m_bbf_object + sizeof(unsigned int));
+			char *type = m_bbf_object + sizeof(unsigned int);
+			Resources::ResourceType loadedObject = (Resources::ResourceType)(*type);
 
 			switch (loadedObject)
 			{
