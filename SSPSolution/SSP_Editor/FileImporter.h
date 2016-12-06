@@ -6,6 +6,7 @@
 #include "dirent.h"
 #include "../ResourceLib/FileLoader.h"
 #include "../ResourceLib/Model.h"
+#include "../ResourceLib/FileHeaders.h"
 class FileImporter
 {
 private:

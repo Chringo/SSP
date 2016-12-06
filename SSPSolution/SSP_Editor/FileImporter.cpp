@@ -70,7 +70,7 @@ void FileImporter::LoadImportedFiles()
 			switch (loadedObject)
 			{
 			case Resources::ResourceType::RES_MESH:
-				handleMesh(m_bbf_object);
+				handleMesh(m_bbf_object); //also send integer for the index so we can add the qt
 				break;
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
@@ -98,7 +98,44 @@ void FileImporter::LoadImportedFiles()
 void FileImporter::handleMesh(char * m_bbf_object)
 {
 	/*create model type here and then when reading */
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 
+	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
+
+	Resources::Mesh *newMesh;
+	res = newMesh->Create(res_Data);
+
+	if (res != Resources::ST_OK)
+		return;
+
+	unsigned int * indices;
+	if (m_meshH->skeleton)
+	{
+		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+	}
+	else
+	{
+		Resources::Mesh::Vertex *vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
+	}
+
+	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
+		res = Resources::Status::ST_BUFFER_ERROR;
+
+	/*we've already loaded one or more meshes into the scene*/
+	if (m_models.size() != 0)
+	{
+
+	}
+	/*this is the first mesh loaded*/
+	else
+	{
+
+	}
 	/*add to the ui here*/
 
 	//Resources::Model *importedModel = new Resources::Model;
