@@ -74,6 +74,8 @@ void FileImporter::LoadImportedFiles()
 				break;
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
+			case Resources::ResourceType::RES_SKELETON:
+				break;
 			case Resources::ResourceType::RES_MODEL:
 				break;
 			case Resources::ResourceType::RES_TEXTURE:
