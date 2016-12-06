@@ -102,21 +102,23 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 		return false;
 	}
 
+	if (dev != nullptr)
+	{
+		D3D11_BUFFER_DESC bufferDesc;
+		memset(&bufferDesc, 0, sizeof(bufferDesc));
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
+		D3D11_SUBRESOURCE_DATA b_data;
+		b_data.pSysMem = data;
+		HRESULT hr;
+		hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
 
-	D3D11_SUBRESOURCE_DATA b_data;
-	b_data.pSysMem = data;
-	HRESULT hr;
-	hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
-
-	if (FAILED(hr))
-		return false;
+		if (FAILED(hr))
+			return false;
+	}
 
 	if (keepRawData) {
 		m_meshData.m_vertices = new Vertex[numVerts];

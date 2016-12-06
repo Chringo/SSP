@@ -103,11 +103,8 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
 
-	Resources::Mesh *newMesh;
-	res = newMesh->Create(res_Data);
+	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
 
-	if (res != Resources::ST_OK)
-		return;
 
 	unsigned int * indices;
 	if (m_meshH->skeleton)
@@ -129,12 +126,20 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	/*we've already loaded one or more meshes into the scene*/
 	if (m_models.size() != 0)
 	{
+		Resources::Model *m_new_model = new Resources::Model();
 
+		m_new_model->SetMesh(newMesh);
 	}
 	/*this is the first mesh loaded*/
 	else
 	{
+		for (int i = 0; i < m_models.size(); ++i)
+		{
+			if (m_models.at(i)->GetMesh()->GetId() == res_Data->m_id)
+			{
 
+			}
+		}
 	}
 	/*add to the ui here*/
 
