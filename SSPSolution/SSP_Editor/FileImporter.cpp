@@ -59,31 +59,34 @@ void FileImporter::LoadImportedFiles()
 	size_t length;
 	for (int i = 0; i < m_filepaths.size(); ++i)
 	{
-		m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
+		Resources::Status res = m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
 
-		Resources::ResourceType loadedObject = (Resources::ResourceType)(*m_bbf_object + sizeof(unsigned int));
-
-		switch (loadedObject)
+		if (res != Resources::Status::ST_ERROR_OPENING_FILE)
 		{
-		case Resources::ResourceType::RES_MESH:
-			handleMesh(m_bbf_object);
-			break;
-		case Resources::ResourceType::RES_ANIMATION:
-			break;
-		case Resources::ResourceType::RES_MODEL:
-			break;
-		case Resources::ResourceType::RES_TEXTURE:
-			break;
-		case Resources::ResourceType::RES_MATERIAL:
-			handleMat(m_bbf_object);
-			break;
-		case Resources::ResourceType::RES_SOUND:
-			break;
-		
-			//RES_UI
+			Resources::ResourceType loadedObject = (Resources::ResourceType)(*m_bbf_object + sizeof(unsigned int));
 
-		default:
-			break;
+			switch (loadedObject)
+			{
+			case Resources::ResourceType::RES_MESH:
+				handleMesh(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_ANIMATION:
+				break;
+			case Resources::ResourceType::RES_MODEL:
+				break;
+			case Resources::ResourceType::RES_TEXTURE:
+				break;
+			case Resources::ResourceType::RES_MATERIAL:
+				handleMat(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_SOUND:
+				break;
+
+				//RES_UI
+
+			default:
+				break;
+			}
 		}
 	}
 }
