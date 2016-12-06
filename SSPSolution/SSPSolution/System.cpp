@@ -74,6 +74,12 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
 
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0.2);
+	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
+
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
