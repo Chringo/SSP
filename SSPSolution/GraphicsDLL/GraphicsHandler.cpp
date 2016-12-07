@@ -129,7 +129,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->InitializeGrid();
 	
 	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), modelsPtr[1]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), m_modelsPtr[1]);
 
 	return 0;
 	
@@ -181,7 +181,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
 	m_d3dHandler->InitializeGridRasterizer();
 	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = true;
@@ -239,7 +239,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
-	delete[] this->modelsPtr;
+	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 }
 
