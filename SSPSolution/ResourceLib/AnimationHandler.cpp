@@ -110,7 +110,7 @@ Resources::Status Resources::AnimationHandler::UnloadAnimation(const unsigned in
 			m_emptyContainers.push_back(((Animation*)animRes->resource));
 			m_animations.erase(id);
 #ifdef _DEBUG
-			std::cout << "Skeleton : " << id << ". Has been Unloaded" << std::endl;
+			std::cout << "Animation : " << id << ". Has been Unloaded" << std::endl;
 #endif // _DEBUG
 		}
 	default:
