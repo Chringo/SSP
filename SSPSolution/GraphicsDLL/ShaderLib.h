@@ -56,10 +56,10 @@ namespace ShaderLib
 		DirectX::XMMATRIX projectionMatrix;
 	};
 
-	struct LightConstantBuffer
+	struct CameraConstantBuffer
 	{
 		DirectX::XMFLOAT3 camPos;
-		DirectX::XMFLOAT3 camDir;
+		DirectX::XMFLOAT3 camTar;
 		float padding1;
 		float padding2;
 	};
