@@ -681,10 +681,12 @@ std::list<EntityPacket*> NetworkModule::PacketBuffer_GetEntityPackets()
 			
 			ePP = dynamic_cast<EntityPacket*>((*iter));
 
-			result.push_back(ePP);
-			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
-			ePP = nullptr;
-		
+			if (ePP != nullptr)
+			{
+				result.push_back(ePP);
+				iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
+				ePP = nullptr;
+			}
 		}
 		else
 		{
@@ -710,10 +712,12 @@ std::list<AnimationPacket*> NetworkModule::PacketBuffer_GetAnimationPackets()
 
 			aPP = dynamic_cast<AnimationPacket*>((*iter));
 
-			result.push_back(aPP);
-			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
-			aPP = nullptr;
-
+			if (aPP != nullptr)
+			{
+				result.push_back(aPP);
+				iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
+				aPP = nullptr;
+			}
 		}
 		else
 		{
@@ -738,11 +742,12 @@ std::list<StatePacket*> NetworkModule::PacketBuffer_GetStatePackets()
 		{
 
 			sPP = dynamic_cast<StatePacket*>((*iter));
-
-			result.push_back(sPP);
-			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
-			sPP = nullptr;
-
+			if (sPP != nullptr)
+			{
+				result.push_back(sPP);
+				iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
+				sPP = nullptr;
+			}
 		}
 		else
 		{
@@ -767,10 +772,15 @@ std::list<CameraPacket*> NetworkModule::PacketBuffer_GetCameraPackets()
 		{
 
 			cPP = dynamic_cast<CameraPacket*>(*iter);
+			if (cPP != nullptr)
+			{
+				result.push_back(cPP);					//We should always be able to cast since the header is correct
+				iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
+				cPP = nullptr;
+			}
+			
 
-			result.push_back(cPP);					//We should always be able to cast since the header is correct
-			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
-			cPP = nullptr;
+			
 
 		}
 		else
