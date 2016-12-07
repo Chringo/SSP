@@ -422,8 +422,8 @@ void NetworkModule::ReadMessagesFromClients()
 			
 			this->SendSyncPacket();
 			
-			delete p;
-			p = nullptr;
+			//delete p;
+			//p = nullptr;
 			iter++;
 			break;
 
@@ -484,8 +484,8 @@ void NetworkModule::ReadMessagesFromClients()
 			
 			this->packet_Buffer.push_back(eP);
 
-			delete eP;
-			eP = nullptr;
+			//delete eP;
+			//eP = nullptr;
 			iter++;
 			break;
 
@@ -497,8 +497,8 @@ void NetworkModule::ReadMessagesFromClients()
 
 			this->packet_Buffer.push_back(aP);
 
-			delete aP;
-			aP = nullptr;
+			//delete aP;
+			//aP = nullptr;
 			iter++;
 			break;
 
@@ -510,8 +510,8 @@ void NetworkModule::ReadMessagesFromClients()
 			
 			this->packet_Buffer.push_back(sP);
 
-			delete sP;
-			sP = nullptr;
+			//delete sP;
+			//sP = nullptr;
 			iter++;
 			break;
 		
@@ -523,8 +523,8 @@ void NetworkModule::ReadMessagesFromClients()
 
 			this->packet_Buffer.push_back(cP);
 
-			delete cP;
-			cP = nullptr;
+			//delete cP;
+			//cP = nullptr;
 			iter++;
 			break;
 
