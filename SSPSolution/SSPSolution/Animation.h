@@ -26,7 +26,7 @@ struct AnimationClip
 	int endFrame; 
 };
 
-class AnimationHandler
+class Animation
 {
 
 private:
@@ -40,8 +40,8 @@ private:
 
 
 public: 
-	AnimationHandler();
-	~AnimationHandler();
+	Animation();
+	~Animation();
 
 	/*Update each frame in the current animation.*/
 	void Update(float dt);

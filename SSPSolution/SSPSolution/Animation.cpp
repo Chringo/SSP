@@ -1,6 +1,6 @@
-#include "AnimationHandler.h"
+#include "Animation.h"
 
-AnimationHandler::AnimationHandler()
+Animation::Animation()
 {
 	this->elapsedTime = 0.0f;
 	this->currentAnimation = IDLE_STATE;
@@ -9,11 +9,11 @@ AnimationHandler::AnimationHandler()
 	Push(currentAnimation, true, 0, 0, 0);
 }
 
-AnimationHandler::~AnimationHandler()
+Animation::~Animation()
 {
 }
 
-void AnimationHandler::Update(float dt)
+void Animation::Update(float dt)
 {
 	/*Need to check in this function what the time in the animation is.
 	If the last frame have been reached, we should check if the time is
@@ -87,15 +87,15 @@ void AnimationHandler::Update(float dt)
 		
 }
 
-void AnimationHandler::Interpolate(float currentTime)
+void Animation::Interpolate(float currentTime)
 {
 }
 
-void AnimationHandler::Blend(int lastFrame, int prevState, int newState)
+void Animation::Blend(int lastFrame, int prevState, int newState)
 {
 }
 
-void AnimationHandler::Push(int currentAnimation, bool isLooping, int startFrame, int endFrame, int duration)
+void Animation::Push(int currentAnimation, bool isLooping, int startFrame, int endFrame, int duration)
 {
 	this->currentAnimation = currentAnimation;
 
@@ -107,7 +107,7 @@ void AnimationHandler::Push(int currentAnimation, bool isLooping, int startFrame
 	animationStack.push(clip);
 }
 
-void AnimationHandler::Pop()
+void Animation::Pop()
 {
 	if (!animationStack.empty())
 	{
@@ -115,7 +115,7 @@ void AnimationHandler::Pop()
 	}
 }
 
-void AnimationHandler::GetAnimationData(int animationIndex, bool & isLooping, int & startFrame, int & endFrame, int & duration)
+void Animation::GetAnimationData(int animationIndex, bool & isLooping, int & startFrame, int & endFrame, int & duration)
 {
 }
 

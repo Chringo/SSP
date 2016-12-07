@@ -89,7 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationHandler.cpp" />
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
@@ -104,7 +104,7 @@
     <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationHandler.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="ComponentStructs.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameState.h" />

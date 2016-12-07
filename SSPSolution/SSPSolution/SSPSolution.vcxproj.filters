@@ -93,7 +93,7 @@
     <ClCompile Include="InputHandler.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationHandler.cpp">
+    <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,7 +134,7 @@
     <ClInclude Include="InputHandler.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationHandler.h">
+    <ClInclude Include="Animation.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
