@@ -64,6 +64,8 @@ void SSP_Editor::on_treeView_doubleClicked()
 	/*checking to see if the selected object is valid*/
 	if (!index.isValid()) return;
 	
+	std::vector<Resources::Model*>* test = m_fileImporter.get_M_models();
+
 	QFileInfo fileInfo = this->m_model->fileInfo(index);
 	QString filePath = fileInfo.filePath();
 

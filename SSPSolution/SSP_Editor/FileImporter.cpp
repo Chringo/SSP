@@ -122,24 +122,30 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
-
+	
 	/*we've already loaded one or more meshes into the scene*/
 	if (m_models.size() != 0)
-	{
-		Resources::Model *m_new_model = new Resources::Model();
-
-		m_new_model->SetMesh(newMesh);
-	}
-	/*this is the first mesh loaded*/
-	else
 	{
 		for (int i = 0; i < m_models.size(); ++i)
 		{
 			if (m_models.at(i)->GetMesh()->GetId() == res_Data->m_id)
 			{
-
+				delete newMesh;
+				return;
 			}
 		}
+		Resources::Model *m_new_model = new Resources::Model();
+
+		m_new_model->SetMesh(newMesh);
+		m_models.push_back(m_new_model);
+	}
+	/*this is the first mesh loaded*/
+	else
+	{
+		Resources::Model *m_new_model = new Resources::Model();
+
+		m_new_model->SetMesh(newMesh);
+		m_models.push_back(m_new_model);
 	}
 	/*add to the ui here*/
 

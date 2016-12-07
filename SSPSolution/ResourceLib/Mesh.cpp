@@ -122,7 +122,8 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 
 	if (keepRawData) {
 		m_meshData.m_vertices = new Vertex[numVerts];
-		memcpy(m_meshData.m_vertices,&data,sizeof(Vertex)* numVerts);
+		memcpy(m_meshData.m_vertices,data,size_t(sizeof(Vertex)* numVerts));
+		//m_meshData.m_vertices = data;
 	}
 
 	m_meshData.m_numVerts = numVerts;
@@ -204,8 +205,10 @@ bool Resources::Mesh::SetIndices(unsigned int * indices, unsigned int numIndices
 	}
 
 	if (keepRawData)
-		m_meshData.m_indices = indices;
-
+	{
+		m_meshData.m_indices = new unsigned int[numIndices];
+		memcpy((char*)&m_meshData.m_indices, (char*)&indices, sizeof(unsigned int)* numIndices);
+	}
 	m_meshData.m_numIndices = numIndices;
 	
 
