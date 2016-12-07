@@ -115,7 +115,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	}
 	else
 	{
-		Resources::Mesh::Vertex *vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
+		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
 	}
@@ -130,6 +130,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 		{
 			if (m_models.at(i)->GetMesh()->GetId() == res_Data->m_id)
 			{
+				newMesh->Destroy();
 				delete newMesh;
 				return;
 			}
