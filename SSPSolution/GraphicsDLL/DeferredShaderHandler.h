@@ -1,6 +1,7 @@
 #ifndef GRAPHICSDLL_DEFERREDSHADERHANDLER
 #define GRAPHICSDLL_DEFERREDSHADERHANDLER
 
+#include "ConstantBufferHandler.h"
 #include "ShaderHandler.h"
 #include "GraphicsComponent.h"
 #include "../ResourceLib/Model.h"
@@ -13,8 +14,7 @@ private:
 
 	ID3D11PixelShader* m_gridPixelShader;
 	ID3D11SamplerState* m_samplerState;
-	ID3D11Buffer * m_worldMatrixBuffer;
-	ID3D11Buffer * m_viewProjMatrixBuffer;
+
 
 	ID3D11RenderTargetView* m_deferredRTV[BUFFER_COUNT];
 	ID3D11Texture2D* m_deferredT2D[BUFFER_COUNT];
@@ -38,10 +38,6 @@ public:
 
 
 	int Draw(ShaderLib::DrawType drawType);
-	int SetShaderParameters( void* shaderParams, ShaderLib::CBuffer type);
-	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world);
-	int BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world);
-	int BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection);
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
 	ID3D11DepthStencilView* GetDSV() { return this->m_DSV; };
