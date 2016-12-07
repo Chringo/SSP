@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSPApplication", "SSPSolution\SSPSolution.vcxproj", "{9BFF2156-5379-46CE-9BC9-35BD895C4ECD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -23,7 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkDLL", "NetworkDLL\Ne
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "SSP_Editor\SSP_Editor.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 	ProjectSection(ProjectDependencies) = postProject
-
 		{FA1FEC57-5873-49E7-8F1F-AB3941D1F52A} = {FA1FEC57-5873-49E7-8F1F-AB3941D1F52A}
 		{59269BE3-152C-4D71-BF1A-B4B0312ADBB2} = {59269BE3-152C-4D71-BF1A-B4B0312ADBB2}
 	EndProjectSection
@@ -55,7 +54,6 @@ Global
 		{FCB8D293-A5CA-4036-85AE-5CFE3053F7CA}.Release|x86.ActiveCfg = Release|Win32
 		{FCB8D293-A5CA-4036-85AE-5CFE3053F7CA}.Release|x86.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.ActiveCfg = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.Build.0 = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.Deploy.0 = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.ActiveCfg = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.Build.0 = Release|Win32

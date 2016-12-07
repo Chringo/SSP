@@ -43,9 +43,7 @@ private:
 	int IncreaseArraySize();
 	int DecreaseArraySize();
 
-	bool initCheck;
 	bool m_gridEnabled;
-	float simpleGravity;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();

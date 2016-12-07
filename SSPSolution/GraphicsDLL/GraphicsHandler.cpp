@@ -61,11 +61,8 @@ GraphicsHandler::~GraphicsHandler()
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
-	this->initCheck = false;
-	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
-	
-	this->modelsPtr = new Resources::Model*[2];
+	this->m_modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
@@ -127,7 +124,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, modelsPtr);
+	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
 	
 	this->InitializeGrid();
 	
