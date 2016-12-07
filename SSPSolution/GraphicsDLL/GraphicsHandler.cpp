@@ -89,7 +89,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		return 1;
 	}
 
-	//ConstantBufferHandler::Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
@@ -149,6 +149,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render()
 {
+	ConstantBufferHandler::GetInstance()->GetCBuffers()->cbViewProj.UpdateBuffer()
 
 
 	/*TEMP CBUFFER STUFF*/
@@ -161,6 +162,8 @@ int GraphicsHandler::Render()
 	lShaderParams->camTar = this->m_camera->GetLookAt();
 	/********************/
 
+
+	//ConstantBufferHandler::GetInstance()->
 
 
 	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);

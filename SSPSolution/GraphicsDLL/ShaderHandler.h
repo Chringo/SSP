@@ -3,7 +3,7 @@
 
 #include <d3dcompiler.h>
 #include <fstream>
-
+#include "ConstantBufferHandler.h"
 #include "ShaderLib.h"
 
 const int BUFFER_COUNT = 6; //color metal rough normal ao wpos
