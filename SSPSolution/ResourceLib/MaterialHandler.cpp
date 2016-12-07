@@ -166,8 +166,6 @@ Resources::Status Resources::MaterialHandler::CreatePlaceHolder()
 		delete m_placeholder;
 		this->m_placeholder = new Material();
 		Resource::RawResourceData data;
-		char name[256] = { 'P','l','a','c','e','H','o','l','d','e','r','M','A','T', '\0' };
-		memcpy(data.m_name, name, 256);
 		data.m_id = -11;
 		data.m_resType = RES_MATERIAL;
 		m_placeholder->Create(&data);

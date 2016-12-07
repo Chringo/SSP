@@ -28,17 +28,19 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	connect(m_ui.actionSave_scene, SIGNAL(triggered()), this, SLOT(on_SaveScene_clicked()));
 	connect(m_ui.actionBuild_BPF, SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
 
-	this->m_fileImporter.ImportFromServer();
-	this->m_fileImporter.LoadImportedFiles();
-	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget);
+	this->m_fileImporter = new FileImporter();
+	this->m_fileImporter->ImportFromServer();
+	this->m_fileImporter->LoadImportedFiles();
+	//this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget);
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
-	this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
+	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 }
 
 
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;
+	delete this->m_fileImporter;
 }
 
 void SSP_Editor::on_NewScene_clicked()
@@ -64,6 +66,8 @@ void SSP_Editor::on_treeView_doubleClicked()
 	/*checking to see if the selected object is valid*/
 	if (!index.isValid()) return;
 	
+	std::vector<Resources::Model*>* test = m_fileImporter->get_M_models();
+
 	QFileInfo fileInfo = this->m_model->fileInfo(index);
 	QString filePath = fileInfo.filePath();
 

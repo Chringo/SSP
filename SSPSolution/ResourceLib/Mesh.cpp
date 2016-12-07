@@ -31,7 +31,6 @@ Resources::Mesh::Mesh() : Resource()
 Resources::Status Resources::Mesh::Create(Resource::RawResourceData * resData, ID3D11Device* dev , RawMeshData * meshData, bool keepRawData)
 {
 	this->Destroy();
-	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
 	m_resourceData.m_id = resData->m_id;
 	m_resourceData.m_resType = RES_MESH;
 	if (meshData != nullptr)
@@ -74,8 +73,6 @@ Resources::Status Resources::Mesh::Destroy()
 {
 	if (!EraseMeshData())
 		return Status::ST_BUFFER_ERROR;
-	char name[5] = { 'N', 'O', 'N', 'E','\0' };
-	memcpy(m_resourceData.m_name, name, sizeof(char) * 5);
 	this->m_resourceData.m_id = 0;
 
 	return Resources::Status::ST_OK;
@@ -105,25 +102,28 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 		return false;
 	}
 
+	if (dev != nullptr)
+	{
+		D3D11_BUFFER_DESC bufferDesc;
+		memset(&bufferDesc, 0, sizeof(bufferDesc));
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
+		D3D11_SUBRESOURCE_DATA b_data;
+		b_data.pSysMem = data;
+		HRESULT hr;
+		hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
 
-	D3D11_SUBRESOURCE_DATA b_data;
-	b_data.pSysMem = data;
-	HRESULT hr;
-	hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
-
-	if (FAILED(hr))
-		return false;
+		if (FAILED(hr))
+			return false;
+	}
 
 	if (keepRawData) {
 		m_meshData.m_vertices = new Vertex[numVerts];
-		memcpy(m_meshData.m_vertices,&data,sizeof(Vertex)* numVerts);
+		memcpy(m_meshData.m_vertices,data,size_t(sizeof(Vertex)* numVerts));
+		//m_meshData.m_vertices = data;
 	}
 
 	m_meshData.m_numVerts = numVerts;
@@ -135,7 +135,7 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 
 bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned int numVerts, bool keepRawData)
 {
-	if (numVerts = 0) 
+	if (numVerts == 0) 
 		return false;
 
 	
@@ -169,7 +169,11 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 	}
 
 	if (keepRawData)
-		m_meshData.m_animVertices = data;
+	{
+		//m_meshData.m_animVertices = data;
+		m_meshData.m_animVertices = new VertexAnim[numVerts];
+		memcpy(m_meshData.m_animVertices, data, size_t(sizeof(VertexAnim)* numVerts));
+	}
 	else {
 		delete data; data = nullptr;
 	}
@@ -205,8 +209,10 @@ bool Resources::Mesh::SetIndices(unsigned int * indices, unsigned int numIndices
 	}
 
 	if (keepRawData)
-		m_meshData.m_indices = indices;
-
+	{
+		m_meshData.m_indices = new unsigned int[numIndices];
+		memcpy(m_meshData.m_indices, indices, sizeof(unsigned int)* numIndices);
+	}
 	m_meshData.m_numIndices = numIndices;
 	
 
@@ -238,7 +244,6 @@ bool Resources::Mesh::EraseMeshData()
 		Resources::OutputErrorString(this, std::string("could not release indexbuffer")); return false;
 	}
 	
-	std::cout << "Erasin mesh data on : " << this->GetName() << std::endl;
 
 
 	m_AnimVertBuffer  = nullptr;

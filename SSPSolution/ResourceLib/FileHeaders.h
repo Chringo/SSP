@@ -22,7 +22,7 @@ struct LayerIdHeader{
 	unsigned int id = 0;
 };
 struct JointHeader {
-	float bindPose[16];
+	float invbindPose[16];
 	int jointIndex;
 	int parentIndex;
 };

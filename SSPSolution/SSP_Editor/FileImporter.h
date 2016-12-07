@@ -6,6 +6,7 @@
 #include "dirent.h"
 #include "../ResourceLib/FileLoader.h"
 #include "../ResourceLib/Model.h"
+#include "../ResourceLib/FileHeaders.h"
 class FileImporter
 {
 private:
@@ -22,6 +23,8 @@ public:
 
 	void ImportFromServer();
 	void LoadImportedFiles();
+
+	std::vector<Resources::Model*>* get_M_models() { return &this->m_models; }
 private:
 	/*functions*/
 	void handleMesh(char * m_bbf_object);
