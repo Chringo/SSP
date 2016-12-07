@@ -31,7 +31,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_fileImporter = new FileImporter();
 	this->m_fileImporter->ImportFromServer();
 	this->m_fileImporter->LoadImportedFiles();
-	//this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget);
+	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget);
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 }

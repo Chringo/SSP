@@ -21,8 +21,7 @@ private:
 	int m_Width;
 	int m_Height;
 
-	std::vector<std::vector<Container>*> m_Map;
-
+	std::unordered_map<unsigned int, std::vector<Container>> m_Map;
 
 public:
 	bool m_IsPreview;
@@ -35,8 +34,8 @@ public:
 	Resources::Status Release();
 
 public:
-	Container GetModel(unsigned int modelID, unsigned int InstanceID);
-	void AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation, unsigned int instanceID);
-	void UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation);
-	void RemoveModel(unsigned int modelID, unsigned int InstanceID);
+	Resources::Status GetModel(unsigned int modelID, unsigned int InstanceID, Container& container);
+	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation);
+	Resources::Status UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation);
+	Resources::Status RemoveModel(unsigned int modelID, unsigned int InstanceID);
 };

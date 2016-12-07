@@ -33,13 +33,8 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 		);
 	}
 
-	this->m_Map.reserve(200);
-	for (size_t i = 0; i < this->m_Map.capacity(); i++)
-	{
-		this->m_Map.push_back(new std::vector<Container>);
-	}
-	//this->m_Map.push_back(new std::vector<Container>);
 
+	this->m_Map.reserve(50);
 
 	return Resources::ST_OK;
 }
@@ -58,10 +53,8 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	for (size_t i = 0; i < this->m_Map.size(); i++)
-	{
-		delete this->m_Map.at(i);
-	}
+	this->m_Map.clear();
+
 	if (!this->m_IsPreview)
 	{
 		delete this->m_EditorInputHandler;
@@ -69,33 +62,40 @@ Resources::Status Communicator::Release()
 	return Resources::ST_OK;
 }
 
-Container Communicator::GetModel(unsigned int modelID, unsigned int InstanceID)
+Resources::Status Communicator::GetModel(unsigned int modelID, unsigned int InstanceID, Container& container)
 {
-	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
-	{
-		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
+	std::vector<Container>* modelPtr;
+
+
+	if (got == m_Map.end()) { // if  does not exists in memory
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		modelPtr = &got->second;
+
+		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			return this->m_Map.at(modelID)->at(i);
+			if (modelPtr->at(i).internalID == InstanceID)
+			{
+				container = modelPtr->at(i);
+				return Resources::Status::ST_OK;
+			}
+
 		}
+		return Resources::Status::ST_RES_MISSING;
 	}
 }
 
-void Communicator::AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation, unsigned int instanceID)
+Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation)
 {
-	if (this->m_Map.size() < model.GetId())
-	{
-		int temp = model.GetId() - this->m_Map.size();
-		this->m_Map.reserve(temp);
-		this->m_Map.resize(model.GetId());
 
-		for (unsigned int i = this->m_Map.size(); i < this->m_Map.capacity(); i++)
-		{
-			this->m_Map.push_back(new std::vector<Container>);
-		}
-	}
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
+	std::vector<Container>* modelPtr;
 
 	Container newComponent;
-	newComponent.component.modelID = model.GetId();
+
+	newComponent.component.modelID = modelID;
 	newComponent.position = position;
 	newComponent.rotation = rotation;
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
@@ -105,34 +105,66 @@ void Communicator::AddModel(Resources::Model model, DirectX::XMVECTOR position, 
 	newComponent.component.worldMatrix = containerMatrix;
 	newComponent.internalID = instanceID;
 
-	this->m_Map.at(model.GetId())->push_back(newComponent);
+
+	if (got == m_Map.end()) { // if  does not exists in memory
+		this->m_Map[modelID].push_back(newComponent);
+		return Resources::Status::ST_OK;
+	}
+	else if(got != m_Map.end()) {
+		modelPtr = &got->second;
+		modelPtr->push_back(newComponent);
+		return Resources::Status::ST_OK;
+	}
+	else {
+		return Resources::Status::ST_RES_MISSING;
+	}
+
+
 }
 
-void Communicator::UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation)
+Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation)
 {
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
+	std::vector<Container>* modelPtr;
 
-	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
-	{
-		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
+	if (got == m_Map.end()) { // if  does not exists in memory
+
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		modelPtr = &got->second;
+
+		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			this->m_Map.at(modelID)->at(i).position = position;
-			this->m_Map.at(modelID)->at(i).rotation = rotation;
-			DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-			DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
-			containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
-			containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-			this->m_Map.at(modelID)->at(i).component.worldMatrix = containerMatrix;
+			if (modelPtr->at(i).internalID == InstanceID)
+			{
+				modelPtr->at(i).position = position;
+				modelPtr->at(i).rotation = rotation;
+				DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
+				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+				modelPtr->at(i).component.worldMatrix = containerMatrix;
+				return Resources::Status::ST_OK;
+			}
+
 		}
+		return Resources::Status::ST_RES_MISSING;
 	}
 }
 
-void Communicator::RemoveModel(unsigned int modelID, unsigned int InstanceID)
+Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int InstanceID)
 {
-	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
-	{
-		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
-		{
-			this->m_Map.at(modelID)->erase(m_Map.at(modelID)->begin() + i);
-		}
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
+	std::vector<Container>* modelPtr;
+
+	if (got == m_Map.end()) { // if  does not exists in memory
+
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		modelPtr = &got->second;
+		modelPtr->erase(modelPtr->begin() + InstanceID);
+		return Resources::Status::ST_OK;
 	}
 }

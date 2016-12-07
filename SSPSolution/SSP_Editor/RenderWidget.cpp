@@ -25,6 +25,10 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 		this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime);
 	}
+
+	//SEND COMPONENT DATA TO HANDLER
+	//this->m_Communicator->m_GraphicsHandler->Sendshit();
+	//THEN RENDER
 	this->m_Communicator->m_GraphicsHandler->Render();
 	this->update();
 }
@@ -35,19 +39,25 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 
-	Resources::Status status;
+	Resources::Status st;
 
-	status = this->m_Communicator->Initialize(
-		this->m_hwnd,
-		this->m_hInstance,
-		parent->width(),
-		parent->height(),
-		isPreview
-	);
-	if (status == Resources::ST_OK)
-	{
+	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
 
-	}
+
+	Container testing;
+	Resources::Model test1;
+	DirectX::XMVECTOR pos1 = { 2,1,1,0 };
+	DirectX::XMVECTOR pos2 = { 1,2,1,0 };
+	DirectX::XMVECTOR pos3 = { 1,1,2,0 };
+
+	st = this->m_Communicator->AddModel(test1.GetId(), 1, pos1, 0.0f);
+	st = this->m_Communicator->AddModel(test1.GetId(), 2, pos1, 45.0f);
+	st = this->m_Communicator->AddModel(test1.GetId(), 3, pos1, 90.0f);
+	st = this->m_Communicator->UpdateModel(test1.GetId(), 1, pos2, 0.0f);
+	st = this->m_Communicator->UpdateModel(test1.GetId(), 2, pos3, 180.0f);
+	st = this->m_Communicator->GetModel(test1.GetId(), 2, testing);
+	st = this->m_Communicator->UpdateModel(test1.GetId(), 2, pos1, 45.0f);
+	st = this->m_Communicator->RemoveModel(test1.GetId(), 2);
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)
