@@ -19,8 +19,7 @@ private:
 	ID3D11RasterizerState* m_rasterizerStateWireFrame;
 
 	ID3D11Texture2D* m_depthStencilBuffer;
-	ID3D11DepthStencilView* m_depthStencilView;
-	ID3D11DepthStencilState* m_depthStencilState;
+
 public:
 	Direct3DHandler();
 	~Direct3DHandler();
@@ -29,16 +28,15 @@ public:
 	int InitializeGridRasterizer();
 
 	int ClearDepthAndRTV();
-	int ClearDepthAndRTV(ID3D11DepthStencilView*);
 	int PresentScene();
 	void Shutdown();
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
-	
+	ID3D11RenderTargetView* GetBackbufferRTV();
+
+
 	int SetRasterizerState(D3D11_FILL_MODE mode);
-	int SetBackBuffer();
-	int SetBackBuffer(ID3D11DepthStencilView*);
 };
 
 #endif

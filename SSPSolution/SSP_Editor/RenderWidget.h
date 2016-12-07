@@ -2,7 +2,7 @@
 #include "ui_SSP_Editor.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "EditorInputHandler.h"
+#include "EditorCommunicator.h"
 
 class D3DRenderWidget : public QWidget {
 	Q_OBJECT
@@ -14,17 +14,10 @@ public:
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
 	virtual void resizeEvent(QResizeEvent* evt);
-	int m_test;
-	int m_Width;
-	int m_Height;
-	int m_x;
-	int m_y;
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
-	Camera* m_Camera;
-	GraphicsHandler* m_GraphicsHandler;
-	EditorInputHandler* m_EditorInputHandler;
+	Communicator* m_Communicator;
 	void Initialize(QWidget* parent, bool isPreview);
 
 	
