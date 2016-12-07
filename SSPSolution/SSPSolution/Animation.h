@@ -1,7 +1,12 @@
-#ifndef SSPAPPLICATION_CORE_ANIMATIONHANDLER_H
-#define SSPAPPLICATION_CORE_ANIMATIONHANDLER_H
+#ifndef SSPAPPLICATION_CORE_ANIMATION_H
+#define SSPAPPLICATION_CORE_ANIMATION_H
 
 #include <stack>
+#include <DirectXMath.h>
+#include <vector>
+#include "../ResourceLib/ResourceHandler.h"
+#pragma comment (lib,"../Debug/ResourceLib")
+using namespace DirectX;
 
 /*This class has the responsibility to play animations in a generic way.
 By generic it is meant for any "animatible entity" to be updated by
@@ -18,7 +23,6 @@ enum AnimationStates
 	THROW_STATE  =	4
 };
 
-
 struct AnimationClip
 {
 	bool isLooping;
@@ -30,14 +34,10 @@ class Animation
 {
 
 private:
-
 	std::stack<AnimationClip> animationStack;
 
-	//Pointer to the class that holds the jointList and keyframe data.
-	/*pointer->func/data*/
 	int currentAnimation;
 	float elapsedTime;
-
 
 public: 
 	Animation();
@@ -52,12 +52,11 @@ public:
 	/*Removes the animation that is on the top of the stack.*/
 	void Pop();
 
-	/*Get the animation information from the "animatible entity".*/
-	void GetAnimationData(int animationIndex, bool& isLooping, int& startFrame, int& endFrame, int& duration);
-
 	/*Don't know if this is suppose to be here? Maybe this is a function
 	we call from Update(), having another class holding interpolation func?*/
-	void Interpolate(float currentTime);
+	void Interpolate(float currentTime, std::vector<XMFLOAT4X4> updatedTransforms);
+
+	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
 
 	/*Maybe this is more suitable for being in another class? I might consider
 	calling this in the Update() from another class pointer.*/

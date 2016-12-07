@@ -2,6 +2,7 @@
 
 Animation::Animation()
 {
+	int animIndex = 0;
 	this->elapsedTime = 0.0f;
 	this->currentAnimation = IDLE_STATE;
 
@@ -51,7 +52,7 @@ void Animation::Update(float dt)
 				bool isLooping;
 				int startFrame, endFrame, duration;
 
-				GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
+				//GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
 
 				/*Push the new animation to the stack.*/
 				Push(0, isLooping, startFrame, endFrame, duration);
@@ -68,15 +69,18 @@ void Animation::Update(float dt)
 		{
 			bool isLooping;
 			int startFrame, endFrame, duration;
-			GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
+			//GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
 			
-			Push (0, isLooping, 0, 0, 0);
+			Push(0, isLooping, 0, 0, 0);
 
 			//Blend(elapsedTime, currentAnimation, 0);
 		}
 
+		int jointCount = 0;
+		std::vector<XMFLOAT4X4> interpolatedTransforms(jointCount);
+
 		/*Call this function and check if the elapsedTime is at the start, between frames or at the end.*/
-		Interpolate(elapsedTime);
+		Interpolate(elapsedTime, interpolatedTransforms);
 	}
 
 	/*No current animation, the physics are currently controlling the "animatible entity".*/
@@ -84,11 +88,43 @@ void Animation::Update(float dt)
 	{
 		/*Have some kind of function here that pauses the playing of any animation, while physics do the job.*/
 	}
-		
 }
 
-void Animation::Interpolate(float currentTime)
+void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpolatedTransforms)
 {
+	int jointListSize = 0;
+
+	for (int jointIndex = 0; jointIndex < jointListSize; jointIndex++)
+	{
+		XMVECTOR trans1, trans2;
+		XMVECTOR scale1, scale2;
+		XMVECTOR quat1, quat2;
+
+		trans1 = XMVectorSet(0, 0, 0, 0); trans2 = XMVectorSet(0, 0, 0, 0);
+		scale1 = XMVectorSet(0, 0, 0, 0); scale2 = XMVectorSet(0, 0, 0, 0);
+		quat1 = XMVectorSet(0, 0, 0, 0); quat2 = XMVectorSet(0, 0, 0, 0);
+
+		/*Interpolate translations for the two keyframes.*/
+		XMVECTOR lerpedTrans = XMVectorLerp(trans1, trans2, 0);
+
+		/*Interpolate scale for the two keyframes.*/
+		XMVECTOR lerpedScale = XMVectorLerp(scale1, scale2, 0);
+
+		/*Spherical interpolate quaternions for the two keyframes.*/
+		XMVECTOR lerpedQuat = XMQuaternionSlerp(quat1, quat2, 0);
+
+		/*Zero vector for the affine transformation matrix.*/
+		XMVECTOR zero = XMVectorSet(0, 0, 0, 0);
+
+		/*Update the transform for each joint in the skeleton.*/
+		XMStoreFloat4x4(&interpolatedTransforms[jointIndex],
+			XMMatrixAffineTransformation(lerpedScale, zero, lerpedQuat, lerpedTrans));
+	}
+}
+
+void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms)
+{
+
 }
 
 void Animation::Blend(int lastFrame, int prevState, int newState)
@@ -113,9 +149,5 @@ void Animation::Pop()
 	{
 		animationStack.pop();
 	}
-}
-
-void Animation::GetAnimationData(int animationIndex, bool & isLooping, int & startFrame, int & endFrame, int & duration)
-{
 }
 
