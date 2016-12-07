@@ -770,8 +770,17 @@ std::list<CameraPacket*> NetworkModule::PacketBuffer_GetCameraPackets()
 	{
 		if ((*iter)->packet_type == UPDATE_CAMERA)
 		{
+			CameraPacket* packet = new CameraPacket;
+			packet->packet_ID = this->packet_ID;
+			packet->timestamp = this->GetTimeStamp();
+			packet->packet_type = UPDATE_CAMERA;
+			packet->pos = DirectX::XMFLOAT4(1,2,3,0);
 
-			cPP = dynamic_cast<CameraPacket*>(*iter);
+			Packet* p= nullptr;
+
+			p = packet;
+
+			cPP = dynamic_cast<CameraPacket*>(p);
 			if (cPP != nullptr)
 			{
 				result.push_back(cPP);					//We should always be able to cast since the header is correct
