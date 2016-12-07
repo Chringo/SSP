@@ -1,11 +1,11 @@
-#ifndef GRAPHICSDLL_FinalShaderHandler
-#define GRAPHICSDLL_FinalShaderHandler
+#ifndef GRAPHICSDLL_FinalShader
+#define GRAPHICSDLL_FinalShader
 
-#include "ShaderHandler.h"
+#include "Shader.h"
 #include "ScreenQuad.h"
 
-class FinalShaderHandler :
-	public ShaderHandler
+class FinalShader :
+	public Shader
 {
 private:
 	ID3D11RenderTargetView* m_finalRTV;
@@ -19,16 +19,16 @@ private:
 	ID3D11ShaderResourceView** m_nullResources;
 
 public:
-	FinalShaderHandler();
-	~FinalShaderHandler();
+	FinalShader();
+	~FinalShader();
 
-	int Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
 	
-	int SetActive(ShaderLib::ShaderType shaderType);
+	int SetActive(ShaderLib::ShaderVariations ShaderVariations);
 	int SetRenderParameters(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView** gBuffers);
 	int SetShaderParameters(ShaderLib::CameraConstantBuffer* shaderParams);
 	
-	void Shutdown();
+	void Release();
 
 	int Draw();
 	void ResetPSShaderResources();

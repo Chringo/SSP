@@ -2,8 +2,8 @@
 #define GRAPHICSDLL_GRAPHICSHANDLER
 
 #include "Direct3DHandler.h"
-#include "DeferredShaderHandler.h"
-#include "FinalShaderHandler.h"
+#include "DeferredShader.h"
+#include "FinalShader.h"
 #include "Camera.h"
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
@@ -22,8 +22,8 @@ class GRAPHICSDLL_API GraphicsHandler
 private:
 	Direct3DHandler* m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
-	DeferredShaderHandler* m_deferredSH;
-	FinalShaderHandler* m_finalSH;
+	DeferredShader* m_deferredSH;
+	FinalShader* m_finalSH;
 
 	HWND* m_windowHandle;
 

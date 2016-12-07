@@ -1,6 +1,6 @@
-#include "DeferredShaderHandler.h"
+#include "DeferredShader.h"
 
-DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
+DeferredShader::DeferredShader() : Shader()
 {
 	this->m_samplerState = nullptr;
 
@@ -14,11 +14,11 @@ DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
 }
 
 
-DeferredShaderHandler::~DeferredShaderHandler()
+DeferredShader::~DeferredShader()
 {
 }
 
-int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
@@ -39,20 +39,20 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 
 		return 1;
 	}
 	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 
@@ -302,7 +302,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 	return 0;
 }
 
-int DeferredShaderHandler::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
+int DeferredShader::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
 {
 	this->m_graphicsComponents = grapicsComponents;
 	this->modelsPtr = modelsPtr;
@@ -310,9 +310,9 @@ int DeferredShaderHandler::SetGraphicsParameters(GraphicsComponent ** grapicsCom
 	return 0;
 }
 
-int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
+int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
-	ShaderHandler::SetActive(shaderType);
+	Shader::SetActive(ShaderVariations);
 
 	this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
@@ -324,9 +324,9 @@ int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 	return 0;
 }
 
-void DeferredShaderHandler::Shutdown()
+void DeferredShader::Release()
 {
-	ShaderHandler::Shutdown();
+	Shader::Release();
 
 	//Release the sampler state
 	if (this->m_samplerState)
@@ -354,7 +354,7 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
-int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
+int DeferredShader::Draw(ShaderLib::DrawType drawType)
 {
 	switch (drawType)
 	{
@@ -381,7 +381,7 @@ int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
 	return 0;
 }
 
-int DeferredShaderHandler::SetShaderParameters(void* shaderParams, ShaderLib::CBuffer type)
+int DeferredShader::SetShaderParameters(void* shaderParams, ShaderLib::CBuffer type)
 {
 	switch (type)
 	{
@@ -405,7 +405,7 @@ int DeferredShaderHandler::SetShaderParameters(void* shaderParams, ShaderLib::CB
 	return 0;
 }
 
-int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world)
+int DeferredShader::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -436,7 +436,7 @@ int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWor
 	return 0;
 }
 
-int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world)
+int DeferredShader::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -467,7 +467,7 @@ int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWor
 	return 0;
 }
 
-int DeferredShaderHandler::BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection)
+int DeferredShader::BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection)
 {
 	HRESULT hResult;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -500,7 +500,7 @@ int DeferredShaderHandler::BindViewProjectionCbuffer(ShaderLib::DeferredConstant
 	return 0;
 }
 
-int DeferredShaderHandler::Clear() //clears RTVs and DSV
+int DeferredShader::Clear() //clears RTVs and DSV
 {
 	float color[4];
 
@@ -520,12 +520,12 @@ int DeferredShaderHandler::Clear() //clears RTVs and DSV
 	return 0;
 }
 
-ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
+ID3D11ShaderResourceView ** DeferredShader::GetShaderResourceViews()
 {
 	return this->m_deferredSRV;
 }
 
-int DeferredShaderHandler::Draw(/*RESOURCE*/)
+int DeferredShader::Draw(/*RESOURCE*/)
 {
 	
 	
@@ -568,12 +568,12 @@ int DeferredShaderHandler::Draw(/*RESOURCE*/)
 	return 0;
 }
 
-int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
+int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 {
 	return 0;
 }
 
-int DeferredShaderHandler::DrawGrid()
+int DeferredShader::DrawGrid()
 {
 	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
 
@@ -599,7 +599,7 @@ int DeferredShaderHandler::DrawGrid()
 	return 0;
 }
 
-int DeferredShaderHandler::InitializeGridShader(ID3D11Device * device)
+int DeferredShader::InitializeGridShader(ID3D11Device * device)
 {
 
 	HRESULT hResult;
@@ -619,7 +619,7 @@ int DeferredShaderHandler::InitializeGridShader(ID3D11Device * device)
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, psFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
 
