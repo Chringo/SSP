@@ -385,12 +385,12 @@ void NetworkModule::ReadMessagesFromClients()
 	bool t = true;
 	unsigned int header = -1;
 	
-	Packet* p = nullptr;
-	SyncPacket* syP = nullptr;
-	EntityPacket* eP = nullptr;
-	AnimationPacket* aP = nullptr;
-	StatePacket* sP = nullptr;
-	CameraPacket* cP = nullptr;
+	Packet* p = new Packet;
+	SyncPacket* syP = new SyncPacket;
+	EntityPacket* eP = new EntityPacket;
+	AnimationPacket* aP = new AnimationPacket;
+	StatePacket* sP = new StatePacket;
+	CameraPacket* cP = new CameraPacket;
 
 	// go through all clients
 	std::map<unsigned int, SOCKET>::iterator iter;
