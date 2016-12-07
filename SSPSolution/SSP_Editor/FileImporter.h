@@ -29,5 +29,6 @@ private:
 	/*functions*/
 	void handleMesh(char * m_bbf_object);
 	void handleMat(char *m_bbf_object);
+	void handleModel(char *m_bbf_object);
 };
 #endif
