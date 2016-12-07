@@ -13,6 +13,7 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	this->m_device = device;
 	this->m_deviceContext = deviceContext;
 
+
 	HRESULT hResult;
 	CD3D11_BUFFER_DESC bufferDesc;
 
@@ -43,7 +44,10 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &camera.D3DBuffer);
 	if (SUCCEEDED(hResult))
+	{
 		deviceContext->VSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
+		deviceContext->PSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
+	}
 	else
 		return 1;
 

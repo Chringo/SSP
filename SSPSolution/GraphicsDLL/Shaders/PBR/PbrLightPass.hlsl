@@ -166,7 +166,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
     //N = normalize(N);
-    float3 V = normalize(wPosSamp.xyz - camPos.xyz); //camDir
+    float3 V = normalize(wPosSamp.xyz - camPos.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT

@@ -266,7 +266,7 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 		return 1;
 	}
 
-	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+	//deviceContext->OMSetDepthStencilState(m_DSS, NULL);
 	return 0;
 }
 
@@ -355,9 +355,9 @@ int DeferredShaderHandler::Clear() //clears RTVs and DSV
 {
 	float color[4];
 
-	color[0] = 1.0f;
-	color[1] = 1.0f;
-	color[2] = 1.0f;
+	color[0] = 0.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
 	color[3] = 1.0f;
 
 	//Clear the render target textures
@@ -430,6 +430,8 @@ int DeferredShaderHandler::DrawGrid()
 	UINT32 offset = 0;
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 

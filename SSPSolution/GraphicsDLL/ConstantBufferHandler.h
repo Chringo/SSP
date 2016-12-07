@@ -21,6 +21,7 @@ class ConstantBufferHandler
 public:
 	struct ConstantBuffer
 	{
+
 		/**BUFFER TYPE STRUCT DEFINITIONS**/
 		struct world
 		{
@@ -29,6 +30,7 @@ public:
 			{
 				DirectX::XMFLOAT4X4 pWorld;
 			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			struct cbData
 			{
@@ -49,8 +51,7 @@ public:
 			{
 				c = *(cbData*)data;
 
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
+
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
@@ -74,6 +75,7 @@ public:
 				DirectX::XMFLOAT4 padding2;
 				DirectX::XMFLOAT4 padding3;
 			};
+				D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			struct cbData
 			{
@@ -97,13 +99,8 @@ public:
 			{
 				c = *(cbData*)data;
 
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
 				return 0;
@@ -117,6 +114,7 @@ public:
 			{
 				DirectX::XMFLOAT4X4 temp;
 			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			ID3D11Buffer * D3DBuffer = nullptr;
 
@@ -127,13 +125,8 @@ public:
 			{
 				p = *(cbData*)data;
 
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
 				return 0;
@@ -147,6 +140,7 @@ public:
 			{
 				DirectX::XMFLOAT4X4 temp;
 			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			ID3D11Buffer * D3DBuffer = nullptr;
 
@@ -157,13 +151,9 @@ public:
 			{
 				p = *(cbData*)data;
 
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
 				return 0;
@@ -182,6 +172,7 @@ public:
 			{
 				DirectX::XMFLOAT4X4 pJoints[32];
 			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			ID3D11Buffer * D3DBuffer = nullptr;
 			pData p;
@@ -199,19 +190,14 @@ public:
 			{
 				c = *(cbData*)data;
 
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-				
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
 				return 0;
 			}
 		};
-
 	};
 
 private:
@@ -221,7 +207,9 @@ private:
 	ID3D11DeviceContext * m_deviceContext;
 
 public:
+
 	~ConstantBufferHandler();
+
 
 	ConstantBuffer::world world;
 	ConstantBuffer::camera camera;
@@ -231,6 +219,8 @@ public:
 
 	int Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
 	int Shutdown();
+
+	
 
 	ID3D11DeviceContext * GetDeviceContext();
 	static ConstantBufferHandler * GetInstance();
