@@ -49,13 +49,10 @@ void Animation::Update(float dt)
 			/*The animation is new and not the default state.*/
 			if (newAnimation != IDLE_STATE)
 			{
-				bool isLooping;
-				int startFrame, endFrame, duration;
-
 				//GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
 
 				/*Push the new animation to the stack.*/
-				Push(0, isLooping, startFrame, endFrame, duration);
+				Push(0, false, 0, 0, 0);
 			}
 
 			/*The animation is the default state.*/
@@ -67,11 +64,7 @@ void Animation::Update(float dt)
 
 		else if (elapsedTime > animationStack.top().startFrame || elapsedTime < animationStack.top().endFrame && newAnimation == true)
 		{
-			bool isLooping;
-			int startFrame, endFrame, duration;
-			//GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
-			
-			Push(0, isLooping, 0, 0, 0);
+			Push(0, false, 0, 0, 0);
 
 			//Blend(elapsedTime, currentAnimation, 0);
 		}
