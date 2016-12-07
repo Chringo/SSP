@@ -13,6 +13,8 @@ private:
 	std::vector<unsigned short int> m_timerMins;
 	std::vector<unsigned short int> m_timerMaxs;
 	std::vector<float> m_customValues;
+	unsigned short int m_lastFPS[10];
+	unsigned short int m_lastFPSCurr;
 
 public:
 	DebugHandler();
