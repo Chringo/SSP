@@ -164,7 +164,7 @@ Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int I
 	}
 	else {
 		modelPtr = &got->second;
-		modelPtr->erase(modelPtr->begin() + InstanceID);
+		modelPtr->erase(modelPtr->begin() + InstanceID -1);
 		return Resources::Status::ST_OK;
 	}
 }

@@ -49,15 +49,6 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 	DirectX::XMVECTOR pos1 = { 2,1,1,0 };
 	DirectX::XMVECTOR pos2 = { 1,2,1,0 };
 	DirectX::XMVECTOR pos3 = { 1,1,2,0 };
-
-	st = this->m_Communicator->AddModel(test1.GetId(), 1, pos1, 0.0f);
-	st = this->m_Communicator->AddModel(test1.GetId(), 2, pos1, 45.0f);
-	st = this->m_Communicator->AddModel(test1.GetId(), 3, pos1, 90.0f);
-	st = this->m_Communicator->UpdateModel(test1.GetId(), 1, pos2, 0.0f);
-	st = this->m_Communicator->UpdateModel(test1.GetId(), 2, pos3, 180.0f);
-	st = this->m_Communicator->GetModel(test1.GetId(), 2, testing);
-	st = this->m_Communicator->UpdateModel(test1.GetId(), 2, pos1, 45.0f);
-	st = this->m_Communicator->RemoveModel(test1.GetId(), 2);
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)

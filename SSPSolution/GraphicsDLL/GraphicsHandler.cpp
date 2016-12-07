@@ -69,7 +69,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
-	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+	//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 
 	this->m_deferredSH = new DeferredShaderHandler;
 	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
