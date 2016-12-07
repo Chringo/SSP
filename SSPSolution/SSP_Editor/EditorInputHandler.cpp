@@ -284,17 +284,22 @@ void EditorInputHandler::detectInput(double dT)
 		this->m_Camera->Update();
 	}
 
+	if ((yaw || pitch))
+	{
 		float rotationAmount = DirectX::XM_PI / 8;
 
-		DirectX::XMFLOAT4 newRotation = 
+		DirectX::XMFLOAT4 newRotation =
 			DirectX::XMFLOAT4(
 				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
 				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
 				0.0f,
 				DirectX::XMScalarCos(rotationAmount / 2.0f)
 			);
+
 		this->m_Camera->SetRotation(newRotation);
-	this->m_Camera->Update();
+		this->m_Camera->Update();
+	}
+
 }
 float EditorInputHandler::Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection)
 {

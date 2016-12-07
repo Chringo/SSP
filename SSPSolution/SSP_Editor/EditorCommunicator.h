@@ -5,7 +5,7 @@
 
 struct Container
 {
-	unsigned int internalId;
+	unsigned int internalID;
 	DirectX::XMVECTOR position; // Total värde. 
 	float rotation; //Total värde. 
 	GraphicsComponent component;
@@ -20,8 +20,8 @@ private:
 
 	int m_Width;
 	int m_Height;
-	unsigned int m_InternalID;
-	std::vector<Container> m_ModelContainer;
+
+	std::vector<std::vector<Container>*> m_Map;
 
 
 public:
@@ -35,9 +35,8 @@ public:
 	Resources::Status Release();
 
 public:
-	std::vector<Container> getModels() { return this->m_ModelContainer; };
-	Container GetModel(unsigned int id);
-	void AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation);
-	void UpdateModel(unsigned int id, DirectX::XMVECTOR position, float rotation);
-	void RemoveModel(unsigned int id);
+	Container GetModel(unsigned int modelID, unsigned int InstanceID);
+	void AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation, unsigned int instanceID);
+	void UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation);
+	void RemoveModel(unsigned int modelID, unsigned int InstanceID);
 };

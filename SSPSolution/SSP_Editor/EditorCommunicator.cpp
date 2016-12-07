@@ -8,7 +8,6 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 	this->m_Width = w;
 	this->m_Height = h;
 	this->m_IsPreview = isPreview;
-	this->m_InternalID = 1; 
 
 	this->m_GraphicsHandler->Initialize(
 		&this->m_hwnd,
@@ -34,7 +33,12 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 		);
 	}
 
-	this->m_ModelContainer.reserve(50);
+	this->m_Map.reserve(200);
+	for (size_t i = 0; i < this->m_Map.capacity(); i++)
+	{
+		this->m_Map.push_back(new std::vector<Container>);
+	}
+	//this->m_Map.push_back(new std::vector<Container>);
 
 
 	return Resources::ST_OK;
@@ -42,6 +46,7 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 
 Communicator::Communicator()
 {
+
 }
 
 Communicator::~Communicator()
@@ -53,7 +58,10 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	this->m_ModelContainer.clear();
+	for (size_t i = 0; i < this->m_Map.size(); i++)
+	{
+		delete this->m_Map.at(i);
+	}
 	if (!this->m_IsPreview)
 	{
 		delete this->m_EditorInputHandler;
@@ -61,59 +69,70 @@ Resources::Status Communicator::Release()
 	return Resources::ST_OK;
 }
 
-Container Communicator::GetModel(unsigned int id)
+Container Communicator::GetModel(unsigned int modelID, unsigned int InstanceID)
 {
-	for (size_t i = 0; i < this->m_ModelContainer.size(); i++)
+	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
 	{
-		if (this->m_ModelContainer.at(i).internalId == id)
+		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
 		{
-			return this->m_ModelContainer.at(i);
+			return this->m_Map.at(modelID)->at(i);
 		}
 	}
 }
 
-void Communicator::AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation)
+void Communicator::AddModel(Resources::Model model, DirectX::XMVECTOR position, float rotation, unsigned int instanceID)
 {
-	Container newModel;
-	newModel.component.modelID = model.GetId();
-	newModel.position = position;
-	newModel.rotation = rotation;
+	if (this->m_Map.size() < model.GetId())
+	{
+		int temp = model.GetId() - this->m_Map.size();
+		this->m_Map.reserve(temp);
+		this->m_Map.resize(model.GetId());
+
+		for (unsigned int i = this->m_Map.size(); i < this->m_Map.capacity(); i++)
+		{
+			this->m_Map.push_back(new std::vector<Container>);
+		}
+	}
+
+	Container newComponent;
+	newComponent.component.modelID = model.GetId();
+	newComponent.position = position;
+	newComponent.rotation = rotation;
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-	newModel.component.worldMatrix = containerMatrix;
-	newModel.internalId = this->m_InternalID; 
-	this->m_InternalID += 1; 
+	newComponent.component.worldMatrix = containerMatrix;
+	newComponent.internalID = instanceID;
 
-	this->m_ModelContainer.push_back(newModel);
-
+	this->m_Map.at(model.GetId())->push_back(newComponent);
 }
 
-void Communicator::UpdateModel(unsigned int id, DirectX::XMVECTOR position, float rotation)
+void Communicator::UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation)
 {
-	for (size_t i = 0; i < this->m_ModelContainer.size(); i++)
+
+	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
 	{
-		if (this->m_ModelContainer.at(i).internalId == id)
+		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
 		{
-			this->m_ModelContainer.at(i).position = position;
-			this->m_ModelContainer.at(i).rotation = rotation;
+			this->m_Map.at(modelID)->at(i).position = position;
+			this->m_Map.at(modelID)->at(i).rotation = rotation;
 			DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
 			containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 			containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-			this->m_ModelContainer.at(i).component.worldMatrix = containerMatrix;
+			this->m_Map.at(modelID)->at(i).component.worldMatrix = containerMatrix;
 		}
 	}
 }
 
-void Communicator::RemoveModel(unsigned int id)
+void Communicator::RemoveModel(unsigned int modelID, unsigned int InstanceID)
 {
-	for (size_t i = 0; i < this->m_ModelContainer.size(); i++)
+	for (unsigned int i = 0; i < this->m_Map.at(modelID)->size(); i++)
 	{
-		if (this->m_ModelContainer.at(i).internalId == id)
+		if (this->m_Map.at(modelID)->at(i).internalID == InstanceID)
 		{
-			this->m_ModelContainer.at(i).internalId = 0;
+			this->m_Map.at(modelID)->erase(m_Map.at(modelID)->begin() + i);
 		}
 	}
 }
