@@ -385,12 +385,12 @@ void NetworkModule::ReadMessagesFromClients()
 	bool t = true;
 	unsigned int header = -1;
 	
-	Packet p;
-	SyncPacket syP;
-	EntityPacket eP;
-	AnimationPacket aP;
-	StatePacket sP;
-	CameraPacket cP;
+	Packet* p = nullptr;
+	SyncPacket* syP = nullptr;
+	EntityPacket* eP = nullptr;
+	AnimationPacket* aP = nullptr;
+	StatePacket* sP = nullptr;
+	CameraPacket* cP = nullptr;
 
 	// go through all clients
 	std::map<unsigned int, SOCKET>::iterator iter;
@@ -418,10 +418,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Host received connection packet from client\n");
 			
-			p.deserialize(network_data);
+			p->deserialize(network_data);
 			
 			this->SendSyncPacket();
 			
+			delete p;
+			p = nullptr;
 			iter++;
 			break;
 
@@ -429,11 +431,11 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Client received CONNECTION_ACCEPTED packet from Host\n");
 			
-			syP.deserialize(network_data);
+			syP->deserialize(network_data);
 			
 			//Sync clock
-			this->time_current = syP.timestamp;
-			this->time_start = syP.time_start;
+			this->time_current = syP->timestamp;
+			this->time_start = syP->time_start;
 			
 			this->SendFlagPacket(TEST_PACKET);
 	
@@ -442,6 +444,8 @@ void NetworkModule::ReadMessagesFromClients()
 			this->SendStatePacket(this->testID, true);
 			this->testID++;*/
 
+			delete syP;
+			syP = nullptr;
 			iter++;
 			break;
 
@@ -449,11 +453,13 @@ void NetworkModule::ReadMessagesFromClients()
 			
 			printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 			
-			p.deserialize(network_data);
+			p->deserialize(network_data);
 
 			this->SendFlagPacket(DISCONNECT_ACCEPTED);
 			this->RemoveClient(iter->first);	//Send the clientID
 			
+			delete p;
+			p = nullptr;
 			iter = this->connectedClients.end();
 			break;
 
@@ -461,9 +467,12 @@ void NetworkModule::ReadMessagesFromClients()
 			
 			printf("Client recived: DISCONNECT_ACCEPTED\n");
 			
-			p.deserialize(network_data);
+			p->deserialize(network_data);
 			
 			this->RemoveClient(iter->first);	//Send the clientID
+			
+			delete p;
+			p = nullptr;
 			iter = this->connectedClients.end();
 			break;
 
@@ -471,10 +480,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived ENTITY_UPDATE packet\n");
 
-			eP.deserialize(network_data);
+			eP->deserialize(network_data);
 			
 			this->packet_Buffer.push_back(eP);
 
+			delete eP;
+			eP = nullptr;
 			iter++;
 			break;
 
@@ -482,10 +493,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived ANIMATION_UPDATE packet\n");
 
-			aP.deserialize(network_data);
+			aP->deserialize(network_data);
 
 			this->packet_Buffer.push_back(aP);
 
+			delete aP;
+			aP = nullptr;
 			iter++;
 			break;
 
@@ -493,10 +506,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived STATE_UPDATE packet\n");
 			
-			sP.deserialize(network_data);
+			sP->deserialize(network_data);
 			
 			this->packet_Buffer.push_back(sP);
 
+			delete sP;
+			sP = nullptr;
 			iter++;
 			break;
 		
@@ -504,10 +519,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived CAMERA_UPDATE packet\n");
 
-			cP.deserialize(network_data);
+			cP->deserialize(network_data);
 
 			this->packet_Buffer.push_back(cP);
 
+			delete cP;
+			cP = nullptr;
 			iter++;
 			break;
 
@@ -515,12 +532,14 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived TEST_PACKET packet\n");
 
-			p.deserialize(network_data);
+			p->deserialize(network_data);
 
-			printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
+			printf("PacketID: %d, Timestamp: %f\n", p->packet_ID, p->timestamp);
 
 			//this->SendFlagPacket(TEST_PACKET);
 
+			delete p;
+			p = nullptr;
 			iter++;
 			break;
 
@@ -632,30 +651,37 @@ void NetworkModule::PacketBuffer_UnLock()
 	this->isLocked = false;
 }
 
-std::list<Packet> NetworkModule::PacketBuffer_GetPackets()
+std::list<Packet*> NetworkModule::PacketBuffer_GetPackets()
 {
-	std::list<Packet> result = this->packet_Buffer;
+	std::list<Packet*> result;
+	std::list<Packet*>::iterator iter;
+
+	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
+	{
+		result.push_back((*iter));
+		delete (*iter);
+	}
 
 	this->packet_Buffer.clear();
 
 	return result;
 }
 
-std::list<EntityPacket> NetworkModule::PacketBuffer_GetEntityPackets()
+std::list<EntityPacket*> NetworkModule::PacketBuffer_GetEntityPackets()
 {
 	EntityPacket* ePP = nullptr;
-	std::list<EntityPacket> result;
-	std::list<Packet>::iterator iter;
+	std::list<EntityPacket*> result;
+	std::list<Packet*>::iterator iter;
 	bool deleted = false;
 
 	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
 	{
-		if (iter->packet_type == UPDATE_ENTITY)
+		if ((*iter)->packet_type == UPDATE_ENTITY)
 		{
 			
-			ePP = dynamic_cast<EntityPacket*>(&(*iter));
+			ePP = dynamic_cast<EntityPacket*>((*iter));
 
-			result.push_back(*ePP);
+			result.push_back(ePP);
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
 			ePP = nullptr;
 		
@@ -670,21 +696,21 @@ std::list<EntityPacket> NetworkModule::PacketBuffer_GetEntityPackets()
 	return result;
 }
 
-std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
+std::list<AnimationPacket*> NetworkModule::PacketBuffer_GetAnimationPackets()
 {
 	AnimationPacket* aPP = nullptr;
-	std::list<AnimationPacket> result;
-	std::list<Packet>::iterator iter;
+	std::list<AnimationPacket*> result;
+	std::list<Packet*>::iterator iter;
 	bool deleted = false;
 
 	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
 	{
-		if (iter->packet_type == UPDATE_ANIMATION)
+		if ((*iter)->packet_type == UPDATE_ANIMATION)
 		{
 
-			aPP = dynamic_cast<AnimationPacket*>(&(*iter));
+			aPP = dynamic_cast<AnimationPacket*>((*iter));
 
-			result.push_back(*aPP);
+			result.push_back(aPP);
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
 			aPP = nullptr;
 
@@ -699,21 +725,21 @@ std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
 	return result;
 }
 
-std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
+std::list<StatePacket*> NetworkModule::PacketBuffer_GetStatePackets()
 {
 	StatePacket* sPP = nullptr;
-	std::list<StatePacket> result;
-	std::list<Packet>::iterator iter;
+	std::list<StatePacket*> result;
+	std::list<Packet*>::iterator iter;
 	bool deleted = false;
 
 	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
 	{
-		if (iter->packet_type == UPDATE_STATE)
+		if ((*iter)->packet_type == UPDATE_STATE)
 		{
 
-			sPP = dynamic_cast<StatePacket*>(&(*iter));
+			sPP = dynamic_cast<StatePacket*>((*iter));
 
-			result.push_back(*sPP);
+			result.push_back(sPP);
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
 			sPP = nullptr;
 
@@ -728,21 +754,21 @@ std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 	return result;
 }
 
-std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
+std::list<CameraPacket*> NetworkModule::PacketBuffer_GetCameraPackets()
 {
 	CameraPacket* cPP = nullptr;
-	std::list<CameraPacket> result;
-	std::list<Packet>::iterator iter;
+	std::list<CameraPacket*> result;
+	std::list<Packet*>::iterator iter;
 	bool deleted = false;
 
 	for (iter = this->packet_Buffer.begin(); iter != this->packet_Buffer.end();)
 	{
-		if (iter->packet_type == UPDATE_CAMERA)
+		if ((*iter)->packet_type == UPDATE_CAMERA)
 		{
 
-			cPP = dynamic_cast<CameraPacket*>(&(*iter));
+			cPP = dynamic_cast<CameraPacket*>(*iter);
 
-			result.push_back(*cPP);
+			result.push_back(cPP);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer.erase(iter);	//Returns the next element after the errased element
 			cPP = nullptr;
 

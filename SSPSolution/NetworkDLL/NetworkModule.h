@@ -35,7 +35,7 @@ private:
 	SOCKET							listenSocket;	
 	SOCKET							connectSocket;		// Socket to listen for new connections	
 	std::map<unsigned int, SOCKET>	connectedClients;	// table to keep track of each client's socket
-	std::list<Packet>				packet_Buffer;
+	std::list<Packet*>				packet_Buffer;
 
 	int ReceiveData(unsigned int client_id, char * recvbuf);
 	bool AcceptNewClient(unsigned int & id);			//accept new connections
@@ -72,11 +72,11 @@ public:
 	void PacketBuffer_Lock();
 	void PacketBuffer_UnLock();
 
-	std::list<Packet> PacketBuffer_GetPackets();					//Get ALL the packets in packet_Buffer	
-	std::list<EntityPacket> PacketBuffer_GetEntityPackets();		//Get ALL EntityPackets in packet_Buffer	
-	std::list<AnimationPacket> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
-	std::list<StatePacket> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
-	std::list<CameraPacket> PacketBuffer_GetCameraPackets();
+	std::list<Packet*> PacketBuffer_GetPackets();					//Get ALL the packets in packet_Buffer	
+	std::list<EntityPacket*> PacketBuffer_GetEntityPackets();		//Get ALL EntityPackets in packet_Buffer	
+	std::list<AnimationPacket*> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
+	std::list<StatePacket*> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
+	std::list<CameraPacket*> PacketBuffer_GetCameraPackets();
 
 	int GetNrOfConnectedClients();
 
