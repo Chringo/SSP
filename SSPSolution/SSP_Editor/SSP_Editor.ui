@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1122</width>
-    <height>747</height>
+    <width>1131</width>
+    <height>695</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@
       <x>950</x>
       <y>30</y>
       <width>161</width>
-      <height>571</height>
+      <height>401</height>
      </rect>
     </property>
     <property name="title">
@@ -118,10 +118,10 @@
    <widget class="QWidget" name="RenderWidget_2" native="true">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>40</y>
-      <width>256</width>
-      <height>256</height>
+      <x>950</x>
+      <y>440</y>
+      <width>161</width>
+      <height>161</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -159,7 +159,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1122</width>
+     <width>1131</width>
      <height>21</height>
     </rect>
    </property>

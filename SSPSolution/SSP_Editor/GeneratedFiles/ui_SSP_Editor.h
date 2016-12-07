@@ -51,7 +51,7 @@ public:
     {
         if (SSP_EditorClass->objectName().isEmpty())
             SSP_EditorClass->setObjectName(QStringLiteral("SSP_EditorClass"));
-        SSP_EditorClass->resize(1122, 747);
+        SSP_EditorClass->resize(1131, 695);
         actionNew_scene = new QAction(SSP_EditorClass);
         actionNew_scene->setObjectName(QStringLiteral("actionNew_scene"));
         actionLoad_scene = new QAction(SSP_EditorClass);
@@ -70,7 +70,7 @@ public:
         label_2->setGeometry(QRect(230, 10, 47, 13));
         groupBox = new QGroupBox(centralWidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setGeometry(QRect(950, 30, 161, 571));
+        groupBox->setGeometry(QRect(950, 30, 161, 401));
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
         pushButton->setGeometry(QRect(20, 610, 75, 23));
@@ -91,9 +91,9 @@ public:
         RenderWidget->setFocusPolicy(Qt::StrongFocus);
         RenderWidget->setAcceptDrops(true);
         RenderWidget->setAutoFillBackground(true);
-        RenderWidget_2 = new QWidget(RenderWidget);
+        RenderWidget_2 = new QWidget(centralWidget);
         RenderWidget_2->setObjectName(QStringLiteral("RenderWidget_2"));
-        RenderWidget_2->setGeometry(QRect(450, 10, 256, 256));
+        RenderWidget_2->setGeometry(QRect(950, 440, 161, 161));
         sizePolicy.setHeightForWidth(RenderWidget_2->sizePolicy().hasHeightForWidth());
         RenderWidget_2->setSizePolicy(sizePolicy);
         RenderWidget_2->setCursor(QCursor(Qt::ArrowCursor));
@@ -108,9 +108,10 @@ public:
         pushButton->raise();
         treeView->raise();
         RenderWidget->raise();
+        RenderWidget_2->raise();
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1122, 21));
+        menuBar->setGeometry(QRect(0, 0, 1131, 21));
         menuEditor = new QMenu(menuBar);
         menuEditor->setObjectName(QStringLiteral("menuEditor"));
         SSP_EditorClass->setMenuBar(menuBar);
