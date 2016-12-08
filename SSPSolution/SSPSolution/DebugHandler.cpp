@@ -28,7 +28,7 @@ int DebugHandler::EndTimer()
 {
 	LARGE_INTEGER currTime;
 	QueryPerformanceCounter(&currTime);
-	this->m_timers.at(this->m_timers.size() - ++this->m_timerToEnd).endTime = currTime;
+	this->m_timers.at(this->m_timers.size() - 1).endTime = currTime;
 
 	return 0;
 }

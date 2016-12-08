@@ -24,7 +24,7 @@ private:
 		unsigned int GetTimeMS(LARGE_INTEGER frequency)
 		{
 			LARGE_INTEGER elapsedTime;
-			elapsedTime.QuadPart = this->startTime.QuadPart - this->endTime.QuadPart;
+			elapsedTime.QuadPart = this->endTime.QuadPart - this->startTime.QuadPart;
 			elapsedTime.QuadPart *= 1000000;
 			return elapsedTime.QuadPart / frequency.QuadPart;
 		}

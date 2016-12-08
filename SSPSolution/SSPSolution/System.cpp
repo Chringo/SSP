@@ -91,6 +91,7 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+		DebugHandler::instance().StartTimer("Update");
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -115,6 +116,8 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
+		DebugHandler::instance().EndTimer();
+
 		//std::cout << int(totalTime) << "\n";
 		//Render
 		DebugHandler::instance().StartTimer("Render");
