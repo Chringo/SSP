@@ -7,12 +7,11 @@ class Player :
 private:
 	//Meters per second
 	float m_speed;
-	float m_jumpSpeed;
-	bool m_onGround;
 public:
 	Player();
 	~Player();
 
+	int Initialize();
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
