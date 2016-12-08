@@ -141,24 +141,22 @@ int System::Update(float deltaTime)
 	int result = 1;
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
-	std::list<CameraPacket*> cList;
+	std::list<CameraPacket> cList;
 
 	//Check for camera updates from the network
-	if (!this->m_networkModule.PacketBuffer_isEmpty())
-	{
+
 		printf("There is a message\n");
 		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
 
 		if (!cList.empty())
 		{
 			printf("The message is for the camera");
-			std::list<CameraPacket*>::iterator iter;
+			std::list<CameraPacket>::iterator iter;
 
 			for (iter = cList.begin(); iter != cList.end();)
 			{
-				this->m_camera->SetCameraPos((*iter)->pos);
+				this->m_camera->SetCameraPos((iter)->pos);
 				
-				delete (*iter);	//Delete the packet that the iter is pointing at
 				iter++;
 				
 			}
@@ -167,12 +165,6 @@ int System::Update(float deltaTime)
 
 		}
 		printf("No Packets for camera\n");
-		
-	}
-	else
-	{
-		printf("PacketBuffer is empty\n");
-	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{

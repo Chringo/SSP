@@ -35,8 +35,11 @@ private:
 	SOCKET							listenSocket;	
 	SOCKET							connectSocket;		// Socket to listen for new connections	
 	std::map<unsigned int, SOCKET>	connectedClients;	// table to keep track of each client's socket
-	std::list<Packet*>				packet_Buffer;
-	Packet*							packet_ptr;
+	
+	std::list<EntityPacket>				packet_Buffer_Entity;
+	std::list<AnimationPacket>			packet_Buffer_Animation;
+	std::list<StatePacket>				packet_Buffer_State;
+	std::list<CameraPacket>				packet_Buffer_Camera;
 
 	int ReceiveData(unsigned int client_id, char * recvbuf);
 	bool AcceptNewClient(unsigned int & id);			//accept new connections
@@ -68,16 +71,14 @@ public:
 	void SendStatePacket(unsigned int entityID, bool newState);
 	void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
 
-	bool PacketBuffer_isEmpty();
 	bool PacketBuffer_isLocked();
 	void PacketBuffer_Lock();
 	void PacketBuffer_UnLock();
 
-	std::list<Packet*> PacketBuffer_GetPackets();					//Get ALL the packets in packet_Buffer	
-	std::list<EntityPacket*> PacketBuffer_GetEntityPackets();		//Get ALL EntityPackets in packet_Buffer	
-	std::list<AnimationPacket*> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
-	std::list<StatePacket*> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
-	std::list<CameraPacket*> PacketBuffer_GetCameraPackets();
+	std::list<EntityPacket> PacketBuffer_GetEntityPackets();		//Get ALL EntityPackets in packet_Buffer	
+	std::list<AnimationPacket> PacketBuffer_GetAnimationPackets();	//Get ALL AnimationPackets in packet_Buffer	
+	std::list<StatePacket> PacketBuffer_GetStatePackets();			//Get ALL StatePackets in packet_Buffer	
+	std::list<CameraPacket> PacketBuffer_GetCameraPackets();
 
 	int GetNrOfConnectedClients();
 
