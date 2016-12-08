@@ -5,8 +5,6 @@
 Player::Player()
 {
 	this->m_speed = 1.0f;
-	this->m_jumpSpeed = 0.0f;
-	this->m_onGround = false;
 }
 
 
@@ -14,12 +12,19 @@ Player::~Player()
 {
 }
 
+int Player::Initialize()
+{
+	int result = 0;
+	this->m_speed = 1.0f;
+	return result;
+}
+
 int Player::Update(float dT, InputHandler* inputHandler)
 {
 	int result = 0;
 	//Determine the player behavior that should accour based on the user input
 	//Map the user input to values
-	int sideways = 0, forwards = 0, jumping = 0;
+	int sideways = 0, forwards = 0;
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		forwards++;
@@ -36,15 +41,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		sideways--;
 	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
-	{
-		jumping = 1;
-	}
 	//Check if player is grounded
 
 
 	//Check if the player should update its physics component
-	if (forwards != 0 || sideways != 0 || jumping != 0)
+	if (forwards != 0 || sideways != 0)
 	{
 		//Use those values for the player behaviour calculations
 		//Get the rotation around the Y-axis, also called the Yaw axis
@@ -57,7 +58,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Rotate the velocity vector
 		//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 		//Add the velocity to our physicsComponent
-		DirectX::XMVectorAdd(this->m_pComp->m_velocity, velocity);
+		this->m_pComp->m_velocity = DirectX::XMVectorAdd(this->m_pComp->m_velocity, velocity);
 
 	}
 	
