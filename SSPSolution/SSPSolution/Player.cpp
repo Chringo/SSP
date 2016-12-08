@@ -17,7 +17,7 @@ int Player::Update(float dT)
 	return result;
 }
 
-int Player::React(int entityID, EVENT event)
+int Player::React(int entityID, EVENT reactEvent)
 {
 	int result = 0;
 	return result;

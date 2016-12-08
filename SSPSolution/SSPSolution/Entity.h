@@ -20,7 +20,7 @@ public:
 
 
 	virtual int Update(float dT) = 0;
-	virtual int React(int entityID, EVENT event) = 0;
+	virtual int React(int entityID, EVENT reactEvent) = 0;
 private:
 };
 

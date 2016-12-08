@@ -4,13 +4,18 @@
 class Player :
 	public Entity
 {
+private:
+
 public:
 	Player();
 	~Player();
 
 
 	int Update(float dT);
-	int React(int entityID, EVENT event);
+	int React(int entityID, EVENT reactEvent);
+
+private:
+
 };
 
 #endif
