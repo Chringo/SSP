@@ -27,7 +27,7 @@ private:
 
 	HWND* m_windowHandle;
 
-	Resources::Model** modelsPtr;
+	Resources::Model** m_modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
@@ -43,9 +43,7 @@ private:
 	int IncreaseArraySize();
 	int DecreaseArraySize();
 
-	bool initCheck;
 	bool m_gridEnabled;
-	float simpleGravity;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();

@@ -9,69 +9,195 @@ class ConstantBufferHandler
 	enum CBufferType
 	{
 		CB_WORLD_B0,
-		CB_VIEW_PROJECTION_B1,
-		CB_CAMERA_B2,
-		CB_MATERIAL_B3,
-		CB_LIGHT_B4, 
-		CB_SKELETON_B5,
+		CB_CAMERA_B1,
+		CB_MATERIAL_B2,
+		CB_LIGHT_B3, 
+		CB_SKELETON_B4,
 
 		CB_TYPE_COUNT
 	};
 
+	
+public:
 	struct ConstantBuffer
 	{
-		struct BufferData
-		{
-			ID3D11Buffer * D3DBuffer = nullptr;
-			CBufferType type;
 
-			BufferData()
+		/**BUFFER TYPE STRUCT DEFINITIONS**/
+		struct world
+		{
+		private:
+			struct pData
 			{
-				type = CB_TYPE_COUNT;
+				DirectX::XMFLOAT4X4 pWorld;
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			struct cbData
+			{
+				DirectX::XMMATRIX cWorld;
 			};
 
-
-			template <typename T>
-			int UpdateBuffer(T* data, CBufferType Type)
+			ID3D11Buffer * D3DBuffer = nullptr;
+			cbData c;
+			pData p;
+			pData GetPData()
 			{
-				D3D11_MAPPED_SUBRESOURCE mappedResource;
-				ZeroMemory(&mappedResource, sizeof(mappedResource));
+				DirectX::XMStoreFloat4x4(&p.pWorld, DirectX::XMMatrixTranspose(c.cWorld));
 
-				ConstantBufferHandler::GetInstance()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				return p;
+			};
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				c = *(cbData*)data;
 
-				T* tempBufferData 0 (T*)mappedResource.pData;
-				*tempBufferData = *data;
+
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
-
+				return 0;
 			}
 		};
 
-		BufferData cbWorld;
-		BufferData cbViewProj;
-		BufferData cbCamera;
-		BufferData cbMaterial;
-		BufferData cbLight;
-		BufferData cbSkeleton;
-
-		ConstantBuffer() {};
-		~ConstantBuffer()
+		struct camera
 		{
-			if (cbWorld.D3DBuffer)
-				cbWorld.D3DBuffer->Release();
-			if (cbViewProj.D3DBuffer)
-				cbViewProj.D3DBuffer->Release();
-			if (cbCamera.D3DBuffer)
-				cbCamera.D3DBuffer->Release();
-			if (cbMaterial.D3DBuffer)
-				cbMaterial.D3DBuffer->Release();
-			if (cbLight.D3DBuffer)
-				cbLight.D3DBuffer->Release();
-			if (cbSkeleton.D3DBuffer)
-				cbSkeleton.D3DBuffer->Release();
-		}
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 pView;
+				DirectX::XMFLOAT4X4 pProjection;
+				DirectX::XMFLOAT4 pPos;
+				DirectX::XMFLOAT4 padding1;
+				DirectX::XMFLOAT4 padding2;
+				DirectX::XMFLOAT4 padding3;
+			};
+				D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			struct cbData
+			{
+				DirectX::XMMATRIX cView;
+				DirectX::XMMATRIX cProjection;
+				DirectX::XMVECTOR cPos;
+			};
+			ID3D11Buffer * D3DBuffer = nullptr;
+			pData p;
+			cbData c;
+			pData GetPData()
+			{
+				DirectX::XMStoreFloat4x4(&p.pView, DirectX::XMMatrixTranspose(c.cView));
+				DirectX::XMStoreFloat4x4(&p.pProjection, DirectX::XMMatrixTranspose(c.cProjection));
+				DirectX::XMStoreFloat4(&p.pPos, c.cPos);
 
+				return p;
+			};
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				c = *(cbData*)data;
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
+
+		struct material
+		{
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 temp;
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			ID3D11Buffer * D3DBuffer = nullptr;
+
+			pData p;
+
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				p = *(cbData*)data;
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
+
+		struct light
+		{
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 temp;
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			ID3D11Buffer * D3DBuffer = nullptr;
+
+			pData p;
+
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				p = *(cbData*)data;
+
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
+
+		struct skeleton
+		{
+			struct cData
+			{
+				DirectX::XMMATRIX cJoints[32];
+			};
+
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 pJoints[32];
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			ID3D11Buffer * D3DBuffer = nullptr;
+			pData p;
+			cData c;
+			pData GetPData()
+			{
+				for (int i = 0; i < 32; i++)
+				{
+					DirectX::XMStoreFloat4x4(&p.pJoints[i], DirectX::XMMatrixTranspose(c.cJoints[i]));
+				}
+				return p;
+			};
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				c = *(cbData*)data;
+
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
 	};
 
 private:
@@ -79,17 +205,25 @@ private:
 	
 	ID3D11Device * m_device;
 	ID3D11DeviceContext * m_deviceContext;
-	ConstantBuffer CBuffers;
 
 public:
+
 	~ConstantBufferHandler();
+
+
+	ConstantBuffer::world world;
+	ConstantBuffer::camera camera;
+	ConstantBuffer::light light;
+	ConstantBuffer::material material;
+	ConstantBuffer::skeleton skeleton;
 
 	int Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
 	int Shutdown();
 
+	
+
 	ID3D11DeviceContext * GetDeviceContext();
 	static ConstantBufferHandler * GetInstance();
-	ConstantBuffer * GetCBuffers();
 
 };
 

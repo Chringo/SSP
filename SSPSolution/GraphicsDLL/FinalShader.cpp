@@ -161,6 +161,11 @@ int FinalShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
 	this->m_deviceContext->PSSetSamplers(1, 1, &this->m_samplerStatePoint);
 
+	if (this->m_gBufferRTVs) {
+		//Set shader texture resource for pixel shader
+		m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, m_gBufferRTVs);
+	}
+
 	this->m_screenQuad->SetBuffers(m_deviceContext);
 
 	return 0;
@@ -209,6 +214,13 @@ int FinalShader::Draw()
 	//delete shaderParamsXM;
 	//delete shaderParamsVP;
 
+	static bool hej = true;
+	if (hej)
+	{
+		//ConstantBufferHandler::GetInstance()->Bind();
+		hej = false;
+	}
+
 	//this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	//this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
 	//this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
@@ -228,42 +240,6 @@ int FinalShader::Draw()
 	return 0;
 }
 
-int FinalShader::SetShaderParameters(ShaderLib::CameraConstantBuffer * shaderParams)
-{
-	HRESULT hResult;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::CameraConstantBuffer* dataPtr;
-	unsigned int bufferNumber;
-
-	//Map the constant buffer so we can write to it (denies GPU access)
-	//hResult = m_deviceContext->Map(this->m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	//if (FAILED(hResult)) {
-	//	return 1;
-	//}
-
-	////Get pointer to the data
-	//dataPtr = (ShaderLib::CameraConstantBuffer*)mappedResource.pData;
-
-
-	//dataPtr->camPos = shaderParams->camPos;
-	//dataPtr->camTar = shaderParams->camTar;
-
-	////Unmap the constant buffer to give the GPU access agin
-	//m_deviceContext->Unmap(this->m_matrixBuffer, 0);
-
-	//Set constant buffer position in vertex shader
-	bufferNumber = 0;
-
-	//Set the constant buffer in vertex and pixel shader with updated values
-	//m_deviceContext->PSSetConstantBuffers(3, 1, &this->m_matrixBuffer);
-
-	if (this->m_gBufferRTVs) {
-		//Set shader texture resource for pixel shader
-		m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, m_gBufferRTVs);
-	}
-
-	return 0;
-}
 
 void FinalShader::ResetPSShaderResources()
 {

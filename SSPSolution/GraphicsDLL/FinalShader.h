@@ -26,7 +26,6 @@ public:
 	
 	int SetActive(ShaderLib::ShaderVariations ShaderVariations);
 	int SetRenderParameters(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView** gBuffers);
-	int SetShaderParameters(ShaderLib::CameraConstantBuffer* shaderParams);
 	
 	void Release();
 

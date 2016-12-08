@@ -61,11 +61,8 @@ GraphicsHandler::~GraphicsHandler()
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
-	this->initCheck = false;
-	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
-	
-	this->modelsPtr = new Resources::Model*[2];
+	this->m_modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
@@ -89,7 +86,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		return 1;
 	}
 
-	//ConstantBufferHandler::Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
@@ -107,8 +104,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
-	//DirectX::XMFLOAT4X4 worldMatrix;
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
@@ -129,11 +124,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, modelsPtr);
+	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	
 	this->InitializeGrid();
 	
 	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), modelsPtr[1]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), m_modelsPtr[1]);
 
 	return 0;
 	
@@ -150,21 +146,15 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render()
 {
 
-
 	/*TEMP CBUFFER STUFF*/
-	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
-	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
-	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
-	ShaderLib::CameraConstantBuffer* lShaderParams = new ShaderLib::CameraConstantBuffer;
-	lShaderParams->camPos = this->m_camera->GetCameraPos();
-	lShaderParams->camTar = this->m_camera->GetLookAt();
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(&m_projectionMatrix);
 	/********************/
-
-
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 
 	this->m_deferredSH->SetActive(ShaderLib::ShaderVariations::Normal);
-	this->m_deferredSH->SetShaderParameters(shaderParamsVP, ShaderLib::CB_VIEW_PROJECTION);
 	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
 
 	/*TEMP*/
@@ -177,15 +167,11 @@ int GraphicsHandler::Render()
 	/********/
 
  
-
 	this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
-	this->m_finalSH->SetShaderParameters(lShaderParams);
 	this->m_finalSH->Draw();
 
 	/*TEMP CBUFFER STUFF*/
-	delete shaderParamsXM;
-	delete shaderParamsVP;
-	delete lShaderParams;
+
 	/*TEMP CBUFFER STUFF*/
 
 
@@ -195,7 +181,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
 	m_d3dHandler->InitializeGridRasterizer();
 	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = true;
@@ -253,7 +239,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
-	delete[] this->modelsPtr;
+	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 }
 
