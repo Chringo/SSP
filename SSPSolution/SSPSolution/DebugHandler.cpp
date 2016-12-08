@@ -35,7 +35,7 @@ int DebugHandler::EndTimer()
 
 int DebugHandler::Display()
 {
-	system("cls");
+	//system("cls");
 
 	std::vector<Timer>::iterator iter;
 	std::vector<std::string>::iterator iterLabel;
