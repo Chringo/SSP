@@ -36,7 +36,7 @@ namespace Resources {
 
 		const unsigned int*   GetJointCount()		   { return &m_anim.jointCount;		};
 		const AnimationJoint* GetJoint(int& index) { return (index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
-		const AnimationJoint* GetAllJoints() { return m_anim.joints; };
+		const AnimationJoint* GetAllJoints() const { return m_anim.joints; };
 
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 

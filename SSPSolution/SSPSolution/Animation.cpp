@@ -6,8 +6,28 @@ Animation::Animation()
 	this->elapsedTime = 0.0f;
 	this->currentAnimation = IDLE_STATE;
 
+	modelPtr = new Resources::Model();
+
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
+
+	skeletonPtr = modelPtr->GetSkeleton();
+
+	jointList = skeletonPtr->GetSkeletonData()->joints;
+	jointCount = skeletonPtr->GetSkeletonData()->jointCount;
+
+	for (int i = 0; i < jointCount; i++)
+	{
+		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose);
+	}
+	animationPtr = skeletonPtr->GetAnimation(currentAnimation);
+
+	animatedJointsList = animationPtr->GetAllJoints();
+
+	int startFrame = animatedJointsList->keyframes[0].timeValue;
+	int endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
+
 	/*Initialize the stack with a default "IDLE" animation.*/
-	Push(currentAnimation, true, 0, 0, 0);
+	Push(currentAnimation, true, startFrame, endFrame, 0);
 }
 
 Animation::~Animation()
@@ -69,9 +89,6 @@ void Animation::Update(float dt)
 			//Blend(elapsedTime, currentAnimation, 0);
 		}
 
-		int jointCount = 0;
-		std::vector<XMFLOAT4X4> interpolatedTransforms(jointCount);
-
 		/*Call this function and check if the elapsedTime is at the start, between frames or at the end.*/
 		Interpolate(elapsedTime, interpolatedTransforms);
 	}
@@ -85,36 +102,92 @@ void Animation::Update(float dt)
 
 void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpolatedTransforms)
 {
-	int jointListSize = 0;
+	interpolatedTransforms.resize(jointCount);
 
-	for (int jointIndex = 0; jointIndex < jointListSize; jointIndex++)
+	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
-		XMVECTOR trans1, trans2;
-		XMVECTOR scale1, scale2;
-		XMVECTOR quat1, quat2;
+		Resources::Animation::AnimationJoint animatedJoint = animatedJointsList[jointIndex];
 
-		trans1 = XMVectorSet(0, 0, 0, 0); trans2 = XMVectorSet(0, 0, 0, 0);
-		scale1 = XMVectorSet(0, 0, 0, 0); scale2 = XMVectorSet(0, 0, 0, 0);
-		quat1 = XMVectorSet(0, 0, 0, 0); quat2 = XMVectorSet(0, 0, 0, 0);
+		/*The current time is the first keyframe.*/
+		if (currentTime <= animationStack.top().startFrame)
+		{
+			int startFrame = animationStack.top().startFrame;
 
-		/*Interpolate translations for the two keyframes.*/
-		XMVECTOR lerpedTrans = XMVectorLerp(trans1, trans2, 0);
+			XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
+			XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
+			XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
 
-		/*Interpolate scale for the two keyframes.*/
-		XMVECTOR lerpedScale = XMVectorLerp(scale1, scale2, 0);
+			XMVECTOR trans = XMLoadFloat3(&tempTrans);
+			XMVECTOR scale = XMLoadFloat3(&tempScale);
+			XMVECTOR quat = XMLoadFloat4(&tempQuat);
 
-		/*Spherical interpolate quaternions for the two keyframes.*/
-		XMVECTOR lerpedQuat = XMQuaternionSlerp(quat1, quat2, 0);
+			XMVECTOR zero = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
-		/*Zero vector for the affine transformation matrix.*/
-		XMVECTOR zero = XMVectorSet(0, 0, 0, 0);
+			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMatrixAffineTransformation(scale, zero, quat, trans));
+		}
+		/*The current time is the last keyframe.*/
+		else if (currentTime >= animationStack.top().endFrame)
+		{
+			int endFrame = animationStack.top().endFrame;
 
-		/*Update the transform for each joint in the skeleton.*/
-		XMStoreFloat4x4(&interpolatedTransforms[jointIndex],
-			XMMatrixAffineTransformation(lerpedScale, zero, lerpedQuat, lerpedTrans));
+			XMVECTOR trans, scale, quat;
+
+			XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
+			XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
+			XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
+
+			XMVECTOR trans = XMLoadFloat3(&tempTrans);
+			XMVECTOR scale = XMLoadFloat3(&tempScale);
+			XMVECTOR quat = XMLoadFloat4(&tempQuat);
+
+			XMVECTOR zero = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+
+			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMatrixAffineTransformation(scale, zero, quat, trans));
+		}
+
+		else
+		{
+			int keyFrameCount = animatedJoint.keyframeCount;
+
+			for (int i = 0; i < keyFrameCount; i++)
+			{
+				if (currentTime >= animatedJoint.keyframes[i].timeValue && currentTime <= animatedJoint.keyframes[i + 1].timeValue)
+				{
+					float lerpFactor = 0;
+
+					XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
+					XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
+					XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
+					XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
+					XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
+					XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
+
+					XMVECTOR trans1 = XMLoadFloat3(&tempTrans1);
+					XMVECTOR scale1 = XMLoadFloat3(&tempScale1);
+					XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
+
+					XMVECTOR trans2 = XMLoadFloat3(&tempTrans2);
+					XMVECTOR scale2 = XMLoadFloat3(&tempScale2);
+					XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
+
+					/*Zero vector for the affine transformation matrix.*/
+					XMVECTOR zero = XMVectorSet(0, 0, 0, 0);
+
+					/*Update the transform for each joint in the skeleton.*/
+					/*XMStoreFloat4x4(&interpolatedTransforms[jointIndex],
+						XMMatrixAffineTransformation(lerpedScale, zero, lerpedQuat, lerpedTrans));*/
+				}
+			}
+		}
 	}
 }
 
+void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16])
+{
+	XMFLOAT4X4 matrix = XMFLOAT4X4(floatArray);
+
+	invBindPoses.push_back(matrix);
+}
 void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms)
 {
 

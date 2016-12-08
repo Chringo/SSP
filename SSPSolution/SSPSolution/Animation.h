@@ -36,6 +36,20 @@ class Animation
 private:
 	std::stack<AnimationClip> animationStack;
 
+	std::vector<XMFLOAT4X4> interpolatedTransforms;
+
+	Resources::Model* modelPtr;
+
+	Resources::Skeleton* skeletonPtr;
+	Resources::Skeleton::Joint* jointList;
+	unsigned int jointCount;
+
+	const Resources::Animation* animationPtr;
+
+	const Resources::Animation::AnimationJoint* animatedJointsList;
+
+	std::vector<XMFLOAT4X4> invBindPoses;
+
 	int currentAnimation;
 	float elapsedTime;
 
@@ -55,6 +69,9 @@ public:
 	/*Don't know if this is suppose to be here? Maybe this is a function
 	we call from Update(), having another class holding interpolation func?*/
 	void Interpolate(float currentTime, std::vector<XMFLOAT4X4> updatedTransforms);
+
+	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16]);
+	void SetXMVectors()
 
 	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
 
