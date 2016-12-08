@@ -5,7 +5,8 @@ class Player :
 	public Entity
 {
 private:
-
+	//Meters per second
+	float m_speed;
 public:
 	Player();
 	~Player();
