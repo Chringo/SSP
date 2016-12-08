@@ -11,7 +11,7 @@ public:
 	~Player();
 
 
-	int Update(float dT);
+	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
 private:

@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_ENTITIES_ENTITY_H
 #include "Observer.h"
 #include "Subject.h"
+#include "InputHandler.h"
 //Subject includes this for the events
 #include "ComponentStructs.h"
 
@@ -18,8 +19,7 @@ public:
 	Entity();
 	virtual ~Entity();
 
-
-	virtual int Update(float dT) = 0;
+	virtual int Update(float dT, InputHandler* inputHandler) = 0;
 	virtual int React(int entityID, EVENT reactEvent) = 0;
 private:
 };

@@ -11,14 +11,16 @@ Player::~Player()
 {
 }
 
-int Player::Update(float dT)
+int Player::Update(float dT, InputHandler* inputHandler)
 {
 	int result = 0;
+
 	return result;
 }
 
 int Player::React(int entityID, EVENT reactEvent)
 {
 	int result = 0;
+
 	return result;
 }
