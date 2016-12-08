@@ -10,3 +10,15 @@ Player::Player()
 Player::~Player()
 {
 }
+
+int Player::Update()
+{
+	int result = 0;
+	return result;
+}
+
+int Player::React(int entityID, EVENT event)
+{
+	int result = 0;
+	return result;
+}
