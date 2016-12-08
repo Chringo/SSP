@@ -7,6 +7,8 @@ class Player :
 private:
 	//Meters per second
 	float m_speed;
+	float m_jumpSpeed;
+	bool m_onGround;
 public:
 	Player();
 	~Player();

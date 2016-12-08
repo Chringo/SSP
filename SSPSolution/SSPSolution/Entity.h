@@ -4,7 +4,8 @@
 #include "Subject.h"
 #include "InputHandler.h"
 //Subject includes this for the events
-#include "ComponentStructs.h"
+#include "../GraphicsDLL/GraphicsHandler.h"
+#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
 
 class Entity :
 	public Observer
@@ -15,6 +16,8 @@ protected:
 	Subject* m_subject;
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
+	//PhysicsComponent* m_pComp;
+	//GraphicsComponent* m_gComp;
 public:
 	Entity();
 	virtual ~Entity();
