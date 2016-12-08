@@ -181,7 +181,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
 	m_d3dHandler->InitializeGridRasterizer();
 	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = true;
