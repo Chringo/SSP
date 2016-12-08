@@ -27,19 +27,19 @@ bool PhysicsHandler::IntersectAABB()
 			for (int axis = 0; axis < 3; axis++)
 			{
 				vecToObj[axis] = 0; //remove clutter values, or old values
-				vecToObj[axis] = PC_toCheck->m_AABB.pos[axis] - PC_ptr->m_AABB.pos[axis];
+				vecToObj[axis] = PC_toCheck->PC_AABB.pos[axis] - PC_ptr->PC_AABB.pos[axis];
 			}
 			//Fraps return the absolute value
 			//http://www.cplusplus.com/reference/cmath/fabs/
 
 			//if the extensions from objA and objB together is smaller than the vector to b, then no collition
-			possibleCollitionX = (fabs(vecToObj[0]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+			possibleCollitionX = (fabs(vecToObj[0]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
 			if (possibleCollitionX == true)
 			{
-				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
 				if (possibleCollitionY == true)
 				{
-					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->m_AABB.ext[0] + PC_ptr->m_AABB.ext[0]));
+					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
 					if (possibleCollitionZ == true)
 					{
 						// apply OOB check for more precisition
@@ -60,21 +60,28 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	DirectX::XMFLOAT3 orthA[3];
 	DirectX::XMFLOAT3 orthB[3];
 
+	DirectX::XMFLOAT3 posA;
+	DirectX::XMFLOAT3 posB;
+
+	DirectX::XMStoreFloat3(&posA, objA->PC_OBB.pos);
+	DirectX::XMStoreFloat3(&posB, objB->PC_OBB.pos);
+	
+
 	//not very clever way, but I need to know if shit work, for debug purpuses
 	for (int i = 0; i < 3; i++)
 	{
-		DirectX::XMStoreFloat3(&orthA[i], objA->m_OBB.ort.r[i]);
-		DirectX::XMStoreFloat3(&orthA[i], objA->m_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
 
-		DirectX::XMStoreFloat3(&orthA[i], objB->m_OBB.ort.r[i]);
-		DirectX::XMStoreFloat3(&orthA[i], objB->m_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthA[i], objB->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthA[i], objB->PC_OBB.ort.r[i]);
 	}
 
 	OBB* a = nullptr;
 	OBB* b = nullptr;
 
-	a = &objA->m_OBB;
-	b = &objB->m_OBB;
+	a = &objA->PC_OBB;
+	b = &objB->PC_OBB;
 
 	float T[3];
 
@@ -91,7 +98,8 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	DirectX::XMFLOAT3X3 R;
 
 	//this holds the translation vector in parent frame
-	transPF_v = this->VectorSubstract(a->pos1, b->pos1);
+	transPF_v = this->VectorSubstract(posA, posB);
+
 
 	//translation in A's frame (START)
 
@@ -327,25 +335,25 @@ void PhysicsHandler::CreateDefaultAABB(const DirectX::XMVECTOR & pos, PhysicsCom
 	DirectX::XMStoreFloat3(&temp , pos);
 
 	//AABB components
-	src->m_AABB.pos[0] = temp.x;
-	src->m_AABB.pos[1] = temp.y;
-	src->m_AABB.pos[2] = temp.z;
+	src->PC_AABB.pos[0] = temp.x;
+	src->PC_AABB.pos[1] = temp.y;
+	src->PC_AABB.pos[2] = temp.z;
 
-	src->m_AABB.ext[0] = 1.0f;
-	src->m_AABB.ext[1] = 1.0f;
-	src->m_AABB.ext[2] = 1.0f;
+	src->PC_AABB.ext[0] = 1.0f;
+	src->PC_AABB.ext[1] = 1.0f;
+	src->PC_AABB.ext[2] = 1.0f;
 }
 
 void PhysicsHandler::CreateDefaultOBB(const DirectX::XMVECTOR & pos, PhysicsComponent* src)
 {
 	//AABB components
-	src->m_OBB.pos = pos;
+	src->PC_OBB.pos = pos;
 
-	src->m_OBB.ext[0] = 1.0f;
-	src->m_OBB.ext[1] = 1.0f;
-	src->m_OBB.ext[2] = 1.0f;
+	src->PC_OBB.ext[0] = 1.0f;
+	src->PC_OBB.ext[1] = 1.0f;
+	src->PC_OBB.ext[2] = 1.0f;
 
-	src->m_OBB.ort = DirectX::XMMatrixIdentity();
+	src->PC_OBB.ort = DirectX::XMMatrixIdentity();
 }
 
 PhysicsHandler::PhysicsHandler()
@@ -383,7 +391,7 @@ void PhysicsHandler::Update()
 	ray.Origin = DirectX::XMLoadFloat3(&testPos);
 	ray.RayDir = DirectX::XMLoadFloat3(&testDir);
 
-	OBB* test = &(this->m_dynamicComponents.at(0)->m_OBB);
+	OBB* test = &(this->m_dynamicComponents.at(0)->PC_OBB);
 	//test->pos = DirectX::XMLoadFloat3(&test->pos1);
 	bool intersected = this->IntersectRayOBB(ray.Origin, ray.RayDir, *test);
 
@@ -396,7 +404,7 @@ void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
 
 	newObject = new PhysicsComponent;
 
-	newObject->m_pos = pos;
+	newObject->PC_pos = pos;
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_dynamicComponents.push_back(newObject);
@@ -500,7 +508,7 @@ void PhysicsHandler::SimpleCollition(float dt)
 		ptr = this->m_dynamicComponents.at(i);
 
 
-		DirectX::XMVECTOR pos = ptr->m_pos;
+		DirectX::XMVECTOR pos = ptr->PC_pos;
 
 		float y = DirectX::XMVectorGetY(pos);
 
@@ -510,17 +518,17 @@ void PhysicsHandler::SimpleCollition(float dt)
 		}
 		else if (y < (0 + this->m_offSet))
 		{
-			ptr->m_pos =  (DirectX::XMVectorSet(DirectX::XMVectorGetX(pos), (0 + this->m_offSet), DirectX::XMVectorGetZ(pos), 0.0f));
-			DirectX::XMVECTOR vel = ptr->m_velocity;
-			ptr->m_velocity = (DirectX::XMVectorSet(DirectX::XMVectorGetX(vel) * m_frictionConstant, 0, DirectX::XMVectorGetZ(vel) * m_frictionConstant, 0.0f));
+			ptr->PC_pos =  (DirectX::XMVectorSet(DirectX::XMVectorGetX(pos), (0 + this->m_offSet), DirectX::XMVectorGetZ(pos), 0.0f));
+			DirectX::XMVECTOR vel = ptr->PC_velocity;
+			ptr->PC_velocity = (DirectX::XMVectorSet(DirectX::XMVectorGetX(vel) * m_frictionConstant, 0, DirectX::XMVectorGetZ(vel) * m_frictionConstant, 0.0f));
 		}
 		else if (y == (0 + this->m_offSet))
 		{
-			DirectX::XMVECTOR vel = ptr->m_velocity;
-			ptr->m_velocity = (DirectX::XMVectorSet(DirectX::XMVectorGetX(vel) * m_frictionConstant, 0.0f, DirectX::XMVectorGetZ(vel) * m_frictionConstant, 0.0f));
+			DirectX::XMVECTOR vel = ptr->PC_velocity;
+			ptr->PC_velocity = (DirectX::XMVectorSet(DirectX::XMVectorGetX(vel) * m_frictionConstant, 0.0f, DirectX::XMVectorGetZ(vel) * m_frictionConstant, 0.0f));
 		}
 
-		ptr->m_pos = DirectX::XMVectorAdd(ptr->m_pos, DirectX::XMVectorScale(ptr->m_velocity, dt));
+		ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(ptr->PC_velocity, dt));
 	}
 }
 
@@ -531,7 +539,7 @@ void PhysicsHandler::SimpleGravity(PhysicsComponent* componentPtr, const float &
 	test = DirectX::XMLoadFloat3(&testRes);
 
 
-	componentPtr->m_velocity = DirectX::XMVectorAdd(componentPtr->m_velocity, this->m_gravity);
+	componentPtr->PC_velocity = DirectX::XMVectorAdd(componentPtr->PC_velocity, this->m_gravity);
 
 }
 

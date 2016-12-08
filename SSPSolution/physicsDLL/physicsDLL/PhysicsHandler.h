@@ -20,10 +20,8 @@ struct AABB
 
 struct OBB
 {
-	DirectX::XMFLOAT3 pos1;
 	DirectX::XMVECTOR pos;
 	float ext[3];
-	//DirectX::XMFLOAT3 orth[3];
 	DirectX::XMMATRIX ort;
 };
 
@@ -37,21 +35,21 @@ struct Ray
 
 __declspec(align(16)) struct PhysicsComponent
 {
-	DirectX::XMVECTOR m_pos;
-	DirectX::XMVECTOR m_velocity;
-	DirectX::XMVECTOR m_rotationVelocity;
-	double m_gravityInfluence;
-	int m_active;
-	int m_entityID;
-	float m_mass;
-	bool m_is_Static;
-	bool m_coolides;
+	DirectX::XMVECTOR PC_pos;
+	DirectX::XMVECTOR PC_velocity;
+	DirectX::XMVECTOR PC_rotationVelocity;
+	double PC_gravityInfluence;
+	int PC_active;
+	int PC_entityID;
+	float PC_mass;
+	bool PC_is_Static;
+	bool PC_coolides;
 
-	AABB m_AABB;
-	OBB m_OBB;
-	//AABB m_looseBoundingBox
-	//BoundingVolume* m_tightBoundingVolume; 
-	//std::vector<int entityID, event EVENT> m_eventlist;
+	AABB PC_AABB;
+	OBB PC_OBB;
+	//AABB PC_looseBoundingBox
+	//BoundingVolume* PC_tightBoundingVolume; 
+	//std::vector<int entityID, event EVENT> PC_eventlist;
 
 };
 
