@@ -62,5 +62,13 @@ void ShaderControl::Draw(Resources::Model * model)
 void ShaderControl::DrawFinal()
 {
 	this->m_activeShader = Shaders::FINAL;
+	((FinalShader*)this->m_shaders[FINAL])->SetActive(ShaderLib::ShaderVariations::Normal);
 	((FinalShader*)this->m_shaders[FINAL])->Draw();
+}
+
+int ShaderControl::ClearFrame()
+{
+
+	((DeferredShader*)this->m_shaders[DEFERRED])->Clear();
+	return 0;
 }

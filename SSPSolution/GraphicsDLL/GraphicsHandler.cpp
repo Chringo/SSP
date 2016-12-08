@@ -133,6 +133,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render()
 {
+	m_shaderControl->ClearFrame();
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;

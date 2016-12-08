@@ -214,12 +214,6 @@ int FinalShader::Draw()
 	//delete shaderParamsXM;
 	//delete shaderParamsVP;
 
-	static bool hej = true;
-	if (hej)
-	{
-		//ConstantBufferHandler::GetInstance()->Bind();
-		hej = false;
-	}
 
 	//this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	//this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());

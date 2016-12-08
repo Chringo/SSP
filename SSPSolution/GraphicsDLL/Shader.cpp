@@ -25,8 +25,8 @@ int Shader::Initialize(ID3D11Device* device,ID3D11DeviceContext * deviceContext,
 int Shader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
 
-	if (m_activeVariation == ShaderVariations)
-		return 0;
+	//if (m_activeVariation == ShaderVariations)
+	//	return 0;
 		//Set the input layout for vertex
 	m_deviceContext->IASetInputLayout(this->m_layout);
 

@@ -38,6 +38,7 @@ public:
 
 	void Draw(Resources::Model* model);
 	void DrawFinal();
+	int ClearFrame();
 
 };
 

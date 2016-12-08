@@ -280,14 +280,20 @@ int DeferredShader::SetGraphicsParameters(GraphicsComponent ** grapicsComponents
 
 int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
+	//if (m_activeVariation == ShaderVariations)
+	//	return 0;
 	Shader::SetActive(ShaderVariations);
 
-	this->Clear(); //clear rtv and dsv
+	//this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
 
 	//Set the render target views
 	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRTV, this->m_DSV);
+
+
+
+	m_activeVariation = ShaderVariations;
 
 	return 0;
 }
@@ -318,7 +324,6 @@ void DeferredShader::Release()
 		}
 		if (this->m_gridPixelShader)
 			this->m_gridPixelShader->Release();
-
 	}
 }
 
