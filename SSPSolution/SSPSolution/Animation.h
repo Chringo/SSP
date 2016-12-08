@@ -71,7 +71,6 @@ public:
 	void Interpolate(float currentTime, std::vector<XMFLOAT4X4> updatedTransforms);
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16]);
-	void SetXMVectors()
 
 	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
 

@@ -130,8 +130,6 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 		{
 			int endFrame = animationStack.top().endFrame;
 
-			XMVECTOR trans, scale, quat;
-
 			XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
 			XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
