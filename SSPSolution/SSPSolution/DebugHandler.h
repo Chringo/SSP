@@ -11,6 +11,7 @@ private:
 	struct Timer {
 		LARGE_INTEGER startTime;
 		LARGE_INTEGER endTime;
+		Timer();
 		Timer(LARGE_INTEGER start)
 		{
 			this->startTime = start;

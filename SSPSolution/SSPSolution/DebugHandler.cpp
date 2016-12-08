@@ -30,3 +30,22 @@ int DebugHandler::EndTimer()
 
 	return 0;
 }
+
+int DebugHandler::Display()
+{
+	system("cls");
+
+	std::vector<Timer>::iterator iter;
+	std::vector<std::string>::iterator iterLabel;
+	for (iter = this->m_timers.begin(), iterLabel = this->m_labels.begin(); 
+		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
+		iter++, iterLabel++)
+	{
+		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " ms" << std::endl;
+	}
+
+	this->m_timers.clear();
+	this->m_labels.clear();
+
+	return 0;
+}
