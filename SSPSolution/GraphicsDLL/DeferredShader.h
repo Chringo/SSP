@@ -37,6 +37,8 @@ private:
 
 	GraphicsComponent** m_graphicsComponents;
 	Resources::Model ** modelsPtr;
+
+	UINT32 m_vertexSize;
 public:
 	DeferredShader();
 	~DeferredShader();

@@ -397,6 +397,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
 	}
 	case ShaderLib::Instanced:
@@ -405,6 +406,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Animated], NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
 		break;
 	}
 	case ShaderLib::InstancedAnimated:
@@ -480,9 +482,8 @@ int DeferredShader::Draw(Resources::Model * model)
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf		 = meshPtr->GetVerticesBuffer();
 	ID3D11Buffer* iBuf		 = meshPtr->GetIndicesBuffer();
-	UINT32 size				 = sizeof(Resources::Mesh::Vertex);
 	UINT32 offset			 = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat     = model->GetMaterial();
@@ -541,9 +542,8 @@ int DeferredShader::Draw(/*RESOURCE*/)
 	Resources::Mesh* meshPtr = this->modelsPtr[1]->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
 	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
-	UINT32 size = sizeof(Resources::Mesh::Vertex);
 	UINT32 offset = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
+	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat = modelsPtr[1]->GetMaterial();
