@@ -5,6 +5,7 @@
 Player::Player()
 {
 	this->m_speed = 1.0f;
+	this->m_grabbed = nullptr;
 }
 
 
@@ -16,6 +17,7 @@ int Player::Initialize()
 {
 	int result = 0;
 	this->m_speed = 1.0f;
+	this->m_grabbed = nullptr;
 	return result;
 }
 

@@ -7,6 +7,7 @@ class Player :
 private:
 	//Meters per second
 	float m_speed;
+	Entity* m_grabbed;
 public:
 	Player();
 	~Player();
