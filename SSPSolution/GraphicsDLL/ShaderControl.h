@@ -30,13 +30,14 @@ private:
 public:
 	ShaderControl();
 	~ShaderControl();
-	void Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, const DirectX::XMINT2& resolution);
+	bool Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, const DirectX::XMINT2& resolution);
 	void Release();
 
 	void SetActive(Shaders type);
+	int SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
 
 	void Draw(Resources::Model* model);
-
+	void DrawFinal();
 
 };
 

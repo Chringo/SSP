@@ -17,6 +17,8 @@ protected:
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout;
 
+	ShaderLib::ShaderVariations m_activeVariation;
+
 public:
 	Shader();
 	virtual ~Shader();

@@ -24,7 +24,10 @@ int Shader::Initialize(ID3D11Device* device,ID3D11DeviceContext * deviceContext,
 
 int Shader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
-	//Set the input layout for vertex
+
+	if (m_activeVariation == ShaderVariations)
+		return 0;
+		//Set the input layout for vertex
 	m_deviceContext->IASetInputLayout(this->m_layout);
 
 	//Set the vertex and pixel shaders that will be used to render this triangle
@@ -32,6 +35,7 @@ int Shader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 	m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 
+	m_activeVariation = ShaderVariations;
 	return 0;
 }
 

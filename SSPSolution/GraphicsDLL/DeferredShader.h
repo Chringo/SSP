@@ -15,10 +15,9 @@ private:
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;
 
-
 	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT];
-	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
+	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 
 	ID3D11Texture2D*		 m_depthStencilBuffer;
 	ID3D11DepthStencilView*  m_DSV;
@@ -36,8 +35,9 @@ public:
 	int SetActive(ShaderLib::ShaderVariations ShaderVariations);
 	void Release();
 
-
 	int Draw(ShaderLib::DrawType drawType);
+	int Draw(Resources::Model* model);
+
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
 	ID3D11DepthStencilView* GetDSV() { return this->m_DSV; };
