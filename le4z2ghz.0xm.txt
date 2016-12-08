@@ -1,0 +1,83 @@
+﻿Merge remote-tracking branch 'refs/remotes/origin/dev' into Camera
+
+# Conflicts:
+#	SSPSolution/GraphicsDLL/GraphicsHandler.cpp
+#	SSPSolution/GraphicsDLL/GraphicsHandler.h
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch Camera
+# Your branch is up-to-date with 'origin/Camera'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	new file:   LICENSE
+#	new file:   SSPSolution/GraphicsDLL/AnimVS.hlsl
+#	new file:   SSPSolution/GraphicsDLL/ConstantBufferHandler.cpp
+#	new file:   SSPSolution/GraphicsDLL/ConstantBufferHandler.h
+#	new file:   SSPSolution/GraphicsDLL/Debug/constantbufferhandler.obj.enc
+#	new file:   SSPSolution/GraphicsDLL/Debug/deferredshaderhandler.obj.enc
+#	new file:   SSPSolution/GraphicsDLL/Debug/finalshaderhandler.obj.enc
+#	new file:   SSPSolution/GraphicsDLL/Debug/graphicshandler.obj.enc
+#	new file:   SSPSolution/GraphicsDLL/Debug/shaderhandler.obj.enc
+#	renamed:    SSPSolution/GraphicsDLL/DeferredShaderHandler.cpp -> SSPSolution/GraphicsDLL/DeferredShader.cpp
+#	new file:   SSPSolution/GraphicsDLL/DeferredShader.h
+#	deleted:    SSPSolution/GraphicsDLL/DeferredShaderHandler.h
+#	modified:   SSPSolution/GraphicsDLL/Direct3DHandler.cpp
+#	modified:   SSPSolution/GraphicsDLL/Direct3DHandler.h
+#	renamed:    SSPSolution/GraphicsDLL/LightShaderHandler.cpp -> SSPSolution/GraphicsDLL/FinalShader.cpp
+#	new file:   SSPSolution/GraphicsDLL/FinalShader.h
+#	modified:   SSPSolution/GraphicsDLL/GraphicsDLL.vcxproj
+#	modified:   SSPSolution/GraphicsDLL/GraphicsDLL.vcxproj.filters
+#	modified:   SSPSolution/GraphicsDLL/GraphicsHandler.cpp
+#	modified:   SSPSolution/GraphicsDLL/GraphicsHandler.h
+#	deleted:    SSPSolution/GraphicsDLL/LightShaderHandler.h
+#	renamed:    SSPSolution/GraphicsDLL/ShaderHandler.cpp -> SSPSolution/GraphicsDLL/Shader.cpp
+#	new file:   SSPSolution/GraphicsDLL/Shader.h
+#	new file:   SSPSolution/GraphicsDLL/ShaderControl.cpp
+#	new file:   SSPSolution/GraphicsDLL/ShaderControl.h
+#	deleted:    SSPSolution/GraphicsDLL/ShaderHandler.h
+#	modified:   SSPSolution/GraphicsDLL/ShaderLib.h
+#	modified:   SSPSolution/GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl
+#	modified:   SSPSolution/GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl
+#	modified:   SSPSolution/GraphicsDLL/Shaders/PBR/PbrLightPass.hlsl
+#	modified:   SSPSolution/GraphicsDLL/Shaders/PBR/PbrLightVS.hlsl
+#	modified:   SSPSolution/ResourceLib/Animation.cpp
+#	modified:   SSPSolution/ResourceLib/Animation.h
+#	modified:   SSPSolution/ResourceLib/AnimationHandler.cpp
+#	modified:   SSPSolution/ResourceLib/AnimationHandler.h
+#	new file:   SSPSolution/ResourceLib/AssetFiles/SkelMesh1.bbf
+#	new file:   SSPSolution/ResourceLib/AssetFiles/SkelMesh1.skel
+#	new file:   SSPSolution/ResourceLib/AssetFiles/SkelMesh1_AnimLayer1.anim
+#	deleted:    SSPSolution/ResourceLib/AssetFiles/pCube1.bbf
+#	deleted:    SSPSolution/ResourceLib/AssetFiles/pCube1.skel
+#	modified:   SSPSolution/ResourceLib/DefineHeader.h
+#	modified:   SSPSolution/ResourceLib/FileHeaders.h
+#	modified:   SSPSolution/ResourceLib/FileLoader.cpp
+#	modified:   SSPSolution/ResourceLib/FileLoader.h
+#	modified:   SSPSolution/ResourceLib/Material.cpp
+#	modified:   SSPSolution/ResourceLib/MaterialHandler.cpp
+#	modified:   SSPSolution/ResourceLib/Mesh.cpp
+#	modified:   SSPSolution/ResourceLib/MeshHandler.cpp
+#	modified:   SSPSolution/ResourceLib/ModelHandler.cpp
+#	modified:   SSPSolution/ResourceLib/Resource.cpp
+#	modified:   SSPSolution/ResourceLib/Resource.h
+#	modified:   SSPSolution/ResourceLib/ResourceHandler.cpp
+#	modified:   SSPSolution/ResourceLib/Skeleton.cpp
+#	modified:   SSPSolution/ResourceLib/Skeleton.h
+#	modified:   SSPSolution/ResourceLib/SkeletonHandler.cpp
+#	modified:   SSPSolution/ResourceLib/SkeletonHandler.h
+#	modified:   SSPSolution/ResourceLib/Texture.cpp
+#	modified:   SSPSolution/ResourceLib/TextureHandler.cpp
+#	new file:   SSPSolution/SSPSolution/Debug/main.obj.enc
+#	new file:   SSPSolution/SSPSolution/Debug/system.obj.enc
+#	modified:   SSPSolution/SSPSolution/System.cpp
+#
+

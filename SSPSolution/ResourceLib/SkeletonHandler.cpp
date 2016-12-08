@@ -19,12 +19,9 @@ Resources::SkeletonHandler::SkeletonHandler(size_t skelAmount, ID3D11Device * de
 		m_emptyContainers.at(i) = &m_containers.at(i);
 	}
 
-	//this->m_meshHandler = new MeshHandler(skelAmount);
-	//this->m_materialHandler = new MaterialHandler(modelAmount);
+	this->m_animHandler = new AnimationHandler(skelAmount);
 	if (device != nullptr) {
 		this->m_device = device;
-		//m_meshHandler->SetDevice(device);
-		//m_materialHandler->SetDevice(device);
 	}
 
 
@@ -49,7 +46,7 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/pCube1.skel";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.skel";
  	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;
@@ -74,47 +71,55 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	}
 	data += sizeof(MainHeader);
 
-	skelData.jointCount = ((SkeletonHeader*)data)->jointCount;
-	unsigned int* animCount = &((SkeletonHeader*)data)->animLayerCount;
-	data += sizeof(SkeletonHeader);
-	skelData.joints = (Skeleton::Joint*)data;
-	data += sizeof(JointHeader) * skelData.jointCount;
+	skelData.jointCount		 = ((SkeletonHeader*)data)->jointCount;
+	unsigned int* animCount  = &((SkeletonHeader*)data)->animLayerCount;
+	data					+= sizeof(SkeletonHeader);
+	skelData.joints		     = (Skeleton::Joint*)data;
+	data				    += sizeof(JointHeader) * skelData.jointCount;
 
 	st = newSkeleton->Create(&resData, &skelData);
 	if (st != ST_OK)
 		return st;
 
 	skelData.joints = nullptr;
-	int animsloaded = 0;
+
+	/*
+	Load all animations for the skeleton
+	for each anim
+	m_animationHandler
+	newSkeleton->AddAnimation
+	*/
+	ResourceContainer* animPtr;
+	
+	m_animHandler->LoadAnimation(UINT(213), animPtr);
+	newSkeleton->AddAnimation((Animation*)animPtr->resource, 0);
+
+	//int animsloaded = 0;
 	//for (size_t i = 0; i < *animCount; i++)
 	//{
 	//	ResourceContainer* animPtr;
-	//	unsigned int* id = (unsigned int*)data;
+	//	unsigned int* id = &((LayerIdHeader*)data)->id;
+	//	m_animHandler->LoadAnimation(UINT(213), animPtr);
 	//	//st = m_animationHandler->GetAnimation(id, &animPtr);
-	//	switch (st) {
-	//		case Status::ST_RES_MISSING: { //if it doesent exist
-	//			Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
-	//			if (mSt != ST_OK) {
-	//				continue;
-	//			}
-	//			else
-	//				newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
-	//			break;
-	//		}
-	//		case Status::ST_OK: {
-	//			animPtr->refCount += 1;
-	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, i/*TEMP*/);
-	//			break;
-	//		}
+	//	//switch (st) {
+	//	//	case Status::ST_RES_MISSING: { //if it doesent exist
+	//	//		//Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
+	//	//		if (mSt != ST_OK) {
+	//	//			continue;
+	//	//		}
+	//	//		else
+	//	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+	//	//		break;
+	//	//	}
+	//	//	case Status::ST_OK: {
+	//	//		animPtr->refCount += 1;
+	//	//		newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+	//	//		break;
+	//	//	}
 	//		animsloaded++;
-	//	}
+	//	//}
 	//}
-	/*
-		Load all animations for the skeleton
-		for each anim
-		m_animationHandler
-		newSkeleton->AddAnimation
-	*/
+
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
 	m_emptyContainers.pop_front();							 // remove from empty container queue
 
@@ -130,7 +135,6 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 	Status st = GetSkeleton(id, skelRes);
 	switch (st)
 	{
-
 	case ST_OK:
 		skelRes->refCount -= 1;
 		if (skelRes->refCount <= 0)
@@ -140,7 +144,7 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 			 {
 				 if (animationsIds->at(i) == 0)
 					 continue;
-				 //m_animationHandler->unloadAnimation(animationIds.at(i));
+				 m_animHandler->UnloadAnimation(animationsIds->at(i));
 			 }
 			((Skeleton*)skelRes->resource)->Destroy();
 			m_emptyContainers.push_back(((Skeleton*)skelRes->resource));
@@ -152,10 +156,10 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 	default:
 		return st;
 	}
-
 	return Resources::Status::ST_OK;
 }
 
 Resources::SkeletonHandler::~SkeletonHandler()
 {
+	delete m_animHandler;
 }
