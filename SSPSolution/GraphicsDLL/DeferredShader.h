@@ -11,6 +11,10 @@ class DeferredShader :
 	public Shader
 {
 private:
+	ID3D11VertexShader*   m_vertexShader[4];
+	ID3D11GeometryShader* m_geoShader;
+	ID3D11PixelShader*	  m_pixelShader;
+	ID3D11InputLayout*    m_layout;
 
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;

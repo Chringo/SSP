@@ -214,6 +214,13 @@ int FinalShader::Draw()
 	//delete shaderParamsXM;
 	//delete shaderParamsVP;
 
+	m_deviceContext->IASetInputLayout(this->m_layout);
+
+	//Set the vertex and pixel shaders that will be used to render this triangle
+	m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
+	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+
+	
 
 	//this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
 	//this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());

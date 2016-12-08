@@ -2,13 +2,7 @@
 
 Shader::Shader()
 {
-	for (int i = 0; i < 4; i++)
-	{
-		this->m_vertexShader[i] = nullptr;
-	}
-	this->m_geoShader = nullptr;
-	this->m_pixelShader = nullptr;
-	this->m_layout = nullptr;
+
 	
 }
 
@@ -28,43 +22,20 @@ int Shader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 	//if (m_activeVariation == ShaderVariations)
 	//	return 0;
 		//Set the input layout for vertex
-	m_deviceContext->IASetInputLayout(this->m_layout);
+	//m_deviceContext->IASetInputLayout(this->m_layout);
 
-	//Set the vertex and pixel shaders that will be used to render this triangle
-	m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
-	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-	m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
+	////Set the vertex and pixel shaders that will be used to render this triangle
+	//m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
+	//m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+	//m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 
-	m_activeVariation = ShaderVariations;
+	//m_activeVariation = ShaderVariations;
 	return 0;
 }
 
 void Shader::Release()
 {
-	for (int i = 0; i < 4; i++)
-	{
-		if (this->m_vertexShader[i])
-		{
-			this->m_vertexShader[i]->Release();
-			this->m_vertexShader[i] = nullptr;
-		}
-	}
-	if (this->m_geoShader)
-	{
-		this->m_geoShader->Release();
-		this->m_geoShader = nullptr;
-	}
-	if (this->m_pixelShader)
-	{
-		this->m_pixelShader->Release();
-		this->m_pixelShader = nullptr;
-	}
-	if (this->m_layout)
-	{
-		this->m_layout->Release();
-		this->m_layout = nullptr;
-	}
-	
+
 }
 
 void Shader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)

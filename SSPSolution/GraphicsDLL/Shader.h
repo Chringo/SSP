@@ -12,10 +12,7 @@ class Shader
 {
 protected:
 	ID3D11DeviceContext*  m_deviceContext;
-	ID3D11VertexShader*   m_vertexShader[4];
-	ID3D11GeometryShader* m_geoShader;
-	ID3D11PixelShader*	  m_pixelShader;
-	ID3D11InputLayout*    m_layout;
+
 
 	ShaderLib::ShaderVariations m_activeVariation;
 

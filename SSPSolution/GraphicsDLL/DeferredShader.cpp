@@ -282,7 +282,16 @@ int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
 	//if (m_activeVariation == ShaderVariations)
 	//	return 0;
-	Shader::SetActive(ShaderVariations);
+	//Shader::SetActive(ShaderVariations);
+
+	m_deviceContext->IASetInputLayout(this->m_layout);
+
+	//Set the vertex and pixel shaders that will be used to render this triangle
+	m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
+	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+	m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
+
+	m_activeVariation = ShaderVariations;
 
 	//this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
