@@ -195,7 +195,7 @@ int GraphicsHandler::InitializeGrid()
 int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-		this->m_deferredSH->DrawGrid();
+		this->m_deferredSH->DrawGrid(m_modelsPtr[NULL]);
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;

@@ -3,7 +3,6 @@
 
 #include "ConstantBufferHandler.h"
 #include "Shader.h"
-#include "GraphicsComponent.h"
 #include "../ResourceLib/Model.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
@@ -35,17 +34,14 @@ private:
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
 
-	GraphicsComponent** m_graphicsComponents;
-	Resources::Model ** modelsPtr;
-
 	UINT32 m_vertexSize;
 public:
 	DeferredShader();
 	~DeferredShader();
 
 	int Initialize(ID3D11Device* device,ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
-	int SetGraphicsParameters(GraphicsComponent** grapicsComponents, Resources::Model** modelsPtr);
 	
+	ID3D11ShaderResourceView** GetShaderResourceViews();
 	int SetActive();
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
 	void Release();
@@ -55,13 +51,9 @@ public:
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
-	ID3D11DepthStencilView* GetDSV() { return this->m_DSV; };
 
-	ID3D11ShaderResourceView** GetShaderResourceViews();
-
-	int DrawGrid();
+	int DrawGrid(Resources::Model * model);
 private:
-	int Draw();
 	int DrawInstanced();
 };
 

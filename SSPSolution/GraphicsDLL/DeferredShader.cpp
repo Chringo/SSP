@@ -342,7 +342,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
 	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
 	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
 
 	hResult = device->CreateDepthStencilState(&depthStencilDesc, &this->m_DSS);
 	if (FAILED(hResult))
@@ -350,17 +350,10 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
-	//deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
 	return 0;
 }
 
-int DeferredShader::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
-{
-	this->m_graphicsComponents = grapicsComponents;
-	this->modelsPtr = modelsPtr;
-
-	return 0;
-}
 
 int DeferredShader::SetActive()
 {
@@ -535,53 +528,18 @@ ID3D11ShaderResourceView ** DeferredShader::GetShaderResourceViews()
 	return this->m_deferredSRV;
 }
 
-int DeferredShader::Draw(/*RESOURCE*/)
-{
-
-
-	Resources::Mesh* meshPtr = this->modelsPtr[1]->GetMesh();
-	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
-	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
-	UINT32 offset = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
-	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-
-	Resources::Material * mat = modelsPtr[1]->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
-	{
-		if (textures[i] == nullptr)
-			continue;
-
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
-	}
-
-
-	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
-
-	for (int i = 1; i < 3; i++)
-	{
-		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
-		this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
-	}
-
-	return 0;
-}
 
 int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 {
 	return 0;
 }
 
-int DeferredShader::DrawGrid()
+int DeferredShader::DrawGrid(Resources::Model * model)
 {
 	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
 
 
-	Resources::Mesh* meshPtr = this->modelsPtr[0]->GetMesh();
+	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
 	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
 	UINT32 size = sizeof(Resources::Mesh::Vertex);
@@ -589,7 +547,6 @@ int DeferredShader::DrawGrid()
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
-	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
