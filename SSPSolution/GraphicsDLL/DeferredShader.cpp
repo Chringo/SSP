@@ -4,6 +4,18 @@ DeferredShader::DeferredShader() : Shader()
 {
 	this->m_samplerState = nullptr;
 
+	for (int i = 0; i < 4; i++)
+	{
+		this->m_vertexShader[i] = nullptr;
+	}
+	this->m_geoShader = nullptr;
+	this->m_pixelShader = nullptr;
+	for (int i = 0; i < IL_TYPE_COUNT; i++)
+	{
+		this->m_layout[i] = nullptr;
+	}
+	this->m_gridPixelShader = nullptr;
+
 	for (int i = 0; i < BUFFER_COUNT; i++) {
 		this->m_deferredT2D[i] = nullptr;
 		this->m_deferredRTV[i] = nullptr;
@@ -31,15 +43,23 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsAnimFilename = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
 	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 
 	// Compile the shaders \\
 
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], &errorMessage);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Normal], &errorMessage);
 	if (FAILED(hResult)) 
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+
+		return 1;
+	}
+	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Animated], &errorMessage);
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, vsAnimFilename);
 
 		return 1;
 	}
@@ -58,8 +78,13 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	// Create the shaders \\
 
-	hResult = device->CreateVertexShader(vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), NULL, &this->m_vertexShader[0]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Normal]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Normal]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Normal]);
 	if (FAILED(hResult)) 
+	{
+		return 1;
+	}
+	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Animated]);
+	if (FAILED(hResult))
 	{
 		return 1;
 	}
@@ -74,43 +99,102 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	// Create the input layout \\
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC inputDescNormal[4];
+	inputDescNormal[0].SemanticName = "POSITION";
+	inputDescNormal[0].SemanticIndex = 0;
+	inputDescNormal[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescNormal[0].InputSlot = 0;
+	inputDescNormal[0].AlignedByteOffset = 0;
+	inputDescNormal[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "NORMAL";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
+	inputDescNormal[1].SemanticName = "NORMAL";
+	inputDescNormal[1].SemanticIndex = 0;
+	inputDescNormal[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescNormal[1].InputSlot = 0;
+	inputDescNormal[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescNormal[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "TANGENT";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
+	inputDescNormal[2].SemanticName = "TANGENT";
+	inputDescNormal[2].SemanticIndex = 0;
+	inputDescNormal[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescNormal[2].InputSlot = 0;
+	inputDescNormal[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescNormal[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[2].InstanceDataStepRate = 0;
 
-	polygonLayout[3].SemanticName = "TEXCOORD";
-	polygonLayout[3].SemanticIndex = 0;
-	polygonLayout[3].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[3].InputSlot = 0;
-	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[3].InstanceDataStepRate = 0;
+	inputDescNormal[3].SemanticName = "TEXCOORD";
+	inputDescNormal[3].SemanticIndex = 0;
+	inputDescNormal[3].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputDescNormal[3].InputSlot = 0;
+	inputDescNormal[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescNormal[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[3].InstanceDataStepRate = 0;
 
 
-	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+	unsigned int numElements = sizeof(inputDescNormal) / sizeof(inputDescNormal[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout);
+	hResult = device->CreateInputLayout(inputDescNormal, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_NORMAL]);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+
+	// Create the input layout \\
+
+	D3D11_INPUT_ELEMENT_DESC inputDescAnim[6];
+	inputDescAnim[0].SemanticName = "POSITION";
+	inputDescAnim[0].SemanticIndex = 0;
+	inputDescAnim[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescAnim[0].InputSlot = 0;
+	inputDescAnim[0].AlignedByteOffset = 0;
+	inputDescAnim[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[0].InstanceDataStepRate = 0;
+
+	inputDescAnim[1].SemanticName = "NORMAL";
+	inputDescAnim[1].SemanticIndex = 0;
+	inputDescAnim[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescAnim[1].InputSlot = 0;
+	inputDescAnim[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescAnim[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[1].InstanceDataStepRate = 0;
+
+	inputDescAnim[2].SemanticName = "TANGENT";
+	inputDescAnim[2].SemanticIndex = 0;
+	inputDescAnim[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescAnim[2].InputSlot = 0;
+	inputDescAnim[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescAnim[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[2].InstanceDataStepRate = 0;
+
+	inputDescAnim[3].SemanticName = "TEXCOORD";
+	inputDescAnim[3].SemanticIndex = 0;
+	inputDescAnim[3].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputDescAnim[3].InputSlot = 0;
+	inputDescAnim[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescAnim[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[3].InstanceDataStepRate = 0;
+
+
+	inputDescAnim[4].SemanticName = "WEIGHTS";
+	inputDescAnim[4].SemanticIndex = 0;
+	inputDescAnim[4].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputDescAnim[4].InputSlot = 0;
+	inputDescAnim[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescAnim[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[4].InstanceDataStepRate = 0;
+
+	inputDescAnim[5].SemanticName = "INFLUENCE";
+	inputDescAnim[5].SemanticIndex = 0;
+	inputDescAnim[5].Format = DXGI_FORMAT_R32G32B32A32_UINT;
+	inputDescAnim[5].InputSlot = 0;
+	inputDescAnim[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescAnim[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescAnim[5].InstanceDataStepRate = 0;
+
+	numElements = sizeof(inputDescAnim) / sizeof(inputDescAnim[0]);
+	//Create the vertex input layout.
+	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -278,20 +362,19 @@ int DeferredShader::SetGraphicsParameters(GraphicsComponent ** grapicsComponents
 	return 0;
 }
 
-int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
+int DeferredShader::SetActive()
 {
 	//if (m_activeVariation == ShaderVariations)
 	//	return 0;
 	//Shader::SetActive(ShaderVariations);
 
-	m_deviceContext->IASetInputLayout(this->m_layout);
+	//m_deviceContext->IASetInputLayout(this->m_layout);
 
 	//Set the vertex and pixel shaders that will be used to render this triangle
-	m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
+	//m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
 	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 	m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 
-	m_activeVariation = ShaderVariations;
 
 	//this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
@@ -302,7 +385,35 @@ int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 
 
 
-	m_activeVariation = ShaderVariations;
+
+	return 0;
+}
+
+int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
+{
+	switch (ShaderVariations)
+	{
+	case ShaderLib::Normal:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
+		break;
+	}
+	case ShaderLib::Instanced:
+		break;
+	case ShaderLib::Animated:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Animated], NULL, 0);
+		break;
+	}
+	case ShaderLib::InstancedAnimated:
+		break;
+	case ShaderLib::Grid:
+		break;
+	default:
+		break;
+	}
 
 	return 0;
 }
@@ -310,6 +421,33 @@ int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 void DeferredShader::Release()
 {
 	Shader::Release();
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (this->m_vertexShader[i])
+		{
+			this->m_vertexShader[i]->Release();
+			this->m_vertexShader[i] = nullptr;
+		}
+	}
+	if (this->m_geoShader)
+	{
+		this->m_geoShader->Release();
+		this->m_geoShader = nullptr;
+	}
+	if (this->m_pixelShader)
+	{
+		this->m_pixelShader->Release();
+		this->m_pixelShader = nullptr;
+	}
+	for (int i = 0; i < IL_TYPE_COUNT; i++)
+	{
+		if (this->m_layout[i])
+		{
+			this->m_layout[i]->Release();
+			this->m_layout[i] = nullptr;
+		}
+	}
 
 	//Release the sampler state
 	if (this->m_samplerState)

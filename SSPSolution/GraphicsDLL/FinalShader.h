@@ -8,8 +8,7 @@ class FinalShader :
 	public Shader
 {
 private:
-	ID3D11VertexShader*   m_vertexShader[4];
-	ID3D11GeometryShader* m_geoShader;
+	ID3D11VertexShader*   m_vertexShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout;
 
@@ -29,7 +28,7 @@ public:
 
 	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
 	
-	int SetActive(ShaderLib::ShaderVariations ShaderVariations);
+	int SetActive();
 	int SetRenderParameters(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView** gBuffers);
 	
 	void Release();

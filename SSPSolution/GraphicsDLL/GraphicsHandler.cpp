@@ -117,7 +117,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->InitializeGrid();
 	
 	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), m_modelsPtr[1]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 
 	return 0;
 	
@@ -144,12 +145,22 @@ int GraphicsHandler::Render()
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	
-	for (int i = 1; i < 3; i++)
+
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
 		m_shaderControl->Draw(m_modelsPtr[0]);
 	}
+
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
+	m_shaderControl->Draw(m_modelsPtr[1]);
+
+	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
+	//{
+	//}
+
 	
 	/*TEMP*/
 	if (m_gridEnabled)
@@ -174,7 +185,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
 	//m_d3dHandler->InitializeGridRasterizer();
 	//m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = false;

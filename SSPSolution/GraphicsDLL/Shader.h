@@ -20,8 +20,9 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	virtual int		 Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution) = 0;
-	virtual int  SetActive(ShaderLib::ShaderVariations ShaderVariations) = 0;
+	virtual int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution) = 0;
+	virtual int SetActive() = 0;
+	virtual int SetVariation(ShaderLib::ShaderVariations variation);
 	virtual void Release() = 0;
 	virtual void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename);
 };

@@ -36,6 +36,26 @@ void ShaderControl::Release()
 void ShaderControl::SetActive(Shaders type)
 {
 	m_activeShader = type;
+	switch (m_activeShader)
+	{
+		case DEFERRED:
+		{
+			m_shaders[DEFERRED]->SetActive();
+			break;
+		}
+	}
+}
+
+void ShaderControl::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
+{
+	switch (m_activeShader)
+	{
+		case DEFERRED:
+		{
+			m_shaders[DEFERRED]->SetVariation(ShaderVariations);
+			break;
+		}
+	}
 }
 
 int ShaderControl::SetBackBufferRTV(ID3D11RenderTargetView * backBufferRTV)
@@ -52,7 +72,6 @@ void ShaderControl::Draw(Resources::Model * model)
 	switch (m_activeShader)
 	{
 	case DEFERRED:
-		m_shaders[DEFERRED]->SetActive(ShaderLib::ShaderVariations::Normal);
 		((DeferredShader*)m_shaders[DEFERRED])->Draw(model);
 		break;
 	}
@@ -62,7 +81,7 @@ void ShaderControl::Draw(Resources::Model * model)
 void ShaderControl::DrawFinal()
 {
 	this->m_activeShader = Shaders::FINAL;
-	((FinalShader*)this->m_shaders[FINAL])->SetActive(ShaderLib::ShaderVariations::Normal);
+	((FinalShader*)this->m_shaders[FINAL])->SetActive();
 	((FinalShader*)this->m_shaders[FINAL])->Draw();
 }
 

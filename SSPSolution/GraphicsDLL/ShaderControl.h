@@ -34,6 +34,7 @@ public:
 	void Release();
 
 	void SetActive(Shaders type);
+	void SetVariation(ShaderLib::ShaderVariations ShaderVariations);
 	int SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
 
 	void Draw(Resources::Model* model);
