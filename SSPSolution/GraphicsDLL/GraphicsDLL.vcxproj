@@ -88,25 +88,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="DeferredShaderHandler.h" />
+    <ClInclude Include="ConstantBufferHandler.h" />
+    <ClInclude Include="DeferredShader.h" />
     <ClInclude Include="Direct3DHandler.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="GraphicsHandler.h" />
-    <ClInclude Include="LightShaderHandler.h" />
+    <ClInclude Include="FinalShader.h" />
     <ClInclude Include="ScreenQuad.h" />
-    <ClInclude Include="ShaderHandler.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderControl.h" />
     <ClInclude Include="ShaderLib.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DeferredShaderHandler.cpp" />
+    <ClCompile Include="ConstantBufferHandler.cpp" />
+    <ClCompile Include="DeferredShader.cpp" />
     <ClCompile Include="Direct3DHandler.cpp" />
     <ClCompile Include="GraphicsHandler.cpp" />
-    <ClCompile Include="LightShaderHandler.cpp" />
+    <ClCompile Include="FinalShader.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
-    <ClCompile Include="ShaderHandler.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderControl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="AnimVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shaders\GBuffer\GridPS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PS_main</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>

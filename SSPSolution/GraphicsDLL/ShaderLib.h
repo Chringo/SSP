@@ -6,11 +6,11 @@
 
 namespace ShaderLib
 {
-	enum ShaderType
+	enum ShaderVariations
 	{
-		Normal = 0,
-		Instanced = 1,
-		Animated = 2,
+		Normal			  = 0,
+		Instanced		  = 1,
+		Animated		  = 2,
 		InstancedAnimated = 3,
 		Grid = 4
 	};
@@ -39,6 +39,11 @@ namespace ShaderLib
 		DirectX::XMFLOAT4X4 worldMatrix;
 	};
 
+	struct WorldConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 worldMatrix;
+	};
+
 	struct DeferredConstantBufferWorldxm
 	{
 		DirectX::XMMATRIX worldMatrix;
@@ -50,16 +55,27 @@ namespace ShaderLib
 		DirectX::XMFLOAT4X4 projectionMatrix;
 	};
 
+	struct VPConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 viewMatrix;
+		DirectX::XMFLOAT4X4 projectionMatrix;
+	};
+
 	struct DeferredConstantBufferVPxm
 	{
 		DirectX::XMMATRIX viewMatrix;
 		DirectX::XMMATRIX projectionMatrix;
 	};
 
-	struct LightConstantBuffer
+	struct SkeletonConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 joint[32];
+	};
+
+	struct CameraConstantBuffer
 	{
 		DirectX::XMFLOAT3 camPos;
-		DirectX::XMFLOAT3 camDir;
+		DirectX::XMFLOAT3 camTar;
 		float padding1;
 		float padding2;
 	};

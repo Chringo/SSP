@@ -1,6 +1,6 @@
-#include "ShaderHandler.h"
+#include "Shader.h"
 
-ShaderHandler::ShaderHandler()
+Shader::Shader()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -9,20 +9,20 @@ ShaderHandler::ShaderHandler()
 	this->m_geoShader = nullptr;
 	this->m_pixelShader = nullptr;
 	this->m_layout = nullptr;
-	this->m_matrixBuffer = nullptr;
+	
 }
 
 
-ShaderHandler::~ShaderHandler()
+Shader::~Shader()
 {
 }
 
-int ShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext * deviceContext, const DirectX::XMINT2&  resolution)
+int Shader::Initialize(ID3D11Device* device,ID3D11DeviceContext * deviceContext, const DirectX::XMINT2& resolution)
 {
 	return 0;
 }
 
-int ShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
+int Shader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
 	//Set the input layout for vertex
 	m_deviceContext->IASetInputLayout(this->m_layout);
@@ -35,7 +35,7 @@ int ShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 	return 0;
 }
 
-void ShaderHandler::Shutdown()
+void Shader::Release()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -60,14 +60,10 @@ void ShaderHandler::Shutdown()
 		this->m_layout->Release();
 		this->m_layout = nullptr;
 	}
-	if (this->m_matrixBuffer)
-	{
-		this->m_matrixBuffer->Release();
-		this->m_matrixBuffer = nullptr;
-	}
+	
 }
 
-void ShaderHandler::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
+void Shader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long long bufferSize, i;

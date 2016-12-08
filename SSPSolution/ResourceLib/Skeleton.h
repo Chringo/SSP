@@ -9,7 +9,7 @@ namespace Resources {
 	{
 	public:
 		struct Joint {
-			float bindPose[16];
+			float invBindPose[16];
 			int jointIndex   = 0;
 			int parentIndex  = 0;
 		};
