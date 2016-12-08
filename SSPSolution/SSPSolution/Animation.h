@@ -30,6 +30,13 @@ struct AnimationClip
 	int endFrame; 
 };
 
+struct SkelTemp
+{
+	int parentIndex;
+	int jointIndex;
+	XMFLOAT4X4 invBindPose;
+};
+
 class Animation
 {
 
@@ -44,11 +51,13 @@ private:
 	Resources::Skeleton::Joint* jointList;
 	unsigned int jointCount;
 
+	std::vector<SkelTemp> skeltempVec;
+
 	const Resources::Animation* animationPtr;
 
 	const Resources::Animation::AnimationJoint* animatedJointsList;
 
-	std::vector<XMFLOAT4X4> invBindPoses;
+	
 
 	int currentAnimation;
 	float elapsedTime;
@@ -70,9 +79,9 @@ public:
 	we call from Update(), having another class holding interpolation func?*/
 	void Interpolate(float currentTime, std::vector<XMFLOAT4X4> updatedTransforms);
 
-	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16]);
+	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
-	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
+	void CalculateFinalTransform();
 
 	/*Maybe this is more suitable for being in another class? I might consider
 	calling this in the Update() from another class pointer.*/

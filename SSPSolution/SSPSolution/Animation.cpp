@@ -17,7 +17,7 @@ Animation::Animation()
 
 	for (int i = 0; i < jointCount; i++)
 	{
-		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose);
+		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
 	animationPtr = skeletonPtr->GetAnimation(currentAnimation);
 
@@ -123,7 +123,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 
 			XMVECTOR zero = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
-			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMatrixAffineTransformation(scale, zero, quat, trans));
+			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMATRIX(scale, zero, quat, trans));
 		}
 		/*The current time is the last keyframe.*/
 		else if (currentTime >= animationStack.top().endFrame)
@@ -140,18 +140,23 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 
 			XMVECTOR zero = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
-			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMatrixAffineTransformation(scale, zero, quat, trans));
+			XMStoreFloat4x4(&interpolatedTransforms[jointIndex], XMMATRIX(scale, zero, quat, trans));
 		}
-
+		/*The current time is between two keyframes.*/
 		else
 		{
 			int keyFrameCount = animatedJoint.keyframeCount;
 
 			for (int i = 0; i < keyFrameCount; i++)
 			{
+				/*Check if the current time is between two keyframes for each joint.*/
 				if (currentTime >= animatedJoint.keyframes[i].timeValue && currentTime <= animatedJoint.keyframes[i + 1].timeValue)
 				{
-					float lerpFactor = 0;
+					float timeKeyframe1 = animatedJoint.keyframes[i].timeValue;
+					float timeKeyframe2 = animatedJoint.keyframes[i].timeValue;
+
+					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
+					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
 					XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
 					XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
@@ -168,27 +173,47 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 					XMVECTOR scale2 = XMLoadFloat3(&tempScale2);
 					XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
 
+					XMVECTOR lerpTrans = XMVectorLerp(trans1, trans2, lerpFactor);
+					XMVECTOR lerpScale = XMVectorLerp(scale1, scale2, lerpFactor);
+					XMVECTOR lerpQuat = XMQuaternionSlerp(quat1, quat2, lerpFactor);
+
 					/*Zero vector for the affine transformation matrix.*/
 					XMVECTOR zero = XMVectorSet(0, 0, 0, 0);
 
 					/*Update the transform for each joint in the skeleton.*/
-					/*XMStoreFloat4x4(&interpolatedTransforms[jointIndex],
-						XMMatrixAffineTransformation(lerpedScale, zero, lerpedQuat, lerpedTrans));*/
+					XMStoreFloat4x4(&interpolatedTransforms[jointIndex],
+						XMMATRIX(lerpScale, zero, lerpQuat, lerpTrans));
 				}
 			}
 		}
 	}
+
+	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
+	CalculateFinalTransform();
 }
 
-void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16])
+void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
 {
 	XMFLOAT4X4 matrix = XMFLOAT4X4(floatArray);
 
-	invBindPoses.push_back(matrix);
-}
-void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms)
-{
+	SkelTemp temp;
+	temp.jointIndex = jointList[jointIndex].jointIndex;
+	temp.parentIndex = jointList[jointIndex].parentIndex;
+	temp.invBindPose = matrix;
 
+	skeltempVec.push_back(temp);
+}
+
+void Animation::CalculateFinalTransform()
+{
+	for (int i = 0; i < jointCount; i++)
+	{
+		XMMATRIX interpolatedTransform = XMLoadFloat4x4(&interpolatedTransforms[i]);
+
+		int parentIndex = skeltempVec[i].parentIndex;
+
+		XMMATRIX parentBindPose = XMLoadFloat4x4(&skeltempVec[parentIndex].invBindPose);
+	}
 }
 
 void Animation::Blend(int lastFrame, int prevState, int newState)
