@@ -22,8 +22,8 @@ enum PacketTypes {
 struct Packet
 {
 	PacketTypes packet_type;
-	int packet_ID;
-	float timestamp;
+	int			packet_ID;
+	float		timestamp;
 
 	virtual void serialize(char * data)
 	{			//Turn the PacketType into bytes
@@ -53,11 +53,11 @@ struct SyncPacket: public Packet
 
 struct EntityPacket: public Packet
 {											
-	unsigned int entityID;					
-	DirectX::XMFLOAT3 newPos;				
-	DirectX::XMFLOAT3 newVelocity;			
-	DirectX::XMFLOAT3 newRotation;			
-	DirectX::XMFLOAT3 newRotationVelocity;	
+	unsigned int		entityID;					
+	DirectX::XMFLOAT3	newPos;				
+	DirectX::XMFLOAT3	newVelocity;			
+	DirectX::XMFLOAT3	newRotation;			
+	DirectX::XMFLOAT3	newRotationVelocity;	
 
 	void serialize(char * data)
 	{
@@ -87,8 +87,8 @@ struct AnimationPacket : public Packet
 
 struct StatePacket : public Packet
 {
-	unsigned int entityID;
-	bool newState;		
+	unsigned int	entityID;
+	bool			newState;		
 
 	void serialize(char * data)
 	{
@@ -103,7 +103,6 @@ struct StatePacket : public Packet
 struct CameraPacket : public Packet
 {
 	DirectX::XMFLOAT4 pos;
-	//DirectX::XMFLOAT4 rotation;
 
 	void serialize(char * data)
 	{			//Turn the PacketType into bytes

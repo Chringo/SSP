@@ -144,27 +144,22 @@ int System::Update(float deltaTime)
 	std::list<CameraPacket> cList;
 
 	//Check for camera updates from the network
+	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
 
-		printf("There is a message\n");
-		cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
+	if (!cList.empty())
+	{
+		std::list<CameraPacket>::iterator iter;
 
-		if (!cList.empty())
+		for (iter = cList.begin(); iter != cList.end();)
 		{
-			printf("The message is for the camera");
-			std::list<CameraPacket>::iterator iter;
-
-			for (iter = cList.begin(); iter != cList.end();)
-			{
-				this->m_camera->SetCameraPos((iter)->pos);
-				this->m_camera->Update();
-				iter++;
-				
-			}
-
-			cList.empty();	//When we have read all the packets, empty the list
-
+			this->m_camera->SetCameraPos((iter)->pos);
+			this->m_camera->Update();
+			iter++;	
 		}
-		printf("No Packets for camera\n");
+
+		cList.empty();	//When we have read all the packets, empty the list
+
+	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{

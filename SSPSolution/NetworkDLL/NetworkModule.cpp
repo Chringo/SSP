@@ -13,17 +13,14 @@ NetworkModule::~NetworkModule()
 
 int NetworkModule::Initialize()
 {
-	printf("Trying to Initialized Network module \n");
+	printf("Initializing Network module... \n");
 
-	this->isLocked = false;
-	// create WSADATA object
-	WSADATA wsaData;
-	// our sockets for the server
-	this->listenSocket = INVALID_SOCKET;
+	WSADATA wsaData;						// Create WSADATA object
+	this->listenSocket = INVALID_SOCKET;	// The socket that will listen
+	int iResult;							
 
-	int iResult;	// for error checking return values
-
-	struct addrinfo *result = NULL; // address info for the server to listen to
+	// Address info for the listenSocket to listen to
+	struct addrinfo *result = NULL; 
 	struct addrinfo hints;
 
 	// Initialize Winsock
@@ -33,12 +30,12 @@ int NetworkModule::Initialize()
 		return 0;
 	}
 
-	// set address information
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;    // TCP
-	hints.ai_flags = AI_PASSIVE;
+	// Set address information
+	ZeroMemory(&hints, sizeof(hints));	// Empties hints
+	hints.ai_family = AF_INET;			// The Internet Protocol version 4 (IPv4) address family
+	hints.ai_socktype = SOCK_STREAM;	// Provides sequenced, reliable, two-way, connection-based byte streams with an OOB data transmission mechanism
+	hints.ai_protocol = IPPROTO_TCP;    // Set to use TCP
+	hints.ai_flags = AI_PASSIVE;		// The socket address will be used in a call to the bind function
 
 	// Resolve the server address and port
 	iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);	//NULL = Dont need addres since it will be on local machine
@@ -81,10 +78,10 @@ int NetworkModule::Initialize()
 		return 0;
 	}
 
-	// no longer need address information
+	// No longer need address information
 	freeaddrinfo(result);
 
-	// start listening for new clients attempting to connect
+	// Start listening for new clients attempting to connect
 	iResult = listen(this->listenSocket, SOMAXCONN);
 
 	if (iResult == SOCKET_ERROR) {
@@ -94,10 +91,8 @@ int NetworkModule::Initialize()
 		return 0;
 	}
 
-	this->GetMyIp();
-
-	//Start the network system clock
-	this->time_start = std::clock();
+	this->GetMyIp();					// Set my_ip to local ip-address
+	this->time_start = std::clock();	// Start the network system clock
 	
 	printf("Network module Initialized\n");
 
@@ -113,6 +108,7 @@ int NetworkModule::Shutdown()
 	//but if there still is connected clients , send a DISCONNECT_REQUEST to them and dont wait for DISCONNECT_ACCEPTED
 	if (i > 0)
 	{
+		// Create a DISCONNECT_REQUEST packet
 		const unsigned int packet_size = sizeof(Packet);
 		char packet_data[packet_size];
 
@@ -123,10 +119,10 @@ int NetworkModule::Shutdown()
 		packet.timestamp = this->GetTimeStamp();
 
 		packet.serialize(packet_data);
-		this->SendToAll(packet_data, packet_size);
+		this->SendToAll(packet_data, packet_size);	// Send the data to all connected clients
 	}
 	
-	this->connectedClients.clear();
+	this->connectedClients.clear();	// Remove all connected clients
 	printf("%d Clients has been removed on server shutdown\n", i);
 
 	return 1;
@@ -134,12 +130,8 @@ int NetworkModule::Shutdown()
 
 void NetworkModule::Update()
 {
-	// Get any new clients
-	this->AcceptNewClient(this->client_id);
-
-	//Read messages
-	this->ReadMessagesFromClients();
-
+	this->AcceptNewClient(this->client_id);	// Get any new clients
+	this->ReadMessagesFromClients();		//Read messages
 }
 
 int NetworkModule::Join(char* ip)
@@ -155,11 +147,12 @@ int NetworkModule::Join(char* ip)
 	}
 	else
 	{
-		ZeroMemory(&hints, sizeof(hints));
-		hints.ai_family = AF_UNSPEC;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_protocol = IPPROTO_TCP;  //TCP
+		ZeroMemory(&hints, sizeof(hints));	// Empties hint
+		hints.ai_family = AF_UNSPEC;		// The address family is unspecified
+		hints.ai_socktype = SOCK_STREAM;	// Provides sequenced, reliable, two-way, connection-based byte streams with an OOB data transmission mechanism
+		hints.ai_protocol = IPPROTO_TCP;	// Set to use TCP
 
+		// Resolve the server address and port
 		int iResult = getaddrinfo(ip, DEFAULT_PORT, &hints, &result);
 
 		if (iResult != 0)
@@ -172,7 +165,7 @@ int NetworkModule::Join(char* ip)
 		// Attempt to connect to an address until one succeeds
 		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 
-			// Create a SOCKET for connecting to server
+			// Set connectSocket to the host information
 			this->connectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 
 			if (this->connectSocket == INVALID_SOCKET) {
@@ -181,14 +174,12 @@ int NetworkModule::Join(char* ip)
 				return 0;
 			}
 
-			// Connect to server.
-			std::clock_t start = std::clock();
-			double dt = 0;
-			iResult = SOCKET_ERROR;
-
 			printf("Trying to connect to host...\n");
-
+			iResult = SOCKET_ERROR;
+			
+			// Try to connect to host. This may take up to 20 seconds
 			iResult = connect(this->connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);	
+			
 			if (iResult == SOCKET_ERROR)
 			{
 				closesocket(this->connectSocket);
@@ -198,10 +189,10 @@ int NetworkModule::Join(char* ip)
 			}
 		}
 
-		// no longer need address info for server
+		// No longer need address info for server
 		freeaddrinfo(result);
 
-		// if connection failed
+		// If connection failed
 		if (this->connectSocket == INVALID_SOCKET)
 		{
 			printf("Unable to connect to server!\n");
@@ -232,9 +223,13 @@ int NetworkModule::Join(char* ip)
 		packet.timestamp = this->GetTimeStamp();
 
 		packet.serialize(packet_data);
+
+		// Send the packet directly to the host
 		NetworkService::sendMessage(this->connectSocket, packet_data, packet_size);
 		printf("Sent CONNECTION_REQUEST to host\n");
 
+		// Add the host to connectedClients before getting a CONNECTION_ACCEPTED back 
+		// since we need to know which client to listen for
 		this->connectedClients.insert(std::pair<unsigned int, SOCKET>(this->client_id, this->connectSocket));
 		printf("client %d has been connected to the this client\n", this->client_id);
 		this->client_id++;
@@ -343,16 +338,16 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
-	// if client waiting, accept the connection and save the socket
+	// If client waiting, accept the connection and save the socket
 	otherClientSocket = accept(this->listenSocket, NULL, NULL);
 
 	if (otherClientSocket != INVALID_SOCKET)
 	{
-		//disable nagle on the client's socket
+		// Disable the nagle effect on the client's socket
 		char value = 1;
 		setsockopt(otherClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));	//TCP Options
 																						
-		// insert new client into session id table 
+		// Insert new client into session id table 
 		this->connectedClients.insert(std::pair<unsigned int, SOCKET>(id, otherClientSocket));
 		printf("client %d has been connected to the server\n", this->client_id);
 		this->client_id++;
@@ -365,9 +360,12 @@ bool NetworkModule::AcceptNewClient(unsigned int & id)
 
 int NetworkModule::ReceiveData(unsigned int client_id, char * recvbuf)
 {
+	// If the ID is in use
 	if (this->connectedClients.find(client_id) != this->connectedClients.end())
 	{
 		SOCKET currentSocket = this->connectedClients[client_id];
+		
+		//Try to recive the message and load it into recvbuf
 		int iResult = NetworkService::receiveMessage(currentSocket, recvbuf, MAX_PACKET_SIZE);
 		if (iResult == 0)
 		{
@@ -381,10 +379,10 @@ int NetworkModule::ReceiveData(unsigned int client_id, char * recvbuf)
 
 void NetworkModule::ReadMessagesFromClients()
 {
-	char network_data[MAX_PACKET_SIZE];
-	bool t = true;
-	unsigned int header = -1;
+	char network_data[MAX_PACKET_SIZE];	// The data buffer that will hold the incoming data
+	unsigned int header = -1;			// The header variable that will hold the loaded header
 	
+	// The objects to load the data into
 	Packet p;
 	SyncPacket syP;
 	EntityPacket eP;
@@ -392,18 +390,19 @@ void NetworkModule::ReadMessagesFromClients()
 	StatePacket sP;
 	CameraPacket cP;
 
-	// go through all clients
 	std::map<unsigned int, SOCKET>::iterator iter;
-
+	
+	// Go through all clients
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end();)
 	{
 		
-		// get data for that client
+		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
-		printf("We get here %d\n", data_length);
+		
+		// If there was data
 		if (data_length <= 0)
 		{
-			//no data recieved exit function
+			//No data recieved, go to the next client
 			iter++;
 			continue;
 		}
@@ -415,126 +414,116 @@ void NetworkModule::ReadMessagesFromClients()
 		{
 
 		case CONNECTION_REQUEST:
-
-			printf("Host received connection packet from client\n");
-			
-			p.deserialize(network_data);
+	
+			p.deserialize(network_data);	// Read the binary data into the object
 			
 			this->SendSyncPacket();
-			
-			//delete p;
-			//p = nullptr;
+
+			//DEBUG
+			//printf("Host received connection packet from client\n");
+
 			iter++;
 			break;
 
 		case CONNECTION_ACCEPTED:
-
-			printf("Client received CONNECTION_ACCEPTED packet from Host\n");
+	
+			syP.deserialize(network_data);	// Read the binary data into the object
 			
-			syP.deserialize(network_data);
-			
-			//Sync clock
+			// Sync clock (Still not used)
 			this->time_current = syP.timestamp;
 			this->time_start = syP.time_start;
 			
 			this->SendFlagPacket(TEST_PACKET);
-	
-			/*this->SendAnimationPacket(this->testID);
-			this->testID++;
-			this->SendStatePacket(this->testID, true);
-			this->testID++;*/
+
+			//DEBUG
+			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
 
 			iter++;
 			break;
 
 		case DISCONNECT_REQUEST:
-			
-			printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
-			
-			p.deserialize(network_data);
+					
+			p.deserialize(network_data);	// Read the binary data into the object
 
 			this->SendFlagPacket(DISCONNECT_ACCEPTED);
-			this->RemoveClient(iter->first);	//Send the clientID
+			this->RemoveClient(iter->first);	// iter->first is the ID
+
+			//DEBUG
+			//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 			iter = this->connectedClients.end();
 			break;
 
 		case DISCONNECT_ACCEPTED:
 			
-			printf("Client recived: DISCONNECT_ACCEPTED\n");
+			p.deserialize(network_data);	// Read the binary data into the object
 			
-			p.deserialize(network_data);
-			
-			this->RemoveClient(iter->first);	//Send the clientID
+			this->RemoveClient(iter->first);
+
+			//DEBUF
+			//printf("Client recived: DISCONNECT_ACCEPTED\n");
 
 			iter = this->connectedClients.end();
 			break;
 
 		case UPDATE_ENTITY:
 
-			printf("Recived ENTITY_UPDATE packet\n");
-
-			eP.deserialize(network_data);
+			eP.deserialize(network_data);	// Read the binary data into the object
 			
-			this->packet_Buffer_Entity.push_back(eP);
+			this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
 
-			//delete eP;
-			//eP = nullptr;
+			//DEBUG
+			//printf("Recived ENTITY_UPDATE packet\n");
+
 			iter++;
 			break;
 
 		case UPDATE_ANIMATION:
 
-			printf("Recived ANIMATION_UPDATE packet\n");
+			aP.deserialize(network_data);	// Read the binary data into the object
 
-			aP.deserialize(network_data);
+			this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
 
-			this->packet_Buffer_Animation.push_back(aP);
+			//DEBUG
+			//printf("Recived ANIMATION_UPDATE packet\n");
 
-			//delete aP;
-			//aP = nullptr;
 			iter++;
 			break;
 
 		case UPDATE_STATE:
 
-			printf("Recived STATE_UPDATE packet\n");
+			sP.deserialize(network_data);	// Read the binary data into the object
 			
-			sP.deserialize(network_data);
+			this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
 			
-			this->packet_Buffer_State.push_back(sP);
+			//DEBUG
+			//printf("Recived STATE_UPDATE packet\n");
 
-			//delete sP;
-			//sP = nullptr;
 			iter++;
 			break;
 		
 		case UPDATE_CAMERA:
 
-			printf("Recived CAMERA_UPDATE packet\n");
+			cP.deserialize(network_data);	// Read the binary data into the object
 
-			cP.deserialize(network_data);
-
-			this->packet_Buffer_Camera.push_back(cP);
-
-			//delete cP;
-			//cP = nullptr;
+			this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
+			
+			//DEBUG
+			//printf("Recived CAMERA_UPDATE packet\n");
+			
 			iter++;
 			break;
 
 		case TEST_PACKET:
 
-			printf("Recived TEST_PACKET packet\n");
-
-			p.deserialize(network_data);
-
-			printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
-
-			//this->SendFlagPacket(TEST_PACKET);
+			p.deserialize(network_data);	// Read the binary data into the object
+			
+			// DEBUG
+			//printf("Recived TEST_PACKET packet\n");
+			//printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
 
 			iter++;
 			break;
-
 
 		default:
 			printf("Unkown packet type %d\n", header);
@@ -551,6 +540,9 @@ float NetworkModule::GetTimeStamp()
 
 int NetworkModule::GetMyIp()
 {
+	// DISCLAIMER
+	// Not sure if there is a better way to do this but it works
+
 	char ac[80];
 	struct in_addr addr;
 
@@ -575,11 +567,11 @@ int NetworkModule::GetMyIp()
 	unsigned char b3 = addr.S_un.S_un_b.s_b3;
 	unsigned char b4 = addr.S_un.S_un_b.s_b4;
 
-	//stream the data as int into the string
+	// Stream the data as int into the string
 	std::stringstream ss;
 	ss << (int)b1 << "." << (int)b2 << "." << (int)b3 << "." << (int)b4;
 	
-	this->my_ip.append(ss.str());
+	this->my_ip.append(ss.str());	// Set my_ip to the local ip-address of the machine
 
 	return 1;
 }
@@ -610,7 +602,7 @@ void NetworkModule::SendToAll(char * packets, int totalSize)
 
 bool NetworkModule::RemoveClient(unsigned int clientID)
 {
-			//Remove the Client from the list
+	//Remove the Client from the list
 	if (this->connectedClients.erase(clientID) != 0)	//Erase returns nummber of objects deleted
 	{	
 		printf("Client %d removed\n", clientID);
