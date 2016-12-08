@@ -36,6 +36,7 @@ private:
 	SOCKET							connectSocket;		// Socket to listen for new connections	
 	std::map<unsigned int, SOCKET>	connectedClients;	// table to keep track of each client's socket
 	std::list<Packet*>				packet_Buffer;
+	Packet*							packet_ptr;
 
 	int ReceiveData(unsigned int client_id, char * recvbuf);
 	bool AcceptNewClient(unsigned int & id);			//accept new connections

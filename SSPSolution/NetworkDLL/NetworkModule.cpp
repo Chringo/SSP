@@ -5,6 +5,7 @@ NetworkModule::NetworkModule()
 	this->isLocked = false;
 	this->client_id = 0;
 	this->packet_ID = 0;
+	this->packet_ptr = nullptr;
 }
 
 NetworkModule::~NetworkModule()
@@ -520,7 +521,7 @@ void NetworkModule::ReadMessagesFromClients()
 			printf("Recived CAMERA_UPDATE packet\n");
 
 			cP->deserialize(network_data);
-
+			this->packet_ptr = cP;
 			this->packet_Buffer.push_back(cP);
 
 			//delete cP;
