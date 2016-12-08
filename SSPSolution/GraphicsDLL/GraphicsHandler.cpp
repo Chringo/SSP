@@ -69,14 +69,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 
-	this->m_deferredSH = new DeferredShaderHandler;
-	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
+	this->m_deferredSH = new DeferredShader;
+	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
 
-	this->m_finalSH = new FinalShaderHandler;
-	if (this->m_finalSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
+	this->m_finalSH = new FinalShader;
+	if (this->m_finalSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
@@ -154,7 +154,7 @@ int GraphicsHandler::Render()
 	/********************/
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 
-	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);
+	this->m_deferredSH->SetActive(ShaderLib::ShaderVariations::Normal);
 	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
 
 	/*TEMP*/
@@ -167,7 +167,7 @@ int GraphicsHandler::Render()
 	/********/
 
  
-	this->m_finalSH->SetActive(ShaderLib::ShaderType::Normal);
+	this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
 	this->m_finalSH->Draw();
 
 	/*TEMP CBUFFER STUFF*/
@@ -207,13 +207,13 @@ void GraphicsHandler::Shutdown()
 	}
 	if (this->m_deferredSH)
 	{
-		this->m_deferredSH->Shutdown();
+		this->m_deferredSH->Release();
 		delete this->m_deferredSH;
 		this->m_deferredSH = nullptr;
 	}
 	if (this->m_finalSH)
 	{
-		this->m_finalSH->Shutdown();
+		this->m_finalSH->Release();
 		delete this->m_finalSH;
 		this->m_finalSH = nullptr;
 	}

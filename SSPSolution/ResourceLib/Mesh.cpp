@@ -56,7 +56,6 @@ Resources::Status Resources::Mesh::Create(Resource::RawResourceData * resData, I
 			{
 				m_meshData.m_animVertices = new VertexAnim[meshData->m_numVerts];
 				memcpy((char*)m_meshData.m_animVertices, meshData->m_animVertices, sizeof(VertexAnim)*  meshData->m_numVerts);
-
 			}
 			else
 			{

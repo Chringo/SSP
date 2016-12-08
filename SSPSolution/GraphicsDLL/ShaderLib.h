@@ -6,11 +6,11 @@
 
 namespace ShaderLib
 {
-	enum ShaderType
+	enum ShaderVariations
 	{
-		Normal = 0,
-		Instanced = 1,
-		Animated = 2,
+		Normal			  = 0,
+		Instanced		  = 1,
+		Animated		  = 2,
 		InstancedAnimated = 3,
 		Grid = 4
 	};
