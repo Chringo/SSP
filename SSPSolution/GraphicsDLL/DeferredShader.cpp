@@ -474,32 +474,6 @@ void DeferredShader::Release()
 	}
 }
 
-int DeferredShader::Draw(ShaderLib::DrawType drawType)
-{
-	switch (drawType)
-	{
-	case ShaderLib::DRAW_STANDARD:
-	{
-		this->Draw();
-		break;
-	}
-	case ShaderLib::DRAW_INSTANCED:
-	{
-		this->DrawInstanced();
-		break;
-	}
-	case ShaderLib::DRAW_GRID:
-	{
-		this->DrawGrid();
-		break;
-	}
-	default:
-		break;
-	}
-
-
-	return 0;
-}
 
 int DeferredShader::Draw(Resources::Model * model)
 {

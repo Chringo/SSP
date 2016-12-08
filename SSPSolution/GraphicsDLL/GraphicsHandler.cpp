@@ -153,13 +153,13 @@ int GraphicsHandler::Render()
 		m_shaderControl->Draw(m_modelsPtr[0]);
 	}
 
+	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
+	//{
+	//}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
 	m_shaderControl->Draw(m_modelsPtr[1]);
 
-	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
-	//{
-	//}
 
 	
 	/*TEMP*/
@@ -195,7 +195,7 @@ int GraphicsHandler::InitializeGrid()
 int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-		this->m_deferredSH->Draw(ShaderLib::DRAW_GRID);
+		this->m_deferredSH->DrawGrid();
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;

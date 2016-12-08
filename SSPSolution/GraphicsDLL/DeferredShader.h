@@ -48,7 +48,7 @@ public:
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
 	void Release();
 
-	int Draw(ShaderLib::DrawType drawType);
+
 	int Draw(Resources::Model* model);
 
 	int Clear();
@@ -57,10 +57,10 @@ public:
 
 	ID3D11ShaderResourceView** GetShaderResourceViews();
 
+	int DrawGrid();
 private:
 	int Draw();
 	int DrawInstanced();
-	int DrawGrid();
 };
 
 #endif
