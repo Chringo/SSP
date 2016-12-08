@@ -156,7 +156,7 @@ int System::Update(float deltaTime)
 			for (iter = cList.begin(); iter != cList.end();)
 			{
 				this->m_camera->SetCameraPos((iter)->pos);
-				
+				this->m_camera->Update();
 				iter++;
 				
 			}
