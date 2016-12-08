@@ -39,6 +39,12 @@ public:
 	DebugHandler();
 	~DebugHandler();
 
+	static DebugHandler& instance()
+	{
+		static DebugHandler *instance = new DebugHandler();
+		return *instance;
+	}
+
 	int StartTimer(std::string label); //returns timer ID, -1 fail
 	int EndTimer();
 	int EndTimer(int timerID);
