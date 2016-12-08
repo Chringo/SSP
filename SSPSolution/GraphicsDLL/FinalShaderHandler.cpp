@@ -1,15 +1,16 @@
-#include "LightShaderHandler.h"
+#include "FinalShaderHandler.h"
 
-LightShaderHandler::LightShaderHandler()
+FinalShaderHandler::FinalShaderHandler()
 {
+	this->m_finalRTV = nullptr;
 }
 
 
-LightShaderHandler::~LightShaderHandler()
+FinalShaderHandler::~FinalShaderHandler()
 {
 }
 
-int LightShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int FinalShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
@@ -87,7 +88,7 @@ int LightShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3
 	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
 	//Fill the description of the dynamic matrix constant buffer that is in the vertex shader
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::LightConstantBuffer);
+	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::CameraConstantBuffer);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
@@ -152,20 +153,33 @@ int LightShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3
 	return 0;
 }
 
-int LightShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
+int FinalShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 {
 	ShaderHandler::SetActive(shaderType);
-
+	m_deviceContext->OMSetRenderTargets(1, &this->m_finalRTV, NULL);
 	//Set the sampler state in pixel shader
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
 	this->m_deviceContext->PSSetSamplers(1, 1, &this->m_samplerStatePoint);
+
+	if (this->m_gBufferRTVs) {
+		//Set shader texture resource for pixel shader
+		m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, m_gBufferRTVs);
+	}
 
 	this->m_screenQuad->SetBuffers(m_deviceContext);
 
 	return 0;
 }
 
-void LightShaderHandler::Shutdown()
+int FinalShaderHandler::SetRenderParameters(ID3D11RenderTargetView *backBufferRTV, ID3D11ShaderResourceView ** gBuffers)
+{
+	this->m_finalRTV = backBufferRTV;
+	this->m_gBufferRTVs = gBuffers;
+
+	return 0;
+}
+
+void FinalShaderHandler::Shutdown()
 {
 	ShaderHandler::Shutdown();
 
@@ -195,51 +209,39 @@ void LightShaderHandler::Shutdown()
 	}
 }
 
-int LightShaderHandler::Draw()
+int FinalShaderHandler::Draw()
 {
+	//delete shaderParamsXM;
+	//delete shaderParamsVP;
+
+	static bool hej = true;
+	if (hej)
+	{
+		//ConstantBufferHandler::GetInstance()->Bind();
+		hej = false;
+	}
+
+	//this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
+	//this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
+	//this->m_finalSH->SetActive(ShaderLib::ShaderType::Normal);
+
+	//ShaderLib::CameraConstantBuffer* lShaderParams = new ShaderLib::CameraConstantBuffer;
+	//lShaderParams->camPos = this->m_camera->GetCameraPos();
+	//lShaderParams->camTar = this->m_camera->GetLookAt();
+
+	//this->SetShaderParameters(lShaderParams, this->m_deferredSH->GetShaderResourceViews());
+	//delete lShaderParams;
+	//this->m_deviceContext->DrawIndexed(6, 0, 0);
+
+	//this->ResetPSShaderResources();
+	this->m_deviceContext->DrawIndexed(6, 0, 0);
+	this->ResetPSShaderResources();
 
 	return 0;
 }
 
-int LightShaderHandler::SetShaderParameters(ShaderLib::LightConstantBuffer * shaderParams, ID3D11ShaderResourceView** gBuffers)
-{
-	HRESULT hResult;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::LightConstantBuffer* dataPtr;
-	unsigned int bufferNumber;
 
-	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = m_deviceContext->Map(this->m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hResult)) {
-		return 1;
-	}
-
-	//Get pointer to the data
-	dataPtr = (ShaderLib::LightConstantBuffer*)mappedResource.pData;
-
-
-	dataPtr->camPos = shaderParams->camPos;
-	dataPtr->camDir = shaderParams->camDir;
-
-	//Unmap the constant buffer to give the GPU access agin
-	m_deviceContext->Unmap(this->m_matrixBuffer, 0);
-
-	//Set constant buffer position in vertex shader
-	bufferNumber = 0;
-
-	//Set the constant buffer in vertex and pixel shader with updated values
-	m_deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
-	//deviceContext->PSSetConstantBuffers(bufferNumber, 1, &this->m_matrixBuffer);
-
-	if (gBuffers) {
-		//Set shader texture resource for pixel shader
-		m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, gBuffers);
-	}
-
-	return 0;
-}
-
-void LightShaderHandler::ResetPSShaderResources()
+void FinalShaderHandler::ResetPSShaderResources()
 {
 	m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, this->m_nullResources);
 }

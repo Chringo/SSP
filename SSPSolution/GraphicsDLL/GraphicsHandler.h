@@ -3,9 +3,10 @@
 
 #include "Direct3DHandler.h"
 #include "DeferredShaderHandler.h"
-#include "LightShaderHandler.h"
+#include "FinalShaderHandler.h"
 #include "Camera.h"
 #include "GraphicsComponent.h"
+#include "ConstantBufferHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -20,22 +21,21 @@ class GRAPHICSDLL_API GraphicsHandler
 {
 private:
 	Direct3DHandler* m_d3dHandler;
-
+	ConstantBufferHandler * m_constantBufferHandler;
 	DeferredShaderHandler* m_deferredSH;
-	LightShaderHandler* m_lightSH;
+	FinalShaderHandler* m_finalSH;
 
 	HWND* m_windowHandle;
 
-	Camera* m_camera;
-
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
+	Resources::Model** m_modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
-	Resources::Model** m_modelsPtr;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
 	//temp
+	Camera* m_camera;
+	DirectX::XMFLOAT4X4 m_projectionMatrix;
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 
