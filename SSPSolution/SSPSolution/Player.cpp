@@ -11,7 +11,7 @@ Player::~Player()
 {
 }
 
-int Player::Update()
+int Player::Update(float dT)
 {
 	int result = 0;
 	return result;

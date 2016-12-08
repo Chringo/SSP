@@ -9,7 +9,7 @@ public:
 	~Player();
 
 
-	int Update();
+	int Update(float dT);
 	int React(int entityID, EVENT event);
 };
 

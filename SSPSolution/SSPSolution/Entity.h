@@ -19,7 +19,7 @@ public:
 	virtual ~Entity();
 
 
-	virtual int Update() = 0;
+	virtual int Update(float dT) = 0;
 	virtual int React(int entityID, EVENT event) = 0;
 private:
 };
