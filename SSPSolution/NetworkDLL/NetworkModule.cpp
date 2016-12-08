@@ -520,8 +520,14 @@ void NetworkModule::ReadMessagesFromClients()
 
 			printf("Recived CAMERA_UPDATE packet\n");
 
+			CameraPacket* cPP = nullptr;
+
+
 			cP->deserialize(network_data);
 			this->packet_ptr = cP;
+
+			cPP = dynamic_cast<CameraPacket*>(this->packet_ptr);
+
 			this->packet_Buffer.push_back(cP);
 
 			//delete cP;
