@@ -11,7 +11,12 @@ private:
 	struct Timer {
 		LARGE_INTEGER startTime;
 		LARGE_INTEGER endTime;
-		Timer();
+		Timer()
+		{
+		}
+		~Timer()
+		{
+		}
 		Timer(LARGE_INTEGER start)
 		{
 			this->startTime = start;
@@ -35,14 +40,16 @@ private:
 	unsigned short int m_currFrameTimesPtr;
 	unsigned short int m_timerToEnd;
 
-public:
+	static DebugHandler* m_instance;
 	DebugHandler();
+
+public:
 	~DebugHandler();
 
 	static DebugHandler& instance()
 	{
-		static DebugHandler *instance = new DebugHandler();
-		return *instance;
+		if (m_instance == nullptr) m_instance = new DebugHandler();
+		return *m_instance;
 	}
 
 	int StartTimer(std::string label); //returns timer ID, -1 fail
@@ -57,6 +64,8 @@ public:
 	int UpdateCustomLabel(int labelID, float newValue);
 
 	int Display();
+
+	void Shutdown();
 };
 
 #endif

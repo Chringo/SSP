@@ -23,6 +23,7 @@ int System::Shutdown()
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
+	DebugHandler::instance().Shutdown();
 	return result;
 }
 
@@ -116,8 +117,10 @@ int System::Run()
 		}
 		//std::cout << int(totalTime) << "\n";
 		//Render
+		DebugHandler::instance().StartTimer("Render");
 		this->m_graphicsHandler->Render();
-
+		DebugHandler::instance().EndTimer();
+		DebugHandler::instance().Display();
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();

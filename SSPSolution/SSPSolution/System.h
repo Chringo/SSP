@@ -6,6 +6,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
+#include "DebugHandler.h"
 #include "../physicsDLL/physicsDLL/PhysicsHandler.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 

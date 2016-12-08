@@ -1,5 +1,7 @@
 #include "DebugHandler.h"
 
+DebugHandler* DebugHandler::m_instance = nullptr;
+
 DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
@@ -26,7 +28,7 @@ int DebugHandler::EndTimer()
 {
 	LARGE_INTEGER currTime;
 	QueryPerformanceCounter(&currTime);
-	this->m_timers.at(this->m_timers.size() - this->m_timerToEnd++).endTime = currTime;
+	this->m_timers.at(this->m_timers.size() - ++this->m_timerToEnd).endTime = currTime;
 
 	return 0;
 }
@@ -46,6 +48,12 @@ int DebugHandler::Display()
 
 	this->m_timers.clear();
 	this->m_labels.clear();
+	this->m_timerToEnd = 0;
 
 	return 0;
+}
+
+void DebugHandler::Shutdown()
+{
+	if (m_instance != nullptr) delete this->m_instance;
 }
