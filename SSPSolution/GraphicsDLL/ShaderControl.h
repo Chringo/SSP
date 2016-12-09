@@ -2,6 +2,7 @@
 #define GRAPHICSDLL_SHADERCONTROL_H
 #include "FinalShader.h"
 #include "DeferredShader.h"
+#include "PostProcessShader.h"
 #include "..\ResourceLib\Model.h"
 
 // Named Shader Control because we had to remake shader handler 
@@ -12,18 +13,19 @@ class ShaderControl
 public:
 	enum Shaders {
 		DEFERRED,
-		FINAL
+		FINAL,
+		POSTPROCESS,
 		//UI,
-		//WATER,
 		//PARTICLES,
 		//BILLBOARD
+		NUM_SHADERS
 	};
 private: 	
-	const static int NUM_SHADERS = 2;
+
 	// pointers to the main device and context
 	ID3D11Device		*m_Device		 = nullptr;
 	ID3D11DeviceContext *m_DeviceContext = nullptr;
-
+	ID3D11RenderTargetView* backBufferRTV;
 	Shader* m_shaders[NUM_SHADERS];
 
 	Shaders m_activeShader;
@@ -35,8 +37,8 @@ public:
 
 	void SetActive(Shaders type);
 	void SetVariation(ShaderLib::ShaderVariations ShaderVariations);
-	int SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
-
+	int  SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
+	void PostProcess();
 	void Draw(Resources::Model* model);
 	void DrawFinal();
 	int ClearFrame();
