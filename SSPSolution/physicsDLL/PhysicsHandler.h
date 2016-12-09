@@ -37,6 +37,7 @@ __declspec(align(16)) struct PhysicsComponent
 {
 	DirectX::XMVECTOR PC_pos;
 	DirectX::XMVECTOR PC_velocity;
+	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
 	double PC_gravityInfluence;
 	int PC_active;
