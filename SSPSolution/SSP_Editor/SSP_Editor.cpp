@@ -19,14 +19,13 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model->setNameFilterDisables(false);
 
 	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
-	//m_ui.treeView->setModel(this->m_model);
-	//connect(m_ui.treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeView_doubleClicked()));
 	QTreeWidgetItem *model = new QTreeWidgetItem(m_ui.treeWidget);
 	model->setText(0, "Models");
 	m_ui.treeWidget->addTopLevelItem(model);
 	QTreeWidgetItem *anim = new QTreeWidgetItem(m_ui.treeWidget);
 	anim->setText(0, "Animations");
 	m_ui.treeWidget->addTopLevelItem(anim);
+	connect(m_ui.treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeView_doubleClicked()));
 
 
 	/*connecting the rest of the buttons to the functions*/
@@ -68,10 +67,10 @@ void SSP_Editor::on_BuildBPF_clicked()
 
 void SSP_Editor::on_treeView_doubleClicked()
 {
-	//QModelIndex index = m_ui.treeView->currentIndex();
+	QModelIndex index = m_ui.treeWidget->currentIndex();
 	
 	/*checking to see if the selected object is valid*/
-	//if (!index.isValid()) return;
+	if (!index.isValid()) return;
 	
 	std::vector<Resources::Model*>* test = m_fileImporter->get_M_models();
 
