@@ -366,6 +366,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
+
 	return true;
 }
 
