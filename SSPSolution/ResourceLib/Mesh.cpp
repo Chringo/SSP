@@ -101,25 +101,28 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 		return false;
 	}
 
+	if (dev != nullptr)
+	{
+		D3D11_BUFFER_DESC bufferDesc;
+		memset(&bufferDesc, 0, sizeof(bufferDesc));
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(Vertex)* numVerts;
 
+		D3D11_SUBRESOURCE_DATA b_data;
+		b_data.pSysMem = data;
+		HRESULT hr;
+		hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
 
-	D3D11_SUBRESOURCE_DATA b_data;
-	b_data.pSysMem = data;
-	HRESULT hr;
-	hr = dev->CreateBuffer(&bufferDesc, &b_data, &m_vertBuffer);
-
-	if (FAILED(hr))
-		return false;
+		if (FAILED(hr))
+			return false;
+	}
 
 	if (keepRawData) {
 		m_meshData.m_vertices = new Vertex[numVerts];
-		memcpy(m_meshData.m_vertices,&data,sizeof(Vertex)* numVerts);
+		memcpy(m_meshData.m_vertices,data,size_t(sizeof(Vertex)* numVerts));
+		//m_meshData.m_vertices = data;
 	}
 
 	m_meshData.m_numVerts = numVerts;
@@ -131,7 +134,7 @@ bool Resources::Mesh::SetVertices(Vertex * data, ID3D11Device* dev, unsigned int
 
 bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned int numVerts, bool keepRawData)
 {
-	if (numVerts = 0) 
+	if (numVerts == 0) 
 		return false;
 
 	
@@ -165,10 +168,12 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 	}
 
 	if (keepRawData)
-		m_meshData.m_animVertices = data;
-	else {
-		delete data; data = nullptr;
+	{
+		//m_meshData.m_animVertices = data;
+		m_meshData.m_animVertices = new VertexAnim[numVerts];
+		memcpy(m_meshData.m_animVertices, data, size_t(sizeof(VertexAnim)* numVerts));
 	}
+
 	m_meshData.hasAnimation = true;
 	m_meshData.m_numVerts = numVerts;
 	return true;
@@ -201,8 +206,10 @@ bool Resources::Mesh::SetIndices(unsigned int * indices, unsigned int numIndices
 	}
 
 	if (keepRawData)
-		m_meshData.m_indices = indices;
-
+	{
+		m_meshData.m_indices = new unsigned int[numIndices];
+		memcpy(m_meshData.m_indices, indices, sizeof(unsigned int)* numIndices);
+	}
 	m_meshData.m_numIndices = numIndices;
 	
 
