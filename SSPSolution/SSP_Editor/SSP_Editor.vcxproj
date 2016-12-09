@@ -70,6 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EditorCommunicator.cpp" />
     <ClCompile Include="EditorInputHandler.cpp" />
     <ClCompile Include="FileImporter.cpp" />
     <ClCompile Include="RenderWidget.cpp" />
@@ -120,6 +121,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />
     <CustomBuild Include="RenderWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
