@@ -95,11 +95,27 @@ int DebugHandler::Display(float dTime)
 
 	std::vector<Timer>::iterator iter;
 	std::vector<std::string>::iterator iterLabel;
-	for (iter = this->m_timers.begin(), iterLabel = this->m_labels.begin(); 
-		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
-		iter++, iterLabel++)
+	int nrOfTimers = this->m_timers.size();
+	for (int i = this->m_timerMins.size(); i < nrOfTimers; i++)
 	{
-		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " us";
+		this->m_timerMins.push_back(9999999);
+		this->m_timerMaxs.push_back(0);
+	}
+
+	unsigned int time, minTime, maxTime;
+	int i;
+	for (i = 0, iter = this->m_timers.begin(), iterLabel = this->m_labels.begin();
+		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
+		i++, iter++, iterLabel++)
+	{
+		time = iter->GetTimeMS(this->m_frequency);
+		minTime = this->m_timerMins.at(i);
+		maxTime = this->m_timerMaxs.at(i);
+		this->m_timerMins.at(i) = (minTime < time) ? minTime : time;
+		this->m_timerMaxs.at(i) = (maxTime > time) ? maxTime : time;
+		
+		std::cout << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
+			<< time << " [" << this->m_timerMaxs.at(i) << "] us";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 10, screen.dwCursorPosition, &written

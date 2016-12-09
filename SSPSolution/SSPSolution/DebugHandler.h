@@ -34,8 +34,8 @@ private:
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
 	std::vector<std::string> m_labels;
-	std::vector<unsigned short int> m_timerMins;
-	std::vector<unsigned short int> m_timerMaxs;
+	std::vector<unsigned int> m_timerMins;
+	std::vector<unsigned int> m_timerMaxs;
 	std::vector<float> m_customValues;
 	unsigned short int m_frameTimes[10];
 	unsigned short int m_currFrameTimesPtr;
