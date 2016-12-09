@@ -132,9 +132,11 @@ int GraphicsHandler::Render()
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
 	this->m_camera->GetCameraPos(cam.cPos);
 	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(&m_projectionMatrix);
+	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+
+
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 
@@ -153,15 +155,7 @@ int GraphicsHandler::Render()
 	m_shaderControl->Draw(m_modelsPtr[1]);
 
 
-	
-	/*TEMP*/
-	{
-		if (textures[i] == nullptr)
-			continue;
 
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
-	}
 
 	if (m_gridEnabled)
 	{
