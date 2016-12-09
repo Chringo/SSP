@@ -42,13 +42,6 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 	Resources::Status st;
 
 	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
-
-
-	Container testing;
-	Resources::Model test1;
-	DirectX::XMVECTOR pos1 = { 2,1,1,0 };
-	DirectX::XMVECTOR pos2 = { 1,2,1,0 };
-	DirectX::XMVECTOR pos3 = { 1,1,2,0 };
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent)

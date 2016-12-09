@@ -30,7 +30,8 @@ private: //for deltaTime
 
 	__int64 m_frameTimeOld = 0;
 	double m_frameTime;
-
+public:
+	Communicator* getCommunicator() { return this->m_Communicator; };
 private:
 	double getFrameTime();
 	void startTimer();
