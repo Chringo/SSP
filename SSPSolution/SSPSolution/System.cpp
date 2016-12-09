@@ -91,6 +91,7 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+		DebugHandler::instance().StartProgram();
 		DebugHandler::instance().StartTimer("Update");
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
@@ -123,13 +124,8 @@ int System::Run()
 		DebugHandler::instance().StartTimer("Render");
 		this->m_graphicsHandler->Render();
 		DebugHandler::instance().EndTimer();
-		DebugHandler::instance().Display();
-		int linesDisplayed = 2, maxLinesDisplayed = 28;
-		//printf("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n");
-		/*for (int i = linesDisplayed; i < maxLinesDisplayed; i++)
-		{
-			printf("%d\n", i);
-		}*/
+		DebugHandler::instance().EndProgram();
+		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();

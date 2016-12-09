@@ -6,6 +6,7 @@ DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
 	this->m_timerToEnd = 0;
+	this->m_displayFPS = true;
 }
 
 void DebugHandler::ClearConsole()
@@ -51,9 +52,45 @@ int DebugHandler::EndTimer()
 	return 0;
 }
 
-int DebugHandler::Display()
+int DebugHandler::StartProgram()
 {
-	this->ClearConsole();
+	QueryPerformanceCounter(&this->m_programStart);
+
+	return 0;
+}
+
+int DebugHandler::EndProgram()
+{
+	QueryPerformanceCounter(&this->m_programEnd);
+
+	return 0;
+}
+
+int DebugHandler::ShowFPS(bool show)
+{
+	this->m_displayFPS = show;
+
+	return 0;
+}
+
+int DebugHandler::Display(float dTime)
+{
+	COORD topLeft = { 0, 0 };
+	COORD FPSLocation = { 100, 0 };
+	COORD toClear = { 4, 100 };
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO screen;
+	DWORD written;
+
+	GetConsoleScreenBufferInfo(console, &screen);
+	FillConsoleOutputCharacterA(
+		console, ' ', toClear.X * toClear.Y, topLeft, &written
+	);
+	/*FillConsoleOutputAttribute(
+		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+		toClear.X * toClear.Y, topLeft, &written
+	);*/
+	SetConsoleCursorPosition(console, topLeft);
 
 	std::vector<Timer>::iterator iter;
 	std::vector<std::string>::iterator iterLabel;
@@ -61,12 +98,19 @@ int DebugHandler::Display()
 		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
 		iter++, iterLabel++)
 	{
-		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " ms" << std::endl;
+		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " us" << std::endl;
 	}
 
 	this->m_timers.clear();
 	this->m_labels.clear();
 	this->m_timerToEnd = 0;
+
+	if (this->m_displayFPS)
+	{
+
+		SetConsoleCursorPosition(console, FPSLocation);
+		std::cout << "FPS: " << std::to_string((int)(1000000 / dTime));
+	}
 
 	return 0;
 }

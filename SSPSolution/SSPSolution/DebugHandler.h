@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <Windows.h>
+#include <string>
 
 class DebugHandler
 {
@@ -39,6 +40,9 @@ private:
 	unsigned short int m_frameTimes[10];
 	unsigned short int m_currFrameTimesPtr;
 	unsigned short int m_timerToEnd;
+	LARGE_INTEGER m_programStart;
+	LARGE_INTEGER m_programEnd;
+	bool m_displayFPS;
 
 	static DebugHandler* m_instance;
 	DebugHandler();
@@ -65,7 +69,7 @@ public:
 	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail
 	int UpdateCustomLabel(int labelID, float newValue);
 
-	int Display();
+	int Display(float dTime);
 
 	void Shutdown();
 };
