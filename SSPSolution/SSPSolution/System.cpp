@@ -71,11 +71,18 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
+	this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
+
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0.2);
+	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
+
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.CreatePhysicsComponent(test);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
