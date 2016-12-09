@@ -78,6 +78,9 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	DebugHandler::instance().CreateCustomLabel("Frame counter", 0.0f);
+
 	return result;
 }
 
@@ -128,6 +131,7 @@ int System::Run()
 		DebugHandler::instance().StartTimer("Render");
 		this->m_graphicsHandler->Render();
 		DebugHandler::instance().EndTimer();
+		DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 		DebugHandler::instance().EndProgram();
 		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
 	}

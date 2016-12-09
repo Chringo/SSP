@@ -36,6 +36,7 @@ private:
 	std::vector<std::string> m_labels;
 	std::vector<unsigned int> m_timerMins;
 	std::vector<unsigned int> m_timerMaxs;
+	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
 	unsigned short int m_frameTimes[10];
 	unsigned short int m_currFrameTimesPtr;
@@ -68,6 +69,7 @@ public:
 
 	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail
 	int UpdateCustomLabel(int labelID, float newValue);
+	int UpdateCustomLabelIncrease(int labelID, float addValue);
 
 	int ResetMinMax();
 

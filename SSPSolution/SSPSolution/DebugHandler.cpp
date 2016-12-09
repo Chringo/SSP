@@ -19,7 +19,7 @@ void DebugHandler::ClearConsole()
 
 	GetConsoleScreenBufferInfo(console, &screen);
 	FillConsoleOutputCharacterA(
-		console, ' ', 400, topLeft, &written
+		console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
 	);
 	FillConsoleOutputAttribute(
 		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
@@ -70,6 +70,42 @@ int DebugHandler::EndProgram()
 int DebugHandler::ShowFPS(bool show)
 {
 	this->m_displayFPS = show;
+
+	return 0;
+}
+
+int DebugHandler::CreateCustomLabel(std::string label, float value)
+{
+	this->m_labelsValues.push_back(label);
+	this->m_customValues.push_back(value);
+
+	return 0;
+}
+
+int DebugHandler::UpdateCustomLabel(int labelID, float newValue)
+{
+	if (labelID < this->m_labelsValues.size())
+	{
+		this->m_customValues.at(labelID) = newValue;
+	}
+	else 
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+int DebugHandler::UpdateCustomLabelIncrease(int labelID, float addValue)
+{
+	if (labelID < this->m_labelsValues.size())
+	{
+		this->m_customValues.at(labelID) += addValue;
+	}
+	else
+	{
+		return -1;
+	}
 
 	return 0;
 }
@@ -126,7 +162,17 @@ int DebugHandler::Display(float dTime)
 			<< time << " [" << this->m_timerMaxs.at(i) << "] us";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
-			console, ' ', 10, screen.dwCursorPosition, &written
+			console, ' ', 5, screen.dwCursorPosition, &written
+		);
+		std::cout << std::endl;
+	}
+	int nrOfCustomLabels = this->m_labelsValues.size();
+	for (int j = 0; j < nrOfCustomLabels; j++)
+	{
+		std::cout << this->m_labelsValues.at(j) << ": " << this->m_customValues.at(j);
+		GetConsoleScreenBufferInfo(console, &screen);
+		FillConsoleOutputCharacterA(
+			console, ' ', 5, screen.dwCursorPosition, &written
 		);
 		std::cout << std::endl;
 	}
