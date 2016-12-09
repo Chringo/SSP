@@ -7,6 +7,7 @@ DebugHandler::DebugHandler()
 	QueryPerformanceFrequency(&this->m_frequency);
 	this->m_timerToEnd = 0;
 	this->m_displayFPS = true;
+	this->ClearConsole();
 }
 
 void DebugHandler::ClearConsole()
@@ -18,7 +19,7 @@ void DebugHandler::ClearConsole()
 
 	GetConsoleScreenBufferInfo(console, &screen);
 	FillConsoleOutputCharacterA(
-		console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
+		console, ' ', 400, topLeft, &written
 	);
 	FillConsoleOutputAttribute(
 		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
@@ -77,15 +78,15 @@ int DebugHandler::Display(float dTime)
 {
 	COORD topLeft = { 0, 0 };
 	COORD FPSLocation = { 100, 0 };
-	COORD toClear = { 4, 100 };
+	//COORD toClear = { 4, 100 };
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO screen;
 	DWORD written;
 
-	GetConsoleScreenBufferInfo(console, &screen);
-	FillConsoleOutputCharacterA(
+	//GetConsoleScreenBufferInfo(console, &screen);
+	/*FillConsoleOutputCharacterA(
 		console, ' ', toClear.X * toClear.Y, topLeft, &written
-	);
+	);*/
 	/*FillConsoleOutputAttribute(
 		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
 		toClear.X * toClear.Y, topLeft, &written
@@ -98,7 +99,12 @@ int DebugHandler::Display(float dTime)
 		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
 		iter++, iterLabel++)
 	{
-		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " us" << std::endl;
+		std::cout << iterLabel->c_str() << ": " << iter->GetTimeMS(this->m_frequency) << " us";
+		GetConsoleScreenBufferInfo(console, &screen);
+		FillConsoleOutputCharacterA(
+			console, ' ', 10, screen.dwCursorPosition, &written
+		);
+		std::cout << std::endl;
 	}
 
 	this->m_timers.clear();
@@ -107,9 +113,12 @@ int DebugHandler::Display(float dTime)
 
 	if (this->m_displayFPS)
 	{
-
 		SetConsoleCursorPosition(console, FPSLocation);
 		std::cout << "FPS: " << std::to_string((int)(1000000 / dTime));
+		GetConsoleScreenBufferInfo(console, &screen);
+		FillConsoleOutputCharacterA(
+			console, ' ', 10, screen.dwCursorPosition, &written
+		);
 	}
 
 	return 0;
