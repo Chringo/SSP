@@ -33,6 +33,7 @@ public:
 	void LoadImportedFiles();
 
 	std::vector<Resources::Model*>* get_M_models() { return &this->m_models; }
+	Resources::Model* get_model(unsigned int modelID);
 private:
 	/*functions*/
 	void handleMesh(char * m_bbf_object);
