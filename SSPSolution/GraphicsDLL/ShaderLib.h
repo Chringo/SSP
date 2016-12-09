@@ -15,70 +15,14 @@ namespace ShaderLib
 		Grid = 4
 	};
 
-	enum CBuffer
-	{
-		CB_WORLD,
-		CB_VIEW_PROJECTION,
-		CB_CAMERA
-	};
 
-	enum DrawType
-	{
-		DRAW_STANDARD,
-		DRAW_INSTANCED,
-		DRAW_GRID
-	};
 	enum RasteriserState
 	{
 		RASTER_NORMAL,
 		RASTER_WIREFRAME
 	};
 
-	struct DeferredConstantBufferWorld
-	{
-		DirectX::XMFLOAT4X4 worldMatrix;
-	};
 
-	struct WorldConstantBuffer
-	{
-		DirectX::XMFLOAT4X4 worldMatrix;
-	};
-
-	struct DeferredConstantBufferWorldxm
-	{
-		DirectX::XMMATRIX worldMatrix;
-	};
-
-	struct DeferredConstantBufferVP
-	{
-		DirectX::XMFLOAT4X4 viewMatrix;
-		DirectX::XMFLOAT4X4 projectionMatrix;
-	};
-
-	struct VPConstantBuffer
-	{
-		DirectX::XMFLOAT4X4 viewMatrix;
-		DirectX::XMFLOAT4X4 projectionMatrix;
-	};
-
-	struct DeferredConstantBufferVPxm
-	{
-		DirectX::XMMATRIX viewMatrix;
-		DirectX::XMMATRIX projectionMatrix;
-	};
-
-	struct SkeletonConstantBuffer
-	{
-		DirectX::XMFLOAT4X4 joint[32];
-	};
-
-	struct CameraConstantBuffer
-	{
-		DirectX::XMFLOAT3 camPos;
-		DirectX::XMFLOAT3 camTar;
-		float padding1;
-		float padding2;
-	};
 }
 
 #endif

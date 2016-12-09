@@ -28,7 +28,7 @@
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
 		D3DRenderWidget* m_D3DRenderWidget;
-		FileImporter m_fileImporter;
+		FileImporter* m_fileImporter;
 
 		D3DRenderWidget* m_D3DRenderWidgetPreview;
 	};
