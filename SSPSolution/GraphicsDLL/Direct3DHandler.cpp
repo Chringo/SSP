@@ -121,65 +121,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	this->m_gDeviceContext->RSSetState(this->m_rasterizerState); //Set the rasterstate
 
-	// Create the depth buffer and view \\
-
-	//D3D11_TEXTURE2D_DESC depthBufferDesc;
-	//ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-
-	//depthBufferDesc.Width = resolution.x;
-	//depthBufferDesc.Height = resolution.y;
-	//depthBufferDesc.MipLevels = 1;
-	//depthBufferDesc.ArraySize = 1;
-	//depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	//depthBufferDesc.SampleDesc.Count = 1; //No MSAA
-	//depthBufferDesc.SampleDesc.Quality = 0;
-
-	//depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	//depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	//depthBufferDesc.CPUAccessFlags = 0;
-	//depthBufferDesc.MiscFlags = 0;
-
-	//hResult = this->m_gDevice->CreateTexture2D(&depthBufferDesc, NULL, &this->m_depthStencilBuffer);
-	//if (FAILED(hResult))
-	//{
-	//	return 1;
-	//}
-
-	//hResult = this->m_gDevice->CreateDepthStencilView(this->m_depthStencilBuffer, NULL, &this->m_DSV);
-	//if (FAILED(hResult))
-	//{
-	//	return 1;
-	//}
-
-	//// Create the depth stecil state \\
-
-	//D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	//ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
-
-	//depthStencilDesc.DepthEnable = true;
-	//depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	////Frontfacing triangles
-	//depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	//depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	////Backfacing triangles
-	//depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	//depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	//hResult = this->m_gDevice->CreateDepthStencilState(&depthStencilDesc, &this->m_depthStencilState);
-	//if (FAILED(hResult))
-	//{
-	//	return 1;
-	//}
-
-	// Create and set the viewport \\
 	
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;

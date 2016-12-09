@@ -59,7 +59,7 @@ bool Resources::FileLoader::CloseFile(Files file)
 		fileHandles[file].close();
 		fileStates[file] = CLOSED;
 	}
-	assert(!fileHandles[file]);
+	assert(!fileHandles[file].is_open());
 	return true;
 }
 
