@@ -17,7 +17,7 @@ namespace Resources
 	public:
 		struct RawResourceData
 		{
-			char m_name[256]; 
+			//char m_name[256]; 
 			unsigned int m_id;
 			ResourceType m_resType = RES_UNKOWN;
 		};
@@ -33,9 +33,6 @@ namespace Resources
 
 		const bool IsType(ResourceType type) const;
 		const ResourceType GetResourceType() const { return m_resourceData.m_resType; };
-
-		const bool SetName(std::string name) ;
-		const std::string GetName() const;
 
 		const unsigned int GetId() const;
 		
@@ -60,7 +57,7 @@ namespace Resources
 
 	static void OutputErrorString(Resource* object, std::string info = "")
 	{
-		std::cout << "Error in object :" << object->GetName() << "| Additional info : " << info << std::endl;
+		std::cout << "Error in object :" << object->GetId() << "| Additional info : " << info << std::endl;
 	}
 }
 

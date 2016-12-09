@@ -2,13 +2,14 @@
 
 D3DRenderWidget::~D3DRenderWidget()
 {
-	this->m_GraphicsHandler->Shutdown();
-	delete this->m_GraphicsHandler;
-	if (this->m_test == 1)
+	Resources::Status status;
+	status = this->m_Communicator->Release();
+	if (status == Resources::ST_OK)
 	{
-		delete this->m_EditorInputHandler;
+		delete this->m_Communicator;
 	}
 }
+
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
 	this->m_frameCount++;
@@ -20,35 +21,32 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 	this->m_frameTime = getFrameTime();
 
-	if (m_test == 1)
+	if (!this->m_Communicator->m_IsPreview)
 	{
-		this->m_EditorInputHandler->detectInput(this->m_frameTime);
+		this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime);
 	}
-	this->m_GraphicsHandler->Render();
+	this->m_Communicator->m_GraphicsHandler->Render();
 	this->update();
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
 {
-	this->m_GraphicsHandler = new GraphicsHandler();
+	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
-	if (!isPreview)
-	{
-		this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 
-	}
-	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
-	this->m_GraphicsHandler->InitializeGrid();
-	this->m_Camera = new Camera();
-	this->m_Camera->Initialize();
-	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
-	delete oldCam;
-	oldCam = nullptr;
-	this->m_test = 0;
-	if (!isPreview)
+	Resources::Status status;
+
+	status = this->m_Communicator->Initialize(
+		this->m_hwnd,
+		this->m_hInstance,
+		parent->width(),
+		parent->height(),
+		isPreview
+	);
+	if (status == Resources::ST_OK)
 	{
-		this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height, this->m_GraphicsHandler);
-		this->m_test = 1;
+
 	}
 }
 

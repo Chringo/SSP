@@ -57,7 +57,9 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::RESOURCE_FILE))
-		return ST_ERROR_OPENING_FILE;
+		std::cout << "Could not open resource file"<<std::endl;
+		//return ST_ERROR_OPENING_FILE;
+
 		// for each model in level
 	{
 		//Get id of the model from the level Instructions
@@ -132,7 +134,7 @@ Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& 
 		modelPtr = (Model*)modelCont->resource;
 		break;
 	case Status::ST_RES_MISSING:
-		/*LOAD THE MODEL | Or return placeholder MODEL*/
+		/*return placeholder MODEL*/
 		modelPtr = m_modelHandler->GetPlaceholderModel();
 		break;
 	default:
