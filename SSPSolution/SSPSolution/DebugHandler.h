@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <string>
 
+// How many frames to use for average fps
 const int FRAMES_FOR_AVG = 100;
 
 class DebugHandler
@@ -24,7 +25,7 @@ private:
 		{
 			this->startTime = start;
 		}
-		unsigned int GetTimeMS(LARGE_INTEGER frequency)
+		unsigned int GetTimeMS(LARGE_INTEGER frequency) // !!! Not MS atm  us
 		{
 			LARGE_INTEGER elapsedTime;
 			elapsedTime.QuadPart = this->endTime.QuadPart - this->startTime.QuadPart;
@@ -40,7 +41,7 @@ private:
 	std::vector<unsigned int> m_timerMaxs;
 	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
-	unsigned short int m_frameTimes[FRAMES_FOR_AVG];
+	unsigned int m_frameTimes[FRAMES_FOR_AVG];
 	int m_currFrameTimesPtr;
 	unsigned short int m_timerToEnd;
 	LARGE_INTEGER m_programStart;
@@ -65,8 +66,8 @@ public:
 	int EndTimer();
 	int EndTimer(int timerID);
 
-	int StartProgram();
-	int EndProgram();
+	int StartProgram(); // Needed at start of program to show fps
+	int EndProgram(); // Needed at end of program to show fps
 	int ShowFPS(bool show);
 
 	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail
@@ -75,7 +76,7 @@ public:
 
 	int ResetMinMax();
 
-	int Display(float dTime);
+	int Display(float dTime); // Call this in the end to display everything in the console
 
 	void Shutdown();
 };

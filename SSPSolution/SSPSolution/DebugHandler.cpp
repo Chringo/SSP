@@ -8,6 +8,10 @@ DebugHandler::DebugHandler()
 	this->m_timerToEnd = 0;
 	this->m_displayFPS = true;
 	this->ClearConsole();
+	for (int i = 0; i < FRAMES_FOR_AVG; i++)
+	{
+		this->m_frameTimes[i] = 40;
+	}
 }
 
 void DebugHandler::ClearConsole()
@@ -185,7 +189,7 @@ int DebugHandler::Display(float dTime)
 	{
 		int sum = 0, avgFPS;
 		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
-		this->m_frameTimes[this->m_currFrameTimesPtr] = (int)(1000000 / dTime);
+		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
 		for (int k = 0; k < FRAMES_FOR_AVG; k++)
 		{
 			sum += this->m_frameTimes[k];
