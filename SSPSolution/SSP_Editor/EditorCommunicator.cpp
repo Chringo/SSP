@@ -20,6 +20,8 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
 	delete oldCam;
 	oldCam = nullptr;
+	this->m_Camera->UpdateProjection();
+	this->m_Camera->Update();
 
 	if (!isPreview)
 	{

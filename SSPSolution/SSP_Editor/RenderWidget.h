@@ -9,7 +9,7 @@ class D3DRenderWidget : public QWidget {
 	Q_OBJECT
 		Q_DISABLE_COPY(D3DRenderWidget)
 public:
-	D3DRenderWidget(QWidget* parent = NULL);
+	D3DRenderWidget(QWidget* parent = NULL, FileImporter* fileImporter = NULL);
 	virtual ~D3DRenderWidget();
 	virtual QPaintEngine* paintEngine() const { return NULL; }
 protected:
@@ -20,6 +20,7 @@ private:
 	HINSTANCE m_hInstance;
 	Communicator* m_Communicator;
 	FileImporter* m_fileImporter;
+	ID3D11Device* m_Device;
 	void Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter);
 
 	
@@ -33,6 +34,7 @@ private: //for deltaTime
 	__int64 m_frameTimeOld = 0;
 	double m_frameTime;
 public:
+	ID3D11Device* getDevice() { return this->m_Device; };
 	Communicator* getCommunicator() { return this->m_Communicator; };
 private:
 	double getFrameTime();

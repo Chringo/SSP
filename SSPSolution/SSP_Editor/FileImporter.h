@@ -24,6 +24,7 @@ private:
 	//put model vector hetrer;
 	std::vector<Resources::Model*> m_models;
 	QTreeWidget *m_itemList;
+	ID3D11Device* m_Device;
 
 public:
 	FileImporter(QTreeWidget *itemList);
@@ -31,6 +32,7 @@ public:
 
 	void ImportFromServer();
 	void LoadImportedFiles();
+	void setDevice(ID3D11Device* device) { this->m_Device = device; };
 
 	std::vector<Resources::Model*>* get_M_models() { return &this->m_models; }
 	Resources::Model* get_model(unsigned int modelID);

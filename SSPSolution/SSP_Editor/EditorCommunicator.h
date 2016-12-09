@@ -34,6 +34,7 @@ public:
 	Resources::Status Release();
 
 public:
+	ID3D11Device* GetDevice() { return this->m_GraphicsHandler->GetDevice(); };
 	Resources::Status FindModel(int modelID, std::vector<Container>* modelPtr);
 	Resources::Status GetComponent(unsigned int modelID, unsigned int InstanceID, Container& container);
 	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation);

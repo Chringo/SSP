@@ -44,13 +44,17 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			for (size_t j = 0; j < modelPtr->size(); j++)
 			{
 				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
-					this->m_fileImporter->get_M_models()->at(0),
+					this->m_fileImporter->get_model(modelPtr->at(j).component.modelID),
 					&modelPtr->at(j).component
 				);
 			}
 
 		}
 
+	}
+	else
+	{
+		this->m_Communicator->m_GraphicsHandler->Render();
 	}
 	this->update();
 }
@@ -60,13 +64,15 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
-	this->m_fileImporter = fileImporter;
 	Resources::Status st;
 
 	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
+	this->m_Device = this->m_Communicator->GetDevice();
+	this->m_fileImporter = fileImporter;
+	this->m_fileImporter->setDevice(this->m_Device);
 }
 
-D3DRenderWidget::D3DRenderWidget(QWidget* parent)
+D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	: QWidget(parent) {
 
 	//COMMENT THESE OUT TO ENABLE USE OF 2 RENDER WIDGETS
@@ -78,11 +84,11 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	setAttribute(Qt::WA_NativeWindow, true);
 	if (parent->width() == 161)
 	{
-		Initialize(parent, true, this->m_fileImporter);
+		Initialize(parent, true, fileImporter);
 	}
 	else
 	{
-		Initialize(parent, false, this->m_fileImporter);
+		Initialize(parent, false, fileImporter);
 	}
 }
 

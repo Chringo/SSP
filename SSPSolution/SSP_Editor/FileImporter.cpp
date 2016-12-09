@@ -143,17 +143,17 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	if (m_meshH->skeleton)
 	{
 		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
 	}
 	else
 	{
 		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
 	}
 
-	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
+	if (!newMesh->SetIndices(indices, m_meshH->indexLength, this->m_Device, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
 	
 	/*we've already loaded one or more meshes into the scene*/
