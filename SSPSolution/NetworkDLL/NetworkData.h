@@ -105,12 +105,12 @@ struct CameraPacket : public Packet
 	DirectX::XMFLOAT4 pos;
 
 	void serialize(char * data)
-	{			//Turn the PacketType into bytes
+	{
 		memcpy(data, this, sizeof(CameraPacket));
 	}
 
 	void deserialize(char * data)
-	{			//Turn bytes into PacketType
+	{
 		memcpy(this, data, sizeof(CameraPacket));
 	}
 };
