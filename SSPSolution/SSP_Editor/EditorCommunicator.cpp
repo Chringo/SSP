@@ -29,10 +29,10 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 			this->m_Camera,
 			this->m_Width,
 			this->m_Height,
-			this->m_GraphicsHandler
+			this->m_GraphicsHandler,
+			&this->m_Map
 		);
 	}
-
 
 	this->m_Map.reserve(50);
 

@@ -1,6 +1,6 @@
 #include "EditorInputHandler.h"
 
-EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler)
+EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler, std::unordered_map<unsigned int, std::vector<Container>>* map)
 {
 	this->m_Width = w;
 	this->m_Height = h;
@@ -25,6 +25,7 @@ EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Ca
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
+	this->m_Map = map;
 	this->m_hwnd = handle;
 	this->m_Camera = camera;
 	this->m_PreviousPos = camera->GetCameraPos();
@@ -303,6 +304,9 @@ void EditorInputHandler::detectInput(double dT)
 }
 float EditorInputHandler::Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection)
 {
+	OBB test;
+
+	this->m_PhysicsHandler->IntersectRayOBB(rayOrigin,rayDirection, test);
 	//for (int i = 0; i <  this->m_Communicator/ 3; i++)
 	//{
 	//
