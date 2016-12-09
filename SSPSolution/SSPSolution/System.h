@@ -28,6 +28,8 @@ private:
 	//This is the window we render to
 	SDL_Window* m_window;
 
+	GameStateHandler m_gsh;
+
 	Camera* m_camera;
 	//These are the subsystems
 	GraphicsHandler* m_graphicsHandler;

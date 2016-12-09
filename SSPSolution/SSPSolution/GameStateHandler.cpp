@@ -11,6 +11,11 @@ GameStateHandler::~GameStateHandler()
 {
 }
 
+int GameStateHandler::Initialize()
+{
+	return 1;
+}
+
 int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;

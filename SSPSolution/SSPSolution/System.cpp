@@ -81,7 +81,9 @@ int System::Initialize()
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	//Init the network module
+	//Initialize the GameStateHandler
+	this->m_gsh.Initialize();
+	//Initialize the network module
 	this->m_networkModule.Initialize();
 
 	return result;

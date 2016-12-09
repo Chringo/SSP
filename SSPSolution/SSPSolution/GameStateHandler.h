@@ -10,6 +10,8 @@ private:
 public:
 	GameStateHandler();
 	~GameStateHandler();
+	
+	int Initialize();
 
 	int Update(float dt, InputHandler* inputHandler);
 private:
