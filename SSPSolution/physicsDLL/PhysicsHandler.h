@@ -95,7 +95,7 @@ public:
 	void Update();
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
-	void RotateBB();
+	void DoBB_Rotation(PhysicsComponent* src);
 
 	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
 	void AdjustChainLinkPosition();
@@ -108,6 +108,9 @@ public:
 
 	int getNrOfComponents()const;
 	PhysicsComponent* getDynamicComponents(int index)const;
+
+	void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
+
 	bool checkCollition();
 
 };

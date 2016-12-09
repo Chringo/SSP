@@ -426,9 +426,9 @@ void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsCompone
 	src->PC_pos = DirectX::XMVector3Transform(src->PC_pos, worldMatrix);
 }
 
-void PhysicsHandler::RotateBB()
+void PhysicsHandler::DoBB_Rotation(PhysicsComponent* src)
 {
-
+	src->PC_rotation = DirectX::XMVectorAdd(src->PC_rotation, src->PC_rotationVelocity);
 }
 
 void PhysicsHandler::DoChainPhysics(PhysicsComponent * current, PhysicsComponent * next, float dt)
@@ -628,6 +628,11 @@ PhysicsComponent* PhysicsHandler::getDynamicComponents(int index)const
 	}
 	return nullptr;
 
+}
+
+void PhysicsHandler::SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate)
+{
+	toRotate->PC_rotation = rotVec;
 }
 
 bool PhysicsHandler::checkCollition()
