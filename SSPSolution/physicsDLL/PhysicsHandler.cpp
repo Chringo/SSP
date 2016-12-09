@@ -575,7 +575,6 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->IntersectionTesting();
 	return true;
 }
 
