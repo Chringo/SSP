@@ -40,7 +40,9 @@ private:
 
 	//Helper functions
 	int IncreaseArraySize();
+	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
+	int DecreaseArraySize(int decreaseTo);
 
 	bool m_gridEnabled;
 public:
@@ -50,6 +52,10 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
+
+	int SetComponentArraySize(int newSize);
+	GraphicsComponent* GetNextAvailableComponent();
+	int UpdateComponentList();
 
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);

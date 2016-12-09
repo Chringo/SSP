@@ -4,13 +4,42 @@ int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
 
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 	this->m_maxGraphicsComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::IncreaseArraySize(int increaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[increaseTo];
+
+	for (int i = 0; i < increaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = increaseTo;
 
 	return 1;
 }
@@ -22,7 +51,14 @@ int GraphicsHandler::DecreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 
 	for (int i = this->m_maxGraphicsComponents; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
@@ -35,6 +71,37 @@ int GraphicsHandler::DecreaseArraySize()
 
 	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySize(int decreaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[decreaseTo];
+
+	for (int i = 0; i < decreaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = decreaseTo; i < this->m_maxGraphicsComponents; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+		}
+	}
+
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = decreaseTo;
 
 	return 1;
 }
@@ -80,19 +147,19 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
-		this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent;
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
 
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
 	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -100,7 +167,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -229,7 +296,7 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i])
 		{
@@ -239,6 +306,61 @@ void GraphicsHandler::Shutdown()
 	}
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
+}
+
+int GraphicsHandler::SetComponentArraySize(int newSize)
+{
+	if (this->m_maxGraphicsComponents < newSize)
+	{
+		this->IncreaseArraySize(newSize);
+	}
+	else if (this->m_maxGraphicsComponents > newSize)
+	{
+		this->DecreaseArraySize(newSize);
+	}
+
+	return 0;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
+{
+	if (this->m_nrOfGraphicsComponents < this->m_maxGraphicsComponents)
+	{
+		this->m_nrOfGraphicsComponents++;
+		return this->m_graphicsComponents[this->m_nrOfGraphicsComponents-1];
+	}
+	else
+	{
+		this->IncreaseArraySize();
+		return this->GetNextAvailableComponent();
+	}
+
+	return nullptr;
+}
+
+int GraphicsHandler::UpdateComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfGraphicsComponents - 1; i++)
+	{
+		if (!this->m_graphicsComponents[i]->active)
+		{
+			GraphicsComponent* tempComponentPtr = this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1];
+			this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1] = this->m_graphicsComponents[i];
+			this->m_graphicsComponents[i] = tempComponentPtr;
+			this->m_nrOfGraphicsComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1]->active)
+	{
+		this->m_nrOfGraphicsComponents--;
+		result++;
+	}
+
+	return result;
 }
 
 int GraphicsHandler::CreateTriangle()
