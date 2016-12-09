@@ -12,6 +12,8 @@ DebugHandler::DebugHandler()
 	{
 		this->m_frameTimes[i] = 40;
 	}
+	this->m_minFPS = 999999;
+	this->m_maxFPS = 0;
 }
 
 void DebugHandler::ClearConsole()
@@ -118,6 +120,8 @@ int DebugHandler::ResetMinMax()
 {
 	this->m_timerMins.clear();
 	this->m_timerMaxs.clear();
+	this->m_minFPS = 999999;
+	this->m_maxFPS = 0;
 
 	return 0;
 }
@@ -201,13 +205,16 @@ int DebugHandler::Display(float dTime)
 			sum += this->m_frameTimes[k];
 		}
 		avgFPS = sum / FRAMES_FOR_AVG;
+		this->m_minFPS = (this->m_minFPS < avgFPS) ? this->m_minFPS : avgFPS;
+		this->m_maxFPS = (this->m_maxFPS > avgFPS) ? this->m_maxFPS : avgFPS;
 		SetConsoleCursorPosition(console, FPSLocation);
-		std::cout << "FPS: " << avgFPS << " (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ")";
+		std::cout << "FPS: [" << this->m_minFPS << "] " << avgFPS << " [" << this->m_maxFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ")";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 5, screen.dwCursorPosition, &written
 		);
 		this->m_currFrameTimesPtr++;
+		
 	}
 
 	COORD finishedCursonLoc = { 0, nrOfTimers + nrOfCustomLabels + 1 };

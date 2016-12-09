@@ -43,6 +43,8 @@ private:
 	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
 	unsigned int m_frameTimes[FRAMES_FOR_AVG];
+	unsigned int m_maxFPS;
+	unsigned int m_minFPS;
 	int m_currFrameTimesPtr;
 	unsigned short int m_timerToEnd;
 	LARGE_INTEGER m_programStart;
