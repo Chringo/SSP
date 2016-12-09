@@ -43,16 +43,12 @@ public:
 			pData GetPData()
 			{
 				DirectX::XMStoreFloat4x4(&p.pWorld, DirectX::XMMatrixTranspose(c.cWorld));
-
 				return p;
 			};
 			template <typename T>
 			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
 			{
 				c = *(cbData*)data;
-
-
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
