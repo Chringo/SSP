@@ -22,7 +22,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
-#include <QtWidgets/QTreeView>
+#include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -39,9 +39,9 @@ public:
     QLabel *label_2;
     QGroupBox *groupBox;
     QPushButton *pushButton;
-    QTreeView *treeView;
     QWidget *RenderWidget;
     QWidget *RenderWidget_2;
+    QTreeWidget *treeWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -74,9 +74,6 @@ public:
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
         pushButton->setGeometry(QRect(20, 610, 75, 23));
-        treeView = new QTreeView(centralWidget);
-        treeView->setObjectName(QStringLiteral("treeView"));
-        treeView->setGeometry(QRect(20, 30, 201, 571));
         RenderWidget = new QWidget(centralWidget);
         RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
         RenderWidget->setGeometry(QRect(230, 30, 711, 571));
@@ -101,14 +98,17 @@ public:
         RenderWidget_2->setFocusPolicy(Qt::StrongFocus);
         RenderWidget_2->setAcceptDrops(true);
         RenderWidget_2->setAutoFillBackground(true);
+        treeWidget = new QTreeWidget(centralWidget);
+        treeWidget->setObjectName(QStringLiteral("treeWidget"));
+        treeWidget->setGeometry(QRect(20, 30, 191, 571));
         SSP_EditorClass->setCentralWidget(centralWidget);
         label_2->raise();
         label->raise();
         groupBox->raise();
         pushButton->raise();
-        treeView->raise();
         RenderWidget->raise();
         RenderWidget_2->raise();
+        treeWidget->raise();
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1131, 21));
@@ -146,6 +146,8 @@ public:
         label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
         groupBox->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
         pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
+        QTreeWidgetItem *___qtreewidgetitem = treeWidget->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
     } // retranslateUi
 

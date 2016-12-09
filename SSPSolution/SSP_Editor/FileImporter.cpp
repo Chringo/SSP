@@ -2,8 +2,9 @@
 
 
 
-FileImporter::FileImporter()
+FileImporter::FileImporter(QTreeWidget *itemList)
 {
+	this->m_itemList = itemList;
 	m_fileLoader = Resources::FileLoader::GetInstance();
 }
 
@@ -27,6 +28,7 @@ void FileImporter::ImportFromServer()
 			{
 				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Models/";
 				pathName += ent->d_name;
+				AddListItem(ListItem::MODEL, ent->d_name);
 				m_filepaths.push_back(pathName);
 			}
 		}
@@ -222,5 +224,18 @@ void FileImporter::handleModel(char * m_bbf_object)
 	newModel->Create(res_Data, raw_model_Data, true);
 
 	m_models.push_back(newModel);
+
+}
+
+void FileImporter::AddListItem(ListItem category, std::string name)
+{
+	/*QTreeWidgetItem *itm = new QTreeWidgetItem(m_ui.treeWidget);
+	itm->setText(0, "hejsnansnsns");
+	m_ui.treeWidget->addTopLevelItem(itm);*/
+	//this->m_itemList->takeTopLevelItem((int)category);
+	//name.c_str
+	QTreeWidgetItem *itm = new QTreeWidgetItem();
+	itm->setText(0, name.c_str());
+	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
 }
