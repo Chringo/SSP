@@ -164,17 +164,6 @@ int Direct3DHandler::InitializeGridRasterizer()
 	return 0;
 }
 
-int Direct3DHandler::ClearDepthAndRTV()
-{
-	float black[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-
-	this->m_gDeviceContext->ClearRenderTargetView(this->m_backBufferRTV, black);
-
-	//this->m_gDeviceContext->ClearDepthStencilView(this->m_DSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	return 0;
-}
-
 
 
 int Direct3DHandler::PresentScene()
