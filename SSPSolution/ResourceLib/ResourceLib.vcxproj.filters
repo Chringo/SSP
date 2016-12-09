@@ -91,6 +91,30 @@
     <Filter Include="Header Files\Handlers\ResourceHandler">
       <UniqueIdentifier>{a679878e-9fa7-49da-be4f-ceef8665a34e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Handlers\SkeletonHandler">
+      <UniqueIdentifier>{5c42de40-7c1a-4bf7-a4b7-242f9afee202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\SkeletonHandler">
+      <UniqueIdentifier>{b32fcec1-6c52-4f08-b0dc-872759f16f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Skeleton">
+      <UniqueIdentifier>{52e8b2b6-7d6c-41da-9571-9fb99221e12e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Skeleton">
+      <UniqueIdentifier>{d9f704c1-bde1-48b4-96a5-42918440cf7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Animation">
+      <UniqueIdentifier>{50e96805-83ab-4f21-801c-22d473ce8d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{9fb466d7-8ff9-4351-94a7-9421b50cc07d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers\AnimationHandler">
+      <UniqueIdentifier>{9b846bf4-9a07-4b24-aa97-974528fa3185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers\AnimationHandler">
+      <UniqueIdentifier>{00710940-5a88-4d27-a119-804b93941e9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -147,6 +171,18 @@
     <ClInclude Include="TextureHandler.h">
       <Filter>Header Files\Handlers\TextureHandler</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletonHandler.h">
+      <Filter>Header Files\Handlers\SkeletonHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationHandler.h">
+      <Filter>Header Files\Handlers\AnimationHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -196,6 +232,18 @@
     </ClCompile>
     <ClCompile Include="TextureLoader\DDSTextureLoader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonHandler.cpp">
+      <Filter>Source Files\Handlers\SkeletonHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationHandler.cpp">
+      <Filter>Source Files\Handlers\AnimationHandler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

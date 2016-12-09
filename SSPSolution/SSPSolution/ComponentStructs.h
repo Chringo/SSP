@@ -29,6 +29,6 @@ enum EVENT
 //	double gravityInfluence;
 //	bool collides;
 //	std::vector<EVENT> eventList;
-};
+//};
 
 #endif
