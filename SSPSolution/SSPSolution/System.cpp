@@ -117,6 +117,10 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
+		{
+			DebugHandler::instance().ResetMinMax();
+		}
 		DebugHandler::instance().EndTimer();
 
 		//std::cout << int(totalTime) << "\n";

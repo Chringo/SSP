@@ -74,6 +74,14 @@ int DebugHandler::ShowFPS(bool show)
 	return 0;
 }
 
+int DebugHandler::ResetMinMax()
+{
+	this->m_timerMins.clear();
+	this->m_timerMaxs.clear();
+
+	return 0;
+}
+
 int DebugHandler::Display(float dTime)
 {
 	COORD topLeft = { 0, 0 };

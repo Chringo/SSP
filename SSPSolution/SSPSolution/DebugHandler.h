@@ -69,6 +69,8 @@ public:
 	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail
 	int UpdateCustomLabel(int labelID, float newValue);
 
+	int ResetMinMax();
+
 	int Display(float dTime);
 
 	void Shutdown();
