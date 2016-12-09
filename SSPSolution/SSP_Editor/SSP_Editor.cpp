@@ -25,7 +25,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	QTreeWidgetItem *anim = new QTreeWidgetItem(m_ui.treeWidget);
 	anim->setText(0, "Animations");
 	m_ui.treeWidget->addTopLevelItem(anim);
-	connect(m_ui.treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeView_doubleClicked()));
+	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 
 
 	/*connecting the rest of the buttons to the functions*/
@@ -69,6 +69,7 @@ void SSP_Editor::on_treeView_doubleClicked()
 {
 	QModelIndex index = m_ui.treeWidget->currentIndex();
 	
+	//use index.r to get the right mesh
 	/*checking to see if the selected object is valid*/
 	if (!index.isValid()) return;
 	
