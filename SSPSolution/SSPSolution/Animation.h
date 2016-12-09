@@ -4,6 +4,8 @@
 #include <stack>
 #include <DirectXMath.h>
 #include <vector>
+#include <chrono>
+#include <iostream>
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 using namespace DirectX;
@@ -26,8 +28,8 @@ enum AnimationStates
 struct AnimationClip
 {
 	bool isLooping;
-	int startFrame;
-	int endFrame; 
+	float startFrame;
+	float endFrame; 
 };
 
 struct SkelTemp
@@ -45,6 +47,8 @@ private:
 
 	std::vector<XMFLOAT4X4> interpolatedTransforms;
 
+	std::vector <XMFLOAT4X4> finalTransforms;
+
 	Resources::Model* modelPtr;
 
 	Resources::Skeleton* skeletonPtr;
@@ -56,8 +60,6 @@ private:
 	const Resources::Animation* animationPtr;
 
 	const Resources::Animation::AnimationJoint* animatedJointsList;
-
-	
 
 	int currentAnimation;
 	float elapsedTime;
