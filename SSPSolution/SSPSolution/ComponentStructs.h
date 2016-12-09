@@ -17,6 +17,15 @@ struct GraphicsComponent
 	bool animated;
 };
 
+struct GraphicsAnimationComponent
+{
+	int active;
+	int modelID;
+	int materialID;
+	DirectX::XMMATRIX worldTransform;
+	DirectX::XMFLOAT4X4 finalTransforms[32];
+};
+
 struct PhysicsComponent 
 {
 	int active;
