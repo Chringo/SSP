@@ -35,7 +35,6 @@ private:
 
 	//temp
 	Camera* m_camera;
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 

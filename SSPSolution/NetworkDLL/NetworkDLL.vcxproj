@@ -146,12 +146,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClientNetwork.h" />
+    <ClInclude Include="NetworkModule.h" />
     <ClInclude Include="NetworkData.h" />
     <ClInclude Include="NetworkService.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientNetwork.cpp" />
+    <ClCompile Include="NetworkModule.cpp" />
     <ClCompile Include="NetworkService.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

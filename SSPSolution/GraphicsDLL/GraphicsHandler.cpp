@@ -135,25 +135,19 @@ int GraphicsHandler::Render()
 	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
-
-
-
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
 		m_shaderControl->Draw(m_modelsPtr[0]);
 	}
-
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
 	m_shaderControl->Draw(m_modelsPtr[1]);
-
 
 
 
