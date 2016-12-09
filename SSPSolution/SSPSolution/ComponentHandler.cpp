@@ -36,7 +36,7 @@ PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 	for (int i = 0; i < this->m_physicsHandler->getNrOfComponents() && !gotComponent; i++)
 	{
 		newComponent = this->m_physicsHandler->getDynamicComponents(i);
-		if (newComponent->m_active)
+		if (newComponent->PC_active)
 		{
 			gotComponent = true;
 		}
