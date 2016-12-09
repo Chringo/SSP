@@ -238,7 +238,6 @@ int System::Update(float deltaTime)
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
 
-
 	this->m_physicsHandler.Update();
 
 	//Render
