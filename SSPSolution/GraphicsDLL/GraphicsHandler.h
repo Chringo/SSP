@@ -8,7 +8,6 @@
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
 
-//#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
