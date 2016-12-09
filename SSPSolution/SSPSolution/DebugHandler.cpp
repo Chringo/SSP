@@ -205,10 +205,10 @@ int DebugHandler::Display(float dTime)
 			sum += this->m_frameTimes[k];
 		}
 		avgFPS = sum / FRAMES_FOR_AVG;
-		this->m_minFPS = (this->m_minFPS < avgFPS) ? this->m_minFPS : avgFPS;
-		this->m_maxFPS = (this->m_maxFPS > avgFPS) ? this->m_maxFPS : avgFPS;
+		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
 		SetConsoleCursorPosition(console, FPSLocation);
-		std::cout << "FPS: [" << this->m_minFPS << "] " << avgFPS << " [" << this->m_maxFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ")";
+		std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 5, screen.dwCursorPosition, &written
