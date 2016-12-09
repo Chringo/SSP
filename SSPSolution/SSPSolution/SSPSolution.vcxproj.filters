@@ -55,6 +55,12 @@
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{a8f4d42a-c2dc-4aa2-91ef-639842dd36c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{6b6fd88b-43fb-44d3-b7c9-a799d18306bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{902ffcaa-55af-4f71-8e6f-11bfeedebff5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameState.cpp">
@@ -96,6 +102,9 @@
     <ClCompile Include="ComponentHandler.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
+    <ClCompile Include="LevelDirector.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h">
@@ -136,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="ComponentHandler.h">
       <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelDirector.h">
+      <Filter>Header Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
