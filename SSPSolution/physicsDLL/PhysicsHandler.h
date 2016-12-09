@@ -30,7 +30,15 @@ struct Ray
 	DirectX::XMVECTOR Origin;
 	DirectX::XMVECTOR RayDir;
 };
+struct Sphere
+{
+	float radius;
+};
 
+struct Plane
+{
+	DirectX::XMVECTOR PC_normal;
+};
 #pragma endregion
 
 __declspec(align(16)) struct PhysicsComponent
@@ -47,6 +55,8 @@ __declspec(align(16)) struct PhysicsComponent
 
 	AABB PC_AABB;
 	OBB PC_OBB;
+	Sphere PC_Sphere;
+	Plane PC_Plane;
 	//AABB PC_looseBoundingBox
 	//BoundingVolume* PC_tightBoundingVolume; 
 	//std::vector<int entityID, event EVENT> PC_eventlist;
@@ -69,9 +79,17 @@ private:
 
 	DirectX::XMVECTOR m_gravity;
 
+	void IntersectionTesting();
+
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
 	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
+	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB);
+	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB);
+	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2);
+	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane);
+	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane);
+	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane);
 
 	//Math functions
 	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
