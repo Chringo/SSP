@@ -1,6 +1,6 @@
-#include "DeferredShaderHandler.h"
+#include "DeferredShader.h"
 
-DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
+DeferredShader::DeferredShader() : Shader()
 {
 	this->m_samplerState = nullptr;
 
@@ -14,11 +14,11 @@ DeferredShaderHandler::DeferredShaderHandler() : ShaderHandler()
 }
 
 
-DeferredShaderHandler::~DeferredShaderHandler()
+DeferredShader::~DeferredShader()
 {
 }
 
-int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
@@ -39,20 +39,20 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[0], &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 
 		return 1;
 	}
 	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) 
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 		return 1;
 	}
 
@@ -123,38 +123,6 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = nullptr;
 
-	// Create the matrix buffers \\
-
-	D3D11_BUFFER_DESC matrixBufferDesc;
-	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
-	//Fill the description of the dynamic matrix constant buffer that is in the vertex shader
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::DeferredConstantBufferWorld);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_worldMatrixBuffer);
-	if (FAILED(hResult)) {
-		return 1;
-	}
-
-	ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
-	//Fill the description of the dynamic matrix constant buffer that is in the vertex shader
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(ShaderLib::DeferredConstantBufferVP);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_viewProjMatrixBuffer);
-	if (FAILED(hResult)) {
-		return 1;
-	}
 
 	// Create the sampler \\
 
@@ -273,10 +241,36 @@ int DeferredShaderHandler::Initialize(ID3D11Device* device, HWND* windowHandle, 
 		return 1;
 	}
 
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	//Frontfacing triangles
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	//Backfacing triangles
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	hResult = device->CreateDepthStencilState(&depthStencilDesc, &this->m_DSS);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	//deviceContext->OMSetDepthStencilState(m_DSS, NULL);
 	return 0;
 }
 
-int DeferredShaderHandler::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
+int DeferredShader::SetGraphicsParameters(GraphicsComponent ** grapicsComponents, Resources::Model ** modelsPtr)
 {
 	this->m_graphicsComponents = grapicsComponents;
 	this->modelsPtr = modelsPtr;
@@ -284,9 +278,9 @@ int DeferredShaderHandler::SetGraphicsParameters(GraphicsComponent ** grapicsCom
 	return 0;
 }
 
-int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
+int DeferredShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 {
-	ShaderHandler::SetActive(shaderType);
+	Shader::SetActive(ShaderVariations);
 
 	this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
@@ -298,9 +292,9 @@ int DeferredShaderHandler::SetActive(ShaderLib::ShaderType shaderType)
 	return 0;
 }
 
-void DeferredShaderHandler::Shutdown()
+void DeferredShader::Release()
 {
-	ShaderHandler::Shutdown();
+	Shader::Release();
 
 	//Release the sampler state
 	if (this->m_samplerState)
@@ -328,7 +322,7 @@ void DeferredShaderHandler::Shutdown()
 	}
 }
 
-int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
+int DeferredShader::Draw(ShaderLib::DrawType drawType)
 {
 	switch (drawType)
 	{
@@ -355,126 +349,9 @@ int DeferredShaderHandler::Draw(ShaderLib::DrawType drawType)
 	return 0;
 }
 
-int DeferredShaderHandler::SetShaderParameters(void* shaderParams, ShaderLib::CBuffer type)
-{
-	switch (type)
-	{
-	case ShaderLib::CB_WORLD:
-	{
-
-		this->BindWorldCbuffer((ShaderLib::DeferredConstantBufferWorld *)shaderParams);
-		break;
-	}
-	case ShaderLib::CB_VIEW_PROJECTION:
-	{
-		this->BindViewProjectionCbuffer((ShaderLib::DeferredConstantBufferVP *)shaderParams);
-		break;
-	}
-	default:
-		break;
-	}
 
 
-
-	return 0;
-}
-
-int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorld * world)
-{
-	HRESULT hResult;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::DeferredConstantBufferWorld * dataPtr;
-
-	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&world->worldMatrix));
-	
-
-	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = m_deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hResult)) {
-		return 1;
-	}
-
-	//Get pointer to the data
-	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
-	//Copy the matrices to the constant buffer
-	DirectX::XMStoreFloat4x4(&dataPtr->worldMatrix, transposedWorld);
-
-	//Unmap the constant buffer to give the GPU access agin
-	m_deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
-
-
-	//Set the constant buffer in vertex and pixel shader with updated values
-	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
-	m_deviceContext->GSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
-
-	return 0;
-}
-
-int DeferredShaderHandler::BindWorldCbuffer(ShaderLib::DeferredConstantBufferWorldxm * world)
-{
-	HRESULT hResult;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::DeferredConstantBufferWorld * dataPtr;
-
-	DirectX::XMMATRIX transposedWorld = DirectX::XMMatrixTranspose(world->worldMatrix);
-
-
-	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = m_deviceContext->Map(this->m_worldMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hResult)) {
-		return 1;
-	}
-
-	//Get pointer to the data
-	dataPtr = (ShaderLib::DeferredConstantBufferWorld *)mappedResource.pData;
-	//Copy the matrices to the constant buffer
-	DirectX::XMStoreFloat4x4(&dataPtr->worldMatrix, world->worldMatrix);
-
-	//Unmap the constant buffer to give the GPU access agin
-	m_deviceContext->Unmap(this->m_worldMatrixBuffer, 0);
-
-
-	//Set the constant buffer in vertex and pixel shader with updated values
-	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
-	m_deviceContext->GSSetConstantBuffers(ShaderLib::CB_WORLD, 1, &this->m_worldMatrixBuffer);
-
-	return 0;
-}
-
-int DeferredShaderHandler::BindViewProjectionCbuffer(ShaderLib::DeferredConstantBufferVP * viewProjection)
-{
-	HRESULT hResult;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	ShaderLib::DeferredConstantBufferVP * dataPtr;
-
-	DirectX::XMMATRIX transposedView = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->viewMatrix));
-	DirectX::XMStoreFloat4x4(&viewProjection->viewMatrix, transposedView);
-	DirectX::XMMATRIX transposedProjection = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&viewProjection->projectionMatrix));
-	DirectX::XMStoreFloat4x4(&viewProjection->projectionMatrix, transposedProjection);
-
-	//Map the constant buffer so we can write to it (denies GPU access)
-	hResult = m_deviceContext->Map(this->m_viewProjMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hResult)) {
-		return 1;
-	}
-
-	//Get pointer to the data
-	dataPtr = (ShaderLib::DeferredConstantBufferVP *)mappedResource.pData;
-
-	//Copy the matrices to the constant buffer
-	dataPtr->viewMatrix = viewProjection->viewMatrix;
-	dataPtr->projectionMatrix = viewProjection->projectionMatrix;
-	//Unmap the constant buffer to give the GPU access agin
-	m_deviceContext->Unmap(this->m_viewProjMatrixBuffer, 0);
-
-	//Set the constant buffer in vertex and pixel shader with updated values
-	m_deviceContext->VSSetConstantBuffers(ShaderLib::CB_VIEW_PROJECTION, 1, &this->m_viewProjMatrixBuffer);
-
-
-	return 0;
-}
-
-int DeferredShaderHandler::Clear() //clears RTVs and DSV
+int DeferredShader::Clear() //clears RTVs and DSV
 {
 	float color[4];
 
@@ -494,18 +371,14 @@ int DeferredShaderHandler::Clear() //clears RTVs and DSV
 	return 0;
 }
 
-ID3D11ShaderResourceView ** DeferredShaderHandler::GetShaderResourceViews()
+ID3D11ShaderResourceView ** DeferredShader::GetShaderResourceViews()
 {
 	return this->m_deferredSRV;
 }
 
-int DeferredShaderHandler::Draw(/*RESOURCE*/)
+int DeferredShader::Draw(/*RESOURCE*/)
 {
-	
-	
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
 
-	this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
 
 	Resources::Mesh* meshPtr = this->modelsPtr[1]->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
@@ -533,28 +406,22 @@ int DeferredShaderHandler::Draw(/*RESOURCE*/)
 
 	for (int i = 1; i < 3; i++)
 	{
-		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
-		this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
+		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
 		this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 	}
 
-	delete shaderParamsXM;
 	return 0;
 }
 
-int DeferredShaderHandler::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
+int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 {
 	return 0;
 }
 
-int DeferredShaderHandler::DrawGrid()
+int DeferredShader::DrawGrid()
 {
 	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
 
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
-	shaderParamsXM->worldMatrix = this->m_graphicsComponents[0]->worldMatrix;
-
-	this->SetShaderParameters(shaderParamsXM, ShaderLib::CB_WORLD);
 
 	Resources::Mesh* meshPtr = this->modelsPtr[0]->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
@@ -564,16 +431,17 @@ int DeferredShaderHandler::DrawGrid()
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
+	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
+
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
 
-	delete shaderParamsXM;
 	m_deviceContext->PSSetShader(this->m_pixelShader, nullptr, NULL);
 
 	return 0;
 }
 
-int DeferredShaderHandler::InitializeGridShader(ID3D11Device * device)
+int DeferredShader::InitializeGridShader(ID3D11Device * device)
 {
 
 	HRESULT hResult;
@@ -593,7 +461,7 @@ int DeferredShaderHandler::InitializeGridShader(ID3D11Device * device)
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult))
 	{
-		ShaderHandler::OutputShaderErrorMessage(errorMessage, psFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
 

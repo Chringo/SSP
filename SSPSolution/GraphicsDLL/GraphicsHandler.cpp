@@ -56,7 +56,6 @@ GraphicsHandler::GraphicsHandler()
 
 GraphicsHandler::~GraphicsHandler()
 {
-	delete[] this->m_modelsPtr;
 }
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
@@ -69,14 +68,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 
-	this->m_deferredSH = new DeferredShaderHandler;
-	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
+	this->m_deferredSH = new DeferredShader;
+	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
 
-	this->m_finalSH = new FinalShaderHandler;
-	if (this->m_finalSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
+	this->m_finalSH = new FinalShader;
+	if (this->m_finalSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
@@ -85,6 +84,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
+
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
@@ -95,8 +96,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
-	//DirectX::XMFLOAT4X4 worldMatrix;
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
@@ -118,10 +117,11 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_nrOfGraphicsComponents++;
 
 	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	
 	this->InitializeGrid();
 	
 	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), modelsPtr[1]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), m_modelsPtr[1]);
 
 	return 0;
 	
@@ -138,43 +138,19 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render()
 {
 
-
 	/*TEMP CBUFFER STUFF*/
-	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
-	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
-	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
-	ShaderLib::CameraConstantBuffer* lShaderParams = new ShaderLib::CameraConstantBuffer;
-	lShaderParams->camPos = this->m_camera->GetCameraPos();
-	lShaderParams->camTar = this->m_camera->GetLookAt();
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(&m_projectionMatrix);
 	/********************/
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 
-
+	this->m_deferredSH->SetActive(ShaderLib::ShaderVariations::Normal);
 	shaderParamsVP->projectionMatrix = *this->m_camera->GetProjectionMatrix();
-
-	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);
-	this->m_deferredSH->SetShaderParameters(shaderParamsVP, ShaderLib::CB_VIEW_PROJECTION);
 	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
 
 	/*TEMP*/
-	Resources::Model* modelPtr;
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(133712),modelPtr);
-
-	Resources::Mesh* meshPtr = modelPtr->GetMesh();
-	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
-	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
-	UINT32 size = sizeof(Resources::Mesh::Vertex);
-	UINT32 offset = 0;
-	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
-	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
-	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-
-
-	Resources::Material * mat  = modelPtr->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
 	{
 		if (textures[i] == nullptr)
 			continue;
@@ -185,24 +161,18 @@ int GraphicsHandler::Render()
 
 	if (m_gridEnabled)
 	{
-		Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), this->m_modelsPtr[0]);
 		int ett;
 		float tva;
 		this->RenderGrid(ett, tva);
 	}
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), this->m_modelsPtr[1]);
 	/********/
 
  
-
-	this->m_finalSH->SetActive(ShaderLib::ShaderType::Normal);
-	this->m_finalSH->SetShaderParameters(lShaderParams);
+	this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
 	this->m_finalSH->Draw();
 
 	/*TEMP CBUFFER STUFF*/
-	delete shaderParamsXM;
-	delete shaderParamsVP;
-	delete lShaderParams;
+
 	/*TEMP CBUFFER STUFF*/
 
 
@@ -212,7 +182,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
 	m_d3dHandler->InitializeGridRasterizer();
 	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	this->m_gridEnabled = true;
@@ -238,13 +208,13 @@ void GraphicsHandler::Shutdown()
 	}
 	if (this->m_deferredSH)
 	{
-		this->m_deferredSH->Shutdown();
+		this->m_deferredSH->Release();
 		delete this->m_deferredSH;
 		this->m_deferredSH = nullptr;
 	}
 	if (this->m_finalSH)
 	{
-		this->m_finalSH->Shutdown();
+		this->m_finalSH->Release();
 		delete this->m_finalSH;
 		this->m_finalSH = nullptr;
 	}
@@ -270,7 +240,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
-	delete[] this->modelsPtr;
+	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 }
 
