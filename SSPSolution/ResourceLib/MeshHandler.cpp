@@ -65,7 +65,9 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 
 	char* data = nullptr;
 	size_t dataSize = 0;
-	Status st = FileLoader::GetInstance()->LoadResource(id, data, &dataSize);
+	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1.bbf";
+	std::string path = "../ResourceLib/AssetFiles/grid.bbf";
+	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
 	if (st != ST_OK)
 		return st;
 	
@@ -88,7 +90,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 #endif // DEBUG
 
 	Mesh* newMesh = m_emptyContainers.front();		//Get an empty container
-	st = newMesh->Create((Resource::RawResourceData*)data); //Initialize it with data
+	st = newMesh->Create(resData); //Initialize it with data
 
 	if (st != ST_OK)
 		return st;
@@ -100,12 +102,12 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 		indices = (unsigned int*) ((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 		
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->numVerts; i++)
-		{
-			std::cout << vertices[i].position[0] << ","
-				<< vertices[i].position[1] << ","
-				<< vertices[i].position[2] << std::endl;
-		}
+	//for (size_t i = 0; i < meshData->numVerts; i++)
+	//{
+	//	std::cout << vertices[i].position[0] << ","
+	//		<< vertices[i].position[1] << ","
+	//		<< vertices[i].position[2] << std::endl;
+	//}
 #endif // _DEBUG
 	}
 	else
@@ -120,23 +122,19 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	//		<< vertices[i].position[1] << ","
 	//		<< vertices[i].position[2] << std::endl;
 	//}
-
-
-		for (size_t i = 0; i < meshData->indexLength; i++)
-		{
-			//std::cout << vertices[i].position[0] << ","
-			//	<< vertices[i].position[1] << ","
-			//	<< vertices[i].position[2] << std::endl;
-
-
-			std::cout << indices[i] << std::endl;
-		}
+	//	for (size_t i = 0; i < meshData->indexLength; i++)
+	//	{
+	//		std::cout << indices[i] << std::endl;
+	//	}
 #endif
 	}
 
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
 
+
+	
+	
 	m_meshes[id] = ResourceContainer(newMesh, 1); // put it into the map
 	m_emptyContainers.pop_front(); //remove from empty container queue;
 
@@ -210,12 +208,12 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->numVerts; i++)
-		{
-			std::cout << vertices[i].position[0] << ","
-				<< vertices[i].position[1] << ","
-				<< vertices[i].position[2] << std::endl;
-		}
+		//for (size_t i = 0; i < meshData->numVerts; i++)
+		//{
+		//	std::cout << vertices[i].position[0] << ","
+		//		<< vertices[i].position[1] << ","
+		//		<< vertices[i].position[2] << std::endl;
+		//}
 #endif // _DEBUG
 	}
 	else{
@@ -223,10 +221,10 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		m_placeHolder->SetVertices(vertices, m_device, meshData->numVerts);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
 #ifdef _DEBUG
-		for (size_t i = 0; i < meshData->indexLength; i++)
-		{
-			std::cout << indices[i] << std::endl;
-		}
+		//for (size_t i = 0; i < meshData->indexLength; i++)
+		//{
+		//	std::cout << indices[i] << std::endl;
+		//}
 #endif
 	}
 

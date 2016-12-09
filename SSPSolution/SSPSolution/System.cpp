@@ -71,6 +71,7 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
+	this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
@@ -196,9 +197,9 @@ int System::Update(float deltaTime)
 	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
-		this->m_camera->AddToCameraPos(posTranslation);
-		this->m_camera->AddToLookAt(posTranslation);
-		float rotationAmount = DirectX::XM_PI / 8;
+		this->m_camera->ApplyLocalTranslation(posTranslation);
+		//this->m_camera->AddToLookAt(posTranslation);
+		float rotationAmount = DirectX::XM_PI / 6;
 		rotationAmount *= deltaTime / 1000000.0f;
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
 		this->m_camera->SetRotation(newRotation);

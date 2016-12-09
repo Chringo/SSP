@@ -3,17 +3,29 @@
 
 struct MainHeader
 {
-	unsigned int meshes;
+	unsigned int id;
+	int resourceType;
 };
 
-struct MeshHeader
-{
-	unsigned int numVerts;
-	unsigned int indexLength;
-	unsigned int jointCount;
+
+
+struct MeshHeader{
+	unsigned int numVerts    = 0;
+	unsigned int indexLength = 0;
 	bool skeleton;
 };
-
+struct SkeletonHeader {
+	unsigned int jointCount = 0;
+	unsigned int animLayerCount = 0;
+};
+struct LayerIdHeader{
+	unsigned int id = 0;
+};
+struct JointHeader {
+	float invbindPose[16];
+	int jointIndex;
+	int parentIndex;
+};
 struct MaterialHeader
 {
 	unsigned int textureIDs[5]{0,0,0,0,0};

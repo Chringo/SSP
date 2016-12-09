@@ -23,9 +23,9 @@ private:
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
-
 	//The 4 values of a quaternion  
 	DirectX::XMFLOAT4 m_rotation;
+	DirectX::XMFLOAT4 m_rotateAroundPos;
 public:
 	Camera();
 	virtual ~Camera();
@@ -67,9 +67,18 @@ public:
 	void MultiplyCameraPos(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue);
 	void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
-
+	//Warning: As the camera uses quaternion rotations and only stores these in one position this functions can only be called once after setting a rotation and before updating.
 	void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
-
+	//Sets the camera position along the rotated coordinate system of the camera
+	void SetLocalTranslation(float x, float y, float z);
+	//Translates the camera along the rotated coordinate system of the camera
+	void ApplyLocalTranslation(float x, float y, float z);
+	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
+	void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
+	//
+	void SetRotationAroundPosOffset(float x, float y, float z);
+	void SetRotationAroundPos(float x, float y, float z);
+	
 #pragma endregion setters
 private:
 };

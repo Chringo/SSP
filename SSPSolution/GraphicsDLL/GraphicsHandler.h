@@ -2,10 +2,11 @@
 #define GRAPHICSDLL_GRAPHICSHANDLER
 
 #include "Direct3DHandler.h"
-#include "DeferredShaderHandler.h"
-#include "LightShaderHandler.h"
+#include "DeferredShader.h"
+#include "FinalShader.h"
 #include "Camera.h"
 #include "GraphicsComponent.h"
+#include "ConstantBufferHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -20,21 +21,21 @@ class GRAPHICSDLL_API GraphicsHandler
 {
 private:
 	Direct3DHandler* m_d3dHandler;
-
-	DeferredShaderHandler* m_deferredSH;
-	LightShaderHandler* m_lightSH;
+	ConstantBufferHandler * m_constantBufferHandler;
+	DeferredShader* m_deferredSH;
+	FinalShader* m_finalSH;
 
 	HWND* m_windowHandle;
 
-	Camera* m_camera;
-
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
+	Resources::Model** m_modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
 
 	//temp
+	Camera* m_camera;
+	DirectX::XMFLOAT4X4 m_projectionMatrix;
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 
@@ -42,8 +43,7 @@ private:
 	int IncreaseArraySize();
 	int DecreaseArraySize();
 
-	bool initCheck;
-	float simpleGravity;
+	bool m_gridEnabled;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
@@ -51,8 +51,11 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
-	void Shutdown();
 
+	int InitializeGrid();
+	int RenderGrid(int& align, float& scale);
+	void Shutdown();
+	
 	//temp
 	int CreateTriangle();
 	int SetTriangle();

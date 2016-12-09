@@ -43,42 +43,50 @@ GraphicsHandler::GraphicsHandler()
 {
 	this->m_d3dHandler = nullptr;
 	this->m_deferredSH = nullptr;
-	this->m_lightSH = nullptr;
+	this->m_finalSH = nullptr;
 	this->m_indexBuffer = nullptr;
 	this->m_vertexBuffer = nullptr;
 	this->m_camera = nullptr;
 	this->m_graphicsComponents = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents = 5;
+	this->m_gridEnabled = false;
 }
 
 
 GraphicsHandler::~GraphicsHandler()
 {
+	
 }
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
-	this->initCheck = false;
-	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
+	this->m_modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
 	}
 	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
-	
-	this->m_deferredSH = new DeferredShaderHandler;
-	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, resolution))
+
+	this->m_deferredSH = new DeferredShader;
+	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
 
-	this->m_lightSH = new LightShaderHandler;
-	if (this->m_lightSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, resolution))
+	this->m_finalSH = new FinalShader;
+	if (this->m_finalSH->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution))
 	{
 		return 1;
 	}
+
+	if (this->m_finalSH->SetRenderParameters(this->m_d3dHandler->GetBackbufferRTV(), this->m_deferredSH->GetShaderResourceViews()))
+	{
+		return 1;
+	}
+
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
@@ -90,16 +98,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
 
-	this->CreateTriangle();
-
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		this->m_graphicsComponents[i] = nullptr;
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
-	//DirectX::XMFLOAT4X4 worldMatrix;
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
@@ -120,7 +124,15 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
+	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	
+	this->InitializeGrid();
+	
+	/*TEMP MODELS*/
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), m_modelsPtr[1]);
+
 	return 0;
+	
 }
 
 Camera* GraphicsHandler::SetCamera(Camera * newCamera)
@@ -134,95 +146,53 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render()
 {
 
-	this->m_deferredSH->ClearRenderTargetViews(this->m_d3dHandler->GetDeviceContext());
+	/*TEMP CBUFFER STUFF*/
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(&m_projectionMatrix);
+	/********************/
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 
-	DirectX::XMMATRIX viewMatrix;
-	this->m_camera->GetViewMatrix(viewMatrix);
-
-	
-
-	this->SetTriangle();
-
-	this->m_deferredSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
-
-	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
-	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
-
-
-	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
-	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
-
-	this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsVP, ShaderLib::VIEW_PROJECTION);
-
+	this->m_deferredSH->SetActive(ShaderLib::ShaderVariations::Normal);
+	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
 
 	/*TEMP*/
-	Resources::Model* modelPtr;
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337),modelPtr);
-
-	Resources::Mesh* meshPtr = modelPtr->GetMesh();
-	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
-	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
-	UINT32 size = sizeof(Resources::Mesh::Vertex);
-	UINT32 offset = 0;
-	ID3D11DeviceContext* dev = m_d3dHandler->GetDeviceContext();
-	dev->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
-	m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-
-
-	Resources::Material * mat  = modelPtr->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
+	if (m_gridEnabled)
 	{
-		if (textures[i] == nullptr)
-			continue;
-
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
+		int ett;
+		float tva;
+		this->RenderGrid(ett, tva);
 	}
-	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(0, numViews, resViews);
-
-
 	/********/
 
-	////TEST ROTATION
-	//static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
-	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000000005f));
-	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
-	////END TEST ROTATION
+ 
+	this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
+	this->m_finalSH->Draw();
 
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) 
-	{
-		shaderParamsXM->worldMatrix = this->m_graphicsComponents[i]->worldMatrix;
+	/*TEMP CBUFFER STUFF*/
 
-		//DirectX::XMStoreFloat4x4(&shaderParamsWorld->worldMatrix, this->m_graphicsComponents[i]->worldMatrix);
-		this->m_deferredSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), shaderParamsXM, ShaderLib::WORLD);
-		//this->m_d3dHandler->GetDeviceContext()->DrawIndexed(3, 0, 0);
+	/*TEMP CBUFFER STUFF*/
 
-		this->m_d3dHandler->GetDeviceContext()->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
-	}
-
-	delete shaderParamsXM;
-	delete shaderParamsVP;
-	delete shaderParamsWorld;
-
-	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
-	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
-	this->m_lightSH->SetActive(this->m_d3dHandler->GetDeviceContext(), ShaderLib::ShaderType::Normal);
-
-	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
-	lShaderParams->camPos = this->m_camera->GetCameraPos();
-	lShaderParams->camDir = this->m_camera->GetLookAt();
-
-	this->m_lightSH->SetShaderParameters(this->m_d3dHandler->GetDeviceContext(), lShaderParams, this->m_deferredSH->GetShaderResourceViews());
-	delete lShaderParams;
-	this->m_d3dHandler->GetDeviceContext()->DrawIndexed(6, 0, 0);
-
-	this->m_lightSH->ResetPSShaderResources(this->m_d3dHandler->GetDeviceContext());
 
 	this->m_d3dHandler->PresentScene();
+	return 0;
+}
+
+int GraphicsHandler::InitializeGrid()
+{
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	m_d3dHandler->InitializeGridRasterizer();
+	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
+	this->m_gridEnabled = true;
+	return 0;
+}
+
+int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
+{
+		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
+		this->m_deferredSH->Draw(ShaderLib::DRAW_GRID);
+		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;
 }
@@ -237,15 +207,15 @@ void GraphicsHandler::Shutdown()
 	}
 	if (this->m_deferredSH)
 	{
-		this->m_deferredSH->Shutdown();
+		this->m_deferredSH->Release();
 		delete this->m_deferredSH;
 		this->m_deferredSH = nullptr;
 	}
-	if (this->m_lightSH)
+	if (this->m_finalSH)
 	{
-		this->m_lightSH->Shutdown();
-		delete this->m_lightSH;
-		this->m_lightSH = nullptr;
+		this->m_finalSH->Release();
+		delete this->m_finalSH;
+		this->m_finalSH = nullptr;
 	}
 	if (this->m_indexBuffer)
 	{
@@ -269,6 +239,7 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
+	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 }
 
