@@ -99,6 +99,7 @@
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="GraphicsHandler.h" />
     <ClInclude Include="FinalShader.h" />
+    <ClInclude Include="PostProcessShader.h" />
     <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderControl.h" />
@@ -111,6 +112,7 @@
     <ClCompile Include="Direct3DHandler.cpp" />
     <ClCompile Include="GraphicsHandler.cpp" />
     <ClCompile Include="FinalShader.cpp" />
+    <ClCompile Include="PostProcessShader.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderControl.cpp" />
