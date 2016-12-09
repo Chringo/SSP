@@ -61,15 +61,13 @@ GraphicsHandler::~GraphicsHandler()
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
-	this->initCheck = false;
-	this->simpleGravity = -1.000000f;
 	this->m_d3dHandler = new Direct3DHandler;
-	this->modelsPtr = new Resources::Model*[2];
+	this->m_modelsPtr = new Resources::Model*[2];
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
 	}
-	//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
@@ -79,13 +77,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
-
-	//Setup projection matrix
-	//fieldOfView = 3.141592654f / 4.0f;
-	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-	float screenAspect = (float)resolution.x / (float)resolution.y;
-
-	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
@@ -144,25 +135,19 @@ int GraphicsHandler::Render()
 	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
-
-
-
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
 		m_shaderControl->Draw(m_modelsPtr[0]);
 	}
-
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
 	m_shaderControl->Draw(m_modelsPtr[1]);
-
 
 
 
