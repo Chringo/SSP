@@ -6,7 +6,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
-#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "../physicsDLL/PhysicsHandler.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 
 const int SCREEN_WIDTH = 1280;
