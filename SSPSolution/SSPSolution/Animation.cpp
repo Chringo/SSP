@@ -6,7 +6,7 @@ Animation::Animation()
 	this->elapsedTime = 0.0f;
 	this->currentAnimation = IDLE_STATE;
 
-	modelPtr = new Resources::Model();
+	
 
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
 
@@ -32,7 +32,7 @@ Animation::Animation()
 
 Animation::~Animation()
 {
-	delete modelPtr;
+	//delete modelPtr;
 }
 
 void Animation::Update(float dt)
