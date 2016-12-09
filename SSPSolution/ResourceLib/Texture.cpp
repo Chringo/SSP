@@ -22,7 +22,6 @@ Resources::Texture::Texture(Resource::RawResourceData resData): Resource(resData
 Resources::Status Resources::Texture::Create(Resource::RawResourceData * resData)
 {
 	Destroy();
-	memcpy((char*)m_resourceData.m_name, (char*)resData->m_name, 256);
 	m_resourceData.m_id = resData->m_id;
 	m_resourceData.m_resType = RES_TEXTURE;
 	return Resources::Status();
@@ -40,9 +39,6 @@ Resources::Status Resources::Texture::Destroy()
 
 
 	m_filePath[0] = '\0';
-
-	char name[5] = { 'N', 'O', 'N', 'E','\0' };
-	memcpy(m_resourceData.m_name, name, sizeof(char) * 5);
 	this->m_resourceData.m_id = 0;
 
 	return Resources::Status::ST_OK;

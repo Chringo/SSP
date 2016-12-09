@@ -395,6 +395,19 @@ void PhysicsHandler::Update()
 	this->TranslateBB(derp, this->m_dynamicComponents.at(0));
 	
 
+	int nrOfChainObjects = this->m_chain.CH_links.size();
+	for (int i = 0; i < nrOfChainObjects - 1; i++)
+	{
+		this->DoChainPhysics(this->m_chain.CH_links.at(i), this->m_chain.CH_links.at(i + 1), dt);
+	}
+
+	int nrOfObjects = this->m_dynamicComponents.size();
+	for (int i = 0; i < nrOfObjects; i++)
+	{
+
+	}
+
+	this->AdjustChainLinkPosition();
 	//SimpleCollition(dt);
 }
 
@@ -416,6 +429,45 @@ void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsCompone
 void PhysicsHandler::RotateBB()
 {
 
+}
+
+void PhysicsHandler::DoChainPhysics(PhysicsComponent * current, PhysicsComponent * next, float dt)
+{
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(current->PC_pos, next->PC_pos);
+	float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+
+	if (lenght >= this->m_chain.CH_linkLenght)
+	{
+		diffVec = DirectX::XMVector3Normalize(diffVec);
+
+		DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - this->m_chain.CH_linkLenght), 0.2);
+		//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(current->m_velocity, next->m_velocity), 0.5));
+
+		next->PC_velocity = DirectX::XMVectorAdd(next->PC_velocity, DirectX::XMVectorScale(force, (1.0 / next->PC_mass)));
+		force = DirectX::XMVectorScale(force, -1.0);
+		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(force, (1.0 / current->PC_mass)));
+	}
+}
+
+void PhysicsHandler::AdjustChainLinkPosition()
+{
+	int size = this->m_chain.CH_links.size();;
+	PhysicsComponent* current;
+	PhysicsComponent* next;
+	for (int i = 0; i < size - 1; i++)
+	{
+		current = this->m_chain.CH_links.at(i);
+		next = this->m_chain.CH_links.at(i + 1);
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(current->PC_pos, next->PC_pos);
+		diffVec = DirectX::XMVectorSubtract(next->PC_pos, current->PC_pos);
+		float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+		diffVec = DirectX::XMVector3Normalize(diffVec);
+
+		if (lenght > this->m_chain.CH_linkLenght + 0.5f)
+		{
+			next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 0.5f)));
+		}
+	}
 }
 
 void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)

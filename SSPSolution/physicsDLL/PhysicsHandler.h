@@ -36,6 +36,7 @@ __declspec(align(16)) struct PhysicsComponent
 {
 	DirectX::XMVECTOR PC_pos;
 	DirectX::XMVECTOR PC_velocity;
+	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
 	double PC_gravityInfluence;
 	int PC_active;
@@ -51,6 +52,12 @@ __declspec(align(16)) struct PhysicsComponent
 	//std::vector<int entityID, event EVENT> PC_eventlist;
 
 };
+struct Chain
+{
+	float CH_linkLenght;
+	float CH_totalLenght;
+	std::vector<PhysicsComponent*> CH_links;
+};
 
 class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 {
@@ -58,6 +65,8 @@ private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
 	int m_nrOfStaticObjects;
 	
+	Chain m_chain;
+
 	DirectX::XMVECTOR m_gravity;
 
 	const float m_offSet = 0.5f;
@@ -87,6 +96,9 @@ public:
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	void RotateBB();
+
+	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
+	void AdjustChainLinkPosition();
 
 	void CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
