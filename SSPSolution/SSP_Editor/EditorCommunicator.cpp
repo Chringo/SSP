@@ -16,7 +16,7 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 	this->m_GraphicsHandler->InitializeGrid();
 
 	this->m_Camera = new Camera();
-	this->m_Camera->Initialize();
+	this->m_Camera->Initialize(this->m_Width / this->m_Height);
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
 	delete oldCam;
 	oldCam = nullptr;

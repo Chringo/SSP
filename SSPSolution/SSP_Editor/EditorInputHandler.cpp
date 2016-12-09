@@ -261,7 +261,7 @@ void EditorInputHandler::detectInput(double dT)
 
 	if (keyBoardState[DIK_F] & 0x80)
 	{
-		this->m_Camera->Initialize();
+		this->m_Camera->Initialize(this->m_Width / this->m_Height);
 		this->m_Camera->Update();
 	}
 
