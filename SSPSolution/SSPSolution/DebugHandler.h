@@ -6,6 +6,8 @@
 #include <Windows.h>
 #include <string>
 
+const int FRAMES_FOR_AVG = 100;
+
 class DebugHandler
 {
 private:
@@ -38,8 +40,8 @@ private:
 	std::vector<unsigned int> m_timerMaxs;
 	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
-	unsigned short int m_frameTimes[10];
-	unsigned short int m_currFrameTimesPtr;
+	unsigned short int m_frameTimes[FRAMES_FOR_AVG];
+	int m_currFrameTimesPtr;
 	unsigned short int m_timerToEnd;
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
