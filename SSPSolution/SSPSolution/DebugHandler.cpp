@@ -125,7 +125,7 @@ int DebugHandler::ResetMinMax()
 int DebugHandler::Display(float dTime)
 {
 	COORD topLeft = { 0, 0 };
-	COORD FPSLocation = { 100, 0 };
+	COORD FPSLocation = { 50, 0 };
 	//COORD toClear = { 4, 100 };
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO screen;
