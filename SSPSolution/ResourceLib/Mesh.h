@@ -9,7 +9,7 @@ namespace Resources
 	
 
 
-	class Mesh :public Resources::Resource
+	class DLL_OPERATION Mesh :public Resources::Resource
 	{
 	
 	public:

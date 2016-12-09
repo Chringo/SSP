@@ -10,20 +10,22 @@ FileImporter::FileImporter()
 
 FileImporter::~FileImporter()
 {
+	m_models.clear();
 }
 
 void FileImporter::ImportFromServer()
 {
 	DIR *dir;
 	struct dirent *ent;
-	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes")) != NULL) 
+	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Models")) != NULL) 
+	//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL) 
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes";
+				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Models/";
 				pathName += ent->d_name;
 				m_filepaths.push_back(pathName);
 			}
@@ -31,6 +33,26 @@ void FileImporter::ImportFromServer()
 		closedir(dir);
 	}
 	else 
+	{
+		/* could not open directory */
+		perror("");
+	}
+	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes")) != NULL)
+		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
 	{
 		/* could not open directory */
 		perror("");
@@ -54,10 +76,151 @@ void FileImporter::ImportFromServer()
 
 void FileImporter::LoadImportedFiles()
 {
-	char *pek;
+	char *m_bbf_object;
 	size_t length;
 	for (int i = 0; i < m_filepaths.size(); ++i)
 	{
-		m_fileLoader->LoadFile(m_filepaths.at(i), pek, &length);
+		Resources::Status res = m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
+
+		if (res != Resources::Status::ST_ERROR_OPENING_FILE)
+		{
+			char *type = m_bbf_object + sizeof(unsigned int);
+			Resources::ResourceType loadedObject = (Resources::ResourceType)(*type);
+
+			switch (loadedObject)
+			{
+			case Resources::ResourceType::RES_MODEL:
+				handleModel(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_MESH:
+				handleMesh(m_bbf_object); //also send integer for the index so we can add the qt
+				break;
+			case Resources::ResourceType::RES_ANIMATION:
+				break;
+			case Resources::ResourceType::RES_SKELETON:
+				break;
+			case Resources::ResourceType::RES_TEXTURE:
+				break;
+			case Resources::ResourceType::RES_MATERIAL:
+				handleMat(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_SOUND:
+				break;
+
+				//RES_UI
+
+			default:
+				break;
+			}
+		}
 	}
+}
+
+void FileImporter::handleMesh(char * m_bbf_object)
+{
+	/*create model type here and then when reading */
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
+
+	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
+
+
+	unsigned int * indices;
+	if (m_meshH->skeleton)
+	{
+		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+	}
+	else
+	{
+		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
+	}
+
+	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
+		res = Resources::Status::ST_BUFFER_ERROR;
+	
+	/*we've already loaded one or more meshes into the scene*/
+	//if (m_models.size() != 0)
+	//{
+	//	for (int i = 0; i < m_models.size(); ++i)
+	//	{
+	//		if (m_models.at(i)->GetMesh()->GetId() == res_Data->m_id)
+	//		{
+	//			newMesh->Destroy();
+	//			delete newMesh;
+	//			return;
+	//		}
+	//	}
+	//	Resources::Model *m_new_model = new Resources::Model();
+
+	//	m_new_model->SetMesh(newMesh);
+	//	m_models.push_back(m_new_model);
+	//}
+	///*this is the first mesh loaded*/
+	//else
+	//{
+	//	Resources::Model *m_new_model = new Resources::Model();
+
+	//	m_new_model->SetMesh(newMesh);
+	//	m_models.push_back(m_new_model);
+	//}
+	for (int i = 0; i < m_models.size(); ++i)
+	{
+		if (m_models.at(i)->GetRawModelData()->meshId == newMesh->GetId())
+		{
+			m_models.at(i)->SetMesh(newMesh);
+		}
+	}
+	/*add to the ui here*/
+
+	//Resources::Model *importedModel = new Resources::Model;
+}
+
+void FileImporter::handleMat(char * m_bbf_object)
+{
+}
+
+void FileImporter::handleModel(char * m_bbf_object)
+{
+	/*
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
+
+	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
+
+
+	unsigned int * indices;
+	if (m_meshH->skeleton)
+	{
+		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+	}
+	else
+	{
+		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
+		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
+	}
+
+	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
+		res = Resources::Status::ST_BUFFER_ERROR; */
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(m_bbf_object + sizeof(MainHeader));
+
+	Resources::Model *newModel = new Resources::Model();
+
+	newModel->Create(res_Data, raw_model_Data, true);
+
+	m_models.push_back(newModel);
+
 }
