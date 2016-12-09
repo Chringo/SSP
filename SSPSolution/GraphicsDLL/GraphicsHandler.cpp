@@ -142,7 +142,7 @@ int GraphicsHandler::Render()
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
 	this->m_camera->GetCameraPos(cam.cPos);
 	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(&m_projectionMatrix);
+	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	/********************/
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 

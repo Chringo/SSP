@@ -7,10 +7,13 @@
 #include "../GraphicsDLL/Camera.h"
 #include "InputHandler.h"
 #include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
+#pragma comment (lib, "../Debug/NetworkDLL")
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+
 class System
 {
 private:
@@ -29,6 +32,9 @@ private:
 	InputHandler* m_inputHandler;
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
+	NetworkModule m_networkModule;
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+
 public:
 	System();
 	~System();

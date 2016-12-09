@@ -15,6 +15,7 @@
 *.ipdb
 *.exp
 *.cso
+*.enc
 
 # Precompiled Headers
 *.gch
