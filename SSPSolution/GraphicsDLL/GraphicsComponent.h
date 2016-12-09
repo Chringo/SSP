@@ -10,4 +10,12 @@ struct GraphicsComponent
 	DirectX::XMMATRIX worldMatrix;
 };
 
+struct AnimGraphicsComponent
+{
+	int active = 0;
+	int modelID = -1;
+	DirectX::XMMATRIX worldMatrix;
+
+	DirectX::XMMATRIX finalTransforms[32];
+};
 #endif

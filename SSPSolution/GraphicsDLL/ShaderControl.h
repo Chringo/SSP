@@ -38,6 +38,9 @@ public:
 	int SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
 
 	void Draw(Resources::Model* model);
+	void Draw(Resources::Model * model, GraphicsComponent * component);
+	void Draw(Resources::Model * model, AnimGraphicsComponent * component);
+
 	void DrawFinal();
 	int ClearFrame();
 

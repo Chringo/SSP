@@ -158,7 +158,7 @@ public:
 
 		struct skeleton
 		{
-			struct cData
+			struct cbData
 			{
 				DirectX::XMMATRIX cJoints[32];
 			};
@@ -172,7 +172,7 @@ public:
 		public:
 			ID3D11Buffer * D3DBuffer = nullptr;
 			pData p;
-			cData c;
+			cbData c;
 			pData GetPData()
 			{
 				for (int i = 0; i < 32; i++)

@@ -48,6 +48,8 @@ public:
 
 
 	int Draw(Resources::Model* model);
+	int Draw(Resources::Model* model, GraphicsComponent * component);
+	int Draw(Resources::Model* model, AnimGraphicsComponent * component);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
