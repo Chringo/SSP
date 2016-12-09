@@ -3,6 +3,11 @@
 FinalShader::FinalShader()
 {
 	this->m_finalRTV = nullptr;
+
+
+	this->m_vertexShader = nullptr;
+	this->m_pixelShader = nullptr;
+	this->m_layout = nullptr;
 }
 
 
@@ -40,7 +45,7 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 
 	// Create the shaders \\
 
-	hResult = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &this->m_vertexShader[0]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &this->m_vertexShader);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -82,26 +87,9 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = nullptr;
 
-	// Create the matrix buffer \\
 
-//D3D11_BUFFER_DESC matrixBufferDesc;
-//ZeroMemory(&matrixBufferDesc, sizeof(matrixBufferDesc));
-////Fill the description of the dynamic matrix constant buffer that is in the vertex shader
-//matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-//matrixBufferDesc.ByteWidth = sizeof(ShaderLib::CameraConstantBuffer);
-//matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-//matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-//matrixBufferDesc.MiscFlags = 0;
-//matrixBufferDesc.StructureByteStride = 0;
-//
-//// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-//hResult = device->CreateBuffer(&matrixBufferDesc, NULL, &this->m_matrixBuffer);
-//if (FAILED(hResult)) {
-//	return 1;
-//}
 
-	// Create the sampler \\
-
+	// Create the sampler
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 
@@ -153,9 +141,9 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	return 0;
 }
 
-int FinalShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
+int FinalShader::SetActive()
 {
-	Shader::SetActive(ShaderVariations);
+
 	m_deviceContext->OMSetRenderTargets(1, &this->m_finalRTV, NULL);
 	//Set the sampler state in pixel shader
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerStateLinear);
@@ -165,6 +153,13 @@ int FinalShader::SetActive(ShaderLib::ShaderVariations ShaderVariations)
 		//Set shader texture resource for pixel shader
 		m_deviceContext->PSSetShaderResources(0, BUFFER_COUNT, m_gBufferRTVs);
 	}
+
+	m_deviceContext->IASetInputLayout(this->m_layout);
+
+	//Set the vertex and pixel shaders that will be used to render this triangle
+	m_deviceContext->GSSetShader(nullptr, NULL, 0);
+	m_deviceContext->VSSetShader(this->m_vertexShader, NULL, 0);
+	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 
 	this->m_screenQuad->SetBuffers(m_deviceContext);
 
@@ -207,33 +202,25 @@ void FinalShader::Release()
 		delete[] this->m_nullResources;
 		this->m_nullResources = nullptr;
 	}
+	if (this->m_vertexShader)
+	{
+		this->m_vertexShader->Release();
+		this->m_vertexShader = nullptr;
+	}
+	if (this->m_pixelShader)
+	{
+		this->m_pixelShader->Release();
+		this->m_pixelShader = nullptr;
+	}
+	if (this->m_layout)
+	{
+		this->m_layout->Release();
+		this->m_layout = nullptr;
+	}
 }
 
 int FinalShader::Draw()
 {
-	//delete shaderParamsXM;
-	//delete shaderParamsVP;
-
-	static bool hej = true;
-	if (hej)
-	{
-		//ConstantBufferHandler::GetInstance()->Bind();
-		hej = false;
-	}
-
-	//this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
-	//this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
-	//this->m_finalSH->SetActive(ShaderLib::ShaderVariations::Normal);
-
-	//ShaderLib::CameraConstantBuffer* lShaderParams = new ShaderLib::CameraConstantBuffer;
-	//lShaderParams->camPos = this->m_camera->GetCameraPos();
-	//lShaderParams->camTar = this->m_camera->GetLookAt();
-
-	//this->SetShaderParameters(lShaderParams, this->m_deferredSH->GetShaderResourceViews());
-	//delete lShaderParams;
-	//this->m_deviceContext->DrawIndexed(6, 0, 0);
-
-	//this->ResetPSShaderResources();
 	this->m_deviceContext->DrawIndexed(6, 0, 0);
 	this->ResetPSShaderResources();
 
