@@ -24,8 +24,9 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
 
-	//Shutdown Network module
-	this->m_networkModule.Shutdown();
+	/*Delete animation class ptr here.*/
+	delete this->m_Anim;
+
 	return result;
 	
 
@@ -83,6 +84,8 @@ int System::Initialize()
 
 	//Init the network module
 	this->m_networkModule.Initialize();
+
+	this->m_Anim = new Animation();
 
 	return result;
 }
@@ -237,6 +240,8 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+	//Update animations here. Temp place right now.
+	m_Anim->Update(deltaTime);
 	return result;
 }
 

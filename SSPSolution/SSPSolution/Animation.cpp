@@ -23,8 +23,8 @@ Animation::Animation()
 
 	animatedJointsList = animationPtr->GetAllJoints();
 
-	int startFrame = animatedJointsList->keyframes[0].timeValue;
-	int endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
+	float startFrame = animatedJointsList->keyframes[0].timeValue;
+	float endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
 
 	/*Initialize the stack with a default "IDLE" animation.*/
 	Push(currentAnimation, true, startFrame, endFrame, 0);
@@ -46,7 +46,8 @@ void Animation::Update(float dt)
 	if (!animationStack.empty() || currentAnimation == IDLE_STATE)
 	{
 		/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
-		elapsedTime += dt;
+		float toSeconds = dt / 1000000;
+		elapsedTime += (toSeconds / 60);
 
 		/*If the animation reaches the last frame and the animation is looping, reset elapsedTime to ZERO.*/
 		if (elapsedTime >= animationStack.top().endFrame && animationStack.top().isLooping == true)
@@ -82,12 +83,12 @@ void Animation::Update(float dt)
 			}
 		}
 
-		else if (elapsedTime > animationStack.top().startFrame || elapsedTime < animationStack.top().endFrame && newAnimation == true)
-		{
-			Push(0, false, 0, 0, 0);
+		//else if (elapsedTime > animationStack.top().startFrame || elapsedTime < animationStack.top().endFrame && newAnimation == true)
+		//{
+		//	Push(0, false, 0, 0, 0);
 
-			//Blend(elapsedTime, currentAnimation, 0);
-		}
+		//	//Blend(elapsedTime, currentAnimation, 0);
+		//}
 
 		/*Call this function and check if the elapsedTime is at the start, between frames or at the end.*/
 		Interpolate(elapsedTime, interpolatedTransforms);
@@ -153,7 +154,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 				if (currentTime >= animatedJoint.keyframes[i].timeValue && currentTime <= animatedJoint.keyframes[i + 1].timeValue)
 				{
 					float timeKeyframe1 = animatedJoint.keyframes[i].timeValue;
-					float timeKeyframe2 = animatedJoint.keyframes[i].timeValue;
+					float timeKeyframe2 = animatedJoint.keyframes[i + 1].timeValue;
 
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
@@ -189,7 +190,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 	}
 
 	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
-	CalculateFinalTransform();
+	CalculateFinalTransform(interpolatedTransforms);
 }
 
 void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
@@ -204,15 +205,33 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 	skeltempVec.push_back(temp);
 }
 
-void Animation::CalculateFinalTransform()
+void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> childTransform)
 {
-	for (int i = 0; i < jointCount; i++)
+	finalTransforms.resize(jointCount);
+
+	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
-		XMMATRIX interpolatedTransform = XMLoadFloat4x4(&interpolatedTransforms[i]);
+		XMMATRIX childTransformation = XMLoadFloat4x4(&childTransform[jointIndex]);
+		XMMATRIX invBindPose = XMLoadFloat4x4(&skeltempVec[jointIndex].invBindPose);
 
-		int parentIndex = skeltempVec[i].parentIndex;
+		int parentIndex = skeltempVec[jointIndex].parentIndex;
 
-		XMMATRIX parentBindPose = XMLoadFloat4x4(&skeltempVec[parentIndex].invBindPose);
+		XMMATRIX tempWorldMatrix = XMMatrixIdentity();
+		XMMATRIX worldMatrix;
+
+		if (parentIndex == -1) {
+			worldMatrix = childTransformation;
+		}
+
+		else {
+			worldMatrix = XMMatrixMultiply(tempWorldMatrix, childTransformation);
+		}
+
+		XMMATRIX finalTransform;
+
+		finalTransform = XMMatrixMultiply(worldMatrix, invBindPose);
+
+		XMStoreFloat4x4(&finalTransforms[jointIndex], finalTransform);
 	}
 }
 
