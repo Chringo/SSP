@@ -27,8 +27,8 @@ struct VS_IN
     float3 Tangent : TANGENT0;
     float2 UV : TEXCOORD0;
 
-    float4 weights : WEIGHT;
-    int4 influences : INFLUENCE;
+    float4 weights : WEIGHTS;
+    uint4 influences : INFLUENCE; //currently a 32bit uinteger, does it need to be 32bit?
 };
 
 struct VS_OUT
@@ -42,9 +42,10 @@ struct VS_OUT
 };
 
 
-VS_OUT main(VS_IN input)
+VS_OUT VS_main(VS_IN input)
 {
     VS_OUT output = (VS_OUT) 0;
+    //wPos, Normal and Tangent should be output in worldspace. Make it so.
 
 	float3 skinnedPos		=	float3(0.f, 0.f, 0.f);
 	float3 skinnedNormal	=	float3(0.f, 0.f, 0.f);

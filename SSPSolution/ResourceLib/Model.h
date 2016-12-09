@@ -28,6 +28,7 @@ namespace Resources {
 		virtual ~Model();
 		Resources::Status Create(Resource::RawResourceData* resData, RawModelData* = nullptr,bool keepRawData = false);
 		Resources::Status Destroy(); // Deincrement references to connected data
+		RawModelData* GetRawModelData() { return this->m_rawData; }
 
 		void SetMesh(Mesh* modelMesh) { this->m_modelMesh = modelMesh;};
 		Mesh* GetMesh() const { return this->m_modelMesh; };
