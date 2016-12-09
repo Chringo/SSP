@@ -9,6 +9,8 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
+#pragma comment (lib,"../Debug/physicsDLL.lib")
+
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 struct Container;

@@ -2,7 +2,7 @@
 #include "EditorInputHandler.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "../physicsDLL/PhysicsHandler.h"
+
 
 struct Container
 {
@@ -28,7 +28,6 @@ public:
 	bool m_IsPreview;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
-	PhysicsHandler* m_PhysicsHandler;
 	Communicator();
 	~Communicator();
 	Resources::Status Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview);
