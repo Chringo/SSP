@@ -118,6 +118,16 @@ void FileImporter::LoadImportedFiles()
 	}
 }
 
+Resources::Model * FileImporter::get_model(unsigned int modelID)
+{
+	for (int i = 0; i < this->m_models.size(); ++i)
+	{
+		if (modelID == m_models.at(i)->GetId())
+			return m_models.at(i);
+	}
+	return nullptr;
+}
+
 void FileImporter::handleMesh(char * m_bbf_object)
 {
 	/*create model type here and then when reading */
