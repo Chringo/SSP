@@ -7,7 +7,7 @@
 #include "Camera.h"
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
-
+#include "ShaderControl.h"
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -20,11 +20,11 @@ const int ARRAY_INC = 5;
 class GRAPHICSDLL_API GraphicsHandler
 {
 private:
-	Direct3DHandler* m_d3dHandler;
+	Direct3DHandler*		m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
-	DeferredShader* m_deferredSH;
-	FinalShader* m_finalSH;
-
+	DeferredShader*			m_deferredSH;
+	FinalShader*			m_finalSH;
+	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
 
 	Resources::Model** m_modelsPtr;
@@ -35,7 +35,6 @@ private:
 
 	//temp
 	Camera* m_camera;
-	DirectX::XMFLOAT4X4 m_projectionMatrix;
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
 

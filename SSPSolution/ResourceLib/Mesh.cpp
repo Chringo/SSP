@@ -173,9 +173,7 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 		m_meshData.m_animVertices = new VertexAnim[numVerts];
 		memcpy(m_meshData.m_animVertices, data, size_t(sizeof(VertexAnim)* numVerts));
 	}
-	else {
-		delete data; data = nullptr;
-	}
+
 	m_meshData.hasAnimation = true;
 	m_meshData.m_numVerts = numVerts;
 	return true;
