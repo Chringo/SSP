@@ -189,7 +189,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 	}
 
 	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
-	CalculateFinalTransform();
+	CalculateFinalTransform(interpolatedTransforms);
 }
 
 void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
@@ -204,7 +204,7 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 	skeltempVec.push_back(temp);
 }
 
-void Animation::CalculateFinalTransform()
+void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms)
 {
 	for (int i = 0; i < jointCount; i++)
 	{
@@ -212,7 +212,15 @@ void Animation::CalculateFinalTransform()
 
 		int parentIndex = skeltempVec[i].parentIndex;
 
-		XMMATRIX parentBindPose = XMLoadFloat4x4(&skeltempVec[parentIndex].invBindPose);
+		XMMATRIX parentBindPose;
+
+		if (parentIndex == -1)
+			parentBindPose = interpolatedTransform;
+
+		else 
+			parentBindPose = XMLoadFloat4x4(&skeltempVec[parentIndex].invBindPose);
+
+		int test = 0;
 	}
 }
 

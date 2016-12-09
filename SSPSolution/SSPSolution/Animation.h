@@ -81,7 +81,7 @@ public:
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
-	void CalculateFinalTransform();
+	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
 
 	/*Maybe this is more suitable for being in another class? I might consider
 	calling this in the Update() from another class pointer.*/

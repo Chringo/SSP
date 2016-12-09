@@ -23,6 +23,10 @@ int System::Shutdown()
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
+
+	/*Delete animation class ptr here.*/
+	delete this->m_Anim;
+
 	return result;
 }
 
@@ -77,6 +81,9 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	/*Initialize Animation class. Temp location right now.*/
+	this->m_Anim = new Animation();
 
 	return result;
 }
@@ -174,7 +181,9 @@ int System::Update(float deltaTime)
 		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
 	}
-	//
+
+	//Update animations here. Temp place right now.
+	m_Anim->Update(deltaTime);
 	return result;
 }
 

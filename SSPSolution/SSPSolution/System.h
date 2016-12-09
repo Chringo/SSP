@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
+#include "Animation.h"
 #include "InputHandler.h"
 #include "../physicsDLL/physicsDLL/PhysicsHandler.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
@@ -29,6 +30,9 @@ private:
 	InputHandler* m_inputHandler;
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
+
+	/*Testing for playing animation.*/
+	Animation* m_Anim;
 public:
 	System();
 	~System();
