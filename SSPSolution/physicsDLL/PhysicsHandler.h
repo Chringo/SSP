@@ -20,10 +20,8 @@ struct AABB
 
 struct OBB
 {
-	DirectX::XMVECTOR pos;
 	float ext[3];
 	DirectX::XMMATRIX ort;
-	DirectX::XMMATRIX worldMatrix;
 };
 
 struct Ray
@@ -88,9 +86,10 @@ public:
 	void Update();
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
+	void RotateBB();
 
 	void CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
-	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj);
+	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 
 	void SimpleCollition(float dt);
 	void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);

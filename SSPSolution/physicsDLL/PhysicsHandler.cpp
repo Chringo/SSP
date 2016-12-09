@@ -65,8 +65,8 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 
 //	DirectX::XM
 
-	DirectX::XMStoreFloat3(&posA, objA->PC_OBB.pos);
-	DirectX::XMStoreFloat3(&posB, objB->PC_OBB.pos);
+	DirectX::XMStoreFloat3(&posA, objA->PC_pos);
+	DirectX::XMStoreFloat3(&posB, objB->PC_pos);
 	
 
 	//not very clever way, but I need to know if shit work, for debug purpuses
@@ -349,7 +349,7 @@ void PhysicsHandler::CreateDefaultAABB(const DirectX::XMVECTOR & pos, PhysicsCom
 void PhysicsHandler::CreateDefaultOBB(const DirectX::XMVECTOR & pos, PhysicsComponent* src)
 {
 	//AABB components
-	src->PC_OBB.pos = pos;
+
 
 	src->PC_OBB.ext[0] = 1.0f;
 	src->PC_OBB.ext[1] = 1.0f;
@@ -386,16 +386,14 @@ void PhysicsHandler::Update()
 	float dt = 0.01f;
 	this->checkCollition();
 
-	Ray ray;
-	DirectX::XMFLOAT3 testPos(0, 0, 0);
-	DirectX::XMFLOAT3 testDir(0, 0, 1);
-
-	ray.Origin = DirectX::XMLoadFloat3(&testPos);
-	ray.RayDir = DirectX::XMLoadFloat3(&testDir);
+	DirectX::XMFLOAT3 testPos(0, 0, 1);
+	DirectX::XMVECTOR derp;
 
 	OBB* test = &(this->m_dynamicComponents.at(0)->PC_OBB);
-	//test->pos = DirectX::XMLoadFloat3(&test->pos1);
-	bool intersected = this->IntersectRayOBB(ray.Origin, ray.RayDir, *test);
+	derp = DirectX::XMLoadFloat3(&testPos);
+
+	this->TranslateBB(derp, this->m_dynamicComponents.at(0));
+	
 
 	//SimpleCollition(dt);
 }
@@ -408,8 +406,16 @@ void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsCompone
 	DirectX::XMMATRIX scaleMatrix = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(temp.x, temp.y, temp.z);
+	
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();
 
-	src->PC_OBB.worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	src->PC_pos = DirectX::XMVector3Transform(src->PC_pos, worldMatrix);
+}
+
+void PhysicsHandler::RotateBB()
+{
+
 }
 
 void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
@@ -424,7 +430,7 @@ void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
 	this->m_dynamicComponents.push_back(newObject);
 }
 
-bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB &obj)
+bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos)
 {
 	Ray ray;
 	ray.Origin = rayOrigin;
@@ -454,7 +460,7 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 	tMax = INFINITY;
 
 	//Vec pointVec = this->Bcenter - ray.o;
-	DirectX::XMVECTOR pointVec = DirectX::XMVectorSubtract(obj.pos, ray.Origin);
+	DirectX::XMVECTOR pointVec = DirectX::XMVectorSubtract(obbPos, ray.Origin);
 
 	//rayD.Normalize();
 	ray.RayDir = DirectX::XMVector3Normalize(radD);
