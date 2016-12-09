@@ -558,9 +558,6 @@ int DeferredShader::DrawGrid(Resources::Model * model)
 
 int DeferredShader::DrawFromEditor(Resources::Model * model)
 {
-	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
-
-
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
 	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();

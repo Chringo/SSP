@@ -32,25 +32,22 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	if (!this->m_Communicator->m_Map.empty())
 	{
 		Resources::Status st;
-		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.begin();
-		std::vector<Container>* modelPtr = nullptr;
-
-
-		if (got == this->m_Communicator->m_Map.end()) { // if  does not exists in memory
-
-		}
-		else {
-			modelPtr = &got->second;
-			for (size_t j = 0; j < modelPtr->size(); j++)
+		for (size_t i = 0; i < this->m_fileImporter->get_M_models()->size(); i++)
+		{
+			std::vector<Container>* modelPtr = nullptr;
+			st = this->m_Communicator->FindModel(this->m_fileImporter->get_M_models()->at(i)->GetId(), modelPtr);
+			if (st == Resources::ST_OK)
 			{
-				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
-					this->m_fileImporter->get_M_models()->at(0),
-					&modelPtr->at(j).component
-				);
+				for (size_t j = 0; j < modelPtr->size(); j++)
+				{
+					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(this->m_fileImporter->get_M_models()->at(i), &modelPtr->at(j).component);
+				}
 			}
-
 		}
-
+	}
+	else
+	{
+		this->m_Communicator->m_GraphicsHandler->Render();
 	}
 	this->update();
 }

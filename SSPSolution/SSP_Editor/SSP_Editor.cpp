@@ -76,13 +76,8 @@ void SSP_Editor::on_treeView_doubleClicked()
 	std::vector<Resources::Model*>* test = m_fileImporter->get_M_models();
 
 
-	DirectX::XMVECTOR pos = { 1,1,1,1 };
-
-
-	for (size_t i = 0; i < test->size(); i++)
-	{
-		this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(i)->GetId(),i+1,pos,0.0f);
-	}
+	DirectX::XMVECTOR pos = { 0,0,0,0 };
+	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos,0.0f);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();
