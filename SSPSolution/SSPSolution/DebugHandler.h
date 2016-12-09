@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <Windows.h>
 #include <string>
 
@@ -66,8 +67,8 @@ public:
 	int EndTimer();
 	int EndTimer(int timerID);
 
-	int StartProgram(); // Needed at start of program to show fps
-	int EndProgram(); // Needed at end of program to show fps
+	int StartProgram(); // Needed at start of program to show timer %
+	int EndProgram(); // Needed at end of program to show timer %
 	int ShowFPS(bool show);
 
 	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail

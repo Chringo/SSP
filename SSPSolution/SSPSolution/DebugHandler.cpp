@@ -40,8 +40,8 @@ DebugHandler::~DebugHandler()
 int DebugHandler::StartTimer(std::string label)
 {
 	LARGE_INTEGER currTime;
-	int result = this->m_timers.size();
 	QueryPerformanceCounter(&currTime);
+	int result = this->m_timers.size();
 	this->m_timers.push_back(Timer(currTime));
 	this->m_labels.push_back(label);
 
@@ -162,8 +162,9 @@ int DebugHandler::Display(float dTime)
 		this->m_timerMins.at(i) = (minTime < time) ? minTime : time;
 		this->m_timerMaxs.at(i) = (maxTime > time) ? maxTime : time;
 		
-		std::cout << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
-			<< time << " [" << this->m_timerMaxs.at(i) << "] us";
+		std::cout << std::fixed << std::setprecision(1) << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
+			<< time << " [" << this->m_timerMaxs.at(i) << "] us, " 
+			<< (float)((time / float(this->m_programEnd.QuadPart - this->m_programStart.QuadPart)) * 100) << "%";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 5, screen.dwCursorPosition, &written
