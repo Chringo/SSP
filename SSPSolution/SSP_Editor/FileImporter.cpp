@@ -229,13 +229,8 @@ void FileImporter::handleModel(char * m_bbf_object)
 
 void FileImporter::AddListItem(ListItem category, std::string name)
 {
-	/*QTreeWidgetItem *itm = new QTreeWidgetItem(m_ui.treeWidget);
-	itm->setText(0, "hejsnansnsns");
-	m_ui.treeWidget->addTopLevelItem(itm);*/
-	//this->m_itemList->takeTopLevelItem((int)category);
-	//name.c_str
 	QTreeWidgetItem *itm = new QTreeWidgetItem();
-	itm->setText(0, name.c_str());
+	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
 }
