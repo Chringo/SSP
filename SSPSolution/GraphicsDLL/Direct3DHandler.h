@@ -27,7 +27,6 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
 	int InitializeGridRasterizer();
 
-	int ClearDepthAndRTV();
 	int PresentScene();
 	void Shutdown();
 
