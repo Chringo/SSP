@@ -126,7 +126,6 @@ int DebugHandler::Display(float dTime)
 {
 	COORD topLeft = { 0, 0 };
 	COORD FPSLocation = { 50, 0 };
-	//COORD toClear = { 4, 100 };
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO screen;
 	DWORD written;
@@ -210,6 +209,9 @@ int DebugHandler::Display(float dTime)
 		);
 		this->m_currFrameTimesPtr++;
 	}
+
+	COORD finishedCursonLoc = { 0, nrOfTimers + nrOfCustomLabels + 1 };
+	SetConsoleCursorPosition(console, finishedCursonLoc);
 
 	return 0;
 }

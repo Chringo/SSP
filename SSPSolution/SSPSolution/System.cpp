@@ -123,6 +123,7 @@ int System::Run()
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance().ResetMinMax();
+			printf("Reseted min max on timers\n");
 		}
 		DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 		DebugHandler::instance().EndTimer();
