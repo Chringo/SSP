@@ -32,6 +32,7 @@ Animation::Animation()
 
 Animation::~Animation()
 {
+	delete modelPtr;
 }
 
 void Animation::Update(float dt)
