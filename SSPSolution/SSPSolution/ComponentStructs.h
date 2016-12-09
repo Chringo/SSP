@@ -17,14 +17,16 @@ struct GraphicsComponent
 	bool animated;
 };
 
-struct GraphicsAnimationComponent
+struct GraphicsAnimComponent
 {
 	int active;
 	int modelID;
 	int materialID;
+	int jointCount;
 	DirectX::XMMATRIX worldTransform;
-	DirectX::XMFLOAT4X4 finalTransforms[32];
+	DirectX::XMMATRIX finalTransforms[32];
 };
+
 
 struct PhysicsComponent 
 {

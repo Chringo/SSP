@@ -87,7 +87,7 @@ void ShaderControl::Draw(Resources::Model * model, GraphicsComponent * component
 	}
 }
 
-void ShaderControl::Draw(Resources::Model * model, AnimGraphicsComponent * component)
+void ShaderControl::Draw(Resources::Model * model, penis * component)
 {
 	switch (m_activeShader)
 	{

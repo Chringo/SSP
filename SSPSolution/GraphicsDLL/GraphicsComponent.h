@@ -10,10 +10,11 @@ struct GraphicsComponent
 	DirectX::XMMATRIX worldMatrix;
 };
 
-struct AnimGraphicsComponent
+struct penis
 {
 	int active = 0;
 	int modelID = -1;
+	int joints = 0;
 	DirectX::XMMATRIX worldMatrix;
 
 	DirectX::XMMATRIX finalTransforms[32];

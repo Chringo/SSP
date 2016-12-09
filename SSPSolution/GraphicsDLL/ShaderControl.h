@@ -39,7 +39,7 @@ public:
 
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
-	void Draw(Resources::Model * model, AnimGraphicsComponent * component);
+	void Draw(Resources::Model * model, penis * component);
 
 	void DrawFinal();
 	int ClearFrame();

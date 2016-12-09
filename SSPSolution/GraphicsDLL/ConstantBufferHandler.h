@@ -186,7 +186,6 @@ public:
 			{
 				c = *(cbData*)data;
 
-
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);

@@ -212,7 +212,7 @@ void GraphicsHandler::Shutdown()
 		}
 	}
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 1; i < 2; i++)
 	{
 		delete this->m_animGraphicsComponents[i];
 		this->m_animGraphicsComponents[i] = nullptr;
@@ -312,6 +312,11 @@ int GraphicsHandler::SetTriangle()
 	return 0;
 }
 
+void GraphicsHandler::SetTempAnimComponent(void * component)
+{
+	m_animGraphicsComponents[0] = (penis*)component;
+}
+
 void GraphicsHandler::m_CreateTempsTestComponents()
 {
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
@@ -341,19 +346,19 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new AnimGraphicsComponent*[2];
+	this->m_animGraphicsComponents = new penis*[2];
 	for (int i = 0; i < 2; i++) {
 		this->m_animGraphicsComponents[i] = nullptr;
 	}
-	for (int i = 0; i < 2; i++) {
-		this->m_animGraphicsComponents[i] = new AnimGraphicsComponent;
 
-		this->m_animGraphicsComponents[i]->worldMatrix = DirectX::XMMatrixIdentity();
-		for (int j = 0; j < 32; j++)
-		{
-			this->m_animGraphicsComponents[0]->finalTransforms[j] = DirectX::XMMatrixIdentity();
-		}
+	this->m_animGraphicsComponents[1] = new penis;
+
+	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
+	for (int j = 0; j < 32; j++)
+	{
+		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
 	}
+	
 
 	
 

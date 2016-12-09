@@ -14,6 +14,15 @@ using namespace DirectX;
 By generic it is meant for any "animatible entity" to be updated by
 this class. The result of playing each frame will update the entity of 
 the skeleton and it's hierarchy of joints.*/
+struct GraphicsAnimationComponent
+{
+	int active = 0;
+	int modelID = -1;
+	int joints = 0;
+	DirectX::XMMATRIX worldMatrix;
+
+	DirectX::XMMATRIX finalTransforms[32];
+};
 
 enum AnimationStates
 {
@@ -47,7 +56,7 @@ private:
 
 	std::vector<XMFLOAT4X4> interpolatedTransforms;
 
-	std::vector <XMFLOAT4X4> finalTransforms;
+	GraphicsAnimationComponent * m_graphicsAnimationComponent;
 
 	Resources::Model* modelPtr;
 
@@ -88,6 +97,8 @@ public:
 	/*Maybe this is more suitable for being in another class? I might consider
 	calling this in the Update() from another class pointer.*/
 	void Blend(int lastFrame, int prevState, int newState);
+
+	GraphicsAnimationComponent * GetAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
 };
 
 

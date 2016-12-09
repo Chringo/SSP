@@ -49,23 +49,27 @@ VS_OUT VS_main(VS_IN input)
 	float3 skinnedPos = float3(0.f, 0.f, 0.f);
 	float3 skinnedNormal = float3(0.f, 0.f, 0.f);
 	float3 skinnedTan = float3(0.f, 0.f, 0.f);
-
+    float weight;
+    int influences;
 	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
 	for (int i = 0; i < 4; i++)
 	{
-		skinnedPos += input.weights[i] * mul(float4(input.Pos, 1.0f), joints[input.influences[i]]).xyz;
-		skinnedNormal += input.weights[i] * mul(input.Normal, (float3x3)joints[input.influences[i]]);
-		skinnedTan += input.weights[i] * mul(input.Tangent, (float3x3)joints[input.influences[i]]);
-	}
+        weight = input.weights[i];
+        influences = input.influences[i];
+        
+        skinnedPos += mul(mul(float4(input.Pos, 1.0f), joints[influences]), weight);
+        skinnedNormal += mul(mul(float4(input.Normal, 1.0f), joints[influences]), weight);
+        skinnedTan += mul(mul(float4(input.Tangent, 1.0f), joints[influences]), weight);
+    }
 
 	matrix WV = mul(viewMatrix, projectionMatrix);
 	matrix WVP = mul(worldMatrix, WV);
 
-	output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
-	output.Pos = mul(float4(skinnedPos, 1), WVP);
+    output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
+    output.Pos = mul(float4(skinnedPos, 1), WVP);
 
-	output.Normal = mul(float4(skinnedNormal, 1), worldMatrix).rgb;
-	output.Tangent = mul(float4(skinnedTan, 1), worldMatrix).rgb;
+    output.Normal = mul(float4(skinnedNormal, 1), worldMatrix).rgb;
+    output.Tangent = mul(float4(skinnedTan, 1), worldMatrix).rgb;
 
 	output.UV = input.UV;
 

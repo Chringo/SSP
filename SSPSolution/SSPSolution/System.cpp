@@ -242,6 +242,8 @@ int System::Update(float deltaTime)
 	}
 	//Update animations here. Temp place right now.
 	m_Anim->Update(deltaTime);
+	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+
 	return result;
 }
 

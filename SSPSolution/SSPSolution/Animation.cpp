@@ -5,8 +5,13 @@ Animation::Animation()
 	int animIndex = 0;
 	this->elapsedTime = 0.0f;
 	this->currentAnimation = IDLE_STATE;
-
-	
+	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
+	this->m_graphicsAnimationComponent->joints = 19;
+	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
+	for (int i = 0; i < 32; i++)
+	{
+		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
+	}
 
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
 
@@ -32,6 +37,7 @@ Animation::Animation()
 
 Animation::~Animation()
 {
+	delete m_graphicsAnimationComponent;
 	//delete modelPtr;
 }
 
@@ -203,12 +209,12 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 	temp.parentIndex = jointList[jointIndex].parentIndex;
 	temp.invBindPose = matrix;
 
+
 	skeltempVec.push_back(temp);
 }
 
 void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> childTransform)
 {
-	finalTransforms.resize(jointCount);
 
 	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
@@ -232,7 +238,7 @@ void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> childTransform)
 
 		finalTransform = XMMatrixMultiply(worldMatrix, invBindPose);
 
-		XMStoreFloat4x4(&finalTransforms[jointIndex], finalTransform);
+		m_graphicsAnimationComponent->finalTransforms[jointIndex] = finalTransform;
 	}
 }
 
