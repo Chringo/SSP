@@ -62,7 +62,20 @@ Resources::Status Communicator::Release()
 	return Resources::ST_OK;
 }
 
-Resources::Status Communicator::GetModel(unsigned int modelID, unsigned int InstanceID, Container& container)
+Resources::Status Communicator::FindModel(int modelID, std::vector<Container>* modelPtr)
+{
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
+
+	if (got == m_Map.end()) { // if  does not exists in memory
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		modelPtr = &got->second;
+		return Resources::Status::ST_OK;
+	}
+}
+
+Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int InstanceID, Container& container)
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
 	std::vector<Container>* modelPtr;

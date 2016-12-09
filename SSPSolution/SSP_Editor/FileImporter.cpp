@@ -222,5 +222,4 @@ void FileImporter::handleModel(char * m_bbf_object)
 	newModel->Create(res_Data, raw_model_Data, true);
 
 	m_models.push_back(newModel);
-
 }

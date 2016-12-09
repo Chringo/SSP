@@ -29,16 +29,35 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	//SEND COMPONENT DATA TO HANDLER
 	//this->m_Communicator->m_GraphicsHandler->Sendshit();
 	//THEN RENDER
-	this->m_Communicator->m_GraphicsHandler->Render();
+	if (!this->m_Communicator->m_Map.empty())
+	{
+		Resources::Status st;
+		for (size_t i = 0; i < this->m_fileImporter->get_M_models()->size(); i++)
+		{
+			std::vector<Container>* modelPtr = nullptr;
+			st = this->m_Communicator->FindModel(this->m_fileImporter->get_M_models()->at(i)->GetId(), modelPtr);
+			if (st == Resources::ST_OK)
+			{
+				for (size_t j = 0; j < modelPtr->size(); j++)
+				{
+					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(this->m_fileImporter->get_M_models()->at(i), &modelPtr->at(j).component);
+				}
+			}
+		}
+	}
+	else
+	{
+		this->m_Communicator->m_GraphicsHandler->Render();
+	}
 	this->update();
 }
 
-void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
+void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
 {
 	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
-
+	this->m_fileImporter = fileImporter;
 	Resources::Status st;
 
 	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
@@ -56,11 +75,11 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	setAttribute(Qt::WA_NativeWindow, true);
 	if (parent->width() == 161)
 	{
-		Initialize(parent, true);
+		Initialize(parent, true, this->m_fileImporter);
 	}
 	else
 	{
-		Initialize(parent, false);
+		Initialize(parent, false, this->m_fileImporter);
 	}
 }
 

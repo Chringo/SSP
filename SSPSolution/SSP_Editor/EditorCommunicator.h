@@ -22,9 +22,9 @@ private:
 	int m_Width;
 	int m_Height;
 
-	std::unordered_map<unsigned int, std::vector<Container>> m_Map;
 
 public:
+	std::unordered_map<unsigned int, std::vector<Container>> m_Map;
 	bool m_IsPreview;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
@@ -34,7 +34,8 @@ public:
 	Resources::Status Release();
 
 public:
-	Resources::Status GetModel(unsigned int modelID, unsigned int InstanceID, Container& container);
+	Resources::Status FindModel(int modelID, std::vector<Container>* modelPtr);
+	Resources::Status GetComponent(unsigned int modelID, unsigned int InstanceID, Container& container);
 	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int InstanceID);

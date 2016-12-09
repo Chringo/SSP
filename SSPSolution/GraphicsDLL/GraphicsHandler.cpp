@@ -189,6 +189,15 @@ int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid
 	return 0;
 }
 
+int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
+{
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
+	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
+	this->m_deferredSH->DrawFromEditor(model);
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
+	return 0;
+}
+
 void GraphicsHandler::Shutdown()
 {
 	if (this->m_d3dHandler)

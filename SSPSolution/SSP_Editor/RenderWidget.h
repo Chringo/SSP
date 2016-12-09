@@ -3,6 +3,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "EditorCommunicator.h"
+#include "FileImporter.h"
 
 class D3DRenderWidget : public QWidget {
 	Q_OBJECT
@@ -18,7 +19,8 @@ private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
 	Communicator* m_Communicator;
-	void Initialize(QWidget* parent, bool isPreview);
+	FileImporter* m_fileImporter;
+	void Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter);
 
 	
 private: //for deltaTime

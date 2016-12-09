@@ -53,6 +53,7 @@ public:
 
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
+	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
 	
 	//temp
