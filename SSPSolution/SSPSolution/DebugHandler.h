@@ -43,6 +43,8 @@ private:
 	static DebugHandler* m_instance;
 	DebugHandler();
 
+	void ClearConsole();
+
 public:
 	~DebugHandler();
 
