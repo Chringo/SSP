@@ -166,7 +166,13 @@ int GraphicsHandler::Render()
 
 	/*TEMP CBUFFER STUFF*/
 
-
+	if (postProcessing)
+	{
+		//m_d3dHandler->GetDeviceContext()->OMSetRenderTargets(1, nullptr, NULL);
+		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		m_d3dHandler->GetDeviceContext()->PSSetShaderResources(6,1,&srv);
+		m_shaderControl->PostProcess();
+	}
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }

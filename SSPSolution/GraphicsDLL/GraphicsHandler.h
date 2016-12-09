@@ -26,7 +26,7 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
-
+	bool postProcessing = true;
 	Resources::Model** m_modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
