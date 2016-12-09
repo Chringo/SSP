@@ -85,6 +85,8 @@ int System::Initialize()
 	//Init the network module
 	this->m_networkModule.Initialize();
 
+	this->m_Anim = new Animation();
+
 	return result;
 }
 
