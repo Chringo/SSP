@@ -102,11 +102,6 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
-
-		//Update the network module
-		this->m_networkModule.Update();
-
-		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
@@ -126,8 +121,6 @@ int System::Run()
 			this->FullscreenToggle();
 		}
 		//std::cout << int(totalTime) << "\n";
-		//Render
-		this->m_graphicsHandler->Render();
 
 	}
 	if (this->m_fullscreen)
@@ -139,6 +132,8 @@ int System::Run()
 int System::Update(float deltaTime)
 {
 	int result = 1;
+
+	
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
 	std::list<CameraPacket> cList;
@@ -237,6 +232,15 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+
+	//Update the network module
+	this->m_networkModule.Update();
+
+
+	this->m_physicsHandler.Update();
+
+	//Render
+	this->m_graphicsHandler->Render();
 	return result;
 }
 

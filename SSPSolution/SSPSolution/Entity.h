@@ -3,8 +3,8 @@
 #include "Observer.h"
 #include "Subject.h"
 //Subject includes this for the events
-#include "ComponentStructs.h"
-
+//#include "ComponentStructs.h"
+#include "ComponentHandler.h"
 class Entity :
 	public Observer
 {
