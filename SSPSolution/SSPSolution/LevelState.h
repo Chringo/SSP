@@ -9,7 +9,8 @@ public:
 	LevelState();
 	virtual ~LevelState();
 
-	int Initialization();
+	int Initialize(GameStateHandler* gsh);
+	int Update(float dt, InputHandler * inputHandler);
 private:
 };
 

@@ -13,5 +13,13 @@ GameState::~GameState()
 
 int GameState::InitializeBase(GameStateHandler * gsh)
 {
-	return 0;
+	int result = 0;
+	if(gsh != nullptr)
+		this->m_gsh = gsh;
+	else
+	{
+		this->m_gsh = nullptr;
+		result = 0;
+	}
+	return result;
 }
