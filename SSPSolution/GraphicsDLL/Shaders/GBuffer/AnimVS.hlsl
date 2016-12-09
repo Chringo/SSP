@@ -16,7 +16,7 @@ cbuffer camera : register(b1)
 }
 cbuffer skeleton : register(b5)
 {
-    float4x4 joint[32];
+	float4x4 joints[32];
 }
 
 
@@ -44,22 +44,30 @@ struct VS_OUT
 
 VS_OUT VS_main(VS_IN input)
 {
-    VS_OUT output = (VS_OUT) 0;
-    //wPos, Normal and Tangent should be output in worldspace. Make it so.
+	VS_OUT output = (VS_OUT) 0;
+	
+	float3 skinnedPos = float3(0.f, 0.f, 0.f);
+	float3 skinnedNormal = float3(0.f, 0.f, 0.f);
+	float3 skinnedTan = float3(0.f, 0.f, 0.f);
 
-    //INSERT VERTEX BLENDING
-    matrix WV = mul(viewMatrix, projectionMatrix);
-    matrix WVP = mul(worldMatrix, WV);
+	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
+	for (int i = 0; i < 4; i++)
+	{
+		skinnedPos += input.weights[i] * mul(float4(input.Pos, 1.0f), joints[input.influences[i]]).xyz;
+		skinnedNormal += input.weights[i] * mul(input.Normal, (float3x3)joints[input.influences[i]]);
+		skinnedTan += input.weights[i] * mul(input.Tangent, (float3x3)joints[input.influences[i]]);
+	}
 
-    output.Pos = float4(input.Pos, 1);
-    output.wPos = mul(output.Pos, worldMatrix);
-    output.Pos = mul(output.Pos, WVP);
+	matrix WV = mul(viewMatrix, projectionMatrix);
+	matrix WVP = mul(worldMatrix, WV);
 
-    output.Normal = mul(float4(input.Normal, 1), worldMatrix).rgb;
-    output.UV = input.UV;
-    output.Tangent = mul(float4(input.Tangent, 1), worldMatrix).rgb;
+	output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
+	output.Pos = mul(float4(skinnedPos, 1), WVP);
 
-    
+	output.Normal = mul(float4(skinnedNormal, 1), worldMatrix).rgb;
+	output.Tangent = mul(float4(skinnedTan, 1), worldMatrix).rgb;
 
-    return output;
+	output.UV = input.UV;
+
+   return output;
 }
