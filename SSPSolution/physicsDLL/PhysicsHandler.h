@@ -23,6 +23,7 @@ struct OBB
 	DirectX::XMVECTOR pos;
 	float ext[3];
 	DirectX::XMMATRIX ort;
+	DirectX::XMMATRIX worldMatrix;
 };
 
 struct Ray
@@ -85,6 +86,8 @@ public:
 	bool Initialize();
 	void ShutDown();
 	void Update();
+
+	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 
 	void CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj);

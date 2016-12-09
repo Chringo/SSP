@@ -63,6 +63,8 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	DirectX::XMFLOAT3 posA;
 	DirectX::XMFLOAT3 posB;
 
+//	DirectX::XM
+
 	DirectX::XMStoreFloat3(&posA, objA->PC_OBB.pos);
 	DirectX::XMStoreFloat3(&posB, objB->PC_OBB.pos);
 	
@@ -396,6 +398,18 @@ void PhysicsHandler::Update()
 	bool intersected = this->IntersectRayOBB(ray.Origin, ray.RayDir, *test);
 
 	//SimpleCollition(dt);
+}
+
+void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src)
+{
+	DirectX::XMFLOAT3 temp;
+	DirectX::XMStoreFloat3(&temp, newPos);
+
+	DirectX::XMMATRIX scaleMatrix = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(temp.x, temp.y, temp.z);
+
+	src->PC_OBB.worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 }
 
 void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
