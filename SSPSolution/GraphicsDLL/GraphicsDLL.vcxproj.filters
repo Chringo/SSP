@@ -22,6 +22,9 @@
     <Filter Include="Resource Files\Shaders\GBuffer">
       <UniqueIdentifier>{569bd10a-b0a8-4ffb-85f8-e98263085c71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\PostProcess">
+      <UniqueIdentifier>{d89a6cbd-d723-497f-a99f-0f766707b31a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsHandler.h">
@@ -111,6 +114,9 @@
     </FxCompile>
     <FxCompile Include="Shaders\GBuffer\AnimVS.hlsl">
       <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PostProcess\RayTrace_BoundingBox.hlsl">
+      <Filter>Resource Files\Shaders\PostProcess</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -19,12 +19,18 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	this->m_deviceContext = deviceContext;
 	WCHAR* filePaths[NUM_TYPES];
 	
-	 filePaths[RAYTRACING]   = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[RAYTRACING]   = L"../GraphicsDLL/Shaders/PostProcess/RayTrace_BoundingBox.hlsl";
 	 filePaths[WATER]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[BLUR]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[FXAA]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 
+	 // Create the screen quad \\
 
+	 this->m_screenQuad = new ScreenQuad();
+	 if (this->m_screenQuad->Initialize(device, resolution))
+	 {
+		 return 1;
+	 }
 
 
 	// Compile the shaders \\
@@ -142,6 +148,13 @@ void PostProcessShader::Release()
 
 	}
 
+	if (this->m_screenQuad)
+	{
+		this->m_screenQuad->Shutdown();
+		delete this->m_screenQuad;
+		this->m_screenQuad = nullptr;
+	}
+
 
 }
 
@@ -154,8 +167,8 @@ ID3D11RenderTargetView* PostProcessShader::Draw()
 		Set the Rendered frame as a shader resource.
 		return the render Target
 	*/
-	m_deviceContext->OMSetRenderTargets(1, NULL, NULL);
-	m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
+	//m_deviceContext->OMSetRenderTargets(1, nullptr, NULL);
+	//m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
 	
 	return m_RenderTarget[currRTVIndex];
 }
