@@ -26,7 +26,7 @@ private:
 	ID3D11Device		*m_Device		 = nullptr;
 	ID3D11DeviceContext *m_DeviceContext = nullptr;
 	ID3D11RenderTargetView* backBufferRTV;
-
+	ID3D11ShaderResourceView* backBufferSRV;
 	Shaders m_activeShader;
 public:
 	Shader* m_shaders[NUM_SHADERS];
@@ -37,7 +37,7 @@ public:
 
 	void SetActive(Shaders type);
 	void SetVariation(ShaderLib::ShaderVariations ShaderVariations);
-	int  SetBackBufferRTV(ID3D11RenderTargetView* backBufferRTV);
+	int  SetBackBuffer(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView* backBufferSRV);
 	void PostProcess();
 	void Draw(Resources::Model* model);
 	void DrawFinal();

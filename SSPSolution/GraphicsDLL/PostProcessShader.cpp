@@ -64,7 +64,7 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	 textureDesc.Height     = resolution.y;
 	 textureDesc.MipLevels  = 1;
 	 textureDesc.ArraySize  = 1;
-	 textureDesc.Format		= DXGI_FORMAT_R32G32B32A32_FLOAT;
+	 textureDesc.Format		= DXGI_FORMAT_R8G8B8A8_UNORM;
 	 textureDesc.SampleDesc.Count = 1;
 	 textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	 textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -113,8 +113,7 @@ int PostProcessShader::SetActive()
 int PostProcessShader::SetActive(PostEffects type)
 {
 
-	ID3D11RenderTargetView* rtv = this->GetAvailableRTV();
-	m_deviceContext->OMSetRenderTargets(1, &rtv, NULL);
+	
 	m_deviceContext->PSSetShader(this->m_pixelShader[type], NULL, 0);
 
 	this->m_screenQuad->SetBuffers(m_deviceContext);
@@ -161,15 +160,17 @@ void PostProcessShader::Release()
 ID3D11RenderTargetView* PostProcessShader::Draw()
 {
 
+	ID3D11RenderTargetView* rtv = this->GetAvailableRTV();
+	m_deviceContext->OMSetRenderTargets(1, &rtv, NULL);
 	this->m_deviceContext->DrawIndexed(6, 0, 0);
 	/*
 		Set renderTarget as null 
 		Set the Rendered frame as a shader resource.
 		return the render Target
 	*/
-	//m_deviceContext->OMSetRenderTargets(1, nullptr, NULL);
-	//m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
-	
+	ID3D11RenderTargetView* temp = nullptr;
+	m_deviceContext->OMSetRenderTargets(1, &temp, NULL);
+	m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
 	return m_RenderTarget[currRTVIndex];
 }
 

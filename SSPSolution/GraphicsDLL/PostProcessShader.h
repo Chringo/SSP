@@ -32,11 +32,11 @@ private:
 public:
 	PostProcessShader();
 	virtual ~PostProcessShader();
-	const bool isActive(PostEffects type) const { return active[type]; };
+	const bool IsEnabled(PostEffects type) const { return active[type]; };
 	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
 	int SetActive(PostEffects type);
 	void Release();
-
+	ID3D11ShaderResourceView* GetActiveShaderResource() { return m_ResourceView[currRTVIndex]; };
 	ID3D11RenderTargetView*  Draw(); // returns the last used RTV
 private:
 	int SetActive();

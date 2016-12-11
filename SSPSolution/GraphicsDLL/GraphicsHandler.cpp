@@ -138,7 +138,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
-	m_shaderControl->SetBackBufferRTV(m_d3dHandler->GetBackbufferRTV());
+	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
@@ -235,11 +235,18 @@ int GraphicsHandler::Render()
 
 	if (postProcessing)
 	{
-		//m_d3dHandler->GetDeviceContext()->OMSetRenderTargets(1, nullptr, NULL);
+		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
 		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
-		m_d3dHandler->GetDeviceContext()->PSSetShaderResources(6,1,&srv);
+		context->PSSetShaderResources(6,1,&srv);
+
 		m_shaderControl->PostProcess();
+		ID3D11ShaderResourceView * tab[1];
+		tab[0] = NULL;
+		context->PSSetShaderResources(6, 1, tab);
 	}
+	
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
