@@ -72,9 +72,10 @@ int ShaderControl::SetBackBufferRTV(ID3D11RenderTargetView * backBufferRTV)
 void ShaderControl::PostProcess()
 {
 	ID3D11RenderTargetView* rtv = this->backBufferRTV;
+	PostProcessShader::PostEffects fx;
 	for (size_t i = 0; i < PostProcessShader::NUM_TYPES; i++)
 	{
-		PostProcessShader::PostEffects fx = PostProcessShader::PostEffects(i);
+		fx = PostProcessShader::PostEffects(i);
 		
 		//If the effect is activated
 		if (((PostProcessShader*)m_shaders[POSTPROCESS])->isActive(fx)) {
@@ -83,8 +84,8 @@ void ShaderControl::PostProcess()
 		}
 	}
 
-	if (rtv != nullptr)
-		m_DeviceContext->OMSetRenderTargets(1, &rtv, NULL);
+
+	m_DeviceContext->OMSetRenderTargets(1, &rtv, NULL);
 }
 
 void ShaderControl::Draw(Resources::Model * model)
