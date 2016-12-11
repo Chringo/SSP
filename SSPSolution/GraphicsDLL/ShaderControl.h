@@ -26,10 +26,10 @@ private:
 	ID3D11Device		*m_Device		 = nullptr;
 	ID3D11DeviceContext *m_DeviceContext = nullptr;
 	ID3D11RenderTargetView* backBufferRTV;
-	Shader* m_shaders[NUM_SHADERS];
 
 	Shaders m_activeShader;
 public:
+	Shader* m_shaders[NUM_SHADERS];
 	ShaderControl();
 	~ShaderControl();
 	bool Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, const DirectX::XMINT2& resolution);

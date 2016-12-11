@@ -1,6 +1,6 @@
 #include "EditorInputHandler.h"
 
-EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler)
+EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler, std::unordered_map<unsigned int, std::vector<Container>>* map)
 {
 	this->m_Width = w;
 	this->m_Height = h;
@@ -25,6 +25,7 @@ EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Ca
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
+	this->m_Map = map;
 	this->m_hwnd = handle;
 	this->m_Camera = camera;
 	this->m_PreviousPos = camera->GetCameraPos();
@@ -48,8 +49,8 @@ void EditorInputHandler::detectInput(double dT)
 
 	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
 
-	float speed = 10.0f * dT;
-	float speedrot = 5.0f * dT;
+	float speed = 5.0f * dT;
+	float speedrot = 2.5f * dT;
 	int result = 1;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	float yaw = 0, pitch = 0;
@@ -260,7 +261,7 @@ void EditorInputHandler::detectInput(double dT)
 
 	if (keyBoardState[DIK_F] & 0x80)
 	{
-		this->m_Camera->Initialize();
+		this->m_Camera->Initialize(this->m_Width / this->m_Height);
 		this->m_Camera->Update();
 	}
 
@@ -284,9 +285,11 @@ void EditorInputHandler::detectInput(double dT)
 		this->m_Camera->Update();
 	}
 
+	if ((yaw || pitch))
+	{
 		float rotationAmount = DirectX::XM_PI / 8;
 
-		DirectX::XMFLOAT4 newRotation = 
+		DirectX::XMFLOAT4 newRotation =
 			DirectX::XMFLOAT4(
 				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
 				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
@@ -296,11 +299,15 @@ void EditorInputHandler::detectInput(double dT)
 
 		this->m_Camera->SetRotation(newRotation);
 		this->m_Camera->Update();
-	this->m_Camera->Update();
+	}
+
 }
 float EditorInputHandler::Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection)
 {
-	//for (int i = 0; i < MODELAMT / 3; i++)
+	OBB test;
+
+	this->m_PhysicsHandler->IntersectRayOBB(rayOrigin,rayDirection, test);
+	//for (int i = 0; i <  this->m_Communicator/ 3; i++)
 	//{
 	//
 	//	//Triangle's vertices, V1, V2, V3

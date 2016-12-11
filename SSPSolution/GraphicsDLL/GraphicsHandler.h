@@ -8,7 +8,7 @@
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
-//#define GRAPHICSDLL_EXPORTS
+
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
@@ -40,7 +40,9 @@ private:
 
 	//Helper functions
 	int IncreaseArraySize();
+	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
+	int DecreaseArraySize(int decreaseTo);
 
 	bool m_gridEnabled;
 public:
@@ -48,11 +50,17 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
 
+	int SetComponentArraySize(int newSize);
+	GraphicsComponent* GetNextAvailableComponent();
+	int UpdateComponentList();
+
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
+	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
 	
 	//temp
