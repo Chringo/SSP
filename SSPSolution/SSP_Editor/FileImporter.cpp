@@ -59,6 +59,27 @@ void FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials")) != NULL)
+		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials/";
+				pathName += ent->d_name;
+				//AddListItem(ListItem::MATERIAL, ent->d_name);
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		/* could not open directory */
+		perror("");
+	}
 	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
 	//{
 	//	/* append all the texture names from the directory */
@@ -195,6 +216,28 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 void FileImporter::handleMat(char * m_bbf_object)
 {
+	Resources::Status stat;
+	Resources::Resource::RawResourceData * res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	MaterialHeader* m_MatH = (MaterialHeader*)(m_bbf_object + sizeof(MainHeader));
+
+	Resources::Material* newMaterial = new Resources::Material(*res_Data);
+	//m_MatH->m_EmissiveValue;
+
+	//Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim)((char)m_meshH + sizeof(MeshHeader));
+	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+	newMaterial->SetMetallic(m_MatH->m_Metallic);
+	newMaterial->SetRoughness(m_MatH->m_Roughness);
+	newMaterial->SetEmissive(m_MatH->m_EmissiveValue);
+
+	for (int i = 0; i < m_models.size(); ++i)
+	{
+		if (m_models.at(i)->GetRawModelData()->materialId == newMaterial->GetId())
+		{
+			m_models.at(i)->SetMaterial(newMaterial);
+		}
+	}
 }
 
 void FileImporter::handleModel(char * m_bbf_object)

@@ -15,6 +15,7 @@ private:
 	{
 		MODEL = 0,
 		ANIM  = 1,
+		MATERIAL = 2,
 	};
 
 	/*variables*/

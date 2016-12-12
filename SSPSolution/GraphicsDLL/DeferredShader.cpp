@@ -558,7 +558,7 @@ int DeferredShader::DrawGrid(Resources::Model * model)
 
 int DeferredShader::DrawFromEditor(Resources::Model * model)
 {
-	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
+	m_deviceContext->PSSetShader(this->m_pixelShader, nullptr, NULL);
 
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
@@ -567,6 +567,22 @@ int DeferredShader::DrawFromEditor(Resources::Model * model)
 	UINT32 offset = 0;
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+	Resources::Material * mat = model->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+
+
+	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 

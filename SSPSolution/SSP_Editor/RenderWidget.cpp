@@ -43,6 +43,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			modelPtr = &got->second;
 			for (size_t j = 0; j < modelPtr->size(); j++)
 			{
+				//this->m_Communicator->m_GraphicsHandler->RenderGrid();
 				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 					this->m_fileImporter->get_model(modelPtr->at(j).component.modelID),
 					&modelPtr->at(j).component

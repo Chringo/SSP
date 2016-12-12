@@ -53,7 +53,7 @@ public:
 	int InitializeGridShader(ID3D11Device * device);
 
 	int DrawGrid(Resources::Model * model);
-	int DrawFromEditor(Resources::Model * model);
+	int DrawFromEditor(Resources::Model * model1);
 private:
 	int DrawInstanced();
 };
