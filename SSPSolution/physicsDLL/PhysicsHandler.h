@@ -78,8 +78,9 @@ private:
 	DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
 	float CrossProductf(const DirectX::XMVECTOR &v1, const DirectX::XMVECTOR &v2) const;
 
-
 	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
+
+	
 
 	//void CreateBB();
 	void CreateDefaultBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
@@ -94,8 +95,10 @@ public:
 	void ShutDown();
 	void Update();
 
+	void RotateBB_X(PhysicsComponent* src);
+
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
-	void DoBB_Rotation(PhysicsComponent* src);
+	void Add_toRotateVec(PhysicsComponent* src);
 
 	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
 	void AdjustChainLinkPosition();

@@ -71,17 +71,22 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
+	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
 
-	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0.2);
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
 
+	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.0);
+	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
+
 	this->m_physicsHandler.CreatePhysicsComponent(test);
-	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.RotateBB_X(this->m_physicsHandler.getDynamicComponents(0));
+	this->m_physicsHandler.CreatePhysicsComponent(test2);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -108,11 +113,6 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
-
-		//Update the network module
-		this->m_networkModule.Update();
-
-		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
@@ -132,8 +132,6 @@ int System::Run()
 			this->FullscreenToggle();
 		}
 		//std::cout << int(totalTime) << "\n";
-		//Render
-		this->m_graphicsHandler->Render();
 
 	}
 	if (this->m_fullscreen)
@@ -145,6 +143,8 @@ int System::Run()
 int System::Update(float deltaTime)
 {
 	int result = 1;
+
+	
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
 	std::list<CameraPacket> cList;
@@ -243,6 +243,15 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+
+	//Update the network module
+	this->m_networkModule.Update();
+
+
+	this->m_physicsHandler.Update();
+
+	//Render
+	this->m_graphicsHandler->Render();
 	return result;
 }
 

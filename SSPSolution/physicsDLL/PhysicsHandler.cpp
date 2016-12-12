@@ -11,7 +11,7 @@ bool PhysicsHandler::IntersectAABB()
 	bool possibleCollitionZ = false;
 	PhysicsComponent* PC_ptr = nullptr;
 	PhysicsComponent* PC_toCheck = nullptr;
-
+	bool result = false;
 
 	int nrOfComponents = this->m_dynamicComponents.size();
 	float vecToObj[3];
@@ -36,20 +36,21 @@ bool PhysicsHandler::IntersectAABB()
 			possibleCollitionX = (fabs(vecToObj[0]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
 			if (possibleCollitionX == true)
 			{
-				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
+				possibleCollitionY = (fabs(vecToObj[1]) <= (PC_toCheck->PC_AABB.ext[1] + PC_ptr->PC_AABB.ext[1]));
 				if (possibleCollitionY == true)
 				{
-					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]));
+					possibleCollitionZ = (fabs(vecToObj[2]) <= (PC_toCheck->PC_AABB.ext[2] + PC_ptr->PC_AABB.ext[2]));
 					if (possibleCollitionZ == true)
 					{
 						// apply OOB check for more precisition
-						this->DoIntersectionTestOBB(PC_toCheck, PC_ptr);
+
+						result = this->DoIntersectionTestOBB(PC_toCheck, PC_ptr);
 					}
 				}
 			}
 		}
 	}
-	return false;
+	return result;
 }
 
 bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB)
@@ -63,7 +64,7 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	DirectX::XMFLOAT3 posA;
 	DirectX::XMFLOAT3 posB;
 
-//	DirectX::XM
+
 
 	DirectX::XMStoreFloat3(&posA, objA->PC_pos);
 	DirectX::XMStoreFloat3(&posB, objB->PC_pos);
@@ -325,6 +326,19 @@ DirectX::XMFLOAT3 PhysicsHandler::VectorSubstract(const DirectX::XMFLOAT3 & v1, 
 	return result;
 }
 
+void PhysicsHandler::RotateBB_X(PhysicsComponent* src)
+{
+	
+	DirectX::XMMATRIX xMatrix;
+	DirectX::XMMATRIX test = src->PC_OBB.ort;
+	
+	//read the value of PC_rotation
+	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
+
+	xMatrix = DirectX::XMMatrixRotationX(45.0);
+	src->PC_OBB.ort = DirectX::XMMatrixMultiply(test, xMatrix);
+}
+
 void PhysicsHandler::CreateDefaultBB(const DirectX::XMVECTOR & pos, PhysicsComponent * src)
 {
 	this->CreateDefaultAABB(pos, src);
@@ -384,15 +398,6 @@ void PhysicsHandler::ShutDown()
 void PhysicsHandler::Update()
 {
 	float dt = 0.01f;
-	this->checkCollition();
-
-	DirectX::XMFLOAT3 testPos(0, 0, 1);
-	DirectX::XMVECTOR derp;
-
-	OBB* test = &(this->m_dynamicComponents.at(0)->PC_OBB);
-	derp = DirectX::XMLoadFloat3(&testPos);
-
-	this->TranslateBB(derp, this->m_dynamicComponents.at(0));
 	
 
 	int nrOfChainObjects = this->m_chain.CH_links.size();
@@ -407,6 +412,11 @@ void PhysicsHandler::Update()
 
 	}
 
+	if (this->IntersectAABB())
+	{
+		printf("Collition has been detected\n");
+	}
+	//this->checkCollition();
 	this->AdjustChainLinkPosition();
 	//SimpleCollition(dt);
 }
@@ -426,7 +436,7 @@ void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsCompone
 	src->PC_pos = DirectX::XMVector3Transform(src->PC_pos, worldMatrix);
 }
 
-void PhysicsHandler::DoBB_Rotation(PhysicsComponent* src)
+void PhysicsHandler::Add_toRotateVec(PhysicsComponent* src)
 {
 	src->PC_rotation = DirectX::XMVectorAdd(src->PC_rotation, src->PC_rotationVelocity);
 }
