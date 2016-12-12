@@ -29,14 +29,15 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	//SEND COMPONENT DATA TO HANDLER
 	//this->m_Communicator->m_GraphicsHandler->Sendshit();
 	//THEN RENDER
+
+	if (!this->m_Communicator->m_Map.empty())
+	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
 	std::vector<Resources::Model*>* modelPtr = this->m_fileImporter->get_M_models();
 	this->m_Communicator->m_GraphicsHandler->clearEditor();
 
-	if (!this->m_Communicator->m_Map.empty())
-	{
-		for (size_t i = 0; i < modelPtr->size(); i++)
+	for (size_t i = 0; i < modelPtr->size(); i++)
 		{
 			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.find(modelPtr->at(i)->GetId());
 			
@@ -62,7 +63,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 		this->m_Communicator->m_GraphicsHandler->Render();
 	}
-	std::cout << this->m_frameTime << std::endl;
+	std::cout << "FPS: " << this->m_fps << std::endl;
 	this->update();
 }
 
