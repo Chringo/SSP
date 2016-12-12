@@ -79,11 +79,15 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
 
-	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0.2);
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
 
+	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.1);
+	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
+
 	this->m_physicsHandler.CreatePhysicsComponent(test);
-	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.RotateBB_X(this->m_physicsHandler.getDynamicComponents(0));
+	this->m_physicsHandler.CreatePhysicsComponent(test2);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
