@@ -5,12 +5,12 @@
 
 void GraphicsHandler::RenderBoundingVolume(OBB & box)
 {
-	obbBoxes.push_back(box);
+	obbBoxes.push_back(&box);
 }
 
 void GraphicsHandler::RenderBoundingVolume(AABB & box)
 {
-	aabbBoxes.push_back(box);
+	aabbBoxes.push_back(&box);
 }
 #endif // _DEBUG
 
@@ -247,6 +247,8 @@ int GraphicsHandler::Render()
 	{
 		m_debugRender.Render(aabbBoxes.at(i));
 	}
+	obbBoxes.clear();
+	aabbBoxes.clear();
 	//Draw Debug.
 #endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
