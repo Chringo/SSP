@@ -493,6 +493,7 @@ int DeferredShader::Draw(Resources::Model * model)
 		numViews += 1;
 	}
 
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
