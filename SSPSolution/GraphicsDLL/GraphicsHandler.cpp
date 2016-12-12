@@ -1,5 +1,19 @@
 #include "GraphicsHandler.h"
 
+#ifdef _DEBUG
+
+
+void GraphicsHandler::RenderBoundingVolume(OBB & box)
+{
+	obbBoxes.push_back(box);
+}
+
+void GraphicsHandler::RenderBoundingVolume(AABB & box)
+{
+	aabbBoxes.push_back(box);
+}
+#endif // _DEBUG
+
 int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
@@ -180,6 +194,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 
 #ifdef _DEBUG
+	 obbBoxes.reserve(20);
+	 aabbBoxes.reserve(20);
 	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 #endif // _DEBUG
 
@@ -253,10 +269,20 @@ int GraphicsHandler::Render()
 	}
 	
 #ifdef _DEBUG
-	AABB box;
+	OBB box;
+	box.ext[0] = 2.0f;
+	box.ext[1] = 2.0f;
+	box.ext[2] = 2.0f;
 	m_debugRender.SetActive();
 
-	m_debugRender.Render(box);
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render(obbBoxes.at(i));
+	}
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(aabbBoxes.at(i));
+	}
 	//Draw Debug.
 #endif // _DEBUG
 	this->m_d3dHandler->PresentScene();

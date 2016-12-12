@@ -24,6 +24,10 @@ private:
 
 #ifdef _DEBUG
 	DebugRenderer m_debugRender;
+	std::vector<OBB> obbBoxes;
+	std::vector<AABB> aabbBoxes;
+	void RenderBoundingVolume(OBB& box);
+	void RenderBoundingVolume(AABB& box);
 #endif // _DEBUG
 
 	Direct3DHandler*		m_d3dHandler;

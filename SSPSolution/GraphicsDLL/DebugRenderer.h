@@ -17,6 +17,7 @@ private:
 			this->y = y;
 			this->z = z;
 		}
+		
 	};
 	Point cubePoints[NUM_POINTS];
 	ID3D11Buffer*	      m_pointBuffer;

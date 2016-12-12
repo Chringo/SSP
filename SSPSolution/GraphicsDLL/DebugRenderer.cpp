@@ -225,12 +225,26 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(AABB & box)
 ID3D11Buffer * DebugRenderer::GenerateLinelist(OBB & box)
 {
 	
+	DirectX::XMVECTOR xDir = box.ort.r[0];
+	DirectX::XMVECTOR yDir = box.ort.r[1];
+	DirectX::XMVECTOR zDir = box.ort.r[2];
+	xDir = DirectX::XMVectorScale(xDir, box.ext[0]);
+	yDir = DirectX::XMVectorScale(yDir, box.ext[1]);
+	zDir = DirectX::XMVectorScale(zDir, box.ext[2]);
+
 	//Create the max points
 	Point maxX, minX, maxY, minY, maxZ, minZ;
 	//see end of file
-	cubePoints[0] = Point(-0.5, 0.5, 0.5);		//0
-	cubePoints[1] = Point(-0.5, -0.5, 0.5);		//1
-	cubePoints[2] = Point(0.5, -0.5, 0.5);		//2
+	DirectX::XMVECTOR point;
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(zDir, yDir), xDir);
+	cubePoints[0] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//0
+
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDir, yDir), xDir);
+	cubePoints[1] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//1
+
+	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(zDir, yDir), xDir);
+	cubePoints[2] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//2
+
 	cubePoints[3] = Point(0.5, 0.5, 0.5);		//3
 	cubePoints[4] = Point(0.5, -0.5, -0.5);		//4
 	cubePoints[5] = Point(0.5, 0.5, -0.5);		//5
