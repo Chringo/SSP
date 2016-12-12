@@ -1,5 +1,5 @@
-#ifndef AIDLL_AICOMPONENT_H
-#define AIDLL_AICOMPONENT_H
+#ifndef AIDLL_AI_AIHANDLER_H
+#define AIDLL_AI_AIHANDLER_H
 
 #ifdef AIDLL_EXPORTS
 #define AIDLL_API __declspec(dllexport)
