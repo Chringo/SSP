@@ -404,8 +404,13 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	}
 	case ShaderLib::InstancedAnimated:
 		break;
-	case ShaderLib::Grid:
+	case ShaderLib::Wireframe:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
+	}
 	default:
 		break;
 	}

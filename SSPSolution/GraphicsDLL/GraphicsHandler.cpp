@@ -207,9 +207,12 @@ int GraphicsHandler::InitializeGrid()
 
 int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* component) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
-		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-		m_shaderControl->Draw(model, component);
-		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
+
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
+	m_shaderControl->Draw(model, component);
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;
 }
@@ -225,16 +228,9 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
-	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
 	//ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
-
 	this->m_shaderControl->Draw(model, component);
 	//((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
-
-	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
-
-
-
 
 	return 0;
 }
