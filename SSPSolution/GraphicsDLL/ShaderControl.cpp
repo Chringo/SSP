@@ -23,6 +23,12 @@ bool ShaderControl::Initialize(ID3D11Device * gDevice, ID3D11DeviceContext * gDe
 	return true;
 }
 
+bool ShaderControl::InitializeWireframe(ID3D11Device * device)
+{
+	((DeferredShader*)m_shaders[DEFERRED])->InitializeGridShader(device);
+	return true;
+}
+
 void ShaderControl::Release()
 {
 	for (size_t i = 0; i < NUM_SHADERS; i++)

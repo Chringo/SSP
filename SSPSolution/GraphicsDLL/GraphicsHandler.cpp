@@ -145,8 +145,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera->Initialize();
 
 	this->m_CreateTempsTestComponents();
-	
-
 
 	return 0;
 	
@@ -201,7 +199,8 @@ int GraphicsHandler::InitializeGrid()
 {
 	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
 	m_d3dHandler->InitializeGridRasterizer();
-	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
+
+	this->m_shaderControl->InitializeWireframe(this->m_d3dHandler->GetDevice());
 	return 0;
 }
 
