@@ -176,6 +176,9 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 	if (!newMesh->SetIndices(indices, m_meshH->indexLength, this->m_Device, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
+
+
+	BoundingBoxHeader* obbdata = (BoundingBoxHeader*)(m_bbf_object + sizeof(MainHeader) + sizeof(MeshHeader));
 	
 	/*we've already loaded one or more meshes into the scene*/
 	//if (m_models.size() != 0)
@@ -207,6 +210,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 		if (m_models.at(i)->GetRawModelData()->meshId == newMesh->GetId())
 		{
 			m_models.at(i)->SetMesh(newMesh);
+			m_models.at(i)->SetOBBData(obbdata);
 		}
 	}
 	/*add to the ui here*/

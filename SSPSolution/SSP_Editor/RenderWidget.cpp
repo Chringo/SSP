@@ -26,10 +26,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime);
 	}
 
-	//SEND COMPONENT DATA TO HANDLER
-	//this->m_Communicator->m_GraphicsHandler->Sendshit();
-	//THEN RENDER
-
 	if (!this->m_Communicator->m_Map.empty())
 	{
 	Resources::Status st;
@@ -48,7 +44,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				InstancePtr = &got->second;
 				for (size_t j = 0; j < InstancePtr->size(); j++)
 				{
-					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+					this->m_Communicator->m_GraphicsHandler->RenderGrid(
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);

@@ -1,6 +1,19 @@
 #ifndef RESOURCELIB_FILEHEADERS_H
 #define RESOURCELIB_FILEHEADERS_H
 
+struct Vector2
+{
+	float u, v;
+};
+struct Vector3
+{
+	float x, y, z;
+};
+struct Vector4
+{
+	float x, y, z, w;
+};
+
 struct MainHeader
 {
 	unsigned int id;
@@ -13,6 +26,13 @@ struct MeshHeader{
 	unsigned int numVerts    = 0;
 	unsigned int indexLength = 0;
 	bool skeleton;
+};
+struct BoundingBoxHeader
+{
+	float extension; //skalären
+	Vector3 extensionDir;
+	Vector3 position;
+	//float min, max, centerPoint;
 };
 struct SkeletonHeader {
 	unsigned int jointCount = 0;
