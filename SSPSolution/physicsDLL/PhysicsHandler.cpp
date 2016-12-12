@@ -586,6 +586,7 @@ void PhysicsHandler::CreateDefaultOBB(const DirectX::XMVECTOR & pos, PhysicsComp
 {
 	//AABB components
 
+	src->PC_OBB.pos = pos;
 
 	src->PC_OBB.ext[0] = 1.0f;
 	src->PC_OBB.ext[1] = 1.0f;

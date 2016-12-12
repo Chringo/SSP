@@ -20,6 +20,7 @@ struct AABB
 
 struct OBB
 {
+	DirectX::XMVECTOR pos;
 	float ext[3];
 	DirectX::XMMATRIX ort;
 };
