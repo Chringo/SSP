@@ -9,8 +9,16 @@
 
 class AIDLL_API AIHandler
 {
+private:	// Variables
+
 public:
 	AIHandler();
 	~AIHandler();
+	int Shutdown();
+
+	int Initialize();
+	int Update(float deltaTime);
+private:	// Helper functions
+
 };
 #endif
