@@ -32,36 +32,32 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	if (!this->m_Communicator->m_Map.empty())
 	{
 		Resources::Status st;
-		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.begin();
-		std::vector<Container>* modelPtr = nullptr;
 
 
-		if (got == this->m_Communicator->m_Map.end()) { // if  does not exists in memory
+		for (size_t i = 0; i < this->m_Communicator->m_Map.size(); i++)
+		{
+			//this->m_Communicator->m_Map.at(i).
 
+				for (size_t j = 0; j < this->m_Communicator->m_Map.at(i).size(); j++)
+				{
+					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+						this->m_fileImporter->get_model(this->m_Communicator->m_Map.at(i).at(j).component.modelID),
+						&this->m_Communicator->m_Map.at(i).at(j).component
+					);
+				}
 		}
-		else {
-			modelPtr = &got->second;
-			for (size_t j = 0; j < modelPtr->size(); j++)
-			{
-				//this->m_Communicator->m_GraphicsHandler->RenderGrid();
-				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
-					this->m_fileImporter->get_model(modelPtr->at(j).component.modelID),
-					&modelPtr->at(j).component
-				);
-			}
-
-		}
-
 	}
 	else
 	{
 		this->m_Communicator->m_GraphicsHandler->Render();
 	}
+	std::cout << this->m_frameTime << std::endl;
 	this->update();
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
 {
+	InitDosConsole();
 	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
