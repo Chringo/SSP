@@ -227,6 +227,16 @@ void FileImporter::handleMat(char * m_bbf_object)
 	//Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim)((char)m_meshH + sizeof(MeshHeader));
 	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
 	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+	
+	Resources::TextureHandler* test2 = new Resources::TextureHandler(5,this->m_Device);
+	Resources::Texture *test = test2->GetPlaceHolderTextures();
+
+	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);
+	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);
+	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);
+	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);
+	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);
+
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);
 	newMaterial->SetEmissive(m_MatH->m_EmissiveValue);
