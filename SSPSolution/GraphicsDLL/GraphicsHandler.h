@@ -50,6 +50,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
 
@@ -59,6 +60,7 @@ public:
 
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
+	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
 	
 	//temp
