@@ -209,6 +209,13 @@ int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* comp
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
 
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	/********************/
+
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
 	m_shaderControl->Draw(model, component);
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);

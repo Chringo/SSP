@@ -470,7 +470,10 @@ void DeferredShader::Release()
 			this->m_deferredSRV[i] = nullptr;
 		}
 		if (this->m_gridPixelShader)
+		{
 			this->m_gridPixelShader->Release();
+			this->m_gridPixelShader = nullptr;
+		}
 	}
 }
 
