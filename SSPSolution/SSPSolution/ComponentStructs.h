@@ -7,39 +7,28 @@ enum EVENT
 {
 	COLLIDED
 };
-
-struct GraphicsComponent 
-{
-	int active;
-	int modelID;
-	int materialID;
-	DirectX::XMMATRIX worldTransform;
-	bool animated;
-};
-
-struct GraphicsAnimComponent
-{
-	int active;
-	int modelID;
-	int materialID;
-	int jointCount;
-	DirectX::XMMATRIX worldTransform;
-	DirectX::XMMATRIX finalTransforms[32];
-};
-
-
-struct PhysicsComponent 
-{
-	int active;
-	bool isDynamic;
-	int entityID;
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 velocity;
-	DirectX::XMFLOAT3 rotation;
-	DirectX::XMFLOAT3 rotationVelocity;
-	double gravityInfluence;
-	bool collides;
-	std::vector<EVENT> eventList;
-};
+//
+//struct GraphicsComponent 
+//{
+//	int active;
+//	int modelID;
+//	int materialID;
+//	DirectX::XMMATRIX worldTransform;
+//	bool animated;
+//};
+//
+//struct PhysicsComponent 
+//{
+//	int active;
+//	bool isDynamic;
+//	int entityID;
+//	DirectX::XMFLOAT3 position;
+//	DirectX::XMFLOAT3 velocity;
+//	DirectX::XMFLOAT3 rotation;
+//	DirectX::XMFLOAT3 rotationVelocity;
+//	double gravityInfluence;
+//	bool collides;
+//	std::vector<EVENT> eventList;
+//};
 
 #endif

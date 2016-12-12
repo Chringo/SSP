@@ -2,8 +2,9 @@
 
 
 
-FileImporter::FileImporter()
+FileImporter::FileImporter(QTreeWidget *itemList)
 {
+	this->m_itemList = itemList;
 	m_fileLoader = Resources::FileLoader::GetInstance();
 }
 
@@ -27,6 +28,7 @@ void FileImporter::ImportFromServer()
 			{
 				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Models/";
 				pathName += ent->d_name;
+				AddListItem(ListItem::MODEL, ent->d_name);
 				m_filepaths.push_back(pathName);
 			}
 		}
@@ -116,6 +118,16 @@ void FileImporter::LoadImportedFiles()
 	}
 }
 
+Resources::Model * FileImporter::get_model(unsigned int modelID)
+{
+	for (int i = 0; i < this->m_models.size(); ++i)
+	{
+		if (modelID == m_models.at(i)->GetId())
+			return m_models.at(i);
+	}
+	return nullptr;
+}
+
 void FileImporter::handleMesh(char * m_bbf_object)
 {
 	/*create model type here and then when reading */
@@ -131,17 +143,17 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	if (m_meshH->skeleton)
 	{
 		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
 	}
 	else
 	{
 		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
 	}
 
-	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
+	if (!newMesh->SetIndices(indices, m_meshH->indexLength, this->m_Device, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
 	
 	/*we've already loaded one or more meshes into the scene*/
@@ -222,5 +234,12 @@ void FileImporter::handleModel(char * m_bbf_object)
 	newModel->Create(res_Data, raw_model_Data, true);
 
 	m_models.push_back(newModel);
+}
+
+void FileImporter::AddListItem(ListItem category, std::string name)
+{
+	QTreeWidgetItem *itm = new QTreeWidgetItem();
+	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
 }

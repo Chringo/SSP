@@ -59,7 +59,6 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)SDL-SSP\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ComponentHandler.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationStorer.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="ComponentHandler.h" />
     <ClInclude Include="AnimationStorer.h" />
     <ClInclude Include="ComponentStructs.h" />
     <ClInclude Include="Entity.h" />

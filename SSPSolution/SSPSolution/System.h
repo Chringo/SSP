@@ -3,11 +3,13 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <iostream>
+#include "InputHandler.h"
+#include "GameStateHandler.h"
+//Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "Animation.h"
-#include "InputHandler.h"
-#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")

@@ -9,7 +9,8 @@ public:
 	LevelSelectState();
 	~LevelSelectState();
 
-	int Initialize();
+	int Initialize(GameStateHandler* gsh);
+	int Update(float dt, InputHandler * inputHandler);
 
 private:
 };
