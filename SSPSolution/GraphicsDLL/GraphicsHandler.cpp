@@ -1,5 +1,19 @@
 #include "GraphicsHandler.h"
 
+#ifdef _DEBUG
+
+
+void GraphicsHandler::RenderBoundingVolume(OBB & box)
+{
+	obbBoxes.push_back(&box);
+}
+
+void GraphicsHandler::RenderBoundingVolume(AABB & box)
+{
+	aabbBoxes.push_back(&box);
+}
+#endif // _DEBUG
+
 int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
@@ -138,7 +152,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
-	m_shaderControl->SetBackBufferRTV(m_d3dHandler->GetBackbufferRTV());
+	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
@@ -152,6 +166,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	/*TEMP MODELS*/
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
+
+#ifdef _DEBUG
+	 obbBoxes.reserve(20);
+	 aabbBoxes.reserve(20);
+	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+#endif // _DEBUG
 
 	return 0;
 	
@@ -198,6 +218,39 @@ int GraphicsHandler::Render()
 	/*TEMP CBUFFER STUFF*/
 
 
+	if (postProcessing)
+	{
+		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
+		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		context->PSSetShaderResources(6,1,&srv);
+
+		m_shaderControl->PostProcess();
+		ID3D11ShaderResourceView * tab[1];
+		tab[0] = NULL;
+		context->PSSetShaderResources(6, 1, tab);
+	}
+	
+#ifdef _DEBUG
+	OBB box;
+	box.ext[0] = 2.0f;
+	box.ext[1] = 2.0f;
+	box.ext[2] = 2.0f;
+	m_debugRender.SetActive();
+
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*obbBoxes.at(i));
+	}
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*aabbBoxes.at(i));
+	}
+	obbBoxes.clear();
+	aabbBoxes.clear();
+	//Draw Debug.
+#endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
@@ -309,6 +362,10 @@ void GraphicsHandler::Shutdown()
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 	delete[] this->m_animGraphicsComponents;
+#ifdef _DEBUG
+	m_debugRender.Release();
+#endif // _DEBUG
+
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
