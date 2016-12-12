@@ -146,8 +146,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera->Initialize();
 
 	this->m_CreateTempsTestComponents();
-
-//	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
 	
 	this->InitializeGrid();
 	
@@ -177,7 +175,9 @@ int GraphicsHandler::Render()
 	this->m_camera->GetViewMatrix(cam.cView);
 	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
+
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
@@ -189,16 +189,6 @@ int GraphicsHandler::Render()
 	//}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
-
-
-
-	if (m_gridEnabled)
-	{
-		int ett;
-		float tva;
-		this->RenderGrid(ett, tva);
-	}
-	/********/
 
 
 	m_shaderControl->DrawFinal();
@@ -440,27 +430,6 @@ int GraphicsHandler::CreateTriangle()
 	if (FAILED(hresult)) {
 		return 1;
 	}
-
-	return 0;
-}
-
-int GraphicsHandler::SetTriangle()
-{
-	unsigned int stride;
-	unsigned offset;
-
-	//Set vertex buffer stride and offset
-	stride = sizeof(DirectX::XMFLOAT3);
-	offset = 0;
-
-	//Set the vertex buffer to active in the input assembly so it can rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetVertexBuffers(0, 1, &this->m_vertexBuffer, &stride, &offset);
-
-	//Set the index buffer to active in the input assembler so it can be rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(this->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
-	this->m_d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return 0;
 }
