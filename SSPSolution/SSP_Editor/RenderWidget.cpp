@@ -29,38 +29,46 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	//SEND COMPONENT DATA TO HANDLER
 	//this->m_Communicator->m_GraphicsHandler->Sendshit();
 	//THEN RENDER
+	Resources::Status st;
+	std::vector<Container>* InstancePtr = nullptr;
+	std::vector<Resources::Model*>* modelPtr = this->m_fileImporter->get_M_models();
+	this->m_Communicator->m_GraphicsHandler->clearEditor();
+
 	if (!this->m_Communicator->m_Map.empty())
 	{
-		Resources::Status st;
-		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.begin();
-		std::vector<Container>* modelPtr = nullptr;
+		for (size_t i = 0; i < modelPtr->size(); i++)
+		{
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.find(modelPtr->at(i)->GetId());
+			
+			if (got == this->m_Communicator->m_Map.end()) { // if  does not exists in memory
 
+			}
+			else {
+				InstancePtr = &got->second;
+				for (size_t j = 0; j < InstancePtr->size(); j++)
+				{
+					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+						modelPtr->at(i),
+						&InstancePtr->at(j).component
+					);
+				}
 
-		if (got == this->m_Communicator->m_Map.end()) { // if  does not exists in memory
-
-		}
-		else {
-			modelPtr = &got->second;
-			for (size_t j = 0; j < modelPtr->size(); j++)
-			{
-				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
-					this->m_fileImporter->get_model(modelPtr->at(j).component.modelID),
-					&modelPtr->at(j).component
-				);
 			}
 
 		}
-
+		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	}
 	else
 	{
 		this->m_Communicator->m_GraphicsHandler->Render();
 	}
+	std::cout << this->m_frameTime << std::endl;
 	this->update();
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
 {
+	InitDosConsole();
 	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);

@@ -60,6 +60,8 @@ public:
 	int InitializeGrid();
 	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
+	int renderFinalEditor();
+	int clearEditor();
 	void Shutdown();
 
 	//TEMP STUFF

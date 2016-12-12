@@ -182,8 +182,8 @@ int GraphicsHandler::Render()
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
 	m_shaderControl->DrawFinal();
@@ -216,7 +216,6 @@ int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* comp
 
 int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
 {
-	m_shaderControl->ClearFrame();
 
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
 	this->m_camera->GetCameraPos(cam.cPos);
@@ -235,12 +234,24 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 
-	m_shaderControl->DrawFinal();
 
-	this->m_d3dHandler->PresentScene();
 
 	return 0;
 }
+
+int GraphicsHandler::renderFinalEditor()
+{
+	m_shaderControl->DrawFinal();
+	this->m_d3dHandler->PresentScene();
+	return 0;
+}
+
+int GraphicsHandler::clearEditor()
+{
+	m_shaderControl->ClearFrame();
+	return 0;
+}
+
 
 void GraphicsHandler::Shutdown()
 {
