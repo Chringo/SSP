@@ -145,33 +145,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
 
-	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
-		this->m_graphicsComponents[i] = new GraphicsComponent;
-	}
-
-	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
-
-	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
-	this->m_nrOfGraphicsComponents++;
-
-	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
-	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
-	this->m_nrOfGraphicsComponents++;
-
-	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 6.f);
-	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
-	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
-	this->m_nrOfGraphicsComponents++;
-
-//	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	this->m_CreateTempsTestComponents();
 	
 	this->InitializeGrid();
 	
@@ -201,30 +175,20 @@ int GraphicsHandler::Render()
 	this->m_camera->GetViewMatrix(cam.cView);
 	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
+
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
-		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
-		m_shaderControl->Draw(m_modelsPtr[0]);
+		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
 	}
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
-	m_shaderControl->Draw(m_modelsPtr[1]);
-
-
-
-	if (m_gridEnabled)
-	{
-		int ett;
-		float tva;
-		this->RenderGrid(ett, tva);
-	}
-	/********/
+	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
 	m_shaderControl->DrawFinal();
@@ -312,7 +276,7 @@ void GraphicsHandler::Shutdown()
 		this->m_indexBuffer->Release();
 		this->m_indexBuffer = nullptr;
 	}
-	if (this->m_vertexBuffer) 
+	if (this->m_vertexBuffer)
 	{
 		this->m_vertexBuffer->Release();
 		this->m_vertexBuffer = nullptr;
@@ -335,8 +299,16 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
+
+	for (int i = 1; i < 2; i++)
+	{
+		delete this->m_animGraphicsComponents[i];
+		this->m_animGraphicsComponents[i] = nullptr;
+	}
+
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
+	delete[] this->m_animGraphicsComponents;
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
@@ -394,91 +366,54 @@ int GraphicsHandler::UpdateComponentList()
 	return result;
 }
 
-int GraphicsHandler::CreateTriangle()
+void GraphicsHandler::SetTempAnimComponent(void * component)
 {
-	DirectX::XMFLOAT3 vertices[3];
-	unsigned long indices[3];
-	int sizeVertices = 3;
-	int sizeIndices = 3;
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	D3D11_BUFFER_DESC indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData;
-	D3D11_SUBRESOURCE_DATA indexData;
-	HRESULT hresult;
-
-	vertices[0] = DirectX::XMFLOAT3(-.5f, -.5f, 2.0f);  //bottom left
-
-	vertices[1] = DirectX::XMFLOAT3(0.0f, .5f, 2.0f);  //top mid
-											   
-	vertices[2] = DirectX::XMFLOAT3(.5f, -.5f, 2.0f);  //bottom right
-
-														 //Load the index array with data
-	for (int i = 0; i < sizeIndices; i++)
-	{
-		indices[i] = i;
-	}
-
-	//Set the description of the static vertex buffer
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * sizeVertices;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	//Give the subresource structure a pointer to the vertex data
-	ZeroMemory(&vertexData, sizeof(vertexData));
-	vertexData.pSysMem = &vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	//Create the vertex buffer
-	hresult = this->m_d3dHandler->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
-	if (FAILED(hresult)) {
-		return 1;
-	}
-
-	//Set up the description of the static index buffer
-	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * sizeIndices;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	ZeroMemory(&indexData, sizeof(indexData));
-	indexData.pSysMem = &indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	//Create the index buffer
-	hresult = this->m_d3dHandler->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &this->m_indexBuffer);
-	if (FAILED(hresult)) {
-		return 1;
-	}
-
-	return 0;
+	m_animGraphicsComponents[0] = (penis*)component;
 }
 
-int GraphicsHandler::SetTriangle()
+void GraphicsHandler::m_CreateTempsTestComponents()
 {
-	unsigned int stride;
-	unsigned offset;
+	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
+		this->m_graphicsComponents[i] = nullptr;
+	}
 
-	//Set vertex buffer stride and offset
-	stride = sizeof(DirectX::XMFLOAT3);
-	offset = 0;
+	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
 
-	//Set the vertex buffer to active in the input assembly so it can rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetVertexBuffers(0, 1, &this->m_vertexBuffer, &stride, &offset);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
 
-	//Set the index buffer to active in the input assembler so it can be rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(this->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
 
-	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
-	this->m_d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	tempWorld = DirectX::XMMatrixTranslation(-1.f, 0.5f, 6.f);
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
+	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
+	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
+	this->m_nrOfGraphicsComponents++;
 
-	return 0;
+	
+	this->m_animGraphicsComponents = new penis*[2];
+	for (int i = 0; i < 2; i++) {
+		this->m_animGraphicsComponents[i] = nullptr;
+	}
+
+	this->m_animGraphicsComponents[1] = new penis;
+
+	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
+	for (int j = 0; j < 32; j++)
+	{
+		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
+	}
+	
+
+	
+
 }

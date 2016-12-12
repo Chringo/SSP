@@ -4,7 +4,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 //#include "ComponentStructs.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
-#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "../physicsDLL/PhysicsHandler.h"
 
 class ComponentHandler
 {
