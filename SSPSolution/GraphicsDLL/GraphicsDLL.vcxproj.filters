@@ -25,6 +25,9 @@
     <Filter Include="Resource Files\Shaders\PostProcess">
       <UniqueIdentifier>{d89a6cbd-d723-497f-a99f-0f766707b31a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Debug">
+      <UniqueIdentifier>{93f4560a-a201-423c-97a2-490d7a1696a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsHandler.h">
@@ -63,6 +66,9 @@
     <ClInclude Include="PostProcessShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DebugRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsHandler.cpp">
@@ -95,6 +101,9 @@
     <ClCompile Include="PostProcessShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DebugRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\GBuffer\GridPS.hlsl">
@@ -117,6 +126,12 @@
     </FxCompile>
     <FxCompile Include="Shaders\PostProcess\RayTrace_BoundingBox.hlsl">
       <Filter>Resource Files\Shaders\PostProcess</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Debug\DebugVS.hlsl">
+      <Filter>Resource Files\Shaders\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Debug\DebugPS.hlsl">
+      <Filter>Resource Files\Shaders\Debug</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
