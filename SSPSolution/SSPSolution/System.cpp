@@ -154,7 +154,10 @@ int System::Update(float deltaTime)
 
 	//Check for camera updates from the network
 	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
-
+	OBB* tempHold = nullptr;
+	this->m_physicsHandler.GetPhysicsComponentOBB(tempHold, 0);
+	
+	this->m_graphicsHandler->RenderBoundingVolume(*tempHold);
 	if (!cList.empty())
 	{
 		std::list<CameraPacket>::iterator iter;

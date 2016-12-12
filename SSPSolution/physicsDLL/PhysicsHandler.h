@@ -136,8 +136,8 @@ public:
 
 	bool checkCollition();
 
-	void GetPhysicsComponentOBB(OBB* src, int index);
-	void GetPhysicsComponentAABB(AABB* src, int index);
+	void GetPhysicsComponentOBB(OBB*& src, int index);
+	void GetPhysicsComponentAABB(AABB*& src, int index);
 
 };
 

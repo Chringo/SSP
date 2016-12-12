@@ -20,16 +20,18 @@ const int ARRAY_INC = 5;
 
 class GRAPHICSDLL_API GraphicsHandler
 {
-private:
 
 #ifdef _DEBUG
+private:
 	DebugRenderer m_debugRender;
 	std::vector<OBB*> obbBoxes;
 	std::vector<AABB*> aabbBoxes;
+public:
 	void RenderBoundingVolume(OBB& box);
 	void RenderBoundingVolume(AABB& box);
 #endif // _DEBUG
 
+private:
 	Direct3DHandler*		m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
 	DeferredShader*			m_deferredSH;

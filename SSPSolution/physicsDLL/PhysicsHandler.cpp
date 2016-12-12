@@ -884,12 +884,12 @@ bool PhysicsHandler::checkCollition()
 	return result;
 }
 
-void PhysicsHandler::GetPhysicsComponentOBB(OBB* src, int index)
+void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_OBB);
 }
 
-void PhysicsHandler::GetPhysicsComponentAABB(AABB* src, int index)
+void PhysicsHandler::GetPhysicsComponentAABB(AABB*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_AABB);
 }
