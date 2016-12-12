@@ -286,7 +286,7 @@ void GraphicsHandler::Shutdown()
 		this->m_indexBuffer->Release();
 		this->m_indexBuffer = nullptr;
 	}
-	if (this->m_vertexBuffer) 
+	if (this->m_vertexBuffer)
 	{
 		this->m_vertexBuffer->Release();
 		this->m_vertexBuffer = nullptr;
@@ -319,6 +319,7 @@ void GraphicsHandler::Shutdown()
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 	delete[] this->m_animGraphicsComponents;
+}
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
