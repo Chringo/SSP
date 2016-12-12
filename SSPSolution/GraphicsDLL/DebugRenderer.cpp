@@ -46,16 +46,24 @@ int DebugRenderer::Initialize(ID3D11Device * device, ID3D11DeviceContext * devic
 		return 1;
 	}
 
-	D3D11_INPUT_ELEMENT_DESC inputDescNormal;
-	inputDescNormal.SemanticName		 = "POSITION";
-	inputDescNormal.SemanticIndex		 = 0;
-	inputDescNormal.Format				 = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputDescNormal.InputSlot			 = 0;
-	inputDescNormal.AlignedByteOffset    = 0;
-	inputDescNormal.InputSlotClass		 = D3D11_INPUT_PER_VERTEX_DATA;
-	inputDescNormal.InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC inputDescNormal[2];
+	inputDescNormal[0].SemanticName			 = "POSITION";
+	inputDescNormal[0].SemanticIndex		 = 0;
+	inputDescNormal[0].Format				 = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescNormal[0].InputSlot			 = 0;
+	inputDescNormal[0].AlignedByteOffset     = 0;
+	inputDescNormal[0].InputSlotClass		 = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[0].InstanceDataStepRate  = 0;
 
-	hResult = device->CreateInputLayout(&inputDescNormal, 1, vertShaderBuffer->GetBufferPointer(), vertShaderBuffer->GetBufferSize(), &this->m_layout);
+	inputDescNormal[1].SemanticName = "COLOR";
+	inputDescNormal[1].SemanticIndex = 0;
+	inputDescNormal[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescNormal[1].InputSlot = 0;
+	inputDescNormal[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescNormal[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	inputDescNormal[1].InstanceDataStepRate = 0;
+
+	hResult = device->CreateInputLayout(inputDescNormal, ARRAYSIZE(inputDescNormal), vertShaderBuffer->GetBufferPointer(), vertShaderBuffer->GetBufferSize(), &this->m_layout);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -191,7 +199,7 @@ void DebugRenderer::SetActive()
 {
 	m_deviceContext->VSSetShader(this->m_vertexShader, NULL, 0);
 	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-	
+	m_deviceContext->IASetInputLayout(this->m_layout);
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 }
 
@@ -225,31 +233,53 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(AABB & box)
 ID3D11Buffer * DebugRenderer::GenerateLinelist(OBB & box)
 {
 	
+	static float color[3]{ 1.0f,0.0f,0.0f };
 	DirectX::XMVECTOR xDir = box.ort.r[0];
 	DirectX::XMVECTOR yDir = box.ort.r[1];
 	DirectX::XMVECTOR zDir = box.ort.r[2];
+	
+	DirectX::XMVECTOR zDirInv;
 	xDir = DirectX::XMVectorScale(xDir, box.ext[0]);
 	yDir = DirectX::XMVectorScale(yDir, box.ext[1]);
 	zDir = DirectX::XMVectorScale(zDir, box.ext[2]);
 
-	//Create the max points
-	Point maxX, minX, maxY, minY, maxZ, minZ;
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(box.pos);
+	
+	//Create the points.
 	//see end of file
 	DirectX::XMVECTOR point;
-	point = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(zDir, yDir), xDir);
-	cubePoints[0] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//0
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(zDir, yDir), xDir);			// z + y - x
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[0] = Point(point.m128_f32, color);		//0
 
-	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDir, yDir), xDir);
-	cubePoints[1] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//1
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDir, yDir), xDir);		// z - y - x
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[1] = Point(point.m128_f32, color);		//1
 
-	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(zDir, yDir), xDir);
-	cubePoints[2] = Point(point.m128_f32[0], point.m128_f32[1], point.m128_f32[2]);		//2
+	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(zDir, yDir), xDir);			// z - y + x
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[2] = Point(point.m128_f32, color);		//2
 
-	cubePoints[3] = Point(0.5, 0.5, 0.5);		//3
-	cubePoints[4] = Point(0.5, -0.5, -0.5);		//4
-	cubePoints[5] = Point(0.5, 0.5, -0.5);		//5
-	cubePoints[6] = Point(-0.5, 0.5, -0.5);		//6
-	cubePoints[7] = Point(-0.5, -0.5, -0.5);	//7
+	point = DirectX::XMVectorAdd(DirectX::XMVectorAdd(zDir, yDir), xDir);				// z + y + x
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[3] = Point(point.m128_f32, color);		//3
+
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(xDir, zDir), yDir);		//x - z - y
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[4] = Point(point.m128_f32, color);		//4
+
+	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(xDir, zDir), yDir);			//x - z + y
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[5] = Point(point.m128_f32, color);		//5
+
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(yDir,xDir), zDir);		//y - x - z
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[6] = Point(point.m128_f32, color);		//6
+
+	zDirInv = DirectX::XMVectorScale(zDir, -1);
+	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDirInv, xDir),yDir );  //- y - x - z
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+	cubePoints[7] = Point(point.m128_f32, color);	    //7
 
 
 
@@ -261,11 +291,8 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(OBB & box)
 	Point* tempData = (Point*)mappedResource.pData;
 	memcpy(tempData, (void*)cubePoints, sizeof(Point)*NUM_POINTS);
 	m_deviceContext->Unmap(m_pointBuffer, 0);
-
+	
 	return m_pointBuffer;
-
-
-
 }
 	/*
 		 _________________________

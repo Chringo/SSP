@@ -14,13 +14,14 @@ cbuffer camera : register(b1)
 struct VS_IN
 {
     float3 Pos : POSITION;
+    float3 Color : COLOR;
     
 };
 
 struct VS_OUT
 {
     float4 Pos : SV_POSITION;
-
+    float3 Color : COLOR;
 
 };
 
@@ -38,6 +39,6 @@ VS_OUT VS_main(VS_IN input)
     output.Pos = float4(input.Pos, 1);
    
     output.Pos = mul(output.Pos, WV);
-
+    output.Color = input.Color;
     return output;
 }

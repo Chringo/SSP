@@ -10,12 +10,25 @@ private:
 	static const short int NUM_INDICES = 24;
 	struct Point{
 		float x, y, z;
+		float r, g, b;
 		Point::Point() {};
-		Point::Point(float x, float y, float z)
+		Point::Point(float pos[3], float color[3])
+		{
+			this->x = pos[0];
+			this->y = pos[1];
+			this->z = pos[2];
+			this->r = color[0];
+			this->g = color[1];
+			this->b = color[2];
+		}
+		Point::Point(float x,float y,float z)
 		{
 			this->x = x;
 			this->y = y;
 			this->z = z;
+			this->r = 1.0f;
+			this->g = 1.0f;
+			this->b = 1.0f;
 		}
 		
 	};
