@@ -8,7 +8,6 @@
 #include <iostream>
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
-using namespace DirectX;
 
 /*This class has the responsibility to play animations in a generic way.
 By generic it is meant for any "animatible entity" to be updated by
@@ -45,7 +44,7 @@ struct SkelTemp
 {
 	int parentIndex;
 	int jointIndex;
-	XMFLOAT4X4 invBindPose;
+	DirectX::XMMATRIX invBindPose;
 };
 
 class Animation
@@ -54,7 +53,7 @@ class Animation
 private:
 	std::stack<AnimationClip> animationStack;
 
-	std::vector<XMFLOAT4X4> interpolatedTransforms;
+	std::vector<DirectX::XMFLOAT4X4> interpolatedTransforms;
 
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
 
@@ -88,11 +87,13 @@ public:
 
 	/*Don't know if this is suppose to be here? Maybe this is a function
 	we call from Update(), having another class holding interpolation func?*/
-	void Interpolate(float currentTime, std::vector<XMFLOAT4X4> updatedTransforms);
+	void Interpolate(float currentTime);
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
-	void CalculateFinalTransform(std::vector<XMFLOAT4X4> interpolatedTransforms);
+	void CalculateGlobalInverseBindPose(std::vector<DirectX::XMMATRIX>& globalInverseBindPose);
+
+	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
 	/*Maybe this is more suitable for being in another class? I might consider
 	calling this in the Update() from another class pointer.*/
