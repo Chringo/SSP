@@ -53,8 +53,9 @@
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;GraphicsDLL-d.lib;ResourceLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /Y "$(SolutionDir)Debug\GraphicsDLL-d.dll" "$(TargetDir)GraphicsDLL-d.dll"
+copy /Y "$(SolutionDir)Debug\ResourceLib.dll" "$(TargetDir)ResourceLib.dll"
+copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(TargetDir)physicsDLL.dll"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
