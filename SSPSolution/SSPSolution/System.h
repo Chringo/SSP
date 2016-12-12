@@ -8,6 +8,7 @@
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
+#include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
@@ -36,6 +37,8 @@ private:
 	PhysicsHandler m_physicsHandler;
 	NetworkModule m_networkModule;
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+	/*Testing for playing animation.*/
+	Animation* m_Anim;
 
 public:
 	System();

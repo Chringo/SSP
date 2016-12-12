@@ -29,6 +29,7 @@ private:
 
 	Resources::Model** m_modelsPtr;
 
+	penis** m_animGraphicsComponents;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
@@ -66,6 +67,12 @@ public:
 	//temp
 	int CreateTriangle();
 	int SetTriangle();
+
+	//TEMP STUFF
+public:
+	void SetTempAnimComponent(void*);
+private:
+	void m_CreateTempsTestComponents();
 };
 
 #endif
