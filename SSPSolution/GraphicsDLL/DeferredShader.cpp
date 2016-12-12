@@ -599,7 +599,7 @@ int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 	return 0;
 }
 
-int DeferredShader::DrawGrid(Resources::Model * model)
+int DeferredShader::DrawGrid(Resources::Model * model) //depricated
 {
 	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
 

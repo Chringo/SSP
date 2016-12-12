@@ -98,15 +98,6 @@ void ShaderControl::Draw(Resources::Model * model, penis * component)
 
 }
 
-void ShaderControl::DrawEditor(Resources::Model * model, GraphicsComponent * component)
-{
-	switch (m_activeShader)
-	{
-	case DEFERRED:
-		((DeferredShader*)m_shaders[DEFERRED])->DrawFromEditor(model);
-		break;
-	}
-}
 
 void ShaderControl::DrawFinal()
 {

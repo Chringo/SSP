@@ -222,6 +222,12 @@ void Direct3DHandler::Shutdown()
 		delete this->m_viewport;
 		this->m_viewport = nullptr;
 	}
+
+	if (this->m_rasterizerStateWireFrame)
+	{
+		m_rasterizerStateWireFrame->Release();
+		this->m_rasterizerStateWireFrame = nullptr;
+	}
 }
 
 ID3D11Device * Direct3DHandler::GetDevice()

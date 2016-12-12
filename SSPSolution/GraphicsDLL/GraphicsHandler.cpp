@@ -118,7 +118,6 @@ GraphicsHandler::GraphicsHandler()
 	this->m_shaderControl		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
-	this->m_gridEnabled			   = false;
 }
 
 
@@ -129,7 +128,7 @@ GraphicsHandler::~GraphicsHandler()
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
 	this->m_d3dHandler = new Direct3DHandler;
-	this->m_modelsPtr = new Resources::Model*[2];
+	
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
@@ -147,11 +146,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_CreateTempsTestComponents();
 	
-	this->InitializeGrid();
-	
-	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
+
 
 	return 0;
 	
@@ -205,9 +200,8 @@ int GraphicsHandler::Render()
 int GraphicsHandler::InitializeGrid()
 {
 	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
-	//m_d3dHandler->InitializeGridRasterizer();
-	//m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
-	this->m_gridEnabled = false;
+	m_d3dHandler->InitializeGridRasterizer();
+	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
 	return 0;
 }
 
@@ -233,8 +227,10 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
-	((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
+	//ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
+
+	m_shaderControl->Draw(model, component);
+	//((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
 
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
@@ -373,6 +369,8 @@ void GraphicsHandler::SetTempAnimComponent(void * component)
 
 void GraphicsHandler::m_CreateTempsTestComponents()
 {
+	this->m_modelsPtr = new Resources::Model*[2];
+
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		this->m_graphicsComponents[i] = nullptr;
@@ -413,7 +411,9 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
-
+	/*TEMP MODELS*/
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 	
 
 }
