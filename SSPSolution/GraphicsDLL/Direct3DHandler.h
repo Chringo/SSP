@@ -9,14 +9,15 @@
 class Direct3DHandler
 {
 private:
-	ID3D11Device* m_gDevice;
-	ID3D11DeviceContext* m_gDeviceContext;
-	IDXGISwapChain* m_swapChain;
-	ID3D11RenderTargetView* m_backBufferRTV;
-	HWND* m_activeWindow;
-	D3D11_VIEWPORT* m_viewport;
-	ID3D11RasterizerState* m_rasterizerState;
-	ID3D11RasterizerState* m_rasterizerStateWireFrame;
+	ID3D11Device*			  m_gDevice;
+	ID3D11DeviceContext*	  m_gDeviceContext;
+	IDXGISwapChain*			  m_swapChain;
+	ID3D11RenderTargetView*   m_backBufferRTV;
+	ID3D11ShaderResourceView* m_backBufferSRV; //for post processing
+	HWND*					  m_activeWindow;
+	D3D11_VIEWPORT*			  m_viewport;
+	ID3D11RasterizerState*	  m_rasterizerState;
+	ID3D11RasterizerState*	  m_rasterizerStateWireFrame;
 
 	ID3D11Texture2D* m_depthStencilBuffer;
 
@@ -30,10 +31,10 @@ public:
 	int PresentScene();
 	void Shutdown();
 
-	ID3D11Device* GetDevice();
-	ID3D11DeviceContext* GetDeviceContext();
-	ID3D11RenderTargetView* GetBackbufferRTV();
-
+	ID3D11Device*			  GetDevice();
+	ID3D11DeviceContext*	  GetDeviceContext();
+	ID3D11RenderTargetView*	  GetBackbufferRTV();
+	ID3D11ShaderResourceView* GetBackbufferSRV();
 
 	int SetRasterizerState(D3D11_FILL_MODE mode);
 };
