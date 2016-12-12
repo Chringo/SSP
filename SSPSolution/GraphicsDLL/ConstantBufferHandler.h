@@ -158,7 +158,7 @@ public:
 
 		struct skeleton
 		{
-			struct cData
+			struct cbData
 			{
 				DirectX::XMMATRIX cJoints[32];
 			};
@@ -172,7 +172,7 @@ public:
 		public:
 			ID3D11Buffer * D3DBuffer = nullptr;
 			pData p;
-			cData c;
+			cbData c;
 			pData GetPData()
 			{
 				for (int i = 0; i < 32; i++)
@@ -185,7 +185,6 @@ public:
 			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
 			{
 				c = *(cbData*)data;
-
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));

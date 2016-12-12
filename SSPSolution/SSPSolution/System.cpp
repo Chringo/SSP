@@ -24,8 +24,9 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
 
-	//Shutdown Network module
-	this->m_networkModule.Shutdown();
+	/*Delete animation class ptr here.*/
+	delete this->m_Anim;
+
 	return result;
 	
 
@@ -71,11 +72,18 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
+	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
+
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0.2);
+	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
+
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.CreatePhysicsComponent(test);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -83,6 +91,8 @@ int System::Initialize()
 
 	//Init the network module
 	this->m_networkModule.Initialize();
+
+	this->m_Anim = new Animation();
 
 	return result;
 }
@@ -232,6 +242,9 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+	//Update animations here. Temp place right now.
+	m_Anim->Update(deltaTime);
+	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
 	//Update the network module
 	this->m_networkModule.Update();

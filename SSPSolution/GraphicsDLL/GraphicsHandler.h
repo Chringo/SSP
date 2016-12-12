@@ -29,6 +29,7 @@ private:
 
 	Resources::Model** m_modelsPtr;
 
+	penis** m_animGraphicsComponents;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
@@ -50,6 +51,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
 
@@ -59,11 +61,18 @@ public:
 
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
+	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
 	
 	//temp
 	int CreateTriangle();
 	int SetTriangle();
+
+	//TEMP STUFF
+public:
+	void SetTempAnimComponent(void*);
+private:
+	void m_CreateTempsTestComponents();
 };
 
 #endif
