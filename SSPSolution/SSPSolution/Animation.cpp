@@ -243,7 +243,6 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 	CalculateGlobalInverseBindPose(globalInverseBindPose);
 
 	//m_graphicsAnimationComponent->finalTransforms[0] = DirectX::XMLoadFloat4x4(&localMatrices[0]);
-
 	m_graphicsAnimationComponent->finalTransforms[0] = DirectX::XMMatrixIdentity();
 
 	/*Compute the final matrices for each joint, updating the result to the skel vertex shader.*/
@@ -259,7 +258,7 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 		DirectX::XMMATRIX globalInvBindPose = globalInverseBindPose[jointIndex];
 
 		DirectX::XMMATRIX finalTransform = DirectX::XMMatrixMultiply(parentChildTransform, globalInvBindPose);
-		
+
 		m_graphicsAnimationComponent->finalTransforms[jointIndex] = finalTransform;
 	}
 }
