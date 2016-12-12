@@ -179,6 +179,10 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 
+#ifdef _DEBUG
+	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+#endif // _DEBUG
+
 	return 0;
 	
 }
@@ -233,6 +237,7 @@ int GraphicsHandler::Render()
 
 	/*TEMP CBUFFER STUFF*/
 
+
 	if (postProcessing)
 	{
 		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
@@ -247,6 +252,13 @@ int GraphicsHandler::Render()
 		context->PSSetShaderResources(6, 1, tab);
 	}
 	
+#ifdef _DEBUG
+	AABB box;
+	m_debugRender.SetActive();
+
+	m_debugRender.Render(box);
+	//Draw Debug.
+#endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
@@ -350,6 +362,10 @@ void GraphicsHandler::Shutdown()
 	}
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
+#ifdef _DEBUG
+	m_debugRender.Release();
+#endif // _DEBUG
+
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)

@@ -8,6 +8,7 @@
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
+#include "DebugRenderer.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -20,13 +21,18 @@ const int ARRAY_INC = 5;
 class GRAPHICSDLL_API GraphicsHandler
 {
 private:
+
+#ifdef _DEBUG
+	DebugRenderer m_debugRender;
+#endif // _DEBUG
+
 	Direct3DHandler*		m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
 	DeferredShader*			m_deferredSH;
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
-	bool postProcessing = true;
+	bool postProcessing = false;
 	Resources::Model** m_modelsPtr;
 
 	GraphicsComponent** m_graphicsComponents;
