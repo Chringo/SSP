@@ -241,11 +241,11 @@ int GraphicsHandler::Render()
 
 	for (size_t i = 0; i < obbBoxes.size(); i++)
 	{
-		m_debugRender.Render(obbBoxes.at(i));
+		m_debugRender.Render(*obbBoxes.at(i));
 	}
 	for (size_t i = 0; i < aabbBoxes.size(); i++)
 	{
-		m_debugRender.Render(aabbBoxes.at(i));
+		m_debugRender.Render(*aabbBoxes.at(i));
 	}
 	obbBoxes.clear();
 	aabbBoxes.clear();
