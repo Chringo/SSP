@@ -71,6 +71,7 @@ private:
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
+
 	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
 
 	//Math functions
@@ -80,13 +81,13 @@ private:
 
 	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
 
-	
+	void UpdateAABB(PhysicsComponent* src);
 
 	//void CreateBB();
 	void CreateDefaultBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
-
 	void CreateDefaultAABB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
 	void CreateDefaultOBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
+
 public:
 	PhysicsHandler();
 	~PhysicsHandler();
@@ -115,6 +116,9 @@ public:
 	void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	bool checkCollition();
+
+	void GetPhysicsComponentOBB(OBB* src, int index);
+	void GetPhysicsComponentAABB(AABB* src, int index);
 
 };
 

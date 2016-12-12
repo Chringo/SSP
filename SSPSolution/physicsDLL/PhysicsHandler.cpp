@@ -44,6 +44,7 @@ bool PhysicsHandler::IntersectAABB()
 					{
 						// apply OOB check for more precisition
 
+						printf("AABB passed! \n");
 						result = this->DoIntersectionTestOBB(PC_toCheck, PC_ptr);
 					}
 				}
@@ -76,8 +77,8 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
 		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
 
-		DirectX::XMStoreFloat3(&orthA[i], objB->PC_OBB.ort.r[i]);
-		DirectX::XMStoreFloat3(&orthA[i], objB->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthB[i], objB->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthB[i], objB->PC_OBB.ort.r[i]);
 	}
 
 	OBB* a = nullptr;
@@ -246,11 +247,12 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	}
 
 	//L = A2 x B1
-	rA = a->ext[0] * fabs(R.m[2][1]) + a->ext[1] * fabs(R.m[0][1]);
+	rA = a->ext[0] * fabs(R.m[1][1]) + a->ext[1] * fabs(R.m[0][1]);
 
 	rB = b->ext[0] * fabs(R.m[2][2]) + b->ext[2] * fabs(R.m[2][0]);
 
 	t = fabs(T[2] * R.m[1][1] - T[1] * R.m[2][1]);
+	float test = rA + rB;
 
 	if (t > (rA + rB))
 	{
@@ -271,6 +273,7 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	/*no separating axis found,
 	the two boxes overlap */
 
+	printf("Collition has been detected\n");
 	return true;
 }
 
@@ -326,6 +329,11 @@ DirectX::XMFLOAT3 PhysicsHandler::VectorSubstract(const DirectX::XMFLOAT3 & v1, 
 	return result;
 }
 
+void PhysicsHandler::UpdateAABB(PhysicsComponent* src)
+{
+
+}
+
 void PhysicsHandler::RotateBB_X(PhysicsComponent* src)
 {
 	
@@ -335,8 +343,11 @@ void PhysicsHandler::RotateBB_X(PhysicsComponent* src)
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
 
-	xMatrix = DirectX::XMMatrixRotationX(45.0);
-	src->PC_OBB.ort = DirectX::XMMatrixMultiply(test, xMatrix);
+	xMatrix = DirectX::XMMatrixRotationX((3.14 / 180) * 45);
+	test = DirectX::XMMatrixMultiply(test, xMatrix);
+
+	src->PC_OBB.ort = test;
+
 }
 
 void PhysicsHandler::CreateDefaultBB(const DirectX::XMVECTOR & pos, PhysicsComponent * src)
@@ -348,16 +359,18 @@ void PhysicsHandler::CreateDefaultBB(const DirectX::XMVECTOR & pos, PhysicsCompo
 void PhysicsHandler::CreateDefaultAABB(const DirectX::XMVECTOR & pos, PhysicsComponent* src)
 {
 	DirectX::XMFLOAT3 temp;
-	DirectX::XMStoreFloat3(&temp , pos);
+	DirectX::XMStoreFloat3(&temp, pos);
+
+	OBB* temp2 = &src->PC_OBB;
 
 	//AABB components
 	src->PC_AABB.pos[0] = temp.x;
 	src->PC_AABB.pos[1] = temp.y;
 	src->PC_AABB.pos[2] = temp.z;
 
-	src->PC_AABB.ext[0] = 1.0f;
-	src->PC_AABB.ext[1] = 1.0f;
-	src->PC_AABB.ext[2] = 1.0f;
+	src->PC_AABB.ext[0] = 1.0 + 1.0f;
+	src->PC_AABB.ext[1] = 1.0 + 1.0f;
+	src->PC_AABB.ext[2] = 1.0 + 1.0f;
 }
 
 void PhysicsHandler::CreateDefaultOBB(const DirectX::XMVECTOR & pos, PhysicsComponent* src)
@@ -414,7 +427,7 @@ void PhysicsHandler::Update()
 
 	if (this->IntersectAABB())
 	{
-		printf("Collition has been detected\n");
+		printf("AABB Pass\n");
 	}
 	//this->checkCollition();
 	this->AdjustChainLinkPosition();
@@ -660,4 +673,14 @@ bool PhysicsHandler::checkCollition()
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
 	return result;
+}
+
+void PhysicsHandler::GetPhysicsComponentOBB(OBB* src, int index)
+{
+	src = &(this->m_dynamicComponents.at(index)->PC_OBB);
+}
+
+void PhysicsHandler::GetPhysicsComponentAABB(AABB* src, int index)
+{
+	src = &(this->m_dynamicComponents.at(index)->PC_AABB);
 }

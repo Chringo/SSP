@@ -81,7 +81,7 @@ int System::Initialize()
 	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
 
-	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.0);
+	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.1);
 	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
 
 	this->m_physicsHandler.CreatePhysicsComponent(test);
