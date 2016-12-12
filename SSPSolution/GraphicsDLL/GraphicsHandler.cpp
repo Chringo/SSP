@@ -181,8 +181,8 @@ int GraphicsHandler::Render()
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
 	m_shaderControl->DrawFinal();
