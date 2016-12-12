@@ -40,7 +40,12 @@ public:
 	int  SetBackBuffer(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView* backBufferSRV);
 	void PostProcess();
 	void Draw(Resources::Model* model);
+	void Draw(Resources::Model * model, GraphicsComponent * component);
+	void Draw(Resources::Model * model, penis * component);
+
+	void DrawEditor(Resources::Model * model, GraphicsComponent * component);
 	void DrawFinal();
+
 	int ClearFrame();
 
 };

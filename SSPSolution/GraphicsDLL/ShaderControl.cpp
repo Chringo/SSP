@@ -108,7 +108,37 @@ void ShaderControl::Draw(Resources::Model * model)
 		((DeferredShader*)m_shaders[DEFERRED])->Draw(model);
 		break;
 	}
+}
 
+void ShaderControl::Draw(Resources::Model * model, GraphicsComponent * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->Draw(model, component);
+		break;
+	}
+}
+
+void ShaderControl::Draw(Resources::Model * model, penis * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->Draw(model, component);
+		break;
+	}
+
+}
+
+void ShaderControl::DrawEditor(Resources::Model * model, GraphicsComponent * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->DrawFromEditor(model);
+		break;
+	}
 }
 
 void ShaderControl::DrawFinal()
