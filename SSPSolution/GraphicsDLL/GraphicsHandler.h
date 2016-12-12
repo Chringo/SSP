@@ -62,6 +62,8 @@ public:
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
+	int renderFinalEditor();
+	int clearEditor();
 	void Shutdown();
 	
 	//temp

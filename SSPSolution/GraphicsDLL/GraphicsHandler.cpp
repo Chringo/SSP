@@ -232,7 +232,6 @@ int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid
 
 int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
 {
-	m_shaderControl->ClearFrame();
 
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
 	this->m_camera->GetCameraPos(cam.cPos);
@@ -249,17 +248,29 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 
-	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
 
 	/*TEMP CBUFFER STUFF*/
 
 
-	this->m_d3dHandler->PresentScene();
 
 	return 0;
 }
+
+int GraphicsHandler::renderFinalEditor()
+{
+	m_shaderControl->DrawFinal();
+	this->m_d3dHandler->PresentScene();
+	return 0;
+}
+
+int GraphicsHandler::clearEditor()
+{
+	m_shaderControl->ClearFrame();
+	return 0;
+}
+
 
 void GraphicsHandler::Shutdown()
 {
