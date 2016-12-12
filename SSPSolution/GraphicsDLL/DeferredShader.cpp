@@ -135,7 +135,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	unsigned int numElements = sizeof(inputDescNormal) / sizeof(inputDescNormal[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescNormal, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_NORMAL]);
+	hResult = device->CreateInputLayout(inputDescNormal, numElements, vertexShaderBuffer[ShaderLib::Normal]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Normal]->GetBufferSize(), &this->m_layout[IL_NORMAL]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -194,7 +194,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	numElements = sizeof(inputDescAnim) / sizeof(inputDescAnim[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
+	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -375,7 +375,7 @@ int DeferredShader::SetActive()
 
 	//Set the render target views
 	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRTV, this->m_DSV);
-
+	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 

@@ -25,9 +25,9 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
+	
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
+		NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
 		NULL, &this->m_gDeviceContext);
 	if (FAILED(hResult))
 	{

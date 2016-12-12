@@ -63,10 +63,6 @@ public:
 	int RenderGrid(int& align, float& scale);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
-	
-	//temp
-	int CreateTriangle();
-	int SetTriangle();
 
 	//TEMP STUFF
 public:
