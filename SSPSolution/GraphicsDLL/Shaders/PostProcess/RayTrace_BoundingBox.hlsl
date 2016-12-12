@@ -147,9 +147,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 	float4  backBufferData = backBufferTex.Sample(pointSampler, input.UV);
 	float4 bbColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	if (IntersectRayAABB(ray,testBox, tMin, tMax) == true){
+	//if (IntersectRayAABB(ray,testBox, tMin, tMax) == true){
 		bbColor = float4(0.4f, 0.0f, 0.0f, 1.0f);
-	}
+	//}
 
 	return saturate(backBufferData + bbColor);
 }
