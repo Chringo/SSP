@@ -205,10 +205,10 @@ int GraphicsHandler::InitializeGrid()
 	return 0;
 }
 
-int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
+int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* component) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-		this->m_deferredSH->DrawGrid(m_modelsPtr[NULL]);
+		m_shaderControl->Draw(model, component);
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;
@@ -229,18 +229,13 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
 	//ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
 
-	m_shaderControl->Draw(model, component);
+	this->m_shaderControl->Draw(model, component);
 	//((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
 
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 
 	m_shaderControl->DrawFinal();
-
-	/*TEMP CBUFFER STUFF*/
-
-	/*TEMP CBUFFER STUFF*/
-
 
 	this->m_d3dHandler->PresentScene();
 
