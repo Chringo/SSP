@@ -30,8 +30,8 @@ int LevelDirector::Update(float dt)
 	//	return SUCCESS;
 
 	State oldState = this->m_currentState;
-	State newState = DEFAULT; // please ignore
-	if (newState != oldState)
+	State newState = State::DEFAULT; // please ignore
+	if (State::GOAL != oldState)// temporary static goal
 	{
 		if (this->ChangeState(newState))
 		{
@@ -59,11 +59,26 @@ void LevelDirector::SetDefaultState(State state)
 {
 	this->m_defaultState = state;
 }
-void LevelDirector::SetNewState(State ID)
-{
-
-}
 bool LevelDirector::ChangeState(State newState)
 {
-
+	bool change = false;
+	// Query list of states to see if the state exists
+	switch (newState)
+	{
+	case LevelDirector::NONE:
+		// Not an allowed state to change to.
+		break;
+	case LevelDirector::START:
+		change = true;
+		break;
+	case LevelDirector::DEFAULT:
+		change = true;
+		break;
+	case LevelDirector::GOAL:
+		change = true;
+		break;
+	default:
+		break;
+	}
+	return change;
 }

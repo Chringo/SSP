@@ -15,6 +15,7 @@ private:	// Variables
 	};
 	State m_currentState;
 	State m_defaultState;
+	//State m_goalState;// A state which is the current goal for the FSM
 
 	// Change State to State* after temp structure is removed
 	std::vector<State> m_states;
@@ -32,7 +33,6 @@ public:
 private:	// Helper functions
 	void AddState(State newState);
 	void SetDefaultState(State state);
-	void SetNewState(State ID);// temp, could be an integer holding an ID in the future
 	bool ChangeState(State state);
 
 };
