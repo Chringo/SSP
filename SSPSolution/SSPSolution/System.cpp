@@ -272,14 +272,13 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
-	//Update the logic first followed by the physics followed by the animations and lastly the graphics
-	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	//Update animations here. Temp place right now.
 	m_Anim->Update(deltaTime);
 	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
 	this->m_physicsHandler.Update();
-
+	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
 	//Render
