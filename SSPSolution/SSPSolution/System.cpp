@@ -23,9 +23,11 @@ int System::Shutdown()
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
+	DebugHandler::instance().Shutdown();
 
-	//Shutdown Network module
-	this->m_networkModule.Shutdown();
+	/*Delete animation class ptr here.*/
+	delete this->m_Anim;
+
 	return result;
 	
 
@@ -71,11 +73,22 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
+	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
+
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
+	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
+
+	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.1);
+	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
+
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.RotateBB_X(this->m_physicsHandler.getDynamicComponents(0));
+	this->m_physicsHandler.CreatePhysicsComponent(test2);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -85,6 +98,10 @@ int System::Initialize()
 	this->m_gsh.Initialize();
 	//Initialize the network module
 	this->m_networkModule.Initialize();
+
+	this->m_Anim = new Animation();
+
+	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 
 	return result;
 }
@@ -99,6 +116,7 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+		DebugHandler::instance().StartProgram();
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -123,8 +141,14 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
-		//std::cout << int(totalTime) << "\n";
-
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
+		{
+			DebugHandler::instance().ResetMinMax();
+			printf("Reseted min max on timers\n");
+		}
+		
+		DebugHandler::instance().EndProgram();
+		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();
@@ -135,6 +159,7 @@ int System::Run()
 //Place all the update functions within the System::Update(float deltaTime) function.
 int System::Update(float deltaTime)
 {
+	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
 	//Update the network module
@@ -147,7 +172,10 @@ int System::Update(float deltaTime)
 
 	//Check for camera updates from the network
 	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
-
+	OBB* tempHold = nullptr;
+	this->m_physicsHandler.GetPhysicsComponentOBB(tempHold, 0);
+	
+	this->m_graphicsHandler->RenderBoundingVolume(*tempHold);
 	if (!cList.empty())
 	{
 		std::list<CameraPacket>::iterator iter;
@@ -239,12 +267,22 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+	//Update animations here. Temp place right now.
+	m_Anim->Update(deltaTime);
+	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
 	this->m_physicsHandler.Update();
 
+	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
+	DebugHandler::instance().EndTimer();
 	//Render
+	DebugHandler::instance().StartTimer("Render");
 	this->m_graphicsHandler->Render();
+<<<<<<< HEAD
 
+=======
+	DebugHandler::instance().EndTimer();
+>>>>>>> DebugClass
 	return result;
 }
 

@@ -25,9 +25,9 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
+	
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
+		NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
 		NULL, &this->m_gDeviceContext);
 	if (FAILED(hResult))
 	{
@@ -50,7 +50,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	swapChainDesc.SampleDesc.Count = 1; //No MSAA
 	swapChainDesc.SampleDesc.Quality = 0;
 
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = *windowHandle;
 	swapChainDesc.Windowed = true; //Hardcoded windowed mode
@@ -86,14 +86,22 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the backbuffer render target view \\
 
-	ID3D11Texture2D* backBufferPrt;
-	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferPrt));
-
-	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, 0, &this->m_backBufferRTV);
+	ID3D11Texture2D* backBufferPrt = nullptr;
+	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
+	
+	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
+
+	hResult = this->m_gDevice->CreateShaderResourceView(backBufferPrt, nullptr, &this->m_backBufferSRV);
+
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 
 	backBufferPrt->Release();
 
@@ -199,6 +207,12 @@ void Direct3DHandler::Shutdown()
 		this->m_backBufferRTV = nullptr;
 	}
 
+	if (this->m_backBufferSRV)
+	{
+		this->m_backBufferSRV->Release();
+		this->m_backBufferSRV = nullptr;
+	}
+
 	if (this->m_swapChain)
 	{
 		this->m_swapChain->Release();
@@ -237,6 +251,11 @@ ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
 ID3D11RenderTargetView * Direct3DHandler::GetBackbufferRTV()
 {
 	return this->m_backBufferRTV;
+}
+
+ID3D11ShaderResourceView * Direct3DHandler::GetBackbufferSRV()
+{
+	return this->m_backBufferSRV;
 }
 
 int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)

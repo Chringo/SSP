@@ -48,11 +48,14 @@ public:
 
 
 	int Draw(Resources::Model* model);
+	int Draw(Resources::Model* model, GraphicsComponent * component);
+	int Draw(Resources::Model* model, penis * component);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
 
 	int DrawGrid(Resources::Model * model);
+	int DrawFromEditor(Resources::Model * model);
 private:
 	int DrawInstanced();
 };

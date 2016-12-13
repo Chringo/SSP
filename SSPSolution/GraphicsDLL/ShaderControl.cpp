@@ -13,13 +13,14 @@ ShaderControl::~ShaderControl()
 
 bool ShaderControl::Initialize(ID3D11Device * gDevice, ID3D11DeviceContext * gDeviceContext, const DirectX::XMINT2& resolution)
 {
-	this->m_Device		  = gDevice;
-	this->m_DeviceContext = gDeviceContext;
-	m_shaders[DEFERRED]   = new DeferredShader();
+	this->m_Device		   = gDevice;
+	this->m_DeviceContext  = gDeviceContext;
+	m_shaders[DEFERRED]    = new DeferredShader();
 	m_shaders[DEFERRED]->Initialize(gDevice, gDeviceContext, resolution);
-	m_shaders[FINAL]	  = new FinalShader();
+	m_shaders[FINAL]	   = new FinalShader();
 	m_shaders[FINAL]->Initialize(gDevice, gDeviceContext, resolution);
-	
+	m_shaders[POSTPROCESS] = new PostProcessShader();
+	m_shaders[POSTPROCESS]->Initialize(gDevice, gDeviceContext, resolution);
 	return true;
 }
 
@@ -58,13 +59,45 @@ void ShaderControl::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	}
 }
 
-int ShaderControl::SetBackBufferRTV(ID3D11RenderTargetView * backBufferRTV)
+int ShaderControl::SetBackBuffer(ID3D11RenderTargetView * backBufferRTV, ID3D11ShaderResourceView* backBufferSRV)
 {
+	this->backBufferRTV = backBufferRTV;
+	this->backBufferSRV = backBufferSRV;
 	
 	((FinalShader*)m_shaders[FINAL])->SetRenderParameters(backBufferRTV,
 		((DeferredShader*)m_shaders[DEFERRED])->GetShaderResourceViews()
 	);
 	return 0;
+}
+
+void ShaderControl::PostProcess()
+{
+	ID3D11RenderTargetView* rtv = this->backBufferRTV;
+	PostProcessShader::PostEffects fx;
+	bool processed = false;
+	for (size_t i = 0; i < PostProcessShader::NUM_TYPES; i++)
+	{
+		fx = PostProcessShader::PostEffects(i);
+		
+		//If the effect is enabled
+		if ((      (PostProcessShader*)m_shaders[POSTPROCESS])->IsEnabled(fx)) {
+			(      (PostProcessShader*)m_shaders[POSTPROCESS])->SetActive(PostProcessShader::PostEffects(fx));
+			rtv = ((PostProcessShader*)m_shaders[POSTPROCESS])->Draw();
+			processed = true;
+		}
+	}
+	if (processed)
+	{
+		ID3D11ShaderResourceView* postResourceView = ((PostProcessShader*)m_shaders[POSTPROCESS])->GetActiveShaderResource();
+		ID3D11Resource* postResource;
+		postResourceView->GetResource(&postResource);
+
+
+		ID3D11Resource* bbResource;
+		backBufferSRV->GetResource(&bbResource);
+		m_DeviceContext->CopyResource(bbResource,postResource);
+		m_DeviceContext->OMSetRenderTargets(1, &backBufferRTV, NULL);
+	}
 }
 
 void ShaderControl::Draw(Resources::Model * model)
@@ -75,7 +108,37 @@ void ShaderControl::Draw(Resources::Model * model)
 		((DeferredShader*)m_shaders[DEFERRED])->Draw(model);
 		break;
 	}
+}
 
+void ShaderControl::Draw(Resources::Model * model, GraphicsComponent * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->Draw(model, component);
+		break;
+	}
+}
+
+void ShaderControl::Draw(Resources::Model * model, penis * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->Draw(model, component);
+		break;
+	}
+
+}
+
+void ShaderControl::DrawEditor(Resources::Model * model, GraphicsComponent * component)
+{
+	switch (m_activeShader)
+	{
+	case DEFERRED:
+		((DeferredShader*)m_shaders[DEFERRED])->DrawFromEditor(model);
+		break;
+	}
 }
 
 void ShaderControl::DrawFinal()

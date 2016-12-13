@@ -8,6 +8,7 @@
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
+#include "DebugRenderer.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -19,6 +20,17 @@ const int ARRAY_INC = 5;
 
 class GRAPHICSDLL_API GraphicsHandler
 {
+
+#ifdef _DEBUG
+private:
+	DebugRenderer m_debugRender;
+	std::vector<OBB*> obbBoxes;
+	std::vector<AABB*> aabbBoxes;
+public:
+	void RenderBoundingVolume(OBB& box);
+	void RenderBoundingVolume(AABB& box);
+#endif // _DEBUG
+
 private:
 	Direct3DHandler*		m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
@@ -26,9 +38,10 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
-
+	bool postProcessing = false;
 	Resources::Model** m_modelsPtr;
 
+	penis** m_animGraphicsComponents;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
@@ -50,6 +63,7 @@ public:
 	~GraphicsHandler();
 
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
 	int Render();
 
@@ -59,11 +73,14 @@ public:
 
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
+	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	void Shutdown();
-	
-	//temp
-	int CreateTriangle();
-	int SetTriangle();
+
+	//TEMP STUFF
+public:
+	void SetTempAnimComponent(void*);
+private:
+	void m_CreateTempsTestComponents();
 };
 
 #endif

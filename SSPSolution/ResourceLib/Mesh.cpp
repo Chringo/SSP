@@ -167,7 +167,7 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 			return false;
 	}
 
-	if (keepRawData)
+	if (true)
 	{
 		//m_meshData.m_animVertices = data;
 		m_meshData.m_animVertices = new VertexAnim[numVerts];
