@@ -6,7 +6,7 @@ FSMEnvironment::LevelDirector::LevelDirector(){}
 FSMEnvironment::LevelDirector::~LevelDirector(){}
 int FSMEnvironment::LevelDirector::Shutdown()
 {
-
+	this->m_states.clear();
 	return SUCCESS;
 }
 
@@ -14,9 +14,11 @@ int FSMEnvironment::LevelDirector::Initialize()
 {
 	// Reset values
 	this->m_states.clear();
-	// temp reset values
-	this->m_currentState = NONE;
-	this->m_defaultState = DEFAULT;
+
+	this->m_defaultState = nullptr;
+	this->m_currentState = nullptr;
+	this->m_goalState = nullptr;
+
 	// TODO: Import new states from new LevelState
 #pragma region temp
 	State test;
@@ -46,24 +48,26 @@ int FSMEnvironment::LevelDirector::Initialize()
 }
 int FSMEnvironment::LevelDirector::Update(float dt)
 {
+	// Return if there are no states
 	if (this->m_states.size() == 0)
 		return SUCCESS;
-	if (this->m_currentState == NONE)
+	// Return if there are no current state or default state
+	if (!(this->m_currentState))
 		this->m_currentState = this->m_defaultState;
-	//if(!(this->m_currentState))
-	//	return SUCCESS;
-
-	State oldState = this->m_currentState;
-	State newState = State::DEFAULT; // please ignore
-	if (State::GOAL != oldState)// temporary static goal
+	if(!(this->m_currentState))
+		return SUCCESS;
+	
+	int oldStateID = this->m_currentState->stateID;
+	this->m_goalID = this->m_currentState->CheckTransitions();
+	if (this->m_goalID != oldStateID)
 	{
-		if (this->ChangeState(newState))
+		if (this->ChangeState(this->m_goalID))
 		{
-			//this->m_currentState->Exit();
-			//this->m_currentState = this->m_goalState;
-			//this->m_currentState->Enter();
+			this->m_currentState->Exit();
+			this->m_currentState = this->m_goalState;
+			this->m_currentState->Enter();
 		}
-		//this->m_currentState->Update(dt);
+		this->m_currentState->Update(dt);
 	}
 
 	return SUCCESS;
