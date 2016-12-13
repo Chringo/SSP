@@ -2,38 +2,56 @@
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #include "Observer.h"
 #include <vector>
-class LevelDirector
+//#define NUMSTATES 3
+namespace FSMEnvironment
 {
-private:	// Variables
-	/* TEMP STATE STRUCTURE */
-	static enum State
+
+#pragma region temp
+	enum Hint
 	{
 		NONE = 0,
-		START,
-		DEFAULT,
-		GOAL
+		EXAMPLE
 	};
-	State m_currentState;
-	State m_defaultState;
-	//State m_goalState;// A state which is the current goal for the FSM
+	struct State
+	{
+		int stateID = -1;
+		int timeDelay = -1;
+		Hint hint = Hint::NONE;
 
-	// Change State to State* after temp structure is removed
-	std::vector<State> m_states;
-public:
-	LevelDirector();
-	~LevelDirector();
-	int Shutdown();
+		int CheckTransitions();
+		void Enter();
+		void Exit();
+		void Update(float deltaTime);
+	};
+#pragma endregion
 
-	int Initialize();
-	int Update(float deltaTime);
+	class LevelDirector
+	{
+	private:	// Variables
+		State* m_currentState;
+		State* m_defaultState;
+		State* m_goalState; // A state which is the current goal for the FSM
+		int m_goalID;
+		std::vector<State> m_states;
+	public:
+		LevelDirector();
+		~LevelDirector();
+		int Shutdown();
 
-	int React(int entityID, EVENT event);
+		int Initialize();
+		int Update(float deltaTime);
+
+		int React(int entityID, EVENT event);
 
 
-private:	// Helper functions
-	void AddState(State newState);
-	void SetDefaultState(State state);
-	bool ChangeState(State state);
+	private:	// Helper functions
+		// TODO: 
+		// Depending on what kind of array/vector we end up with to hold our states
+		// the argument list should be updated accordingly
+		void AddState(State* newState);
+		void SetDefaultState(State* state);
+		bool ChangeState(int state);
 
-};
+	};
+}
 #endif
