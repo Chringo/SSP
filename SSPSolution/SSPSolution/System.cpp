@@ -78,17 +78,8 @@ int System::Initialize()
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
+
 	this->m_physicsHandler.Initialize();
-
-	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
-	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
-
-	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.1);
-	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
-
-	this->m_physicsHandler.CreatePhysicsComponent(test);
-	this->m_physicsHandler.RotateBB_X(this->m_physicsHandler.getDynamicComponents(0));
-	this->m_physicsHandler.CreatePhysicsComponent(test2);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -165,10 +156,7 @@ int System::Update(float deltaTime)
 
 	//Check for camera updates from the network
 	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
-	OBB* tempHold = nullptr;
-	this->m_physicsHandler.GetPhysicsComponentOBB(tempHold, 0);
-	
-	this->m_graphicsHandler->RenderBoundingVolume(*tempHold);
+
 	if (!cList.empty())
 	{
 		std::list<CameraPacket>::iterator iter;
@@ -268,7 +256,57 @@ int System::Update(float deltaTime)
 	this->m_networkModule.Update();
 
 
-	this->m_physicsHandler.Update();
+
+
+	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
+	//temp input for testing chain
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		DirectX::XMFLOAT3 dir;
+		dir.x = (rand() % 201) - 100;
+		dir.y = (rand() % 101);
+		dir.z = (rand() % 201) - 100;
+		if (dir.y < 0)
+		{
+			dir.y *= -1;
+		}
+		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, dir.y * 0.018, dir.z * -0.008, 0);
+		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
+	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-1, 1.5, 0, 0);
+	}
+	//-----
+	this->m_physicsHandler.Update(deltaTime);
+	OBB* temp = nullptr;
+	OBB* temp2 = nullptr;
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 1);
+	//m_graphicsHandler->RenderBoundingVolume(*temp);
+	//m_graphicsHandler->RenderBoundingVolume(*temp2);
+
+	GraphicsComponent* g_temp;
+	g_temp = m_graphicsHandler->getComponent(1);
+	DirectX::XMFLOAT3 tempPos;
+	DirectX::XMStoreFloat3(&tempPos,temp->pos);
+	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
+
+	g_temp = m_graphicsHandler->getComponent(2);
+	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
+	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
+	OBB* chainStuff = nullptr;
+	for (int i = 1; i < nrOfComponents - 1; i++)
+	{
+		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
+		this->m_graphicsHandler->RenderBoundingVolume(*chainStuff);
+	}
+
+	
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
