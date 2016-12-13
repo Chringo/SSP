@@ -56,8 +56,6 @@ private:
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
-
-	bool m_gridEnabled;
 public:
 	GraphicsHandler();
 	~GraphicsHandler();
@@ -71,14 +69,19 @@ public:
 	GraphicsComponent* GetNextAvailableComponent();
 	int UpdateComponentList();
 
+
+
 	int InitializeGrid();
-	int RenderGrid(int& align, float& scale);
+	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
+	int renderFinalEditor();
+	int clearEditor();
 	void Shutdown();
 
 	//TEMP STUFF
 public:
 	void SetTempAnimComponent(void*);
+	GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };

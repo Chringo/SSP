@@ -56,10 +56,12 @@ VS_OUT VS_main(VS_IN input)
 	{
         weight = input.weights[i];
         influences = input.influences[i];
-        
-        skinnedPos += mul(mul(float4(input.Pos, 1.0f), joints[influences]), weight);
-        skinnedNormal += mul(mul(float4(input.Normal, 1.0f), joints[influences]), weight);
-        skinnedTan += mul(mul(float4(input.Tangent, 1.0f), joints[influences]), weight);
+        if (influences > 0)
+        {          
+            skinnedPos += mul(mul(float4(input.Pos, 1.0f), joints[influences]), weight);
+            skinnedNormal += mul(mul(float4(input.Normal, 1.0f), joints[influences]), weight);
+            skinnedTan += mul(mul(float4(input.Tangent, 1.0f), joints[influences]), weight);
+        }
     }
 
 	matrix WV = mul(viewMatrix, projectionMatrix);

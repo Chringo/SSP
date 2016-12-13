@@ -47,12 +47,15 @@ __declspec(align(16)) struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
+	DirectX::XMVECTOR PC_normalForce;
 	double PC_gravityInfluence;
 	int PC_active;
 	int PC_entityID;
 	float PC_mass;
 	bool PC_is_Static;
 	bool PC_coolides;
+	float PC_friction;
+	float PC_elasticity;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -75,8 +78,16 @@ class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
 	int m_nrOfStaticObjects;
-	
+	PhysicsComponent m_floor;
+	PhysicsComponent m_wall1;
+	PhysicsComponent m_wall2;
+	PhysicsComponent m_wall3;
+	PhysicsComponent m_wall4;
+	PhysicsComponent m_roof;
+
+
 	Chain m_chain;
+
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -113,7 +124,10 @@ public:
 
 	bool Initialize();
 	void ShutDown();
-	void Update();
+	void Update(float deltaTime);
+
+	void InitializeChain(int start, int end);
+
 
 	void RotateBB_X(PhysicsComponent* src);
 
@@ -123,7 +137,7 @@ public:
 	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
 	void AdjustChainLinkPosition();
 
-	void CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
+	PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 
 	void SimpleCollition(float dt);
