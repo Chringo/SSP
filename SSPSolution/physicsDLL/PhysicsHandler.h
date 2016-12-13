@@ -76,6 +76,11 @@ private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
 	int m_nrOfStaticObjects;
 	PhysicsComponent m_floor;
+	PhysicsComponent m_wall1;
+	PhysicsComponent m_wall2;
+	PhysicsComponent m_wall3;
+	PhysicsComponent m_wall4;
+	PhysicsComponent m_roof;
 
 
 	Chain m_chain;

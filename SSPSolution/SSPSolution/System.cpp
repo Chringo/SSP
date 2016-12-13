@@ -250,8 +250,20 @@ int System::Update(float deltaTime)
 	OBB* temp2 = nullptr;
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, 1);
-	m_graphicsHandler->RenderBoundingVolume(*temp);
-	m_graphicsHandler->RenderBoundingVolume(*temp2);
+	//m_graphicsHandler->RenderBoundingVolume(*temp);
+	//m_graphicsHandler->RenderBoundingVolume(*temp2);
+
+	GraphicsComponent* g_temp;
+	g_temp = m_graphicsHandler->getComponent(1);
+	DirectX::XMFLOAT3 tempPos;
+	DirectX::XMStoreFloat3(&tempPos,temp->pos);
+	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
+
+	g_temp = m_graphicsHandler->getComponent(2);
+	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
+	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
 	
 
 	//Render

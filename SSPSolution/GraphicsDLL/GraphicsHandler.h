@@ -71,6 +71,8 @@ public:
 	GraphicsComponent* GetNextAvailableComponent();
 	int UpdateComponentList();
 
+
+
 	int InitializeGrid();
 	int RenderGrid(int& align, float& scale);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
@@ -79,6 +81,7 @@ public:
 	//TEMP STUFF
 public:
 	void SetTempAnimComponent(void*);
+	GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };

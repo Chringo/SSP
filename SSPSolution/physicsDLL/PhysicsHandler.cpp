@@ -621,18 +621,36 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(0, 5, 0, 0);
-	DirectX::XMVECTOR tempPos2 = DirectX::XMVectorSet(0, 10, 3, 0);
+	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(3, 2, 0, 0);
+	DirectX::XMVECTOR tempPos2 = DirectX::XMVectorSet(0, 4, 3, 0);
 
 	PhysicsComponent* ptr = nullptr;
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0.01, 0);
-	this->CreatePhysicsComponent(tempPos2);
+	ptr->PC_velocity = DirectX::XMVectorSet(-0.3, 0, 0.1, 0);
+	ptr = this->CreatePhysicsComponent(tempPos2);
+	ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0.7, 0);
 
 	this->m_gravity = DirectX::XMVectorSet(0, -0.001, 0, 0);
 
-	this->m_floor.PC_pos = DirectX::XMVectorSet(0, -1.0, 0, 0);
+	//Axels HOUSE
+	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
+
+	this->m_wall1.PC_pos = DirectX::XMVectorSet(10.0, 0.0, 0.0, 0.0);
+	this->m_wall1.PC_Plane.PC_normal = DirectX::XMVectorSet(-1.0, 0.0, 0, 0);
+
+	this->m_wall2.PC_pos = DirectX::XMVectorSet(-10.0, 0.0, 0.0, 0.0);
+	this->m_wall2.PC_Plane.PC_normal = DirectX::XMVectorSet(1.0, 0.0, 0, 0);
+
+	this->m_wall3.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 10.0, 0.0);
+	this->m_wall3.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0);
+
+	this->m_wall4.PC_pos = DirectX::XMVectorSet(0.0, 0.0, -10.0, 0.0);
+	this->m_wall4.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0);
+
+	this->m_roof.PC_pos = DirectX::XMVectorSet(0.0, 5.0, 0.0, 0.0);
+	this->m_roof.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, -1.0, 0.0, 0);
+
 
 	return true;
 }
@@ -665,6 +683,12 @@ void PhysicsHandler::Update(float deltaTime)
 		//{
 			//printf("AABB intersect \n");
 		//}
+		//Axels house intersection
+		this->OBBPlaneIntersectionTest(current, &this->m_wall1);
+		this->OBBPlaneIntersectionTest(current, &this->m_wall2);
+		this->OBBPlaneIntersectionTest(current, &this->m_wall3);
+		this->OBBPlaneIntersectionTest(current, &this->m_wall4);
+		this->OBBPlaneIntersectionTest(current, &this->m_roof);
 		bool floorTest = false;
 		floorTest = this->OBBPlaneIntersectionTest(current, &this->m_floor);
 		if (floorTest == false)
