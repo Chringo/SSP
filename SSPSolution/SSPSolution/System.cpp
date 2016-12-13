@@ -255,11 +255,36 @@ int System::Update(float deltaTime)
 	//Update the network module
 	this->m_networkModule.Update();
 
+
+
+
+	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
+	//temp input for testing chain
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		DirectX::XMFLOAT3 dir;
+		dir.x = (rand() % 201) - 100;
+		dir.y = (rand() % 101);
+		dir.z = (rand() % 201) - 100;
+		if (dir.y < 0)
+		{
+			dir.y *= -1;
+		}
+		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, dir.y * 0.018, dir.z * -0.008, 0);
+		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
+	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-1, 1.5, 0, 0);
+	}
+	//-----
 	this->m_physicsHandler.Update(deltaTime);
 	OBB* temp = nullptr;
 	OBB* temp2 = nullptr;
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
-	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, 1);
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 1);
 	//m_graphicsHandler->RenderBoundingVolume(*temp);
 	//m_graphicsHandler->RenderBoundingVolume(*temp2);
 
@@ -275,8 +300,7 @@ int System::Update(float deltaTime)
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
 	OBB* chainStuff = nullptr;
-
-	for (int i = 3; i < 6; i++)
+	for (int i = 1; i < nrOfComponents - 1; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
 		this->m_graphicsHandler->RenderBoundingVolume(*chainStuff);

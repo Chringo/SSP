@@ -47,12 +47,15 @@ __declspec(align(16)) struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
+	DirectX::XMVECTOR PC_normalForce;
 	double PC_gravityInfluence;
 	int PC_active;
 	int PC_entityID;
 	float PC_mass;
 	bool PC_is_Static;
 	bool PC_coolides;
+	float PC_friction;
+	float PC_elasticity;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -123,7 +126,7 @@ public:
 	void ShutDown();
 	void Update(float deltaTime);
 
-	void InitializeChain(int p_index, int b_index, int nrOfSeg);
+	void InitializeChain(int start, int end);
 
 
 	void RotateBB_X(PhysicsComponent* src);
