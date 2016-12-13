@@ -115,6 +115,9 @@ public:
 	void ShutDown();
 	void Update();
 
+	void InitializeChain(int p_index, int b_index, int nrOfSeg);
+
+
 	void RotateBB_X(PhysicsComponent* src);
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
@@ -123,7 +126,7 @@ public:
 	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
 	void AdjustChainLinkPosition();
 
-	void CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
+	PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 
 	void SimpleCollition(float dt);

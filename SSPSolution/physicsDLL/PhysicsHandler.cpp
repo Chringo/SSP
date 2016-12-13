@@ -146,7 +146,7 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	float rB = 0.0f;
 	float t = 0.0f;
 
-	DirectX::XMFLOAT3 L = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT3 L = DirectX::XMFLOAT3(posA.x - posB.x, posA.y - posB.y, posA.z - posB.z);
 
 	//B's basis with respect to A's local frame
 	DirectX::XMFLOAT3X3 R;
@@ -551,8 +551,8 @@ void PhysicsHandler::RotateBB_X(PhysicsComponent* src)
 	
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
-
-	xMatrix = DirectX::XMMatrixRotationX((3.14 / 180) * 45);
+	
+	xMatrix = DirectX::XMMatrixRotationX((3.14159265359f / 2.0f));
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
 
 	src->PC_OBB.ort = test;
@@ -643,6 +643,25 @@ void PhysicsHandler::Update()
 	//SimpleCollition(dt);
 }
 
+void PhysicsHandler::InitializeChain(int p_index, int b_index, int nrOfSeg)
+{
+	PhysicsComponent* temp = nullptr;
+
+	this->m_chain.CH_linkLenght = 0.5;
+	this->m_chain.CH_links.push_back(this->m_dynamicComponents.at(b_index));
+	
+
+	for (int i = 0; i < nrOfSeg; i++)
+	{
+		temp = this->CreatePhysicsComponent(this->m_dynamicComponents.at(b_index)->PC_pos);
+		this->m_chain.CH_links.push_back(temp);
+	}
+
+	this->m_chain.CH_links.push_back(this->m_dynamicComponents.at(p_index));
+	this->m_chain.CH_totalLenght = 0.5 * nrOfSeg + 2;
+}
+
+
 void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src)
 {
 	DirectX::XMFLOAT3 temp;
@@ -702,16 +721,17 @@ void PhysicsHandler::AdjustChainLinkPosition()
 	}
 }
 
-void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
+PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
 {
 	PhysicsComponent* newObject = nullptr;
-
 	newObject = new PhysicsComponent;
 
 	newObject->PC_pos = pos;
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_dynamicComponents.push_back(newObject);
+
+	return newObject;
 }
 
 bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos)
