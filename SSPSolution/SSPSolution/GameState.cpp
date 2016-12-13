@@ -11,15 +11,19 @@ GameState::~GameState()
 {
 }
 
-int GameState::InitializeBase(GameStateHandler * gsh)
+int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
 	int result = 0;
-	if(gsh != nullptr)
-		this->m_gsh = gsh;
-	else
+	if (gsh == nullptr || cHandler == nullptr)
 	{
 		this->m_gsh = nullptr;
+		this->m_cHandler = nullptr;
 		result = 0;
+	}
+	else
+	{
+		this->m_gsh = gsh;
+		this->m_cHandler = cHandler;
 	}
 	return result;
 }

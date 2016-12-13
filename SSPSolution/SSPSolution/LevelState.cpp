@@ -11,9 +11,11 @@ LevelState::~LevelState()
 {
 }
 
-int LevelState::Initialize(GameStateHandler * gsh)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
-	return 0;
+	int result = 0;
+	result = GameState::InitializeBase(gsh, cHandler);
+	return result;
 }
 
 int LevelState::Update(float dt, InputHandler * inputHandler)

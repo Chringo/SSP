@@ -11,9 +11,11 @@ MenuState::~MenuState()
 {
 }
 
-int MenuState::Initialize(GameStateHandler * gsh)
+int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
-	return 0;
+	int result = 0;
+	result = GameState::InitializeBase(gsh, cHandler);
+	return result;
 }
 
 int MenuState::Update(float dt, InputHandler * inputHandler)
