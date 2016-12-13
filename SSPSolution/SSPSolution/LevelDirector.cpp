@@ -2,15 +2,15 @@
 #define SUCCESS 1
 #define FAIL 0
 
-LevelDirector::LevelDirector(){}
-LevelDirector::~LevelDirector(){}
-int LevelDirector::Shutdown()
+FSMEnvironment::LevelDirector::LevelDirector(){}
+FSMEnvironment::LevelDirector::~LevelDirector(){}
+int FSMEnvironment::LevelDirector::Shutdown()
 {
 
 	return SUCCESS;
 }
 
-int LevelDirector::Initialize()
+int FSMEnvironment::LevelDirector::Initialize()
 {
 	// Reset values
 	this->m_states.clear();
@@ -44,7 +44,7 @@ int LevelDirector::Initialize()
 
 	return SUCCESS;
 }
-int LevelDirector::Update(float dt)
+int FSMEnvironment::LevelDirector::Update(float dt)
 {
 	if (this->m_states.size() == 0)
 		return SUCCESS;
@@ -69,17 +69,17 @@ int LevelDirector::Update(float dt)
 	return SUCCESS;
 }
 
-int LevelDirector::React(int entityID, EVENT event)
+int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 {
 
 	return SUCCESS;
 }
 
-void LevelDirector::AddState(State newState)
+void FSMEnvironment::LevelDirector::AddState(State* newState)
 {
-	this->m_states.push_back(newState);
+	this->m_states.push_back(*newState);
 }
-void LevelDirector::SetDefaultState(State state)
+void FSMEnvironment::LevelDirector::SetDefaultState(State* state)
 {
 	this->m_defaultState = state;
 }
