@@ -7,7 +7,7 @@
 namespace Resources
 {
 
-	class TextureHandler
+	class DLL_OPERATION TextureHandler
 	{
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_textures;
