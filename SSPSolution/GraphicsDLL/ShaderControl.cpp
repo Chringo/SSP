@@ -80,7 +80,7 @@ void ShaderControl::PostProcess()
 	ID3D11RenderTargetView* rtv = this->m_backBufferRTV;
 	PostProcessShader::PostEffects fx;
 	bool processed = false;
-	m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, ((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencil());
+	m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, NULL);
 	for (size_t i = 0; i < PostProcessShader::NUM_TYPES; i++)
 	{
 		fx = PostProcessShader::PostEffects(i);

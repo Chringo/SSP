@@ -45,13 +45,14 @@ public:
 	~DebugRenderer();
 	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
 	void Release();
-	void Render(AABB& box);
-	void Render(OBB& box);
+	void Render(DirectX::XMVECTOR& pos, AABB&  box);
+	void Render(DirectX::XMVECTOR& pos, OBB&   box);
+	void Render(DirectX::XMVECTOR& pos, Plane& box);
 	void SetActive();
 
 private:
-	ID3D11Buffer* GenerateLinelist(AABB& box);
-	ID3D11Buffer* GenerateLinelist(OBB& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos,AABB& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos,OBB& box);
 };
 
 #endif

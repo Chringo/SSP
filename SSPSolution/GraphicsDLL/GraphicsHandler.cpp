@@ -3,16 +3,24 @@
 #ifdef _DEBUG
 
 
-void GraphicsHandler::RenderBoundingVolume(OBB & box)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box)
 {
 	obbBoxes.push_back(&box);
+	positions[T_OBB].push_back(&pos);
 }
 
-void GraphicsHandler::RenderBoundingVolume(AABB & box)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB & box)
 {
 	aabbBoxes.push_back(&box);
+	positions[T_AABB].push_back(&pos);
 }
 #endif // _DEBUG
+
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plane)
+{
+	planes.push_back(&plane);
+	positions[T_PLANE].push_back(&pos);
+}
 
 int GraphicsHandler::IncreaseArraySize()
 {
@@ -234,12 +242,22 @@ int GraphicsHandler::Render()
 
 	for (size_t i = 0; i < obbBoxes.size(); i++)
 	{
-		m_debugRender.Render(*obbBoxes.at(i));
+		m_debugRender.Render( *positions[T_OBB].at(i),*obbBoxes.at(i));
+
 	}
+	positions[T_OBB].clear();
 	for (size_t i = 0; i < aabbBoxes.size(); i++)
 	{
-		m_debugRender.Render(*aabbBoxes.at(i));
+		m_debugRender.Render(*positions[T_AABB].at(i),*aabbBoxes.at(i));
 	}
+	positions[T_AABB].clear();
+	for (size_t i = 0; i < planes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i));
+	}
+	positions[T_PLANE].clear();
+
+	planes.clear();
 	obbBoxes.clear();
 	aabbBoxes.clear();
 	//Draw Debug.

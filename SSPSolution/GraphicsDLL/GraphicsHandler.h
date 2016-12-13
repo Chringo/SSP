@@ -23,12 +23,22 @@ class GRAPHICSDLL_API GraphicsHandler
 
 #ifdef _DEBUG
 private:
+	enum BoundingTypes {
+		T_OBB,
+		T_AABB,
+		T_PLANE,
+		T_SPHERE,
+		T_NUM_TYPES
+	};
 	DebugRenderer m_debugRender;
-	std::vector<OBB*> obbBoxes;
-	std::vector<AABB*> aabbBoxes;
+	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
+	std::vector<OBB*>   obbBoxes;
+	std::vector<AABB*>  aabbBoxes;
+	std::vector<Plane*> planes;
 public:
-	void RenderBoundingVolume(OBB& box);
-	void RenderBoundingVolume(AABB& box);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane);
 #endif // _DEBUG
 
 private:

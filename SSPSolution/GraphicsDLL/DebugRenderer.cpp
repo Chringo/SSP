@@ -172,9 +172,9 @@ void DebugRenderer::Release()
 
 }
 
-void DebugRenderer::Render(AABB & box)
+void DebugRenderer::Render(DirectX::XMVECTOR& pos,AABB & box)
 {
-	ID3D11Buffer* buf = GenerateLinelist(box);
+	ID3D11Buffer* buf = GenerateLinelist(pos,box);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &buf, &m_vertexSize, &offset);
@@ -183,16 +183,20 @@ void DebugRenderer::Render(AABB & box)
 	m_deviceContext->DrawIndexed(NUM_INDICES, 0, 0);
 }
 
-void DebugRenderer::Render(OBB & box)
+void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box)
 {
 
-	ID3D11Buffer* buf = GenerateLinelist(box);
+	ID3D11Buffer* buf = GenerateLinelist(pos,box);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &buf, &m_vertexSize, &offset);
 	m_deviceContext->IASetIndexBuffer(this->m_boxIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	m_deviceContext->DrawIndexed(NUM_INDICES, 0, 0);
+}
+
+void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & box)
+{
 }
 
 void DebugRenderer::SetActive()
@@ -203,10 +207,8 @@ void DebugRenderer::SetActive()
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 }
 
-ID3D11Buffer * DebugRenderer::GenerateLinelist(AABB & box)
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box)
 {
-	//Create the max points
-	Point maxX, minX, maxY, minY, maxZ, minZ;
 
 	cubePoints[0] =	Point(-0.5,  0.5,  0.5);		//0
 	cubePoints[1] =	Point(-0.5, -0.5,  0.5);		//1
@@ -230,7 +232,7 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(AABB & box)
 
 }
 
-ID3D11Buffer * DebugRenderer::GenerateLinelist(OBB & box)
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,OBB & box)
 {
 	
 	static float color[3]{ 1.0f,0.0f,0.0f };
@@ -243,7 +245,7 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(OBB & box)
 	yDir = DirectX::XMVectorScale(yDir, box.ext[1]);
 	zDir = DirectX::XMVectorScale(zDir, box.ext[2]);
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(box.pos);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
 	
 	//Create the points.
 	//see end of file
