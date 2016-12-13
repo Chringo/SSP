@@ -135,7 +135,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	unsigned int numElements = sizeof(inputDescNormal) / sizeof(inputDescNormal[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescNormal, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_NORMAL]);
+	hResult = device->CreateInputLayout(inputDescNormal, numElements, vertexShaderBuffer[ShaderLib::Normal]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Normal]->GetBufferSize(), &this->m_layout[IL_NORMAL]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -194,7 +194,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	numElements = sizeof(inputDescAnim) / sizeof(inputDescAnim[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[0]->GetBufferPointer(), vertexShaderBuffer[0]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
+	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -375,7 +375,7 @@ int DeferredShader::SetActive()
 
 	//Set the render target views
 	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRTV, this->m_DSV);
-
+	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 
@@ -389,6 +389,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Normal:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
@@ -398,14 +399,21 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Animated:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Animated], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
 		break;
 	}
 	case ShaderLib::InstancedAnimated:
 		break;
-	case ShaderLib::Grid:
+	case ShaderLib::Wireframe:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
+		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
+	}
 	default:
 		break;
 	}
@@ -465,7 +473,10 @@ void DeferredShader::Release()
 			this->m_deferredSRV[i] = nullptr;
 		}
 		if (this->m_gridPixelShader)
+		{
 			this->m_gridPixelShader->Release();
+			this->m_gridPixelShader = nullptr;
+		}
 	}
 }
 
@@ -493,6 +504,7 @@ int DeferredShader::Draw(Resources::Model * model)
 		numViews += 1;
 	}
 
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
@@ -599,7 +611,7 @@ int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
 	return 0;
 }
 
-int DeferredShader::DrawGrid(Resources::Model * model)
+int DeferredShader::DrawGrid(Resources::Model * model) //depricated
 {
 	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
 
@@ -623,7 +635,7 @@ int DeferredShader::DrawGrid(Resources::Model * model)
 
 int DeferredShader::DrawFromEditor(Resources::Model * model)
 {
-	m_deviceContext->PSSetShader(this->m_gridPixelShader, nullptr, NULL);
+	m_deviceContext->PSSetShader(this->m_pixelShader, nullptr, NULL);
 
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetVerticesBuffer();
@@ -632,6 +644,22 @@ int DeferredShader::DrawFromEditor(Resources::Model * model)
 	UINT32 offset = 0;
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &size, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+
+	Resources::Material * mat = model->GetMaterial();
+	Resources::Texture** textures = mat->GetAllTextures();
+	ID3D11ShaderResourceView* resViews[5];
+	UINT numViews = 0;
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (textures[i] == nullptr)
+			continue;
+
+		resViews[numViews] = textures[i]->GetResourceView();
+		numViews += 1;
+	}
+
+
+	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
@@ -643,8 +671,6 @@ int DeferredShader::InitializeGridShader(ID3D11Device * device)
 {
 
 	HRESULT hResult;
-	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
-	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
 

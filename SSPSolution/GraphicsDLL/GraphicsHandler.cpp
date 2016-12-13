@@ -1,5 +1,19 @@
 #include "GraphicsHandler.h"
 
+#ifdef _DEBUG
+
+
+void GraphicsHandler::RenderBoundingVolume(OBB & box)
+{
+	obbBoxes.push_back(&box);
+}
+
+void GraphicsHandler::RenderBoundingVolume(AABB & box)
+{
+	aabbBoxes.push_back(&box);
+}
+#endif // _DEBUG
+
 int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
@@ -118,7 +132,6 @@ GraphicsHandler::GraphicsHandler()
 	this->m_shaderControl		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
-	this->m_gridEnabled			   = false;
 }
 
 
@@ -129,7 +142,7 @@ GraphicsHandler::~GraphicsHandler()
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
 {
 	this->m_d3dHandler = new Direct3DHandler;
-	this->m_modelsPtr = new Resources::Model*[2];
+	
 	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
 	{
 		return 1;
@@ -138,7 +151,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
-	m_shaderControl->SetBackBufferRTV(m_d3dHandler->GetBackbufferRTV());
+	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
@@ -146,14 +159,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera->Initialize();
 
 	this->m_CreateTempsTestComponents();
-
-//	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
-	
-	this->InitializeGrid();
-	
-	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
+	//InitializeGrid();
+#ifdef _DEBUG
+	 obbBoxes.reserve(20);
+	 aabbBoxes.reserve(20);
+	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+#endif // _DEBUG
 
 	return 0;
 	
@@ -177,11 +188,14 @@ int GraphicsHandler::Render()
 	this->m_camera->GetViewMatrix(cam.cView);
 	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	/********************/
+
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
+		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
 		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
 	}
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
@@ -191,16 +205,6 @@ int GraphicsHandler::Render()
 	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
-
-	if (m_gridEnabled)
-	{
-		int ett;
-		float tva;
-		this->RenderGrid(ett, tva);
-	}
-	/********/
-
-
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
@@ -208,6 +212,39 @@ int GraphicsHandler::Render()
 	/*TEMP CBUFFER STUFF*/
 
 
+	if (postProcessing)
+	{
+		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
+		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		context->PSSetShaderResources(6,1,&srv);
+
+		m_shaderControl->PostProcess();
+		ID3D11ShaderResourceView * tab[1];
+		tab[0] = NULL;
+		context->PSSetShaderResources(6, 1, tab);
+	}
+	
+#ifdef _DEBUG
+	OBB box;
+	box.ext[0] = 2.0f;
+	box.ext[1] = 2.0f;
+	box.ext[2] = 2.0f;
+	m_debugRender.SetActive();
+
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*obbBoxes.at(i));
+	}
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*aabbBoxes.at(i));
+	}
+	obbBoxes.clear();
+	aabbBoxes.clear();
+	//Draw Debug.
+#endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
@@ -215,24 +252,34 @@ int GraphicsHandler::Render()
 int GraphicsHandler::InitializeGrid()
 {
 	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
-	//m_d3dHandler->InitializeGridRasterizer();
-	//m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
-	this->m_gridEnabled = false;
+	m_d3dHandler->InitializeGridRasterizer();
+
+	this->m_shaderControl->InitializeWireframe(this->m_d3dHandler->GetDevice());
 	return 0;
 }
 
-int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
+int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* component) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
-		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-		this->m_deferredSH->DrawGrid(m_modelsPtr[NULL]);
-		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
+
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	/********************/
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
+
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
+	m_shaderControl->Draw(model, component);
+	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;
 }
 
 int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
 {
-	m_shaderControl->ClearFrame();
 
 	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
 	this->m_camera->GetCameraPos(cam.cPos);
@@ -242,24 +289,26 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
-	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
-	((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
-
-	m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
-
-
-	m_shaderControl->DrawFinal();
-
-	/*TEMP CBUFFER STUFF*/
-
-	/*TEMP CBUFFER STUFF*/
-
-
-	this->m_d3dHandler->PresentScene();
+	//ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
+	this->m_shaderControl->Draw(model, component);
+	//((DeferredShader*)m_shaderControl->m_shaders[0])->DrawFromEditor(model);
 
 	return 0;
 }
+
+int GraphicsHandler::renderFinalEditor()
+{
+	m_shaderControl->DrawFinal();
+	this->m_d3dHandler->PresentScene();
+	return 0;
+}
+
+int GraphicsHandler::clearEditor()
+{
+	m_shaderControl->ClearFrame();
+	return 0;
+}
+
 
 void GraphicsHandler::Shutdown()
 {
@@ -319,6 +368,10 @@ void GraphicsHandler::Shutdown()
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 	delete[] this->m_animGraphicsComponents;
+#ifdef _DEBUG
+	m_debugRender.Release();
+#endif // _DEBUG
+
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
@@ -376,95 +429,6 @@ int GraphicsHandler::UpdateComponentList()
 	return result;
 }
 
-int GraphicsHandler::CreateTriangle()
-{
-	DirectX::XMFLOAT3 vertices[3];
-	unsigned long indices[3];
-	int sizeVertices = 3;
-	int sizeIndices = 3;
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	D3D11_BUFFER_DESC indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData;
-	D3D11_SUBRESOURCE_DATA indexData;
-	HRESULT hresult;
-
-	vertices[0] = DirectX::XMFLOAT3(-.5f, -.5f, 2.0f);  //bottom left
-
-	vertices[1] = DirectX::XMFLOAT3(0.0f, .5f, 2.0f);  //top mid
-											   
-	vertices[2] = DirectX::XMFLOAT3(.5f, -.5f, 2.0f);  //bottom right
-
-														 //Load the index array with data
-	for (int i = 0; i < sizeIndices; i++)
-	{
-		indices[i] = i;
-	}
-
-	//Set the description of the static vertex buffer
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * sizeVertices;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	//Give the subresource structure a pointer to the vertex data
-	ZeroMemory(&vertexData, sizeof(vertexData));
-	vertexData.pSysMem = &vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	//Create the vertex buffer
-	hresult = this->m_d3dHandler->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
-	if (FAILED(hresult)) {
-		return 1;
-	}
-
-	//Set up the description of the static index buffer
-	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * sizeIndices;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	ZeroMemory(&indexData, sizeof(indexData));
-	indexData.pSysMem = &indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	//Create the index buffer
-	hresult = this->m_d3dHandler->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &this->m_indexBuffer);
-	if (FAILED(hresult)) {
-		return 1;
-	}
-
-	return 0;
-}
-
-int GraphicsHandler::SetTriangle()
-{
-	unsigned int stride;
-	unsigned offset;
-
-	//Set vertex buffer stride and offset
-	stride = sizeof(DirectX::XMFLOAT3);
-	offset = 0;
-
-	//Set the vertex buffer to active in the input assembly so it can rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetVertexBuffers(0, 1, &this->m_vertexBuffer, &stride, &offset);
-
-	//Set the index buffer to active in the input assembler so it can be rendered
-	this->m_d3dHandler->GetDeviceContext()->IASetIndexBuffer(this->m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	//Set the type od primitiv that should be rendered from this vertex buffer, in this case triangles
-	this->m_d3dHandler->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return 0;
-}
-
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
 	m_animGraphicsComponents[0] = (penis*)component;
@@ -472,6 +436,8 @@ void GraphicsHandler::SetTempAnimComponent(void * component)
 
 void GraphicsHandler::m_CreateTempsTestComponents()
 {
+	this->m_modelsPtr = new Resources::Model*[2];
+
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		this->m_graphicsComponents[i] = nullptr;
@@ -512,7 +478,9 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
-
+	/*TEMP MODELS*/
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 	
 
 }
