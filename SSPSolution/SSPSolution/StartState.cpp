@@ -11,6 +11,12 @@ StartState::~StartState()
 {
 }
 
+int StartState::ShutDown()
+{
+	int result = 1;
+	return result;
+}
+
 int StartState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
 	int result = 0;

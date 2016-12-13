@@ -9,6 +9,7 @@ public:
 	MenuState();
 	~MenuState();
 
+	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
 	int Update(float dt, InputHandler * inputHandler);
 private:

@@ -11,6 +11,12 @@ MenuState::~MenuState()
 {
 }
 
+int MenuState::ShutDown()
+{
+	int result = 1;
+	return result;
+}
+
 int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
 	int result = 0;

@@ -14,6 +14,8 @@ protected:
 public:
 	GameState();
 	virtual ~GameState();
+
+	virtual int ShutDown() = 0;
 	//Returns 1 for success and 0 for failure
 	virtual int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler) = 0;
 
