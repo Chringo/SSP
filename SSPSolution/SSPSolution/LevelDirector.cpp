@@ -73,3 +73,24 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 	}
 	return change;
 }
+
+#pragma region temp
+int FSMEnvironment::State::CheckTransitions()
+{
+
+	return 1;// TODO: Return ID
+}
+void FSMEnvironment::State::Enter()
+{
+
+}
+void FSMEnvironment::State::Exit()
+{
+
+}
+void FSMEnvironment::State::Update(float dt)
+{
+
+}
+#pragma endregion
+
