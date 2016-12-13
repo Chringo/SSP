@@ -17,11 +17,15 @@ int System::Shutdown()
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
 	SDL_Quit();
+	this->m_gsh.ShutDown();
 	this->m_graphicsHandler->Shutdown();
 	delete this->m_graphicsHandler;
+	this->m_graphicsHandler = nullptr;
 	delete this->m_camera;
+	this->m_camera = nullptr;
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
+	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	DebugHandler::instance().Shutdown();
 
