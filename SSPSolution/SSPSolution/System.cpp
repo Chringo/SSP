@@ -278,11 +278,7 @@ int System::Update(float deltaTime)
 	//Render
 	DebugHandler::instance().StartTimer("Render");
 	this->m_graphicsHandler->Render();
-<<<<<<< HEAD
-
-=======
 	DebugHandler::instance().EndTimer();
->>>>>>> DebugClass
 	return result;
 }
 

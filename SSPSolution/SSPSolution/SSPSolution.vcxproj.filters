@@ -154,7 +154,7 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\Entities</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
