@@ -115,7 +115,6 @@ int System::Run()
 	while (this->m_running)
 	{
 		DebugHandler::instance().StartProgram();
-		DebugHandler::instance().StartTimer("Update");
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -144,14 +143,7 @@ int System::Run()
 			DebugHandler::instance().ResetMinMax();
 			printf("Reseted min max on timers\n");
 		}
-		DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
-		DebugHandler::instance().EndTimer();
-
-		//std::cout << int(totalTime) << "\n";
-		//Render
-		DebugHandler::instance().StartTimer("Render");
-		this->m_graphicsHandler->Render();
-		DebugHandler::instance().EndTimer();
+		
 		DebugHandler::instance().EndProgram();
 		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
 	}
@@ -163,6 +155,7 @@ int System::Run()
 
 int System::Update(float deltaTime)
 {
+	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
 	
@@ -277,8 +270,12 @@ int System::Update(float deltaTime)
 
 	this->m_physicsHandler.Update();
 
+	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
+	DebugHandler::instance().EndTimer();
 	//Render
+	DebugHandler::instance().StartTimer("Render");
 	this->m_graphicsHandler->Render();
+	DebugHandler::instance().EndTimer();
 	return result;
 }
 
