@@ -1081,7 +1081,7 @@ void PhysicsHandler::GetPhysicsComponentAABB(AABB*& src, int index)
 	src = &(this->m_dynamicComponents.at(index)->PC_AABB);
 }
 
-void PhysicsHandler::GetPhysicsComponentPlane(Plane*& src, int index)
+PhysicsComponent* PhysicsHandler::GetTempFloor()
 {
-	src = &(this->m_dynamicComponents.at(index)->PC_Plane);
+	return &this->m_floor;
 }

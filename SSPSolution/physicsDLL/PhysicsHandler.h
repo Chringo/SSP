@@ -152,8 +152,9 @@ public:
 
 	void GetPhysicsComponentOBB(OBB*& src, int index);
 	void GetPhysicsComponentAABB(AABB*& src, int index);
-	void GetPhysicsComponentPlane(Plane*& src, int index);
 
+	
+	PhysicsComponent* GetTempFloor();
 };
 
 #endif

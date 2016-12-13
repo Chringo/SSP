@@ -243,7 +243,6 @@ int GraphicsHandler::Render()
 	for (size_t i = 0; i < obbBoxes.size(); i++)
 	{
 		m_debugRender.Render( *positions[T_OBB].at(i),*obbBoxes.at(i));
-
 	}
 	positions[T_OBB].clear();
 	for (size_t i = 0; i < aabbBoxes.size(); i++)

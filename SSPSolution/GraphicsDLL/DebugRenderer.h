@@ -6,8 +6,15 @@ class DebugRenderer
 {
 
 private:
-	static const short int NUM_POINTS  = 8;
-	static const short int NUM_INDICES = 24;
+	enum MeshTypes {
+		M_CUBE    = 0,
+		M_PLANE   = 1,
+		M_SPHERE  = 2,
+		M_NUM_TYPES
+	};
+	 int NUM_POINTS[M_NUM_TYPES];
+	 int NUM_INDICES[M_NUM_TYPES];
+	
 	struct Point{
 		float x, y, z;
 		float r, g, b;
@@ -32,9 +39,11 @@ private:
 		}
 		
 	};
-	Point cubePoints[NUM_POINTS];
-	ID3D11Buffer*	      m_pointBuffer;
-	ID3D11Buffer*	      m_boxIndexBuffer;
+	Point* m_points[M_NUM_TYPES];
+	UINT*  m_indices[M_NUM_TYPES];
+
+	ID3D11Buffer*	      m_PointBuffer [M_NUM_TYPES] ;
+	ID3D11Buffer*	      m_IndexBuffer [M_NUM_TYPES] ;
 	ID3D11VertexShader*   m_vertexShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout;
@@ -47,12 +56,15 @@ public:
 	void Release();
 	void Render(DirectX::XMVECTOR& pos, AABB&  box);
 	void Render(DirectX::XMVECTOR& pos, OBB&   box);
-	void Render(DirectX::XMVECTOR& pos, Plane& box);
+	void Render(DirectX::XMVECTOR& pos, Plane& plane);
 	void SetActive();
 
 private:
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos,AABB& box);
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos,OBB& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, AABB& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, OBB& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Plane& box);
+
+
 };
 
 #endif
