@@ -93,9 +93,10 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
+	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
 	//Initialize the GameStateHandler
-	this->m_gsh.Initialize();
+	this->m_gsh.Initialize(&this->m_componentHandler);
 	//Initialize the network module
 	this->m_networkModule.Initialize();
 
