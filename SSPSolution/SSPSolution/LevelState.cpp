@@ -24,10 +24,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 
 	//Read from file
 	//Get Components
+	GraphicsComponent* tempComp = this->m_cHandler->GetGraphicsComponent();
 	//Set Component values
+	tempComp->active = 1;
+	tempComp->modelID = 1337;
+	tempComp->worldMatrix = DirectX::XMMatrixIdentity();
 	//Give Components to entities
 	this->m_player1.Initialize();
-
 	return result;
 }
 
