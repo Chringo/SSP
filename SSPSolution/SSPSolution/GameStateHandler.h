@@ -12,6 +12,8 @@ public:
 	GameStateHandler();
 	~GameStateHandler();
 
+	int ShutDown();
+
 	int Initialize(ComponentHandler* cHandler);
 
 	int Update(float dt, InputHandler* inputHandler);
