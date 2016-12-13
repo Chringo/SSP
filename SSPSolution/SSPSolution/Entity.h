@@ -24,6 +24,12 @@ public:
 	//dT should be in seconds
 	virtual int Update(float dT, InputHandler* inputHandler) = 0;
 	virtual int React(int entityID, EVENT reactEvent) = 0;
+
+	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
+	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
+
+
+
 private:
 };
 
