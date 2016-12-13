@@ -23,10 +23,10 @@ public:
 private: 	
 
 	// pointers to the main device and context
-	ID3D11Device		*m_Device		 = nullptr;
-	ID3D11DeviceContext *m_DeviceContext = nullptr;
-	ID3D11RenderTargetView* backBufferRTV;
-	ID3D11ShaderResourceView* backBufferSRV;
+	ID3D11Device			* m_Device				 = nullptr;
+	ID3D11DeviceContext		* m_DeviceContext		 = nullptr;
+	ID3D11RenderTargetView*   m_backBufferRTV		 = nullptr;
+	ID3D11ShaderResourceView* m_backBufferSRV		 = nullptr;
 	Shaders m_activeShader;
 public:
 	Shader* m_shaders[NUM_SHADERS];

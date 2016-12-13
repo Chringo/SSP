@@ -211,6 +211,7 @@ int GraphicsHandler::Render()
 	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
+
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
@@ -231,12 +232,8 @@ int GraphicsHandler::Render()
 		tab[0] = NULL;
 		context->PSSetShaderResources(6, 1, tab);
 	}
-	
 #ifdef _DEBUG
-	OBB box;
-	box.ext[0] = 2.0f;
-	box.ext[1] = 2.0f;
-	box.ext[2] = 2.0f;
+
 	m_debugRender.SetActive();
 
 	for (size_t i = 0; i < obbBoxes.size(); i++)
@@ -251,6 +248,7 @@ int GraphicsHandler::Render()
 	aabbBoxes.clear();
 	//Draw Debug.
 #endif // _DEBUG
+
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
