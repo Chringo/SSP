@@ -18,7 +18,7 @@ namespace Resources {
 		};
 
 	private:
-		BoundingBoxHeader* pickingBox = nullptr;
+		BoundingBoxHeader pickingBox;
 		RawModelData* m_rawData     = nullptr;
 		Mesh*	      m_modelMesh	= nullptr;
 		Material*	  m_material	= nullptr;
@@ -42,8 +42,8 @@ namespace Resources {
 		void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
 		Skeleton* GetSkeleton() { return this->m_skeleton; };
 
-		void SetOBBData(BoundingBoxHeader* obbdata) { this->pickingBox = obbdata; };
-		BoundingBoxHeader* GetOBBData() { return this->pickingBox; };
+		void SetOBBData(BoundingBoxHeader obbdata) { this->pickingBox = obbdata; };
+		BoundingBoxHeader GetOBBData() { return this->pickingBox; };
 	
 	};
 }

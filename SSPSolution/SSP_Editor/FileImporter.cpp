@@ -161,24 +161,26 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 
 	unsigned int * indices;
+	BoundingBoxHeader* obbdataPtr;
 	if (m_meshH->skeleton)
 	{
 		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+		obbdataPtr = (BoundingBoxHeader*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts + sizeof(unsigned int) * m_meshH->indexLength));
 	}
 	else
 	{
 		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
+		obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * m_meshH->indexLength);
 	}
 
 	if (!newMesh->SetIndices(indices, m_meshH->indexLength, this->m_Device, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
 
-
-	BoundingBoxHeader* obbdata = (BoundingBoxHeader*)(m_bbf_object + sizeof(MainHeader) + sizeof(MeshHeader));
+	// = (BoundingBoxHeader*)(m_bbf_object + sizeof(MainHeader) + sizeof(MeshHeader));
 	
 	/*we've already loaded one or more meshes into the scene*/
 	//if (m_models.size() != 0)
@@ -205,6 +207,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	//	m_new_model->SetMesh(newMesh);
 	//	m_models.push_back(m_new_model);
 	//}
+	BoundingBoxHeader obbdata = *obbdataPtr;
 	for (int i = 0; i < m_models.size(); ++i)
 	{
 		if (m_models.at(i)->GetRawModelData()->meshId == newMesh->GetId())
