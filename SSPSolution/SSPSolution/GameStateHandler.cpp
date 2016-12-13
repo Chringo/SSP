@@ -11,9 +11,21 @@ GameStateHandler::~GameStateHandler()
 {
 }
 
-int GameStateHandler::Initialize()
+
+int GameStateHandler::Initialize(ComponentHandler * cHandler)
 {
-	return 1;
+	int result = 0;
+	
+	//Create, Initialize and push a LevelState
+	LevelState* tempState = new LevelState();
+	result = tempState->Initialize(this, cHandler);
+	//If the initialization was successful
+	if (result > 0)
+	{
+		//Push it to the gamestate stack/vector
+		this->m_stateStack.push_back(tempState);
+	}
+	return result;
 }
 
 int GameStateHandler::Update(float dt, InputHandler * inputHandler)
