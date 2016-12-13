@@ -2,30 +2,38 @@
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #include "Observer.h"
 #include <vector>
-namespace FSMLevel
+class LevelDirector
 {
-	enum States
+private:	// Variables
+	/* TEMP STATE STRUCTURE */
+	static enum State
 	{
-		
+		NONE = 0,
+		START,
+		DEFAULT,
+		GOAL
 	};
-	class LevelDirector
-	{
-	private:	// Variables
-		//std::vector<"hints">
+	State m_currentState;
+	State m_defaultState;
 
-	public:
-		LevelDirector();
-		~LevelDirector();
-		int Shutdown();
+	// Change State to State* after temp structure is removed
+	std::vector<State> m_states;
+public:
+	LevelDirector();
+	~LevelDirector();
+	int Shutdown();
 
-		int Initialize();
-		int Update(float deltaTime);
+	int Initialize();
+	int Update(float deltaTime);
 
-		int React(int entityID, EVENT event);
+	int React(int entityID, EVENT event);
 
 
-	private:	// Helper functions
-		void ChangeState(States newState);
-	};
-}
+private:	// Helper functions
+	void AddState(State newState);
+	void SetDefaultState(State state);
+	void SetNewState(State ID);// temp, could be an integer holding an ID in the future
+	bool ChangeState(State state);
+
+};
 #endif
