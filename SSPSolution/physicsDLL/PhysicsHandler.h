@@ -75,8 +75,11 @@ class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
 	int m_nrOfStaticObjects;
-	
+	PhysicsComponent m_floor;
+
+
 	Chain m_chain;
+
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -113,7 +116,7 @@ public:
 
 	bool Initialize();
 	void ShutDown();
-	void Update();
+	void Update(float deltaTime);
 
 	void InitializeChain(int p_index, int b_index, int nrOfSeg);
 
