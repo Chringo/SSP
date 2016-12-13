@@ -1,6 +1,6 @@
 #include "EditorCommunicator.h"
 
-Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview)
+Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview, std::vector<Resources::Model*>* modelPtr)
 {
 	this->m_GraphicsHandler = new GraphicsHandler();
 	this->m_hwnd = hwnd;
@@ -32,7 +32,8 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 			this->m_Width,
 			this->m_Height,
 			this->m_GraphicsHandler,
-			&this->m_Map
+			&this->m_Map,
+			modelPtr
 		);
 	}
 

@@ -9,6 +9,7 @@
 #include "../ResourceLib/FileHeaders.h"
 #include "../ResourceLib/TextureHandler.h"
 #include <QtWidgets\qtreewidget.h>
+
 class FileImporter
 {
 private:

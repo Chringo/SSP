@@ -1,16 +1,17 @@
 #pragma once
 #include "EditorInputHandler.h"
+#include "Header.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 
 
-struct Container
-{
-	unsigned int internalID;
-	DirectX::XMVECTOR position; // Total värde. 
-	float rotation; //Total värde. 
-	GraphicsComponent component;
-};
+//struct Container
+//{
+//	unsigned int internalID;
+//	DirectX::XMVECTOR position; // Total värde. 
+//	float rotation; //Total värde. 
+//	GraphicsComponent component;
+//};
 
 class Communicator
 {
@@ -30,7 +31,7 @@ public:
 	EditorInputHandler* m_EditorInputHandler;
 	Communicator();
 	~Communicator();
-	Resources::Status Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview);
+	Resources::Status Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview, std::vector<Resources::Model*>* modelPtr);
 	Resources::Status Release();
 
 public:

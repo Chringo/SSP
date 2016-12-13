@@ -44,7 +44,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				InstancePtr = &got->second;
 				for (size_t j = 0; j < InstancePtr->size(); j++)
 				{
-					this->m_Communicator->m_GraphicsHandler->RenderGrid(
+					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
@@ -71,7 +71,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	Resources::Status st;
 
-	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
+	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview, fileImporter->get_M_models());
 	this->m_Device = this->m_Communicator->GetDevice();
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);

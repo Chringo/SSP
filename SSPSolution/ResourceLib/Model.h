@@ -18,11 +18,11 @@ namespace Resources {
 		};
 
 	private:
-		BoundingBoxHeader pickingBox;
 		RawModelData* m_rawData     = nullptr;
 		Mesh*	      m_modelMesh	= nullptr;
 		Material*	  m_material	= nullptr;
 		Skeleton*	  m_skeleton	= nullptr;	
+		BoundingBoxHeader pickingBox;
 		//Animation*  m_animations  = nullptr;
 	public:
 		Model(Resource::RawResourceData resData);

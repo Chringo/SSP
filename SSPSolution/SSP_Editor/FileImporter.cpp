@@ -167,7 +167,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
-		obbdataPtr = (BoundingBoxHeader*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts + sizeof(unsigned int) * m_meshH->indexLength));
+		obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * m_meshH->indexLength);
 	}
 	else
 	{

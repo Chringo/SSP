@@ -1,6 +1,6 @@
 #ifndef RESOURCELIB_FILEHEADERS_H
 #define RESOURCELIB_FILEHEADERS_H
-
+#include <DirectXMath.h>
 struct Vector2
 {
 	float u, v;
@@ -27,13 +27,14 @@ struct MeshHeader{
 	unsigned int indexLength = 0;
 	bool skeleton;
 };
+
 struct BoundingBoxHeader
 {
-	float extension; //skalären
-	Vector3 extensionDir;
-	Vector3 position;
-	//float min, max, centerPoint;
+	Vector3 position; //positionen på boundingboxen
+	float extension[3]; //skalären
+	Vector3 extensionDir[3]; //Orto
 };
+
 struct SkeletonHeader {
 	unsigned int jointCount = 0;
 	unsigned int animLayerCount = 0;
