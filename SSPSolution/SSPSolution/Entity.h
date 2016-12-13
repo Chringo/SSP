@@ -6,7 +6,7 @@
 //Subject includes this for the events
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/physicsDLL/PhysicsHandler.h"
-
+#include "ComponentHandler.h"
 class Entity :
 	public Observer
 {

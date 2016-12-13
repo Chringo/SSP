@@ -4,13 +4,42 @@ int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
 
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 	delete[] this->m_graphicsComponents;
 	this->m_graphicsComponents = newArray;
 	this->m_maxGraphicsComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::IncreaseArraySize(int increaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[increaseTo];
+
+	for (int i = 0; i < increaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = increaseTo;
 
 	return 1;
 }
@@ -22,7 +51,14 @@ int GraphicsHandler::DecreaseArraySize()
 
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
-		newArray[i] = this->m_graphicsComponents[i];
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
 	}
 
 	for (int i = this->m_maxGraphicsComponents; i < this->m_maxGraphicsComponents + ARRAY_INC; i++)
@@ -39,24 +75,55 @@ int GraphicsHandler::DecreaseArraySize()
 	return 1;
 }
 
+int GraphicsHandler::DecreaseArraySize(int decreaseTo)
+{
+	GraphicsComponent** newArray = new GraphicsComponent*[decreaseTo];
+
+	for (int i = 0; i < decreaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsComponents)
+		{
+			newArray[i] = this->m_graphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = decreaseTo; i < this->m_maxGraphicsComponents; i++)
+	{
+		if (this->m_graphicsComponents[i])
+		{
+			delete this->m_graphicsComponents[i];
+		}
+	}
+
+	delete[] this->m_graphicsComponents;
+	this->m_graphicsComponents = newArray;
+	this->m_maxGraphicsComponents = decreaseTo;
+
+	return 1;
+}
+
 GraphicsHandler::GraphicsHandler()
 {
-	this->m_d3dHandler = nullptr;
-	this->m_deferredSH = nullptr;
-	this->m_lightSH = nullptr;
-	this->m_indexBuffer = nullptr;
-	this->m_vertexBuffer = nullptr;
-	this->m_camera = nullptr;
-	this->m_graphicsComponents = nullptr;
+	this->m_d3dHandler			   = nullptr;
+	this->m_deferredSH			   = nullptr;
+	this->m_finalSH				   = nullptr;
+	this->m_indexBuffer			   = nullptr;
+	this->m_vertexBuffer		   = nullptr;
+	this->m_camera				   = nullptr;
+	this->m_graphicsComponents	   = nullptr;
+	this->m_shaderControl		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
-	this->m_maxGraphicsComponents = 5;
-	this->m_gridEnabled = false;
+	this->m_maxGraphicsComponents  = 5;
+	this->m_gridEnabled			   = false;
 }
 
 
 GraphicsHandler::~GraphicsHandler()
 {
-	delete[] this->m_modelsPtr;
 }
 
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
@@ -69,45 +136,30 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 
-	this->m_deferredSH = new DeferredShaderHandler;
-	if (this->m_deferredSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
-	{
-		return 1;
-	}
+	this->m_shaderControl = new ShaderControl;
+	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+	m_shaderControl->SetBackBufferRTV(m_d3dHandler->GetBackbufferRTV());
 
-	this->m_lightSH = new LightShaderHandler;
-	if (this->m_lightSH->Initialize(this->m_d3dHandler->GetDevice(), windowHandle, this->m_d3dHandler->GetDeviceContext(), resolution))
-	{
-		return 1;
-	}
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
 
-	//Setup projection matrix
-	//fieldOfView = 3.141592654f / 4.0f;
-	float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-	float screenAspect = (float)resolution.x / (float)resolution.y;
-
-	DirectX::XMStoreFloat4x4(&m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.1f, 1000.0f));
-
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
-		this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent;
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
-	//DirectX::XMFLOAT4X4 worldMatrix;
-	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
 
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
 	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -115,12 +167,17 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
-	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+//	this->m_deferredSH->SetGraphicsParameters(m_graphicsComponents, this->m_modelsPtr);
+	
 	this->InitializeGrid();
+	
+	/*TEMP MODELS*/
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
 
 	return 0;
 	
@@ -136,94 +193,64 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render()
 {
+	m_shaderControl->ClearFrame();
 
-	this->m_deferredSH->ClearRenderTargetViews();
+	/*TEMP CBUFFER STUFF*/
+	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
+	this->m_camera->GetCameraPos(cam.cPos);
+	this->m_camera->GetViewMatrix(cam.cView);
+	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	/********************/
+	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[i]->worldMatrix);
+		m_shaderControl->Draw(m_modelsPtr[0]);
+	}
+	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
+	//{
+	//}
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&this->m_graphicsComponents[0]->worldMatrix);
+	m_shaderControl->Draw(m_modelsPtr[1]);
 
-	DirectX::XMMATRIX viewMatrix;
-	this->m_camera->GetViewMatrix(viewMatrix);
-
-
-
-	this->m_deferredSH->SetActive(ShaderLib::ShaderType::Normal);
-
-	ShaderLib::DeferredConstantBufferWorld* shaderParamsWorld = new ShaderLib::DeferredConstantBufferWorld;
-	ShaderLib::DeferredConstantBufferVP* shaderParamsVP = new ShaderLib::DeferredConstantBufferVP;
-	ShaderLib::DeferredConstantBufferWorldxm * shaderParamsXM = new ShaderLib::DeferredConstantBufferWorldxm;
-
-
-	shaderParamsVP->viewMatrix = *this->m_camera->GetViewMatrix();
-	shaderParamsVP->projectionMatrix = this->m_projectionMatrix;
-
-	this->m_deferredSH->SetShaderParameters(shaderParamsVP, ShaderLib::CB_VIEW_PROJECTION);
-
-
-	/*TEMP*/
 
 
 	if (m_gridEnabled)
 	{
-		Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), this->m_modelsPtr[0]);
 		int ett;
 		float tva;
 		this->RenderGrid(ett, tva);
 	}
-
-
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(111337), this->m_modelsPtr[1]);
-	m_deferredSH->Draw(ShaderLib::DRAW_STANDARD);
-
 	/********/
 
-	////TEST ROTATION
-	//static DirectX::XMMATRIX rotation = DirectX::XMMatrixIdentity();
-	//rotation = DirectX::XMMatrixMultiply(rotation, DirectX::XMMatrixRotationY(0.0000005f));
-	//this->m_graphicsComponents[0]->worldMatrix = DirectX::XMMatrixMultiply(rotation, this->m_graphicsComponents[0]->worldMatrix);
-	////END TEST ROTATION
 
- 
+	m_shaderControl->DrawFinal();
 
+	/*TEMP CBUFFER STUFF*/
 
-	delete shaderParamsXM;
-	delete shaderParamsVP;
-	delete shaderParamsWorld;
+	/*TEMP CBUFFER STUFF*/
 
-	this->m_d3dHandler->ClearDepthAndRTV(this->m_deferredSH->GetDSV());
-	this->m_d3dHandler->SetBackBuffer(this->m_deferredSH->GetDSV());
-	this->m_lightSH->SetActive(ShaderLib::ShaderType::Normal);
-
-	ShaderLib::LightConstantBuffer* lShaderParams = new ShaderLib::LightConstantBuffer;
-	lShaderParams->camPos = this->m_camera->GetCameraPos();
-	lShaderParams->camDir = this->m_camera->GetLookAt();
-
-	this->m_lightSH->SetShaderParameters(lShaderParams, this->m_deferredSH->GetShaderResourceViews());
-	delete lShaderParams;
-	this->m_d3dHandler->GetDeviceContext()->DrawIndexed(6, 0, 0);
-
-	this->m_lightSH->ResetPSShaderResources();
 
 	this->m_d3dHandler->PresentScene();
-
 	return 0;
 }
 
 int GraphicsHandler::InitializeGrid()
 {
-	m_d3dHandler->InitializeGridRasterizer();
-	m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
-	this->m_gridEnabled = true;
+	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
+	//m_d3dHandler->InitializeGridRasterizer();
+	//m_deferredSH->InitializeGridShader(this->m_d3dHandler->GetDevice());
+	this->m_gridEnabled = false;
 	return 0;
 }
 
 int GraphicsHandler::RenderGrid(int &align, float &scale) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
-
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
-
-
-
-		this->m_deferredSH->Draw(ShaderLib::DRAW_GRID);
-
-
+		this->m_deferredSH->DrawGrid(m_modelsPtr[NULL]);
 		m_d3dHandler->SetRasterizerState(D3D11_FILL_SOLID);
 
 	return 0;
@@ -239,15 +266,15 @@ void GraphicsHandler::Shutdown()
 	}
 	if (this->m_deferredSH)
 	{
-		this->m_deferredSH->Shutdown();
+		this->m_deferredSH->Release();
 		delete this->m_deferredSH;
 		this->m_deferredSH = nullptr;
 	}
-	if (this->m_lightSH)
+	if (this->m_finalSH)
 	{
-		this->m_lightSH->Shutdown();
-		delete this->m_lightSH;
-		this->m_lightSH = nullptr;
+		this->m_finalSH->Release();
+		delete this->m_finalSH;
+		this->m_finalSH = nullptr;
 	}
 	if (this->m_indexBuffer)
 	{
@@ -259,11 +286,17 @@ void GraphicsHandler::Shutdown()
 		this->m_vertexBuffer->Release();
 		this->m_vertexBuffer = nullptr;
 	}
+	if (this->m_shaderControl)
+	{
+		m_shaderControl->Release();
+		delete m_shaderControl;
+		this->m_shaderControl = nullptr;
+	}
 	if (this->m_windowHandle)
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i])
 		{
@@ -271,7 +304,63 @@ void GraphicsHandler::Shutdown()
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
+	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
+}
+
+int GraphicsHandler::SetComponentArraySize(int newSize)
+{
+	if (this->m_maxGraphicsComponents < newSize)
+	{
+		this->IncreaseArraySize(newSize);
+	}
+	else if (this->m_maxGraphicsComponents > newSize)
+	{
+		this->DecreaseArraySize(newSize);
+	}
+
+	return 0;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
+{
+	if (this->m_nrOfGraphicsComponents < this->m_maxGraphicsComponents)
+	{
+		this->m_nrOfGraphicsComponents++;
+		return this->m_graphicsComponents[this->m_nrOfGraphicsComponents-1];
+	}
+	else
+	{
+		this->IncreaseArraySize();
+		return this->GetNextAvailableComponent();
+	}
+
+	return nullptr;
+}
+
+int GraphicsHandler::UpdateComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfGraphicsComponents - 1; i++)
+	{
+		if (!this->m_graphicsComponents[i]->active)
+		{
+			GraphicsComponent* tempComponentPtr = this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1];
+			this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1] = this->m_graphicsComponents[i];
+			this->m_graphicsComponents[i] = tempComponentPtr;
+			this->m_nrOfGraphicsComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1]->active)
+	{
+		this->m_nrOfGraphicsComponents--;
+		result++;
+	}
+
+	return result;
 }
 
 int GraphicsHandler::CreateTriangle()
