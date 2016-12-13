@@ -59,26 +59,17 @@ void LevelDirector::SetDefaultState(State state)
 {
 	this->m_defaultState = state;
 }
-bool LevelDirector::ChangeState(State newState)
+bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;
 	// Query list of states to see if the state exists
-	switch (newState)
+	for (int i = 0; i < m_states.size(); i++)
 	{
-	case LevelDirector::NONE:
-		// Not an allowed state to change to.
-		break;
-	case LevelDirector::START:
-		change = true;
-		break;
-	case LevelDirector::DEFAULT:
-		change = true;
-		break;
-	case LevelDirector::GOAL:
-		change = true;
-		break;
-	default:
-		break;
+		if (m_states[i].stateID == newState)
+		{
+			change = true;
+			break;
+		}
 	}
 	return change;
 }
