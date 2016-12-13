@@ -2,13 +2,14 @@
 
 D3DRenderWidget::~D3DRenderWidget()
 {
-	this->m_GraphicsHandler->Shutdown();
-	delete this->m_GraphicsHandler;
-	if (this->m_test == 1)
+	Resources::Status status;
+	status = this->m_Communicator->Release();
+	if (status == Resources::ST_OK)
 	{
-		delete this->m_EditorInputHandler;
+		delete this->m_Communicator;
 	}
 }
+
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
 	this->m_frameCount++;
@@ -20,39 +21,58 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 	this->m_frameTime = getFrameTime();
 
-	if (m_test == 1)
+	if (!this->m_Communicator->m_IsPreview)
 	{
-		this->m_EditorInputHandler->detectInput(this->m_frameTime);
+		this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime);
 	}
-	this->m_GraphicsHandler->Render();
+
+	//SEND COMPONENT DATA TO HANDLER
+	//this->m_Communicator->m_GraphicsHandler->Sendshit();
+	//THEN RENDER
+	if (!this->m_Communicator->m_Map.empty())
+	{
+		Resources::Status st;
+		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_Map.begin();
+		std::vector<Container>* modelPtr = nullptr;
+
+
+		if (got == this->m_Communicator->m_Map.end()) { // if  does not exists in memory
+
+		}
+		else {
+			modelPtr = &got->second;
+			for (size_t j = 0; j < modelPtr->size(); j++)
+			{
+				this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+					this->m_fileImporter->get_model(modelPtr->at(j).component.modelID),
+					&modelPtr->at(j).component
+				);
+			}
+
+		}
+
+	}
+	else
+	{
+		this->m_Communicator->m_GraphicsHandler->Render();
+	}
 	this->update();
 }
 
-void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview)
+void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
 {
-	this->m_GraphicsHandler = new GraphicsHandler();
+	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
-	if (!isPreview)
-	{
-		this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	Resources::Status st;
 
-	}
-	this->m_GraphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(parent->width(), parent->height()));
-	this->m_GraphicsHandler->InitializeGrid();
-	this->m_Camera = new Camera();
-	this->m_Camera->Initialize();
-	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
-	delete oldCam;
-	oldCam = nullptr;
-	this->m_test = 0;
-	if (!isPreview)
-	{
-		this->m_EditorInputHandler = new EditorInputHandler(this->m_hInstance,this->m_hwnd,this->m_Camera, this->m_Width, this->m_Height, this->m_GraphicsHandler);
-		this->m_test = 1;
-	}
+	st = this->m_Communicator->Initialize(this->m_hwnd, this->m_hInstance, parent->width(), parent->height(), isPreview);
+	this->m_Device = this->m_Communicator->GetDevice();
+	this->m_fileImporter = fileImporter;
+	this->m_fileImporter->setDevice(this->m_Device);
 }
 
-D3DRenderWidget::D3DRenderWidget(QWidget* parent)
+D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	: QWidget(parent) {
 
 	//COMMENT THESE OUT TO ENABLE USE OF 2 RENDER WIDGETS
@@ -64,11 +84,11 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent)
 	setAttribute(Qt::WA_NativeWindow, true);
 	if (parent->width() == 161)
 	{
-		Initialize(parent, true);
+		Initialize(parent, true, fileImporter);
 	}
 	else
 	{
-		Initialize(parent, false);
+		Initialize(parent, false, fileImporter);
 	}
 }
 

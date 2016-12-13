@@ -24,7 +24,13 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
 	DebugHandler::instance().Shutdown();
+
+	/*Delete animation class ptr here.*/
+	delete this->m_Anim;
+
 	return result;
+	
+
 }
 
 int System::Initialize()
@@ -35,7 +41,6 @@ int System::Initialize()
 	this->m_window = NULL;
 	//Get the instance if this application
 	this->m_hinstance = GetModuleHandle(NULL);
-
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -68,18 +73,33 @@ int System::Initialize()
 	}
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
-	this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
+	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
 	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
 	delete oldCam;
 	oldCam = nullptr;
 	//Initialize the PhysicsHandler
 	this->m_physicsHandler.Initialize();
 
+	DirectX::XMFLOAT3 temp = DirectX::XMFLOAT3(0, 0, 0);
+	DirectX::XMVECTOR test = DirectX::XMLoadFloat3(&temp);
+
+	DirectX::XMFLOAT3 temp2 = DirectX::XMFLOAT3(0, 0, 2.1);
+	DirectX::XMVECTOR test2 = DirectX::XMLoadFloat3(&temp2);
+
+	this->m_physicsHandler.CreatePhysicsComponent(test);
+	this->m_physicsHandler.RotateBB_X(this->m_physicsHandler.getDynamicComponents(0));
+	this->m_physicsHandler.CreatePhysicsComponent(test2);
+
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	DebugHandler::instance().CreateCustomLabel("Frame counter", 0.0f);
+	//Init the network module
+	this->m_networkModule.Initialize();
+
+	this->m_Anim = new Animation();
+
+	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 
 	return result;
 }
@@ -101,7 +121,6 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
-		this->m_physicsHandler.Update();
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
@@ -145,8 +164,33 @@ int System::Run()
 int System::Update(float deltaTime)
 {
 	int result = 1;
+
+	
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	int rotateCameraY = 0;
+	std::list<CameraPacket> cList;
+
+	//Check for camera updates from the network
+	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
+	OBB* tempHold = nullptr;
+	this->m_physicsHandler.GetPhysicsComponentOBB(tempHold, 0);
+	
+	this->m_graphicsHandler->RenderBoundingVolume(*tempHold);
+	if (!cList.empty())
+	{
+		std::list<CameraPacket>::iterator iter;
+
+		for (iter = cList.begin(); iter != cList.end();)
+		{
+			this->m_camera->SetCameraPos((iter)->pos);
+			this->m_camera->Update();
+			iter++;	
+		}
+
+		cList.empty();	//When we have read all the packets, empty the list
+
+	}
+
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		translateCameraZ++;
@@ -189,8 +233,52 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
 		this->m_camera->SetRotation(newRotation);
 		this->m_camera->Update();
+
+		//Send updates over the network
+		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
+		{
+			DirectX::XMFLOAT4 updatePos;
+			this->m_camera->GetCameraPos(updatePos);
+			this->m_networkModule.SendCameraPacket(updatePos);
+		}
+		
 	}
-	//
+	//Network
+	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	{
+		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+		{
+			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
+			{
+				printf("Joined client with the ip %s\n", this->m_ip);
+			}
+			else
+			{
+				printf("Failed to connect to the client\n", this->m_ip);
+			}
+			
+		}
+		else
+		{
+			printf("Join failed since this module is already connected to other clients\n");
+		}
+	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	{
+		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
+	}
+	//Update animations here. Temp place right now.
+	m_Anim->Update(deltaTime);
+	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+
+	//Update the network module
+	this->m_networkModule.Update();
+
+
+	this->m_physicsHandler.Update();
+
+	//Render
+	this->m_graphicsHandler->Render();
 	return result;
 }
 

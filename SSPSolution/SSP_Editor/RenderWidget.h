@@ -2,30 +2,26 @@
 #include "ui_SSP_Editor.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "EditorInputHandler.h"
+#include "EditorCommunicator.h"
+#include "FileImporter.h"
 
 class D3DRenderWidget : public QWidget {
 	Q_OBJECT
 		Q_DISABLE_COPY(D3DRenderWidget)
 public:
-	D3DRenderWidget(QWidget* parent = NULL);
+	D3DRenderWidget(QWidget* parent = NULL, FileImporter* fileImporter = NULL);
 	virtual ~D3DRenderWidget();
 	virtual QPaintEngine* paintEngine() const { return NULL; }
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
 	virtual void resizeEvent(QResizeEvent* evt);
-	int m_test;
-	int m_Width;
-	int m_Height;
-	int m_x;
-	int m_y;
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
-	Camera* m_Camera;
-	GraphicsHandler* m_GraphicsHandler;
-	EditorInputHandler* m_EditorInputHandler;
-	void Initialize(QWidget* parent, bool isPreview);
+	Communicator* m_Communicator;
+	FileImporter* m_fileImporter;
+	ID3D11Device* m_Device;
+	void Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter);
 
 	
 private: //for deltaTime
@@ -37,7 +33,9 @@ private: //for deltaTime
 
 	__int64 m_frameTimeOld = 0;
 	double m_frameTime;
-
+public:
+	ID3D11Device* getDevice() { return this->m_Device; };
+	Communicator* getCommunicator() { return this->m_Communicator; };
 private:
 	double getFrameTime();
 	void startTimer();

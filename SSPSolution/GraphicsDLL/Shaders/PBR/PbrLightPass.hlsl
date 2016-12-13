@@ -13,12 +13,14 @@ SamplerState pointSampler : register(s1);
 //	matrix worldMatrix;
 //}
 
-cbuffer camera : register(b0)
+cbuffer camera : register(b1)
 {
-    float3 camPos;
-    float3 camTarget;
-    float padding1;
-    float padding2;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+
+    float4 camPos;
+	// do not need padding here. float4 = 16bit
+
 }
 
 struct VS_OUT
@@ -122,7 +124,6 @@ float GGX(float NdotH, float m)
 
 float4 PS_main(VS_OUT input) : SV_Target
 {
-    float3 camDir = camTarget - camPos;
     uint lightCount = 3;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
@@ -164,7 +165,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
     //N = normalize(N);
-    float3 V = normalize(wPosSamp.xyz - camPos); //camDir
+    float3 V = normalize(wPosSamp.xyz - camPos.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
