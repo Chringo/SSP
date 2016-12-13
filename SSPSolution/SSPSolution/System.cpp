@@ -23,6 +23,7 @@ int System::Shutdown()
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
 	this->m_physicsHandler.ShutDown();
+	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
 	delete this->m_Anim;
@@ -98,6 +99,8 @@ int System::Initialize()
 
 	this->m_Anim = new Animation();
 
+	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
+
 	return result;
 }
 
@@ -111,6 +114,7 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+		DebugHandler::instance().StartProgram();
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -134,8 +138,14 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
-		//std::cout << int(totalTime) << "\n";
-
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
+		{
+			DebugHandler::instance().ResetMinMax();
+			printf("Reseted min max on timers\n");
+		}
+		
+		DebugHandler::instance().EndProgram();
+		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();
@@ -145,6 +155,7 @@ int System::Run()
 
 int System::Update(float deltaTime)
 {
+	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
 	
@@ -259,8 +270,12 @@ int System::Update(float deltaTime)
 
 	this->m_physicsHandler.Update();
 
+	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
+	DebugHandler::instance().EndTimer();
 	//Render
+	DebugHandler::instance().StartTimer("Render");
 	this->m_graphicsHandler->Render();
+	DebugHandler::instance().EndTimer();
 	return result;
 }
 
