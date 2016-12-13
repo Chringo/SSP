@@ -5,6 +5,10 @@
 #include "EditorCommunicator.h"
 #include "FileImporter.h"
 
+#include <stdio.h>
+#include "Windows.h"
+#include "Wincon.h"
+
 class D3DRenderWidget : public QWidget {
 	Q_OBJECT
 		Q_DISABLE_COPY(D3DRenderWidget)
@@ -40,4 +44,10 @@ private:
 	double getFrameTime();
 	void startTimer();
 	double getTime();
+	void InitDosConsole() {
+		AllocConsole();
+		freopen("CONIN$", "rb", stdin);
+		freopen("CONOUT$", "wb", stdout);
+		freopen("CONOUT$", "wb", stderr);
+	}
 };

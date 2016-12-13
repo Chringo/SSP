@@ -7,6 +7,7 @@
 #include "../ResourceLib/FileLoader.h"
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/FileHeaders.h"
+#include "../ResourceLib/TextureHandler.h"
 #include <QtWidgets\qtreewidget.h>
 class FileImporter
 {
@@ -15,6 +16,7 @@ private:
 	{
 		MODEL = 0,
 		ANIM  = 1,
+		MATERIAL = 2,
 	};
 
 	/*variables*/
