@@ -255,7 +255,6 @@ int System::Update(float deltaTime)
 	//Update the network module
 	this->m_networkModule.Update();
 
-
 	this->m_physicsHandler.Update(deltaTime);
 	OBB* temp = nullptr;
 	OBB* temp2 = nullptr;
@@ -274,6 +273,14 @@ int System::Update(float deltaTime)
 	g_temp = m_graphicsHandler->getComponent(2);
 	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
+	OBB* chainStuff = nullptr;
+
+	for (int i = 3; i < 6; i++)
+	{
+		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
+		this->m_graphicsHandler->RenderBoundingVolume(*chainStuff);
+	}
 
 	
 

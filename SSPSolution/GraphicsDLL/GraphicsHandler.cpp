@@ -203,7 +203,7 @@ int GraphicsHandler::Render()
 	//}
 	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
-	m_shaderControl->Draw(m_modelsPtr[1], this->m_graphicsComponents[0]);
+	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
 
 	//RenderGrid(m_modelsPtr[1], )
 
