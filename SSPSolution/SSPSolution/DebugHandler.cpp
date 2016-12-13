@@ -211,7 +211,7 @@ int DebugHandler::Display(float dTime)
 		std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
-			console, ' ', 5, screen.dwCursorPosition, &written
+			console, ' ', 8, screen.dwCursorPosition, &written
 		);
 		this->m_currFrameTimesPtr++;
 		
