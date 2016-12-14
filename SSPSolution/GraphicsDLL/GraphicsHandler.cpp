@@ -201,9 +201,11 @@ int GraphicsHandler::Render()
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
 
+	//RenderGrid(m_modelsPtr[1], )
 
 	m_shaderControl->DrawFinal();
 
@@ -432,6 +434,11 @@ int GraphicsHandler::UpdateComponentList()
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
 	m_animGraphicsComponents[0] = (penis*)component;
+}
+
+GraphicsComponent * GraphicsHandler::getComponent(int index)
+{
+	return this->m_graphicsComponents[index];
 }
 
 void GraphicsHandler::m_CreateTempsTestComponents()

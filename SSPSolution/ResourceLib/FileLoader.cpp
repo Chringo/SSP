@@ -6,7 +6,7 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/SkelMesh1.bbf");
+	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/grid.bbf");
 	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
 
 	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
