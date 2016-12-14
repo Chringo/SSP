@@ -4,11 +4,12 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	: QMainWindow(parent)
 {
 	m_ui.setupUi(this);
-
 	/*making a fileSystemModel to enable a file viewer in the treeView widget*/
 	this->m_model = new QFileSystemModel(this);
 	this->m_model->setRootPath("C:/");
 	this->m_model->setFilter(QDir::NoDotAndDotDot | QDir::Files);
+	setFocusPolicy(Qt::StrongFocus);
+
 	
 	/*a list of filters for the treeView*/
 	QStringList filters;
@@ -42,7 +43,14 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 }
 
-
+void SSP_Editor::keyPressEvent(QKeyEvent * evt)
+{
+	this->m_D3DRenderWidget->keyPressEvent(evt);
+}
+void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
+{
+	this->m_D3DRenderWidget->keyReleaseEvent(evt);
+}
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;

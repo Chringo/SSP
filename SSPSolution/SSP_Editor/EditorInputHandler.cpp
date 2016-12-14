@@ -1,5 +1,6 @@
 #include "EditorInputHandler.h"
 
+
 EditorInputHandler::EditorInputHandler(
 	HINSTANCE handleInstance,
 	HWND handle,
@@ -13,7 +14,6 @@ EditorInputHandler::EditorInputHandler(
 	this->m_Width = w;
 	this->m_Height = h;
 	this->m_GraphicsHandler = graphicshandler;
-	this->isHeld = false;
 	HRESULT hr = DirectInput8Create(
 		handleInstance,
 		DIRECTINPUT_VERSION,
@@ -39,173 +39,161 @@ EditorInputHandler::EditorInputHandler(
 	this->m_hwnd = handle;
 	this->m_Camera = camera;
 	this->m_PreviousPos = camera->GetCameraPos();
+	for (size_t i = 0; i < NUMBOOLS; i++)
+	{
+		this->m_KeysHeld[i] = false;
+	}
+	DIMouse->Acquire();
 }
 
 EditorInputHandler::~EditorInputHandler()
 {
 }
 
-void EditorInputHandler::detectInput(double dT)
+void EditorInputHandler::KeyboardMovement(double dT)
 {
-
-	DIMOUSESTATE mouseCurrentState;
-
-	BYTE keyBoardState[256]; // the amount of buttons a char array of 256.
-
-	DIKeyboard->Acquire();
-	DIMouse->Acquire();
-
-	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
-
-	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
-
-	float speed = 5.0f * dT;
-	float speedrot = 2.5f * dT;
-	int result = 1;
+	float speed = 2.0f * dT;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
-	float yaw = 0, pitch = 0;
 
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	ScreenToClient(this->m_hwnd, &mousePos);
+	if (this->m_KeysHeld[Bools::W] == true)
+		translateCameraZ += speed;
 
-#pragma region SHIFT + ALT +
+	if (this->m_KeysHeld[Bools::A] == true)
+		translateCameraX -= speed;
+	if (this->m_KeysHeld[Bools::S] == true)
+		translateCameraZ -= speed;
+	if (this->m_KeysHeld[Bools::D] == true)
+		translateCameraX += speed;
+	if (this->m_KeysHeld[Bools::C] == true)
+		translateCameraY -= speed;
+	if (this->m_KeysHeld[Bools::SPACE] == true)
+		translateCameraY += speed;
+	if (this->m_KeysHeld[ALT] == true)
+		MouseMovement(dT);
+	if (this->m_KeysHeld[SHIFT] == true)
+		MouseZoom(dT);
 
-#pragma endregion
-
-#pragma region CONTROL +
-	if (keyBoardState[DIK_LCONTROL] & 0x80)
+	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
-		if (mouseCurrentState.rgbButtons[0])
-		{
-			DirectX::XMVECTOR rayOrigin, rayDirection;
-			int m_MouseX = mousePos.x;
-			int m_MouseY = mousePos.y;
-			if (m_MouseX > m_Width)
-				m_MouseX = m_Width;
-			else if (m_MouseX < 0)
-				m_MouseX = 0;
-			if (m_MouseY > m_Height)
-				m_MouseY = m_Height;
-			else if (m_MouseY < 0)
-				m_MouseY = 0;
-
-			DirectX::XMVECTOR localRayDirection = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			DirectX::XMVECTOR LocalRayOrigin = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			float X, Y, Z;
-			DirectX::XMFLOAT4X4 camProjection;
-			float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-			float screenAspect = (float)m_Width / (float)m_Height;
-
-			DirectX::XMStoreFloat4x4(
-				&camProjection,
-				DirectX::XMMatrixPerspectiveFovLH(
-					fieldOfView,
-					screenAspect,
-					0.1f,
-					1000.0f)
+		DirectX::XMFLOAT3 posTranslation =
+			DirectX::XMFLOAT3(
+				float(translateCameraX),
+				float(translateCameraY),
+				float(translateCameraZ)
 			);
 
-			//Transform 2D pick position on screen space to 3D ray in View space
-			X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
-			Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
-			Z = 1.0f;    //View space's Z direction ranges from 0 to 1, so we set 1 since the ray goes "into" the screen
-
-			localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
-
-			DirectX::XMMATRIX inverseCamView;
-			DirectX::XMVECTOR det = { 1,1,1,1 };
-			DirectX::XMMATRIX temp;
-			this->m_Camera->GetBaseViewMatrix(temp);
-
-			//inverseCamView = DirectX::XMMatrixInverse(&det, temp);
-
-			//rayOrigin = XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
-			//rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
-			//rayDirection = DirectX::XMVector3Normalize(rayDirection);
-
-			DirectX::XMFLOAT4 test;
-			DirectX::XMStoreFloat4(&test, localRayDirection);
-			this->m_Camera->SetLookAt(test);
-		}
+		this->m_PreviousPos = this->m_Camera->GetCameraPos();
+		this->m_Camera->ApplyLocalTranslation(
+			float(translateCameraX),
+			float(translateCameraY),
+			float(translateCameraZ)
+		);
+		this->m_Camera->Update();
 	}
-#pragma endregion
+}
 
-#pragma region SHIFT +
-	if (keyBoardState[DIK_LSHIFT] & 0x80)
-	{
-		if (keyBoardState[DIK_W] & 0x80)
-		{
-			translateCameraZ += speed;
-		}
-		if (keyBoardState[DIK_S] & 0x80)
-		{
-			translateCameraZ -= speed;
-		}
-		if (keyBoardState[DIK_A] & 0x80)
-		{
-			translateCameraX -= speed;
-		}
-		if (keyBoardState[DIK_D] & 0x80)
-		{
-			translateCameraX += speed;
-		}
-		if (keyBoardState[DIK_C] & 0x80)
-		{
-			translateCameraY -= speed;
-		}
-		if (keyBoardState[DIK_SPACE] & 0x80)
-		{
-			translateCameraY += speed;
-		}
+void EditorInputHandler::MouseMovement(double dT)
+{
+	DIMOUSESTATE mouseCurrentState;
+
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+	float pitch = 0;
+	float yaw = 0;
+
 		if (mouseCurrentState.rgbButtons[0])
 		{
-			if (mouseCurrentState.lY < 0)
-			{
-				translateCameraZ += speedrot;
-			}
-			if (mouseCurrentState.lY > 0)
-			{
-				translateCameraZ -= speedrot;
-			}
-
-		}
-
-
-	}
-#pragma endregion
-
-#pragma region ALT +
-	if (keyBoardState[DIK_LALT] & 0x80)
-	{
-		if (mouseCurrentState.rgbButtons[0])
-		{
-			if ((mouseCurrentState.lX!= m_mouseLastState.lX) || (mouseCurrentState.lY != m_mouseLastState.lY))
+			if ((mouseCurrentState.lX != m_mouseLastState.lX) || (mouseCurrentState.lY != m_mouseLastState.lY))
 			{
 				pitch += mouseCurrentState.lX * 0.01f;
-		
+	
 				yaw += mouseCurrentState.lY * 0.01f;
-
+	
 				// Ensure the mouse location doesn't exceed the screen width or height.
 				if (m_MouseX < 0) { m_MouseX = 0; }
 				if (m_MouseY < 0) { m_MouseY = 0; }
-
+	
 				if (m_MouseX > m_Width) { m_MouseX = m_Width; }
 				if (m_MouseY > m_Height) { m_MouseY = m_Height; }
-
+	
 				m_mouseLastState = mouseCurrentState;
 			}
 		}
-	}
-#pragma endregion
+
+	if ((yaw || pitch))
+	{
+		float rotationAmount = DirectX::XM_PI / 8;
 	
-#pragma region ONLY MOUSE
-	if (mouseCurrentState.rgbButtons[0] &&
-		keyBoardState[DIK_Z] & 0x80)
+		DirectX::XMFLOAT4 newRotation =
+			DirectX::XMFLOAT4(
+				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
+				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
+				0.0f,
+				DirectX::XMScalarCos(rotationAmount / 2.0f)
+			);
+	
+		this->m_Camera->SetRotation(newRotation);
+		this->m_Camera->Update();
+	}
+
+}
+
+void EditorInputHandler::MouseZoom(double dT)
+{
+	DIMOUSESTATE mouseCurrentState;
+	
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+
+	float speedrot = 2.5f * dT;
+	float translateCameraZ = 0;
+
+	if (mouseCurrentState.rgbButtons[0])
+	{
+		if (mouseCurrentState.lY < 0)
+		{
+			translateCameraZ += speedrot;
+		}
+		if (mouseCurrentState.lY > 0)
+		{
+			translateCameraZ -= speedrot;
+		}
+	
+	}
+	if (translateCameraZ)
+	{
+		DirectX::XMFLOAT3 posTranslation =
+			DirectX::XMFLOAT3(
+				0.0f,
+				0.0f,
+				float(translateCameraZ)
+			);
+
+		this->m_PreviousPos = this->m_Camera->GetCameraPos();
+		this->m_Camera->ApplyLocalTranslation(
+			0.0f,
+			0.0f,
+			float(translateCameraZ)
+		);
+		this->m_Camera->Update();
+	}
+}
+
+void EditorInputHandler::CameraReset()
+{
+		this->m_Camera->Initialize(this->m_Width / this->m_Height);
+		this->m_Camera->Update();
+}
+
+void EditorInputHandler::MousePicking()
+{
+	DIMOUSESTATE mouseCurrentState;
+
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+
+	if (mouseCurrentState.rgbButtons[0])
 	{
 		DirectX::XMVECTOR rayOrigin, rayDirection;
-		int m_MouseX = mousePos.x;
-		int m_MouseY = mousePos.y;
+		int m_MouseX = m_point.x();
+		int m_MouseY = m_point.y();
 		if (m_MouseX > m_Width)
 			m_MouseX = m_Width;
 		else if (m_MouseX < 0)
@@ -215,10 +203,10 @@ void EditorInputHandler::detectInput(double dT)
 		else if (m_MouseY < 0)
 			m_MouseY = 0;
 
-		DirectX::XMVECTOR localRayDirection = 
+		DirectX::XMVECTOR localRayDirection =
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		DirectX::XMVECTOR LocalRayOrigin = 
-			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		DirectX::XMVECTOR LocalRayOrigin = DirectX::XMLoadFloat3(&this->m_Camera->GetCameraPos());
+		//DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		float X, Y, Z;
 		DirectX::XMFLOAT4X4* camProjectionPtr = this->m_Camera->GetProjectionMatrix();
 		DirectX::XMFLOAT4X4 camProjection = *(DirectX::XMFLOAT4X4*)camProjectionPtr;
@@ -239,10 +227,10 @@ void EditorInputHandler::detectInput(double dT)
 
 		inverseCamView = DirectX::XMMatrixInverse(&det, temp1);
 
-		rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
+		//rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
 		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
 		rayDirection = DirectX::XMVector3Normalize(rayDirection);
-		
+
 		//checks if we picked on a model by iterating
 
 		if (!this->m_Map->empty())
@@ -278,12 +266,12 @@ void EditorInputHandler::detectInput(double dT)
 						boundingBox.extensionDir;
 						DirectX::XMMATRIX temp2;
 						temp2 = DirectX::XMMatrixSet(
-							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z,0.0f,
-							boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z,0.0f,
-							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z,0.0f,
-							0.0f,0.0f,0.0f,1.0f
+							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+							boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+							0.0f, 0.0f, 0.0f, 1.0f
 						);
-						
+
 						obj.ort = temp2;
 
 						//OBB obj = *(OBB*)&boundingBox;
@@ -292,7 +280,7 @@ void EditorInputHandler::detectInput(double dT)
 						DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
 						obj.ort = temp3;
 
-						result = this->m_PhysicsHandler->IntersectRayOBB(rayOrigin, rayDirection, obj);
+						result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, obj, InstancePtr->at(j).position);
 						if (result)
 						{
 							this->m_Picked.ID = modelPtr->at(i)->GetId();
@@ -301,7 +289,7 @@ void EditorInputHandler::detectInput(double dT)
 							break;
 						}
 						else
-						std::cout << "false" << std::endl;
+							std::cout << "false" << std::endl;
 					}
 
 				}
@@ -314,63 +302,138 @@ void EditorInputHandler::detectInput(double dT)
 			//this->m_Communicator->m_GraphicsHandler->Render();
 		}
 
+	}
+}
 
 
 
-		//this->m_PhysicsHandler->IntersectRayOBB(rayOrigin, rayDirection, test);
 
 
-		if (result != FLT_MAX)
+
+//DIMOUSESTATE mouseCurrentState;
+//
+//BYTE keyBoardState[256]; // the amount of buttons a char array of 256.
+//
+//DIKeyboard->Acquire();
+//DIMouse->Acquire();
+//
+//DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+//
+//DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
+//
+//float speed = 5.0f * dT;
+//float speedrot = 2.5f * dT;
+//int result = 1;
+//float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
+//float yaw = 0, pitch = 0;
+//
+//POINT mousePos;
+//GetCursorPos(&mousePos);
+//ScreenToClient(this->m_hwnd, &mousePos);
+
+
+
+void EditorInputHandler::keyReleased(QKeyEvent * evt)
+{
+		switch (evt->key())
 		{
-			this->m_Picked;
-
-
-
-
+		case Qt::Key_Shift:
+			m_KeysHeld[Bools::SHIFT] = false;
+			m_KeysHeld[Bools::W] = false;
+			m_KeysHeld[Bools::A] = false;
+			m_KeysHeld[Bools::S] = false;
+			m_KeysHeld[Bools::D] = false;
+			m_KeysHeld[Bools::C] = false;
+			m_KeysHeld[Bools::SPACE] = false;
+			break;
+		case Qt::Key_Alt:
+			m_KeysHeld[Bools::ALT] = false;
+			break;
+		case Qt::Key_Control:
+			m_KeysHeld[Bools::CONTROL] = false;
+			break;
+		case Qt::Key_W:
+			m_KeysHeld[Bools::W] = false;
+			break;
+		case Qt::Key_A:
+			m_KeysHeld[Bools::A] = false;
+			break;
+		case Qt::Key_S:
+			m_KeysHeld[Bools::S] = false;
+			break;
+		case Qt::Key_D:
+			m_KeysHeld[Bools::D] = false;
+			break;
+		case Qt::Key_C:
+			m_KeysHeld[Bools::C] = false;
+			break;
+		case Qt::Key_Space:
+			m_KeysHeld[Bools::SPACE] = false;
+			break;
+		default:
+			break;
 		}
-	}
-#pragma endregion
+}
 
-	if (keyBoardState[DIK_F] & 0x80)
-	{
-		this->m_Camera->Initialize(this->m_Width / this->m_Height);
-		this->m_Camera->Update();
-	}
+void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
+{
+		switch (evt->key())
+		{
+		case Qt::Key_Shift:
+			m_KeysHeld[Bools::SHIFT] = true;
+			break;
+		case Qt::Key_Alt:
+			m_KeysHeld[Bools::ALT] = true;
+			break;
+		case Qt::Key_Control:
+			m_KeysHeld[Bools::CONTROL] = true;
+			break;
+		case Qt::Key_W:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::W] = true;
+			}
+			break;
+		case Qt::Key_A:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::A] = true;
+			}
+			break;
+		case Qt::Key_S:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::S] = true;
+			}
+			break;
+		case Qt::Key_D:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::D] = true;
+			}
+			break;
+		case Qt::Key_C:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::C] = true;
+			}
+			break;
+		case Qt::Key_Space:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::SPACE] = true;
+			}
+			break;
+		default:
+			break;
+		}
 
-
-
-	if ((translateCameraY || translateCameraZ || translateCameraX))
-	{
-		DirectX::XMFLOAT3 posTranslation =
-			DirectX::XMFLOAT3(
-				float(translateCameraX),
-				float(translateCameraY),
-				float(translateCameraZ)
-			);
-
-		this->m_PreviousPos = this->m_Camera->GetCameraPos();
-		this->m_Camera->ApplyLocalTranslation(
-			float(translateCameraX),
-			float(translateCameraY),
-			float(translateCameraZ)
-		);
-		this->m_Camera->Update();
-	}
-
-	if ((yaw || pitch))
-	{
-		float rotationAmount = DirectX::XM_PI / 8;
-
-		DirectX::XMFLOAT4 newRotation =
-			DirectX::XMFLOAT4(
-				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				0.0f,
-				DirectX::XMScalarCos(rotationAmount / 2.0f)
-			);
-
-		this->m_Camera->SetRotation(newRotation);
-		this->m_Camera->Update();
-	}
-
+		switch (evt->key())
+		{
+		case Qt::Key_R:
+			CameraReset();
+			break;
+		default:
+			break;
+		}
 }

@@ -321,6 +321,34 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 int GraphicsHandler::renderFinalEditor()
 {
 	m_shaderControl->DrawFinal();
+#ifdef _DEBUG
+
+
+	//ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	//ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	//context->OMSetRenderTargets(1, &temp, this->dsv);
+	m_debugRender.SetActive();
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_OBB].at(i), *obbBoxes.at(i));
+	}
+	positions[T_OBB].clear();
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_AABB].at(i), *aabbBoxes.at(i));
+	}
+	positions[T_AABB].clear();
+	for (size_t i = 0; i < planes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i));
+	}
+	positions[T_PLANE].clear();
+
+	planes.clear();
+	obbBoxes.clear();
+	aabbBoxes.clear();
+	//Draw Debug.
+#endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }

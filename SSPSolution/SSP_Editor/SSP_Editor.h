@@ -5,6 +5,7 @@
 #include <QtWidgets\qmainwindow.h>
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
+#include <QKeyEvent>
 #include "RenderWidget.h"
 #include "FileImporter.h"
 
@@ -15,7 +16,9 @@
 	public:
 		SSP_Editor(QWidget *parent = Q_NULLPTR);
 		~SSP_Editor();
-
+	protected:
+		virtual void keyPressEvent(QKeyEvent * evt);
+		virtual void keyReleaseEvent(QKeyEvent *evt);
 	public slots:
 	void on_treeView_doubleClicked();
 	void on_NewScene_clicked();

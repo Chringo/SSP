@@ -5,6 +5,7 @@
 #include "EditorCommunicator.h"
 #include "FileImporter.h"
 
+
 #include <stdio.h>
 #include "Windows.h"
 #include "Wincon.h"
@@ -16,9 +17,10 @@ public:
 	D3DRenderWidget(QWidget* parent = NULL, FileImporter* fileImporter = NULL);
 	virtual ~D3DRenderWidget();
 	virtual QPaintEngine* paintEngine() const { return NULL; }
+	virtual void keyPressEvent(QKeyEvent * evt);
+	virtual void keyReleaseEvent(QKeyEvent * evt);
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
-	virtual void resizeEvent(QResizeEvent* evt);
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;

@@ -8,6 +8,7 @@
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../ResourceLib/ResourceHandler.h"
 #include "Header.h"
+#include "ui_SSP_Editor.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
 #pragma comment (lib,"../Debug/physicsDLL.lib")
@@ -20,6 +21,22 @@ struct HasPicked
 	int ID = 0;
 	int listInstance = 0;
 };
+
+enum Bools {
+	SHIFT = 0,
+	ALT = 1,
+	CONTROL = 2,
+	W = 3,
+	A = 4,
+	S = 5,
+	D = 6,
+	C = 7,
+	SPACE = 8,
+	F = 9,
+	NUMBOOLS
+};
+
+
 class EditorInputHandler
 {
 private:
@@ -27,7 +44,8 @@ private:
 	int m_Height;
 	int m_MouseX;
 	int m_MouseY;
-	bool isHeld;
+	bool m_KeysHeld[Bools::NUMBOOLS];
+	QPoint m_point;
 
 
 	DirectX::XMFLOAT3 m_PreviousPos;
@@ -38,11 +56,24 @@ private:
 	std::vector<Resources::Model*>* modelPtr;
 	HasPicked m_Picked;
 	Camera* m_Camera;
+
 	DIMOUSESTATE		 m_mouseLastState;
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIKeyboard;
 	IDirectInputDevice8* DIMouse;
 public:
+	void detectInput(double dT, QKeyEvent* key);
+	void SetMousePos(QPoint point) { this->m_point = point; };
+	void KeyboardMovement(double dT);
+	void MouseMovement(double dT);
+	void MouseZoom(double dT);
+	void CameraReset();
+	void MousePicking();
+	void keyReleased(QKeyEvent* evt);
+
+
+
+
 	EditorInputHandler(
 		HINSTANCE handleInstance,
 		HWND handle,
@@ -54,5 +85,4 @@ public:
 		std::vector<Resources::Model*>* modelPtr
 	);
 	~EditorInputHandler();
-	void detectInput(double dT);
 };

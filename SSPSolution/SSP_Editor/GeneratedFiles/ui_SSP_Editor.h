@@ -24,6 +24,7 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QWidget>
+#include <qevent.h>
 
 QT_BEGIN_NAMESPACE
 
