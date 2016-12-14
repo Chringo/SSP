@@ -14,7 +14,7 @@
 
 struct AABB
 {
-	float pos[3];
+	//float pos[3];
 	float ext[3];
 };
 
@@ -153,6 +153,8 @@ public:
 	void GetPhysicsComponentOBB(OBB*& src, int index);
 	void GetPhysicsComponentAABB(AABB*& src, int index);
 
+	
+	PhysicsComponent* GetTempFloor();
 };
 
 #endif

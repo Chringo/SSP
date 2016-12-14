@@ -303,8 +303,12 @@ int System::Update(float deltaTime)
 	for (int i = 1; i < nrOfComponents - 1; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
-		this->m_graphicsHandler->RenderBoundingVolume(*chainStuff);
+		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
+		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos,*chainStuff);
 	}
+
+	PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
+	this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
 
 	
 
