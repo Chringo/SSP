@@ -5,14 +5,19 @@
 
 struct AIComponent
 {
+	// system variables
 	int active = 0;
 	int entityID = -1;
 
+	// AI variables
+	bool triggered;
+	int time;
+	int speed;
 	int direction;
 	int currentWaypoint;
 	int nextWaypoint;
 
-	DirectX::XMVECTOR waypoints[8];
+	DirectX::XMVECTOR waypoints[8]; // XMFLOAT3?
 };
 
 #endif
