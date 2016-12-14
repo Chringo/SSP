@@ -689,7 +689,7 @@ bool PhysicsHandler::Initialize()
 	//Axels HOUSE
 	float houseFriction = 0.7;
 	float houseElasticity = 0.4;
-	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, -5.0, 0.0, 0.0);
+	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
 	this->m_floor.PC_friction = houseFriction;
 	this->m_floor.PC_elasticity = houseElasticity;
