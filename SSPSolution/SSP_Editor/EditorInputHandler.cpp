@@ -274,9 +274,9 @@ void EditorInputHandler::detectInput(double dT)
 						obj.ext[2] = boundingBox.extension[2];
 
 						DirectX::XMFLOAT3 temp;
-						temp.x = boundingBox.position.x;
-						temp.y = boundingBox.position.y;
-						temp.z = boundingBox.position.z;
+						temp.x = InstancePtr->at(j).position.m128_f32[0];
+						temp.y = InstancePtr->at(j).position.m128_f32[1];
+						temp.z = InstancePtr->at(j).position.m128_f32[2];
 						obj.pos = DirectX::XMLoadFloat3(&temp);
 
 						obj.ort;
@@ -291,7 +291,6 @@ void EditorInputHandler::detectInput(double dT)
 						
 						obj.ort = temp2;
 
-
 						//OBB obj = *(OBB*)&boundingBox;
 						//DONT FORGET TO MULTIPLY MATRIX
 						DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
@@ -303,7 +302,11 @@ void EditorInputHandler::detectInput(double dT)
 						{
 							this->m_Picked.ID = modelPtr->at(i)->GetId();
 							this->m_Picked.listInstance = j;
+							std::cout << "true" << std::endl;
+							break;
 						}
+						else
+						std::cout << "false" << std::endl;
 					}
 
 				}
