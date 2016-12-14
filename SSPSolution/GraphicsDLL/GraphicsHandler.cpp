@@ -467,19 +467,21 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
-		this->m_graphicsComponents[i] = nullptr;
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent();
+
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
 
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
 	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -487,7 +489,7 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 

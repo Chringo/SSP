@@ -24,6 +24,7 @@ int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler* cHandler
 	{
 		this->m_gsh = gsh;
 		this->m_cHandler = cHandler;
+		result = 1;
 	}
 	return result;
 }
