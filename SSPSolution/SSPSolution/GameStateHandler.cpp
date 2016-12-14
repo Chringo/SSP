@@ -14,7 +14,7 @@ GameStateHandler::~GameStateHandler()
 int GameStateHandler::ShutDown()
 {
 	//Delete the states
-	while (this->m_statesToRemove.size())
+	while (this->m_stateStack.size())
 	{
 		GameState* temp;
 		temp = this->m_stateStack.back();
@@ -47,6 +47,12 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler)
 	{
 		//Push it to the gamestate stack/vector
 		this->m_stateStack.push_back(tempState);
+	}
+	else
+	{
+		//Delete it
+		delete tempState;
+		tempState = nullptr;
 	}
 	return result;
 }

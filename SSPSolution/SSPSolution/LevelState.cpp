@@ -19,7 +19,7 @@ int LevelState::ShutDown()
 
 int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 {
-	int result = 0;
+	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler);
 
 	//Read from file
