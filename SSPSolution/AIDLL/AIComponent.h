@@ -9,8 +9,8 @@ struct AIComponent
 	int entityID = -1;
 
 	int direction;
-	int currentPos;
-	int nextPos;
+	int currentWaypoint;
+	int nextWaypoint;
 
 	DirectX::XMVECTOR waypoints[8];
 };
