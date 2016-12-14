@@ -72,14 +72,11 @@ int DebugRenderer::Initialize(ID3D11Device * device, ID3D11DeviceContext * devic
 	{
 		return 1;
 	}
-
-
 	this->m_pixelShader = nullptr;
 	hResult = D3DCompileFromFile(filePathPS, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(hResult)) {
 		return 1;
 	}
-
 	hResult = device->CreateVertexShader(vertShaderBuffer->GetBufferPointer(), vertShaderBuffer->GetBufferSize(), NULL, &this->m_vertexShader);
 	if (FAILED(hResult))
 	{
@@ -117,9 +114,6 @@ int DebugRenderer::Initialize(ID3D11Device * device, ID3D11DeviceContext * devic
 	for (size_t i = 0; i < M_NUM_TYPES; i++)
 	{
 		m_points[i] = new Point[NUM_POINTS[i]];
-
-		
-
 		D3D11_BUFFER_DESC vertexBufferDesc;
 
 		D3D11_SUBRESOURCE_DATA vertexData;
@@ -368,18 +362,22 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 	DirectX::XMVECTOR point;
 	point = DirectX::XMVectorAdd(right, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 	m_points[M_PLANE][0] = Point(point.m128_f32, color);		//0
 
 	point = DirectX::XMVectorSubtract(right, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 	m_points[M_PLANE][1] = Point(point.m128_f32, color);		//1
 
 	point = DirectX::XMVectorAdd(rightInv,zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 	m_points[M_PLANE][2] = Point(point.m128_f32, color);		//2
 
 	point = DirectX::XMVectorSubtract(rightInv, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
+	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 	m_points[M_PLANE][3] = Point(point.m128_f32, color);		//3
 
 	

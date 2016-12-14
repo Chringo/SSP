@@ -49,6 +49,7 @@ private:
 	ID3D11InputLayout*    m_layout;
 	ID3D11Device*		  m_device;
 	ID3D11DeviceContext*  m_deviceContext;
+
 public:
 	DebugRenderer();
 	~DebugRenderer();
