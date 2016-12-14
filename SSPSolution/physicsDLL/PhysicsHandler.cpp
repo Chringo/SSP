@@ -63,6 +63,13 @@ bool PhysicsHandler::IntersectAABB()
 	PhysicsComponent* PC_toCheck = nullptr;
 	bool result = false;
 
+	DirectX::XMFLOAT3 temp;
+	DirectX::XMStoreFloat3(&temp, PC_toCheck->PC_pos);
+
+	DirectX::XMFLOAT3 temp2;
+	DirectX::XMStoreFloat3(&temp, PC_ptr->PC_pos);
+
+
 	int nrOfComponents = this->m_dynamicComponents.size();
 	float vecToObj[3];
 
@@ -74,11 +81,16 @@ bool PhysicsHandler::IntersectAABB()
 		{
 			PC_ptr = this->m_dynamicComponents.at(j);
 
-			for (int axis = 0; axis < 3; axis++)
-			{
-				vecToObj[axis] = 0; //remove clutter values, or old values
-				vecToObj[axis] = PC_toCheck->PC_AABB.pos[axis] - PC_ptr->PC_AABB.pos[axis];
-			}
+
+			vecToObj[0] = 0; //remove clutter values, or old values
+			vecToObj[0] = temp.x - temp2.x;
+
+			vecToObj[1] = 0; //remove clutter values, or old values
+			vecToObj[1] = temp.y - temp2.y;
+
+			vecToObj[2] = 0; //remove clutter values, or old values
+			vecToObj[2] = temp.z - temp2.z;
+
 			//Fraps return the absolute value
 			//http://www.cplusplus.com/reference/cmath/fabs/
 
@@ -617,10 +629,6 @@ void PhysicsHandler::CreateDefaultAABB(const DirectX::XMVECTOR & pos, PhysicsCom
 	OBB* temp2 = &src->PC_OBB;
 
 	//AABB components
-	src->PC_AABB.pos[0] = temp.x;
-	src->PC_AABB.pos[1] = temp.y;
-	src->PC_AABB.pos[2] = temp.z;
-
 	src->PC_AABB.ext[0] = 1.0 + 1.0f;
 	src->PC_AABB.ext[1] = 1.0 + 1.0f;
 	src->PC_AABB.ext[2] = 1.0 + 1.0f;
@@ -689,7 +697,7 @@ bool PhysicsHandler::Initialize()
 	//Axels HOUSE
 	float houseFriction = 0.7;
 	float houseElasticity = 0.4;
-	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, -5.0, 0.0, 0.0);
+	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
 	this->m_floor.PC_friction = houseFriction;
 	this->m_floor.PC_elasticity = houseElasticity;
@@ -1079,4 +1087,9 @@ void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 void PhysicsHandler::GetPhysicsComponentAABB(AABB*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_AABB);
+}
+
+PhysicsComponent* PhysicsHandler::GetTempFloor()
+{
+	return &this->m_floor;
 }
