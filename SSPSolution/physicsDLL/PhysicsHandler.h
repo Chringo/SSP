@@ -57,6 +57,8 @@ __declspec(align(16)) struct PhysicsComponent
 	float PC_friction;
 	float PC_elasticity;
 
+	//bool m_collided;
+
 	AABB PC_AABB;
 	OBB PC_OBB;
 	Sphere PC_Sphere;
@@ -129,7 +131,7 @@ public:
 	void InitializeChain(int start, int end);
 
 
-	void RotateBB_X(PhysicsComponent* src);
+	DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src);
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	void Add_toRotateVec(PhysicsComponent* src);

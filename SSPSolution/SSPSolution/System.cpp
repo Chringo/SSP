@@ -279,18 +279,84 @@ int System::Update(float deltaTime)
 		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
 		ballPtr->PC_velocity = DirectX::XMVectorSet(-1, 1.5, 0, 0);
 	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-0.01, 0, 0, 0);
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(0.01, 0, 0, 0);
+	}
+	
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_V))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(0.0, 0.01, 0, 0);
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_B))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(0.0, -0.01, 0, 0);
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_Z))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_rotation = DirectX::XMVectorSet(0.0, -0.01, 0, 0);
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_X))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
+		ballPtr->PC_rotation = DirectX::XMVectorSet(0.0, 0.01, 0, 0);
+	}
+
+
+
 	//-----
 	this->m_physicsHandler.Update(deltaTime);
 	OBB* temp = nullptr;
 	OBB* temp2 = nullptr;
+
+	PhysicsComponent* BB_AABB = nullptr;
+	PhysicsComponent* BB_AABB2 = nullptr;
+
+
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 1);
 	//m_graphicsHandler->RenderBoundingVolume(*temp);
 	//m_graphicsHandler->RenderBoundingVolume(*temp2);
 
+	
+	//first object
+	BB_AABB = this->m_physicsHandler.getDynamicComponents(0);
+	this->m_graphicsHandler->RenderBoundingVolume(BB_AABB->PC_pos, BB_AABB->PC_OBB);
+
+	
 	GraphicsComponent* g_temp;
 	g_temp = m_graphicsHandler->getComponent(1);
 	DirectX::XMFLOAT3 tempPos;
+	DirectX::XMStoreFloat3(&tempPos, temp->pos);
+	
+	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+	g_temp->worldMatrix *= this->m_physicsHandler.RotateBB_Y(BB_AABB);
+	
+	
+	
+	//secound obj
+	BB_AABB2 = this->m_physicsHandler.getDynamicComponents(1);
+	this->m_graphicsHandler->RenderBoundingVolume(BB_AABB2->PC_pos, BB_AABB2->PC_OBB);
+
+
+
+	//GraphicsComponent* g_temp;
+	g_temp = m_graphicsHandler->getComponent(1);
+	//DirectX::XMFLOAT3 tempPos;
 	DirectX::XMStoreFloat3(&tempPos,temp->pos);
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
@@ -299,16 +365,16 @@ int System::Update(float deltaTime)
 	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
-	OBB* chainStuff = nullptr;
-	for (int i = 1; i < nrOfComponents - 1; i++)
-	{
-		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
-		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
-		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos,*chainStuff);
-	}
+	//OBB* chainStuff = nullptr;
+	//for (int i = 1; i < nrOfComponents - 1; i++)
+	//{
+	//	this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
+	//	PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
+	//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos,*chainStuff);
+	//}
 
-	PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
-	this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
+	//PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
+	//this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
 
 	
 
