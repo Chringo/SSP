@@ -600,7 +600,9 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_Y(PhysicsComponent* src)
 	
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
-	xMatrix = DirectX::XMMatrixRotationY((3.14159265359 / 4.0));
+	float rotAngle = (3.14159265359 / 180.0);
+
+	xMatrix = DirectX::XMMatrixRotationY(rotAngle);
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
 
 
