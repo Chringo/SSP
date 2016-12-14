@@ -12,7 +12,7 @@ namespace Resources {
 		struct Keyframe {
 			float timeValue = 0;
 			float translation[3]{0.0f,0.0f,0.0f };
-			float quaternion[4] {0.0f,0.0f,0.0f };
+			float rotation[3] {0.0f,0.0f,0.0f };
 			float scale[3]		{0.0f,0.0f,0.0f };
 		};
 		struct AnimationJoint {

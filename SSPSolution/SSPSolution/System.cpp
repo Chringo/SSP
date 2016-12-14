@@ -205,6 +205,10 @@ int System::Update(float deltaTime)
 	{
 		rotateCameraY--;
 	}
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_B))
+	{
+		
+	}
 	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));

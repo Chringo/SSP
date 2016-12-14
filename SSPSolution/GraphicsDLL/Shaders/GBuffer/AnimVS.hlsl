@@ -14,7 +14,7 @@ cbuffer camera : register(b1)
     float4 padding2;
     float4 padding3;
 }
-cbuffer skeleton : register(b5)
+cbuffer skeleton : register(b4)
 {
 	float4x4 joints[32];
 }
@@ -54,12 +54,16 @@ VS_OUT VS_main(VS_IN input)
 	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
 	for (int i = 0; i < 4; i++)
 	{
-        weight = input.weights[i];
         influences = input.influences[i];
-        
-        skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences]));
-        skinnedNormal += mul(weight, mul(float4(input.Normal, 1.0f), joints[influences]));
-        skinnedTan += mul(weight, mul(float4(input.Tangent, 1.0f), joints[influences]));
+
+		if (influences != -1)
+		{
+			weight = input.weights[i];
+
+			skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences]));
+			skinnedNormal += mul(weight, mul(float4(input.Normal, 1.0f), joints[influences]));
+			skinnedTan += mul(weight, mul(float4(input.Tangent, 1.0f), joints[influences]));
+		}
     }
 
 	matrix WV = mul(viewMatrix, projectionMatrix);
