@@ -14,7 +14,7 @@
 
 struct AABB
 {
-	float pos[3];
+	//float pos[3];
 	float ext[3];
 };
 
