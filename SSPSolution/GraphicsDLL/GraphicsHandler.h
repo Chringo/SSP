@@ -8,6 +8,7 @@
 #include "GraphicsComponent.h"
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
+#include "DebugRenderer.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -19,6 +20,28 @@ const int ARRAY_INC = 5;
 
 class GRAPHICSDLL_API GraphicsHandler
 {
+
+#ifdef _DEBUG
+private:
+	enum BoundingTypes {
+		T_OBB,
+		T_AABB,
+		T_PLANE,
+		T_SPHERE,
+		T_NUM_TYPES
+	};
+	DebugRenderer m_debugRender;
+	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
+	std::vector<OBB*>   obbBoxes;
+	std::vector<AABB*>  aabbBoxes;
+	std::vector<Plane*> planes;
+	ID3D11DepthStencilView* dsv;
+public:
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane);
+#endif // _DEBUG
+
 private:
 	Direct3DHandler*		m_d3dHandler;
 	ConstantBufferHandler * m_constantBufferHandler;
@@ -26,7 +49,7 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
-
+	bool postProcessing = false;
 	Resources::Model** m_modelsPtr;
 
 	penis** m_animGraphicsComponents;
@@ -57,6 +80,8 @@ public:
 	GraphicsComponent* GetNextAvailableComponent();
 	int UpdateComponentList();
 
+
+
 	int InitializeGrid();
 	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
@@ -67,6 +92,7 @@ public:
 	//TEMP STUFF
 public:
 	void SetTempAnimComponent(void*);
+	GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };

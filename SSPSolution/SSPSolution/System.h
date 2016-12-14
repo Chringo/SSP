@@ -5,6 +5,7 @@
 #include <iostream>
 #include "InputHandler.h"
 #include "GameStateHandler.h"
+#include "DebugHandler.h"
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"

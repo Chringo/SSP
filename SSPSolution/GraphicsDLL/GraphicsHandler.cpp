@@ -1,5 +1,27 @@
 #include "GraphicsHandler.h"
 
+#ifdef _DEBUG
+
+
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box)
+{
+	obbBoxes.push_back(&box);
+	positions[T_OBB].push_back(&pos);
+}
+
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB & box)
+{
+	aabbBoxes.push_back(&box);
+	positions[T_AABB].push_back(&pos);
+}
+#endif // _DEBUG
+
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plane)
+{
+	planes.push_back(&plane);
+	positions[T_PLANE].push_back(&pos);
+}
+
 int GraphicsHandler::IncreaseArraySize()
 {
 	GraphicsComponent** newArray = new GraphicsComponent*[this->m_maxGraphicsComponents + ARRAY_INC];
@@ -137,7 +159,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
-	m_shaderControl->SetBackBufferRTV(m_d3dHandler->GetBackbufferRTV());
+	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
@@ -145,6 +167,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera->Initialize();
 
 	this->m_CreateTempsTestComponents();
+	//InitializeGrid();
+#ifdef _DEBUG
+	 obbBoxes.reserve(20);
+	 aabbBoxes.reserve(20);
+	 planes.reserve(20);
+	 dsv = m_shaderControl->GetBackBufferDSV();
+	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+#endif // _DEBUG
 
 	return 0;
 	
@@ -175,6 +205,7 @@ int GraphicsHandler::Render()
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
 	{
+		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
 		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
 	}
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
@@ -182,6 +213,9 @@ int GraphicsHandler::Render()
 	//}
 	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
+
+	//RenderGrid(m_modelsPtr[1], )
 
 
 	m_shaderControl->DrawFinal();
@@ -190,6 +224,48 @@ int GraphicsHandler::Render()
 
 	/*TEMP CBUFFER STUFF*/
 
+
+	if (postProcessing)
+	{
+		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
+		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		context->PSSetShaderResources(6,1,&srv);
+
+		m_shaderControl->PostProcess();
+		ID3D11ShaderResourceView * tab[1];
+		tab[0] = NULL;
+		context->PSSetShaderResources(6, 1, tab);
+	}
+#ifdef _DEBUG
+	
+
+	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	context->OMSetRenderTargets(1, &temp, this->dsv);
+	m_debugRender.SetActive();
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render( *positions[T_OBB].at(i),*obbBoxes.at(i));
+	}
+	positions[T_OBB].clear();
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_AABB].at(i),*aabbBoxes.at(i));
+	}
+	positions[T_AABB].clear();
+	for (size_t i = 0; i < planes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i));
+	}
+	positions[T_PLANE].clear();
+
+	planes.clear();
+	obbBoxes.clear();
+	aabbBoxes.clear();
+	//Draw Debug.
+#endif // _DEBUG
 
 	this->m_d3dHandler->PresentScene();
 	return 0;
@@ -212,8 +288,10 @@ int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* comp
 	this->m_camera->GetViewMatrix(cam.cView);
 	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
 
 	m_d3dHandler->SetRasterizerState(D3D11_FILL_WIREFRAME);
 	m_shaderControl->Draw(model, component);
@@ -312,6 +390,10 @@ void GraphicsHandler::Shutdown()
 	delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
 	delete[] this->m_animGraphicsComponents;
+#ifdef _DEBUG
+	m_debugRender.Release();
+#endif // _DEBUG
+
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
@@ -372,6 +454,11 @@ int GraphicsHandler::UpdateComponentList()
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
 	m_animGraphicsComponents[0] = (penis*)component;
+}
+
+GraphicsComponent * GraphicsHandler::getComponent(int index)
+{
+	return this->m_graphicsComponents[index];
 }
 
 void GraphicsHandler::m_CreateTempsTestComponents()

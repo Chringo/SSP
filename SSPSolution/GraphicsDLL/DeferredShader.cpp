@@ -389,6 +389,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Normal:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
@@ -398,6 +399,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Animated:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Animated], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
 		break;
@@ -407,6 +409,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Wireframe:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
 		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
@@ -501,6 +504,7 @@ int DeferredShader::Draw(Resources::Model * model)
 		numViews += 1;
 	}
 
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
@@ -667,8 +671,6 @@ int DeferredShader::InitializeGridShader(ID3D11Device * device)
 {
 
 	HRESULT hResult;
-	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
-	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
 
