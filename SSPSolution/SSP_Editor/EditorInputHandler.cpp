@@ -220,31 +220,26 @@ void EditorInputHandler::detectInput(double dT)
 		DirectX::XMVECTOR LocalRayOrigin = 
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		float X, Y, Z;
-		DirectX::XMFLOAT4X4 camProjection;
-		float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-		float screenAspect = (float)m_Width / (float)m_Height;
+		DirectX::XMFLOAT4X4* camProjectionPtr = this->m_Camera->GetProjectionMatrix();
+		DirectX::XMFLOAT4X4 camProjection = *(DirectX::XMFLOAT4X4*)camProjectionPtr;
+		//float fieldOfView = (float)DirectX::XM_PI / 4.0f;
+		//float screenAspect = (float)m_Width / (float)m_Height;
 
-		DirectX::XMStoreFloat4x4(
-			&camProjection,
-			DirectX::XMMatrixPerspectiveFovLH(
-				fieldOfView,
-				screenAspect,
-				0.1f,
-				1000.0f)
-		);
+
+
 		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
 		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
 		Z = 1.0f;
-		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
 
+		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
 		DirectX::XMMATRIX inverseCamView;
 		DirectX::XMVECTOR det = { 1,1,1,1 };
-		DirectX::XMMATRIX temp;
-		this->m_Camera->GetBaseViewMatrix(temp);
+		DirectX::XMMATRIX temp1;
+		this->m_Camera->GetBaseViewMatrix(temp1);
 
-		inverseCamView = DirectX::XMMatrixInverse(&det, temp);
+		inverseCamView = DirectX::XMMatrixInverse(&det, temp1);
 
-		rayOrigin = XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
+		rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
 		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
 		rayDirection = DirectX::XMVector3Normalize(rayDirection);
 		

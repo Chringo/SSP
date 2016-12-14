@@ -59,7 +59,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 		this->m_Communicator->m_GraphicsHandler->Render();
 	}
-	std::cout << "FPS: " << this->m_fps << std::endl;
+	//std::cout << "FPS: " << this->m_fps << std::endl;
 	this->update();
 }
 
