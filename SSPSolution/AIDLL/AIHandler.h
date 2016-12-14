@@ -7,6 +7,10 @@
 #define AIDLL_API __declspec(dllimport)
 #endif
 
+#include "AIComponent.h"
+#include <DirectXMath.h>
+#include <vector>
+
 class AIDLL_API AIHandler
 {
 private:	// Variables
