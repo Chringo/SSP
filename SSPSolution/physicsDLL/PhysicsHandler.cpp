@@ -63,6 +63,13 @@ bool PhysicsHandler::IntersectAABB()
 	PhysicsComponent* PC_toCheck = nullptr;
 	bool result = false;
 
+	DirectX::XMFLOAT3 temp;
+	DirectX::XMStoreFloat3(&temp, PC_toCheck->PC_pos);
+
+	DirectX::XMFLOAT3 temp2;
+	DirectX::XMStoreFloat3(&temp, PC_ptr->PC_pos);
+
+
 	int nrOfComponents = this->m_dynamicComponents.size();
 	float vecToObj[3];
 
@@ -74,11 +81,16 @@ bool PhysicsHandler::IntersectAABB()
 		{
 			PC_ptr = this->m_dynamicComponents.at(j);
 
-			for (int axis = 0; axis < 3; axis++)
-			{
-				vecToObj[axis] = 0; //remove clutter values, or old values
-				vecToObj[axis] = PC_toCheck->PC_AABB.pos[axis] - PC_ptr->PC_AABB.pos[axis];
-			}
+
+			vecToObj[0] = 0; //remove clutter values, or old values
+			vecToObj[0] = temp.x - temp2.x;
+
+			vecToObj[1] = 0; //remove clutter values, or old values
+			vecToObj[1] = temp.y - temp2.y;
+
+			vecToObj[2] = 0; //remove clutter values, or old values
+			vecToObj[2] = temp.z - temp2.z;
+
 			//Fraps return the absolute value
 			//http://www.cplusplus.com/reference/cmath/fabs/
 
@@ -162,8 +174,10 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	for (int i = 0; i < 3; i++)
 	{
 		T[i] = this->DotProduct(transPF_v, orthA[i]);
+		
 	}
-
+	//T[1] = -2.0f;
+	//T[2] = 0.0;
 	//translation in A's frame (END)
 
 	//calculate the rotation matrix
@@ -323,7 +337,7 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	/*no separating axis found,
 	the two boxes overlap */
 
-	printf("Collition has been detected\n");
+	//printf("Collition has been detected\n");
 	return true;
 }
 
@@ -427,7 +441,35 @@ bool PhysicsHandler::SpherePlaneIntersectionTest(PhysicsComponent * objSphere, P
 
 	float d = DirectX::XMVectorGetX(DirectX::XMVector3Length(pParallel));
 
-	return d < objSphere->PC_Sphere.radius;
+	bool result = d <= objSphere->PC_Sphere.radius;
+
+	if (result)
+	{
+		float lenght = (objSphere->PC_Sphere.radius - d);
+		objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, DirectX::XMVectorScale(pParallel, lenght));
+
+		DirectX::XMVECTOR resultVel = objSphere->PC_velocity;
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal)) < 0)
+		{
+			DirectX::XMVECTOR resultVel = DirectX::XMVector3Reflect(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal);
+		}
+
+		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, resultVel, objPlane->PC_Plane.PC_normal);
+
+		pParallel = DirectX::XMVectorScale(pParallel, objPlane->PC_elasticity);
+		pPerpendicular = DirectX::XMVectorScale(pPerpendicular, objPlane->PC_friction);
+
+		resultVel = DirectX::XMVectorAdd(pParallel, pPerpendicular);
+
+		//resultVel = DirectX::XMVectorScale(resultVel, 0.55);
+		//objOBB->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, pParallel);
+		objSphere->PC_velocity = resultVel;
+
+
+		objSphere->PC_normalForce = objPlane->PC_Plane.PC_normal;
+	}
+
+	return result;
 }
 
 bool PhysicsHandler::AABBPlaneIntersectionTest(PhysicsComponent * objAABB, PhysicsComponent * objPlane)
@@ -483,7 +525,16 @@ bool PhysicsHandler::OBBPlaneIntersectionTest(PhysicsComponent * objOBB, Physics
 
 	d = DirectX::XMVectorGetX(DirectX::XMVector3Length(pParallel));
 
-	return d < sum;
+	bool result = d < sum;
+	if (result)
+	{
+		DirectX::XMVECTOR resultVel = DirectX::XMVector3Reflect(objOBB->PC_velocity, objPlane->PC_Plane.PC_normal);
+		resultVel = DirectX::XMVectorScale(resultVel, 0.7);
+		//objOBB->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, pParallel);
+		objOBB->PC_velocity = resultVel;
+	}
+
+	return result;
 }
 
 float PhysicsHandler::DotProduct(const DirectX::XMFLOAT3 & v1, const DirectX::XMFLOAT3 & v2) const
@@ -551,9 +602,14 @@ void PhysicsHandler::RotateBB_X(PhysicsComponent* src)
 	
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
-
-	xMatrix = DirectX::XMMatrixRotationX((3.14 / 180) * 45);
+	xMatrix = DirectX::XMMatrixRotationY((3.14159265359 / 4.0));
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
+
+
+	//xMatrix = DirectX::XMMatrixRotationX((3.14159265359 / 4.0));
+	//test = DirectX::XMMatrixMultiply(test, xMatrix);
+	//xMatrix = DirectX::XMMatrixRotationZ((3.14159265359 / 4.0));
+	//test = DirectX::XMMatrixMultiply(test, xMatrix);
 
 	src->PC_OBB.ort = test;
 
@@ -573,10 +629,6 @@ void PhysicsHandler::CreateDefaultAABB(const DirectX::XMVECTOR & pos, PhysicsCom
 	OBB* temp2 = &src->PC_OBB;
 
 	//AABB components
-	src->PC_AABB.pos[0] = temp.x;
-	src->PC_AABB.pos[1] = temp.y;
-	src->PC_AABB.pos[2] = temp.z;
-
 	src->PC_AABB.ext[0] = 1.0 + 1.0f;
 	src->PC_AABB.ext[1] = 1.0 + 1.0f;
 	src->PC_AABB.ext[2] = 1.0 + 1.0f;
@@ -605,6 +657,90 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
+	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(0, 1, 7, 0);
+	DirectX::XMVECTOR tempPos2 = DirectX::XMVectorSet(0, 1, 7, 0);
+
+	PhysicsComponent* ptr = nullptr;
+	ptr = this->CreatePhysicsComponent(tempPos);
+	ptr->PC_mass = 50;
+	ptr->PC_is_Static = false;
+	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
+
+	ptr = this->CreatePhysicsComponent(tempPos);
+	ptr->PC_mass = 5;
+	ptr->PC_is_Static = false;
+	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
+
+	ptr = this->CreatePhysicsComponent(tempPos);
+	ptr->PC_mass = 5;
+	ptr->PC_is_Static = false;
+	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
+
+	ptr = this->CreatePhysicsComponent(tempPos);
+	ptr->PC_mass = 5;
+	ptr->PC_is_Static = false;
+	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
+
+	ptr = this->CreatePhysicsComponent(tempPos2);
+	ptr->PC_mass = 20;
+	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
+
+
+	int size = this->m_dynamicComponents.size();
+	this->InitializeChain(0, size);
+
+	this->m_chain.CH_linkLenght = 3.0f;
+
+
+	this->m_gravity = DirectX::XMVectorSet(0, -0.01, 0, 0);
+
+	//Axels HOUSE
+	float houseFriction = 0.7;
+	float houseElasticity = 0.4;
+	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
+	this->m_floor.PC_friction = houseFriction;
+	this->m_floor.PC_elasticity = houseElasticity;
+	
+	this->m_wall1.PC_pos = DirectX::XMVectorSet(25.0, 0.0, 0.0, 0.0);
+	this->m_wall1.PC_Plane.PC_normal = DirectX::XMVectorSet(-1.0, 0.0, 0, 0);
+	this->m_wall1.PC_friction = houseFriction;
+	this->m_wall1.PC_elasticity = houseElasticity;
+	
+	this->m_wall2.PC_pos = DirectX::XMVectorSet(-25.0, 0.0, 0.0, 0.0);
+	this->m_wall2.PC_Plane.PC_normal = DirectX::XMVectorSet(1.0, 0.0, 0, 0);
+	this->m_wall2.PC_friction = houseFriction;
+	this->m_wall2.PC_elasticity = houseElasticity;
+	
+	this->m_wall3.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 30.0, 0.0);
+	this->m_wall3.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0);
+	this->m_wall3.PC_friction = houseFriction;
+	this->m_wall3.PC_elasticity = houseElasticity;
+	
+	this->m_wall4.PC_pos = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0.0);
+	this->m_wall4.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0);
+	this->m_wall4.PC_friction = houseFriction;
+	this->m_wall4.PC_elasticity = houseElasticity;
+	
+	this->m_roof.PC_pos = DirectX::XMVectorSet(0.0, 15.0, 0.0, 0.0);
+	this->m_roof.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, -1.0, 0.0, 0);
+	this->m_roof.PC_friction = houseFriction;
+	this->m_roof.PC_elasticity = houseElasticity;
+
+
+	DirectX::XMVECTOR test1 = DirectX::XMVectorSet(0, 1, 0, 0);
+	DirectX::XMVECTOR test2 = DirectX::XMVectorSet(1, 1, 0, 0);
+	if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(test2, test1)) < 0)
+	{
+		test2 = DirectX::XMVector3Reflect(test2, test1);
+	}
+
+
+	DirectX::XMVECTOR pParallel;
+	DirectX::XMVECTOR pPerpendicular;
+
+	DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, test2, test1);
+
 	return true;
 }
 
@@ -617,9 +753,9 @@ void PhysicsHandler::ShutDown()
 	}
 }
 
-void PhysicsHandler::Update()
+void PhysicsHandler::Update(float deltaTime)
 {
-	float dt = 0.01f;
+	float dt = (deltaTime);
 	
 
 	int nrOfChainObjects = this->m_chain.CH_links.size();
@@ -631,17 +767,61 @@ void PhysicsHandler::Update()
 	int nrOfObjects = this->m_dynamicComponents.size();
 	for (int i = 0; i < nrOfObjects; i++)
 	{
+		PhysicsComponent* current = this->m_dynamicComponents.at(i);
+		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 
+		//Axels house intersection
+		this->SpherePlaneIntersectionTest(current, &this->m_wall1);
+		this->SpherePlaneIntersectionTest(current, &this->m_wall2);
+		this->SpherePlaneIntersectionTest(current, &this->m_wall3);
+		this->SpherePlaneIntersectionTest(current, &this->m_wall4);
+		this->SpherePlaneIntersectionTest(current, &this->m_roof);
+		bool floorTest = false;
+		floorTest = this->SpherePlaneIntersectionTest(current, &this->m_floor);
+		if (floorTest == false)
+		{
+			//current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, this->m_gravity);
+		}
+		else
+		{
+			//current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		}
+		DirectX::XMVECTOR pParallel;
+		DirectX::XMVECTOR pPerpendicular;
+
+		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
+
+		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(pPerpendicular, current->PC_gravityInfluence));
+
+		if (!current->PC_is_Static)
+		{
+			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, current->PC_velocity);
+			DirectX::XMFLOAT3 temp;
+			DirectX::XMStoreFloat3(&temp, current->PC_pos);
+			if (temp.y < -7)
+			{
+				current->PC_pos = DirectX::XMVectorSet(0, 1, 7, 0);
+			}
+			current->PC_OBB.pos = current->PC_pos;
+		}
 	}
 
-	if (this->IntersectAABB())
-	{
-		printf("AABB Pass\n");
-	}
+	
+
 	//this->checkCollition();
 	this->AdjustChainLinkPosition();
 	//SimpleCollition(dt);
 }
+
+void PhysicsHandler::InitializeChain(int start, int end)
+{
+	for (int i = start; i < end; i++)
+	{
+		this->m_chain.CH_links.push_back(this->m_dynamicComponents.at(i));
+	}
+
+}
+
 
 void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src)
 {
@@ -668,7 +848,7 @@ void PhysicsHandler::DoChainPhysics(PhysicsComponent * current, PhysicsComponent
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(current->PC_pos, next->PC_pos);
 	float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 
-	if (lenght >= this->m_chain.CH_linkLenght)
+	if (lenght > this->m_chain.CH_linkLenght)
 	{
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 
@@ -690,28 +870,43 @@ void PhysicsHandler::AdjustChainLinkPosition()
 	{
 		current = this->m_chain.CH_links.at(i);
 		next = this->m_chain.CH_links.at(i + 1);
-		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(current->PC_pos, next->PC_pos);
-		diffVec = DirectX::XMVectorSubtract(next->PC_pos, current->PC_pos);
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(next->PC_pos, current->PC_pos);
+		//diffVec = DirectX::XMVectorSubtract(next->PC_pos, current->PC_pos);
 		float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 
-		if (lenght > this->m_chain.CH_linkLenght + 0.5f)
+		if (lenght > this->m_chain.CH_linkLenght +0.5)
 		{
-			next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 0.5f)));
+			next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 0.5)));
+			next->PC_OBB.pos = next->PC_pos;
 		}
 	}
 }
 
-void PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
+PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
 {
 	PhysicsComponent* newObject = nullptr;
-
 	newObject = new PhysicsComponent;
 
 	newObject->PC_pos = pos;
+	newObject->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
+	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
+	newObject->PC_active = 0;
+	newObject->PC_coolides = true;
+	newObject->PC_entityID = 0;
+	newObject->PC_is_Static = false;
+	newObject->PC_mass = 5.0f;
+	newObject->PC_gravityInfluence = 1.0f;
+	newObject->PC_Sphere.radius = 1.0f;
+	newObject->PC_friction = 1.0f;
+	newObject->PC_elasticity = 1.0f;
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_dynamicComponents.push_back(newObject);
+
+	return newObject;
 }
 
 bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos)
@@ -892,4 +1087,9 @@ void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 void PhysicsHandler::GetPhysicsComponentAABB(AABB*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_AABB);
+}
+
+PhysicsComponent* PhysicsHandler::GetTempFloor()
+{
+	return &this->m_floor;
 }
