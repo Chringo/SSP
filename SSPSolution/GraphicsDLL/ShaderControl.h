@@ -43,6 +43,7 @@ public:
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
 	void Draw(Resources::Model * model, penis * component);
+	ID3D11DepthStencilView* GetBackBufferDSV() const {return((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencilView();}
 
 	void DrawFinal();
 

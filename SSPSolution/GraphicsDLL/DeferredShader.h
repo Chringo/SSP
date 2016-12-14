@@ -56,6 +56,7 @@ public:
 
 	int DrawGrid(Resources::Model * model);
 	int DrawFromEditor(Resources::Model * model1);
+	ID3D11DepthStencilView*  GetDepthStencilView() const { return this->m_DSV; };
 private:
 	int DrawInstanced();
 };
