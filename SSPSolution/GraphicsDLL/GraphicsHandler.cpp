@@ -171,6 +171,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #ifdef _DEBUG
 	 obbBoxes.reserve(20);
 	 aabbBoxes.reserve(20);
+	 planes.reserve(20);
+	 dsv = m_shaderControl->GetBackBufferDSV();
 	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 #endif // _DEBUG
 
@@ -237,7 +239,9 @@ int GraphicsHandler::Render()
 		context->PSSetShaderResources(6, 1, tab);
 	}
 #ifdef _DEBUG
-
+	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
 
 	for (size_t i = 0; i < obbBoxes.size(); i++)

@@ -35,6 +35,7 @@ private:
 	std::vector<OBB*>   obbBoxes;
 	std::vector<AABB*>  aabbBoxes;
 	std::vector<Plane*> planes;
+	ID3D11DepthStencilView* dsv;
 public:
 	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box);
 	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box);
