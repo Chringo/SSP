@@ -41,7 +41,7 @@ int FSMEnvironment::LevelDirector::Initialize()
 	{
 		printf("%d\n", m_states[i].stateID);
 	}
-	m_currentState = &m_states.front();
+	SetDefaultState(&m_states[0]);
 #pragma endregion
 
 	return SUCCESS;
