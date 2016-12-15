@@ -65,6 +65,9 @@ private:
 
 	std::vector<SkelTemp> skeltempVec;
 
+	//temp
+	std::vector<DirectX::XMMATRIX> transformationMatrices;
+
 	const Resources::Animation* animationPtr;
 
 	const Resources::Animation::AnimationJoint* animatedJointsList;
