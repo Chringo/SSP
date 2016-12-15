@@ -31,6 +31,6 @@ public:
 	int getNrOfAIComponents() const;
 	
 private:	// Helper functions
-	AIComponent * CreateAIComponent(int entityID);
+	AIComponent* CreateAIComponent(int entityID);
 };
 #endif

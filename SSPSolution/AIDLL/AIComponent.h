@@ -15,7 +15,7 @@ __declspec(align(16)) struct AIComponent
 	int m_speed;
 	int m_direction;
 	int m_currentWaypoint;
-	int m_nextWaypoint;
+	int m_nrOfWaypoint;
 
 	DirectX::XMVECTOR m_waypoints[8];
 };
