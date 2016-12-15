@@ -84,6 +84,10 @@ void FSMEnvironment::LevelDirector::SetDefaultState(State* state)
 {
 	this->m_defaultState = state;
 }
+void FSMEnvironment::LevelDirector::SetGoalID(int goal)
+{
+	this->m_goalID = goal;
+}
 bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;

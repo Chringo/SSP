@@ -50,6 +50,7 @@ namespace FSMEnvironment
 		void AddState(State* newState);
 		void SetDefaultState(State* state);
 		bool ChangeState(int state);
+		void SetGoalID(int goal);			// Update m_goalID to new goal
 
 	};
 }
