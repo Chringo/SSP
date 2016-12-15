@@ -5,36 +5,53 @@
 #include "MemoryManager.h"
 namespace Resources
 {
+	/*
+	AUTHOR: Martin Clementson
+	
+	This is the main file loader. It reads the BPF file by getting an id of a resource
+	It reads the registry to get a RegIndex of that id. The Regindex says where the asset is in the BPF file.
+
+	It uses preallocated memory buffers, provided by "MemoryManager" to hold the file data. 
+	This nullifies any new and delete operations during runtime.
+	In case of an asset is larger than the memorybuffers, they will automatically resize. 
+	However, one should set the static variables below do avoid these situations.
+
+	The function "LoadFile" Is a backdoor to directly read one file. This was used during testing
+	when we had no BPF, Registry or level file.
+	The function reads the whole file and puts it into a char buffer.
+	*/
+
 
 	class DLL_OPERATION FileLoader{
 	public:
 		enum Files{
 			RESOURCE_FILE = 0,
-			REG_FILE = 1
+			REG_FILE      = 1
 		};
 		enum FileState{
-			CLOSED = 0,
-			OPEN = 1
+			CLOSED = 0,	//This is used to keep a file open. 
+			OPEN   = 1	//When loading a level, we dont want to open/close the BPF for every function call.
 		};
 		struct RegIndex {
-			unsigned int id;
-			unsigned int startBit;
-			unsigned int byteSize;
+			unsigned int id;		// Resource id
+			unsigned int startBit;  // Place in BPF file
+			unsigned int byteSize;  // How many bytes to memcpy.
 		};
 	private:
 		static const size_t NUM_FILES		= 2;
 		static const size_t LEVEL_MEMORY	= 128; //kb
 		static const size_t RESOURCE_MEMORY = 256; //kb
 		
-		FileState     fileStates[NUM_FILES];
-		std::string	  filePaths[NUM_FILES];
+											 
+		FileState     fileStates [NUM_FILES]; 
+		std::string	  filePaths  [NUM_FILES];
 		std::ifstream fileHandles[NUM_FILES];
 
 		std::unordered_map<unsigned int, RegIndex> m_fileRegistry;
 		MemoryManager mem_manager;
 		FileLoader();
 	public:
-		static FileLoader* GetInstance();
+		static FileLoader* GetInstance(); //Singleton
 		virtual ~FileLoader();
 	
 		bool OpenFile(Files file);
@@ -45,7 +62,7 @@ namespace Resources
 		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 
 	private:
-		Resources::Status LoadRegistryFile();
+		Resources::Status LoadRegistryFile(); //Load registry into memory on startup
 	};
 
 }
