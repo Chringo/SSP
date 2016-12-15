@@ -251,7 +251,7 @@ void Animation::CalculateGlobalInverseBindPose(std::vector<DirectX::XMMATRIX>& g
 		{
 			//DirectX::XMMATRIX parentInvBindPose = skeltempVec[parentIndex].invBindPose; //HÄR HAR DAVID JIDDRAT!<---------------------------------------
 			DirectX::XMMATRIX parentInvBindPose = globalInverseBindPose[parentIndex];
-
+			
 			//DirectX::XMVECTOR determinant = DirectX::XMMatrixDeterminant(parentInvBindPose);
 			//DirectX::XMMATRIX parentBindPose = DirectX::XMMatrixInverse(&determinant, parentInvBindPose);
 
@@ -272,29 +272,61 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 	m_graphicsAnimationComponent->finalTransforms[0] = DirectX::XMMatrixIdentity();
 
 	/*Compute the final matrices for each joint, updating the result to the skel vertex shader.*/
+
+	std::vector<DirectX::XMMATRIX> toRootTransforms(jointCount);
+	toRootTransforms[0] = DirectX::XMLoadFloat4x4(&localMatrices[0]);
 	for (int jointIndex = 1; jointIndex < jointCount; jointIndex++) //HÄR HAR DAVID JIDDRAT!<-------------------------------------------
 	{
-		//int parentIndex = skeltempVec[jointIndex].parentIndex;
+		int parentIndex = skeltempVec[jointIndex].parentIndex;
 
 		DirectX::XMMATRIX interpolatedLocalTransform = DirectX::XMLoadFloat4x4(&localMatrices[jointIndex]);//DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&localMatrices[jointIndex]));
 		//DirectX::XMMATRIX parentTransform = DirectX::XMLoadFloat4x4(&localMatrices[parentIndex]);
 
 		//DirectX::XMMATRIX parentChildTransform = DirectX::XMMatrixMultiply(parentTransform, childTransform);
 
-		DirectX::XMMATRIX globalInvBindPose = globalInverseBindPose[jointIndex];
 
-		//DirectX::XMMATRIX finalTransform = DirectX::XMMatrixMultiply(interpolatedLocalTransform, globalInvBindPose);
+		//toParent == interpolatedLocalTransform
+		//parentIndex == skeltempVec[jointIndex].parentIndex
+		//parentToRoot == globalInvBindPose[parentIndex]
+		//toRoot == toParent*parentToRoot
 
-		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(skeltempVec[jointIndex].invBindPose, globalInvBindPose);
 
-		DirectX::XMMATRIX offset = DirectX::XMMatrixMultiply(interpolatedLocalTransform, toRoot);
+		//DirectX::XMMATRIX globalInvBindPose = globalInverseBindPose[jointIndex];
+
+		////DirectX::XMMATRIX finalTransform = DirectX::XMMatrixMultiply(interpolatedLocalTransform, globalInvBindPose);
+
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(skeltempVec[jointIndex].invBindPose);
+
+		DirectX::XMMATRIX transformationMatrix = DirectX::XMMatrixInverse(&det, skeltempVec[jointIndex].invBindPose);
+
+		//DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(transformationMatrix, globalInvBindPose);
+
+		//DirectX::XMMATRIX offset = DirectX::XMMatrixMultiply(interpolatedLocalTransform, toRoot);
+
+		//book test
+		DirectX::XMMATRIX parentToRoot = toRootTransforms[parentIndex];
+
+		DirectX::XMMATRIX toParent = interpolatedLocalTransform;
+
+		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(toParent, parentToRoot);
+
+		toRootTransforms.at(jointIndex) = toRoot;
+
+		//DirectX::XMMATRIX finalTransform = DirectX::XMMatrixMultiply(transformationMatrix, toRoot);
 
 		//jointList[jointIndex].parentIndex
 
+		//DirectX::XMMATRIX finalTransform = 
 		
 		//DirectX::XMMATRIX finalTransform = DirectX::XMMatrixMultiply(offset, globalInvBindPose);
 
-		m_graphicsAnimationComponent->finalTransforms[jointIndex] = offset;
+		//m_graphicsAnimationComponent->finalTransforms[jointIndex] = finalTransform;
+	}
+	for (int i = 0; i < jointCount; ++i)
+	{
+		DirectX::XMMATRIX interpolatedLocalTransform = DirectX::XMLoadFloat4x4(&localMatrices[i]);
+		DirectX::XMMATRIX toRoot = toRootTransforms[i];
+		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixMultiply(interpolatedLocalTransform, toRoot);
 	}
 }
 
