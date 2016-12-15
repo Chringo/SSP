@@ -97,6 +97,7 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 		if (m_states[i].stateID == newState)
 		{
 			change = true;
+			this->m_goalState = &m_states[i];
 			break;
 		}
 	}
