@@ -125,15 +125,17 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
 			DirectX::XMFLOAT4 tempRot(animatedJoint.keyframes[startFrame].rotation);
 
+
+
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
 			DirectX::XMVECTOR rot = XMLoadFloat4(&tempRot);
-
+			
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
 			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			DirectX::XMMATRIX localTransform = (scaleMat * rotMat) * transMat;
+			DirectX::XMMATRIX localTransform = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, rotMat), transMat));
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
