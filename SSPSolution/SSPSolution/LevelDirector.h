@@ -2,7 +2,6 @@
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #include "Observer.h"
 #include <vector>
-//#define NUMSTATES 3
 namespace FSMEnvironment
 {
 

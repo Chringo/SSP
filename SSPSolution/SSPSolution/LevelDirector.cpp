@@ -26,17 +26,14 @@ int FSMEnvironment::LevelDirector::Initialize()
 	test.timeDelay = 10;
 	test.hint = Hint::EXAMPLE;
 	AddState(&test);
-	//m_states.push_back(test);
 	test.stateID = 1;
 	test.timeDelay = 15;
 	test.hint = Hint::EXAMPLE;
 	AddState(&test);
-	//m_states.push_back(test);
 	test.stateID = 2;
 	test.timeDelay = 20;
 	test.hint = Hint::EXAMPLE;
 	AddState(&test);
-	//m_states.push_back(test);
 	for (int i = 0; i < 3; i++)
 	{
 		printf("%d\n", m_states[i].stateID);
