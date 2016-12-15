@@ -6,7 +6,7 @@ AIHandler::AIHandler(){}
 AIHandler::~AIHandler(){}
 int AIHandler::Shutdown()
 {
-	for (int i = 0; i < m_nrOfAIComponent; i++)
+	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		delete this->m_AIComponents.at(i);
 	}
