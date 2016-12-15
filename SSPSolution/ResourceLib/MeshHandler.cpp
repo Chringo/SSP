@@ -65,7 +65,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 
 	char* data = nullptr;
 	size_t dataSize = 0;
-	std::string path = "../ResourceLib/AssetFiles/snake_cube_skelmesh.bbf";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.bbf";
 	//std::string path = "../ResourceLib/AssetFiles/grid.bbf";
 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
 	if (st != ST_OK)

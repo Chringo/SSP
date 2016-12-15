@@ -39,10 +39,10 @@ Resources::Status Resources::AnimationHandler::GetAnimation(const unsigned int &
 
 Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int & id, ResourceContainer *& animPtr)
 {
-
+	
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/snake_cube_skelmesh_BasicTestAnimation.anim";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_AnimLayer1.anim";
 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;
