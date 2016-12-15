@@ -336,8 +336,8 @@ int System::Update(float deltaTime)
 
 	
 	//first object
-	BB_AABB = this->m_physicsHandler.getDynamicComponents(0);
-	this->m_graphicsHandler->RenderBoundingVolume(BB_AABB->PC_pos, BB_AABB->PC_OBB);
+	//BB_AABB = this->m_physicsHandler.getDynamicComponents(0);
+	//this->m_graphicsHandler->RenderBoundingVolume(BB_AABB->PC_pos, BB_AABB->PC_OBB);
 
 	
 	GraphicsComponent* g_temp;
@@ -349,69 +349,23 @@ int System::Update(float deltaTime)
 	DirectX::XMMATRIX oldWorldMatrix = g_temp->worldMatrix;
 	DirectX::XMMATRIX rotationMatrix;
 
-	//this is a walkaround 
-	//rotate obj 1
-	oldWorldMatrix = g_temp->worldMatrix;
 
-	rotationMatrix = this->m_physicsHandler.RotateBB_X(BB_AABB, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-
-	oldWorldMatrix = g_temp->worldMatrix;
-
-	rotationMatrix = this->m_physicsHandler.RotateBB_Y(BB_AABB, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-
-	oldWorldMatrix = g_temp->worldMatrix;
-
-	rotationMatrix = this->m_physicsHandler.RotateBB_Z(BB_AABB, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-	
-
-
-	////secound obj
-	BB_AABB2 = this->m_physicsHandler.getDynamicComponents(1);
-	BB_AABB2->PC_pos = DirectX::XMVectorSet(5, 1, 7, 0);
-	this->m_graphicsHandler->RenderBoundingVolume(BB_AABB2->PC_pos, BB_AABB2->PC_OBB);
-
-	////GraphicsComponent* g_temp;
-	//g_temp = m_graphicsHandler->getComponent(1);
-	//DirectX::XMFLOAT3 tempPos;
-	//g_temp = m_graphicsHandler->getComponent(0);
-
-	DirectX::XMStoreFloat3(&tempPos,temp->pos);
+	g_temp = m_graphicsHandler->getComponent(2);
+	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
-	oldWorldMatrix = g_temp->worldMatrix;
-
-	rotationMatrix = this->m_physicsHandler.RotateBB_X(BB_AABB2, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-
-	oldWorldMatrix = g_temp->worldMatrix;
-
-	rotationMatrix = this->m_physicsHandler.RotateBB_Y(BB_AABB2, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-
-	oldWorldMatrix = g_temp->worldMatrix;
-
-	rotationMatrix = this->m_physicsHandler.RotateBB_Z(BB_AABB2, rotAngle);
-	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
-
-	//g_temp = m_graphicsHandler->getComponent(2);
-	//DirectX::XMStoreFloat3(&tempPos, temp2->pos);
-	//g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
 
+	OBB* chainStuff = nullptr;
+	for (int i = 1; i < nrOfComponents - 1; i++)
+	{
+		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
+		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
+		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos,*chainStuff);
+	}
 
-	//OBB* chainStuff = nullptr;
-	//for (int i = 1; i < nrOfComponents - 1; i++)
-	//{
-	//	this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
-	//	PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
-	//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos,*chainStuff);
-	//}
-
-	//PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
-	//this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
+	PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
+	this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
 
 	
 
