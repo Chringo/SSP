@@ -280,43 +280,6 @@ int System::Update(float deltaTime)
 		ballPtr->PC_velocity = DirectX::XMVectorSet(-1, 1.5, 0, 0);
 	}
 
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-0.01, 0, 0, 0);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(0.01, 0, 0, 0);
-	}
-	
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_V))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(0.0, 0.01, 0, 0);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_B))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(0.0, -0.01, 0, 0);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_Z))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_rotation = DirectX::XMVectorSet(0.0, -0.01, 0, 0);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_X))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_rotation = DirectX::XMVectorSet(0.0, 0.01, 0, 0);
-	}
-
-
 
 	//-----
 	float rotAngle = (3.14159265359 / 180.0);
