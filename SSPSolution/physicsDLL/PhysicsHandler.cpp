@@ -662,29 +662,33 @@ bool PhysicsHandler::Initialize()
 
 	PhysicsComponent* ptr = nullptr;
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 50;
+	ptr->PC_mass = 50.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 5.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 5.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 5.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos2);
-	ptr->PC_mass = 20;
-	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
-
+	ptr->PC_mass = 20.0f;
+	ptr->PC_velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	ptr->PC_active = 1;
 
 	int size = this->m_dynamicComponents.size();
 	this->InitializeChain(0, size);
@@ -692,7 +696,7 @@ bool PhysicsHandler::Initialize()
 	this->m_chain.CH_linkLenght = 3.0f;
 
 
-	this->m_gravity = DirectX::XMVectorSet(0, -0.01, 0, 0);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.01f, 0.0f, 0.0f);
 
 	//Axels HOUSE
 	float houseFriction = 0.7;
@@ -893,7 +897,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
-	newObject->PC_active = 0;
+	newObject->PC_active = 1;
 	newObject->PC_coolides = true;
 	newObject->PC_entityID = 0;
 	newObject->PC_is_Static = false;

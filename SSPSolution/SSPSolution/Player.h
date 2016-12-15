@@ -17,6 +17,8 @@ public:
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
+	//Returns the old speed
+	float SetSpeed(float speed);
 private:
 
 };

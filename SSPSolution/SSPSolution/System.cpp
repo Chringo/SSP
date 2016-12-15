@@ -297,7 +297,7 @@ int System::Update(float deltaTime)
 	OBB* temp = nullptr;
 	OBB* temp2 = nullptr;
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
-	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 1);
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 2);
 	//m_graphicsHandler->RenderBoundingVolume(*temp);
 	//m_graphicsHandler->RenderBoundingVolume(*temp2);
 
@@ -313,7 +313,7 @@ int System::Update(float deltaTime)
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
 	OBB* chainStuff = nullptr;
-	for (int i = 1; i < nrOfComponents - 1; i++)
+	for (int i = 1; i < nrOfComponents - 2; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
 		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);

@@ -31,7 +31,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	tempGComp->modelID = 1337;
 	tempGComp->worldMatrix = DirectX::XMMatrixIdentity();
 	tempPComp->PC_active = 1;
-	tempPComp->PC_pos = DirectX::XMVectorSet(0.0f, 2.0f, 1.0f, 1.0f);
+	tempPComp->PC_pos = DirectX::XMVectorSet(0.0f, 1.0f, 6.0f, 1.0f);
 	//Give Components to entities
 	this->m_player1.Initialize();
 	this->m_player1.SetGraphicsComponent(tempGComp);

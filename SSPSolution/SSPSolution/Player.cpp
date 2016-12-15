@@ -62,7 +62,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Add the velocity to our physicsComponent
 		this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 	}
-	
+	//Temporary fix for moving data between components
+
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 	//End the update
 	return result;
 }
@@ -72,4 +74,11 @@ int Player::React(int entityID, EVENT reactEvent)
 	int result = 0;
 
 	return result;
+}
+
+float Player::SetSpeed(float speed)
+{
+	float oldSpeed = this->m_speed;
+	this->m_speed = speed;
+	return oldSpeed;
 }
