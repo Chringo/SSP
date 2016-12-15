@@ -36,13 +36,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	this->m_player1.Initialize();
 	this->m_player1.SetGraphicsComponent(tempGComp);
 	this->m_player1.SetPhysicsComponent(tempPComp);
+	this->m_player1.SetSpeed(0.0001f);
 	return result;
 }
 
 int LevelState::Update(float dt, InputHandler * inputHandler)
 {
-	int result = 0;
-
+	int result = 1;
+	dt = 1000000 / dt;
 	this->m_player1.Update(dt, inputHandler);
 
 	return result;

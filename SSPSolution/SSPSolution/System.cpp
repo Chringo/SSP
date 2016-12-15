@@ -155,6 +155,8 @@ int System::Run()
 //Place all the update functions within the System::Update(float deltaTime) function.
 int System::Update(float deltaTime)
 {
+	if (deltaTime < 0.000001f)
+		deltaTime = 0.000001f;
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 

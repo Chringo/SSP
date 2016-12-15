@@ -56,7 +56,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Define a quaternion rotation so we can rotate the velocity vector
 		//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
 		float forwardsVel = 0.0f, sidewaysVel = 0.0f;
-		DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways * dT, 0.0f, m_speed * forwards * dT, 1.0f);
+		DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
 		//Rotate the velocity vector
 		//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 		//Add the velocity to our physicsComponent

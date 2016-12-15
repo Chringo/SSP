@@ -203,7 +203,7 @@ int GraphicsHandler::Render()
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
+	for (int i = 1; i < 4; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
 		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
