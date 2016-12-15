@@ -726,35 +726,37 @@ bool PhysicsHandler::Initialize()
 	//Axels HOUSE
 	float houseFriction = 0.7;
 	float houseElasticity = 0.4;
+	
 	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
 	this->m_floor.PC_friction = houseFriction;
 	this->m_floor.PC_elasticity = houseElasticity;
-	
-	this->m_wall1.PC_pos = DirectX::XMVectorSet(25.0, 0.0, 0.0, 0.0);
-	this->m_wall1.PC_Plane.PC_normal = DirectX::XMVectorSet(-1.0, 0.0, 0, 0);
-	this->m_wall1.PC_friction = houseFriction;
-	this->m_wall1.PC_elasticity = houseElasticity;
-	
-	this->m_wall2.PC_pos = DirectX::XMVectorSet(-25.0, 0.0, 0.0, 0.0);
-	this->m_wall2.PC_Plane.PC_normal = DirectX::XMVectorSet(1.0, 0.0, 0, 0);
-	this->m_wall2.PC_friction = houseFriction;
-	this->m_wall2.PC_elasticity = houseElasticity;
-	
-	this->m_wall3.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 30.0, 0.0);
-	this->m_wall3.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0);
-	this->m_wall3.PC_friction = houseFriction;
-	this->m_wall3.PC_elasticity = houseElasticity;
-	
-	this->m_wall4.PC_pos = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0.0);
-	this->m_wall4.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0);
-	this->m_wall4.PC_friction = houseFriction;
-	this->m_wall4.PC_elasticity = houseElasticity;
-	
-	this->m_roof.PC_pos = DirectX::XMVectorSet(0.0, 15.0, 0.0, 0.0);
-	this->m_roof.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, -1.0, 0.0, 0);
-	this->m_roof.PC_friction = houseFriction;
-	this->m_roof.PC_elasticity = houseElasticity;
+
+	//this->m_wall1.PC_pos = DirectX::XMVectorSet(25.0, 0.0, 0.0, 0.0);
+	//this->m_wall1.PC_Plane.PC_normal = DirectX::XMVectorSet(-1.0, 0.0, 0, 0);
+	//this->m_wall1.PC_friction = houseFriction;
+	//this->m_wall1.PC_elasticity = houseElasticity;
+	//
+	//this->m_wall2.PC_pos = DirectX::XMVectorSet(-25.0, 0.0, 0.0, 0.0);
+	//this->m_wall2.PC_Plane.PC_normal = DirectX::XMVectorSet(1.0, 0.0, 0, 0);
+	//this->m_wall2.PC_friction = houseFriction;
+	//this->m_wall2.PC_elasticity = houseElasticity;
+	//
+	//this->m_wall3.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 30.0, 0.0);
+	//this->m_wall3.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0);
+	//this->m_wall3.PC_friction = houseFriction;
+	//this->m_wall3.PC_elasticity = houseElasticity;
+	//
+	//this->m_wall4.PC_pos = DirectX::XMVectorSet(0.0, 0.0, -1.0, 0.0);
+	//this->m_wall4.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0);
+	//this->m_wall4.PC_friction = houseFriction;
+	//this->m_wall4.PC_elasticity = houseElasticity;
+	//
+	//this->m_roof.PC_pos = DirectX::XMVectorSet(0.0, 15.0, 0.0, 0.0);
+	//this->m_roof.PC_Plane.PC_normal = DirectX::XMVectorSet(0.0, -1.0, 0.0, 0);
+	//this->m_roof.PC_friction = houseFriction;
+	//this->m_roof.PC_elasticity = houseElasticity;
+
 
 
 	DirectX::XMVECTOR test1 = DirectX::XMVectorSet(0, 1, 0, 0);
@@ -800,11 +802,11 @@ void PhysicsHandler::Update(float deltaTime)
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 
 		//Axels house intersection
-		this->SpherePlaneIntersectionTest(current, &this->m_wall1);
-		this->SpherePlaneIntersectionTest(current, &this->m_wall2);
-		this->SpherePlaneIntersectionTest(current, &this->m_wall3);
-		this->SpherePlaneIntersectionTest(current, &this->m_wall4);
-		this->SpherePlaneIntersectionTest(current, &this->m_roof);
+		//this->SpherePlaneIntersectionTest(current, &this->m_wall1);
+		//this->SpherePlaneIntersectionTest(current, &this->m_wall2);
+		//this->SpherePlaneIntersectionTest(current, &this->m_wall3);
+		//this->SpherePlaneIntersectionTest(current, &this->m_wall4);
+		//this->SpherePlaneIntersectionTest(current, &this->m_roof);
 		bool floorTest = false;
 		floorTest = this->SpherePlaneIntersectionTest(current, &this->m_floor);
 		if (floorTest == false)
