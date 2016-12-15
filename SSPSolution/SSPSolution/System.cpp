@@ -255,8 +255,13 @@ int System::Update(float deltaTime)
 	//Update the network module
 	this->m_networkModule.Update();
 
-
-
+#pragma region tempAI
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_L))
+	{
+		this->director.Initialize();
+		this->director.Update(0);
+	}
+#pragma endregion
 
 	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
 	//temp input for testing chain
