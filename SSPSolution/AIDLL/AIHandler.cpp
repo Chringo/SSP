@@ -6,6 +6,10 @@ AIHandler::AIHandler(){}
 AIHandler::~AIHandler(){}
 int AIHandler::Shutdown()
 {
+	for (int i = 0; i < m_nrOfAIComponent; i++)
+	{
+		delete this->m_AIComponents.at(i);
+	}
 
 	return SUCCESS;
 }
@@ -15,7 +19,7 @@ int AIHandler::Initialize(int nrOfAIComponents, int maxAIComponent)
 	m_nrOfAIComponent = nrOfAIComponents;
 	m_maxAIComponent = maxAIComponent;
 
-	for (size_t i = 0; i < m_nrOfAIComponent; i++)
+	for (int i = 0; i < m_nrOfAIComponent; i++)
 	{
 		m_AIComponents.push_back(CreateAIComponent());
 	}

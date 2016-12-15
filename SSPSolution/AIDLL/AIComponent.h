@@ -3,7 +3,7 @@
 
 #include <DirectXMath.h>
 
-struct AIComponent
+__declspec(align(16)) struct AIComponent
 {
 	// system variables
 	int active = 0;
@@ -17,7 +17,7 @@ struct AIComponent
 	int currentWaypoint;
 	int nextWaypoint;
 
-	DirectX::XMVECTOR waypoints[8]; // XMFLOAT3?
+	DirectX::XMVECTOR waypoints[8];
 };
 
 #endif
