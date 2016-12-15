@@ -14,42 +14,57 @@ int AIHandler::Shutdown()
 	return SUCCESS;
 }
 
-int AIHandler::Initialize(int nrOfAIComponents, int maxAIComponent)
+int AIHandler::Initialize(int nrOfAIComponents)
 {
-	m_nrOfAIComponent = nrOfAIComponents;
-	m_maxAIComponent = maxAIComponent;
+	if (this->m_nrOfAIComponents < 0)
+		return FAIL;
+	
+	m_nrOfAIComponents = nrOfAIComponents;
 
-	for (int i = 0; i < m_nrOfAIComponent; i++)
+	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
-		m_AIComponents.push_back(CreateAIComponent());
+		m_AIComponents.push_back(CreateAIComponent(i));
 	}
 
 	return SUCCESS;
 }
 int AIHandler::Update(float dt)
 {
+	for (int i = 0; i < this->m_nrOfAIComponents; i++)
+	{
+		if (this->m_AIComponents.at(i)->m_active && this->m_AIComponents.at(i)->m_triggered)
+		{
+			// AIComponent logic/behavior
+			// movement of e.g. platforms
+		}
+	}
 
 	return SUCCESS;
 }
 
-AIComponent* AIHandler::CreateAIComponent()
+int AIHandler::getNrOfAIComponents() const
+{
+	return this->m_nrOfAIComponents;
+}
+
+AIComponent* AIHandler::CreateAIComponent(int entityID)
 {
 	AIComponent* newComponent = nullptr;
 	newComponent = new AIComponent;
 
-	newComponent->active = 0;
-	newComponent->entityID = -1;
+	newComponent->m_active = 0;
+	newComponent->m_entityID = entityID;
 
-	newComponent->triggered = false;
-	newComponent->time = 0;
-	newComponent->speed = 0;
-	newComponent->direction = 0;
-	newComponent->currentWaypoint = 0;
-	newComponent->nextWaypoint = 0;
+	newComponent->m_triggered = false;
+	newComponent->m_time = 0;
+	newComponent->m_speed = 0;
+	newComponent->m_direction = 0;
+	newComponent->m_currentWaypoint = 0;
+	newComponent->m_nextWaypoint = 0;
 
 	for (size_t i = 0; i < 8; i++)
 	{
-		newComponent->waypoints[i] = DirectX::XMVECTOR();
+		newComponent->m_waypoints[i] = DirectX::XMVECTOR();
 	}
 
 	return newComponent;

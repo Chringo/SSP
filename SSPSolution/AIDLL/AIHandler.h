@@ -15,18 +15,22 @@ class AIDLL_API AIHandler
 {
 private:	// Variables
 	std::vector<AIComponent*> m_AIComponents;
-	int m_nrOfAIComponent;
-	int m_maxAIComponent;
+	int m_nrOfAIComponents;
 
 public:
 	AIHandler();
 	~AIHandler();
 	int Shutdown();
 
-	int Initialize(int nrOfAIComponents, int maxAIComponent);
+	int Initialize(int nrOfAIComponents);
 	int Update(float deltaTime);
+
+	// Setters
+
+	// Getters
+	int getNrOfAIComponents() const;
 	
 private:	// Helper functions
-	AIComponent * CreateAIComponent();
+	AIComponent * CreateAIComponent(int entityID);
 };
 #endif
