@@ -7,7 +7,20 @@
 #include "SkeletonHandler.h"
 namespace Resources
 {
+#pragma region Comment
+	/*
+		AUTHOR: Martin Clementson
 
+		This class holds the models and handlers for the subdata of all models.
+
+		A model is basically a container of pointers to raw data such as, material,mesh,skeleton
+		GetModel is used to get a specific model 
+		This class was optimized for the game. It pre allocated memory for a certain amount
+		of models. Then it never deallocate them during runtime. It keeps track of available containers.
+		When  a model is unloaded its buffers are released and the model object is put into "emptyContainers" which
+		means that its ready to be used with new data.
+	*/
+#pragma endregion
 	class ModelHandler
 	{
 	private:
