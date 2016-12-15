@@ -99,6 +99,8 @@ private:
 	bool IntersectAABB();
 
 	bool DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsComponent* objB);
+
+	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB);
 	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB);
 	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB);
 	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2);
@@ -130,8 +132,10 @@ public:
 
 	void InitializeChain(int start, int end);
 
+	DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
+	DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);
+	DirectX::XMMATRIX RotateBB_Z(PhysicsComponent* src, const float &radian);
 
-	DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src);
 
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	void Add_toRotateVec(PhysicsComponent* src);

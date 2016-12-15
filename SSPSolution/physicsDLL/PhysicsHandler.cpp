@@ -339,6 +339,231 @@ bool PhysicsHandler::DoIntersectionTestOBB(PhysicsComponent* objA, PhysicsCompon
 	return true;
 }
 
+bool PhysicsHandler::ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB)
+{
+	DirectX::XMFLOAT3 transPF_v;
+	DirectX::XMFLOAT3 transPF_t;
+
+	DirectX::XMFLOAT3 orthA[3];
+	DirectX::XMFLOAT3 orthB[3];
+
+	DirectX::XMFLOAT3 posA;
+	DirectX::XMFLOAT3 posB;
+
+
+
+	DirectX::XMStoreFloat3(&posA, objA->PC_pos);
+	DirectX::XMStoreFloat3(&posB, objB->PC_pos);
+
+
+	//not very clever way, but I need to know if shit work, for debug purpuses
+	for (int i = 0; i < 3; i++)
+	{
+		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthA[i], objA->PC_OBB.ort.r[i]);
+
+		DirectX::XMStoreFloat3(&orthB[i], objB->PC_OBB.ort.r[i]);
+		DirectX::XMStoreFloat3(&orthB[i], objB->PC_OBB.ort.r[i]);
+	}
+
+	OBB* a = nullptr;
+	OBB* b = nullptr;
+
+	a = &objA->PC_OBB;
+	b = &objB->PC_OBB;
+
+	float T[3];
+
+	transPF_v = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	//scalar values
+	float rA = 0.0f;
+	float rB = 0.0f;
+	float t = 0.0f;
+
+	DirectX::XMFLOAT3 L = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	//B's basis with respect to A's local frame
+	DirectX::XMFLOAT3X3 R;
+
+	//this holds the translation vector in parent frame
+	transPF_v = this->VectorSubstract(posA, posB);
+
+
+	//translation in A's frame (START)
+
+	//really tedious to do this, if time is given, we should make a better dot product
+	//really directX?!?!?
+	for (int i = 0; i < 3; i++)
+	{
+		T[i] = this->DotProduct(transPF_v, orthA[i]);
+
+	}
+	//T[1] = -2.0f;
+	//T[2] = 0.0;
+	//translation in A's frame (END)
+
+	//calculate the rotation matrix
+	for (int i = 0; i < 3; i++)
+	{
+		for (int k = 0; k < 3; k++)
+		{
+			R.m[i][k] = this->DotProduct(orthA[i], orthB[k]);
+		}
+	}
+
+	/*ALGORITHM: Use the separating axis test for all 15 potential
+	separating axes. If a separating axis could not be found, the two
+	boxes overlap. */
+
+	//A's basis vectors
+	for (int i = 0; i < 3; i++)
+	{
+		rA = a->ext[i];
+
+		rB = b->ext[0] * fabs(R.m[i][0]) + b->ext[1] * fabs(R.m[i][1]) + b->ext[2] * fabs(R.m[i][2]);
+
+		t = fabs(T[i]);
+
+		if (t >(rA + rB))
+		{
+			return false;
+		}
+	}
+
+	//B's basis vectors
+	for (int i = 0; i < 3; i++)
+	{
+		rA = a->ext[0] * fabs(R.m[0][i]) + a->ext[1] * fabs(R.m[1][i]) + a->ext[2] * fabs(R.m[2][i]);
+
+		rB = a->ext[i];
+
+		t = fabs(T[i]);
+
+		if (t >(rA + rB))
+		{
+			return false;
+		}
+	}
+
+	//9 cross products??
+	/*
+	I have no clue what happening here mathwise, if time is with us, I will try to understand what is happening
+	here.
+
+	//sorce
+	http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=5
+	*/
+
+	// L = A0 x B0
+	rA = a->ext[1] * fabs(R.m[2][0]) + a->ext[2] * fabs(R.m[1][0]);
+	rB = b->ext[1] * fabs(R.m[0][2]) + b->ext[2] * fabs(R.m[0][1]);
+
+	t = fabs(T[2] * R.m[1][0] - T[1] * R.m[2][0]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A0 x B1
+	rA = a->ext[1] * fabs(R.m[2][1]) + a->ext[2] * fabs(R.m[1][1]);
+	rB = b->ext[0] * fabs(R.m[0][2]) + b->ext[2] * fabs(R.m[0][0]);
+
+	t = fabs(T[2] * R.m[1][1] - T[1] * R.m[2][1]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A0 x B2
+	rA = a->ext[1] * fabs(R.m[2][2]) + a->ext[2] * fabs(R.m[1][2]);
+	rB = b->ext[0] * fabs(R.m[0][1]) + b->ext[1] * fabs(R.m[0][0]);
+
+	t = fabs(T[2] * R.m[1][2] - T[1] * R.m[2][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	// L = A1 x B0
+	rA = a->ext[0] * fabs(R.m[2][0]) + a->ext[2] * fabs(R.m[0][0]);
+	rB = b->ext[1] * fabs(R.m[1][2]) + b->ext[2] * fabs(R.m[1][1]);
+
+	t = fabs(T[0] * R.m[2][0] - T[2] * R.m[0][0]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A1 x B1
+	rA = a->ext[0] * fabs(R.m[2][1]) + a->ext[2] * fabs(R.m[0][1]);
+	rB = b->ext[0] * fabs(R.m[1][2]) + b->ext[2] * fabs(R.m[1][0]);
+
+	t = fabs(T[0] * R.m[2][1] - T[2] * R.m[0][1]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A1 x B2
+	rA = a->ext[0] * fabs(R.m[2][2]) + a->ext[2] * fabs(R.m[0][2]);
+	rB = b->ext[0] * fabs(R.m[1][1]) + b->ext[1] * fabs(R.m[1][0]);
+
+	t = fabs(T[0] * R.m[2][2] - T[2] * R.m[0][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	// L = A2 x B0
+	rA = a->ext[0] * fabs(R.m[1][0]) + a->ext[1] * fabs(R.m[0][0]);
+
+	rB = b->ext[1] * fabs(R.m[2][2]) + b->ext[2] * fabs(R.m[2][1]);
+
+	t = fabs(T[1] * R.m[0][0] - T[0] * R.m[1][0]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A2 x B1
+	rA = a->ext[0] * fabs(R.m[1][1]) + a->ext[1] * fabs(R.m[0][1]);
+
+	rB = b->ext[0] * fabs(R.m[2][2]) + b->ext[2] * fabs(R.m[2][0]);
+
+	t = fabs(T[2] * R.m[1][1] - T[1] * R.m[2][1]);
+	float test = rA + rB;
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+
+	//L = A2 x B2
+	rA = a->ext[0] * fabs(R.m[1][2]) + a->ext[1] * fabs(R.m[0][2]);
+
+	rB = b->ext[0] * fabs(R.m[2][1]) + b->ext[1] * fabs(R.m[2][0]);
+
+	t = fabs(T[1] * R.m[0][2] - T[0] * R.m[1][2]);
+
+	if (t > (rA + rB))
+	{
+		return false;
+	}
+	/*no separating axis found,
+	the two boxes overlap */
+
+	//printf("Collition has been detected\n");
+	return true;
+}
+
 bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, PhysicsComponent * objAABB)
 {
 
@@ -592,17 +817,16 @@ void PhysicsHandler::UpdateAABB(PhysicsComponent* src)
 
 }
 
-DirectX::XMMATRIX PhysicsHandler::RotateBB_Y(PhysicsComponent* src)
+DirectX::XMMATRIX PhysicsHandler::RotateBB_X(PhysicsComponent* src, const float &radian)
 {
-	
 	DirectX::XMMATRIX xMatrix;
 	DirectX::XMMATRIX test = src->PC_OBB.ort;
-	
+
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
 	float rotAngle = (3.14159265359 / 180.0);
 
-	xMatrix = DirectX::XMMatrixRotationY(rotAngle);
+	xMatrix = DirectX::XMMatrixRotationX(radian);
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
 
 
@@ -610,6 +834,34 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_Y(PhysicsComponent* src)
 	//test = DirectX::XMMatrixMultiply(test, xMatrix);
 	//xMatrix = DirectX::XMMatrixRotationZ((3.14159265359 / 4.0));
 	//test = DirectX::XMMatrixMultiply(test, xMatrix);
+
+	src->PC_OBB.ort = test;
+
+	return xMatrix;
+}
+
+DirectX::XMMATRIX PhysicsHandler::RotateBB_Y(PhysicsComponent* src, const float &radian)
+{
+	DirectX::XMMATRIX xMatrix;
+	DirectX::XMMATRIX test = src->PC_OBB.ort;
+
+	xMatrix = DirectX::XMMatrixRotationY(radian);
+	test = DirectX::XMMatrixMultiply(test, xMatrix);
+
+	src->PC_OBB.ort = test;
+
+	return xMatrix;
+}
+
+DirectX::XMMATRIX PhysicsHandler::RotateBB_Z(PhysicsComponent* src, const float &radian)
+{
+	DirectX::XMMATRIX xMatrix;
+	DirectX::XMMATRIX test = src->PC_OBB.ort;
+
+	float rotAngle = (3.14159265359 / 180.0);
+
+	xMatrix = DirectX::XMMatrixRotationZ(radian);
+	test = DirectX::XMMatrixMultiply(test, xMatrix);
 
 	src->PC_OBB.ort = test;
 
@@ -835,7 +1087,6 @@ void PhysicsHandler::InitializeChain(int start, int end)
 	}
 
 }
-
 
 void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src)
 {

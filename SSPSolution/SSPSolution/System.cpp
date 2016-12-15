@@ -319,6 +319,8 @@ int System::Update(float deltaTime)
 
 
 	//-----
+	float rotAngle = (3.14159265359 / 180.0);
+
 	this->m_physicsHandler.Update(deltaTime);
 	OBB* temp = nullptr;
 	OBB* temp2 = nullptr;
@@ -344,26 +346,61 @@ int System::Update(float deltaTime)
 	DirectX::XMStoreFloat3(&tempPos, temp->pos);
 	
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
-	g_temp->worldMatrix *= this->m_physicsHandler.RotateBB_Y(BB_AABB);
+	DirectX::XMMATRIX oldWorldMatrix = g_temp->worldMatrix;
+	DirectX::XMMATRIX rotationMatrix;
+
+	//this is a walkaround 
+	//rotate obj 1
+	oldWorldMatrix = g_temp->worldMatrix;
+
+	rotationMatrix = this->m_physicsHandler.RotateBB_X(BB_AABB, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
+
+	oldWorldMatrix = g_temp->worldMatrix;
+
+	rotationMatrix = this->m_physicsHandler.RotateBB_Y(BB_AABB, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
+
+	oldWorldMatrix = g_temp->worldMatrix;
+
+	rotationMatrix = this->m_physicsHandler.RotateBB_Z(BB_AABB, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
 	
-	
-	
-	//secound obj
+
+
+	////secound obj
 	BB_AABB2 = this->m_physicsHandler.getDynamicComponents(1);
+	BB_AABB2->PC_pos = DirectX::XMVectorSet(5, 1, 7, 0);
 	this->m_graphicsHandler->RenderBoundingVolume(BB_AABB2->PC_pos, BB_AABB2->PC_OBB);
 
-
-
-	//GraphicsComponent* g_temp;
-	g_temp = m_graphicsHandler->getComponent(1);
+	////GraphicsComponent* g_temp;
+	//g_temp = m_graphicsHandler->getComponent(1);
 	//DirectX::XMFLOAT3 tempPos;
+	//g_temp = m_graphicsHandler->getComponent(0);
+
 	DirectX::XMStoreFloat3(&tempPos,temp->pos);
 	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
+	oldWorldMatrix = g_temp->worldMatrix;
 
-	g_temp = m_graphicsHandler->getComponent(2);
-	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
-	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+	rotationMatrix = this->m_physicsHandler.RotateBB_X(BB_AABB2, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
+
+	oldWorldMatrix = g_temp->worldMatrix;
+
+	rotationMatrix = this->m_physicsHandler.RotateBB_Y(BB_AABB2, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
+
+	oldWorldMatrix = g_temp->worldMatrix;
+
+	rotationMatrix = this->m_physicsHandler.RotateBB_Z(BB_AABB2, rotAngle);
+	g_temp->worldMatrix = DirectX::XMMatrixMultiply(oldWorldMatrix, rotationMatrix);
+
+	//g_temp = m_graphicsHandler->getComponent(2);
+	//DirectX::XMStoreFloat3(&tempPos, temp2->pos);
+	//g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+
+
 
 	//OBB* chainStuff = nullptr;
 	//for (int i = 1; i < nrOfComponents - 1; i++)
