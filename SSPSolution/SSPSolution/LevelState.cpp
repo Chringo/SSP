@@ -43,7 +43,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 0;
 
-	//this->m_player1.Update(dt, inputHandler);
+	this->m_player1.Update(dt, inputHandler);
 
 	return result;
 }
