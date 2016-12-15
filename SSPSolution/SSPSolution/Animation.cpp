@@ -135,7 +135,7 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			DirectX::XMMATRIX localTransform = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, rotMat), transMat));
+			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -156,7 +156,7 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			DirectX::XMMATRIX localTransform = (scaleMat * rotMat) * transMat;
+			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -199,7 +199,7 @@ void Animation::Interpolate(float currentTime)
 					DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(lerpRot);
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
-					DirectX::XMMATRIX localTransform = (scaleMat * rotMat) * transMat;
+					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply( transMat, rotMat), scaleMat);
 
 					/*Update the transform for each joint in the skeleton.*/
 					DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
@@ -245,10 +245,11 @@ void Animation::CalculateGlobalInverseBindPose(std::vector<DirectX::XMMATRIX>& g
 			//DirectX::XMMATRIX parentInvBindPose = skeltempVec[parentIndex].invBindPose; //HÄR HAR DAVID JIDDRAT!<---------------------------------------
 			DirectX::XMMATRIX parentInvBindPose = globalInverseBindPose[parentIndex];
 
-			DirectX::XMVECTOR determinant = DirectX::XMMatrixDeterminant(parentInvBindPose);
-			DirectX::XMMATRIX parentBindPose = DirectX::XMMatrixInverse(&determinant, parentInvBindPose);
+			//DirectX::XMVECTOR determinant = DirectX::XMMatrixDeterminant(parentInvBindPose);
+			//DirectX::XMMATRIX parentBindPose = DirectX::XMMatrixInverse(&determinant, parentInvBindPose);
 
-			globalInverseBindPose[i] = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixMultiply(childBindPose, parentBindPose));
+			//globalInverseBindPose[i] = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixMultiply(childBindPose, parentBindPose));
+			globalInverseBindPose[i] = DirectX::XMMatrixMultiply(skeltempVec[i].invBindPose, parentInvBindPose);
 		}
 	}
 }
@@ -268,7 +269,7 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 	{
 		//int parentIndex = skeltempVec[jointIndex].parentIndex;
 
-		DirectX::XMMATRIX childTransform = DirectX::XMLoadFloat4x4(&localMatrices[jointIndex]);
+		DirectX::XMMATRIX childTransform = DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4(&localMatrices[jointIndex]));
 		//DirectX::XMMATRIX parentTransform = DirectX::XMLoadFloat4x4(&localMatrices[parentIndex]);
 
 		//DirectX::XMMATRIX parentChildTransform = DirectX::XMMatrixMultiply(parentTransform, childTransform);
