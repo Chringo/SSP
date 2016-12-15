@@ -6,18 +6,18 @@
 __declspec(align(16)) struct AIComponent
 {
 	// system variables
-	int active = 0;
-	int entityID = -1;
+	int m_active = 0;
+	int m_entityID = -1;
 
 	// AI variables
-	bool triggered;
-	int time;
-	int speed;
-	int direction;
-	int currentWaypoint;
-	int nextWaypoint;
+	bool m_triggered;
+	int m_time;
+	int m_speed;
+	int m_direction;
+	int m_currentWaypoint;
+	int m_nextWaypoint;
 
-	DirectX::XMVECTOR waypoints[8];
+	DirectX::XMVECTOR m_waypoints[8];
 };
 
 #endif
