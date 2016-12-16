@@ -271,13 +271,13 @@ int System::Update(float deltaTime)
 		{
 			dir.y *= -1;
 		}
-		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, 3.5, dir.z * -0.008, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, 2.0, dir.z * -0.008, 0);
 		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
 	}
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
 	{
 		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-1.5, 3.5, 0, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-0.5, 2.0, 0, 0);
 	}
 
 
