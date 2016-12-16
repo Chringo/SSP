@@ -82,3 +82,8 @@ float Player::SetSpeed(float speed)
 	this->m_speed = speed;
 	return oldSpeed;
 }
+
+PhysicsComponent * Player::GetPhysicsComponentRef()
+{
+	return this->m_pComp;
+}

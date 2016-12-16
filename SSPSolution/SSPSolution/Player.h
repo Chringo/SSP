@@ -19,6 +19,8 @@ public:
 
 	//Returns the old speed
 	float SetSpeed(float speed);
+
+	PhysicsComponent* GetPhysicsComponentRef();
 private:
 
 };
