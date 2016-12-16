@@ -17,11 +17,15 @@ int System::Shutdown()
 	SDL_DestroyWindow(m_window);
 	//Quit SDL subsystems
 	SDL_Quit();
+	this->m_gsh.ShutDown();
 	this->m_graphicsHandler->Shutdown();
 	delete this->m_graphicsHandler;
+	this->m_graphicsHandler = nullptr;
 	delete this->m_camera;
+	this->m_camera = nullptr;
 	this->m_inputHandler->Shutdown();
 	delete this->m_inputHandler;
+	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	DebugHandler::instance().Shutdown();
 
@@ -84,8 +88,11 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	//Init the network module
+	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
+	//Initialize the GameStateHandler
+	this->m_gsh.Initialize(&this->m_componentHandler);
+	//Initialize the network module
 	this->m_networkModule.Initialize();
 
 	this->m_Anim = new Animation();
@@ -111,6 +118,7 @@ int System::Run()
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= frequency.QuadPart;
+
 		//Prepare the InputHandler
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
@@ -144,10 +152,16 @@ int System::Run()
 	return result;
 }
 
+//Place all the update functions within the System::Update(float deltaTime) function.
 int System::Update(float deltaTime)
 {
+	if (deltaTime < 0.000001f)
+		deltaTime = 0.000001f;
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
+
+	//Update the network module
+	this->m_networkModule.Update();
 
 	
 	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
@@ -252,6 +266,8 @@ int System::Update(float deltaTime)
 	m_Anim->Update(deltaTime);
 	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
+	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	//Update the network module
 	this->m_networkModule.Update();
 
@@ -271,16 +287,14 @@ int System::Update(float deltaTime)
 		{
 			dir.y *= -1;
 		}
-		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, dir.y * 0.018, dir.z * -0.008, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(dir.x * -0.008, 3.5, dir.z * -0.008, 0);
 		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
 	}
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
 	{
 		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-1, 1.5, 0, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-1.5, 3.5, 0, 0);
 	}
-
-
 	//-----
 	float rotAngle = (3.14159265359 / 180.0);
 
@@ -293,7 +307,7 @@ int System::Update(float deltaTime)
 
 
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
-	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 1);
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 2);
 	//m_graphicsHandler->RenderBoundingVolume(*temp);
 	//m_graphicsHandler->RenderBoundingVolume(*temp2);
 
@@ -320,7 +334,7 @@ int System::Update(float deltaTime)
 
 
 	OBB* chainStuff = nullptr;
-	for (int i = 1; i < nrOfComponents - 1; i++)
+	for (int i = 1; i < nrOfComponents - 2; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
 		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
