@@ -447,10 +447,10 @@ bool PhysicsHandler::SpherePlaneIntersectionTest(PhysicsComponent * objSphere, P
 		objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, DirectX::XMVectorScale(pParallel, lenght));
 
 		DirectX::XMVECTOR resultVel = objSphere->PC_velocity;
-		resultVel = DirectX::XMVector3Reflect(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal);
+		//resultVel = DirectX::XMVector3Reflect(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal);
 		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal)) < 0)
 		{
-			//DirectX::XMVECTOR resultVel = DirectX::XMVector3Reflect(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal);
+			DirectX::XMVECTOR resultVel = DirectX::XMVector3Reflect(objSphere->PC_velocity, objPlane->PC_Plane.PC_normal);
 		}
 
 		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, resultVel, objPlane->PC_Plane.PC_normal);
@@ -686,31 +686,37 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(0, 5, 45, 0);
-	DirectX::XMVECTOR tempPos2 = DirectX::XMVectorSet(2, 1, 45, 0);
+	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(0, 5, 60, 0);
+	DirectX::XMVECTOR tempPos2 = DirectX::XMVectorSet(2, 1, 60, 0);
 
 	PhysicsComponent* ptr = nullptr;
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 20;
+	ptr->PC_mass = 10;
 	ptr->PC_is_Static = false;
 	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
 	//ptr->PC_pos = DirectX::XMVectorSet(-2, 0, 0, 0);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 1;
 	ptr->PC_is_Static = false;
 	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5.0f;
+	ptr->PC_mass = 1.0f;
 	ptr->PC_is_Static = false;
 	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5.0f;
+	ptr->PC_mass = 1.0f;
+	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
+	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
+
+	ptr = this->CreatePhysicsComponent(tempPos);
+	ptr->PC_mass = 1.0f;
 	ptr->PC_is_Static = false;
 	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
@@ -718,7 +724,7 @@ bool PhysicsHandler::Initialize()
 	ptr = this->CreatePhysicsComponent(tempPos2);
 	ptr->PC_velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	ptr->PC_active = 1;
-	ptr->PC_mass = 10;
+	ptr->PC_mass = 5;
 	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
 
 
@@ -728,11 +734,11 @@ bool PhysicsHandler::Initialize()
 	this->m_chain.CH_linkLenght = 3.0f;
 
 
-	this->m_gravity = DirectX::XMVectorSet(0, -0.06, 0, 0);
+	this->m_gravity = DirectX::XMVectorSet(0, -0.05, 0, 0);
 
 	//Axels HOUSE
 	float houseFriction = 0.7;
-	float houseElasticity = 0.1;
+	float houseElasticity = 0.5;
 	
 	this->m_floor.PC_pos = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_floor.PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1.0, 0, 0);
@@ -793,7 +799,7 @@ void PhysicsHandler::ShutDown()
 
 void PhysicsHandler::Update(float deltaTime)
 {
-	float dt = (deltaTime / 30000);
+	float dt = (deltaTime / 50000);
 	
 
 	int nrOfChainObjects = this->m_chain.CH_links.size();
@@ -801,6 +807,10 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->DoChainPhysics(this->m_chain.CH_links.at(i), this->m_chain.CH_links.at(i + 1), dt);
 	}
+	//for (int i = nrOfChainObjects - 1; i > 0; i--)
+	//{
+	//	this->DoChainPhysics(this->m_chain.CH_links.at(i), this->m_chain.CH_links.at(i - 1), dt);
+	//}
 
 	int nrOfObjects = this->m_dynamicComponents.size();
 	for (int i = 0; i < nrOfObjects; i++)
@@ -910,12 +920,25 @@ void PhysicsHandler::AdjustChainLinkPosition()
 		float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 
-		if (lenght > this->m_chain.CH_linkLenght +0.5)
+		if (lenght > this->m_chain.CH_linkLenght +1.0)
 		{
-			next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 0.5)));
+			next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 1.0)));
 			next->PC_OBB.pos = next->PC_pos;
 		}
 	}
+	//for (int i = size - 1; i > 0; i--)
+	//{
+	//	current = this->m_chain.CH_links.at(i);
+	//	next = this->m_chain.CH_links.at(i - 1);
+	//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(next->PC_pos, current->PC_pos);
+	//	float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+	//	diffVec = DirectX::XMVector3Normalize(diffVec);
+	//	if (lenght > this->m_chain.CH_linkLenght + 1.0)
+	//	{
+	//		next->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(diffVec, (this->m_chain.CH_linkLenght + 1.0)));
+	//		next->PC_OBB.pos = next->PC_pos;
+	//	}
+	//}
 }
 
 PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR &pos)
