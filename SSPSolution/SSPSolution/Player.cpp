@@ -83,7 +83,19 @@ float Player::SetSpeed(float speed)
 	return oldSpeed;
 }
 
-PhysicsComponent * Player::GetPhysicsComponentRef()
+Entity * Player::SetGrabbed(Entity * toGrab)
 {
-	return this->m_pComp;
+	Entity* temp = this->m_grabbed;
+	this->m_grabbed = toGrab;
+	return temp;
+}
+
+float Player::GetSpeed()
+{
+	return this->m_speed;
+}
+
+Entity * Player::GetGrabbed()
+{
+	return this->m_grabbed;
 }

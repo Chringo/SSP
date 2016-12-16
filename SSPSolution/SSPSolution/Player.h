@@ -19,8 +19,10 @@ public:
 
 	//Returns the old speed
 	float SetSpeed(float speed);
+	Entity* SetGrabbed(Entity* toGrab);
 
-	PhysicsComponent* GetPhysicsComponentRef();
+	float GetSpeed();
+	Entity* GetGrabbed();
 private:
 
 };

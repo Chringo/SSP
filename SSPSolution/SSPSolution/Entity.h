@@ -28,6 +28,8 @@ public:
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 
+	PhysicsComponent* GetPhysicsComponentRef();
+	GraphicsComponent* GetGraphicsComponentRef();
 
 
 private:
