@@ -23,7 +23,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		startTimer();
 	}
 	this->m_frameTime = getFrameTime();
-
+	
 	if (!this->m_Communicator->m_IsPreview)
 	{
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
@@ -48,6 +48,11 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				InstancePtr = &got->second;
 				for (size_t j = 0; j < InstancePtr->size(); j++)
 				{
+					if (InstancePtr->at(j).isDirty)
+					{
+						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(),j,InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+					}
+
 					BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
 					OBB obj;
 					obj.ext[0] = boundingBox.extension[0];
@@ -83,10 +88,30 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
-					this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-						InstancePtr->at(j).position,
-						obj
-					);
+
+
+					if (this->m_Communicator->m_EditorInputHandler->m_Picked.ID == modelPtr->at(i)->GetId() && this->m_Communicator->m_EditorInputHandler->m_Picked.listInstance == j)
+					{
+						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+							InstancePtr->at(j).position,
+							obj
+						);
+
+						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+							this->m_Communicator->m_EditorInputHandler->m_Axis[0].pos,
+							this->m_Communicator->m_EditorInputHandler->m_Axis[0]
+						);
+						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+							this->m_Communicator->m_EditorInputHandler->m_Axis[1].pos,
+							this->m_Communicator->m_EditorInputHandler->m_Axis[1]
+						);
+						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+							this->m_Communicator->m_EditorInputHandler->m_Axis[2].pos,
+							this->m_Communicator->m_EditorInputHandler->m_Axis[2]
+						);
+
+
+					}
 				}
 
 			}

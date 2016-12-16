@@ -44,6 +44,8 @@ private:
 	int m_Height;
 	int m_MouseX;
 	int m_MouseY;
+	int m_LastMouseX;
+	int m_LastMouseY;
 	bool m_KeysHeld[Bools::NUMBOOLS];
 	QPoint m_point;
 
@@ -54,14 +56,16 @@ private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map;
 	std::vector<Resources::Model*>* modelPtr;
-	HasPicked m_Picked;
 	Camera* m_Camera;
 
 	DIMOUSESTATE		 m_mouseLastState;
 	LPDIRECTINPUT8		 m_directInput;
-	IDirectInputDevice8* DIKeyboard;
 	IDirectInputDevice8* DIMouse;
+
 public:
+	OBB m_Axis[3];
+	HasPicked m_Picked;
+	HasPicked m_LastPicked;
 	void detectInput(double dT, QKeyEvent* key);
 	void SetMousePos(QPoint point) { this->m_point = point; };
 	void KeyboardMovement(double dT);
@@ -70,6 +74,7 @@ public:
 	void CameraReset();
 	void MousePicking();
 	void keyReleased(QKeyEvent* evt);
+	void UpdatePos(int index);
 
 
 

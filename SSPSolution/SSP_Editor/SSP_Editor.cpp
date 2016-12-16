@@ -85,9 +85,7 @@ void SSP_Editor::on_treeView_doubleClicked()
 
 
 	DirectX::XMVECTOR pos = {
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10))),
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10))),
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10)))
+		0.0f,0.0f,0.0f
 	};
 
 	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos,0.0f);

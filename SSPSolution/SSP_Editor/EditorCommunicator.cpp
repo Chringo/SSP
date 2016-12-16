@@ -127,6 +127,7 @@ Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int inst
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 	newComponent.component.worldMatrix = containerMatrix;
 	newComponent.internalID = instanceID;
+	newComponent.isDirty = false;
 
 
 	if (got == m_Map.end()) { // if  does not exists in memory
@@ -159,7 +160,7 @@ Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int I
 
 		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			if (modelPtr->at(i).internalID == InstanceID)
+			if (i == InstanceID)
 			{
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
@@ -168,6 +169,7 @@ Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int I
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 				modelPtr->at(i).component.worldMatrix = containerMatrix;
+				modelPtr->at(i).isDirty = false;
 				return Resources::Status::ST_OK;
 			}
 

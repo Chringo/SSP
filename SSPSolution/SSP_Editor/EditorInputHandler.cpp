@@ -21,16 +21,16 @@ EditorInputHandler::EditorInputHandler(
 		(void**)&m_directInput,
 		NULL);
 
-	hr = m_directInput->CreateDevice(GUID_SysKeyboard,
-		&DIKeyboard,
-		NULL);
+	//hr = m_directInput->CreateDevice(GUID_SysKeyboard,
+	//	&DIKeyboard,
+	//	NULL);
 
 	hr = m_directInput->CreateDevice(GUID_SysMouse,
 		&DIMouse,
 		NULL);
 
-	hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = DIKeyboard->SetCooperativeLevel(handle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	//hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	//hr = DIKeyboard->SetCooperativeLevel(handle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
@@ -44,6 +44,7 @@ EditorInputHandler::EditorInputHandler(
 		this->m_KeysHeld[i] = false;
 	}
 	DIMouse->Acquire();
+	this->m_LastPicked.listInstance = NULL;
 }
 
 EditorInputHandler::~EditorInputHandler()
@@ -188,32 +189,31 @@ void EditorInputHandler::MousePicking()
 	DIMOUSESTATE mouseCurrentState;
 
 	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+    this->m_MouseX = this->m_point.x();
+	this->m_MouseY = this->m_point.y();
+	if (this->m_MouseX > this->m_Width)
+		this->m_MouseX = this->m_Width;
+	else if (this->m_MouseX < 0)
+		this->m_MouseX = 0;
+	if (this->m_MouseY > this->m_Height)
+		this->m_MouseY = this->m_Height;
+	else if (this->m_MouseY < 0)
+		this->m_MouseY = 0;
 
-	if (mouseCurrentState.rgbButtons[0])
+	if (mouseCurrentState.rgbButtons[0] && !this->m_KeysHeld[SHIFT])
 	{
 		DirectX::XMVECTOR rayOrigin, rayDirection;
-		int m_MouseX = m_point.x();
-		int m_MouseY = m_point.y();
-		if (m_MouseX > m_Width)
-			m_MouseX = m_Width;
-		else if (m_MouseX < 0)
-			m_MouseX = 0;
-		if (m_MouseY > m_Height)
-			m_MouseY = m_Height;
-		else if (m_MouseY < 0)
-			m_MouseY = 0;
+
 
 		DirectX::XMVECTOR localRayDirection =
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		//DirectX::XMVECTOR LocalRayOrigin =
+		//	DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f);
 		DirectX::XMVECTOR LocalRayOrigin = DirectX::XMLoadFloat3(&this->m_Camera->GetCameraPos());
 		//DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		float X, Y, Z;
 		DirectX::XMFLOAT4X4* camProjectionPtr = this->m_Camera->GetProjectionMatrix();
 		DirectX::XMFLOAT4X4 camProjection = *(DirectX::XMFLOAT4X4*)camProjectionPtr;
-		//float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-		//float screenAspect = (float)m_Width / (float)m_Height;
-
-
 
 		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
 		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
@@ -223,11 +223,12 @@ void EditorInputHandler::MousePicking()
 		DirectX::XMMATRIX inverseCamView;
 		DirectX::XMVECTOR det = { 1,1,1,1 };
 		DirectX::XMMATRIX temp1;
-		this->m_Camera->GetBaseViewMatrix(temp1);
+		this->m_Camera->GetViewMatrix(temp1);
 
 		inverseCamView = DirectX::XMMatrixInverse(&det, temp1);
 
-		//rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
+
+		rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
 		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
 		rayDirection = DirectX::XMVector3Normalize(rayDirection);
 
@@ -285,53 +286,66 @@ void EditorInputHandler::MousePicking()
 						{
 							this->m_Picked.ID = modelPtr->at(i)->GetId();
 							this->m_Picked.listInstance = j;
-							std::cout << "true" << std::endl;
-							break;
-						}
-						else
-							std::cout << "false" << std::endl;
-					}
 
+							m_Axis[0] = obj;
+							m_Axis[1] = obj;
+							m_Axis[2] = obj;
+
+							this->m_Axis[0].pos = obj.pos;
+							this->m_Axis[0].pos.m128_f32[0] += 1;
+							this->m_Axis[1].pos = obj.pos;
+							this->m_Axis[1].pos.m128_f32[1] += 1;
+							this->m_Axis[2].pos = obj.pos;
+							this->m_Axis[2].pos.m128_f32[2] += 1;
+							this->m_Axis[0].ext[0] = 0.15f;
+							this->m_Axis[0].ext[1] = 0.15f;
+							this->m_Axis[0].ext[2] = 0.15f;
+							this->m_Axis[1].ext[0] = 0.15f;
+							this->m_Axis[1].ext[1] = 0.15f;
+							this->m_Axis[1].ext[2] = 0.15f;
+							this->m_Axis[2].ext[0] = 0.15f;
+							this->m_Axis[2].ext[1] = 0.15f;
+							this->m_Axis[2].ext[2] = 0.15f;
+
+							if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
+							{
+								this->m_LastPicked = m_Picked;
+
+							}
+							else if (this->m_LastPicked.listInstance == NULL)
+							{
+								this->m_LastPicked = this->m_Picked;
+							}
+						}
+
+						int index = -1;
+						for (size_t k = 0; k < 3; k++)
+						{
+							result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, this->m_Axis[k], this->m_Axis[k].pos);
+							if (result)
+							{
+								index = k;
+								break;
+							}
+
+						}
+						if (index != -1)
+						{
+							UpdatePos(index);
+						}
+
+
+
+
+					}
 				}
 
 			}
-			//this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 		}
-		else
-		{
-			//this->m_Communicator->m_GraphicsHandler->Render();
-		}
-
 	}
+	this->m_LastMouseX = this->m_MouseX;
+	this->m_LastMouseY = this->m_MouseY;
 }
-
-
-
-
-
-
-//DIMOUSESTATE mouseCurrentState;
-//
-//BYTE keyBoardState[256]; // the amount of buttons a char array of 256.
-//
-//DIKeyboard->Acquire();
-//DIMouse->Acquire();
-//
-//DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
-//
-//DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
-//
-//float speed = 5.0f * dT;
-//float speedrot = 2.5f * dT;
-//int result = 1;
-//float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
-//float yaw = 0, pitch = 0;
-//
-//POINT mousePos;
-//GetCursorPos(&mousePos);
-//ScreenToClient(this->m_hwnd, &mousePos);
-
-
 
 void EditorInputHandler::keyReleased(QKeyEvent * evt)
 {
@@ -373,6 +387,95 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 		default:
 			break;
 		}
+}
+
+void EditorInputHandler::UpdatePos(int index)
+{
+	float temp1, temp2;
+	if (this->m_LastMouseX != this->m_MouseX)
+	{
+		temp1 = m_LastMouseX - m_MouseX;
+		temp2 = m_LastMouseY - m_MouseY;
+		if (index == 0)
+		{
+			if (temp1 > 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
+			}
+			if (temp1 < 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += 1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		if (index == 1)
+		{
+			if (temp2 > 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += 1;
+			}
+			if (temp2 < 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += -1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		if (index == 2)
+		{
+			if (temp1 > 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += -1;
+			}
+			if (temp1 < 0)
+			{
+				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += 1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (index == 0)
+			{
+				if (temp1 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[0] += -1;
+				}
+				if (temp1 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[0] += 1;
+				}
+
+			}
+			if (index == 1)
+			{
+				if (temp2 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[1] += 1;
+				}
+				if (temp2 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[1] += -1;
+				}
+			}
+			if (index == 2)
+			{
+				if (temp1 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[2] += -1;
+				}
+				if (temp1 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[2] += 1;
+				}
+			}
+		}
+	}
 }
 
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
