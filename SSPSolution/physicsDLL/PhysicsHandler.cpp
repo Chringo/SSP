@@ -691,7 +691,7 @@ bool PhysicsHandler::Initialize()
 
 	PhysicsComponent* ptr = nullptr;
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 10;
+	ptr->PC_mass = 20;
 	ptr->PC_is_Static = false;
 	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
