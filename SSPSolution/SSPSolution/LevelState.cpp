@@ -17,10 +17,10 @@ int LevelState::ShutDown()
 	return result;
 }
 
-int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* camera)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, camera);
 
 	//Read from file
 	//Get Components

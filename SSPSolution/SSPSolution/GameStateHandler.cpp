@@ -35,13 +35,13 @@ int GameStateHandler::ShutDown()
 }
 
 
-int GameStateHandler::Initialize(ComponentHandler * cHandler)
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* camera)
 {
 	int result = 0;
 	
 	//Create, Initialize and push a LevelState
 	LevelState* tempState = new LevelState();
-	result = tempState->Initialize(this, cHandler);
+	result = tempState->Initialize(this, cHandler, camera);
 	//If the initialization was successful
 	if (result > 0)
 	{

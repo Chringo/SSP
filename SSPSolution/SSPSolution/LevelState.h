@@ -12,7 +12,7 @@ public:
 	virtual ~LevelState();
 
 	int ShutDown();
-	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
+	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* camera);
 	int Update(float dt, InputHandler * inputHandler);
 private:
 };
