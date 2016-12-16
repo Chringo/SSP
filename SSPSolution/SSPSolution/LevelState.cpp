@@ -45,6 +45,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	int result = 1;
 	dt = 1000000 / dt;
 	this->m_player1.Update(dt, inputHandler);
+	//Update the cameras position
+	DirectX::XMVECTOR offset = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
 	return result;
 }
