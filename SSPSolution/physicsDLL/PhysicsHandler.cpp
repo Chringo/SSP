@@ -830,8 +830,9 @@ void PhysicsHandler::Update(float deltaTime)
 
 		if (!current->PC_is_Static)
 		{
-			float partOfSecond = 1000000.0f / deltaTime;
-			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, partOfSecond));
+			//float partOfSecond = 1000000.0f / deltaTime;
+			//DirectX::XMVectorScale(current->PC_velocity, partOfSecond)
+			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, current->PC_velocity);
 			DirectX::XMFLOAT3 temp;
 			DirectX::XMStoreFloat3(&temp, current->PC_pos);
 			if (temp.y < -7)
