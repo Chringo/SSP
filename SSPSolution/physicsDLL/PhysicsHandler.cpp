@@ -715,9 +715,11 @@ bool PhysicsHandler::Initialize()
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos2);
-	ptr->PC_mass = 20.0f;
 	ptr->PC_velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	ptr->PC_active = 1;
+	ptr->PC_mass = 10;
+	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
+
 
 	int size = this->m_dynamicComponents.size();
 	this->InitializeChain(0, size);
@@ -725,7 +727,7 @@ bool PhysicsHandler::Initialize()
 	this->m_chain.CH_linkLenght = 3.0f;
 
 
-	this->m_gravity = DirectX::XMVectorSet(0, -0.1, 0, 0);
+	this->m_gravity = DirectX::XMVectorSet(0, -0.04, 0, 0);
 
 	//Axels HOUSE
 	float houseFriction = 0.7;
@@ -790,7 +792,7 @@ void PhysicsHandler::ShutDown()
 
 void PhysicsHandler::Update(float deltaTime)
 {
-	float dt = (deltaTime);
+	float dt = (deltaTime / 30000);
 	
 
 	int nrOfChainObjects = this->m_chain.CH_links.size();
@@ -826,13 +828,11 @@ void PhysicsHandler::Update(float deltaTime)
 
 		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
 
-		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(pPerpendicular, current->PC_gravityInfluence));
+		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, current->PC_gravityInfluence), dt));
 
 		if (!current->PC_is_Static)
 		{
-			//float partOfSecond = 1000000.0f / deltaTime;
-			//DirectX::XMVectorScale(current->PC_velocity, partOfSecond)
-			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, current->PC_velocity);
+			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, dt));
 			DirectX::XMFLOAT3 temp;
 			DirectX::XMStoreFloat3(&temp, current->PC_pos);
 			if (temp.y < -7)
@@ -858,7 +858,7 @@ void PhysicsHandler::Update(float deltaTime)
 		printf("no intersection");
 	}
 	
-	//this->AdjustChainLinkPosition();
+	this->AdjustChainLinkPosition();
 	//SimpleCollition(dt);
 }
 
@@ -903,9 +903,9 @@ void PhysicsHandler::DoChainPhysics(PhysicsComponent * current, PhysicsComponent
 		DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - this->m_chain.CH_linkLenght), 0.2);
 		//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(current->m_velocity, next->m_velocity), 0.5));
 
-		next->PC_velocity = DirectX::XMVectorAdd(next->PC_velocity, DirectX::XMVectorScale(force, (1.0 / next->PC_mass)));
+		next->PC_velocity = DirectX::XMVectorAdd(next->PC_velocity, DirectX::XMVectorScale(DirectX::XMVectorScale(force, (1.0 / next->PC_mass)), dt));
 		force = DirectX::XMVectorScale(force, -1.0);
-		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(force, (1.0 / current->PC_mass)));
+		current->PC_velocity = DirectX::XMVectorAdd(current->PC_velocity, DirectX::XMVectorScale(DirectX::XMVectorScale(force, (1.0 / current->PC_mass)),dt));
 	}
 }
 

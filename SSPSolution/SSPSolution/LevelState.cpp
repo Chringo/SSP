@@ -36,7 +36,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	this->m_player1.Initialize();
 	this->m_player1.SetGraphicsComponent(tempGComp);
 	this->m_player1.SetPhysicsComponent(tempPComp);
-	this->m_player1.SetSpeed(0.0001f);
+	this->m_player1.SetSpeed(0.1f);
 	return result;
 }
 
