@@ -693,26 +693,32 @@ bool PhysicsHandler::Initialize()
 	ptr = this->CreatePhysicsComponent(tempPos);
 	ptr->PC_mass = 10;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
 	//ptr->PC_pos = DirectX::XMVectorSet(-2, 0, 0, 0);
 	ptr->PC_mass = 5;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 5.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos);
-	ptr->PC_mass = 5;
+	ptr->PC_mass = 5.0f;
 	ptr->PC_is_Static = false;
+	ptr->PC_active = 1;
 	//ptr->PC_velocity = DirectX::XMVectorSet(-0.5, 0.3, 0.0, 0);
 
 	ptr = this->CreatePhysicsComponent(tempPos2);
-	ptr->PC_mass = 5;
+	ptr->PC_velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	ptr->PC_active = 1;
+	ptr->PC_mass = 10;
 	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
 
 
@@ -922,7 +928,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
-	newObject->PC_active = 0;
+	newObject->PC_active = 1;
 	newObject->PC_coolides = true;
 	newObject->PC_entityID = 0;
 	newObject->PC_is_Static = false;

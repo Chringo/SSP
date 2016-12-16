@@ -31,16 +31,18 @@ GraphicsComponent * ComponentHandler::GetGraphicsComponent()
 
 PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 {
-	bool gotComponent = false;
 	PhysicsComponent* newComponent = nullptr;
+	/*bool gotComponent = false;
 	for (int i = 0; i < this->m_physicsHandler->getNrOfComponents() && !gotComponent; i++)
 	{
 		newComponent = this->m_physicsHandler->getDynamicComponents(i);
-		if (newComponent->PC_active)
+		if (!newComponent->PC_active)
 		{
 			gotComponent = true;
 		}
-	}
+	}*/
+	DirectX::XMVECTOR tempPos;
+	newComponent = this->m_physicsHandler->CreatePhysicsComponent(tempPos);
 	return newComponent;
 }
 
