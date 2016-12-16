@@ -843,20 +843,20 @@ void PhysicsHandler::Update(float deltaTime)
 		}
 	}
 	
-	PhysicsComponent* test1 = nullptr;
+	/*PhysicsComponent* test1 = nullptr;
 	PhysicsComponent* test2 = nullptr;
 
 	test1 = this->getDynamicComponents(0);
-	test2 = this->getDynamicComponents(1);
+	test2 = this->getDynamicComponents(1);*/
 
-	if (this->ObbObbIntersectionTest(test1, test2) == true)
+	/*if (this->ObbObbIntersectionTest(test1, test2) == true)
 	{
 		printf("OBB collition detected");
 	}
 	else
 	{
 		printf("no intersection");
-	}
+	}*/
 	
 	this->AdjustChainLinkPosition();
 	//SimpleCollition(dt);
