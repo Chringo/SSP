@@ -74,11 +74,18 @@ struct Chain
 	float CH_totalLenght;
 	std::vector<PhysicsComponent*> CH_links;
 };
+struct ChainLink
+{
+	float CL_lenght;
+	PhysicsComponent* CL_next; 
+	PhysicsComponent* CL_previous;
+};
 
 class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 {
 private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 	PhysicsComponent m_floor;
 	PhysicsComponent m_wall1;
@@ -140,9 +147,14 @@ public:
 	void Add_toRotateVec(PhysicsComponent* src);
 
 	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
+	void DoChainPhysics(ChainLink* link, float dt);
+	void AdjustChainLinkPosition(ChainLink* link);
 	void AdjustChainLinkPosition();
 
+	void ApplyForceToComponent(PhysicsComponent* componentPtr, DirectX::XMVECTOR force, float dt);
+
 	PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
+	void CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 
 	void SimpleCollition(float dt);

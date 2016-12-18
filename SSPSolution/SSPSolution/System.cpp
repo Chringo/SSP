@@ -287,13 +287,13 @@ int System::Update(float deltaTime)
 		{
 			dir.y *= -1;
 		}
-		ballPtr->PC_velocity = DirectX::XMVectorSet(3.0, 3.0, 0, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(3, 2, 0, 0);
 		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
 	}
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
 	{
 		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-3.0, 3.0, 0, 0);
+		ballPtr->PC_velocity = DirectX::XMVectorSet(-3, 2, 0, 0);
 	}
 	//-----
 	float rotAngle = (3.14159265359 / 180.0);
@@ -307,7 +307,7 @@ int System::Update(float deltaTime)
 
 
 	this->m_physicsHandler.GetPhysicsComponentOBB(temp, 0);
-	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, nrOfComponents - 2);
+	this->m_physicsHandler.GetPhysicsComponentOBB(temp2, 1);
 	//m_graphicsHandler->RenderBoundingVolume(*temp);
 	//m_graphicsHandler->RenderBoundingVolume(*temp2);
 
@@ -334,7 +334,7 @@ int System::Update(float deltaTime)
 
 
 	OBB* chainStuff = nullptr;
-	for (int i = 1; i < nrOfComponents - 2; i++)
+	for (int i = 2; i < nrOfComponents - 1; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
 		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
