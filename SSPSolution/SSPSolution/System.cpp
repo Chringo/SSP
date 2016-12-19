@@ -163,8 +163,18 @@ int System::Update(float deltaTime)
 	//Update the network module
 	this->m_networkModule.Update();
 
-	
-	int translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
+	PhysicsComponent* tempPlayer = nullptr;
+	tempPlayer = this->m_physicsHandler.getDynamicComponents(1);
+	DirectX::XMFLOAT3 playerPos;
+	DirectX::XMFLOAT3 cameraPos = this->m_camera->GetCameraPos();
+	DirectX::XMStoreFloat3(&playerPos, tempPlayer->PC_pos);
+	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
+
+	//translateCameraX = playerPos.x - cameraPos.x;
+	//translateCameraY = playerPos.y - cameraPos.y;
+	//translateCameraZ = playerPos.z - cameraPos.z;
+	//tempPlayer->PC_pos = DirectX::XMLoadFloat3(&cameraPos);
+
 	int rotateCameraY = 0;
 	std::list<CameraPacket> cList;
 
@@ -227,7 +237,7 @@ int System::Update(float deltaTime)
 		rotationAmount *= deltaTime / 1000000.0f;
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
 		this->m_camera->SetRotation(newRotation);
-		this->m_camera->Update();
+		//this->m_camera->Update();
 
 		//Send updates over the network
 		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
@@ -236,8 +246,9 @@ int System::Update(float deltaTime)
 			this->m_camera->GetCameraPos(updatePos);
 			this->m_networkModule.SendCameraPacket(updatePos);
 		}
-		
+		this->m_physicsHandler.ApplyForceToComponent(tempPlayer, DirectX::XMVectorSet(translateCameraX, translateCameraY, translateCameraZ, 0), 1.0f);
 	}
+	this->m_camera->Update();
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
 	{
@@ -279,15 +290,14 @@ int System::Update(float deltaTime)
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
 		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponents(0);
-		DirectX::XMFLOAT3 dir;
-		dir.x = (rand() % 201) - 100;
-		dir.y = (rand() % 101);
-		dir.z = (rand() % 201) - 100;
-		if (dir.y < 0)
-		{
-			dir.y *= -1;
-		}
-		ballPtr->PC_velocity = DirectX::XMVectorSet(3, 2, 0, 0);
+		DirectX::XMVECTOR dir;
+		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
+		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
+		dir = DirectX::XMVectorScale(dir, 700);
+
+
+		this->m_physicsHandler.ApplyForceToComponent(ballPtr, dir, 1.0);
+		//ballPtr->PC_velocity = DirectX::XMVectorSet(3, 2, 0, 0);
 		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
 	}
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
@@ -344,7 +354,8 @@ int System::Update(float deltaTime)
 	PhysicsComponent* floor = this->m_physicsHandler.GetTempFloor();
 	this->m_graphicsHandler->RenderBoundingVolume(floor->PC_pos, floor->PC_Plane);
 
-	
+	//no really, nothing speciall here please go ahead doing your every day duties
+	this->AbsolutellyNotAFunction();
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
@@ -483,4 +494,22 @@ int System::FullscreenToggle()
 	SDL_SetWindowFullscreen(this->m_window, this->m_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
 	this->m_fullscreen = SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN;
 	return result;
+}
+
+void System::AbsolutellyNotAFunction()
+{
+	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos());
+	DirectX::XMVECTOR camLookAt = DirectX::XMLoadFloat3(&this->m_camera->GetLookAt());
+	PhysicsComponent* player= nullptr;
+
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
+	
+	player = this->m_physicsHandler.getDynamicComponents(1);
+
+	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
+	camPos = DirectX::XMVectorAdd(camPos, DirectX::XMVectorSet(0, 3, 0, 0));
+	camLookAt = DirectX::XMVectorAdd(camPos, diffVec);
+
+	this->m_camera->SetCameraPos(camPos);
+	this->m_camera->SetLookAt(camLookAt);
 }
