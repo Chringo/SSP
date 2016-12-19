@@ -46,7 +46,7 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/snake_cube_test.skel";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.skel";
  	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;

@@ -42,7 +42,7 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 	
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/snake_cube_test_AnimLayer1.anim";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_AnimLayer2.anim";
 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;
