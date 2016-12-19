@@ -701,7 +701,6 @@ bool PhysicsHandler::Initialize()
 	ptr->PC_mass = 5;
 	ptr->PC_is_Static = false;
 	ptr->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
-
 	this->CreateChainLink(0, 1, 5, 3);
 
 
