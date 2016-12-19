@@ -57,22 +57,10 @@ __declspec(align(16)) struct PhysicsComponent
 	float PC_friction;
 	float PC_elasticity;
 
-	//bool m_collided;
-
 	AABB PC_AABB;
 	OBB PC_OBB;
 	Sphere PC_Sphere;
 	Plane PC_Plane;
-	//AABB PC_looseBoundingBox
-	//BoundingVolume* PC_tightBoundingVolume; 
-	//std::vector<int entityID, event EVENT> PC_eventlist;
-
-};
-struct Chain
-{
-	float CH_linkLenght;
-	float CH_totalLenght;
-	std::vector<PhysicsComponent*> CH_links;
 };
 struct ChainLink
 {
@@ -88,15 +76,6 @@ private:
 	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 	PhysicsComponent m_floor;
-	PhysicsComponent m_wall1;
-	PhysicsComponent m_wall2;
-	PhysicsComponent m_wall3;
-	PhysicsComponent m_wall4;
-	PhysicsComponent m_roof;
-
-
-	Chain m_chain;
-
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -136,8 +115,6 @@ public:
 	void ShutDown();
 	void Update(float deltaTime);
 
-	void InitializeChain(int start, int end);
-
 	DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);
 	DirectX::XMMATRIX RotateBB_Z(PhysicsComponent* src, const float &radian);
@@ -146,10 +123,8 @@ public:
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	void Add_toRotateVec(PhysicsComponent* src);
 
-	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
 	void DoChainPhysics(ChainLink* link, float dt);
 	void AdjustChainLinkPosition(ChainLink* link);
-	void AdjustChainLinkPosition();
 
 	void ApplyForceToComponent(PhysicsComponent* componentPtr, DirectX::XMVECTOR force, float dt);
 
