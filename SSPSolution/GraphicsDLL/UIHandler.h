@@ -4,6 +4,7 @@
 #include "GraphicsComponent.h"
 #include <vector>
 #include "SpriteBatch.h"
+#include "WICTextureLoader.h"
 
 class UIHandler
 {
@@ -13,12 +14,14 @@ private:
 	unsigned int m_nrOfComponents;
 	unsigned int m_maxComponents;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	ID3D11ShaderResourceView* m_texture;
 
 public:
 	UIHandler();
 	~UIHandler();
 
-	void Initialize(ID3D11DeviceContext* deviceContext);
+	void Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+	void DrawUI();
 	void Shutdown();
 
 	UIComponent* GetNextUIComponent();

@@ -8,7 +8,7 @@ UIHandler::~UIHandler()
 {
 }
 
-void UIHandler::Initialize(ID3D11DeviceContext* deviceContext)
+void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	this->m_maxComponents = 10;
 	this->m_nrOfComponents = 0;
@@ -19,6 +19,14 @@ void UIHandler::Initialize(ID3D11DeviceContext* deviceContext)
 	}
 
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(deviceContext);
+	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
+}
+
+void UIHandler::DrawUI()
+{
+	this->m_spriteBatch->Begin();
+	this->m_spriteBatch->Draw(this->m_texture, DirectX::XMFLOAT2(0.0f, 0.0f));
+	this->m_spriteBatch->End();
 }
 
 void UIHandler::Shutdown()
@@ -27,6 +35,9 @@ void UIHandler::Shutdown()
 	{
 		delete this->m_UIComponents.at(i);
 	}
+	this->m_spriteBatch.release();
+	this->m_texture->Release();
+	this->m_texture = nullptr;
 }
 
 UIComponent* UIHandler::GetNextUIComponent()
