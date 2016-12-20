@@ -349,6 +349,7 @@ void EditorInputHandler::MousePicking()
 
 void EditorInputHandler::keyReleased(QKeyEvent * evt)
 {
+	
 		switch (evt->key())
 		{
 		case Qt::Key_Shift:

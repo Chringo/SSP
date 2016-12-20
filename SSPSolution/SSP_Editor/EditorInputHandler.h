@@ -3,16 +3,17 @@
 #include <dinputd.h>
 #include <windows.h>
 #include <Wincodec.h>
+#include <qevent.h>
 #include "../GraphicsDLL/Camera.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../ResourceLib/ResourceHandler.h"
 #include "Header.h"
 #include "ui_SSP_Editor.h"
-#pragma comment (lib,"../Debug/ResourceLib")
 
-#pragma comment (lib,"../Debug/physicsDLL.lib")
-
+#pragma comment (lib,"../../Debug/GraphicsDLL-d.lib")
+#pragma comment (lib,"../../Debug/ResourceLib.lib")
+#pragma comment (lib,"../../Debug/physicsDLL.lib")
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
