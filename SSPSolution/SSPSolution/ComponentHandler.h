@@ -20,6 +20,7 @@ public:
 
 	GraphicsComponent* GetGraphicsComponent();
 	PhysicsComponent* GetPhysicsComponent();
+	UIComponent* GetUIComponent();
 	void UpdateGraphicsComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
 };

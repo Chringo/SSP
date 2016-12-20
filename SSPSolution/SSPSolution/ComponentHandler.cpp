@@ -44,6 +44,11 @@ PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 	return newComponent;
 }
 
+UIComponent* ComponentHandler::GetUIComponent()
+{
+	return this->m_graphicsHandler->GetNextAvailableUIComponent();
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();

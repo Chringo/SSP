@@ -451,6 +451,11 @@ int GraphicsHandler::UpdateComponentList()
 	return result;
 }
 
+UIComponent * GraphicsHandler::GetNextAvailableUIComponent()
+{
+	return this->m_uiHandler->GetNextUIComponent();
+}
+
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
 	m_animGraphicsComponents[0] = (penis*)component;

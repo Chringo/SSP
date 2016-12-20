@@ -9,6 +9,7 @@
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
 #include "DebugRenderer.h"
+#include "UIHandler.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -48,6 +49,7 @@ private:
 	DeferredShader*			m_deferredSH;
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
+	UIHandler*				m_uiHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
 	Resources::Model** m_modelsPtr;
@@ -80,7 +82,7 @@ public:
 	GraphicsComponent* GetNextAvailableComponent();
 	int UpdateComponentList();
 
-
+	UIComponent* GetNextAvailableUIComponent();
 
 	int InitializeGrid();
 	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
