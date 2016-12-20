@@ -1,6 +1,7 @@
 #ifndef GRAPHICSDLL_GRAPHICSCOMPONENT_H
 #define GRAPHICSDLL_GRAPHICSCOMPONENT_H
 
+#include <d3d11.h>
 #include <DirectXMath.h>
 
 struct GraphicsComponent
@@ -27,5 +28,27 @@ struct UIComponent
 	bool wasClicked = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
+
+	void UpdateClicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize)
+	{
+		float mouseX = mousePos.x - (GetSystemMetrics(SM_CXSCREEN) - windowSize.x) / 2;
+		float mouseY = mousePos.y - (GetSystemMetrics(SM_CYSCREEN) - windowSize.y) / 2;
+
+		if ((mouseX > this->position.x - this->size.x && mouseX < this->position.x + this->size.x) 
+			&& (mouseY > this->position.y - this->size.y && mouseY < this->position.y + this->size.y)) {
+			this->wasClicked = true;
+		}
+	}
+	bool CheckClicked()
+	{
+		if (this->wasClicked)
+		{
+			this->wasClicked = false;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 };
 #endif
