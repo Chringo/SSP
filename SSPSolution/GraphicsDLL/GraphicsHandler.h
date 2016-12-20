@@ -71,7 +71,7 @@ public:
 	GraphicsHandler();
 	~GraphicsHandler();
 
-	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode = false);
 	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
 	int Render();

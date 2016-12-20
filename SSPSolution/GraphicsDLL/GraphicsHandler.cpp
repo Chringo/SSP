@@ -147,7 +147,7 @@ GraphicsHandler::~GraphicsHandler()
 {
 }
 
-int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution)
+int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution,  bool editorMode)
 {
 	this->m_d3dHandler = new Direct3DHandler;
 	
@@ -155,7 +155,11 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
-	Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+	if (!editorMode)
+	{
+		Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+		this->m_CreateTempsTestComponents();
+	}
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
@@ -166,7 +170,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
 
-	this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG
 	 obbBoxes.reserve(20);
@@ -400,24 +403,24 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
 	{
-		if (this->m_graphicsComponents[i])
+		if (this->m_graphicsComponents[i] != nullptr)
 		{
 			delete this->m_graphicsComponents[i];
 			this->m_graphicsComponents[i] = nullptr;
 		}
 	}
 
-	for (int i = 1; i < 2; i++)
-	{
-		delete this->m_animGraphicsComponents[i];
-		this->m_animGraphicsComponents[i] = nullptr;
-	}
+	//for (int i = 1; i < 2; i++)
+	//{
+	//	delete this->m_animGraphicsComponents[i];
+	//	this->m_animGraphicsComponents[i] = nullptr;
+	//}
 
-	delete[] this->m_modelsPtr;
+	//delete[] this->m_modelsPtr;
 	delete[] this->m_graphicsComponents;
-	delete[] this->m_animGraphicsComponents;
+	//delete[] this->m_animGraphicsComponents;
 #ifdef _DEBUG
 	m_debugRender.Release();
 #endif // _DEBUG
