@@ -119,10 +119,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		}
 		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	}
-	else
-	{
-		this->m_Communicator->m_GraphicsHandler->Render();
-	}
+	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
 	this->update();
 }
@@ -158,6 +155,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_Device = this->m_Communicator->GetDevice();
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);
+	DataHandler::GetInstance()->GetTextureHandler()->SetDevice(m_Device);
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
