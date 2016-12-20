@@ -25,8 +25,9 @@ bool Progression::WriteToFile(std::string filename)
 	}
 	else
 	{
-
-		saveFile << "Allhuakbar" << "\r\n";
+		saveFile << this->m_currentLevel << "\r\n";
+		saveFile << this->m_currentCheckpoint << "\r\n";
+		saveFile << this->m_unlockedLevels << "\r\n";
 		saveFile.close();
 	}
 	return true;
