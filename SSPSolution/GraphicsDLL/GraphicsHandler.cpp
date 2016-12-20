@@ -138,6 +138,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_camera				   = nullptr;
 	this->m_graphicsComponents	   = nullptr;
 	this->m_shaderControl		   = nullptr;
+	this->m_uiHandler			   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
 }
@@ -165,6 +166,9 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	this->m_camera = new Camera;
 	this->m_camera->Initialize();
+
+	this->m_uiHandler = new UIHandler;
+	this->m_uiHandler->Initialize();
 
 	this->m_CreateTempsTestComponents();
 	//InitializeGrid();
@@ -367,6 +371,12 @@ void GraphicsHandler::Shutdown()
 		m_shaderControl->Release();
 		delete m_shaderControl;
 		this->m_shaderControl = nullptr;
+	}
+	if (this->m_uiHandler)
+	{
+		this->m_uiHandler->Shutdown();
+		delete this->m_uiHandler;
+		this->m_uiHandler = nullptr;
 	}
 	if (this->m_windowHandle)
 	{
