@@ -173,5 +173,8 @@
     <ClInclude Include="DebugHandler.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Progression.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

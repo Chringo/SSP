@@ -122,6 +122,7 @@
     <ClInclude Include="LevelState.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="Progression.h" />
     <ClInclude Include="StartState.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="System.h" />
