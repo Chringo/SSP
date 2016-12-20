@@ -6,6 +6,7 @@
 #include "InputHandler.h"
 #include "GameStateHandler.h"
 #include "DebugHandler.h"
+#include "Progression.h"
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"

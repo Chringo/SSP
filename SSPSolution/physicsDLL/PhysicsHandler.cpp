@@ -845,11 +845,11 @@ void PhysicsHandler::Update(float deltaTime)
 
 	if (this->ObbObbIntersectionTest(test1, test2) == true)
 	{
-		printf("OBB collition detected");
+		//printf("OBB collition detected");
 	}
 	else
 	{
-		printf("no intersection");
+		//printf("no intersection");
 	}
 	
 	//this->AdjustChainLinkPosition();
