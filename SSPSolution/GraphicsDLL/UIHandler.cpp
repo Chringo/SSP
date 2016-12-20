@@ -24,7 +24,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 void UIHandler::DrawUI()
 {
-	this->m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred);
+	this->m_spriteBatch->Begin();
 	this->m_spriteBatch->Draw(this->m_texture, DirectX::XMFLOAT2(0.0f, 0.0f));
 	this->m_spriteBatch->End();
 }
