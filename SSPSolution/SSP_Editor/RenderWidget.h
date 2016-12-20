@@ -44,11 +44,11 @@ public:
 	Communicator* getCommunicator() { return this->m_Communicator; };
 private:
 	double getFrameTime();
-	void startTimer();
+	void   startTimer();
 	double getTime();
 	void InitDosConsole() {
 		AllocConsole();
-		freopen("CONIN$", "rb", stdin);
+		freopen("CONIN$", "rb" , stdin);
 		freopen("CONOUT$", "wb", stdout);
 		freopen("CONOUT$", "wb", stderr);
 	}

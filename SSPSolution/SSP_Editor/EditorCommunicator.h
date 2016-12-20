@@ -3,7 +3,7 @@
 #include "Header.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-
+#include "Level.h"
 
 
 //struct Container
@@ -24,9 +24,11 @@ private:
 	int m_Width;
 	int m_Height;
 
-
+	Level currentLevel;
 public:
-	std::unordered_map<unsigned int, std::vector<Container>> m_Map;
+
+	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap;
+	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap;
 	bool m_IsPreview;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
@@ -39,8 +41,8 @@ public:
 	ID3D11Device* GetDevice() { return this->m_GraphicsHandler->GetDevice(); };
 	void SetMousePos(QPoint point) { this->m_EditorInputHandler->SetMousePos(point); };
 	Resources::Status FindModel(int modelID, std::vector<Container>* modelPtr);
-	Resources::Status GetComponent(unsigned int modelID, unsigned int InstanceID, Container& container);
-	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation);
-	Resources::Status UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation);
-	Resources::Status RemoveModel(unsigned int modelID, unsigned int InstanceID);
+	Resources::Status GetComponent(unsigned int modelID, unsigned int instanceID, Container& container);
+	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 };
