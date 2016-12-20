@@ -35,3 +35,21 @@ UIComponent* UIHandler::GetNextUIComponent()
 	}
 	return nullptr;
 }
+
+void UIHandler::UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos)
+{
+	std::vector<UIComponent*>::iterator uiCompIter;
+	for (uiCompIter = this->m_UIComponents.begin(); uiCompIter != this->m_UIComponents.end(); uiCompIter++)
+	{
+		(*uiCompIter)->UpdateClicked(mousePos);
+	}
+}
+
+void UIHandler::UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize)
+{
+	std::vector<UIComponent*>::iterator uiCompIter;
+	for (uiCompIter = this->m_UIComponents.begin(); uiCompIter != this->m_UIComponents.end(); uiCompIter++)
+	{
+		(*uiCompIter)->UpdateClicked(mousePos, windowSize);
+	}
+}

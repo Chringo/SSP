@@ -20,7 +20,8 @@ public:
 	void Shutdown();
 
 	UIComponent* GetNextUIComponent();
-
+	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos);
+	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize);
 };
 
 #endif
