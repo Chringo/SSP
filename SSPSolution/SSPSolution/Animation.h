@@ -80,7 +80,7 @@ public:
 	void Update(float dt);
 
 	/*Adds a new animation to the stack. Input arguments should come from somewhere else containing frame data.*/
-	void Push(int newAnimation, bool isLooping, int startFrame, int endFrame, int duration);
+	void Push(int newAnimation, bool isLooping, float startFrame, float endFrame, float duration);
 
 	/*Removes the animation that is on the top of the stack.*/
 	void Pop();

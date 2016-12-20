@@ -7,6 +7,8 @@ Animation::Animation()
 	this->currentAnimation = IDLE_STATE;
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
 	this->m_graphicsAnimationComponent->joints = 19;
+
+	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(5, 0, 0);
 	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
 	for (int i = 0; i < 32; i++)
 	{
@@ -127,13 +129,25 @@ void Animation::Interpolate(float currentTime)
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
-			//DirectX::XMFLOAT4 tempRot(animatedJoint.keyframes[startFrame].rotation);
+			//DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[startFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
 
+			//tempTrans.x *= -1.0;
+			//tempTrans.y *= -1.0;
+			tempTrans.z *= -1.0;
+
+			//tempQuat.x *= -1.0;
+			//tempQuat.y *= -1.0;
+			//tempQuat.z *= -1.0;
+			//tempQuat.w *= -1.0;
+
+			//tempScale.x *= -1.0;
+			//tempScale.y *= -1.0;
+			//tempScale.z *= -1.0;
 
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
-			//DirectX::XMVECTOR rot = XMLoadFloat4(&tempRot);
+			//DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
 			DirectX::XMVECTOR quat = XMLoadFloat4(&tempQuat);
 			
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
@@ -141,8 +155,9 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
-			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -156,6 +171,19 @@ void Animation::Interpolate(float currentTime)
 			//DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[endFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
 
+			//tempTrans.x *= -1.0;
+			//tempTrans.y *= -1.0;
+			tempTrans.z *= -1.0;
+
+			//tempQuat.x *= -1.0;
+			//tempQuat.y *= -1.0;
+			//tempQuat.z *= -1.0;
+			//tempQuat.w *= -1.0;
+			
+			//tempScale.x *= -1.0;
+			//tempScale.y *= -1.0;
+			//tempScale.z *= -1.0;
+
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
 			//DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
@@ -166,8 +194,9 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
-			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -196,30 +225,55 @@ void Animation::Interpolate(float currentTime)
 					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
 					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
 
+					//tempTrans1.x *= -1.0;
+					//tempTrans1.y *= -1.0;
+					tempTrans1.z *= -1.0;
+
+					//tempTrans2.x *= -1.0;
+					//tempTrans2.y *= -1.0;
+					tempTrans2.z *= -1.0;
+
+					//tempQuat1.x *= -1.0;
+					//tempQuat1.y *= -1.0;
+					//tempQuat1.z *= -1.0;
+					//tempQuat1.w *= -1.0;
+
+					//tempQuat2.x *= -1.0;
+					//tempQuat2.y *= -1.0;
+					//tempQuat2.z *= -1.0;
+					//tempQuat2.w *= -1.0;
+
+					//tempScale1.x *= -1.0;
+					//tempScale1.y *= -1.0;
+					//tempScale1.z *= -1.0;
+
+					//tempScale2.x *= -1.0;
+					//tempScale2.y *= -1.0;
+					//tempScale2.z *= -1.0;
+
 					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
 					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
 					//DirectX::XMVECTOR rot1 = DirectX::XMLoadFloat3(&tempRot1);
-					//DirectX::XMVECTOR qRot1 = DirectX::XMQuaternionRotationRollPitchYawFromVector(rot1);
 					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
 					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
 
 					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
 					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
 					//DirectX::XMVECTOR rot2 = DirectX::XMLoadFloat3(&tempRot2);
-					//DirectX::XMVECTOR qRot2 = DirectX::XMQuaternionRotationRollPitchYawFromVector(rot2);
 
 					DirectX::XMVECTOR lerpTrans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					DirectX::XMVECTOR lerpScale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
-					//DirectX::XMVECTOR lerpRot = DirectX::XMQuaternionSlerp(qRot1, qRot2, lerpFactor);
+					//DirectX::XMVECTOR lerpRot = DirectX::XMVectorLerp(rot1, rot2, lerpFactor);
 					DirectX::XMVECTOR lerpQuat = DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor);
 
 					DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpScale);
-					//DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationQuaternion(lerpRot);
+					//DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(lerpRot);
 					DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpQuat);
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply( transMat, rotMat), scaleMat);
-					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
+					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 					/*Update the transform for each joint in the skeleton.*/
 					DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
@@ -290,9 +344,9 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 	//DirectX::XMMATRIX invBindPose = globalInverseBindPose[0];
 	DirectX::XMMATRIX invBindPose = skeltempVec[0].invBindPose;
 
-	//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixMultiply(invBindPose, childLocal));
+	DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixMultiply(invBindPose, childLocal));
 	
-	DirectX::XMStoreFloat4x4(&toRootTransform[0], childLocal);
+	//DirectX::XMStoreFloat4x4(&toRootTransform[0], childLocal);
 
 	//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
 
@@ -323,7 +377,7 @@ void Animation::Blend(int lastFrame, int prevState, int newState)
 {
 }
 
-void Animation::Push(int currentAnimation, bool isLooping, int startFrame, int endFrame, int duration)
+void Animation::Push(int currentAnimation, bool isLooping, float startFrame, float endFrame, float duration)
 {
 	this->currentAnimation = currentAnimation;
 
