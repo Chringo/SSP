@@ -56,3 +56,33 @@ bool Progression::ReadFromFile(std::string filename)
 
 	return true;
 }
+
+unsigned int Progression::GetCurrentLevel()
+{
+	return this->m_currentLevel;
+}
+
+unsigned int Progression::GetCurrentCheckpoint()
+{
+	return this->m_currentCheckpoint;
+}
+
+unsigned int Progression::GetUnlockedLevels()
+{
+	return this->m_unlockedLevels;
+}
+
+void Progression::SetCurrentLevel(unsigned int levelID)
+{
+	this->m_currentLevel = levelID;
+}
+
+void Progression::SetCurrentCheckpoint(unsigned int checkpointID)
+{
+	this->m_currentCheckpoint = checkpointID;
+}
+
+void Progression::SetUnlockedLevels(unsigned int newLevels)
+{
+	this->m_unlockedLevels = newLevels;
+}

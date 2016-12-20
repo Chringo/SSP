@@ -39,7 +39,13 @@ public:
 	bool WriteToFile(std::string filename);
 	bool ReadFromFile(std::string filename);
 
+	unsigned int GetCurrentLevel();
+	unsigned int GetCurrentCheckpoint();
+	unsigned int GetUnlockedLevels();
 
+	void SetCurrentLevel(unsigned int levelID);
+	void SetCurrentCheckpoint(unsigned int checkpointID);
+	void SetUnlockedLevels(unsigned int newLevels);
 };
 
 #endif
