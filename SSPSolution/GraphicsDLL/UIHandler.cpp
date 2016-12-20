@@ -18,13 +18,13 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		this->m_UIComponents.push_back(newUIComp);
 	}
 
-	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(deviceContext);
+	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
 }
 
 void UIHandler::DrawUI()
 {
-	this->m_spriteBatch->Begin();
+	this->m_spriteBatch->Begin(DirectX::SpriteSortMode_Deferred);
 	this->m_spriteBatch->Draw(this->m_texture, DirectX::XMFLOAT2(0.0f, 0.0f));
 	this->m_spriteBatch->End();
 }
@@ -35,9 +35,17 @@ void UIHandler::Shutdown()
 	{
 		delete this->m_UIComponents.at(i);
 	}
-	this->m_spriteBatch.release();
-	this->m_texture->Release();
-	this->m_texture = nullptr;
+	//this->m_spriteBatch.release();
+	if (this->m_spriteBatch)
+	{
+		delete this->m_spriteBatch;
+		this->m_spriteBatch = nullptr;
+	}
+	if (this->m_texture)
+	{
+		this->m_texture->Release();
+		this->m_texture = nullptr;
+	}
 }
 
 UIComponent* UIHandler::GetNextUIComponent()

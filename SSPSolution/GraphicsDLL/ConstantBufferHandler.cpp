@@ -97,6 +97,20 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	return 0;
 }
 
+int ConstantBufferHandler::ResetConstantBuffers()
+{
+	this->m_deviceContext->VSSetConstantBuffers(CB_WORLD_B0, 1, &world.D3DBuffer);
+
+	//this->m_deviceContext->VSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
+	//this->m_deviceContext->PSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
+
+	//this->m_deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &material.D3DBuffer);
+	//this->m_deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &light.D3DBuffer);
+	//this->m_deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &skeleton.D3DBuffer);
+
+	return 0;
+}
+
 int ConstantBufferHandler::Shutdown()
 {
 	if (world.D3DBuffer)

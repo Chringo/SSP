@@ -13,7 +13,7 @@ private:
 	std::vector<UIComponent*> m_UIComponents;
 	unsigned int m_nrOfComponents;
 	unsigned int m_maxComponents;
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	DirectX::SpriteBatch* m_spriteBatch;
 	ID3D11ShaderResourceView* m_texture;
 
 public:

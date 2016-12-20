@@ -194,6 +194,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render()
 {
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 	m_shaderControl->ClearFrame();
 
 	/*TEMP CBUFFER STUFF*/
@@ -204,7 +205,7 @@ int GraphicsHandler::Render()
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
-
+	
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
@@ -271,6 +272,7 @@ int GraphicsHandler::Render()
 	//Draw Debug.
 #endif // _DEBUG
 
+	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
