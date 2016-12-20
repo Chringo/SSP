@@ -19,4 +19,13 @@ struct penis
 
 	DirectX::XMMATRIX finalTransforms[32];
 };
+
+struct UIComponent
+{
+	int active = 0;
+	int spriteID = -1;
+	bool wasClicked = false;
+	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
+};
 #endif
