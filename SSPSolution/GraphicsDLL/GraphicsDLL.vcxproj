@@ -105,6 +105,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderControl.h" />
     <ClInclude Include="ShaderLib.h" />
+    <ClInclude Include="UIHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -118,6 +119,7 @@
     <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderControl.cpp" />
+    <ClCompile Include="UIHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Debug\DebugPS.hlsl">

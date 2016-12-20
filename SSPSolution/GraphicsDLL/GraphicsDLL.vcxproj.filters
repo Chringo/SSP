@@ -28,6 +28,12 @@
     <Filter Include="Resource Files\Shaders\Debug">
       <UniqueIdentifier>{93f4560a-a201-423c-97a2-490d7a1696a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UIHandler">
+      <UniqueIdentifier>{651d093a-eb21-4d0d-8d9d-1e17162b5866}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UIHandler">
+      <UniqueIdentifier>{1ed5cf78-779b-480e-8f8b-142400b66aba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsHandler.h">
@@ -69,6 +75,9 @@
     <ClInclude Include="DebugRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UIHandler.h">
+      <Filter>Header Files\UIHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsHandler.cpp">
@@ -103,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="DebugRenderer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHandler.cpp">
+      <Filter>Source Files\UIHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
