@@ -3,6 +3,7 @@
 
 #include "GraphicsComponent.h"
 #include <vector>
+#include "SpriteBatch.h"
 
 class UIHandler
 {
@@ -11,12 +12,13 @@ private:
 	std::vector<UIComponent*> m_UIComponents;
 	unsigned int m_nrOfComponents;
 	unsigned int m_maxComponents;
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
 public:
 	UIHandler();
 	~UIHandler();
 
-	void Initialize();
+	void Initialize(ID3D11DeviceContext* deviceContext);
 	void Shutdown();
 
 	UIComponent* GetNextUIComponent();

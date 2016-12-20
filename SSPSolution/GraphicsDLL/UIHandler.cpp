@@ -8,7 +8,7 @@ UIHandler::~UIHandler()
 {
 }
 
-void UIHandler::Initialize()
+void UIHandler::Initialize(ID3D11DeviceContext* deviceContext)
 {
 	this->m_maxComponents = 10;
 	this->m_nrOfComponents = 0;
@@ -17,6 +17,8 @@ void UIHandler::Initialize()
 		UIComponent* newUIComp = new UIComponent;
 		this->m_UIComponents.push_back(newUIComp);
 	}
+
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(deviceContext);
 }
 
 void UIHandler::Shutdown()
