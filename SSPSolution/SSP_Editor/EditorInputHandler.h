@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <Wincodec.h>
 #include <qevent.h>
+#include "Level.h"
 #include "../GraphicsDLL/Camera.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
@@ -49,13 +50,12 @@ private:
 	int m_LastMouseY;
 	bool m_KeysHeld[Bools::NUMBOOLS];
 	QPoint m_point;
-
+	Level* currentLevel;
 
 	DirectX::XMFLOAT3 m_PreviousPos;
 	HWND m_hwnd;
 	GraphicsHandler* m_GraphicsHandler;
 	PhysicsHandler* m_PhysicsHandler;
-	std::unordered_map<unsigned int, std::vector<Container>>* m_Map;
 	std::vector<Resources::Model*>* modelPtr;
 	Camera* m_Camera;
 
@@ -87,7 +87,7 @@ public:
 		int,
 		int,
 		GraphicsHandler* graphicshandler,
-		std::unordered_map<unsigned int, std::vector<Container>>* map,
+		Level* currentLevel,
 		std::vector<Resources::Model*>* modelPtr
 	);
 	~EditorInputHandler();

@@ -8,7 +8,7 @@ EditorInputHandler::EditorInputHandler(
 	int w,
 	int h,
 	GraphicsHandler* graphicshandler,
-	std::unordered_map<unsigned int, std::vector<Container>>* map,
+	Level* currentLevel,
 	std::vector<Resources::Model*>* modelPtr)
 {
 	this->m_Width = w;
@@ -34,10 +34,10 @@ EditorInputHandler::EditorInputHandler(
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->m_Map = map;
-	this->modelPtr = modelPtr;
-	this->m_hwnd = handle;
-	this->m_Camera = camera;
+	this->currentLevel  = currentLevel;
+	this->modelPtr      = modelPtr;
+	this->m_hwnd	    = handle;
+	this->m_Camera	    = camera;
 	this->m_PreviousPos = camera->GetCameraPos();
 	for (size_t i = 0; i < NUMBOOLS; i++)
 	{
@@ -234,7 +234,8 @@ void EditorInputHandler::MousePicking()
 
 		//checks if we picked on a model by iterating
 
-		if (!this->m_Map->empty())
+		std::unordered_map<unsigned int, std::vector<Container>>* m_Map = currentLevel->GetModels();
+		if (!m_Map->empty())
 		{
 			BoundingBoxHeader boundingBox;
 			Resources::Status st;
@@ -245,7 +246,7 @@ void EditorInputHandler::MousePicking()
 				std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Map->find(modelPtr->at(i)->GetId());
 
 				if (got == this->m_Map->end()) { // if  does not exists in memory
-
+					continue;
 				}
 				else {
 					InstancePtr = &got->second;
@@ -333,13 +334,8 @@ void EditorInputHandler::MousePicking()
 						{
 							UpdatePos(index);
 						}
-
-
-
-
 					}
 				}
-
 			}
 		}
 	}
@@ -393,6 +389,7 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 void EditorInputHandler::UpdatePos(int index)
 {
 	float temp1, temp2;
+	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = currentLevel->GetModels();
 	if (this->m_LastMouseX != this->m_MouseX)
 	{
 		temp1 = m_LastMouseX - m_MouseX;
@@ -401,42 +398,42 @@ void EditorInputHandler::UpdatePos(int index)
 		{
 			if (temp1 > 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
 			}
 			if (temp1 < 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += 1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += 1;
 			}
 			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
-			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
 
 		}
 		if (index == 1)
 		{
 			if (temp2 > 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += 1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += 1;
 			}
 			if (temp2 < 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += -1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += -1;
 			}
 			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
-			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
 
 		}
 		if (index == 2)
 		{
 			if (temp1 > 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += -1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += -1;
 			}
 			if (temp1 < 0)
 			{
-				this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += 1;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += 1;
 			}
 			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
-			this->m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
 
 		}
 		for (size_t i = 0; i < 3; i++)

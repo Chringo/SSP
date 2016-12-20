@@ -5,7 +5,7 @@ struct Container
 {
 	unsigned int internalID;
 	DirectX::XMVECTOR position; // Total värde. 
-	float rotation; //Total värde. 
+	DirectX::XMVECTOR rotation; //Total värde. 
 	GraphicsComponent component;
 	bool isDirty = false;
 };
