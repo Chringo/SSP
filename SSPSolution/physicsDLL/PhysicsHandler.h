@@ -76,6 +76,7 @@ private:
 	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 	PhysicsComponent m_floor;
+	PhysicsComponent m_platform;
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -92,6 +93,9 @@ private:
 	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane);
 	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane);
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane);
+	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
+
+	void CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent* obj2, DirectX::XMVECTOR normal, float dt);
 
 	//Math functions
 	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;

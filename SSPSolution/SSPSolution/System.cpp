@@ -222,11 +222,11 @@ int System::Update(float deltaTime)
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
-		rotateCameraY++;
+		rotateCameraY += 3;
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
 	{
-		rotateCameraY--;
+		rotateCameraY -= 3;
 	}
 	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
@@ -293,7 +293,8 @@ int System::Update(float deltaTime)
 		DirectX::XMVECTOR dir;
 		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
 		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
-		dir = DirectX::XMVectorScale(dir, 700);
+		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
+		dir = DirectX::XMVectorScale(dir, 400);
 
 
 		this->m_physicsHandler.ApplyForceToComponent(ballPtr, dir, 1.0);
@@ -332,19 +333,27 @@ int System::Update(float deltaTime)
 	DirectX::XMFLOAT3 tempPos;
 	DirectX::XMStoreFloat3(&tempPos, temp->pos);
 	
-	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
-	DirectX::XMMATRIX oldWorldMatrix = g_temp->worldMatrix;
-	DirectX::XMMATRIX rotationMatrix;
+	//g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+	//DirectX::XMMATRIX oldWorldMatrix = g_temp->worldMatrix;
+	//DirectX::XMMATRIX rotationMatrix;
 
 
-	g_temp = m_graphicsHandler->getComponent(2);
-	DirectX::XMStoreFloat3(&tempPos, temp2->pos);
-	g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
+	//g_temp = m_graphicsHandler->getComponent(2);
+	//DirectX::XMStoreFloat3(&tempPos, temp2->pos);
+	//g_temp->worldMatrix = DirectX::XMMatrixTranslation(tempPos.x, tempPos.y, tempPos.z);
 
+	OBB platform;
+	platform.ext[0] = 20.0f;
+	platform.ext[1] = 1.0f;
+	platform.ext[2] = 20.0f;
+	platform.ort.r[0] = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	platform.ort.r[1] = DirectX::XMVectorSet(0, 1.0, 0, 0);
+	platform.ort.r[2] = DirectX::XMVectorSet(0, 0, 1.0, 0);
 
+	this->m_graphicsHandler->RenderBoundingVolume(DirectX::XMVectorSet(0, 5, 60, 0),platform);
 
 	OBB* chainStuff = nullptr;
-	for (int i = 2; i < nrOfComponents - 1; i++)
+	for (int i = 0; i < nrOfComponents - 1; i++)
 	{
 		this->m_physicsHandler.GetPhysicsComponentOBB(chainStuff, i);
 		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponents(i);
