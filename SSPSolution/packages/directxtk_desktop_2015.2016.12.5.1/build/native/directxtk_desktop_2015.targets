@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="directxtk_desktop_2015_init_targets_0;directxtk_desktop_2015_init_targets_1">
+  <PropertyGroup>
+    <BuildTimePath />
+  </PropertyGroup>
+  <PropertyGroup Label="Default initializers for properties">
+    <CallingConventions-directxtk_desktop_2015 Condition="'$(CallingConventions-directxtk_desktop_2015)' == ''">cdecl</CallingConventions-directxtk_desktop_2015>
+    <Linkages-directxtk_desktop_2015 Condition="'$(Linkages-directxtk_desktop_2015)' == ''">dynamic</Linkages-directxtk_desktop_2015>
+  </PropertyGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\directxtk_desktop_2015-propertiesui-a003c182-bed8-4632-a852-db983dc7cac8.xml" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>HAS_DIRECTXTK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../../build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../../build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and Debug" Condition="'$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../../build/native/lib/x64/Debug/DirectXTKAudioDX.lib;$(MSBuildThisFileDirectory)../../build/native/lib/x64/Debug/DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and Release" Condition="'$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../../build/native/lib/Win32/Release/DirectXTKAudioDX.lib;$(MSBuildThisFileDirectory)../../build/native/lib/Win32/Release/DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and Debug" Condition="'$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../../build/native/lib/Win32/Debug/DirectXTKAudioDX.lib;$(MSBuildThisFileDirectory)../../build/native/lib/Win32/Debug/DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and Release" Condition="'$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../../build/native/lib/x64/Release/DirectXTKAudioDX.lib;$(MSBuildThisFileDirectory)../../build/native/lib/x64/Release/DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Target Name="directxtk_desktop_2015_BeforeLink" AfterTargets="BeforeLink">
+    <CheckRuntimeLibrary RuntimeLibrary="%(ClCompile.RuntimeLibrary)" ExpectedRuntimeLibrary="none" LibraryName="directxtk_desktop_2015" />
+  </Target>
+  <Target Name="directxtk_desktop_2015_BeforeLink_Release_and_static" Label="Release and static" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkages-directxtk_desktop_2015.ToLower())' == 'static'" AfterTargets="directxtk_desktop_2015_BeforeLink">
+    <CheckRuntimeLibrary RuntimeLibrary="%(ClCompile.RuntimeLibrary)" ExpectedRuntimeLibrary="MultiThreaded" LibraryName="directxtk_desktop_2015" />
+  </Target>
+  <Target Name="directxtk_desktop_2015_BeforeLink_Debug_and_static" Label="Debug and static" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkages-directxtk_desktop_2015.ToLower())' == 'static'" AfterTargets="directxtk_desktop_2015_BeforeLink">
+    <CheckRuntimeLibrary RuntimeLibrary="%(ClCompile.RuntimeLibrary)" ExpectedRuntimeLibrary="MultiThreadedDebug" LibraryName="directxtk_desktop_2015" />
+  </Target>
+  <Target Name="directxtk_desktop_2015_AfterBuild" AfterTargets="AfterBuild">
+    <Copy DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" UseHardlinksIfPossible="true" SourceFiles="@(CopyToOutput)">
+      <Output TaskParameter="DestinationFiles" PropertyName="DestinationFiles" />
+      <Output TaskParameter="DestinationFiles" ItemName="DestinationFiles" />
+      <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles" />
+      <Output TaskParameter="CopiedFiles" ItemName="CopiedFiles" />
+    </Copy>
+  </Target>
+  <UsingTask TaskName="NuGetPackageOverlay" AssemblyFile="$(NuGet-NativeExtensionPath)\coapp.NuGetNativeMSBuildTasks.dll" Condition="'$(DesignTimeBuild)' != 'true' AND ('$(NugetMsBuildExtensionLoaded)' == '' OR '$(NugetMsBuildExtensionLoaded)' == 'false')" />
+  <UsingTask TaskName="CheckRuntimeLibrary" AssemblyFile="$(NuGet-NativeExtensionPath)\coapp.NuGetNativeMSBuildTasks.dll" Condition="'$(DesignTimeBuild)' != 'true' AND ('$(NugetMsBuildExtensionLoaded)' == '' OR '$(NugetMsBuildExtensionLoaded)' == 'false')" />
+  <UsingTask TaskName="StringContains" AssemblyFile="$(NuGet-NativeExtensionPath)\coapp.NuGetNativeMSBuildTasks.dll" Condition="'$(DesignTimeBuild)' != 'true' AND ('$(NugetMsBuildExtensionLoaded)' == '' OR '$(NugetMsBuildExtensionLoaded)' == 'false')" />
+  <Target Name="directxtk_desktop_2015_init_targets_0">
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(NuGet-NativeExtensionPath)\coapp.NuGetNativeMSBuildTasks.dll.orig" DestinationFiles="$(NuGet-NativeExtensionPath)\coapp.NuGetNativeMSBuildTasks.dll" />
+    <PropertyGroup>
+      <NugetMsBuildExtensionLoaded Condition="'$(NugetMsBuildExtensionLoaded)' == '' OR '$(NuGet-OverlayLoaded)' == 'false'">true</NugetMsBuildExtensionLoaded>
+    </PropertyGroup>
+  </Target>
+  <Target Name="directxtk_desktop_2015_init_targets_1">
+    <StringContains Text="CallingConventions-cdecl" Library="directxtk_desktop_2015" Value="cdecl" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="CallingConventions-stdcall" Library="directxtk_desktop_2015" Value="stdcall" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="CallingConventions-fastcall" Library="directxtk_desktop_2015" Value="fastcall" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="CallingConventions-thiscall" Library="directxtk_desktop_2015" Value="thiscall" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="CallingConventions-clrcall" Library="directxtk_desktop_2015" Value="clrcall" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="CallingConventions-vectorcall" Library="directxtk_desktop_2015" Value="vectorcall" Condition="'$(CallingConventions-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConventions-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="Linkages-dynamic" Library="directxtk_desktop_2015" Value="dynamic" Condition="'$(Linkages-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkages-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="Linkages-static" Library="directxtk_desktop_2015" Value="static" Condition="'$(Linkages-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkages-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="Linkages-ltcg" Library="directxtk_desktop_2015" Value="ltcg" Condition="'$(Linkages-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkages-directxtk_desktop_2015" />
+    </StringContains>
+    <StringContains Text="Linkages-sxs" Library="directxtk_desktop_2015" Value="sxs" Condition="'$(Linkages-directxtk_desktop_2015)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkages-directxtk_desktop_2015" />
+    </StringContains>
+  </Target>
+</Project>

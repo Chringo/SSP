@@ -146,4 +146,7 @@
       <Filter>Resource Files\Shaders\Debug</Filter>
     </FxCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
