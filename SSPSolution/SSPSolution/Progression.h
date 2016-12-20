@@ -6,8 +6,19 @@ class Progression
 
 private:
 
-public:
+	static Progression* m_instance;
 
+	Progression();
+
+
+public:
+	~Progression();
+
+	static Progression& instance()
+	{
+		if (m_instance == nullptr) m_instance = new Progression();
+		return *m_instance;
+	}
 };
 
 #endif
