@@ -46,16 +46,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	dt = 1000000 / dt;
 	this->m_player1.Update(dt, inputHandler);
 	//Update the cameras position
-	DirectX::XMVECTOR offset = DirectX::XMVectorSet(0.0f, 1.0f, -8.5f, 0.0f);
-	PhysicsComponent* pComponent = this->m_player1.GetPhysicsComponentRef();
-	DirectX::XMVECTOR pos = pComponent->PC_pos;
+	DirectX::XMVECTOR offset = DirectX::XMVectorSet(0.0f, 2.0f, -16.5f, 0.0f);
+	DirectX::XMVECTOR pos = this->m_player1.GetPhysicsComponentRef()->PC_pos;
 	pos = DirectX::XMVectorAdd(pos, offset);
 	//DirectX::XMVectorAdd(pos, offset);
-
-	this->m_cameraRef->SetCameraPos(DirectX::XMVectorAdd(pos, offset));
-	offset = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	pos = DirectX::XMVectorAdd(pos, offset);
-	this->m_cameraRef->SetLookAt(pos);
+	DirectX::XMVECTOR cameraPos;
+	this->m_cameraRef->GetCameraPos(cameraPos);
+	DirectX::XMFLOAT3 translation;
+	DirectX::XMStoreFloat3(&translation, DirectX::XMVectorSubtract(pos, cameraPos));
+	this->m_cameraRef->AddToCameraPos(translation);
+	this->m_cameraRef->AddToLookAt(translation);
 	this->m_cameraRef->Update();
 	return result;
 }
