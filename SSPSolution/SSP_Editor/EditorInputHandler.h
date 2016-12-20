@@ -11,9 +11,9 @@
 #include "Header.h"
 #include "ui_SSP_Editor.h"
 
-#pragma comment (lib,"../../Debug/GraphicsDLL-d.lib")
-#pragma comment (lib,"../../Debug/ResourceLib.lib")
-#pragma comment (lib,"../../Debug/physicsDLL.lib")
+#pragma comment (lib,"GraphicsDLL-d.lib")
+#pragma comment (lib,"ResourceLib.lib")
+
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
