@@ -12,14 +12,14 @@ Level::~Level()
 {
 }
 
-std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModels()
+std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntities()
 {
-	return nullptr;
+	return &m_ModelMap;
 }
 
 std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 {
-	return nullptr;
+	return &m_LightMap;
 }
 
 Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int instanceID, Container & container)

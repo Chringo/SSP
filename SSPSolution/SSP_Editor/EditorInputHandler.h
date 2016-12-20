@@ -12,9 +12,9 @@
 #include "Header.h"
 #include "ui_SSP_Editor.h"
 
-#pragma comment (lib,"../../Debug/GraphicsDLL-d.lib")
-#pragma comment (lib,"../../Debug/ResourceLib.lib")
-#pragma comment (lib,"../../Debug/physicsDLL.lib")
+#pragma comment (lib,"GraphicsDLL-d.lib")
+#pragma comment (lib,"ResourceLib.lib")
+#pragma comment (lib,"physicsDLL.lib")
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
@@ -50,7 +50,7 @@ private:
 	int m_LastMouseY;
 	bool m_KeysHeld[Bools::NUMBOOLS];
 	QPoint m_point;
-	Level* currentLevel;
+	Level* m_currentLevel;
 
 	DirectX::XMFLOAT3 m_PreviousPos;
 	HWND m_hwnd;
@@ -87,7 +87,7 @@ public:
 		int,
 		int,
 		GraphicsHandler* graphicshandler,
-		Level* currentLevel,
+		Level* m_currentLevel,
 		std::vector<Resources::Model*>* modelPtr
 	);
 	~EditorInputHandler();

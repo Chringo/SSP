@@ -24,11 +24,9 @@ private:
 	int m_Width;
 	int m_Height;
 
-	Level currentLevel;
+	Level m_currentLevel;
 public:
 
-	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap;
-	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap;
 	bool m_IsPreview;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
@@ -45,4 +43,6 @@ public:
 	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
+
+	Level* GetCurrentLevel() { return &m_currentLevel; };
 };

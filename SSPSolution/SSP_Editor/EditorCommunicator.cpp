@@ -39,12 +39,11 @@ Resources::Status Communicator::Initialize(
 			this->m_Width,
 			this->m_Height,
 			this->m_GraphicsHandler,
-			&this->currentLevel,
+			&this->m_currentLevel,
 			modelPtr
 		);
 	}
 
-	this->m_ModelMap.reserve(50);
 
 	return Resources::ST_OK;
 }
@@ -63,7 +62,6 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	this->m_ModelMap.clear();
 
 	if (!this->m_IsPreview)
 	{
@@ -74,33 +72,33 @@ Resources::Status Communicator::Release()
 
 Resources::Status Communicator::FindModel(int modelID, std::vector<Container>* modelPtr)
 {
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
-
-	if (got == m_ModelMap.end()) { // if  does not exists in memory
-		return Resources::Status::ST_RES_MISSING;
-	}
-	else {
-		modelPtr = &got->second;
+	//std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
+	//
+	//if (got == m_ModelMap.end()) { // if  does not exists in memory
+	//	return Resources::Status::ST_RES_MISSING;
+	//}
+	//else {
+	//	modelPtr = &got->second;
 		return Resources::Status::ST_OK;
-	}
+	//}
 }
 
 Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int instanceID, Container& container)
 {
-	return currentLevel.GetModelEntity(modelID, instanceID, container);
+	return m_currentLevel.GetModelEntity(modelID, instanceID, container);
 }
 
 Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return currentLevel.AddModelEntity(modelID, instanceID, position, rotation);
+	return m_currentLevel.AddModelEntity(modelID, instanceID, position, rotation);
 }
 
 Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return currentLevel.UpdateModel(modelID, instanceID, position, rotation);
+	return m_currentLevel.UpdateModel(modelID, instanceID, position, rotation);
 }
 
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
 {
-	return currentLevel.RemoveModel(modelID, instanceID);
+	return m_currentLevel.RemoveModel(modelID, instanceID);
 }

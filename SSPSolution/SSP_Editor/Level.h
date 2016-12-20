@@ -9,18 +9,21 @@
 	
 	This Class contains all the data of a level. This class can be exported to a binary file and imported from a file.
 	Only one level is active at a time. If one is imported while another is loaded, the loaded one is saved first.
+
+	Some functions have been transfered from "EditorCommunicator" where Johan is the author
 */
 class Level
 {
 private:
-	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap;
-	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap;
+	std::vector<Resources::Model*>* m_uniqueModelPtr;					 //Every unique model, loaded by fileloader
+	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of models in the level
+	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
 public:
 	Level();
 	~Level();
 	
-
-	std::unordered_map<unsigned int, std::vector<Container>> * GetModels();
+	std::vector<Resources::Model*>* GetUniqueModels() { return this->m_uniqueModelPtr; };
+	std::unordered_map<unsigned int, std::vector<Container>> * GetModelEntities();
 	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
 
 	Resources::Status GetModelEntity(unsigned int modelID, unsigned int instanceID, Container& container);
