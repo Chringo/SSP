@@ -466,6 +466,11 @@ UIComponent * GraphicsHandler::GetNextAvailableUIComponent()
 	return this->m_uiHandler->GetNextUIComponent();
 }
 
+void GraphicsHandler::UpdateUIComponents(DirectX::XMFLOAT2 mousePos)
+{
+	this->m_uiHandler->UpdateUIComponentsclicked(mousePos);
+}
+
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
 	m_animGraphicsComponents[0] = (penis*)component;

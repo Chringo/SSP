@@ -83,6 +83,7 @@ public:
 	int UpdateComponentList();
 
 	UIComponent* GetNextAvailableUIComponent();
+	void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
 	int InitializeGrid();
 	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
