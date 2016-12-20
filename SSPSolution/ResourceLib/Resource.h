@@ -9,9 +9,7 @@
 namespace Resources
 {
 
-	
-	
-
+/*This is the base class of all resources. Each resource class i a descendant of this class*/
 	class DLL_OPERATION Resource
 	{
 	public:
@@ -42,6 +40,14 @@ namespace Resources
 		
 		
 	};
+
+	/*
+	A resource container is used to keep track of references to a specific resource.
+	When a level is loaded, all the assets that the level uses are incremented by 1 (or loaded if missing)
+	When a level is unloaded all the assets used by it are decremented by 1.
+
+	If the refCount of a rescontainer hits 0 it will be unloaded from memory.
+	*/
 	struct ResourceContainer
 	{
 		int refCount = 0; // when this hits 0 unload from memory

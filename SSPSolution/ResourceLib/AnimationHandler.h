@@ -5,7 +5,15 @@
 #include "FileHeaders.h"
 namespace Resources {
 
+	/*
+	AUTHOR: Martin Clementson
+	This class holds all the mesh data in ram.
 
+	This class was optimized for the game.It pre allocated memory for a certain amount
+	of animations .Then it never deallocate them during runtime.It keeps track of available containers.
+	When an animation is unloaded its buffers are released and the animation object is put into "emptyContainers" which
+	means that its ready to be used with new data.
+	*/
 	class AnimationHandler
 	{
 
