@@ -4,7 +4,9 @@ Progression* Progression::m_instance = nullptr;
 
 Progression::Progression()
 {
-
+	this->m_currentLevel = 0;
+	this->m_currentCheckpoint = 0;
+	this->m_unlockedLevels = 0;
 }
 
 Progression::~Progression()
