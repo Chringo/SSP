@@ -250,7 +250,7 @@ int System::Update(float deltaTime)
 	}
 
 	//Save progress
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_O))
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
 		bool result = Progression::instance().WriteToFile("Save1");
 
@@ -261,6 +261,20 @@ int System::Update(float deltaTime)
 		else
 		{
 			printf("Saved to file\n");
+		}
+	}
+	//Load
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
+	{
+		bool result = Progression::instance().ReadFromFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with loading from file\n");
+		}
+		else
+		{
+			printf("Loaded from file\n");
 		}
 	}
 

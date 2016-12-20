@@ -20,7 +20,8 @@ bool Progression::WriteToFile(std::string filename)
 
 	saveFile.open("..\\Debug\\Saves\\" + filename + ".txt");
 
-	if (!saveFile.is_open()) {
+	if (!saveFile.is_open()) 
+	{
 		return false;
 	}
 	else
@@ -35,5 +36,23 @@ bool Progression::WriteToFile(std::string filename)
 
 bool Progression::ReadFromFile(std::string filename)
 {
-	return false;
+	std::ifstream loadFile;
+	std::string path = "..\\Debug\\Saves\\" + filename + ".txt";
+	loadFile.open(path);
+
+	if (!loadFile.is_open()) 
+	{
+		return false;
+	}
+	else
+	{
+
+		loadFile >> this->m_currentLevel;
+		loadFile >> this->m_currentCheckpoint;
+		loadFile >> this->m_unlockedLevels;
+
+		loadFile.close();
+	}
+
+	return true;
 }
