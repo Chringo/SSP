@@ -70,6 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataHandler.cpp" />
     <ClCompile Include="EditorCommunicator.cpp" />
     <ClCompile Include="EditorInputHandler.cpp" />
     <ClCompile Include="FileImporter.cpp" />
@@ -123,6 +124,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />
     <ClInclude Include="Header.h" />
