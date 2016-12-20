@@ -87,8 +87,11 @@ void SSP_Editor::on_treeView_doubleClicked()
 	DirectX::XMVECTOR pos = {
 		0.0f,0.0f,0.0f
 	};
+	DirectX::XMVECTOR rot = {
+		0.0f,0.0f,0.0f
+	};
 
-	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos,0.0f);
+	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();

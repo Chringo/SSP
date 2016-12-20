@@ -8,7 +8,7 @@ EditorInputHandler::EditorInputHandler(
 	int w,
 	int h,
 	GraphicsHandler* graphicshandler,
-	Level* currentLevel,
+	Level* m_currentLevel,
 	std::vector<Resources::Model*>* modelPtr)
 {
 	this->m_Width = w;
@@ -34,7 +34,7 @@ EditorInputHandler::EditorInputHandler(
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->currentLevel  = currentLevel;
+	this->m_currentLevel  = m_currentLevel;
 	this->modelPtr      = modelPtr;
 	this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
@@ -234,7 +234,7 @@ void EditorInputHandler::MousePicking()
 
 		//checks if we picked on a model by iterating
 
-		std::unordered_map<unsigned int, std::vector<Container>>* m_Map = currentLevel->GetModels();
+		std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 		if (!m_Map->empty())
 		{
 			BoundingBoxHeader boundingBox;
@@ -243,9 +243,9 @@ void EditorInputHandler::MousePicking()
 			bool result;
 			for (size_t i = 0; i < modelPtr->size(); i++)
 			{
-				std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Map->find(modelPtr->at(i)->GetId());
+				std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
 
-				if (got == this->m_Map->end()) { // if  does not exists in memory
+				if (got == m_Map->end()) { // if  does not exists in memory
 					continue;
 				}
 				else {
@@ -350,11 +350,11 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 		{
 		case Qt::Key_Shift:
 			m_KeysHeld[Bools::SHIFT] = false;
-			m_KeysHeld[Bools::W] = false;
-			m_KeysHeld[Bools::A] = false;
-			m_KeysHeld[Bools::S] = false;
-			m_KeysHeld[Bools::D] = false;
-			m_KeysHeld[Bools::C] = false;
+			m_KeysHeld[Bools::W]	 = false;
+			m_KeysHeld[Bools::A]	 = false;
+			m_KeysHeld[Bools::S]	 = false;
+			m_KeysHeld[Bools::D]	 = false;
+			m_KeysHeld[Bools::C]	 = false;
 			m_KeysHeld[Bools::SPACE] = false;
 			break;
 		case Qt::Key_Alt:
@@ -389,7 +389,7 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 void EditorInputHandler::UpdatePos(int index)
 {
 	float temp1, temp2;
-	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = currentLevel->GetModels();
+	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 	if (this->m_LastMouseX != this->m_MouseX)
 	{
 		temp1 = m_LastMouseX - m_MouseX;

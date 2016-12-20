@@ -29,8 +29,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
 		this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
-
-	if (!this->m_Communicator->m_ModelMap.empty())
+	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
+	if (!m_ModelMap->empty())
 	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
@@ -39,9 +39,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 
 	for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = this->m_Communicator->m_ModelMap.find(modelPtr->at(i)->GetId());
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap->find(modelPtr->at(i)->GetId());
 			
-			if (got == this->m_Communicator->m_ModelMap.end()) { // if does not exists in memory
+			if (got == m_ModelMap->end()) { // if does not exists in memory
 				continue;
 			}
 			else {
