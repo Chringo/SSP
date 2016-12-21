@@ -16,7 +16,6 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB & box, Di
 	positions[T_AABB].push_back(&pos);
 	colors[T_AABB].push_back(color);
 }
-#endif // _DEBUG
 
 void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
@@ -58,6 +57,7 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	aabbBoxes.clear();
 
 }
+#endif // _DEBUG
 
 int GraphicsHandler::IncreaseArraySize()
 {
@@ -192,11 +192,13 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
+	this->editorMode = editorMode;
 	if (!editorMode)
 	{
 		Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		this->m_CreateTempsTestComponents();
 	}
+
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
@@ -204,8 +206,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
-	this->m_camera = new Camera;
-	this->m_camera->Initialize();
 
 	//InitializeGrid();
 #ifdef _DEBUG
@@ -278,10 +278,9 @@ int GraphicsHandler::Render()
 		tab[0] = NULL;
 		context->PSSetShaderResources(6, 1, tab);
 	}
+
 #ifdef _DEBUG
-	
 	RenderBoundingBoxes(false);
-	//Draw Debug.
 #endif // _DEBUG
 
 	this->m_d3dHandler->PresentScene();
@@ -339,10 +338,9 @@ int GraphicsHandler::renderFinalEditor()
 {
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
-
 	RenderBoundingBoxes();
-	//Draw Debug.
 #endif // _DEBUG
+
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
@@ -408,10 +406,15 @@ void GraphicsHandler::Shutdown()
 	//	delete this->m_animGraphicsComponents[i];
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
-
-	//delete[] this->m_modelsPtr;
+	if (!editorMode)
+	{
+	
+		delete this->m_animGraphicsComponents[1];
+		delete[] this->m_modelsPtr;
+		delete[] this->m_animGraphicsComponents;
+	}
+	
 	delete[] this->m_graphicsComponents;
-	//delete[] this->m_animGraphicsComponents;
 #ifdef _DEBUG
 	m_debugRender.Release();
 #endif // _DEBUG
