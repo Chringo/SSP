@@ -196,9 +196,9 @@ void DebugRenderer::Release()
 
 }
 
-void DebugRenderer::Render(DirectX::XMVECTOR& pos,AABB & box)
+void DebugRenderer::Render(DirectX::XMVECTOR& pos,AABB & box, DirectX::XMVECTOR color)
 {
-	ID3D11Buffer* buf = GenerateLinelist(pos,box);
+	ID3D11Buffer* buf = GenerateLinelist(pos,box,color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &buf, &m_vertexSize, &offset);
@@ -207,10 +207,10 @@ void DebugRenderer::Render(DirectX::XMVECTOR& pos,AABB & box)
 	m_deviceContext->DrawIndexed(NUM_INDICES[M_CUBE], 0, 0);
 }
 
-void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box)
+void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 
-	ID3D11Buffer* buf = GenerateLinelist(pos,box);
+	ID3D11Buffer* buf = GenerateLinelist(pos,box,color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_CUBE], &m_vertexSize, &offset);
@@ -219,10 +219,10 @@ void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box)
 	m_deviceContext->DrawIndexed(NUM_INDICES[M_CUBE], 0, 0);
 }
 
-void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane)
+void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ID3D11Buffer* buf = GenerateLinelist(pos, plane);
+	ID3D11Buffer* buf = GenerateLinelist(pos, plane,color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PLANE], &m_vertexSize, &offset);
@@ -240,10 +240,10 @@ void DebugRenderer::SetActive()
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 }
 
-ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box)
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box, DirectX::XMVECTOR color)
 {
 	
-	static float color[3]{ 0.0f,1.0f,0.0f };
+
 	static DirectX::XMVECTOR normXDir{ 1.0f, 0.0f, 0.0f };
 	static DirectX::XMVECTOR normYDir{ 0.0f, 1.0f, 0.0f };
 	static DirectX::XMVECTOR normZDir{ 0.0f, 0.0f, 1.0f };
@@ -264,36 +264,36 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box
 	DirectX::XMVECTOR point;
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(zDir, yDir), xDir);			// z + y - x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][0] = Point(point.m128_f32, color);		//0
+	m_points[M_CUBE][0] = Point(point.m128_f32, color.m128_f32);		//0
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDir, yDir), xDir);		// z - y - x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][1] = Point(point.m128_f32, color);		//1
+	m_points[M_CUBE][1] = Point(point.m128_f32, color.m128_f32);		//1
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(zDir, yDir), xDir);			// z - y + x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][2] = Point(point.m128_f32, color);		//2
+	m_points[M_CUBE][2] = Point(point.m128_f32, color.m128_f32);		//2
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorAdd(zDir, yDir), xDir);				// z + y + x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][3] = Point(point.m128_f32, color);		//3
+	m_points[M_CUBE][3] = Point(point.m128_f32, color.m128_f32);		//3
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(xDir, zDir), yDir);		//x - z - y
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][4] = Point(point.m128_f32, color);		//4
+	m_points[M_CUBE][4] = Point(point.m128_f32, color.m128_f32);		//4
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(xDir, zDir), yDir);			//x - z + y
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][5] = Point(point.m128_f32, color);		//5
+	m_points[M_CUBE][5] = Point(point.m128_f32, color.m128_f32);		//5
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(yDir, xDir), zDir);		//y - x - z
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][6] = Point(point.m128_f32, color);		//6
+	m_points[M_CUBE][6] = Point(point.m128_f32, color.m128_f32);		//6
 
 	zDirInv = DirectX::XMVectorScale(zDir, -1);
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDirInv, xDir), yDir);  //- y - x - z
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][7] = Point(point.m128_f32, color);	    //7
+	m_points[M_CUBE][7] = Point(point.m128_f32, color.m128_f32);	    //7
 
 
 
@@ -311,10 +311,9 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box
 
 }
 
-ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,OBB & box)
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 	
-	static float color[3]{ 1.0f,0.0f,0.0f };
 	DirectX::XMVECTOR xDir = box.ort.r[0];
 	DirectX::XMVECTOR yDir = box.ort.r[1];
 	DirectX::XMVECTOR zDir = box.ort.r[2];
@@ -331,36 +330,36 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,OBB & box)
 	DirectX::XMVECTOR point;
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(zDir, yDir), xDir);			// z + y - x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][0] = Point(point.m128_f32, color);		//0
+	m_points[M_CUBE][0] = Point(point.m128_f32, color.m128_f32);		//0
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDir, yDir), xDir);		// z - y - x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][1] = Point(point.m128_f32, color);		//1
+	m_points[M_CUBE][1] = Point(point.m128_f32, color.m128_f32);		//1
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(zDir, yDir), xDir);			// z - y + x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][2] = Point(point.m128_f32, color);		//2
+	m_points[M_CUBE][2] = Point(point.m128_f32, color.m128_f32);		//2
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorAdd(zDir, yDir), xDir);				// z + y + x
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][3] = Point(point.m128_f32, color);		//3
+	m_points[M_CUBE][3] = Point(point.m128_f32, color.m128_f32);		//3
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(xDir, zDir), yDir);		//x - z - y
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][4] = Point(point.m128_f32, color);		//4
+	m_points[M_CUBE][4] = Point(point.m128_f32, color.m128_f32);		//4
 
 	point = DirectX::XMVectorAdd(DirectX::XMVectorSubtract(xDir, zDir), yDir);			//x - z + y
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][5] = Point(point.m128_f32, color);		//5
+	m_points[M_CUBE][5] = Point(point.m128_f32, color.m128_f32);		//5
 
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(yDir,xDir), zDir);		//y - x - z
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][6] = Point(point.m128_f32, color);		//6
+	m_points[M_CUBE][6] = Point(point.m128_f32, color.m128_f32);		//6
 
 	zDirInv = DirectX::XMVectorScale(zDir, -1);
 	point = DirectX::XMVectorSubtract(DirectX::XMVectorSubtract(zDirInv, xDir),yDir );  //- y - x - z
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_CUBE][7] = Point(point.m128_f32, color);	    //7
+	m_points[M_CUBE][7] = Point(point.m128_f32, color.m128_f32);	    //7
 
 
 
@@ -376,9 +375,9 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,OBB & box)
 	
 	return m_PointBuffer[M_CUBE];
 }
-ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & box)
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & box, DirectX::XMVECTOR color)
 {
-	static float color[3]{ 0.0f,0.0f,1.0f };
+	
 	
 	static float SCALAR = 1000.0f;
 
@@ -406,22 +405,22 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 	point = DirectX::XMVectorAdd(right, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_PLANE][0] = Point(point.m128_f32, color);		//0
+	m_points[M_PLANE][0] = Point(point.m128_f32, color.m128_f32);		//0
 
 	point = DirectX::XMVectorSubtract(right, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_PLANE][1] = Point(point.m128_f32, color);		//1
+	m_points[M_PLANE][1] = Point(point.m128_f32, color.m128_f32);		//1
 
 	point = DirectX::XMVectorAdd(rightInv,zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_PLANE][2] = Point(point.m128_f32, color);		//2
+	m_points[M_PLANE][2] = Point(point.m128_f32, color.m128_f32);		//2
 
 	point = DirectX::XMVectorSubtract(rightInv, zDir);
 	point = DirectX::XMVectorScale(point, SCALAR);
 	point = DirectX::XMVector3TransformCoord(point, worldMatrix);
-	m_points[M_PLANE][3] = Point(point.m128_f32, color);		//3
+	m_points[M_PLANE][3] = Point(point.m128_f32, color.m128_f32);		//3
 
 	
 
