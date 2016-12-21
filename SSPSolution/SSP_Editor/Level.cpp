@@ -46,7 +46,7 @@ Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int insta
 	}
 }
 
-Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -78,7 +78,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	
 }
 
-Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -110,7 +110,7 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 	}
 }
 
-Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID)
+Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -124,4 +124,20 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		modelPtr->erase(modelPtr->begin() + instanceID - 1);
 		return Resources::Status::ST_OK;
 	}
+}
+
+unsigned int Level::GetNumEntities()
+{
+	unsigned int num = 0;
+
+
+	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
+	{
+		std::vector<Container> * vector = &iterator->second;
+
+		num += vector->size();
+		
+	}
+
+	return num;
 }
