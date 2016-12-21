@@ -33,6 +33,7 @@ struct Mouse
 	int lastX;
 	int lastY;
 
+	bool rightHeld;
 	bool leftHeld;
 };
 
@@ -64,7 +65,7 @@ public:
 	{
 		this->m_active = active;
 	};
-	void Update(OBB &selectedObject)
+	void SelectObb(OBB &selectedObject)
 	{
 		selectedObjectOBB = selectedObject;
 

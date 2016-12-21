@@ -208,12 +208,14 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 	if (evt->button() == Qt::LeftButton)
 	{
 		//*MOUSEPICKING*//
+		m_ProjectRay(m_mouse.x, m_mouse.y);
+
 		if (transformWidget.IsActive())
 		{
 			m_PickTransformWidget();
 		}
 		
-		m_PickObjectSelection();
+		//m_PickObjectSelection();
 
 		this->m_mouse.leftHeld = true;
 
@@ -273,88 +275,90 @@ bool EditorInputHandler::m_PickTransformWidget()
 
 bool EditorInputHandler::m_PickObjectSelection()
 {
-	//bool result;
+	bool result;
 
-	////checks if we picked on a model by iterating
-	//std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
-	//if (!m_Map->empty())
-	//{
-	//	BoundingBoxHeader boundingBox;
-	//	Resources::Status st;
-	//	std::vector<Container>* InstancePtr = nullptr;
-	//	for (size_t i = 0; i < modelPtr->size(); i++)
-	//	{
-	//		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
+	//checks if we picked on a model by iterating
+	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
+	if (!m_Map->empty())
+	{
+		BoundingBoxHeader boundingBox;
+		Resources::Status st;
+		std::vector<Container>* InstancePtr = nullptr;
+		for (size_t i = 0; i < modelPtr->size(); i++)
+		{
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
 
-	//		if (got == m_Map->end()) { // if  does not exists in memory
-	//			continue;
-	//		}
-	//		else {
-	//			InstancePtr = &got->second;
-	//			for (size_t j = 0; j < InstancePtr->size(); j++)
-	//			{
-	//				boundingBox = modelPtr->at(i)->GetOBBData();
-	//				OBB obj;
-	//				obj.ext[0] = boundingBox.extension[0];
-	//				obj.ext[1] = boundingBox.extension[1];
-	//				obj.ext[2] = boundingBox.extension[2];
+			if (got == m_Map->end()) { // if  does not exists in memory
+				continue;
+			}
+			else {
+				InstancePtr = &got->second;
+				for (size_t j = 0; j < InstancePtr->size(); j++)
+				{
+					boundingBox = modelPtr->at(i)->GetOBBData();
+					OBB obj;
+					obj.ext[0] = boundingBox.extension[0];
+					obj.ext[1] = boundingBox.extension[1];
+					obj.ext[2] = boundingBox.extension[2];
 
-	//				DirectX::XMFLOAT3 temp;
-	//				temp.x = InstancePtr->at(j).position.m128_f32[0];
-	//				temp.y = InstancePtr->at(j).position.m128_f32[1];
-	//				temp.z = InstancePtr->at(j).position.m128_f32[2];
-	//				obj.pos = DirectX::XMLoadFloat3(&temp);
+					obj.pos = DirectX::XMVectorSet(
+						InstancePtr->at(j).position.m128_f32[0],
+						InstancePtr->at(j).position.m128_f32[1],
+						InstancePtr->at(j).position.m128_f32[2],
+						1.0f);
 
 
-	//				boundingBox.extensionDir;
-	//				DirectX::XMMATRIX temp2;
-	//				temp2 = DirectX::XMMatrixSet(
-	//					boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
-	//					boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
-	//					boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
-	//					0.0f, 0.0f, 0.0f, 1.0f
-	//				);
+					DirectX::XMMATRIX extensionMatrix;
+					extensionMatrix = DirectX::XMMatrixSet(
+						boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+						boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+						boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+						0.0f, 0.0f, 0.0f, 1.0f
+					);
 
-	//				obj.ort = temp2;
+					obj.ort = extensionMatrix;
 
-	//				//OBB obj = *(OBB*)&boundingBox;
-	//				//DONT FORGET TO MULTIPLY MATRIX
-	//				DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
-	//				DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
-	//				obj.ort = temp3;
+					//OBB obj = *(OBB*)&boundingBox;
+					//DONT FORGET TO MULTIPLY MATRIX
+					DirectX::XMMATRIX tempWorld = InstancePtr->at(j).component.worldMatrix;
+					DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
+					obj.ort = finalOrt;
 
-	//				result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
 
-	//				if (result)
-	//				{
+					//OBB obj = *(OBB*)&boundingBox;
+					//DONT FORGET TO MULTIPLY MATRIX
+					obj.ort = DirectX::XMMatrixMultiply(obj.ort, InstancePtr->at(j).component.worldMatrix);
 
-	//					this->m_Picked.ID = modelPtr->at(i)->GetId();
-	//					this->m_Picked.listInstance = j;
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
+					transformWidget.setActive(result);
+					if (result)
+					{
+						this->m_Picked.ID = modelPtr->at(i)->GetId();
+						this->m_Picked.listInstance = j;
 
-	//					//update widget with the intersected obb
-	//					this->transformWidget.Update(obj);
+						//update widget with the intersected obb
+						this->transformWidget.SelectObb(obj);
 
-	//					if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
-	//					{
-	//						this->m_LastPicked = m_Picked;
+						if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
+						{
+							this->m_LastPicked = m_Picked;
+						}
+						else if (this->m_LastPicked.listInstance == NULL)
+						{
+							this->m_LastPicked = this->m_Picked;
+						}
+					}
+					else
+					{
+						return result;
+					}
+				}
+			}
+		}
+	}
+	return result;
 
-	//					}
-	//					else if (this->m_LastPicked.listInstance == NULL)
-	//					{
-	//						this->m_LastPicked = this->m_Picked;
-	//					}
-	//				}
-	//				else
-	//				{
-	//					return result;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	//return result;
-
-	return true;
+	//return true;
 }
 
 void EditorInputHandler::MousePicking()
@@ -389,14 +393,18 @@ void EditorInputHandler::MousePicking()
 						obj.ext[1] = boundingBox.extension[1];
 						obj.ext[2] = boundingBox.extension[2];
 
-						DirectX::XMFLOAT3 temp;
-						temp.x = InstancePtr->at(j).position.m128_f32[0];
-						temp.y = InstancePtr->at(j).position.m128_f32[1];
-						temp.z = InstancePtr->at(j).position.m128_f32[2];
-						obj.pos = DirectX::XMLoadFloat3(&temp);
+						//DirectX::XMFLOAT3 temp;
+						//temp.x = InstancePtr->at(j).position.m128_f32[0];
+						//temp.y = InstancePtr->at(j).position.m128_f32[1];
+						//temp.z = InstancePtr->at(j).position.m128_f32[2];
+						//obj.pos = DirectX::XMLoadFloat3(&temp);
 
-						
-						boundingBox.extensionDir;
+						obj.pos = DirectX::XMVectorSet(
+							InstancePtr->at(j).position.m128_f32[0],
+							InstancePtr->at(j).position.m128_f32[1],
+							InstancePtr->at(j).position.m128_f32[2],
+							1.0f);
+
 						DirectX::XMMATRIX temp2;
 						temp2 = DirectX::XMMatrixSet(
 							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
@@ -404,7 +412,7 @@ void EditorInputHandler::MousePicking()
 							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
 							0.0f, 0.0f, 0.0f, 1.0f
 						);
-						
+
 						obj.ort = temp2;
 
 						//OBB obj = *(OBB*)&boundingBox;
@@ -422,7 +430,7 @@ void EditorInputHandler::MousePicking()
 							this->m_Picked.listInstance = j;
 
 							//update widget with the intersected obb
-							this->transformWidget.Update(obj);
+							this->transformWidget.SelectObb(obj);
 
 							if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
 							{
