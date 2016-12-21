@@ -3,23 +3,60 @@
 #ifdef _DEBUG
 
 
-void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 	obbBoxes.push_back(&box);
 	positions[T_OBB].push_back(&pos);
+	colors[T_OBB].push_back(color);
 }
 
-void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB & box)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB & box, DirectX::XMVECTOR color)
 {
 	aabbBoxes.push_back(&box);
 	positions[T_AABB].push_back(&pos);
+	colors[T_AABB].push_back(color);
 }
 #endif // _DEBUG
 
-void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plane)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
 	planes.push_back(&plane);
 	positions[T_PLANE].push_back(&pos);
+	colors[T_PLANE].push_back(color);
+}
+
+void GraphicsHandler::RenderBoundingBoxes(bool noClip)
+{
+	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	if(noClip)
+		context->OMSetRenderTargets(1, &temp, nullptr);
+	else
+		context->OMSetRenderTargets(1, &temp, this->dsv);
+	m_debugRender.SetActive();
+	for (size_t i = 0; i < obbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_OBB].at(i), *obbBoxes.at(i), colors[T_OBB].at(i));
+	}
+	positions[T_OBB].clear();
+	colors[T_OBB].clear();
+	for (size_t i = 0; i < aabbBoxes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_AABB].at(i), *aabbBoxes.at(i), colors[T_AABB].at(i));
+	}
+	positions[T_AABB].clear();
+	colors[T_AABB].clear();
+	for (size_t i = 0; i < planes.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i), colors[T_PLANE].at(i));
+	}
+	positions[T_PLANE].clear();
+	colors[T_PLANE].clear();
+
+	planes.clear();
+	obbBoxes.clear();
+	aabbBoxes.clear();
+
 }
 
 int GraphicsHandler::IncreaseArraySize()
@@ -243,30 +280,7 @@ int GraphicsHandler::Render()
 	}
 #ifdef _DEBUG
 	
-
-	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
-	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
-	context->OMSetRenderTargets(1, &temp, this->dsv);
-	m_debugRender.SetActive();
-	for (size_t i = 0; i < obbBoxes.size(); i++)
-	{
-		m_debugRender.Render( *positions[T_OBB].at(i),*obbBoxes.at(i));
-	}
-	positions[T_OBB].clear();
-	for (size_t i = 0; i < aabbBoxes.size(); i++)
-	{
-		m_debugRender.Render(*positions[T_AABB].at(i),*aabbBoxes.at(i));
-	}
-	positions[T_AABB].clear();
-	for (size_t i = 0; i < planes.size(); i++)
-	{
-		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i));
-	}
-	positions[T_PLANE].clear();
-
-	planes.clear();
-	obbBoxes.clear();
-	aabbBoxes.clear();
+	RenderBoundingBoxes(false);
 	//Draw Debug.
 #endif // _DEBUG
 
@@ -326,30 +340,7 @@ int GraphicsHandler::renderFinalEditor()
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
 
-
-	//ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
-	//ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
-	//context->OMSetRenderTargets(1, &temp, this->dsv);
-	m_debugRender.SetActive();
-	for (size_t i = 0; i < obbBoxes.size(); i++)
-	{
-		m_debugRender.Render(*positions[T_OBB].at(i), *obbBoxes.at(i));
-	}
-	positions[T_OBB].clear();
-	for (size_t i = 0; i < aabbBoxes.size(); i++)
-	{
-		m_debugRender.Render(*positions[T_AABB].at(i), *aabbBoxes.at(i));
-	}
-	positions[T_AABB].clear();
-	for (size_t i = 0; i < planes.size(); i++)
-	{
-		m_debugRender.Render(*positions[T_PLANE].at(i), *planes.at(i));
-	}
-	positions[T_PLANE].clear();
-
-	planes.clear();
-	obbBoxes.clear();
-	aabbBoxes.clear();
+	RenderBoundingBoxes();
 	//Draw Debug.
 #endif // _DEBUG
 	this->m_d3dHandler->PresentScene();
