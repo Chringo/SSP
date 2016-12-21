@@ -32,11 +32,7 @@ namespace Resources
 			CLOSED = 0,	//This is used to keep a file open. 
 			OPEN   = 1	//When loading a level, we dont want to open/close the BPF for every function call.
 		};
-		struct RegIndex {
-			unsigned int id;		// Resource id
-			unsigned int startBit;  // Place in BPF file
-			unsigned int byteSize;  // How many bytes to memcpy.
-		};
+		
 	private:
 		static const size_t NUM_FILES		= 2;
 		static const size_t LEVEL_MEMORY	= 128; //kb

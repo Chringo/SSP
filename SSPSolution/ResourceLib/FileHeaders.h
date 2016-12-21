@@ -61,4 +61,13 @@ struct TextureHeader
 {
 	char filePath[256];
 };
+
+struct RegistryHeader {
+	unsigned int numIds;
+};
+struct RegistryItem {
+	unsigned int id;		// Resource id
+	unsigned int startBit;  // Place in BPF file
+	unsigned int byteSize;  // How many bytes to memcpy.
+};
 #endif
