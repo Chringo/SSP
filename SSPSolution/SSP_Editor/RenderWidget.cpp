@@ -14,7 +14,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
 	QPoint local = this->mapFromGlobal(QCursor::pos());
 	this->m_Communicator->m_EditorInputHandler->SetMousePos(local);
-
+	this->m_Communicator->m_GraphicsHandler->clearEditor();
 	this->m_frameCount++;
 	if (getTime() > 1.0f)
 	{
@@ -34,8 +34,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
-	std::vector<Resources::Model*>* modelPtr = this->m_fileImporter->get_M_models();
-	this->m_Communicator->m_GraphicsHandler->clearEditor();
+	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();// this->m_fileImporter->get_M_models();
+	
 
 	for (size_t i = 0; i < modelPtr->size(); i++)
 		{
@@ -117,11 +117,11 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			}
 
 		}
-		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	}
+		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
+	this->update();
 	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
-	this->update();
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
