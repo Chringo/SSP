@@ -96,7 +96,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 							InstancePtr->at(j).position,
 							obj
 						);
-
+						
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->m_Axis[0].pos,
 							this->m_Communicator->m_EditorInputHandler->m_Axis[0]

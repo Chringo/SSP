@@ -141,8 +141,8 @@ void SSP_Editor::on_treeView_doubleClicked()
 	//use index.r to get the right mesh
 	/*checking to see if the selected object is valid*/
 	if (!index.isValid()) return;
-	
-	std::vector<Resources::Model*>* test = m_fileImporter->get_M_models();
+
+	std::vector<Resources::Model*>* test = DataHandler::GetInstance()->GetModels(); //m_fileImporter->get_M_models();
 
 
 	DirectX::XMVECTOR pos = {
