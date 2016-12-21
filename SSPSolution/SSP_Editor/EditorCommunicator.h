@@ -3,7 +3,7 @@
 #include "Header.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "Level.h"
+#include "LevelHandler.h"
 
 
 //struct Container
@@ -24,7 +24,7 @@ private:
 	int m_Width;
 	int m_Height;
 
-	Level m_currentLevel;
+	Level* m_currentLevel;
 public:
 
 	bool m_IsPreview;
@@ -44,5 +44,5 @@ public:
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 
-	Level* GetCurrentLevel() { return &m_currentLevel; };
+	Level* GetCurrentLevel() { return m_currentLevel; };
 };

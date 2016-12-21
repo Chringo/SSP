@@ -46,7 +46,7 @@ Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int insta
 	}
 }
 
-Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -68,6 +68,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
 		this->m_ModelMap[modelID].push_back(newComponent);
+		this->m_uniqueModels.push_back(modelID);
 		return Resources::Status::ST_OK;
 	}
 	else  {
@@ -78,7 +79,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	
 }
 
-Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -110,7 +111,7 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 	}
 }
 
-Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID)
+Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -124,4 +125,29 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		modelPtr->erase(modelPtr->begin() + instanceID - 1);
 		return Resources::Status::ST_OK;
 	}
+}
+
+unsigned int Level::GetNumEntities()
+{
+	unsigned int num = 0;
+
+	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
+	{
+		std::vector<Container> * vector = &iterator->second;
+		num += vector->size();
+	}
+	return num;
+}
+
+unsigned int Level::GetNumLights()
+{
+	return 0;
+}
+
+void Level::Destroy()
+{
+	m_uniqueModels.clear();
+	m_ModelMap.clear();
+	m_LightMap.clear();
+	levelName = "untitled_level";
 }

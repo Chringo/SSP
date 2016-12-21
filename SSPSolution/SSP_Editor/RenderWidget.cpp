@@ -149,7 +149,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 {
 	Resources::Status st;
 	InitDosConsole();
-
+	
 	this->m_Communicator = new Communicator();
 	this->m_hwnd = (HWND)parent->winId();
 	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
