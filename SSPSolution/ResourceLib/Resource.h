@@ -6,6 +6,7 @@
 #include <deque>
 #include "Enumerations.h"
 #include <string>
+
 namespace Resources
 {
 
