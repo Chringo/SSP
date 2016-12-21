@@ -96,6 +96,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ResourceLibExporter.cpp" />
     <ClCompile Include="SSP_Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +132,8 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelHandler.h" />
     <ClInclude Include="LevelHeaders.h" />
+    <ClInclude Include="ResourceLibExporter.h" />
+    <ClInclude Include="ResourceLibHeaders.h" />
     <CustomBuild Include="RenderWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing RenderWidget.h...</Message>

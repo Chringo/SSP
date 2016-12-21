@@ -16,7 +16,7 @@ private:
 	Level m_currentLevel;
 	QString filePath = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Levels/";
 	LevelHandler();
-
+	
 public:
 	~LevelHandler();
 	static LevelHandler* GetInstance();

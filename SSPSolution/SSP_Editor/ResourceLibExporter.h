@@ -1,6 +1,6 @@
 #ifndef SSP_EDITOR_RESOURCELIBEXPORTER_H
 #define SSP_EDITOR_RESOURCELIBEXPORTER_H
-
+#include "../ResourceLib/FileHeaders.h"
 
 /*
 	Author: Martin Clementson

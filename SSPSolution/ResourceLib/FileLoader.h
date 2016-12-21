@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Mesh.h"
 #include "MemoryManager.h"
+#include "FileHeaders.h"
 namespace Resources
 {
 	/*
@@ -43,7 +44,7 @@ namespace Resources
 		std::string	  filePaths  [NUM_FILES];
 		std::ifstream fileHandles[NUM_FILES];
 
-		std::unordered_map<unsigned int, RegIndex> m_fileRegistry;
+		std::unordered_map<unsigned int, RegistryItem> m_fileRegistry;
 		MemoryManager mem_manager;
 		FileLoader();
 	public:
@@ -52,7 +53,7 @@ namespace Resources
 	
 		bool OpenFile(Files file);
 		bool CloseFile(Files file);
-		RegIndex* GetRegistryIndex(const unsigned int& objectId);
+		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
 		Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
 		Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
 		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
