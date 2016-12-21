@@ -210,12 +210,23 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 		//*MOUSEPICKING*//
 		m_ProjectRay(m_mouse.x, m_mouse.y);
 
+		bool object, widget;
+
 		if (transformWidget.IsActive())
 		{
-			m_PickTransformWidget();
+			widget = m_PickTransformWidget();
 		}
 		
-		//m_PickObjectSelection();
+		object = m_PickObjectSelection();
+
+		if (object || widget)
+		{
+			transformWidget.setActive(true);
+		}
+		else
+		{
+			transformWidget.setActive(false);
+		}
 
 		this->m_mouse.leftHeld = true;
 
@@ -229,6 +240,30 @@ void EditorInputHandler::mouseButtonRelease(QMouseEvent * evt)
 		this->m_mouse.leftHeld = false;
 
 	}
+}
+
+void EditorInputHandler::MoveObject()
+{
+	if (m_mouse.leftHeld)
+	{
+		m_ProjectRay(m_mouse.x, m_mouse.y);
+
+		//Container in m_Map has instance position.
+
+
+		//modelPtr->at(m_Picked.listInstance)
+
+		//Container * container = m_currentLevel->GetModelEntities()->find(m_Picked.listInstance);
+		//std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(m_Picked.listInstance)->GetId());
+
+		//got->first
+		//
+		//m_Picked; //selected object
+
+
+
+	}
+
 }
 
 void EditorInputHandler::m_ProjectRay(int X, int Y)
@@ -261,14 +296,15 @@ bool EditorInputHandler::m_PickTransformWidget()
 			this->transformWidget.axisOBB[i], this->transformWidget.axisOBB[i].pos);
 		if (result)
 		{
-			transformWidget.selectedAxis = i;
+			transformWidget.SelectAxis(i);
 			break;
 		}
 		else
 		{
-			transformWidget.selectedAxis = TransformWidget::NONE;
+			transformWidget.SelectAxis(TransformWidget::NONE);
 		}
 	}
+	//transformWidget.setActive(result);
 
 	return result;
 }
@@ -324,13 +360,8 @@ bool EditorInputHandler::m_PickObjectSelection()
 					DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
 					obj.ort = finalOrt;
 
-
-					//OBB obj = *(OBB*)&boundingBox;
-					//DONT FORGET TO MULTIPLY MATRIX
-					obj.ort = DirectX::XMMatrixMultiply(obj.ort, InstancePtr->at(j).component.worldMatrix);
-
 					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
-					transformWidget.setActive(result);
+					//transformWidget.setActive(result);
 					if (result)
 					{
 						this->m_Picked.ID = modelPtr->at(i)->GetId();

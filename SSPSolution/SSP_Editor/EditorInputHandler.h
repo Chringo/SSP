@@ -51,11 +51,15 @@ public:
 	};
 private:
 	bool m_active;
+	DirectX::XMVECTOR m_colors[4];
 public:
 	OBB selectedObjectOBB;
 	OBB axisOBB[NUM_AXIS];
+	DirectX::XMVECTOR * axisColors[NUM_AXIS];
+
 	unsigned int selectedAxis;
 	
+
 public:
 	bool IsActive()
 	{
@@ -77,6 +81,19 @@ public:
 		}
 	};
 
+	void SelectAxis(int i)
+	{
+		axisColors[X] = &m_colors[X];
+		axisColors[Y] = &m_colors[Y];
+		axisColors[Z] = &m_colors[Z];
+
+		if (i >= X && Z >= i)
+		{
+			selectedAxis = i;
+			axisColors[i] = &m_colors[NUM_AXIS];
+		}
+	}
+
 	TransformWidget()
 	{
 		for (int i = 0; i < NUM_AXIS; i++)
@@ -86,6 +103,16 @@ public:
 				axisOBB[i].ext[j] = 0.15;
 			}
 		}
+
+		m_colors[X] = { 1.0, 0.0, 0.0, 0.0 };
+		m_colors[Y] = { 0.0, 1.0, 0.0, 0.0 };
+		m_colors[Z] = { 0.0, 0.0, 1.0, 0.0 };
+		m_colors[NUM_AXIS] = { 1.0, 1.0, 1.0, 0.0 };
+		
+		axisColors[X] = &m_colors[X];
+		axisColors[Y] = &m_colors[Y];
+		axisColors[Z] = &m_colors[Z];
+
 	};
 };
 
@@ -154,7 +181,7 @@ public:
 	void UpdateMouse();
 	void mouseButtonDown(QMouseEvent* evt);
 	void mouseButtonRelease(QMouseEvent * evt);
-
+	void MoveObject();
 
 
 	EditorInputHandler(

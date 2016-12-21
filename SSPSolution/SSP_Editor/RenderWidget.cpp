@@ -28,7 +28,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
 		this->m_Communicator->m_EditorInputHandler->UpdateMouse();
-		this->m_Communicator->m_EditorInputHandler->MousePicking();
+		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
 	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
 	if (!m_ModelMap->empty())
@@ -91,24 +91,30 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					);
 
 
-					if (this->m_Communicator->m_EditorInputHandler->m_Picked.ID == modelPtr->at(i)->GetId() && this->m_Communicator->m_EditorInputHandler->m_Picked.listInstance == j)
+					if (this->m_Communicator->m_EditorInputHandler->m_Picked.ID == modelPtr->at(i)->GetId() && this->m_Communicator->m_EditorInputHandler->m_Picked.listInstance == j && this->m_Communicator->m_EditorInputHandler->transformWidget.IsActive())
 					{
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							InstancePtr->at(j).position,
-							obj
+							obj,
+							{ .0f, .65f, .67f }
+					
 						);
 						
+
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X].pos,
-							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X],
+							*this->m_Communicator->m_EditorInputHandler->transformWidget.axisColors[TransformWidget::X]
 						);
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Y].pos,
-							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Y]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Y],
+							*this->m_Communicator->m_EditorInputHandler->transformWidget.axisColors[TransformWidget::Y]
 						);
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z].pos,
-							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z],
+							*this->m_Communicator->m_EditorInputHandler->transformWidget.axisColors[TransformWidget::Z]
 						);
 
 
