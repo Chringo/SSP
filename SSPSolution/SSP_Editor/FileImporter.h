@@ -11,7 +11,6 @@
 #include <QtWidgets\qtreewidget.h>
 #include "DataHandler.h"
 
-
 class FileImporter
 {
 private:
