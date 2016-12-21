@@ -127,6 +127,14 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	}
 }
 
+bool Level::isEmpty()
+{
+	if (this->GetNumEntities() == 0) {
+		return true;
+	}
+	return false;
+}
+
 unsigned int Level::GetNumEntities()
 {
 	unsigned int num = 0;

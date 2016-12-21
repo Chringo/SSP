@@ -67,21 +67,27 @@ SSP_Editor::~SSP_Editor()
 void SSP_Editor::on_NewScene_clicked()
 {
 	//Prompt the user if they want to save the current level before creating a new scene
-	
-	if (!PromptSaveLevel()) //returns false if the user cancels the operation
-		return;
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
 	//Create the new level
 	LevelHandler::GetInstance()->NewLevel();
 	QString title = "Level: untitled_level";
 	this->window()->setWindowTitle(title);
+	lastSave = "None performed";
 }
 
 void SSP_Editor::on_LoadScene_clicked()
 {
-
-	if (!PromptSaveLevel()) //returns false if the user cancels the operation
-		return;
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
 	LevelHandler::GetInstance()->ImportLevelFile();
+	lastSave = "None performed";
 }
 
 void SSP_Editor::on_SaveScene_clicked()

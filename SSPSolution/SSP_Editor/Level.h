@@ -39,6 +39,7 @@ public:
 	Resources::Status UpdateLight( unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveLight( unsigned int instanceID);
 */
+	bool isEmpty();
 	unsigned int GetNumEntities();
 	unsigned int GetNumLights();
 	const std::string* GetName() { return &levelName; };

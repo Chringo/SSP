@@ -56,9 +56,14 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 
 LevelData::LevelStatus LevelHandler::ImportLevelFile()
 {
-	NewLevel();
+	
 	//Let the user pick a path and file name.
 	std::string path = GetFilePathAndName(Operation::LOAD);
+	if (path == "")
+	{
+		return LevelData::LevelStatus::L_FILE_SAVE_CANCELED;
+	}
+	NewLevel();
 																		 //TODO: Set file name as window title
 	std::fstream file;													 //TODO: Set file name as window title
 	file.open(path, std::fstream::in | std::fstream::binary);			 //TODO: Set file name as window title
