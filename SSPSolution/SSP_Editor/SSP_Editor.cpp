@@ -51,6 +51,14 @@ void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
 {
 	this->m_D3DRenderWidget->keyReleaseEvent(evt);
 }
+void SSP_Editor::mousePressEvent(QMouseEvent * evt)
+{
+	this->m_D3DRenderWidget->mousePressEvent(evt);
+}
+void SSP_Editor::mouseReleaseEvent(QMouseEvent * evt)
+{
+	this->m_D3DRenderWidget->mouseReleaseEvent(evt);
+}
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;

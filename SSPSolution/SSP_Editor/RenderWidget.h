@@ -19,6 +19,8 @@ public:
 	virtual QPaintEngine* paintEngine() const { return NULL; }
 	virtual void keyPressEvent(QKeyEvent * evt);
 	virtual void keyReleaseEvent(QKeyEvent * evt);
+	virtual void mousePressEvent(QMouseEvent * evt);
+	virtual void mouseReleaseEvent(QMouseEvent * evt);
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
 private:

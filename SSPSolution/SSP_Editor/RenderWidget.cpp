@@ -27,6 +27,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	if (!this->m_Communicator->m_IsPreview)
 	{
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
+		this->m_Communicator->m_EditorInputHandler->UpdateMouse();
 		this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
 	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
@@ -98,16 +99,16 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						);
 
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[0].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[0]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X].pos,
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X]
 						);
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[1].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[1]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Y].pos,
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Y]
 						);
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[2].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[2]
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z].pos,
+							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z]
 						);
 
 
@@ -135,6 +136,16 @@ void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
 void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 {
 	this->m_Communicator->m_EditorInputHandler->keyReleased(evt);
+}
+
+void D3DRenderWidget::mousePressEvent(QMouseEvent * evt)
+{
+	this->m_Communicator->m_EditorInputHandler->mouseButtonDown(evt);
+}
+
+void D3DRenderWidget::mouseReleaseEvent(QMouseEvent * evt)
+{
+	this->m_Communicator->m_EditorInputHandler->mouseButtonRelease(evt);
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)

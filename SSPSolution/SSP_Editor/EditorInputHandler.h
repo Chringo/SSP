@@ -24,6 +24,75 @@ struct HasPicked
 	int listInstance = 0;
 };
 
+struct Mouse
+{
+	DIMOUSESTATE currentState;
+	DIMOUSESTATE lastState;
+	int x;
+	int y;
+	int lastX;
+	int lastY;
+
+	bool leftHeld;
+};
+
+struct TransformWidget
+{
+public:
+	enum AXIS
+	{
+		NONE = -1,
+		X,
+		Y,
+		Z,
+
+		NUM_AXIS
+	};
+private:
+	bool m_active;
+public:
+	OBB selectedObjectOBB;
+	OBB axisOBB[NUM_AXIS];
+	unsigned int selectedAxis;
+	
+public:
+	bool IsActive()
+	{
+		return m_active;
+	};
+	void setActive(bool active)
+	{
+		this->m_active = active;
+	};
+	void Update(OBB &selectedObject)
+	{
+		selectedObjectOBB = selectedObject;
+
+		for (int i = 0; i < NUM_AXIS; i++)
+		{
+			axisOBB[i].ort = selectedObject.ort;
+			axisOBB[i].pos = selectedObject.pos;
+			axisOBB[i].pos.m128_f32[i] += 1.f;
+		}
+	};
+
+	TransformWidget()
+	{
+		for (int i = 0; i < NUM_AXIS; i++)
+		{
+			for (int j = 0; j < NUM_AXIS; j++)
+			{
+				axisOBB[i].ext[j] = 0.15;
+			}
+		}
+	};
+};
+
+struct PickRay
+{
+	DirectX::XMVECTOR origin, direction, localOrigin;
+};
+
 enum Bools {
 	SHIFT = 0,
 	ALT = 1,
@@ -42,13 +111,13 @@ enum Bools {
 class EditorInputHandler
 {
 private:
+	Mouse m_mouse;
+	PickRay m_ray;
 	int m_Width;
 	int m_Height;
-	int m_MouseX;
-	int m_MouseY;
-	int m_LastMouseX;
-	int m_LastMouseY;
+
 	bool m_KeysHeld[Bools::NUMBOOLS];
+	
 	QPoint m_point;
 	Level* m_currentLevel;
 
@@ -62,9 +131,14 @@ private:
 	DIMOUSESTATE		 m_mouseLastState;
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIMouse;
-
+private:
+	void m_ProjectRay(int X, int Y);
+	bool m_PickTransformWidget();
+	bool m_PickObjectSelection();
 public:
-	OBB m_Axis[3];
+	//OBB m_Axis[3];
+	TransformWidget transformWidget = TransformWidget();
+	
 	HasPicked m_Picked;
 	HasPicked m_LastPicked;
 	void detectInput(double dT, QKeyEvent* key);
@@ -76,7 +150,9 @@ public:
 	void MousePicking();
 	void keyReleased(QKeyEvent* evt);
 	void UpdatePos(int index);
-
+	void UpdateMouse();
+	void mouseButtonDown(QMouseEvent* evt);
+	void mouseButtonRelease(QMouseEvent * evt);
 
 
 

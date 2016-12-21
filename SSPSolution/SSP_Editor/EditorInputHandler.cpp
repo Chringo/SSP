@@ -45,6 +45,11 @@ EditorInputHandler::EditorInputHandler(
 	}
 	DIMouse->Acquire();
 	this->m_LastPicked.listInstance = NULL;
+	this->m_ray.direction = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+	this->m_ray.origin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+
+	
 }
 
 EditorInputHandler::~EditorInputHandler()
@@ -95,28 +100,26 @@ void EditorInputHandler::KeyboardMovement(double dT)
 
 void EditorInputHandler::MouseMovement(double dT)
 {
-	DIMOUSESTATE mouseCurrentState;
-
-	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouse.currentState);
 	float pitch = 0;
 	float yaw = 0;
 
-		if (mouseCurrentState.rgbButtons[0])
+		if (m_mouse.currentState.rgbButtons[0])
 		{
-			if ((mouseCurrentState.lX != m_mouseLastState.lX) || (mouseCurrentState.lY != m_mouseLastState.lY))
+			if ((m_mouse.currentState.lX != m_mouse.lastState.lX) || (m_mouse.currentState.lY != m_mouse.lastState.lY))
 			{
-				pitch += mouseCurrentState.lX * 0.01f;
+				pitch += m_mouse.currentState.lX * 0.01f;
 	
-				yaw += mouseCurrentState.lY * 0.01f;
+				yaw += m_mouse.currentState.lY * 0.01f;
 	
 				// Ensure the mouse location doesn't exceed the screen width or height.
-				if (m_MouseX < 0) { m_MouseX = 0; }
-				if (m_MouseY < 0) { m_MouseY = 0; }
+				if (this->m_mouse.x < 0) { this->m_mouse.x = 0; }
+				if (this->m_mouse.y < 0) { this->m_mouse.y = 0; }
 	
-				if (m_MouseX > m_Width) { m_MouseX = m_Width; }
-				if (m_MouseY > m_Height) { m_MouseY = m_Height; }
+				if (this->m_mouse.x > m_Width) { this->m_mouse.x = m_Width; }
+				if (this->m_mouse.y > m_Height) { this->m_mouse.y = m_Height; }
 	
-				m_mouseLastState = mouseCurrentState;
+				m_mouse.lastState = m_mouse.currentState;
 			}
 		}
 
@@ -138,22 +141,23 @@ void EditorInputHandler::MouseMovement(double dT)
 
 }
 
+
 void EditorInputHandler::MouseZoom(double dT)
 {
-	DIMOUSESTATE mouseCurrentState;
-	
-	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
 
+	
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouse.currentState);
+	
 	float speedrot = 2.5f * dT;
 	float translateCameraZ = 0;
 
-	if (mouseCurrentState.rgbButtons[0])
+	if (m_mouse.currentState.rgbButtons[0])
 	{
-		if (mouseCurrentState.lY < 0)
+		if (m_mouse.currentState.lY < 0)
 		{
 			translateCameraZ += speedrot;
 		}
-		if (mouseCurrentState.lY > 0)
+		if (m_mouse.currentState.lY > 0)
 		{
 			translateCameraZ -= speedrot;
 		}
@@ -184,56 +188,173 @@ void EditorInputHandler::CameraReset()
 		this->m_Camera->Update();
 }
 
+void EditorInputHandler::UpdateMouse()
+{
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouse.currentState);
+	this->m_mouse.x = this->m_point.x();
+	this->m_mouse.y = this->m_point.y();
+	if (this->m_mouse.x > this->m_Width)
+		this->m_mouse.x = this->m_Width;
+	else if (this->m_mouse.x < 0)
+		this->m_mouse.x = 0;
+	if (this->m_mouse.y > this->m_Height)
+		this->m_mouse.y = this->m_Height;
+	else if (this->m_mouse.y < 0)
+		this->m_mouse.y = 0;
+}
+
+void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
+{
+	if (evt->button() == Qt::LeftButton)
+	{
+		//*MOUSEPICKING*//
+		if (transformWidget.IsActive())
+		{
+			m_PickTransformWidget();
+		}
+		
+		m_PickObjectSelection();
+
+		this->m_mouse.leftHeld = true;
+
+	}
+}
+
+void EditorInputHandler::mouseButtonRelease(QMouseEvent * evt)
+{
+	if (evt->button() == Qt::LeftButton)
+	{
+		this->m_mouse.leftHeld = false;
+
+	}
+}
+
+void EditorInputHandler::m_ProjectRay(int X, int Y)
+{
+	DirectX::XMMATRIX inverseCamView;
+	this->m_Camera->GetViewMatrix(inverseCamView);
+	inverseCamView = DirectX::XMMatrixInverse(nullptr, inverseCamView);
+
+	this->m_ray.direction = DirectX::XMVector3Normalize(DirectX::XMVector3TransformNormal(
+		DirectX::XMVectorSet(
+			(((2.0f * X) / m_Width) - 1) / this->m_Camera->GetProjectionMatrix()->_11,
+			-(((2.0f * Y) / m_Height) - 1) / this->m_Camera->GetProjectionMatrix()->_22,
+			1.0f,
+			0.0f),
+		inverseCamView));
+
+	this->m_ray.localOrigin = DirectX::XMLoadFloat3(&this->m_Camera->GetCameraPos());
+
+	this->m_ray.origin = DirectX::XMVector3TransformCoord(this->m_ray.localOrigin, inverseCamView);
+}
+
+bool EditorInputHandler::m_PickTransformWidget()
+{
+	bool result;
+
+	for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
+	{
+		result = this->m_PhysicsHandler->IntersectRayOBB(
+			this->m_ray.localOrigin, this->m_ray.direction,
+			this->transformWidget.axisOBB[i], this->transformWidget.axisOBB[i].pos);
+		if (result)
+		{
+			transformWidget.selectedAxis = i;
+			break;
+		}
+		else
+		{
+			transformWidget.selectedAxis = TransformWidget::NONE;
+		}
+	}
+
+	return result;
+}
+
+bool EditorInputHandler::m_PickObjectSelection()
+{
+	////checks if we picked on a model by iterating
+	//std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
+	//if (!m_Map->empty())
+	//{
+	//	BoundingBoxHeader boundingBox;
+	//	Resources::Status st;
+	//	std::vector<Container>* InstancePtr = nullptr;
+	//	bool result;
+	//	for (size_t i = 0; i < modelPtr->size(); i++)
+	//	{
+	//		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
+
+	//		if (got == m_Map->end()) { // if  does not exists in memory
+	//			continue;
+	//		}
+	//		else {
+	//			InstancePtr = &got->second;
+	//			for (size_t j = 0; j < InstancePtr->size(); j++)
+	//			{
+	//				boundingBox = modelPtr->at(i)->GetOBBData();
+	//				OBB obj;
+	//				obj.ext[0] = boundingBox.extension[0];
+	//				obj.ext[1] = boundingBox.extension[1];
+	//				obj.ext[2] = boundingBox.extension[2];
+
+	//				DirectX::XMFLOAT3 temp;
+	//				temp.x = InstancePtr->at(j).position.m128_f32[0];
+	//				temp.y = InstancePtr->at(j).position.m128_f32[1];
+	//				temp.z = InstancePtr->at(j).position.m128_f32[2];
+	//				obj.pos = DirectX::XMLoadFloat3(&temp);
+
+
+	//				boundingBox.extensionDir;
+	//				DirectX::XMMATRIX temp2;
+	//				temp2 = DirectX::XMMatrixSet(
+	//					boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+	//					boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+	//					boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+	//					0.0f, 0.0f, 0.0f, 1.0f
+	//				);
+
+	//				obj.ort = temp2;
+
+	//				//OBB obj = *(OBB*)&boundingBox;
+	//				//DONT FORGET TO MULTIPLY MATRIX
+	//				DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
+	//				DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
+	//				obj.ort = temp3;
+
+	//				result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
+
+	//				if (result)
+	//				{
+
+	//					this->m_Picked.ID = modelPtr->at(i)->GetId();
+	//					this->m_Picked.listInstance = j;
+
+	//					//update widget with the intersected obb
+	//					this->transformWidget.Update(obj);
+
+	//					if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
+	//					{
+	//						this->m_LastPicked = m_Picked;
+
+	//					}
+	//					else if (this->m_LastPicked.listInstance == NULL)
+	//					{
+	//						this->m_LastPicked = this->m_Picked;
+	//					}
+	//				}
+
+	return false;
+}
+
 void EditorInputHandler::MousePicking()
 {
-	DIMOUSESTATE mouseCurrentState;
 
-	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
-    this->m_MouseX = this->m_point.x();
-	this->m_MouseY = this->m_point.y();
-	if (this->m_MouseX > this->m_Width)
-		this->m_MouseX = this->m_Width;
-	else if (this->m_MouseX < 0)
-		this->m_MouseX = 0;
-	if (this->m_MouseY > this->m_Height)
-		this->m_MouseY = this->m_Height;
-	else if (this->m_MouseY < 0)
-		this->m_MouseY = 0;
-
-	if (mouseCurrentState.rgbButtons[0] && !this->m_KeysHeld[SHIFT])
+	if (m_mouse.currentState.rgbButtons[0] && !this->m_KeysHeld[SHIFT])
 	{
-		DirectX::XMVECTOR rayOrigin, rayDirection;
-
-
-		DirectX::XMVECTOR localRayDirection =
-			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		//DirectX::XMVECTOR LocalRayOrigin =
-		//	DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f);
-		DirectX::XMVECTOR LocalRayOrigin = DirectX::XMLoadFloat3(&this->m_Camera->GetCameraPos());
-		//DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		float X, Y, Z;
-		DirectX::XMFLOAT4X4* camProjectionPtr = this->m_Camera->GetProjectionMatrix();
-		DirectX::XMFLOAT4X4 camProjection = *(DirectX::XMFLOAT4X4*)camProjectionPtr;
-
-		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
-		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
-		Z = 1.0f;
-
-		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
-		DirectX::XMMATRIX inverseCamView;
-		DirectX::XMVECTOR det = { 1,1,1,1 };
-		DirectX::XMMATRIX temp1;
-		this->m_Camera->GetViewMatrix(temp1);
-
-		inverseCamView = DirectX::XMMatrixInverse(&det, temp1);
-
-
-		rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
-		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
-		rayDirection = DirectX::XMVector3Normalize(rayDirection);
+		this->m_ProjectRay(m_mouse.x, m_mouse.y);
 
 		//checks if we picked on a model by iterating
-
 		std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 		if (!m_Map->empty())
 		{
@@ -264,7 +385,7 @@ void EditorInputHandler::MousePicking()
 						temp.z = InstancePtr->at(j).position.m128_f32[2];
 						obj.pos = DirectX::XMLoadFloat3(&temp);
 
-						obj.ort;
+						
 						boundingBox.extensionDir;
 						DirectX::XMMATRIX temp2;
 						temp2 = DirectX::XMMatrixSet(
@@ -273,7 +394,7 @@ void EditorInputHandler::MousePicking()
 							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
 							0.0f, 0.0f, 0.0f, 1.0f
 						);
-
+						
 						obj.ort = temp2;
 
 						//OBB obj = *(OBB*)&boundingBox;
@@ -282,31 +403,16 @@ void EditorInputHandler::MousePicking()
 						DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
 						obj.ort = temp3;
 
-						result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, obj, InstancePtr->at(j).position);
+						result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
+
 						if (result)
 						{
+							
 							this->m_Picked.ID = modelPtr->at(i)->GetId();
 							this->m_Picked.listInstance = j;
 
-							m_Axis[0] = obj;
-							m_Axis[1] = obj;
-							m_Axis[2] = obj;
-
-							this->m_Axis[0].pos = obj.pos;
-							this->m_Axis[0].pos.m128_f32[0] += 1;
-							this->m_Axis[1].pos = obj.pos;
-							this->m_Axis[1].pos.m128_f32[1] += 1;
-							this->m_Axis[2].pos = obj.pos;
-							this->m_Axis[2].pos.m128_f32[2] += 1;
-							this->m_Axis[0].ext[0] = 0.15f;
-							this->m_Axis[0].ext[1] = 0.15f;
-							this->m_Axis[0].ext[2] = 0.15f;
-							this->m_Axis[1].ext[0] = 0.15f;
-							this->m_Axis[1].ext[1] = 0.15f;
-							this->m_Axis[1].ext[2] = 0.15f;
-							this->m_Axis[2].ext[0] = 0.15f;
-							this->m_Axis[2].ext[1] = 0.15f;
-							this->m_Axis[2].ext[2] = 0.15f;
+							//update widget with the intersected obb
+							this->transformWidget.Update(obj);
 
 							if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
 							{
@@ -320,15 +426,16 @@ void EditorInputHandler::MousePicking()
 						}
 
 						int index = -1;
-						for (size_t k = 0; k < 3; k++)
+						for (int k = 0; k < TransformWidget::NUM_AXIS; k++)
 						{
-							result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, this->m_Axis[k], this->m_Axis[k].pos);
+							result = this->m_PhysicsHandler->IntersectRayOBB(
+								this->m_ray.localOrigin, this->m_ray.direction, 
+								this->transformWidget.axisOBB[k], this->transformWidget.axisOBB[k].pos);
 							if (result)
 							{
 								index = k;
 								break;
 							}
-
 						}
 						if (index != -1)
 						{
@@ -339,8 +446,8 @@ void EditorInputHandler::MousePicking()
 			}
 		}
 	}
-	this->m_LastMouseX = this->m_MouseX;
-	this->m_LastMouseY = this->m_MouseY;
+	this->m_mouse.lastX = this->m_mouse.x;
+	this->m_mouse.lastY = this->m_mouse.y;
 }
 
 void EditorInputHandler::keyReleased(QKeyEvent * evt)
@@ -390,10 +497,10 @@ void EditorInputHandler::UpdatePos(int index)
 {
 	float temp1, temp2;
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
-	if (this->m_LastMouseX != this->m_MouseX)
+	if (this->m_mouse.lastX != this->m_mouse.x)
 	{
-		temp1 = m_LastMouseX - m_MouseX;
-		temp2 = m_LastMouseY - m_MouseY;
+		temp1 = this->m_mouse.lastX - this->m_mouse.x;
+		temp2 = this->m_mouse.lastY - this->m_mouse.y;
 		if (index == 0)
 		{
 			if (temp1 > 0)
@@ -436,40 +543,39 @@ void EditorInputHandler::UpdatePos(int index)
 				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
 
 		}
-		for (size_t i = 0; i < 3; i++)
+		for (size_t i = 0; i < TransformWidget::NUM_AXIS; i++)
 		{
 			if (index == 0)
 			{
 				if (temp1 > 0)
 				{
-					this->m_Axis[i].pos.m128_f32[0] += -1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[0] += -1;
 				}
 				if (temp1 < 0)
 				{
-					this->m_Axis[i].pos.m128_f32[0] += 1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[0] += 1;
 				}
-
 			}
 			if (index == 1)
 			{
 				if (temp2 > 0)
 				{
-					this->m_Axis[i].pos.m128_f32[1] += 1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[1] += 1;
 				}
 				if (temp2 < 0)
 				{
-					this->m_Axis[i].pos.m128_f32[1] += -1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[1] += -1;
 				}
 			}
 			if (index == 2)
 			{
 				if (temp1 > 0)
 				{
-					this->m_Axis[i].pos.m128_f32[2] += -1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[2] += -1;
 				}
 				if (temp1 < 0)
 				{
-					this->m_Axis[i].pos.m128_f32[2] += 1;
+					this->transformWidget.axisOBB[i].pos.m128_f32[2] += 1;
 				}
 			}
 		}
