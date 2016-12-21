@@ -23,6 +23,7 @@
 	protected:
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
+		virtual void closeEvent(QCloseEvent * event);
 	public slots:
 	void on_treeView_doubleClicked();
 	void on_NewScene_clicked();

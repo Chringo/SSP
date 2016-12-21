@@ -51,6 +51,10 @@ void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
 {
 	this->m_D3DRenderWidget->keyReleaseEvent(evt);
 }
+void SSP_Editor::closeEvent(QCloseEvent * event)
+{
+	PromptSaveLevel();
+}
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;
