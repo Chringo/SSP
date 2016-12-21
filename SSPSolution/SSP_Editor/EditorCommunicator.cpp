@@ -9,6 +9,7 @@ Resources::Status Communicator::Initialize(
 	std::vector<Resources::Model*>* modelPtr
 )
 {
+	this->m_currentLevel = LevelHandler::GetInstance()->GetCurrentLevel();
 	this->m_GraphicsHandler = new GraphicsHandler();
 	this->m_hwnd = hwnd;
 	this->m_hInstance = hinstance;
@@ -39,7 +40,7 @@ Resources::Status Communicator::Initialize(
 			this->m_Width,
 			this->m_Height,
 			this->m_GraphicsHandler,
-			&this->m_currentLevel,
+			this->m_currentLevel,
 			modelPtr
 		);
 	}
@@ -85,20 +86,20 @@ Resources::Status Communicator::FindModel(int modelID, std::vector<Container>* m
 
 Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int instanceID, Container& container)
 {
-	return m_currentLevel.GetModelEntity(modelID, instanceID, container);
+	return m_currentLevel->GetModelEntity(modelID, instanceID, container);
 }
 
 Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return m_currentLevel.AddModelEntity(modelID, instanceID, position, rotation);
+	return m_currentLevel->AddModelEntity(modelID, instanceID, position, rotation);
 }
 
 Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return m_currentLevel.UpdateModel(modelID, instanceID, position, rotation);
+	return m_currentLevel->UpdateModel(modelID, instanceID, position, rotation);
 }
 
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
 {
-	return m_currentLevel.RemoveModel(modelID, instanceID);
+	return m_currentLevel->RemoveModel(modelID, instanceID);
 }
