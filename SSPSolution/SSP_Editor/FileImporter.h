@@ -9,6 +9,7 @@
 #include "../ResourceLib/FileHeaders.h"
 #include "../ResourceLib/TextureHandler.h"
 #include <QtWidgets\qtreewidget.h>
+#include "DataHandler.h"
 
 class FileImporter
 {
@@ -23,7 +24,7 @@ private:
 	/*variables*/
 	std::vector<std::string> m_filepaths;
 	Resources::FileLoader *m_fileLoader;
-
+	DataHandler* m_data;
 	//put model vector hetrer;
 	std::vector<Resources::Model*> m_models;
 	QTreeWidget *m_itemList;
@@ -37,7 +38,7 @@ public:
 	void LoadImportedFiles();
 	void setDevice(ID3D11Device* device) { this->m_Device = device; };
 
-	std::vector<Resources::Model*>* get_M_models() { return &this->m_models; }
+	std::vector<Resources::Model*>* get_M_models() { return this->m_data->GetModels(); }
 	Resources::Model* get_model(unsigned int modelID);
 private:
 	/*functions*/

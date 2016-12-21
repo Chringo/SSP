@@ -5,7 +5,7 @@
 #include "EditorCommunicator.h"
 #include "FileImporter.h"
 
-
+#include "DataHandler.h"
 #include <stdio.h>
 #include "Windows.h"
 #include "Wincon.h"

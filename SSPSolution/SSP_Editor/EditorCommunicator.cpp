@@ -18,7 +18,7 @@ Resources::Status Communicator::Initialize(
 
 	this->m_GraphicsHandler->Initialize(
 		&this->m_hwnd,
-		DirectX::XMINT2(m_Width, m_Height)
+		DirectX::XMINT2(m_Width, m_Height), true
 	);
 	this->m_GraphicsHandler->InitializeGrid();
 

@@ -3,17 +3,32 @@
 #include <fstream>
 #include "LevelHeaders.h"
 #include "Level.h"
+#include <qfiledialog.h>
+
 class LevelHandler
 {
+	enum Operation {
+		LOAD,
+		SAVE
+	};
 private:
-		std::string filePath;
-public:
-	LevelHandler();
-	~LevelHandler();
+	
+		Level m_currentLevel;
 
-	void SetFilePath(std::string& filePath) { this->filePath = filePath; };
-	LevelData::LevelStatus ExportLevelFile(std::string& filepath);
-	LevelData::LevelStatus ImportLevelFile(std::string& filepath);
+		
+		QString filePath = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Levels/";
+	LevelHandler();
+public:
+	~LevelHandler();
+	static LevelHandler* GetInstance();
+
+	LevelData::LevelStatus ExportLevelFile();
+	LevelData::LevelStatus ImportLevelFile();
+	LevelData::LevelStatus NewLevel();
+
+private:
+	std::string GetFilePathAndName(Operation flag);
+
 };
 
 #endif

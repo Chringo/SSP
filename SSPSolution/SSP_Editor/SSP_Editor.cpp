@@ -14,7 +14,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	/*a list of filters for the treeView*/
 	QStringList filters;
 	filters << "*.bbf";
-
+	
 	/*setting the filters and disabling the user from seeing any other files*/
 	this->m_model->setNameFilters(filters);
 	this->m_model->setNameFilterDisables(false);
@@ -51,6 +51,10 @@ void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
 {
 	this->m_D3DRenderWidget->keyReleaseEvent(evt);
 }
+void SSP_Editor::closeEvent(QCloseEvent * event)
+{
+	PromptSaveLevel();
+}
 void SSP_Editor::mousePressEvent(QMouseEvent * evt)
 {
 	this->m_D3DRenderWidget->mousePressEvent(evt);
@@ -67,18 +71,67 @@ SSP_Editor::~SSP_Editor()
 
 void SSP_Editor::on_NewScene_clicked()
 {
+	//Prompt the user if they want to save the current level before creating a new scene
+	
+	if (!PromptSaveLevel()) //returns false if the user cancels the operation
+		return;
+	//Create the new level
+	LevelHandler::GetInstance()->NewLevel();
 }
 
 void SSP_Editor::on_LoadScene_clicked()
 {
+
+	if (!PromptSaveLevel()) //returns false if the user cancels the operation
+		return;
+	LevelHandler::GetInstance()->ImportLevelFile();
 }
 
 void SSP_Editor::on_SaveScene_clicked()
 {
+
+	LevelData::LevelStatus stat = LevelHandler::GetInstance()->ExportLevelFile();
+	if (stat == LevelData::LevelStatus::L_OK)
+	{
+		QString format = "hh:mm:ss";
+		lastSave = time.currentDateTime().toString(format);
+	}
+
 }
 
 void SSP_Editor::on_BuildBPF_clicked()
 {
+}
+
+bool SSP_Editor::PromptSaveLevel()
+{
+	QString format = "hh:mm:ss";
+	QMessageBox msgBox(this);
+	msgBox.setText("Do you want to save the current level?");
+	QString last = "Last save performed at : ";
+	last.append(lastSave);
+	msgBox.setInformativeText(last);
+	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Save);
+	int ret = msgBox.exec();
+	switch (ret) {
+	case QMessageBox::Save:
+	{
+
+		LevelData::LevelStatus stat = LevelHandler::GetInstance()->ExportLevelFile();
+		if (stat == LevelData::LevelStatus::L_OK)
+		{
+			QString format = "hh:mm:ss";
+			lastSave = time.currentDateTime().toString(format);
+		}
+		break;
+	}
+
+	case QMessageBox::Cancel:
+		return false; 
+		break;
+	}
+	return true;
 }
 
 void SSP_Editor::on_treeView_doubleClicked()

@@ -15,6 +15,7 @@
 class Level
 {
 private:
+	std::string levelName = "untitled_level";
 	std::vector<Resources::Model*>* m_uniqueModelPtr;					 //Every unique model, loaded by fileloader
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of models in the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
@@ -30,7 +31,7 @@ public:
 	Resources::Status AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
-
+	
 
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);
@@ -39,6 +40,8 @@ public:
 	Resources::Status RemoveLight( unsigned int instanceID);
 */
 
+	const std::string* GetName() { return &levelName; };
+	void SetName(std::string& newName) { this->levelName = newName; };
 };
 
 #endif

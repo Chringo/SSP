@@ -5,7 +5,7 @@
 Resources::Texture::Texture() : Resource()
 {
 	m_resourceData.m_resType = ResourceType::RES_TEXTURE;
-	m_filePath[0] = '\0';
+	m_fileName[0] = '\0';
 }
 
 
@@ -38,7 +38,7 @@ Resources::Status Resources::Texture::Destroy()
 	textureResource = nullptr;
 
 
-	m_filePath[0] = '\0';
+	m_fileName[0] = '\0';
 	this->m_resourceData.m_id = 0;
 
 	return Resources::Status::ST_OK;
