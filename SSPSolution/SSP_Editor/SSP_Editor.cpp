@@ -41,6 +41,8 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_fileImporter->LoadImportedFiles();
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
+	QString title = QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName());
+	this->window()->setWindowTitle(title);
 }
 
 void SSP_Editor::keyPressEvent(QKeyEvent * evt)
@@ -69,6 +71,8 @@ void SSP_Editor::on_NewScene_clicked()
 		return;
 	//Create the new level
 	LevelHandler::GetInstance()->NewLevel();
+	QString title = "untitled_level";
+	this->window()->setWindowTitle(title);
 }
 
 void SSP_Editor::on_LoadScene_clicked()
@@ -87,6 +91,8 @@ void SSP_Editor::on_SaveScene_clicked()
 	{
 		QString format = "hh:mm:ss";
 		lastSave = time.currentDateTime().toString(format);
+		QString title = QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName());
+		this->window()->setWindowTitle(title);
 	}
 
 }
@@ -115,6 +121,8 @@ bool SSP_Editor::PromptSaveLevel()
 		{
 			QString format = "hh:mm:ss";
 			lastSave = time.currentDateTime().toString(format);
+			QString title = QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName());
+			this->window()->setWindowTitle(title);
 		}
 		break;
 	}
