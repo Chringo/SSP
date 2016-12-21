@@ -7,5 +7,6 @@ struct Container
 	DirectX::XMVECTOR position; // Total värde. 
 	DirectX::XMVECTOR rotation; //Total värde. 
 	GraphicsComponent component;
-	bool isDirty = false;
+	bool isDirty  = false;
+	bool isStatic = true;
 };

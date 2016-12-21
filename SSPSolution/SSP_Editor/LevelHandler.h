@@ -27,7 +27,16 @@ public:
 	Level* GetCurrentLevel() { return &this->m_currentLevel; };
 private:
 	std::string GetFilePathAndName(Operation flag);
+
+#pragma region Save Functions
 	LevelData::MainLevelHeader GetMainHeader();
+	LevelData::LevelStatus GetEntityData(char* dataPtr);
+	LevelData::LevelStatus GetResourceData(char* dataPtr);
+#pragma endregion
+
+#pragma region Load Functions
+	LevelData::LevelStatus LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities);
+#pragma endregion
  };
 
 #endif
