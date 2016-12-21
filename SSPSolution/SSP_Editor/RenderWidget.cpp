@@ -83,7 +83,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
 					DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
 					obj.ort = temp3;
-
+					
 
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 						modelPtr->at(i),

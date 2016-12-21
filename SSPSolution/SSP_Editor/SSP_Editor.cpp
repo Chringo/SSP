@@ -56,7 +56,10 @@ void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
 }
 void SSP_Editor::closeEvent(QCloseEvent * event)
 {
-	PromptSaveLevel();
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		PromptSaveLevel();
+	}
 }
 void SSP_Editor::mousePressEvent(QMouseEvent * evt)
 {
@@ -75,21 +78,35 @@ SSP_Editor::~SSP_Editor()
 void SSP_Editor::on_NewScene_clicked()
 {
 	//Prompt the user if they want to save the current level before creating a new scene
-	
-	if (!PromptSaveLevel()) //returns false if the user cancels the operation
-		return;
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
 	//Create the new level
 	LevelHandler::GetInstance()->NewLevel();
 	QString title = "Level: untitled_level";
 	this->window()->setWindowTitle(title);
+	lastSave = "None performed";
 }
 
 void SSP_Editor::on_LoadScene_clicked()
 {
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
+	
+	lastSave = "None performed";
 
-	if (!PromptSaveLevel()) //returns false if the user cancels the operation
-		return;
-	LevelHandler::GetInstance()->ImportLevelFile();
+	LevelData::LevelStatus stat = LevelHandler::GetInstance()->ImportLevelFile();
+	if (stat == LevelData::LevelStatus::L_OK)
+	{
+		QString title = "Level: "; //Set new window title
+		title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+		this->window()->setWindowTitle(title);
+	}
 }
 
 void SSP_Editor::on_SaveScene_clicked()
