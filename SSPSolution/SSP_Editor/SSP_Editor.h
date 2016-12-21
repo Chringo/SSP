@@ -12,6 +12,7 @@
 #include <LevelHandler.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+
 	class SSP_Editor : public QMainWindow
 	{
 		Q_OBJECT
