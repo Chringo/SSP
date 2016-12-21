@@ -273,6 +273,8 @@ bool EditorInputHandler::m_PickTransformWidget()
 
 bool EditorInputHandler::m_PickObjectSelection()
 {
+	//bool result;
+
 	////checks if we picked on a model by iterating
 	//std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 	//if (!m_Map->empty())
@@ -280,7 +282,6 @@ bool EditorInputHandler::m_PickObjectSelection()
 	//	BoundingBoxHeader boundingBox;
 	//	Resources::Status st;
 	//	std::vector<Container>* InstancePtr = nullptr;
-	//	bool result;
 	//	for (size_t i = 0; i < modelPtr->size(); i++)
 	//	{
 	//		std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
@@ -343,8 +344,17 @@ bool EditorInputHandler::m_PickObjectSelection()
 	//						this->m_LastPicked = this->m_Picked;
 	//					}
 	//				}
+	//				else
+	//				{
+	//					return result;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	//return result;
 
-	return false;
+	return true;
 }
 
 void EditorInputHandler::MousePicking()
