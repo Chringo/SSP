@@ -34,6 +34,8 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 
 	file.close();
 
+	QFileInfo info(QString::fromStdString(path));
+	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
 	return LevelData::LevelStatus::L_OK;
 }
 
@@ -77,9 +79,10 @@ std::string LevelHandler::GetFilePathAndName(Operation flag)
 		dlg.setNameFilter("Levels (*.level)");
 		if (dlg.exec())
 		{
-			QFileInfo info(dlg.selectedFiles().at(0));
-			std::string hej = info.baseName().toStdString();
-			m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
+			//
+			//QFileInfo info(dlg.selectedFiles().at(0));
+			//std::string hej = info.baseName().toStdString();
+			//m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
 			
 			return dlg.selectedFiles().at(0).toStdString();
 		}
