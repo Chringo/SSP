@@ -56,7 +56,10 @@ void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
 }
 void SSP_Editor::closeEvent(QCloseEvent * event)
 {
-	PromptSaveLevel();
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		PromptSaveLevel();
+	}
 }
 SSP_Editor::~SSP_Editor()
 {
@@ -86,8 +89,16 @@ void SSP_Editor::on_LoadScene_clicked()
 		if (!PromptSaveLevel()) //returns false if the user cancels the operation
 			return;
 	}
-	LevelHandler::GetInstance()->ImportLevelFile();
+	
 	lastSave = "None performed";
+
+	LevelData::LevelStatus stat = LevelHandler::GetInstance()->ImportLevelFile();
+	if (stat == LevelData::LevelStatus::L_OK)
+	{
+		QString title = "Level: "; //Set new window title
+		title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+		this->window()->setWindowTitle(title);
+	}
 }
 
 void SSP_Editor::on_SaveScene_clicked()

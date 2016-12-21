@@ -27,28 +27,29 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 
 	std::fstream file;
 	file.open(path, std::fstream::out | std::fstream::binary);
-	LevelData::MainLevelHeader header = this->GetMainHeader(); //Get the main header for the file 
+	LevelData::MainLevelHeader header = this->GetMainHeader();				//Get the main header for the file 
 	char* data = (char*)&header;
 
-	file.write(data, sizeof(LevelData::MainLevelHeader));		//Write the main header first
+	file.write(data, sizeof(LevelData::MainLevelHeader));					 //Write the main header first
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.entityAmount; //size of resource data
-	char* resData  = new char[resSize];			//Allocate for resource data
-	GetResourceData(resData);					//Get resource data
-	file.write(resData, resSize);				//Write resource data to file
+	char* resData  = new char[resSize];										 //Allocate for resource data
+	GetResourceData(resData);												 //Get resource data
+	file.write(resData, resSize);											 //Write resource data to file
 
 
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
-	char* modelData = new char[modelSize];
-	GetEntityData(modelData);
-
-	file.write(modelData, modelSize); //Write all modelEntities
+	char* modelData = new char[modelSize];					//Allocate for modelEntity data
+	GetEntityData(modelData);								//Get modelEntity data	
+	file.write(modelData, modelSize);						//Write all modelEntities
 
 	file.close();
+
 	delete resData;
-	delete modelData;
+	delete modelData;//Cleanup
+
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
 	return LevelData::LevelStatus::L_OK;
@@ -63,29 +64,32 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	{
 		return LevelData::LevelStatus::L_FILE_SAVE_CANCELED;
 	}
-	NewLevel();
-																		 //TODO: Set file name as window title
-	std::fstream file;													 //TODO: Set file name as window title
-	file.open(path, std::fstream::in | std::fstream::binary);			 //TODO: Set file name as window title
+	NewLevel();		//Empty the current level object
+																		 
+	std::fstream file;													
+	file.open(path, std::fstream::in | std::fstream::binary);			
 
 
 	LevelData::MainLevelHeader header;
-	file.read((char*)&header, sizeof(LevelData::MainLevelHeader));
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.entityAmount; //size of resource data
 	file.seekg(resSize, std::ios_base::cur);								 //Skip the resource data (only used by the game engine)
 	
-																			 //Model Entities
-	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
-	char* modelData = new char[modelSize];
-	file.read(modelData, modelSize);
-	this->LoadEntities((LevelData::EntityHeader*)modelData, header.entityAmount);
+	//Model Entities
+	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
+	char* modelData = new char[modelSize];										  //allocate for the entities
+	file.read(modelData, modelSize);											  //Bulk read all the entity data
+	this->LoadEntities((LevelData::EntityHeader*)modelData, header.entityAmount); //Load them into the level object
 
 
 	file.close();
-	delete modelData;
-	 return LevelData::LevelStatus::L_OK;
+	delete modelData; //Cleanup
+	QFileInfo info(QString::fromStdString(path));
+	m_currentLevel.SetName(info.baseName().toStdString()); //Set the  name to the level
+
+	return LevelData::LevelStatus::L_OK;
 }
 
 LevelData::LevelStatus LevelHandler::NewLevel()
@@ -130,7 +134,7 @@ std::string LevelHandler::GetFilePathAndName(Operation flag)
 		dlg.setNameFilter("Levels (*.level)");
 		if (dlg.exec())
 		{
-			return dlg.selectedFiles().at(0).toStdString();
+			return dlg.selectedFiles().at(0).toStdString(); //Return file path as string
 		}
 		else
 		{
@@ -175,7 +179,7 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.rotation[1] = entityContainer->at(i).rotation.m128_f32[1];	//Convert from Vector to float3
 			entity.rotation[2] = entityContainer->at(i).rotation.m128_f32[2];
 
-			entity.isStatic = entityContainer->at(i).isStatic;
+			entity.isStatic	   = entityContainer->at(i).isStatic;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
 			offset += sizeof(LevelData::EntityHeader);
 
