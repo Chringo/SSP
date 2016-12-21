@@ -1,6 +1,15 @@
 #include "EditorInputHandler.h"
 
-EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Camera* camera, int w, int h, GraphicsHandler* graphicshandler, std::unordered_map<unsigned int, std::vector<Container>>* map)
+
+EditorInputHandler::EditorInputHandler(
+	HINSTANCE handleInstance,
+	HWND handle,
+	Camera* camera,
+	int w,
+	int h,
+	GraphicsHandler* graphicshandler,
+	Level* m_currentLevel,
+	std::vector<Resources::Model*>* modelPtr)
 {
 	this->m_Width = w;
 	this->m_Height = h;
@@ -12,260 +21,58 @@ EditorInputHandler::EditorInputHandler(HINSTANCE handleInstance, HWND handle, Ca
 		(void**)&m_directInput,
 		NULL);
 
-	hr = m_directInput->CreateDevice(GUID_SysKeyboard,
-		&DIKeyboard,
-		NULL);
+	//hr = m_directInput->CreateDevice(GUID_SysKeyboard,
+	//	&DIKeyboard,
+	//	NULL);
 
 	hr = m_directInput->CreateDevice(GUID_SysMouse,
 		&DIMouse,
 		NULL);
 
-	hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = DIKeyboard->SetCooperativeLevel(handle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	//hr = DIKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	//hr = DIKeyboard->SetCooperativeLevel(handle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->m_Map = map;
-	this->m_hwnd = handle;
-	this->m_Camera = camera;
+	this->m_currentLevel  = m_currentLevel;
+	this->modelPtr      = modelPtr;
+	this->m_hwnd	    = handle;
+	this->m_Camera	    = camera;
 	this->m_PreviousPos = camera->GetCameraPos();
+	for (size_t i = 0; i < NUMBOOLS; i++)
+	{
+		this->m_KeysHeld[i] = false;
+	}
+	DIMouse->Acquire();
+	this->m_LastPicked.listInstance = NULL;
 }
 
 EditorInputHandler::~EditorInputHandler()
 {
 }
 
-void EditorInputHandler::detectInput(double dT)
+void EditorInputHandler::KeyboardMovement(double dT)
 {
-
-	DIMOUSESTATE mouseCurrentState;
-
-	BYTE keyBoardState[256]; // the amount of buttons a char array of 256.
-
-	DIKeyboard->Acquire();
-	DIMouse->Acquire();
-
-	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
-
-	DIKeyboard->GetDeviceState(sizeof(keyBoardState), (LPVOID)&keyBoardState);
-
-	float speed = 5.0f * dT;
-	float speedrot = 2.5f * dT;
-	int result = 1;
+	float speed = 2.0f * dT;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
-	float yaw = 0, pitch = 0;
 
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	ScreenToClient(this->m_hwnd, &mousePos);
+	if (this->m_KeysHeld[Bools::W] == true)
+		translateCameraZ += speed;
 
-#pragma region SHIFT + ALT +
-
-#pragma endregion
-
-#pragma region CONTROL +
-	if (keyBoardState[DIK_LCONTROL] & 0x80)
-	{
-		if (mouseCurrentState.rgbButtons[0])
-		{
-			DirectX::XMVECTOR rayOrigin, rayDirection;
-			int m_MouseX = mousePos.x;
-			int m_MouseY = mousePos.y;
-			if (m_MouseX > m_Width)
-				m_MouseX = m_Width;
-			else if (m_MouseX < 0)
-				m_MouseX = 0;
-			if (m_MouseY > m_Height)
-				m_MouseY = m_Height;
-			else if (m_MouseY < 0)
-				m_MouseY = 0;
-
-			DirectX::XMVECTOR localRayDirection = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			DirectX::XMVECTOR LocalRayOrigin = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			float X, Y, Z;
-			DirectX::XMFLOAT4X4 camProjection;
-			float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-			float screenAspect = (float)m_Width / (float)m_Height;
-
-			DirectX::XMStoreFloat4x4(
-				&camProjection,
-				DirectX::XMMatrixPerspectiveFovLH(
-					fieldOfView,
-					screenAspect,
-					0.1f,
-					1000.0f)
-			);
-
-			//Transform 2D pick position on screen space to 3D ray in View space
-			X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
-			Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
-			Z = 1.0f;    //View space's Z direction ranges from 0 to 1, so we set 1 since the ray goes "into" the screen
-
-			localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
-
-			DirectX::XMMATRIX inverseCamView;
-			DirectX::XMVECTOR det = { 1,1,1,1 };
-			DirectX::XMMATRIX temp;
-			this->m_Camera->GetBaseViewMatrix(temp);
-
-			//inverseCamView = DirectX::XMMatrixInverse(&det, temp);
-
-			//rayOrigin = XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
-			//rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
-			//rayDirection = DirectX::XMVector3Normalize(rayDirection);
-
-			DirectX::XMFLOAT4 test;
-			DirectX::XMStoreFloat4(&test, localRayDirection);
-			this->m_Camera->SetLookAt(test);
-		}
-	}
-#pragma endregion
-
-#pragma region SHIFT +
-	if (keyBoardState[DIK_LSHIFT] & 0x80)
-	{
-		if (keyBoardState[DIK_W] & 0x80)
-		{
-			translateCameraZ += speed;
-		}
-		if (keyBoardState[DIK_S] & 0x80)
-		{
-			translateCameraZ -= speed;
-		}
-		if (keyBoardState[DIK_A] & 0x80)
-		{
-			translateCameraX -= speed;
-		}
-		if (keyBoardState[DIK_D] & 0x80)
-		{
-			translateCameraX += speed;
-		}
-		if (keyBoardState[DIK_C] & 0x80)
-		{
-			translateCameraY -= speed;
-		}
-		if (keyBoardState[DIK_SPACE] & 0x80)
-		{
-			translateCameraY += speed;
-		}
-		if (mouseCurrentState.rgbButtons[0])
-		{
-			if (mouseCurrentState.lY < 0)
-			{
-				translateCameraZ += speedrot;
-			}
-			if (mouseCurrentState.lY > 0)
-			{
-				translateCameraZ -= speedrot;
-			}
-
-		}
-
-
-	}
-#pragma endregion
-
-#pragma region ALT +
-	if (keyBoardState[DIK_LALT] & 0x80)
-	{
-		if (mouseCurrentState.rgbButtons[0])
-		{
-			if ((mouseCurrentState.lX!= m_mouseLastState.lX) || (mouseCurrentState.lY != m_mouseLastState.lY))
-			{
-				pitch += mouseCurrentState.lX * 0.01f;
-		
-				yaw += mouseCurrentState.lY * 0.01f;
-
-				// Ensure the mouse location doesn't exceed the screen width or height.
-				if (m_MouseX < 0) { m_MouseX = 0; }
-				if (m_MouseY < 0) { m_MouseY = 0; }
-
-				if (m_MouseX > m_Width) { m_MouseX = m_Width; }
-				if (m_MouseY > m_Height) { m_MouseY = m_Height; }
-
-				m_mouseLastState = mouseCurrentState;
-			}
-		}
-	}
-#pragma endregion
-	
-#pragma region ONLY MOUSE
-	if (mouseCurrentState.rgbButtons[0] &&
-		!keyBoardState[DIK_LALT] & 0x80 ||
-		!keyBoardState[DIK_LSHIFT] & 0x80)
-	{
-		DirectX::XMVECTOR rayOrigin, rayDirection;
-		int m_MouseX = mousePos.x;
-		int m_MouseY = mousePos.y;
-		if (m_MouseX > m_Width)
-			m_MouseX = m_Width;
-		else if (m_MouseX < 0)
-			m_MouseX = 0;
-		if (m_MouseY > m_Height)
-			m_MouseY = m_Height;
-		else if (m_MouseY < 0)
-			m_MouseY = 0;
-
-		DirectX::XMVECTOR localRayDirection = 
-			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		DirectX::XMVECTOR LocalRayOrigin = 
-			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		float X, Y, Z;
-		DirectX::XMFLOAT4X4 camProjection;
-		float fieldOfView = (float)DirectX::XM_PI / 4.0f;
-		float screenAspect = (float)m_Width / (float)m_Height;
-
-		DirectX::XMStoreFloat4x4(
-			&camProjection,
-			DirectX::XMMatrixPerspectiveFovLH(
-				fieldOfView,
-				screenAspect,
-				0.1f,
-				1000.0f)
-		);
-		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
-		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
-		Z = 1.0f;
-		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
-
-		DirectX::XMMATRIX inverseCamView;
-		DirectX::XMVECTOR det = { 1,1,1,1 };
-		DirectX::XMMATRIX temp;
-		this->m_Camera->GetBaseViewMatrix(temp);
-
-		inverseCamView = DirectX::XMMatrixInverse(&det, temp);
-
-		rayOrigin = XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
-		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
-		rayDirection = DirectX::XMVector3Normalize(rayDirection);
-		
-		//checks if we picked on a model by iterating triangles;
-		float result = Intersection(rayOrigin,rayDirection);
-		if (result != FLT_MAX)
-		{
-			this->m_Picked;
-		}
-
-		//DO PICKING TEST TO FIND MESH IN SCENE
-		//GET POINTER?
-		//STORE AS LAST PICK
-		//NEED A GET FUNC SO OTHER CLASSES CAN GET CURRENT PICK
-		//HIGHLIGHT?
-
-
-		//DirectX::XMFLOAT4 test;
-		//DirectX::XMStoreFloat4(&test, localRayDirection);
-		//this->m_Camera->SetLookAt(test);
-	}
-#pragma endregion
-
-	if (keyBoardState[DIK_F] & 0x80)
-	{
-		this->m_Camera->Initialize(this->m_Width / this->m_Height);
-		this->m_Camera->Update();
-	}
-
-
+	if (this->m_KeysHeld[Bools::A] == true)
+		translateCameraX -= speed;
+	if (this->m_KeysHeld[Bools::S] == true)
+		translateCameraZ -= speed;
+	if (this->m_KeysHeld[Bools::D] == true)
+		translateCameraX += speed;
+	if (this->m_KeysHeld[Bools::C] == true)
+		translateCameraY -= speed;
+	if (this->m_KeysHeld[Bools::SPACE] == true)
+		translateCameraY += speed;
+	if (this->m_KeysHeld[ALT] == true)
+		MouseMovement(dT);
+	if (this->m_KeysHeld[SHIFT] == true)
+		MouseZoom(dT);
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
@@ -284,11 +91,39 @@ void EditorInputHandler::detectInput(double dT)
 		);
 		this->m_Camera->Update();
 	}
+}
+
+void EditorInputHandler::MouseMovement(double dT)
+{
+	DIMOUSESTATE mouseCurrentState;
+
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+	float pitch = 0;
+	float yaw = 0;
+
+		if (mouseCurrentState.rgbButtons[0])
+		{
+			if ((mouseCurrentState.lX != m_mouseLastState.lX) || (mouseCurrentState.lY != m_mouseLastState.lY))
+			{
+				pitch += mouseCurrentState.lX * 0.01f;
+	
+				yaw += mouseCurrentState.lY * 0.01f;
+	
+				// Ensure the mouse location doesn't exceed the screen width or height.
+				if (m_MouseX < 0) { m_MouseX = 0; }
+				if (m_MouseY < 0) { m_MouseY = 0; }
+	
+				if (m_MouseX > m_Width) { m_MouseX = m_Width; }
+				if (m_MouseY > m_Height) { m_MouseY = m_Height; }
+	
+				m_mouseLastState = mouseCurrentState;
+			}
+		}
 
 	if ((yaw || pitch))
 	{
 		float rotationAmount = DirectX::XM_PI / 8;
-
+	
 		DirectX::XMFLOAT4 newRotation =
 			DirectX::XMFLOAT4(
 				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
@@ -296,123 +131,410 @@ void EditorInputHandler::detectInput(double dT)
 				0.0f,
 				DirectX::XMScalarCos(rotationAmount / 2.0f)
 			);
-
+	
 		this->m_Camera->SetRotation(newRotation);
 		this->m_Camera->Update();
 	}
 
 }
-float EditorInputHandler::Intersection(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection)
-{
-	OBB test;
 
-	this->m_PhysicsHandler->IntersectRayOBB(rayOrigin,rayDirection, test);
-	//for (int i = 0; i <  this->m_Communicator/ 3; i++)
-	//{
-	//
-	//	//Triangle's vertices, V1, V2, V3
-	//	DirectX::XMVECTOR tri1V1 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//	DirectX::XMVECTOR tri1V2 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//	DirectX::XMVECTOR tri1V3 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//
-	//
-	//	//Temporary 3d floats for each vertex.
-	//	DirectX::XMFLOAT3 _tV1, _tV2, _tV3;
-	//
-	//	_tV1.x = obj.finalVector[i * 3 + 0].x;
-	//	_tV1.y = obj.finalVector[i * 3 + 0].y;
-	//	_tV1.z = obj.finalVector[i * 3 + 0].z;
-	//
-	//	_tV2.x = obj.finalVector[i * 3 + 1].x;
-	//	_tV2.y = obj.finalVector[i * 3 + 1].y;
-	//	_tV2.z = obj.finalVector[i * 3 + 1].z;
-	//
-	//	_tV3.x = obj.finalVector[i * 3 + 2].x;
-	//	_tV3.y = obj.finalVector[i * 3 + 2].y;
-	//	_tV3.z = obj.finalVector[i * 3 + 2].z;
-	//
-	//
-	//	tri1V1 = DirectX::XMVectorSet(_tV1.x, _tV1.y, _tV1.z, 1.0f);
-	//	tri1V2 = DirectX::XMVectorSet(_tV2.x, _tV2.y, _tV2.z, 1.0f);
-	//	tri1V3 = DirectX::XMVectorSet(_tV3.x, _tV3.y, _tV3.z, 1.0f);
-	//
-	//	tri1V1 = DirectX::XMVector3TransformCoord(tri1V1, matrices.World);
-	//	tri1V2 = DirectX::XMVector3TransformCoord(tri1V2, matrices.World);
-	//	tri1V3 = DirectX::XMVector3TransformCoord(tri1V3, matrices.World);
-	//
-	//
-	//	DirectX::XMVECTOR U = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//	DirectX::XMVECTOR V = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//
-	//	DirectX::XMVECTOR faceNormal = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//
-	//	U = DirectX::XMVectorSubtract(tri1V2, tri1V1);
-	//	V = DirectX::XMVectorSubtract(tri1V3, tri1V1);
-	//
-	//	faceNormal = DirectX::XMVector3Cross(U, V);
-	//	faceNormal = DirectX::XMVector3Normalize(faceNormal);
-	//
-	//	DirectX::XMVECTOR triPoint = tri1V1;
-	//
-	//	//plane equation
-	//	float tri1A = DirectX::XMVectorGetX(faceNormal);
-	//	float tri1B = DirectX::XMVectorGetY(faceNormal);
-	//	float tri1C = DirectX::XMVectorGetZ(faceNormal);
-	//	float tri1D = (-tri1A*DirectX::XMVectorGetX(triPoint) - tri1B*DirectX::XMVectorGetY(triPoint) - tri1C*DirectX::XMVectorGetZ(triPoint));
-	//
-	//	//now we find wher the ray intersects with the triangles plane,
-	//
-	//	float ep1, ep2, t = 0.0f;
-	//
-	//	float planeIntersectX, planeIntersectY, planeIntersectz = 0.0f;
-	//
-	//
-	//	DirectX::XMVECTOR pointInPlane = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//
-	//	ep1 = (DirectX::XMVectorGetX(rayOrigin)      *   tri1A) + (DirectX::XMVectorGetY(rayOrigin)       *   tri1B) + (DirectX::XMVectorGetZ(rayOrigin)       *   tri1C);
-	//	ep2 = (DirectX::XMVectorGetX(rayDirection)   *   tri1A) + (DirectX::XMVectorGetY(rayDirection)    *   tri1B) + (DirectX::XMVectorGetZ(rayDirection)    *   tri1C);
-	//
-	//	if (ep2 != 0.0f)
-	//	{
-	//		t = -(ep1 + tri1D) / (ep2);
-	//	}
-	//	if (t > 0.0f)
-	//	{
-	//		planeIntersectX = DirectX::XMVectorGetX(rayOrigin) + DirectX::XMVectorGetX(rayDirection) * t;
-	//		planeIntersectY = DirectX::XMVectorGetY(rayOrigin) + DirectX::XMVectorGetY(rayDirection) * t;
-	//		planeIntersectz = DirectX::XMVectorGetZ(rayOrigin) + DirectX::XMVectorGetZ(rayDirection) * t;
-	//
-	//		pointInPlane = DirectX::XMVectorSet(planeIntersectX, planeIntersectY, planeIntersectz, 0.0f);
-	//
-	//		if (checkPointInTriangle(tri1V1, tri1V2, tri1V3, pointInPlane))
-	//		{
-	//			return t / 2.0f;
-	//		}
-	//	}
-	//
-	//
-	//}
-	return FLT_MAX;
-}
-bool EditorInputHandler::checkPointInTriangle(const DirectX::XMVECTOR& point, const DirectX::XMVECTOR& triangleV1, const DirectX::XMVECTOR& triangleV2, const DirectX::XMVECTOR& triangleV3)
+void EditorInputHandler::MouseZoom(double dT)
 {
-	//Denna funktion kolla om en point är i en triangle genom att
-	DirectX::XMVECTOR collisionPoint1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV3, triangleV2), DirectX::XMVectorSubtract(point, triangleV2));
+	DIMOUSESTATE mouseCurrentState;
+	
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
 
-	DirectX::XMVECTOR collisionPoint2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV3, triangleV2), DirectX::XMVectorSubtract(triangleV1, triangleV2));
-	if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(collisionPoint1, collisionPoint2)) >= 0)
+	float speedrot = 2.5f * dT;
+	float translateCameraZ = 0;
+
+	if (mouseCurrentState.rgbButtons[0])
 	{
-		collisionPoint1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV3, triangleV1), DirectX::XMVectorSubtract(point, triangleV1));
-		collisionPoint2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV3, triangleV1), DirectX::XMVectorSubtract(triangleV2, triangleV1));
-		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(collisionPoint1, collisionPoint2)) >= 0)
+		if (mouseCurrentState.lY < 0)
 		{
-			collisionPoint1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV2, triangleV1), DirectX::XMVectorSubtract(point, triangleV1));
-			collisionPoint2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triangleV2, triangleV1), DirectX::XMVectorSubtract(triangleV3, triangleV1));
-			if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(collisionPoint1, collisionPoint2)) >= 0)
+			translateCameraZ += speedrot;
+		}
+		if (mouseCurrentState.lY > 0)
+		{
+			translateCameraZ -= speedrot;
+		}
+	
+	}
+	if (translateCameraZ)
+	{
+		DirectX::XMFLOAT3 posTranslation =
+			DirectX::XMFLOAT3(
+				0.0f,
+				0.0f,
+				float(translateCameraZ)
+			);
+
+		this->m_PreviousPos = this->m_Camera->GetCameraPos();
+		this->m_Camera->ApplyLocalTranslation(
+			0.0f,
+			0.0f,
+			float(translateCameraZ)
+		);
+		this->m_Camera->Update();
+	}
+}
+
+void EditorInputHandler::CameraReset()
+{
+		this->m_Camera->Initialize(this->m_Width / this->m_Height);
+		this->m_Camera->Update();
+}
+
+void EditorInputHandler::MousePicking()
+{
+	DIMOUSESTATE mouseCurrentState;
+
+	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+    this->m_MouseX = this->m_point.x();
+	this->m_MouseY = this->m_point.y();
+	if (this->m_MouseX > this->m_Width)
+		this->m_MouseX = this->m_Width;
+	else if (this->m_MouseX < 0)
+		this->m_MouseX = 0;
+	if (this->m_MouseY > this->m_Height)
+		this->m_MouseY = this->m_Height;
+	else if (this->m_MouseY < 0)
+		this->m_MouseY = 0;
+
+	if (mouseCurrentState.rgbButtons[0] && !this->m_KeysHeld[SHIFT])
+	{
+		DirectX::XMVECTOR rayOrigin, rayDirection;
+
+
+		DirectX::XMVECTOR localRayDirection =
+			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		//DirectX::XMVECTOR LocalRayOrigin =
+		//	DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 0.0f);
+		DirectX::XMVECTOR LocalRayOrigin = DirectX::XMLoadFloat3(&this->m_Camera->GetCameraPos());
+		//DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		float X, Y, Z;
+		DirectX::XMFLOAT4X4* camProjectionPtr = this->m_Camera->GetProjectionMatrix();
+		DirectX::XMFLOAT4X4 camProjection = *(DirectX::XMFLOAT4X4*)camProjectionPtr;
+
+		X = (((2.0f * m_MouseX) / m_Width) - 1) / camProjection._11;
+		Y = -(((2.0f * m_MouseY) / m_Height) - 1) / camProjection._22;
+		Z = 1.0f;
+
+		localRayDirection = DirectX::XMVectorSet(X, Y, Z, 0.0f);
+		DirectX::XMMATRIX inverseCamView;
+		DirectX::XMVECTOR det = { 1,1,1,1 };
+		DirectX::XMMATRIX temp1;
+		this->m_Camera->GetViewMatrix(temp1);
+
+		inverseCamView = DirectX::XMMatrixInverse(&det, temp1);
+
+
+		rayOrigin = DirectX::XMVector3TransformCoord(LocalRayOrigin, inverseCamView);
+		rayDirection = DirectX::XMVector3TransformNormal(localRayDirection, inverseCamView);
+		rayDirection = DirectX::XMVector3Normalize(rayDirection);
+
+		//checks if we picked on a model by iterating
+
+		std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
+		if (!m_Map->empty())
+		{
+			BoundingBoxHeader boundingBox;
+			Resources::Status st;
+			std::vector<Container>* InstancePtr = nullptr;
+			bool result;
+			for (size_t i = 0; i < modelPtr->size(); i++)
 			{
-				return true;
+				std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(i)->GetId());
+
+				if (got == m_Map->end()) { // if  does not exists in memory
+					continue;
+				}
+				else {
+					InstancePtr = &got->second;
+					for (size_t j = 0; j < InstancePtr->size(); j++)
+					{
+						boundingBox = modelPtr->at(i)->GetOBBData();
+						OBB obj;
+						obj.ext[0] = boundingBox.extension[0];
+						obj.ext[1] = boundingBox.extension[1];
+						obj.ext[2] = boundingBox.extension[2];
+
+						DirectX::XMFLOAT3 temp;
+						temp.x = InstancePtr->at(j).position.m128_f32[0];
+						temp.y = InstancePtr->at(j).position.m128_f32[1];
+						temp.z = InstancePtr->at(j).position.m128_f32[2];
+						obj.pos = DirectX::XMLoadFloat3(&temp);
+
+						obj.ort;
+						boundingBox.extensionDir;
+						DirectX::XMMATRIX temp2;
+						temp2 = DirectX::XMMatrixSet(
+							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+							boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+							0.0f, 0.0f, 0.0f, 1.0f
+						);
+
+						obj.ort = temp2;
+
+						//OBB obj = *(OBB*)&boundingBox;
+						//DONT FORGET TO MULTIPLY MATRIX
+						DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
+						DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
+						obj.ort = temp3;
+
+						result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, obj, InstancePtr->at(j).position);
+						if (result)
+						{
+							this->m_Picked.ID = modelPtr->at(i)->GetId();
+							this->m_Picked.listInstance = j;
+
+							m_Axis[0] = obj;
+							m_Axis[1] = obj;
+							m_Axis[2] = obj;
+
+							this->m_Axis[0].pos = obj.pos;
+							this->m_Axis[0].pos.m128_f32[0] += 1;
+							this->m_Axis[1].pos = obj.pos;
+							this->m_Axis[1].pos.m128_f32[1] += 1;
+							this->m_Axis[2].pos = obj.pos;
+							this->m_Axis[2].pos.m128_f32[2] += 1;
+							this->m_Axis[0].ext[0] = 0.15f;
+							this->m_Axis[0].ext[1] = 0.15f;
+							this->m_Axis[0].ext[2] = 0.15f;
+							this->m_Axis[1].ext[0] = 0.15f;
+							this->m_Axis[1].ext[1] = 0.15f;
+							this->m_Axis[1].ext[2] = 0.15f;
+							this->m_Axis[2].ext[0] = 0.15f;
+							this->m_Axis[2].ext[1] = 0.15f;
+							this->m_Axis[2].ext[2] = 0.15f;
+
+							if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
+							{
+								this->m_LastPicked = m_Picked;
+
+							}
+							else if (this->m_LastPicked.listInstance == NULL)
+							{
+								this->m_LastPicked = this->m_Picked;
+							}
+						}
+
+						int index = -1;
+						for (size_t k = 0; k < 3; k++)
+						{
+							result = this->m_PhysicsHandler->IntersectRayOBB(LocalRayOrigin, rayDirection, this->m_Axis[k], this->m_Axis[k].pos);
+							if (result)
+							{
+								index = k;
+								break;
+							}
+
+						}
+						if (index != -1)
+						{
+							UpdatePos(index);
+						}
+					}
+				}
 			}
 		}
 	}
-	return false;
+	this->m_LastMouseX = this->m_MouseX;
+	this->m_LastMouseY = this->m_MouseY;
+}
+
+void EditorInputHandler::keyReleased(QKeyEvent * evt)
+{
+	
+		switch (evt->key())
+		{
+		case Qt::Key_Shift:
+			m_KeysHeld[Bools::SHIFT] = false;
+			m_KeysHeld[Bools::W]	 = false;
+			m_KeysHeld[Bools::A]	 = false;
+			m_KeysHeld[Bools::S]	 = false;
+			m_KeysHeld[Bools::D]	 = false;
+			m_KeysHeld[Bools::C]	 = false;
+			m_KeysHeld[Bools::SPACE] = false;
+			break;
+		case Qt::Key_Alt:
+			m_KeysHeld[Bools::ALT] = false;
+			break;
+		case Qt::Key_Control:
+			m_KeysHeld[Bools::CONTROL] = false;
+			break;
+		case Qt::Key_W:
+			m_KeysHeld[Bools::W] = false;
+			break;
+		case Qt::Key_A:
+			m_KeysHeld[Bools::A] = false;
+			break;
+		case Qt::Key_S:
+			m_KeysHeld[Bools::S] = false;
+			break;
+		case Qt::Key_D:
+			m_KeysHeld[Bools::D] = false;
+			break;
+		case Qt::Key_C:
+			m_KeysHeld[Bools::C] = false;
+			break;
+		case Qt::Key_Space:
+			m_KeysHeld[Bools::SPACE] = false;
+			break;
+		default:
+			break;
+		}
+}
+
+void EditorInputHandler::UpdatePos(int index)
+{
+	float temp1, temp2;
+	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
+	if (this->m_LastMouseX != this->m_MouseX)
+	{
+		temp1 = m_LastMouseX - m_MouseX;
+		temp2 = m_LastMouseY - m_MouseY;
+		if (index == 0)
+		{
+			if (temp1 > 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
+			}
+			if (temp1 < 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += 1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		if (index == 1)
+		{
+			if (temp2 > 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += 1;
+			}
+			if (temp2 < 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[1] += -1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		if (index == 2)
+		{
+			if (temp1 > 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += -1;
+			}
+			if (temp1 < 0)
+			{
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[2] += 1;
+			}
+			//this->m_Map->at(m_LastPicked.ID).at(m_LastPicked.listInstance).rotation += 45.0f;
+				m_Map->at(m_Picked.ID).at(m_Picked.listInstance).isDirty = true;
+
+		}
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (index == 0)
+			{
+				if (temp1 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[0] += -1;
+				}
+				if (temp1 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[0] += 1;
+				}
+
+			}
+			if (index == 1)
+			{
+				if (temp2 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[1] += 1;
+				}
+				if (temp2 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[1] += -1;
+				}
+			}
+			if (index == 2)
+			{
+				if (temp1 > 0)
+				{
+					this->m_Axis[i].pos.m128_f32[2] += -1;
+				}
+				if (temp1 < 0)
+				{
+					this->m_Axis[i].pos.m128_f32[2] += 1;
+				}
+			}
+		}
+	}
+}
+
+void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
+{
+		switch (evt->key())
+		{
+		case Qt::Key_Shift:
+			m_KeysHeld[Bools::SHIFT] = true;
+			break;
+		case Qt::Key_Alt:
+			m_KeysHeld[Bools::ALT] = true;
+			break;
+		case Qt::Key_Control:
+			m_KeysHeld[Bools::CONTROL] = true;
+			break;
+		case Qt::Key_W:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::W] = true;
+			}
+			break;
+		case Qt::Key_A:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::A] = true;
+			}
+			break;
+		case Qt::Key_S:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::S] = true;
+			}
+			break;
+		case Qt::Key_D:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::D] = true;
+			}
+			break;
+		case Qt::Key_C:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::C] = true;
+			}
+			break;
+		case Qt::Key_Space:
+			if (m_KeysHeld[Bools::SHIFT] == true)
+			{
+				m_KeysHeld[Bools::SPACE] = true;
+			}
+			break;
+		default:
+			break;
+		}
+
+		switch (evt->key())
+		{
+		case Qt::Key_R:
+			CameraReset();
+			break;
+		default:
+			break;
+		}
 }

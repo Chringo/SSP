@@ -73,6 +73,15 @@
     <ClCompile Include="EditorCommunicator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -99,6 +108,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EditorCommunicator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

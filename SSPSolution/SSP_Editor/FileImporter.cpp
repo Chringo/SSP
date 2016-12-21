@@ -4,6 +4,7 @@
 
 FileImporter::FileImporter(QTreeWidget *itemList)
 {
+	m_data = DataHandler::GetInstance();
 	this->m_itemList = itemList;
 	m_fileLoader = Resources::FileLoader::GetInstance();
 }
@@ -59,6 +60,22 @@ void FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
+	//{
+	//	/* append all the texture names from the directory */
+	//	while ((ent = readdir(dir)) != NULL) 
+	//	{
+	//		if (*ent->d_name != '.')
+	//			m_filepaths.push_back(ent->d_name);
+	//	}
+	//	closedir(dir);
+	//}
+	//else 
+	//{
+	//	/* could not open directory */
+	//	perror("");
+	//}
+	// Load textures before Materials, So that the materials can find them.
 	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials")) != NULL)
 		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
 	{
@@ -80,21 +97,6 @@ void FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
-	//{
-	//	/* append all the texture names from the directory */
-	//	while ((ent = readdir(dir)) != NULL) 
-	//	{
-	//		if (*ent->d_name != '.')
-	//			m_filepaths.push_back(ent->d_name);
-	//	}
-	//	closedir(dir);
-	//}
-	//else 
-	//{
-	//	/* could not open directory */
-	//	perror("");
-	//}
 }
 
 void FileImporter::LoadImportedFiles()
@@ -141,6 +143,7 @@ void FileImporter::LoadImportedFiles()
 
 Resources::Model * FileImporter::get_model(unsigned int modelID)
 {
+	
 	for (int i = 0; i < this->m_models.size(); ++i)
 	{
 		if (modelID == m_models.at(i)->GetId())
@@ -155,58 +158,45 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	Resources::Status res;
 	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 
+	if (DataHandler::GetInstance()->IDExists(res_Data->m_id))
+		return;
+
 	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
 
 	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
 
 
 	unsigned int * indices;
+	BoundingBoxHeader* obbdataPtr;
 	if (m_meshH->skeleton)
 	{
 		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+		obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * m_meshH->indexLength);
 	}
 	else
 	{
 		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, this->m_Device, m_meshH->numVerts, true);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
+		obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * m_meshH->indexLength);
 	}
 
 	if (!newMesh->SetIndices(indices, m_meshH->indexLength, this->m_Device, true))
 		res = Resources::Status::ST_BUFFER_ERROR;
+
 	
-	/*we've already loaded one or more meshes into the scene*/
-	//if (m_models.size() != 0)
-	//{
-	//	for (int i = 0; i < m_models.size(); ++i)
-	//	{
-	//		if (m_models.at(i)->GetMesh()->GetId() == res_Data->m_id)
-	//		{
-	//			newMesh->Destroy();
-	//			delete newMesh;
-	//			return;
-	//		}
-	//	}
-	//	Resources::Model *m_new_model = new Resources::Model();
-
-	//	m_new_model->SetMesh(newMesh);
-	//	m_models.push_back(m_new_model);
-	//}
-	///*this is the first mesh loaded*/
-	//else
-	//{
-	//	Resources::Model *m_new_model = new Resources::Model();
-
-	//	m_new_model->SetMesh(newMesh);
-	//	m_models.push_back(m_new_model);
-	//}
-	for (int i = 0; i < m_models.size(); ++i)
+	BoundingBoxHeader obbdata = *obbdataPtr;
+	m_data->AddMesh(newMesh);
+	std::vector<Resources::Model*>* models = m_data->GetModels();
+	
+	for (int i = 0; i < models->size(); ++i)
 	{
-		if (m_models.at(i)->GetRawModelData()->meshId == newMesh->GetId())
+		if (models->at(i)->GetRawModelData()->meshId == newMesh->GetId())
 		{
-			m_models.at(i)->SetMesh(newMesh);
+			models->at(i)->SetMesh(newMesh);
+			models->at(i)->SetOBBData(obbdata);
 		}
 	}
 	/*add to the ui here*/
@@ -219,74 +209,51 @@ void FileImporter::handleMat(char * m_bbf_object)
 	Resources::Status stat;
 	Resources::Resource::RawResourceData * res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 
+	if (DataHandler::GetInstance()->IDExists(res_Data->m_id))
+		return;
+
 	MaterialHeader* m_MatH = (MaterialHeader*)(m_bbf_object + sizeof(MainHeader));
 
 	Resources::Material* newMaterial = new Resources::Material(*res_Data);
-	//m_MatH->m_EmissiveValue;
-
-	//Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim)((char)m_meshH + sizeof(MeshHeader));
-	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
-	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
 	
-	Resources::TextureHandler* test2 = new Resources::TextureHandler(5,this->m_Device);
-	Resources::Texture *test = test2->GetPlaceHolderTextures();
-
-	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);
-	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);
-	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);
-	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);
-	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);
+	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+																					   // TEMPORARY
+	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);
 	newMaterial->SetEmissive(m_MatH->m_EmissiveValue);
 
-	for (int i = 0; i < m_models.size(); ++i)
+	m_data->AddMaterial(newMaterial); //add the material to the data handler
+
+	std::vector<Resources::Model*>* models = m_data->GetModels();
+	for (int i = 0; i < models->size(); ++i)
 	{
-		if (m_models.at(i)->GetRawModelData()->materialId == newMaterial->GetId())
+		if (models->at(i)->GetRawModelData()->materialId == newMaterial->GetId())
 		{
-			m_models.at(i)->SetMaterial(newMaterial);
+			models->at(i)->SetMaterial(newMaterial);
 		}
 	}
 }
 
 void FileImporter::handleModel(char * m_bbf_object)
 {
-	/*
+	
 	Resources::Status res;
 	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
-
-	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
-
-	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
-
-
-	unsigned int * indices;
-	if (m_meshH->skeleton)
-	{
-		Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
-		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
-	}
-	else
-	{
-		Resources::Mesh::Vertex* vertices = (Resources::Mesh::Vertex*)((char*)m_meshH + sizeof(MeshHeader));
-		newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
-		indices = (unsigned int*)((char*)vertices + (sizeof(Resources::Mesh::Vertex)* m_meshH->numVerts));
-	}
-
-	if (!newMesh->SetIndices(indices, m_meshH->indexLength, nullptr, true))
-		res = Resources::Status::ST_BUFFER_ERROR; */
-	Resources::Status res;
-	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
-
+	if (m_data->IDExists(res_Data->m_id))
+		return;
 	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(m_bbf_object + sizeof(MainHeader));
 
 	Resources::Model *newModel = new Resources::Model();
 
 	newModel->Create(res_Data, raw_model_Data, true);
-
-	m_models.push_back(newModel);
+	m_data->AddModel(newModel);
+	
 }
 
 void FileImporter::AddListItem(ListItem category, std::string name)

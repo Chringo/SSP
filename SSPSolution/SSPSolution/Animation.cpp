@@ -38,7 +38,7 @@ Animation::Animation()
 Animation::~Animation()
 {
 	delete m_graphicsAnimationComponent;
-	//delete modelPtr;
+
 }
 
 void Animation::Update(float dt)

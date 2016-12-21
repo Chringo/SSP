@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SSP_Editor.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -137,18 +137,18 @@ public:
 
     void retranslateUi(QMainWindow *SSP_EditorClass)
     {
-        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", 0));
-        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", 0));
-        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", 0));
-        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
-        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
-        label->setText(QApplication::translate("SSP_EditorClass", "File Editor", 0));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
-        groupBox->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
+        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", Q_NULLPTR));
+        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", Q_NULLPTR));
+        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
+        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
+        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
+        label->setText(QApplication::translate("SSP_EditorClass", "File Editor", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem = treeWidget->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
-        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
 };

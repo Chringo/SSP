@@ -1,7 +1,15 @@
 #include "EditorCommunicator.h"
 
-Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview)
+
+Resources::Status Communicator::Initialize(
+	HWND hwnd,
+	HINSTANCE hinstance,
+	int w, int h,
+	bool isPreview,
+	std::vector<Resources::Model*>* modelPtr
+)
 {
+	this->m_currentLevel = LevelHandler::GetInstance()->GetCurrentLevel();
 	this->m_GraphicsHandler = new GraphicsHandler();
 	this->m_hwnd = hwnd;
 	this->m_hInstance = hinstance;
@@ -11,7 +19,7 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 
 	this->m_GraphicsHandler->Initialize(
 		&this->m_hwnd,
-		DirectX::XMINT2(m_Width, m_Height)
+		DirectX::XMINT2(m_Width, m_Height), true
 	);
 	this->m_GraphicsHandler->InitializeGrid();
 
@@ -32,11 +40,11 @@ Resources::Status Communicator::Initialize(HWND hwnd, HINSTANCE hinstance, int w
 			this->m_Width,
 			this->m_Height,
 			this->m_GraphicsHandler,
-			&this->m_Map
+			this->m_currentLevel,
+			modelPtr
 		);
 	}
 
-	this->m_Map.reserve(50);
 
 	return Resources::ST_OK;
 }
@@ -55,7 +63,6 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-	this->m_Map.clear();
 
 	if (!this->m_IsPreview)
 	{
@@ -66,120 +73,33 @@ Resources::Status Communicator::Release()
 
 Resources::Status Communicator::FindModel(int modelID, std::vector<Container>* modelPtr)
 {
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
-
-	if (got == m_Map.end()) { // if  does not exists in memory
-		return Resources::Status::ST_RES_MISSING;
-	}
-	else {
-		modelPtr = &got->second;
+	//std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
+	//
+	//if (got == m_ModelMap.end()) { // if  does not exists in memory
+	//	return Resources::Status::ST_RES_MISSING;
+	//}
+	//else {
+	//	modelPtr = &got->second;
 		return Resources::Status::ST_OK;
-	}
+	//}
 }
 
-Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int InstanceID, Container& container)
+Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int instanceID, Container& container)
 {
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
-	std::vector<Container>* modelPtr;
-
-
-	if (got == m_Map.end()) { // if  does not exists in memory
-		return Resources::Status::ST_RES_MISSING;
-	}
-	else {
-		modelPtr = &got->second;
-
-		for (size_t i = 0; i < modelPtr->size(); i++)
-		{
-			if (modelPtr->at(i).internalID == InstanceID)
-			{
-				container = modelPtr->at(i);
-				return Resources::Status::ST_OK;
-			}
-
-		}
-		return Resources::Status::ST_RES_MISSING;
-	}
+	return m_currentLevel->GetModelEntity(modelID, instanceID, container);
 }
 
-Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, float rotation)
+Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
-	std::vector<Container>* modelPtr;
-
-	Container newComponent;
-
-	newComponent.component.modelID = modelID;
-	newComponent.position = position;
-	newComponent.rotation = rotation;
-	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
-	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
-	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-	newComponent.component.worldMatrix = containerMatrix;
-	newComponent.internalID = instanceID;
-
-
-	if (got == m_Map.end()) { // if  does not exists in memory
-		this->m_Map[modelID].push_back(newComponent);
-		return Resources::Status::ST_OK;
-	}
-	else if(got != m_Map.end()) {
-		modelPtr = &got->second;
-		modelPtr->push_back(newComponent);
-		return Resources::Status::ST_OK;
-	}
-	else {
-		return Resources::Status::ST_RES_MISSING;
-	}
-
-
+	return m_currentLevel->AddModelEntity(modelID, instanceID, position, rotation);
 }
 
-Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int InstanceID, DirectX::XMVECTOR position, float rotation)
+Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
-	std::vector<Container>* modelPtr;
-
-	if (got == m_Map.end()) { // if  does not exists in memory
-
-		return Resources::Status::ST_RES_MISSING;
-	}
-	else {
-		modelPtr = &got->second;
-
-		for (size_t i = 0; i < modelPtr->size(); i++)
-		{
-			if (modelPtr->at(i).internalID == InstanceID)
-			{
-				modelPtr->at(i).position = position;
-				modelPtr->at(i).rotation = rotation;
-				DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(rotation);
-				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
-				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-				modelPtr->at(i).component.worldMatrix = containerMatrix;
-				return Resources::Status::ST_OK;
-			}
-
-		}
-		return Resources::Status::ST_RES_MISSING;
-	}
+	return m_currentLevel->UpdateModel(modelID, instanceID, position, rotation);
 }
 
-Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int InstanceID)
+Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
 {
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map.find(modelID);
-	std::vector<Container>* modelPtr;
-
-	if (got == m_Map.end()) { // if  does not exists in memory
-
-		return Resources::Status::ST_RES_MISSING;
-	}
-	else {
-		modelPtr = &got->second;
-		modelPtr->erase(modelPtr->begin() + InstanceID -1);
-		return Resources::Status::ST_OK;
-	}
+	return m_currentLevel->RemoveModel(modelID, instanceID);
 }

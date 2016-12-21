@@ -4,16 +4,17 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	: QMainWindow(parent)
 {
 	m_ui.setupUi(this);
-
 	/*making a fileSystemModel to enable a file viewer in the treeView widget*/
 	this->m_model = new QFileSystemModel(this);
 	this->m_model->setRootPath("C:/");
 	this->m_model->setFilter(QDir::NoDotAndDotDot | QDir::Files);
+	setFocusPolicy(Qt::StrongFocus);
+
 	
 	/*a list of filters for the treeView*/
 	QStringList filters;
 	filters << "*.bbf";
-
+	
 	/*setting the filters and disabling the user from seeing any other files*/
 	this->m_model->setNameFilters(filters);
 	this->m_model->setNameFilterDisables(false);
@@ -40,9 +41,26 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_fileImporter->LoadImportedFiles();
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
+	QString title = "Level: ";
+	title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+	this->window()->setWindowTitle(title);
 }
 
-
+void SSP_Editor::keyPressEvent(QKeyEvent * evt)
+{
+	this->m_D3DRenderWidget->keyPressEvent(evt);
+}
+void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
+{
+	this->m_D3DRenderWidget->keyReleaseEvent(evt);
+}
+void SSP_Editor::closeEvent(QCloseEvent * event)
+{
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		PromptSaveLevel();
+	}
+}
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;
@@ -51,18 +69,89 @@ SSP_Editor::~SSP_Editor()
 
 void SSP_Editor::on_NewScene_clicked()
 {
+	//Prompt the user if they want to save the current level before creating a new scene
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
+	//Create the new level
+	LevelHandler::GetInstance()->NewLevel();
+	QString title = "Level: untitled_level";
+	this->window()->setWindowTitle(title);
+	lastSave = "None performed";
 }
 
 void SSP_Editor::on_LoadScene_clicked()
 {
+	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
+	{
+		if (!PromptSaveLevel()) //returns false if the user cancels the operation
+			return;
+	}
+	
+	lastSave = "None performed";
+
+	LevelData::LevelStatus stat = LevelHandler::GetInstance()->ImportLevelFile();
+	if (stat == LevelData::LevelStatus::L_OK)
+	{
+		QString title = "Level: "; //Set new window title
+		title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+		this->window()->setWindowTitle(title);
+	}
 }
 
 void SSP_Editor::on_SaveScene_clicked()
 {
+
+	LevelData::LevelStatus stat = LevelHandler::GetInstance()->ExportLevelFile();
+	if (stat == LevelData::LevelStatus::L_OK)
+	{
+		QString format = "hh:mm:ss";
+		lastSave = time.currentDateTime().toString(format);
+		QString title = "Level: ";
+		title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+		this->window()->setWindowTitle(title);
+	}
+
 }
 
 void SSP_Editor::on_BuildBPF_clicked()
 {
+}
+
+bool SSP_Editor::PromptSaveLevel()
+{
+	QString format = "hh:mm:ss";
+	QMessageBox msgBox(this);
+	msgBox.setText("Do you want to save the current level?");
+	QString last = "Last save performed at : ";
+	last.append(lastSave);
+	msgBox.setInformativeText(last);
+	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Save);
+	int ret = msgBox.exec();
+	switch (ret) {
+	case QMessageBox::Save:
+	{
+
+		LevelData::LevelStatus stat = LevelHandler::GetInstance()->ExportLevelFile();
+		if (stat == LevelData::LevelStatus::L_OK)
+		{
+			QString format = "hh:mm:ss";
+			lastSave = time.currentDateTime().toString(format);
+			QString title = "Level: ";
+			title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
+			this->window()->setWindowTitle(title);
+		}
+		break;
+	}
+
+	case QMessageBox::Cancel:
+		return false; 
+		break;
+	}
+	return true;
 }
 
 void SSP_Editor::on_treeView_doubleClicked()
@@ -72,17 +161,18 @@ void SSP_Editor::on_treeView_doubleClicked()
 	//use index.r to get the right mesh
 	/*checking to see if the selected object is valid*/
 	if (!index.isValid()) return;
-	
-	std::vector<Resources::Model*>* test = m_fileImporter->get_M_models();
+
+	std::vector<Resources::Model*>* test = DataHandler::GetInstance()->GetModels(); //m_fileImporter->get_M_models();
 
 
 	DirectX::XMVECTOR pos = {
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10))),
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10))),
-		-10 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (10 - -10)))
+		0.0f,0.0f,0.0f
+	};
+	DirectX::XMVECTOR rot = {
+		0.0f,0.0f,0.0f
 	};
 
-	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos,0.0f);
+	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();
