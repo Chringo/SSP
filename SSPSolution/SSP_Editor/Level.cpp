@@ -68,6 +68,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
 		this->m_ModelMap[modelID].push_back(newComponent);
+		this->m_uniqueModels.push_back(modelID);
 		return Resources::Status::ST_OK;
 	}
 	else  {
@@ -130,14 +131,23 @@ unsigned int Level::GetNumEntities()
 {
 	unsigned int num = 0;
 
-
 	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
 	{
 		std::vector<Container> * vector = &iterator->second;
-
 		num += vector->size();
-		
 	}
-
 	return num;
+}
+
+unsigned int Level::GetNumLights()
+{
+	return 0;
+}
+
+void Level::Destroy()
+{
+	m_uniqueModels.clear();
+	m_ModelMap.clear();
+	m_LightMap.clear();
+	levelName = "untitled_level";
 }

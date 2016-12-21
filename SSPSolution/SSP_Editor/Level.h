@@ -16,14 +16,14 @@ class Level
 {
 private:
 	std::string levelName = "untitled_level";
-	std::vector<Resources::Model*>* m_uniqueModelPtr;					 //Every unique model, loaded by fileloader
+	std::vector<unsigned int> m_uniqueModels;							 //Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of models in the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
 public:
 	Level();
 	~Level();
 	
-	std::vector<Resources::Model*>* GetUniqueModels() { return this->m_uniqueModelPtr; };
+	std::vector<unsigned int>* GetUniqueModels() { return &this->m_uniqueModels; };
 	std::unordered_map<unsigned int, std::vector<Container>> * GetModelEntities();
 	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
 
@@ -39,9 +39,11 @@ public:
 	Resources::Status UpdateLight( unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveLight( unsigned int instanceID);
 */
-
+	unsigned int GetNumEntities();
+	unsigned int GetNumLights();
 	const std::string* GetName() { return &levelName; };
 	void SetName(std::string& newName) { this->levelName = newName; };
+	void Destroy(); //Clears the whole level, This is used when a new scene is loaded
 };
 
 #endif
