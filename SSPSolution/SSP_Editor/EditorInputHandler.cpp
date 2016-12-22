@@ -248,75 +248,40 @@ void EditorInputHandler::MoveObject()
 	if (m_mouse.leftHeld && transformWidget.IsActive() && transformWidget.selectedAxis != TransformWidget::NONE)
 	{
 		Container * instance;
-
 		m_ProjectRay(m_mouse.x, m_mouse.y);
 		instance = &m_currentLevel->GetModelEntities()->at(m_Picked.ID).at(m_Picked.listInstance);
-		//m_currentLevel->GetModelEntity(m_Picked.ID, m_Picked.listInstance, instance);
-		//Resources::Model * model = modelPtr->at(transformWidget.SelectedModelIndex);
-		
+
+		//*PLANE INTERSECTION*//
+		//Plane position is the position of the axis widget
 		DirectX::XMVECTOR plane = transformWidget.axisOBB[transformWidget.selectedAxis].pos;
 		DirectX::XMVECTOR N;
 		
-		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+		//Normal is vector from axis widget to eye [SOMETHING'S PROBABLY WRONG HERE]
+		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetLookAt()), DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()));
+		N = DirectX::XMVectorScale(N, -1.f);
 
-		//plane.m128_f32[transformWidget.selectedAxis] = 1.0;
-		//N.m128_f32[2 - transformWidget.selectedAxis] = 1.0;
+		//N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+
 
 		DirectX::XMVECTOR P;
 		DirectX::XMVECTOR Diff;
 
-
+		//t is amount of ray unit vectors to reach point, p is point on plane
 		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, N).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, N).m128_f32[0]);
 		P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
 
+		//*MOVEMENT*//
+		//Difference between point on plane relative to axis widget
 		Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
 
+		//Add relative difference to object position
 		instance->position.m128_f32[transformWidget.selectedAxis] =
 			DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
 
-
-		//*UPDATE INSTANCE POSITION HERE*//
-		//*TO MOVE AXIES TOGETHER, ADD ENTIRE VECTORS INSTEAD OF INDIVIDIAL AXIES*//
-		//switch (transformWidget.selectedAxis)
-		//{
-		//	case(TransformWidget::X):
-		//	{
-		//		DirectX::XMVECTOR plane = DirectX::XMPlaneFromPointNormal(instance->position, { 0.f,0.f,1.f });
-		//		DirectX::XMVECTOR P;
-		//		DirectX::XMVECTOR Diff;
-		//		
-
-		//		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, { 0.f,0.f,1.f }).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, { 0.f,0.f,1.f }).m128_f32[0]);
-		//		P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
-
-		//		Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
-
-		//		instance->position.m128_f32[transformWidget.selectedAxis] = 
-		//			DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
-
-
-		//		//instance->position = DirectX::XMVectorAdd(instance->position, Diff);
-		//		//instance->position.m128_f32[transformWidget.selectedAxis] -= 0.15;
-		//		//instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
-
-		//	}
-		//	case(TransformWidget::Y):
-		//	{
-		//		instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
-		//	}
-		//	case(TransformWidget::Z):
-		//	{
-		//		instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
-		//	}
-		//	default:
-		//		break;
-		//}
-
-		//*REF*//
-		//map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
-
-
-		//Bounding box conversion stuffs....
+		
+		
+		
+		//*Bounding box conversion stuffs....*//
 		BoundingBoxHeader boundingBox = modelPtr->at(transformWidget.SelectedModelIndex)->GetOBBData();
 		OBB obj;
 		obj.ext[0] = boundingBox.extension[0];
@@ -340,28 +305,16 @@ void EditorInputHandler::MoveObject()
 
 		obj.ort = extensionMatrix;
 
-		//OBB obj = *(OBB*)&boundingBox;
-		//DONT FORGET TO MULTIPLY MATRIX
+		//into worldspace we go!
 		DirectX::XMMATRIX tempWorld = instance->component.worldMatrix;
 		DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
 		obj.ort = finalOrt;
 
+		//Set the bounding box for widget
 		transformWidget.SelectObb(obj);
 
-
-		
-
-
-
-
-
-		//flag for update, i hope.
+		//flag instance for update
 		instance->isDirty = true;
-		
-
-
-
-
 	}
 
 }
