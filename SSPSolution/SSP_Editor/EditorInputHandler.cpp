@@ -272,15 +272,11 @@ void EditorInputHandler::RotateObject(int direction)
 			break;
 		}
 		instance->rotation = DirectX::XMVectorAdd(instance->rotation, rotation);
-		//instance->rotation = rotation;
-		
-		//DirectX::XMVector3Rotate(instance->rotation, rotation);
-		instance->isDirty = true;
-		
 
-		//printf("bajs %d\n", direction);
+		instance->isDirty = true;
+	
 	}
-	//printf("kiss %d\n", direction);
+
 }
 
 void EditorInputHandler::MoveObject()
