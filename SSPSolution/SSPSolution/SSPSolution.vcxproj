@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)SDL-SSP\lib\x86;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;GraphicsDLL-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;GraphicsDLL-d.lib;AIDLL-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -85,7 +85,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)SDL-SSP\lib\x86;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;GraphicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;AIDLL.lib;GraphicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -97,6 +97,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
     <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="LevelDirector.cpp" />
     <ClCompile Include="LevelSelectState.cpp" />
     <ClCompile Include="LevelState.cpp" />
     <ClCompile Include="main.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
     <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="LevelDirector.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="LevelState.h" />
     <ClInclude Include="MenuState.h" />
