@@ -135,6 +135,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
 {
 	this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime, evt);
+
+	
 }
 
 void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)

@@ -242,6 +242,46 @@ void EditorInputHandler::mouseButtonRelease(QMouseEvent * evt)
 
 	}
 }
+void EditorInputHandler::RotateObject(int direction)
+{
+	if (transformWidget.IsActive())
+	{
+		Container * instance;
+		m_ProjectRay(m_mouse.x, m_mouse.y);
+		instance = &m_currentLevel->GetModelEntities()->at(m_Picked.ID).at(m_Picked.listInstance);
+
+		DirectX::XMVECTOR rotation;
+		float angle = DirectX::XMConvertToRadians(45.f);
+
+
+		switch (direction)
+		{
+		case (Qt::Key_Up):
+			rotation = DirectX::XMQuaternionRotationAxis({ 1.0f, 0.0f, 0.0f }, angle);
+			break;
+		case (Qt::Key_Down):
+			rotation = DirectX::XMQuaternionRotationAxis({ 1.0f, 0.0f, 0.0f }, -angle);
+			break;
+		case (Qt::Key_Left):
+			rotation = DirectX::XMQuaternionRotationAxis({ 0.0f, 1.0f, 0.0f }, angle);
+			break;
+		case (Qt::Key_Right):
+			rotation = DirectX::XMQuaternionRotationAxis({ 0.0f, 1.0f, 0.0f }, -angle);
+			break;
+		default:
+			break;
+		}
+		instance->rotation = DirectX::XMVectorAdd(instance->rotation, rotation);
+		//instance->rotation = rotation;
+		
+		//DirectX::XMVector3Rotate(instance->rotation, rotation);
+		instance->isDirty = true;
+		
+
+		//printf("bajs %d\n", direction);
+	}
+	//printf("kiss %d\n", direction);
+}
 
 void EditorInputHandler::MoveObject()
 {
@@ -250,34 +290,45 @@ void EditorInputHandler::MoveObject()
 		Container * instance;
 		m_ProjectRay(m_mouse.x, m_mouse.y);
 		instance = &m_currentLevel->GetModelEntities()->at(m_Picked.ID).at(m_Picked.listInstance);
+		//*m_Picked only containg ids seems retarded, but maby its just me...           *//
+		//*why use the map over and over when we already know which instance's active...*//
 
 		//*PLANE INTERSECTION*//
 		//Plane position is the position of the axis widget
 		DirectX::XMVECTOR plane = transformWidget.axisOBB[transformWidget.selectedAxis].pos;
 		DirectX::XMVECTOR N;
 		
-		//Normal is vector from axis widget to eye [SOMETHING'S PROBABLY WRONG HERE]
+		//Normal is vector from axis widget to eye direction [SOMETHING'S PROBABLY WRONG HERE]
 		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetLookAt()), DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()));
 		N = DirectX::XMVectorScale(N, -1.f);
 
+		//plane normal relative to eye position
 		//N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
-
-
-		DirectX::XMVECTOR P;
-		DirectX::XMVECTOR Diff;
 
 		//t is amount of ray unit vectors to reach point, p is point on plane
 		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, N).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, N).m128_f32[0]);
-		P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
+		DirectX::XMVECTOR P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
 
 		//*MOVEMENT*//
 		//Difference between point on plane relative to axis widget
-		Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
 
-		//Add relative difference to object position
-		instance->position.m128_f32[transformWidget.selectedAxis] =
-			DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
-
+		//Change position
+		//Snap
+		if (Diff.m128_f32[transformWidget.selectedAxis] > 1.0)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] += 1.0f;
+		}
+		else if(Diff.m128_f32[transformWidget.selectedAxis] < -1.0)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] -= 1.0f;
+		}
+		//Non snap
+		if (false)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] =
+				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
+		}
 		
 		
 		
@@ -740,6 +791,12 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 		{
 		case Qt::Key_R:
 			CameraReset();
+			break;
+		case (Qt::Key_Up):
+		case (Qt::Key_Down):
+		case (Qt::Key_Left):
+		case (Qt::Key_Right):
+			this->RotateObject(evt->key());
 			break;
 		default:
 			break;

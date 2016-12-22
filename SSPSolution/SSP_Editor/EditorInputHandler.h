@@ -191,7 +191,9 @@ public:
 	void UpdateMouse();
 	void mouseButtonDown(QMouseEvent* evt);
 	void mouseButtonRelease(QMouseEvent * evt);
+	void RotateObject(int direction);
 	void MoveObject();
+
 
 
 	EditorInputHandler(
