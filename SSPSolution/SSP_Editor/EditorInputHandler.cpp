@@ -210,14 +210,15 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 		//*MOUSEPICKING*//
 		m_ProjectRay(m_mouse.x, m_mouse.y);
 
-		bool object, widget;
+		bool object = false;
+		bool widget = false;
 
 		if (transformWidget.IsActive())
 		{
 			widget = m_PickTransformWidget();
 		}
-		
-		object = m_PickObjectSelection();
+		if (!widget)
+			object = m_PickObjectSelection();
 
 		if (object || widget)
 		{
@@ -229,7 +230,6 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 		}
 
 		this->m_mouse.leftHeld = true;
-
 	}
 }
 
@@ -238,27 +238,127 @@ void EditorInputHandler::mouseButtonRelease(QMouseEvent * evt)
 	if (evt->button() == Qt::LeftButton)
 	{
 		this->m_mouse.leftHeld = false;
+		this->transformWidget.SelectAxis(TransformWidget::NONE);
 
 	}
 }
 
 void EditorInputHandler::MoveObject()
 {
-	if (m_mouse.leftHeld)
+	if (m_mouse.leftHeld && transformWidget.IsActive() && transformWidget.selectedAxis != TransformWidget::NONE)
 	{
+		Container * instance;
+
 		m_ProjectRay(m_mouse.x, m_mouse.y);
+		instance = &m_currentLevel->GetModelEntities()->at(m_Picked.ID).at(m_Picked.listInstance);
+		//m_currentLevel->GetModelEntity(m_Picked.ID, m_Picked.listInstance, instance);
+		//Resources::Model * model = modelPtr->at(transformWidget.SelectedModelIndex);
+		
+		DirectX::XMVECTOR plane = transformWidget.axisOBB[transformWidget.selectedAxis].pos;
+		DirectX::XMVECTOR N;
+		
+		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
 
-		//Container in m_Map has instance position.
+		//plane.m128_f32[transformWidget.selectedAxis] = 1.0;
+		//N.m128_f32[2 - transformWidget.selectedAxis] = 1.0;
+
+		DirectX::XMVECTOR P;
+		DirectX::XMVECTOR Diff;
 
 
-		//modelPtr->at(m_Picked.listInstance)
+		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, N).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, N).m128_f32[0]);
+		P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
 
-		//Container * container = m_currentLevel->GetModelEntities()->find(m_Picked.listInstance);
-		//std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_Map->find(modelPtr->at(m_Picked.listInstance)->GetId());
+		Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
 
-		//got->first
-		//
-		//m_Picked; //selected object
+		instance->position.m128_f32[transformWidget.selectedAxis] =
+			DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
+
+
+		//*UPDATE INSTANCE POSITION HERE*//
+		//*TO MOVE AXIES TOGETHER, ADD ENTIRE VECTORS INSTEAD OF INDIVIDIAL AXIES*//
+		//switch (transformWidget.selectedAxis)
+		//{
+		//	case(TransformWidget::X):
+		//	{
+		//		DirectX::XMVECTOR plane = DirectX::XMPlaneFromPointNormal(instance->position, { 0.f,0.f,1.f });
+		//		DirectX::XMVECTOR P;
+		//		DirectX::XMVECTOR Diff;
+		//		
+
+		//		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, { 0.f,0.f,1.f }).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, { 0.f,0.f,1.f }).m128_f32[0]);
+		//		P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
+
+		//		Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+
+		//		instance->position.m128_f32[transformWidget.selectedAxis] = 
+		//			DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
+
+
+		//		//instance->position = DirectX::XMVectorAdd(instance->position, Diff);
+		//		//instance->position.m128_f32[transformWidget.selectedAxis] -= 0.15;
+		//		//instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
+
+		//	}
+		//	case(TransformWidget::Y):
+		//	{
+		//		instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
+		//	}
+		//	case(TransformWidget::Z):
+		//	{
+		//		instance->position.m128_f32[transformWidget.selectedAxis] += 0.01f;
+		//	}
+		//	default:
+		//		break;
+		//}
+
+		//*REF*//
+		//map->at(m_Picked.ID).at(m_Picked.listInstance).position.m128_f32[0] += -1;
+
+
+		//Bounding box conversion stuffs....
+		BoundingBoxHeader boundingBox = modelPtr->at(transformWidget.SelectedModelIndex)->GetOBBData();
+		OBB obj;
+		obj.ext[0] = boundingBox.extension[0];
+		obj.ext[1] = boundingBox.extension[1];
+		obj.ext[2] = boundingBox.extension[2];
+
+		obj.pos = DirectX::XMVectorSet(
+			instance->position.m128_f32[0],
+			instance->position.m128_f32[1],
+			instance->position.m128_f32[2],
+			1.0f);
+
+
+		DirectX::XMMATRIX extensionMatrix;
+		extensionMatrix = DirectX::XMMatrixSet(
+			boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+			boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+			boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+		obj.ort = extensionMatrix;
+
+		//OBB obj = *(OBB*)&boundingBox;
+		//DONT FORGET TO MULTIPLY MATRIX
+		DirectX::XMMATRIX tempWorld = instance->component.worldMatrix;
+		DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
+		obj.ort = finalOrt;
+
+		transformWidget.SelectObb(obj);
+
+
+		
+
+
+
+
+
+		//flag for update, i hope.
+		instance->isDirty = true;
+		
+
 
 
 
@@ -311,7 +411,7 @@ bool EditorInputHandler::m_PickTransformWidget()
 
 bool EditorInputHandler::m_PickObjectSelection()
 {
-	bool result;
+	bool gotHit = false;
 
 	//checks if we picked on a model by iterating
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
@@ -360,6 +460,8 @@ bool EditorInputHandler::m_PickObjectSelection()
 					DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
 					obj.ort = finalOrt;
 
+					bool result = false;
+					/*PICKING HERE NEEDS DISTANCE CHECK*/
 					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
 					//transformWidget.setActive(result);
 					if (result)
@@ -369,7 +471,7 @@ bool EditorInputHandler::m_PickObjectSelection()
 
 						//update widget with the intersected obb
 						this->transformWidget.SelectObb(obj);
-
+						this->transformWidget.SelectedModelIndex = i;
 						if (this->m_Picked.listInstance != this->m_LastPicked.listInstance)
 						{
 							this->m_LastPicked = m_Picked;
@@ -378,16 +480,19 @@ bool EditorInputHandler::m_PickObjectSelection()
 						{
 							this->m_LastPicked = this->m_Picked;
 						}
+
+						gotHit = result;
 					}
-					else
-					{
-						return result;
-					}
+
+				}
+				if (!gotHit)
+				{
+					this->transformWidget.SelectedModelIndex = TransformWidget::NONE;
 				}
 			}
 		}
 	}
-	return result;
+	return gotHit;
 
 	//return true;
 }
@@ -423,12 +528,6 @@ void EditorInputHandler::MousePicking()
 						obj.ext[0] = boundingBox.extension[0];
 						obj.ext[1] = boundingBox.extension[1];
 						obj.ext[2] = boundingBox.extension[2];
-
-						//DirectX::XMFLOAT3 temp;
-						//temp.x = InstancePtr->at(j).position.m128_f32[0];
-						//temp.y = InstancePtr->at(j).position.m128_f32[1];
-						//temp.z = InstancePtr->at(j).position.m128_f32[2];
-						//obj.pos = DirectX::XMLoadFloat3(&temp);
 
 						obj.pos = DirectX::XMVectorSet(
 							InstancePtr->at(j).position.m128_f32[0],

@@ -33,8 +33,8 @@ struct Mouse
 	int lastX;
 	int lastY;
 
-	bool rightHeld;
-	bool leftHeld;
+	bool rightHeld = false;
+	bool leftHeld = false;
 };
 
 struct TransformWidget
@@ -50,14 +50,14 @@ public:
 		NUM_AXIS
 	};
 private:
-	bool m_active;
+	bool m_active = false;
 	DirectX::XMVECTOR m_colors[4];
 public:
 	OBB selectedObjectOBB;
 	OBB axisOBB[NUM_AXIS];
 	DirectX::XMVECTOR * axisColors[NUM_AXIS];
-
-	unsigned int selectedAxis;
+	int SelectedModelIndex = NONE;
+	unsigned int selectedAxis = NONE;
 	
 
 public:
@@ -73,11 +73,17 @@ public:
 	{
 		selectedObjectOBB = selectedObject;
 
+		
+
 		for (int i = 0; i < NUM_AXIS; i++)
 		{
 			axisOBB[i].ort = selectedObject.ort;
 			axisOBB[i].pos = selectedObject.pos;
-			axisOBB[i].pos.m128_f32[i] += 1.f;
+			//relative to origin
+			//axisOBB[i].pos.m128_f32[i] += 1.f;
+
+			//relative to object
+			axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
 		}
 	};
 
@@ -91,6 +97,10 @@ public:
 		{
 			selectedAxis = i;
 			axisColors[i] = &m_colors[NUM_AXIS];
+		}
+		else
+		{
+			selectedAxis = NONE;
 		}
 	}
 
