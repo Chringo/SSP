@@ -27,6 +27,7 @@
 		virtual void closeEvent(QCloseEvent * event);
 	public slots:
 	void on_treeView_doubleClicked();
+	void on_treeView_selection_Changed();
 	void on_NewScene_clicked();
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();
@@ -43,5 +44,7 @@
 		 QDateTime time;
 		QString lastSave = "None made";
 		bool PromptSaveLevel();
+
+		
 	};
 #endif

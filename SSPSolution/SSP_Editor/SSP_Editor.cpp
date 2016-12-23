@@ -20,25 +20,40 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model->setNameFilterDisables(false);
 
 	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
-	QTreeWidgetItem *model = new QTreeWidgetItem(m_ui.treeWidget);
-	model->setText(0, "Models");
-	m_ui.treeWidget->addTopLevelItem(model);
-	QTreeWidgetItem *anim = new QTreeWidgetItem(m_ui.treeWidget);
+	QBrush brush(Qt::GlobalColor::gray);
+	QColor color;
+	
+	QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.treeWidget);
+	model->setText(0, "Models");	
+	model->setFlags(Qt::NoItemFlags);	
+	model->setBackground(0, brush);			
+	model->setTextColor(0, color.black());
+	model->setTextAlignment(0,Qt::AlignCenter);
+	m_ui.treeWidget->addTopLevelItem(model);						
+	QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.treeWidget);
 	anim->setText(0, "Animations");
+	anim->setFlags(Qt::NoItemFlags);
+	anim->setBackground(0, brush);			
+	anim->setTextColor(0, color.black());
+	anim->setTextAlignment(0, Qt::AlignCenter);
 	m_ui.treeWidget->addTopLevelItem(anim);
+	m_ui.treeWidget->setHeaderLabels(QStringList() << "Resources" );
 	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
+	connect(m_ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(on_treeView_selection_Changed()));
+	
 
 
 	/*connecting the rest of the buttons to the functions*/
-	connect(m_ui.actionNew_scene, SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
+	connect(m_ui.actionNew_scene,  SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
 	connect(m_ui.actionLoad_scene, SIGNAL(triggered()), this, SLOT(on_LoadScene_clicked()));
 	connect(m_ui.actionSave_scene, SIGNAL(triggered()), this, SLOT(on_SaveScene_clicked()));
-	connect(m_ui.actionBuild_BPF, SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
+	connect(m_ui.actionBuild_BPF,  SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
 
-	this->m_fileImporter = new FileImporter(m_ui.treeWidget);
+	this->m_fileImporter    = new FileImporter(m_ui.treeWidget);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
-	this->m_fileImporter->ImportFromServer();
-	this->m_fileImporter->LoadImportedFiles();
+	this->m_fileImporter->ImportFromServer();	 
+	this->m_fileImporter->LoadImportedFiles();  
+
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 	QString title = "Level: ";
@@ -65,6 +80,23 @@ SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;
 	delete this->m_fileImporter;
+	delete m_D3DRenderWidget;
+	m_ui.treeWidget->clear();
+
+}
+
+void SSP_Editor::on_treeView_selection_Changed()
+{
+	static QTreeWidgetItem* lastSelection = nullptr; //store last selection
+	QBrush brush_normal(Qt::GlobalColor::white);
+	QBrush brush_green(Qt::green);
+
+	if(lastSelection != nullptr)
+		lastSelection->setBackground(0, brush_normal);
+
+	m_ui.treeWidget->currentItem()->setBackground(0, brush_green);
+
+	lastSelection = m_ui.treeWidget->currentItem();
 }
 
 void SSP_Editor::on_NewScene_clicked()
@@ -146,7 +178,6 @@ bool SSP_Editor::PromptSaveLevel()
 		}
 		break;
 	}
-
 	case QMessageBox::Cancel:
 		return false; 
 		break;
