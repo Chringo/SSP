@@ -12,7 +12,6 @@ FileImporter::FileImporter(QTreeWidget *itemList)
 
 FileImporter::~FileImporter()
 {
-	m_models.clear();
 }
 
 void FileImporter::ImportFromServer()
@@ -140,18 +139,6 @@ void FileImporter::LoadImportedFiles()
 		}
 	}
 }
-
-Resources::Model * FileImporter::get_model(unsigned int modelID)
-{
-	
-	for (int i = 0; i < this->m_models.size(); ++i)
-	{
-		if (modelID == m_models.at(i)->GetId())
-			return m_models.at(i);
-	}
-	return nullptr;
-}
-
 void FileImporter::handleMesh(char * m_bbf_object)
 {
 	/*create model type here and then when reading */
@@ -163,7 +150,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
 
-	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
+	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data); //memory handled in Datahandler
 
 
 	unsigned int * indices;
