@@ -34,7 +34,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
-	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();// this->m_fileImporter->get_M_models();
+	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();
 	
 
 	for (size_t i = 0; i < modelPtr->size(); i++)
