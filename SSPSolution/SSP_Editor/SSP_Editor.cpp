@@ -20,27 +20,50 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model->setNameFilterDisables(false);
 
 	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
-	QBrush brush(Qt::GlobalColor::gray);
+	
 	QColor color;
 	
 	QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.treeWidget);
 	model->setText(0, "Models");	
-	model->setFlags(Qt::NoItemFlags);	
-	model->setBackground(0, brush);			
-	model->setTextColor(0, color.black());
+	
 	model->setTextAlignment(0,Qt::AlignCenter);
-	m_ui.treeWidget->addTopLevelItem(model);						
+	m_ui.treeWidget->addTopLevelItem(model);		
+	m_ui.treeWidget->insertTopLevelItem(0, model);
+	
 	QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.treeWidget);
 	anim->setText(0, "Animations");
-	anim->setFlags(Qt::NoItemFlags);
-	anim->setBackground(0, brush);			
-	anim->setTextColor(0, color.black());
+			
 	anim->setTextAlignment(0, Qt::AlignCenter);
-	m_ui.treeWidget->addTopLevelItem(anim);
+	m_ui.treeWidget->addTopLevelItem(anim);	
+	m_ui.treeWidget->insertTopLevelItem(1,anim);
 	m_ui.treeWidget->setHeaderLabels(QStringList() << "Resources" );
+	
 	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 	connect(m_ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(on_treeView_selection_Changed()));
-	
+
+	for (size_t i = 0; i < 10; i++)
+	{
+		QTreeWidgetItem* modelb = new QTreeWidgetItem();
+		QString hej = "ITEM ITEM ITEM #";
+		hej.append(i);
+		modelb->setFlags(Qt::ItemFlag::ItemIsEnabled);
+		modelb->setText(0, hej);
+		modelb->setTextAlignment(0, Qt::AlignLeft);
+		m_ui.treeWidget->topLevelItem(1)->addChild(modelb);
+	}
+	 
+	for (size_t i = 0; i < 10; i++)
+	{
+		QTreeWidgetItem* modela = new QTreeWidgetItem();
+		QString hej = "ITEM ITEM ITEM # ";
+		hej.append(i);
+
+		modela->setText(0, hej);
+		modela->setFlags(Qt::ItemFlag::ItemIsEnabled);
+		modela->setTextAlignment(0, Qt::AlignLeft);
+		int aaa = m_ui.treeWidget->topLevelItemCount();
+		m_ui.treeWidget->topLevelItem(0)->addChild(modela);
+	}
 
 
 	/*connecting the rest of the buttons to the functions*/
@@ -87,16 +110,18 @@ SSP_Editor::~SSP_Editor()
 
 void SSP_Editor::on_treeView_selection_Changed()
 {
-	static QTreeWidgetItem* lastSelection = nullptr; //store last selection
-	QBrush brush_normal(Qt::GlobalColor::white);
-	QBrush brush_green(Qt::green);
-
-	if(lastSelection != nullptr)
-		lastSelection->setBackground(0, brush_normal);
-
-	m_ui.treeWidget->currentItem()->setBackground(0, brush_green);
-
-	lastSelection = m_ui.treeWidget->currentItem();
+	//if(m_ui.treeWidget->currentItem()->parent() == NULL) //If a category window is clicked
+	//	return;
+	//static QTreeWidgetItem* lastSelection = nullptr; //store last selection
+	QBrush brush_normal(Qt::GlobalColor::blue);
+	//QBrush brush_blue(QColor(85, 170, 255));
+	//
+	//if(lastSelection != nullptr)
+	//	lastSelection->setBackground(0, brush_normal);
+	//
+	m_ui.treeWidget->currentItem()->setBackground(0, brush_normal/*QColor(85, 170, 255)*/);
+	//
+	//lastSelection = m_ui.treeWidget->currentItem();
 }
 
 void SSP_Editor::on_NewScene_clicked()
@@ -187,6 +212,8 @@ bool SSP_Editor::PromptSaveLevel()
 
 void SSP_Editor::on_treeView_doubleClicked()
 {
+	if (m_ui.treeWidget->currentItem()->parent() == NULL) //If a category window is clicked
+		return;
 	QModelIndex index = m_ui.treeWidget->currentIndex();
 	
 	//use index.r to get the right mesh
@@ -203,7 +230,7 @@ void SSP_Editor::on_treeView_doubleClicked()
 		0.0f,0.0f,0.0f
 	};
 
-	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
+//	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();
