@@ -25,13 +25,14 @@
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
 		virtual void closeEvent(QCloseEvent * event);
+		virtual void resizeEvent(QResizeEvent *event);
 	public slots:
 	void on_treeView_doubleClicked();
-	void on_treeView_selection_Changed();
 	void on_NewScene_clicked();
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();
 	void on_BuildBPF_clicked();
+
 
 	private:
 		Ui::SSP_EditorClass m_ui;

@@ -39,8 +39,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	m_ui.treeWidget->setHeaderLabels(QStringList() << "Resources" );
 	
 	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
-	connect(m_ui.treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(on_treeView_selection_Changed()));
-
+	
 	for (size_t i = 0; i < 10; i++)
 	{
 		QTreeWidgetItem* modelb = new QTreeWidgetItem();
@@ -99,6 +98,10 @@ void SSP_Editor::closeEvent(QCloseEvent * event)
 		PromptSaveLevel();
 	}
 }
+void SSP_Editor::resizeEvent(QResizeEvent * event)
+{
+	m_D3DRenderWidget->resizeEvent(event);
+}
 SSP_Editor::~SSP_Editor()
 {
 	delete this->m_model;
@@ -108,21 +111,7 @@ SSP_Editor::~SSP_Editor()
 
 }
 
-void SSP_Editor::on_treeView_selection_Changed()
-{
-	//if(m_ui.treeWidget->currentItem()->parent() == NULL) //If a category window is clicked
-	//	return;
-	//static QTreeWidgetItem* lastSelection = nullptr; //store last selection
-	QBrush brush_normal(Qt::GlobalColor::blue);
-	//QBrush brush_blue(QColor(85, 170, 255));
-	//
-	//if(lastSelection != nullptr)
-	//	lastSelection->setBackground(0, brush_normal);
-	//
-	m_ui.treeWidget->currentItem()->setBackground(0, brush_normal/*QColor(85, 170, 255)*/);
-	//
-	//lastSelection = m_ui.treeWidget->currentItem();
-}
+
 
 void SSP_Editor::on_NewScene_clicked()
 {
