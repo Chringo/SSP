@@ -13,14 +13,19 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
@@ -39,16 +44,35 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QLabel *label_2;
     QWidget *RenderWidget;
-    QWidget *RenderWidget_2;
-    QGroupBox *groupBox;
+    QLabel *label_2;
     QPushButton *pushButton;
     QTabWidget *tabWidget;
     QWidget *tab;
     QVBoxLayout *verticalLayout;
     QTreeWidget *treeWidget;
     QWidget *tab_2;
+    QGroupBox *Values;
+    QVBoxLayout *verticalLayout_3;
+    QFrame *nameQFrame;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *nameLabel;
+    QLineEdit *lineEdit;
+    QFrame *gridlayout;
+    QGridLayout *gridLayout_3;
+    QLabel *rotationlabel;
+    QDoubleSpinBox *xValue_translate;
+    QDoubleSpinBox *yValue_translate;
+    QLabel *scalelabel;
+    QDoubleSpinBox *zValue_translate;
+    QLabel *translateLabel;
+    QDoubleSpinBox *xValue_scale;
+    QDoubleSpinBox *xValue_rot;
+    QDoubleSpinBox *yValue_scale;
+    QDoubleSpinBox *yValue_rot;
+    QDoubleSpinBox *zValue_scale;
+    QDoubleSpinBox *zValue_rot;
+    QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -58,7 +82,7 @@ public:
     {
         if (SSP_EditorClass->objectName().isEmpty())
             SSP_EditorClass->setObjectName(QStringLiteral("SSP_EditorClass"));
-        SSP_EditorClass->resize(1131, 695);
+        SSP_EditorClass->resize(1171, 703);
         SSP_EditorClass->setAutoFillBackground(false);
         SSP_EditorClass->setStyleSheet(QLatin1String("\n"
 "QMainWindow{\n"
@@ -69,6 +93,35 @@ public:
 "background:   rgb(68, 68, 68);\n"
 "color: white;\n"
 "border: black;\n"
+"}\n"
+"QMenu{\n"
+"background:   rgb(68, 68, 68);\n"
+"color: white;\n"
+"border: black;\n"
+"}\n"
+"QMenu::item:selected {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
+"}\n"
+"\n"
+"\n"
+"\n"
+"QGroupBox{\n"
+"background:   rgb(68, 68, 68);\n"
+"color: white;\n"
+"border: 1px solid black;\n"
+"border-radius : 1px;\n"
+"}\n"
+"QGroupBox::title{\n"
+"background:   transparent;\n"
+"color: white;\n"
+"}\n"
+"\n"
+"QDoubleSpinBox{\n"
+"background:  rgb(48, 48, 48);\n"
+"}\n"
+"\n"
+"QLineEdit{\n"
+"background:  rgb(48, 48, 48);\n"
 "}\n"
 "\n"
 "\n"
@@ -84,7 +137,8 @@ public:
 "\n"
 "QTabBar::tab{\n"
 "    background:  rgb(48, 48, 48);\n"
-"    border: 1px solid rgb(68, 68, 68) ;\n"
+"    border: 1px solid rg"
+                        "b(68, 68, 68) ;\n"
 "    border-bottom-color:  rgb(68, 68, 68); /* same as the pane color */\n"
 "    border-top-left-radius: 4px;\n"
 "    border-top-right-radius: 4px;\n"
@@ -108,8 +162,7 @@ public:
 " \n"
 "}\n"
 "\n"
-""
-                        "QTreeWidget::Item:has-children{\n"
+"QTreeWidget::Item:has-children{\n"
 "spacing: 3px;\n"
 "border-radius: 4px;\n"
 "border: 1px solid;\n"
@@ -124,11 +177,8 @@ public:
 "}\n"
 "QTreeView::item:hover {\n"
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
-"    border: 1px solid #bfcde4;\n"
-"}\n"
-"QTreeView::item:pressed {\n"
-"    background: green;\n"
-"    border: 1px solid #bfcde4;\n"
+"    border: 1px solid #"
+                        "bfcde4;\n"
 "}\n"
 "\n"
 "\n"
@@ -136,6 +186,11 @@ public:
 "#centralWidget{\n"
 "background:  rgb(68, 68, 68);\n"
 "border : 1px solid black;\n"
+"}\n"
+"\n"
+"#nameQFrame{\n"
+"\n"
+" margin-top: 10px;\n"
 "}\n"
 "\n"
 "QLabel{\n"
@@ -151,14 +206,15 @@ public:
 "}\n"
 "QPushButton:hover{\n"
 "   background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
-"    border: 1px "
-                        "solid #bfcde4;}\n"
+"    border: 1px solid #bfcde4;}\n"
 "\n"
 "QPushButton:pressed{\n"
 "  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(221, 263, 239), stop: 1 #cbdaf1);\n"
 "    border: 1px solid #bfcde4;}\n"
 "\n"
-""));
+"background:   rgb(68, 68, 68);\n"
+"color: white;\n"
+"border: black;"));
         SSP_EditorClass->setAnimated(true);
         actionNew_scene = new QAction(SSP_EditorClass);
         actionNew_scene->setObjectName(QStringLiteral("actionNew_scene"));
@@ -175,46 +231,26 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
-
         RenderWidget = new QWidget(centralWidget);
         RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
         RenderWidget->setSizePolicy(sizePolicy);
-        RenderWidget->setMinimumSize(QSize(711, 571));
+        RenderWidget->setMinimumSize(QSize(1, 1));
         RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
         RenderWidget->setMouseTracking(true);
         RenderWidget->setFocusPolicy(Qt::StrongFocus);
         RenderWidget->setAcceptDrops(true);
         RenderWidget->setAutoFillBackground(true);
 
-        gridLayout->addWidget(RenderWidget, 1, 2, 2, 1);
+        gridLayout->addWidget(RenderWidget, 1, 2, 3, 1);
 
-        RenderWidget_2 = new QWidget(centralWidget);
-        RenderWidget_2->setObjectName(QStringLiteral("RenderWidget_2"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(RenderWidget_2->sizePolicy().hasHeightForWidth());
-        RenderWidget_2->setSizePolicy(sizePolicy1);
-        RenderWidget_2->setCursor(QCursor(Qt::ArrowCursor));
-        RenderWidget_2->setMouseTracking(true);
-        RenderWidget_2->setFocusPolicy(Qt::StrongFocus);
-        RenderWidget_2->setAcceptDrops(true);
-        RenderWidget_2->setAutoFillBackground(true);
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
 
-        gridLayout->addWidget(RenderWidget_2, 2, 3, 1, 1);
-
-        groupBox = new QGroupBox(centralWidget);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-
-        gridLayout->addWidget(groupBox, 1, 3, 1, 1);
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
 
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
@@ -223,11 +259,12 @@ public:
 
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy1);
+        tabWidget->setMinimumSize(QSize(200, 0));
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
         verticalLayout = new QVBoxLayout(tab);
@@ -250,23 +287,190 @@ public:
         tab_2->setObjectName(QStringLiteral("tab_2"));
         tabWidget->addTab(tab_2, QString());
 
-        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
+        gridLayout->addWidget(tabWidget, 1, 1, 1, 1);
+
+        Values = new QGroupBox(centralWidget);
+        Values->setObjectName(QStringLiteral("Values"));
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
+        Values->setSizePolicy(sizePolicy2);
+        Values->setMinimumSize(QSize(250, 571));
+        Values->setAutoFillBackground(false);
+        Values->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+        Values->setFlat(false);
+        verticalLayout_3 = new QVBoxLayout(Values);
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
+        verticalLayout_3->setSizeConstraint(QLayout::SetDefaultConstraint);
+        nameQFrame = new QFrame(Values);
+        nameQFrame->setObjectName(QStringLiteral("nameQFrame"));
+        nameQFrame->setFrameShape(QFrame::StyledPanel);
+        nameQFrame->setFrameShadow(QFrame::Raised);
+        horizontalLayout_2 = new QHBoxLayout(nameQFrame);
+        horizontalLayout_2->setSpacing(4);
+        horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        nameLabel = new QLabel(nameQFrame);
+        nameLabel->setObjectName(QStringLiteral("nameLabel"));
+
+        horizontalLayout_2->addWidget(nameLabel);
+
+        lineEdit = new QLineEdit(nameQFrame);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setCursorMoveStyle(Qt::VisualMoveStyle);
+
+        horizontalLayout_2->addWidget(lineEdit);
+
+
+        verticalLayout_3->addWidget(nameQFrame);
+
+        gridlayout = new QFrame(Values);
+        gridlayout->setObjectName(QStringLiteral("gridlayout"));
+        gridlayout->setFrameShape(QFrame::StyledPanel);
+        gridlayout->setFrameShadow(QFrame::Raised);
+        gridLayout_3 = new QGridLayout(gridlayout);
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setContentsMargins(11, 11, 11, 11);
+        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        rotationlabel = new QLabel(gridlayout);
+        rotationlabel->setObjectName(QStringLiteral("rotationlabel"));
+
+        gridLayout_3->addWidget(rotationlabel, 4, 0, 1, 1);
+
+        xValue_translate = new QDoubleSpinBox(gridlayout);
+        xValue_translate->setObjectName(QStringLiteral("xValue_translate"));
+        xValue_translate->setWrapping(true);
+        xValue_translate->setFrame(true);
+        xValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        xValue_translate->setDecimals(4);
+        xValue_translate->setMinimum(-10000);
+        xValue_translate->setMaximum(10000);
+
+        gridLayout_3->addWidget(xValue_translate, 1, 1, 1, 1);
+
+        yValue_translate = new QDoubleSpinBox(gridlayout);
+        yValue_translate->setObjectName(QStringLiteral("yValue_translate"));
+        yValue_translate->setWrapping(true);
+        yValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_translate->setDecimals(4);
+        yValue_translate->setMinimum(-10000);
+        yValue_translate->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_translate, 1, 2, 1, 1);
+
+        scalelabel = new QLabel(gridlayout);
+        scalelabel->setObjectName(QStringLiteral("scalelabel"));
+
+        gridLayout_3->addWidget(scalelabel, 5, 0, 1, 1);
+
+        zValue_translate = new QDoubleSpinBox(gridlayout);
+        zValue_translate->setObjectName(QStringLiteral("zValue_translate"));
+        zValue_translate->setWrapping(true);
+        zValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        zValue_translate->setDecimals(4);
+        zValue_translate->setMinimum(-10000);
+        zValue_translate->setMaximum(10000);
+
+        gridLayout_3->addWidget(zValue_translate, 1, 3, 1, 1);
+
+        translateLabel = new QLabel(gridlayout);
+        translateLabel->setObjectName(QStringLiteral("translateLabel"));
+
+        gridLayout_3->addWidget(translateLabel, 1, 0, 1, 1);
+
+        xValue_scale = new QDoubleSpinBox(gridlayout);
+        xValue_scale->setObjectName(QStringLiteral("xValue_scale"));
+        xValue_scale->setMinimumSize(QSize(0, 0));
+        xValue_scale->setWrapping(true);
+        xValue_scale->setFrame(true);
+        xValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        xValue_scale->setDecimals(4);
+        xValue_scale->setMinimum(-10000);
+        xValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(xValue_scale, 5, 1, 1, 1);
+
+        xValue_rot = new QDoubleSpinBox(gridlayout);
+        xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
+        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
+        xValue_rot->setSizePolicy(sizePolicy3);
+        xValue_rot->setWrapping(true);
+        xValue_rot->setFrame(true);
+        xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        xValue_rot->setDecimals(4);
+        xValue_rot->setMinimum(-10000);
+        xValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
+
+        yValue_scale = new QDoubleSpinBox(gridlayout);
+        yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
+        yValue_scale->setMinimumSize(QSize(0, 0));
+        yValue_scale->setWrapping(true);
+        yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_scale->setDecimals(4);
+        yValue_scale->setMinimum(-10000);
+        yValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
+
+        yValue_rot = new QDoubleSpinBox(gridlayout);
+        yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
+        yValue_rot->setWrapping(true);
+        yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_rot->setDecimals(4);
+        yValue_rot->setMinimum(-10000);
+        yValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
+
+        zValue_scale = new QDoubleSpinBox(gridlayout);
+        zValue_scale->setObjectName(QStringLiteral("zValue_scale"));
+        zValue_scale->setMinimumSize(QSize(0, 0));
+        zValue_scale->setWrapping(true);
+        zValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        zValue_scale->setDecimals(4);
+        zValue_scale->setMinimum(-10000);
+        zValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(zValue_scale, 5, 3, 1, 1);
+
+        zValue_rot = new QDoubleSpinBox(gridlayout);
+        zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
+        zValue_rot->setWrapping(true);
+        zValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        zValue_rot->setDecimals(4);
+        zValue_rot->setMinimum(-10000);
+        zValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(zValue_rot, 4, 3, 1, 1);
+
+
+        verticalLayout_3->addWidget(gridlayout);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_3->addItem(verticalSpacer);
+
+
+        gridLayout->addWidget(Values, 1, 3, 3, 1);
 
         SSP_EditorClass->setCentralWidget(centralWidget);
-        label_2->raise();
-        groupBox->raise();
-        RenderWidget->raise();
-        RenderWidget_2->raise();
-        pushButton->raise();
-        tabWidget->raise();
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1131, 21));
+        menuBar->setGeometry(QRect(0, 0, 1171, 26));
         menuEditor = new QMenu(menuBar);
         menuEditor->setObjectName(QStringLiteral("menuEditor"));
         SSP_EditorClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(SSP_EditorClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        mainToolBar->setMovable(false);
         SSP_EditorClass->addToolBar(Qt::TopToolBarArea, mainToolBar);
         statusBar = new QStatusBar(SSP_EditorClass);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -296,12 +500,16 @@ public:
         actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
         actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
         label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
-        groupBox->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
         pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem = treeWidget->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
+        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Name", Q_NULLPTR));
+        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
+        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
+        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 

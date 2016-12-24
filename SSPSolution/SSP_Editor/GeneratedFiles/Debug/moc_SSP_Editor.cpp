@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SSP_Editor_t {
-    QByteArrayData data[8];
-    char stringdata0[150];
+    QByteArrayData data[7];
+    char stringdata0[120];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,16 +32,14 @@ static const qt_meta_stringdata_SSP_Editor_t qt_meta_stringdata_SSP_Editor = {
 QT_MOC_LITERAL(0, 0, 10), // "SSP_Editor"
 QT_MOC_LITERAL(1, 11, 25), // "on_treeView_doubleClicked"
 QT_MOC_LITERAL(2, 37, 0), // ""
-QT_MOC_LITERAL(3, 38, 29), // "on_treeView_selection_Changed"
-QT_MOC_LITERAL(4, 68, 19), // "on_NewScene_clicked"
-QT_MOC_LITERAL(5, 88, 20), // "on_LoadScene_clicked"
-QT_MOC_LITERAL(6, 109, 20), // "on_SaveScene_clicked"
-QT_MOC_LITERAL(7, 130, 19) // "on_BuildBPF_clicked"
+QT_MOC_LITERAL(3, 38, 19), // "on_NewScene_clicked"
+QT_MOC_LITERAL(4, 58, 20), // "on_LoadScene_clicked"
+QT_MOC_LITERAL(5, 79, 20), // "on_SaveScene_clicked"
+QT_MOC_LITERAL(6, 100, 19) // "on_BuildBPF_clicked"
 
     },
     "SSP_Editor\0on_treeView_doubleClicked\0"
-    "\0on_treeView_selection_Changed\0"
-    "on_NewScene_clicked\0on_LoadScene_clicked\0"
+    "\0on_NewScene_clicked\0on_LoadScene_clicked\0"
     "on_SaveScene_clicked\0on_BuildBPF_clicked"
 };
 #undef QT_MOC_LITERAL
@@ -52,7 +50,7 @@ static const uint qt_meta_data_SSP_Editor[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -60,15 +58,13 @@ static const uint qt_meta_data_SSP_Editor[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x0a /* Public */,
-       3,    0,   45,    2, 0x0a /* Public */,
-       4,    0,   46,    2, 0x0a /* Public */,
-       5,    0,   47,    2, 0x0a /* Public */,
-       6,    0,   48,    2, 0x0a /* Public */,
-       7,    0,   49,    2, 0x0a /* Public */,
+       1,    0,   39,    2, 0x0a /* Public */,
+       3,    0,   40,    2, 0x0a /* Public */,
+       4,    0,   41,    2, 0x0a /* Public */,
+       5,    0,   42,    2, 0x0a /* Public */,
+       6,    0,   43,    2, 0x0a /* Public */,
 
  // slots: parameters
-    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -85,11 +81,10 @@ void SSP_Editor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->on_treeView_doubleClicked(); break;
-        case 1: _t->on_treeView_selection_Changed(); break;
-        case 2: _t->on_NewScene_clicked(); break;
-        case 3: _t->on_LoadScene_clicked(); break;
-        case 4: _t->on_SaveScene_clicked(); break;
-        case 5: _t->on_BuildBPF_clicked(); break;
+        case 1: _t->on_NewScene_clicked(); break;
+        case 2: _t->on_LoadScene_clicked(); break;
+        case 3: _t->on_SaveScene_clicked(); break;
+        case 4: _t->on_BuildBPF_clicked(); break;
         default: ;
         }
     }
@@ -121,13 +116,13 @@ int SSP_Editor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 6;
+        _id -= 5;
     }
     return _id;
 }
