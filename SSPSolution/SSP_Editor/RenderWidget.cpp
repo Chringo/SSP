@@ -118,10 +118,21 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 
 		}
 	}
-		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
+	
+	this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	this->update();
 	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
+}
+
+void D3DRenderWidget::resizeEvent(QResizeEvent * event)
+{
+
+	float aspect = 1.0f;
+	if ((float)this->frameGeometry().height() != 0)
+		aspect = (float)this->frameGeometry().width() / (float)this->frameGeometry().height();
+
+	m_Communicator->GetCamera()->UpdateProjection(aspect);
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
@@ -140,8 +151,8 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	InitDosConsole();
 	
 	this->m_Communicator = new Communicator();
-	this->m_hwnd = (HWND)parent->winId();
-	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	this->m_hwnd		 = (HWND)parent->winId();
+	this->m_hInstance    = (HINSTANCE)::GetModuleHandle(NULL);
 
 	st = this->m_Communicator->Initialize(
 		this->m_hwnd,
@@ -149,7 +160,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 		parent->width(),
 		parent->height(),
 		isPreview,
-		fileImporter->get_M_models()
+		DataHandler::GetInstance()->GetModels()
 	);
 	
 	this->m_Device = this->m_Communicator->GetDevice();
