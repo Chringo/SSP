@@ -167,6 +167,7 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);
 	DataHandler::GetInstance()->GetTextureHandler()->SetDevice(m_Device);
+	this->resizeEvent(nullptr); // Update the camera projection matrix to fit the widget window
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
