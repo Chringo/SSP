@@ -96,6 +96,14 @@ int Camera::UpdateProjection()
 	return result;
 }
 
+int Camera::UpdateProjection(float screenAspect , float fieldOfView , float nearPlane, float farPlane ) {
+
+	//Update the projection matrix
+	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
+
+	return 1;
+}
+
 #pragma region
 void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 {
