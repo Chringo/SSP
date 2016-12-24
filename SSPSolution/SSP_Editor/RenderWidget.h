@@ -29,7 +29,7 @@ private:
 	FileImporter* m_fileImporter;
 	ID3D11Device* m_Device;
 	void Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter);
-
+	QWidget* parent;
 	
 private: //for deltaTime
 	double m_countsPerSecond = 0.0;
