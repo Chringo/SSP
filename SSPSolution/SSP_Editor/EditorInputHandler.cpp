@@ -257,22 +257,29 @@ void EditorInputHandler::RotateObject(int direction)
 		switch (direction)
 		{
 		case (Qt::Key_Up):
-			rotation = DirectX::XMQuaternionRotationAxis({ 1.0f, 0.0f, 0.0f }, angle);
+			instance->rotation.m128_f32[0] += 45.f;
 			break;
 		case (Qt::Key_Down):
-			rotation = DirectX::XMQuaternionRotationAxis({ 1.0f, 0.0f, 0.0f }, -angle);
+			instance->rotation.m128_f32[0] -= 45.f;
 			break;
 		case (Qt::Key_Left):
-			rotation = DirectX::XMQuaternionRotationAxis({ 0.0f, 1.0f, 0.0f }, angle);
+			instance->rotation.m128_f32[1] += 45.f;
 			break;
 		case (Qt::Key_Right):
-			rotation = DirectX::XMQuaternionRotationAxis({ 0.0f, 1.0f, 0.0f }, -angle);
+			instance->rotation.m128_f32[1] -= 45.f;
 			break;
 		default:
 			break;
 		}
-		instance->rotation = DirectX::XMVectorAdd(instance->rotation, rotation);
+		//DirectX::XMVECTOR finalRot;
+		//float hej;
+		//DirectX::XMQuaternionToAxisAngle(&finalRot, &hej, rotation);
+		//hej = DirectX::XMConvertToDegrees(hej);
+		////float qScalar = rotation.m128_f32[3];
 
+		////finalRot = DirectX::XMVector3Rotate(instance->rotation, rotation);
+		//instance->rotation = finalRot;
+		//
 		instance->isDirty = true;
 	
 	}
