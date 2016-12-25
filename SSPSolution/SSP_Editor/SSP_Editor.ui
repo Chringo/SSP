@@ -18,7 +18,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-QMainWindow{
+QMainWindow,QMessageBox{
 background:    rgb(68, 68, 68);
 border: black;
 }
@@ -34,6 +34,7 @@ border: black;
 }
 QMenu::item:selected {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
+	color:black;
 }
 
 
@@ -105,7 +106,7 @@ QTreeWidget::Item:!has-children{
 spacing: 3px;
 border-radius: 1px;
 border: 1px solid;
-background : rgb(222, 222, 222);
+background : rgb(111, 111, 111);
 }
 QTreeView::item:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
@@ -182,7 +183,7 @@ border: black;</string>
        <bool>true</bool>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>

@@ -85,7 +85,7 @@ public:
         SSP_EditorClass->resize(1171, 703);
         SSP_EditorClass->setAutoFillBackground(false);
         SSP_EditorClass->setStyleSheet(QLatin1String("\n"
-"QMainWindow{\n"
+"QMainWindow,QMessageBox{\n"
 "background:    rgb(68, 68, 68);\n"
 "border: black;\n"
 "}\n"
@@ -101,6 +101,7 @@ public:
 "}\n"
 "QMenu::item:selected {\n"
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
+"	color:black;\n"
 "}\n"
 "\n"
 "\n"
@@ -136,9 +137,9 @@ public:
 "\n"
 "\n"
 "QTabBar::tab{\n"
-"    background:  rgb(48, 48, 48);\n"
-"    border: 1px solid rg"
-                        "b(68, 68, 68) ;\n"
+"    background:  rgb(48, 48, 48)"
+                        ";\n"
+"    border: 1px solid rgb(68, 68, 68) ;\n"
 "    border-bottom-color:  rgb(68, 68, 68); /* same as the pane color */\n"
 "    border-top-left-radius: 4px;\n"
 "    border-top-right-radius: 4px;\n"
@@ -173,12 +174,12 @@ public:
 "spacing: 3px;\n"
 "border-radius: 1px;\n"
 "border: 1px solid;\n"
-"background : rgb(222, 222, 222);\n"
+"background : rgb(111, 111, 111);\n"
 "}\n"
 "QTreeView::item:hover {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
-"    border: 1px solid #"
-                        "bfcde4;\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1"
+                        ");\n"
+"    border: 1px solid #bfcde4;\n"
 "}\n"
 "\n"
 "\n"
@@ -243,7 +244,7 @@ public:
         RenderWidget->setMouseTracking(true);
         RenderWidget->setFocusPolicy(Qt::StrongFocus);
         RenderWidget->setAcceptDrops(true);
-        RenderWidget->setAutoFillBackground(true);
+        RenderWidget->setAutoFillBackground(false);
 
         gridLayout->addWidget(RenderWidget, 1, 2, 3, 1);
 
