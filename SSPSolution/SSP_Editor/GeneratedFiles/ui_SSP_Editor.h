@@ -80,9 +80,9 @@ public:
     QLabel *UIDTEXT;
     QLabel *uniqueIDLabel;
     QLabel *ANIMTEXT;
-    QComboBox *comboBox;
-    QCheckBox *checkBox;
-    QLabel *label;
+    QComboBox *animationBox;
+    QCheckBox *isStaticCheck;
+    QLabel *ISSTATICTEXT;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QMenu *menuEditor;
@@ -494,22 +494,23 @@ public:
 
         formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
 
-        comboBox = new QComboBox(variousOptionsframe);
-        comboBox->setObjectName(QStringLiteral("comboBox"));
-        comboBox->setEnabled(false);
+        animationBox = new QComboBox(variousOptionsframe);
+        animationBox->setObjectName(QStringLiteral("animationBox"));
+        animationBox->setEnabled(false);
 
-        formLayout->setWidget(4, QFormLayout::FieldRole, comboBox);
+        formLayout->setWidget(4, QFormLayout::FieldRole, animationBox);
 
-        checkBox = new QCheckBox(variousOptionsframe);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-        checkBox->setLayoutDirection(Qt::LeftToRight);
+        isStaticCheck = new QCheckBox(variousOptionsframe);
+        isStaticCheck->setObjectName(QStringLiteral("isStaticCheck"));
+        isStaticCheck->setLayoutDirection(Qt::LeftToRight);
+        isStaticCheck->setChecked(true);
 
-        formLayout->setWidget(3, QFormLayout::FieldRole, checkBox);
+        formLayout->setWidget(3, QFormLayout::FieldRole, isStaticCheck);
 
-        label = new QLabel(variousOptionsframe);
-        label->setObjectName(QStringLiteral("label"));
+        ISSTATICTEXT = new QLabel(variousOptionsframe);
+        ISSTATICTEXT->setObjectName(QStringLiteral("ISSTATICTEXT"));
 
-        formLayout->setWidget(3, QFormLayout::LabelRole, label);
+        formLayout->setWidget(3, QFormLayout::LabelRole, ISSTATICTEXT);
 
 
         verticalLayout_3->addWidget(variousOptionsframe);
@@ -573,12 +574,12 @@ public:
         UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
         uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
         ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
-        comboBox->clear();
-        comboBox->insertItems(0, QStringList()
+        animationBox->clear();
+        animationBox->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
         );
-        checkBox->setText(QString());
-        label->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
+        isStaticCheck->setText(QString());
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
