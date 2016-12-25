@@ -40,29 +40,29 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	
 	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 	
-	for (size_t i = 0; i < 10; i++)
-	{
-		QTreeWidgetItem* modelb = new QTreeWidgetItem();
-		QString hej = "ITEM ITEM ITEM #";
-		hej.append(i);
-		modelb->setFlags(Qt::ItemFlag::ItemIsEnabled);
-		modelb->setText(0, hej);
-		modelb->setTextAlignment(0, Qt::AlignLeft);
-		m_ui.treeWidget->topLevelItem(1)->addChild(modelb);
-	}
-	 
-	for (size_t i = 0; i < 10; i++)
-	{
-		QTreeWidgetItem* modela = new QTreeWidgetItem();
-		QString hej = "ITEM ITEM ITEM # ";
-		hej.append(i);
-
-		modela->setText(0, hej);
-		modela->setFlags(Qt::ItemFlag::ItemIsEnabled);
-		modela->setTextAlignment(0, Qt::AlignLeft);
-		int aaa = m_ui.treeWidget->topLevelItemCount();
-		m_ui.treeWidget->topLevelItem(0)->addChild(modela);
-	}
+	//for (size_t i = 0; i < 10; i++)
+	//{
+	//	QTreeWidgetItem* modelb = new QTreeWidgetItem();
+	//	QString hej = "ITEM ITEM ITEM #";
+	//	hej.append(i);
+	//	modelb->setFlags(Qt::ItemFlag::ItemIsEnabled);
+	//	modelb->setText(0, hej);
+	//	modelb->setTextAlignment(0, Qt::AlignLeft);
+	//	m_ui.treeWidget->topLevelItem(1)->addChild(modelb);
+	//}
+	// 
+	//for (size_t i = 0; i < 10; i++)
+	//{
+	//	QTreeWidgetItem* modela = new QTreeWidgetItem();
+	//	QString hej = "ITEM ITEM ITEM # ";
+	//	hej.append(i);
+	//
+	//	modela->setText(0, hej);
+	//	modela->setFlags(Qt::ItemFlag::ItemIsEnabled);
+	//	modela->setTextAlignment(0, Qt::AlignLeft);
+	//	int aaa = m_ui.treeWidget->topLevelItemCount();
+	//	m_ui.treeWidget->topLevelItem(0)->addChild(modela);
+	//}
 
 
 	/*connecting the rest of the buttons to the functions*/
@@ -219,7 +219,7 @@ void SSP_Editor::on_treeView_doubleClicked()
 		0.0f,0.0f,0.0f
 	};
 
-//	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
+	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();
