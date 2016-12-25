@@ -13,7 +13,10 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
@@ -58,7 +61,7 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QLabel *nameLabel;
     QLineEdit *lineEdit;
-    QFrame *gridlayout;
+    QFrame *transformFrame;
     QGridLayout *gridLayout_3;
     QLabel *rotationlabel;
     QDoubleSpinBox *xValue_translate;
@@ -72,6 +75,14 @@ public:
     QDoubleSpinBox *yValue_rot;
     QDoubleSpinBox *zValue_scale;
     QDoubleSpinBox *zValue_rot;
+    QFrame *variousOptionsframe;
+    QFormLayout *formLayout;
+    QLabel *UIDTEXT;
+    QLabel *uniqueIDLabel;
+    QLabel *ANIMTEXT;
+    QComboBox *comboBox;
+    QCheckBox *checkBox;
+    QLabel *label;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QMenu *menuEditor;
@@ -104,8 +115,6 @@ public:
 "	color:black;\n"
 "}\n"
 "\n"
-"\n"
-"\n"
 "QGroupBox{\n"
 "background:   rgb(68, 68, 68);\n"
 "color: white;\n"
@@ -124,6 +133,9 @@ public:
 "QLineEdit{\n"
 "background:  rgb(48, 48, 48);\n"
 "}\n"
+"QComboBox{\n"
+"background:  rgb(48, 48, 48);\n"
+"}\n"
 "\n"
 "\n"
 "QToolBar{\n"
@@ -136,9 +148,9 @@ public:
 "}\n"
 "\n"
 "\n"
-"QTabBar::tab{\n"
-"    background:  rgb(48, 48, 48)"
-                        ";\n"
+"QTabB"
+                        "ar::tab{\n"
+"    background:  rgb(48, 48, 48);\n"
 "    border: 1px solid rgb(68, 68, 68) ;\n"
 "    border-bottom-color:  rgb(68, 68, 68); /* same as the pane color */\n"
 "    border-top-left-radius: 4px;\n"
@@ -177,8 +189,8 @@ public:
 "background : rgb(111, 111, 111);\n"
 "}\n"
 "QTreeView::item:hover {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1"
-                        ");\n"
+"    background: qlineargradient(x1: 0, y1: 0, x"
+                        "2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
 "    border: 1px solid #bfcde4;\n"
 "}\n"
 "\n"
@@ -190,8 +202,11 @@ public:
 "}\n"
 "\n"
 "#nameQFrame{\n"
-"\n"
 " margin-top: 10px;\n"
+"}\n"
+"\n"
+"#transformFrame{\n"
+"	background : rgb(74, 74, 74);\n"
 "}\n"
 "\n"
 "QLabel{\n"
@@ -298,6 +313,7 @@ public:
         sizePolicy2.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
         Values->setSizePolicy(sizePolicy2);
         Values->setMinimumSize(QSize(250, 571));
+        Values->setMaximumSize(QSize(250, 16777215));
         Values->setAutoFillBackground(false);
         Values->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         Values->setFlat(false);
@@ -328,20 +344,20 @@ public:
 
         verticalLayout_3->addWidget(nameQFrame);
 
-        gridlayout = new QFrame(Values);
-        gridlayout->setObjectName(QStringLiteral("gridlayout"));
-        gridlayout->setFrameShape(QFrame::StyledPanel);
-        gridlayout->setFrameShadow(QFrame::Raised);
-        gridLayout_3 = new QGridLayout(gridlayout);
+        transformFrame = new QFrame(Values);
+        transformFrame->setObjectName(QStringLiteral("transformFrame"));
+        transformFrame->setFrameShape(QFrame::StyledPanel);
+        transformFrame->setFrameShadow(QFrame::Raised);
+        gridLayout_3 = new QGridLayout(transformFrame);
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
-        rotationlabel = new QLabel(gridlayout);
+        rotationlabel = new QLabel(transformFrame);
         rotationlabel->setObjectName(QStringLiteral("rotationlabel"));
 
         gridLayout_3->addWidget(rotationlabel, 4, 0, 1, 1);
 
-        xValue_translate = new QDoubleSpinBox(gridlayout);
+        xValue_translate = new QDoubleSpinBox(transformFrame);
         xValue_translate->setObjectName(QStringLiteral("xValue_translate"));
         xValue_translate->setWrapping(true);
         xValue_translate->setFrame(true);
@@ -352,7 +368,7 @@ public:
 
         gridLayout_3->addWidget(xValue_translate, 1, 1, 1, 1);
 
-        yValue_translate = new QDoubleSpinBox(gridlayout);
+        yValue_translate = new QDoubleSpinBox(transformFrame);
         yValue_translate->setObjectName(QStringLiteral("yValue_translate"));
         yValue_translate->setWrapping(true);
         yValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -362,12 +378,12 @@ public:
 
         gridLayout_3->addWidget(yValue_translate, 1, 2, 1, 1);
 
-        scalelabel = new QLabel(gridlayout);
+        scalelabel = new QLabel(transformFrame);
         scalelabel->setObjectName(QStringLiteral("scalelabel"));
 
         gridLayout_3->addWidget(scalelabel, 5, 0, 1, 1);
 
-        zValue_translate = new QDoubleSpinBox(gridlayout);
+        zValue_translate = new QDoubleSpinBox(transformFrame);
         zValue_translate->setObjectName(QStringLiteral("zValue_translate"));
         zValue_translate->setWrapping(true);
         zValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -377,12 +393,12 @@ public:
 
         gridLayout_3->addWidget(zValue_translate, 1, 3, 1, 1);
 
-        translateLabel = new QLabel(gridlayout);
+        translateLabel = new QLabel(transformFrame);
         translateLabel->setObjectName(QStringLiteral("translateLabel"));
 
         gridLayout_3->addWidget(translateLabel, 1, 0, 1, 1);
 
-        xValue_scale = new QDoubleSpinBox(gridlayout);
+        xValue_scale = new QDoubleSpinBox(transformFrame);
         xValue_scale->setObjectName(QStringLiteral("xValue_scale"));
         xValue_scale->setMinimumSize(QSize(0, 0));
         xValue_scale->setWrapping(true);
@@ -394,7 +410,7 @@ public:
 
         gridLayout_3->addWidget(xValue_scale, 5, 1, 1, 1);
 
-        xValue_rot = new QDoubleSpinBox(gridlayout);
+        xValue_rot = new QDoubleSpinBox(transformFrame);
         xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
         QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy3.setHorizontalStretch(0);
@@ -410,7 +426,7 @@ public:
 
         gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
 
-        yValue_scale = new QDoubleSpinBox(gridlayout);
+        yValue_scale = new QDoubleSpinBox(transformFrame);
         yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
         yValue_scale->setMinimumSize(QSize(0, 0));
         yValue_scale->setWrapping(true);
@@ -421,7 +437,7 @@ public:
 
         gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
 
-        yValue_rot = new QDoubleSpinBox(gridlayout);
+        yValue_rot = new QDoubleSpinBox(transformFrame);
         yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
         yValue_rot->setWrapping(true);
         yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -431,7 +447,7 @@ public:
 
         gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
 
-        zValue_scale = new QDoubleSpinBox(gridlayout);
+        zValue_scale = new QDoubleSpinBox(transformFrame);
         zValue_scale->setObjectName(QStringLiteral("zValue_scale"));
         zValue_scale->setMinimumSize(QSize(0, 0));
         zValue_scale->setWrapping(true);
@@ -442,7 +458,7 @@ public:
 
         gridLayout_3->addWidget(zValue_scale, 5, 3, 1, 1);
 
-        zValue_rot = new QDoubleSpinBox(gridlayout);
+        zValue_rot = new QDoubleSpinBox(transformFrame);
         zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
         zValue_rot->setWrapping(true);
         zValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -453,7 +469,50 @@ public:
         gridLayout_3->addWidget(zValue_rot, 4, 3, 1, 1);
 
 
-        verticalLayout_3->addWidget(gridlayout);
+        verticalLayout_3->addWidget(transformFrame);
+
+        variousOptionsframe = new QFrame(Values);
+        variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
+        variousOptionsframe->setFrameShape(QFrame::StyledPanel);
+        variousOptionsframe->setFrameShadow(QFrame::Raised);
+        formLayout = new QFormLayout(variousOptionsframe);
+        formLayout->setSpacing(6);
+        formLayout->setContentsMargins(11, 11, 11, 11);
+        formLayout->setObjectName(QStringLiteral("formLayout"));
+        UIDTEXT = new QLabel(variousOptionsframe);
+        UIDTEXT->setObjectName(QStringLiteral("UIDTEXT"));
+
+        formLayout->setWidget(0, QFormLayout::LabelRole, UIDTEXT);
+
+        uniqueIDLabel = new QLabel(variousOptionsframe);
+        uniqueIDLabel->setObjectName(QStringLiteral("uniqueIDLabel"));
+
+        formLayout->setWidget(0, QFormLayout::FieldRole, uniqueIDLabel);
+
+        ANIMTEXT = new QLabel(variousOptionsframe);
+        ANIMTEXT->setObjectName(QStringLiteral("ANIMTEXT"));
+
+        formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
+
+        comboBox = new QComboBox(variousOptionsframe);
+        comboBox->setObjectName(QStringLiteral("comboBox"));
+        comboBox->setEnabled(false);
+
+        formLayout->setWidget(4, QFormLayout::FieldRole, comboBox);
+
+        checkBox = new QCheckBox(variousOptionsframe);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setLayoutDirection(Qt::LeftToRight);
+
+        formLayout->setWidget(3, QFormLayout::FieldRole, checkBox);
+
+        label = new QLabel(variousOptionsframe);
+        label->setObjectName(QStringLiteral("label"));
+
+        formLayout->setWidget(3, QFormLayout::LabelRole, label);
+
+
+        verticalLayout_3->addWidget(variousOptionsframe);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -465,7 +524,7 @@ public:
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1171, 26));
+        menuBar->setGeometry(QRect(0, 0, 1171, 21));
         menuEditor = new QMenu(menuBar);
         menuEditor->setObjectName(QStringLiteral("menuEditor"));
         SSP_EditorClass->setMenuBar(menuBar);
@@ -487,7 +546,7 @@ public:
 
         retranslateUi(SSP_EditorClass);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -511,6 +570,15 @@ public:
         rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
         scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
         translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
+        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
+        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
+        comboBox->clear();
+        comboBox->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+        );
+        checkBox->setText(QString());
+        label->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
