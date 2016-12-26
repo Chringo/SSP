@@ -5,17 +5,26 @@
 #include <QtWidgets\qmainwindow.h>
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
+#include <QKeyEvent>
 #include "RenderWidget.h"
 #include "FileImporter.h"
+#include <qfiledialog.h>
+#include <LevelHandler.h>
+#include <qmessagebox.h>
+#include <qdatetime.h>
 
 	class SSP_Editor : public QMainWindow
 	{
 		Q_OBJECT
 
+	
 	public:
 		SSP_Editor(QWidget *parent = Q_NULLPTR);
 		~SSP_Editor();
-
+	protected:
+		virtual void keyPressEvent(QKeyEvent * evt);
+		virtual void keyReleaseEvent(QKeyEvent *evt);
+		virtual void closeEvent(QCloseEvent * event);
 	public slots:
 	void on_treeView_doubleClicked();
 	void on_NewScene_clicked();
@@ -28,8 +37,11 @@
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
 		D3DRenderWidget* m_D3DRenderWidget;
-		FileImporter m_fileImporter;
-
+		FileImporter* m_fileImporter;
+	
 		D3DRenderWidget* m_D3DRenderWidgetPreview;
+		 QDateTime time;
+		QString lastSave = "None made";
+		bool PromptSaveLevel();
 	};
 #endif

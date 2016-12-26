@@ -3,14 +3,21 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <iostream>
+#include "InputHandler.h"
+#include "GameStateHandler.h"
+#include "DebugHandler.h"
+//Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "InputHandler.h"
-#include "../physicsDLL/physicsDLL/PhysicsHandler.h"
+#include "Animation.h"
+#include "../physicsDLL/PhysicsHandler.h"
+#include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
-
+#pragma comment (lib, "../Debug/NetworkDLL")
+/* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+
 class System
 {
 private:
@@ -29,6 +36,11 @@ private:
 	InputHandler* m_inputHandler;
 	//this is a physicsHandler
 	PhysicsHandler m_physicsHandler;
+	NetworkModule m_networkModule;
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+	/*Testing for playing animation.*/
+	Animation* m_Anim;
+	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
 public:
 	System();
 	~System();

@@ -6,18 +6,17 @@
 #include <deque>
 #include "Enumerations.h"
 #include <string>
+
 namespace Resources
 {
 
-	
-	
-
+/*This is the base class of all resources. Each resource class i a descendant of this class*/
 	class DLL_OPERATION Resource
 	{
 	public:
 		struct RawResourceData
 		{
-			char m_name[256]; 
+			//char m_name[256]; 
 			unsigned int m_id;
 			ResourceType m_resType = RES_UNKOWN;
 		};
@@ -34,9 +33,6 @@ namespace Resources
 		const bool IsType(ResourceType type) const;
 		const ResourceType GetResourceType() const { return m_resourceData.m_resType; };
 
-		const bool SetName(std::string name) ;
-		const std::string GetName() const;
-
 		const unsigned int GetId() const;
 		
 	
@@ -45,6 +41,14 @@ namespace Resources
 		
 		
 	};
+
+	/*
+	A resource container is used to keep track of references to a specific resource.
+	When a level is loaded, all the assets that the level uses are incremented by 1 (or loaded if missing)
+	When a level is unloaded all the assets used by it are decremented by 1.
+
+	If the refCount of a rescontainer hits 0 it will be unloaded from memory.
+	*/
 	struct ResourceContainer
 	{
 		int refCount = 0; // when this hits 0 unload from memory
@@ -60,7 +64,7 @@ namespace Resources
 
 	static void OutputErrorString(Resource* object, std::string info = "")
 	{
-		std::cout << "Error in object :" << object->GetName() << "| Additional info : " << info << std::endl;
+		std::cout << "Error in object :" << object->GetId() << "| Additional info : " << info << std::endl;
 	}
 }
 

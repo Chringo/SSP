@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Skeleton.h"
+#include "FileHeaders.h"
 namespace Resources {
 
 	class DLL_OPERATION Model :
@@ -21,6 +22,7 @@ namespace Resources {
 		Mesh*	      m_modelMesh	= nullptr;
 		Material*	  m_material	= nullptr;
 		Skeleton*	  m_skeleton	= nullptr;	
+		BoundingBoxHeader pickingBox;
 		//Animation*  m_animations  = nullptr;
 	public:
 		Model(Resource::RawResourceData resData);
@@ -28,6 +30,7 @@ namespace Resources {
 		virtual ~Model();
 		Resources::Status Create(Resource::RawResourceData* resData, RawModelData* = nullptr,bool keepRawData = false);
 		Resources::Status Destroy(); // Deincrement references to connected data
+		RawModelData* GetRawModelData() { return this->m_rawData; }
 
 		void SetMesh(Mesh* modelMesh) { this->m_modelMesh = modelMesh;};
 		Mesh* GetMesh() const { return this->m_modelMesh; };
@@ -38,6 +41,9 @@ namespace Resources {
 
 		void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
 		Skeleton* GetSkeleton() { return this->m_skeleton; };
+
+		void SetOBBData(BoundingBoxHeader obbdata) { this->pickingBox = obbdata; };
+		BoundingBoxHeader GetOBBData() { return this->pickingBox; };
 	
 	};
 }
