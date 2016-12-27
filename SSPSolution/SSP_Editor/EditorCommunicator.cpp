@@ -56,6 +56,7 @@ Communicator::Communicator()
 
 Communicator::~Communicator()
 {
+	
 
 }
 
@@ -63,7 +64,7 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-
+	delete this->m_Camera;
 	if (!this->m_IsPreview)
 	{
 		delete this->m_EditorInputHandler;

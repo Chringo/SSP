@@ -23,6 +23,7 @@ class GRAPHICSDLL_API GraphicsHandler
 
 #ifdef _DEBUG
 private:
+	bool editorMode = false;
 	enum BoundingTypes {
 		T_OBB,
 		T_AABB,

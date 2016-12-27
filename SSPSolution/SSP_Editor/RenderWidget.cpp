@@ -36,7 +36,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
-	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();// this->m_fileImporter->get_M_models();
+	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();
 	
 
 	for (size_t i = 0; i < modelPtr->size(); i++)
@@ -128,10 +128,28 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 
 		}
 	}
-		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
+	
+	this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	this->update();
 	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
+}
+
+void D3DRenderWidget::resizeEvent(QResizeEvent * event)
+{
+	
+
+	float aspect = 1.0f;
+	float h = (float)parent->frameGeometry().height();
+	float w = (float)parent->frameGeometry().width();
+
+	this->frameGeometry().setWidth(w);
+	this->frameGeometry().setHeight(h);
+	if (h != 0)
+		aspect = w / h;
+
+		m_Communicator->GetCamera()->UpdateProjection(aspect);
+	 m_Communicator->m_GraphicsHandler->SetCamera(m_Communicator->GetCamera());
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
@@ -162,27 +180,35 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	InitDosConsole();
 	
 	this->m_Communicator = new Communicator();
-	this->m_hwnd = (HWND)parent->winId();
-	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	this->m_hwnd		 = (HWND)parent->winId();
+	this->m_hInstance    = (HINSTANCE)::GetModuleHandle(NULL);
+
+	
 
 	st = this->m_Communicator->Initialize(
 		this->m_hwnd,
 		this->m_hInstance,
-		parent->width(),
-		parent->height(),
+		1920.0f, //Editor resolution
+		1080.0f, //Editor resolution
 		isPreview,
-		fileImporter->get_M_models()
+		DataHandler::GetInstance()->GetModels()
 	);
+	float h = (float)parent->frameGeometry().height();
+	float w = (float)parent->frameGeometry().width();
+
+	this->frameGeometry().setWidth(w);
+	this->frameGeometry().setHeight(h);
 	
 	this->m_Device = this->m_Communicator->GetDevice();
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);
 	DataHandler::GetInstance()->GetTextureHandler()->SetDevice(m_Device);
+	//this->resizeEvent(nullptr); // Update the camera projection matrix to fit the widget window
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	: QWidget(parent) {
-
+	this->parent = parent;
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);

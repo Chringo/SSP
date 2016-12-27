@@ -37,6 +37,7 @@ public:
 
 public:
 	ID3D11Device* GetDevice() { return this->m_GraphicsHandler->GetDevice(); };
+	Camera* GetCamera() {return this->m_Camera;};
 	void SetMousePos(QPoint point) { this->m_EditorInputHandler->SetMousePos(point); };
 	Resources::Status FindModel(int modelID, std::vector<Container>* modelPtr);
 	Resources::Status GetComponent(unsigned int modelID, unsigned int instanceID, Container& container);

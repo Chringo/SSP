@@ -12,22 +12,22 @@ FileImporter::FileImporter(QTreeWidget *itemList)
 
 FileImporter::~FileImporter()
 {
-	m_models.clear();
 }
 
-void FileImporter::ImportFromServer()
+Resources::Status FileImporter::ImportFromServer()
 {
 	DIR *dir;
 	struct dirent *ent;
-	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Models")) != NULL) 
-	//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
+	QString dirPath = pathToBbfFolder + "/Models";
+	
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL) 
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Models/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				AddListItem(ListItem::MODEL, ent->d_name);
 				m_filepaths.push_back(pathName);
@@ -37,18 +37,20 @@ void FileImporter::ImportFromServer()
 	}
 	else 
 	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
 		/* could not open directory */
 		perror("");
 	}
-	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes")) != NULL)
-		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
+
+	dirPath = pathToBbfFolder + "/Meshes";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL)
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				m_filepaths.push_back(pathName);
 			}
@@ -57,6 +59,7 @@ void FileImporter::ImportFromServer()
 	}
 	else
 	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
 		/* could not open directory */
 		perror("");
 	}
@@ -75,16 +78,16 @@ void FileImporter::ImportFromServer()
 	//	/* could not open directory */
 	//	perror("");
 	//}
+	dirPath = pathToBbfFolder + "/Materials";
 	// Load textures before Materials, So that the materials can find them.
-	if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials")) != NULL)
-		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL)
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				//AddListItem(ListItem::MATERIAL, ent->d_name);
 				m_filepaths.push_back(pathName);
@@ -94,6 +97,7 @@ void FileImporter::ImportFromServer()
 	}
 	else
 	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
 		/* could not open directory */
 		perror("");
 	}
@@ -140,18 +144,27 @@ void FileImporter::LoadImportedFiles()
 		}
 	}
 }
-
-Resources::Model * FileImporter::get_model(unsigned int modelID)
+Resources::Status FileImporter::Initialize()
 {
-	
-	for (int i = 0; i < this->m_models.size(); ++i)
-	{
-		if (modelID == m_models.at(i)->GetId())
-			return m_models.at(i);
-	}
-	return nullptr;
-}
+	bool import = false;
+	do {
+		if (ImportFromServer() == Resources::Status::ST_ERROR_OPENING_FILE) //Try import from server
+		{
+			if (HandlePathNotFound()){   // If it didnt work, prompt for new path
+				SelectNewPath();		// If user wants new path
+			}
+			else {
+				//TODO: Load from BPF file instead
+				return Resources::Status::ST_ERROR_OPENING_FILE;
+			}
+		}
+		else
+			import = true;
+	} while (!import);
+	LoadImportedFiles();
 
+	return Resources::Status::ST_OK;
+}
 void FileImporter::handleMesh(char * m_bbf_object)
 {
 	/*create model type here and then when reading */
@@ -163,7 +176,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 
 	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
 
-	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data);
+	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data); //memory handled in Datahandler
 
 
 	unsigned int * indices;
@@ -262,4 +275,58 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
+}
+
+bool FileImporter::HandlePathNotFound()
+{
+
+
+	QMessageBox msgBox;
+	msgBox.setText("Could not find assets folder");
+
+	msgBox.setInformativeText("Would you like to browse for assets?");
+	msgBox.setStandardButtons(QMessageBox::Yes |  QMessageBox::No);
+	msgBox.setDefaultButton(QMessageBox::Yes);
+	int ret = msgBox.exec();
+	switch (ret) {
+	case QMessageBox::Yes:
+		return true;
+	case QMessageBox::No:
+		return false;
+	}
+
+	return false;
+}
+
+std::string FileImporter::SelectNewPath()
+{
+
+	QMessageBox msgBox;
+	msgBox.setText("Please locate the folder \"bbf files\"");
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setDefaultButton(QMessageBox::Ok);
+	msgBox.exec();
+	QFileDialog dlg(NULL, "Load file");
+	dlg.setAcceptMode(QFileDialog::AcceptOpen);
+	//QFileDialog::ReadOnly
+	dlg.setNameFilter("bbf files");
+	dlg.setObjectName("bbf files");
+	dlg.setOption(QFileDialog::Option::ShowDirsOnly, true);
+	QString  newPath = dlg.getExistingDirectory(nullptr, "Open Directory",
+		"/bbf files",
+		QFileDialog::ShowDirsOnly
+		| QFileDialog::DontResolveSymlinks);
+
+	
+	if (newPath.length() > 2)
+	{
+		this->pathToBbfFolder = newPath;
+		return newPath.toStdString(); //Return file path as string
+	}
+	else
+	{
+		return "";
+	}
+
+	
 }

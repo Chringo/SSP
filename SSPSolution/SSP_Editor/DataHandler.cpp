@@ -18,8 +18,9 @@ Resources::Status DataHandler::AddMesh(Resources::Mesh * mesh)
 
 Resources::Status DataHandler::AddMaterial(Resources::Material * material)
 {
+	m_materials.push_back(material);
 	this->loadedIds[material->GetId()] = true;
-	return Resources::Status();
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status DataHandler::AddTexture(Resources::Texture * texture)

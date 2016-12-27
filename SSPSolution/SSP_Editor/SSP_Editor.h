@@ -12,6 +12,8 @@
 #include <LevelHandler.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+#include "UiControlHandler.h"
+
 	class SSP_Editor : public QMainWindow
 	{
 		Q_OBJECT
@@ -24,6 +26,7 @@
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
 		virtual void closeEvent(QCloseEvent * event);
+		virtual void resizeEvent(QResizeEvent *event);
 		virtual void mousePressEvent(QMouseEvent * evt);
 		virtual void mouseReleaseEvent(QMouseEvent * evt);
 	public slots:
@@ -32,6 +35,7 @@
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();
 	void on_BuildBPF_clicked();
+
 
 	private:
 		Ui::SSP_EditorClass m_ui;
@@ -44,5 +48,7 @@
 		 QDateTime time;
 		QString lastSave = "None made";
 		bool PromptSaveLevel();
+
+		
 	};
 #endif

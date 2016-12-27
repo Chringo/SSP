@@ -20,6 +20,7 @@ public:
 	virtual void keyPressEvent(QKeyEvent * evt);
 	virtual void keyReleaseEvent(QKeyEvent * evt);
 	virtual void mousePressEvent(QMouseEvent * evt);
+	virtual void resizeEvent(QResizeEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent * evt);
 protected:
 	virtual void paintEvent(QPaintEvent* evt);
@@ -30,7 +31,7 @@ private:
 	FileImporter* m_fileImporter;
 	ID3D11Device* m_Device;
 	void Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter);
-
+	QWidget* parent;
 	
 private: //for deltaTime
 	double m_countsPerSecond = 0.0;

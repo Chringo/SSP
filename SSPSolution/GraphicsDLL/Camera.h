@@ -38,6 +38,7 @@ public:
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	int Update();
 	int UpdateProjection();
+	int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 #pragma region
 	void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	DirectX::XMFLOAT4X4 * GetViewMatrix();
