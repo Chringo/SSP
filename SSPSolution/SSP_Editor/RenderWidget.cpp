@@ -180,18 +180,19 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_hwnd		 = (HWND)parent->winId();
 	this->m_hInstance    = (HINSTANCE)::GetModuleHandle(NULL);
 
-	
+	float h = (float)parent->frameGeometry().height();
+	float w = (float)parent->frameGeometry().width();
 
 	st = this->m_Communicator->Initialize(
 		this->m_hwnd,
 		this->m_hInstance,
-		1920.0f, //Editor resolution
-		1080.0f, //Editor resolution
+		w, 
+		h, 
 		isPreview,
 		DataHandler::GetInstance()->GetModels()
 	);
-	float h = (float)parent->frameGeometry().height();
-	float w = (float)parent->frameGeometry().width();
+	
+	
 
 	this->frameGeometry().setWidth(w);
 	this->frameGeometry().setHeight(h);
