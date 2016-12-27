@@ -55,35 +55,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(),j,InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 					}
 
-					BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
-					OBB obj;
-					obj.ext[0] = boundingBox.extension[0];
-					obj.ext[1] = boundingBox.extension[1];
-					obj.ext[2] = boundingBox.extension[2];
 
-					DirectX::XMFLOAT3 temp;
-					temp.x = InstancePtr->at(j).position.m128_f32[0];
-					temp.y = InstancePtr->at(j).position.m128_f32[1];
-					temp.z = InstancePtr->at(j).position.m128_f32[2];
-					obj.pos = DirectX::XMLoadFloat3(&temp);
-
-					obj.ort;
-					boundingBox.extensionDir;
-					DirectX::XMMATRIX temp2;
-					temp2 = DirectX::XMMatrixSet(
-						boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
-						boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
-						boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
-						0.0f, 0.0f, 0.0f, 1.0f
-					);
-
-					obj.ort = temp2;
-
-					//OBB obj = *(OBB*)&boundingBox;
-					//DONT FORGET TO MULTIPLY MATRIX
-					DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
-					DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
-					obj.ort = temp3;
 					
 
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
@@ -94,6 +66,36 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 
 					if (this->m_Communicator->m_EditorInputHandler->m_Picked.ID == modelPtr->at(i)->GetId() && this->m_Communicator->m_EditorInputHandler->m_Picked.listInstance == j && this->m_Communicator->m_EditorInputHandler->transformWidget.IsActive())
 					{
+						BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
+						OBB obj;
+						obj.ext[0] = boundingBox.extension[0];
+						obj.ext[1] = boundingBox.extension[1];
+						obj.ext[2] = boundingBox.extension[2];
+
+						DirectX::XMFLOAT3 temp;
+						temp.x = InstancePtr->at(j).position.m128_f32[0];
+						temp.y = InstancePtr->at(j).position.m128_f32[1];
+						temp.z = InstancePtr->at(j).position.m128_f32[2];
+						obj.pos = DirectX::XMLoadFloat3(&temp);
+
+						obj.ort;
+						boundingBox.extensionDir;
+						DirectX::XMMATRIX temp2;
+						temp2 = DirectX::XMMatrixSet(
+							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+							boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+							0.0f, 0.0f, 0.0f, 1.0f
+						);
+
+						obj.ort = temp2;
+
+						//OBB obj = *(OBB*)&boundingBox;
+						//DONT FORGET TO MULTIPLY MATRIX
+						DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
+						DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
+						obj.ort = temp3;
+
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							InstancePtr->at(j).position,
 							obj,

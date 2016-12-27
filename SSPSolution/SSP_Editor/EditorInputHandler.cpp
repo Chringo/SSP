@@ -335,6 +335,7 @@ void EditorInputHandler::MoveObject()
 		
 		
 		//*Bounding box conversion stuffs....*//
+		
 		BoundingBoxHeader boundingBox = modelPtr->at(transformWidget.SelectedModelIndex)->GetOBBData();
 		OBB obj;
 		obj.ext[0] = boundingBox.extension[0];
