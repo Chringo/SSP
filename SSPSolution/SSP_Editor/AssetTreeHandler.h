@@ -1,6 +1,9 @@
 #ifndef SSPEDITOR_UI_AssetTreeHandler_H
 #define SSPEDITOR_UI_AssetTreeHandler_H
 #include "ui_SSP_Editor.h"
+#include <qobject.h>
+#include "DataHandler.h"
+#include "LevelHandler.h"
 /*	
 	Author: Martin Clementson
 	This class handles the asset tree widget to serve our purpose
@@ -8,8 +11,9 @@
 */
 namespace Ui {
 
-	class AssetTreeHandler
+	class AssetTreeHandler : public QObject
 	{
+		Q_OBJECT
 	public:
 		enum AssetCategories
 		{
@@ -20,11 +24,16 @@ namespace Ui {
 		};
 
 	private:
-		QTreeWidget* tree;
+		QTreeWidget* m_tree;
 		AssetTreeHandler();
 	public:
 		AssetTreeHandler(QTreeWidget* tree);
 		~AssetTreeHandler();
+	
+	
+	public slots:
+		void on_treeView_doubleClicked();
+	
 	};
 }
 
