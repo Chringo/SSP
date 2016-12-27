@@ -70,7 +70,6 @@ SSP_Editor::~SSP_Editor()
 	delete this->m_model;
 	delete this->m_fileImporter;
 	delete m_D3DRenderWidget;
-	m_ui.assetTree->clear();
 
 }
 

@@ -52,7 +52,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				{
 					if (InstancePtr->at(j).isDirty)
 					{
-						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(),j,InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 					}
 
 
@@ -102,7 +102,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 							{ .0f, .65f, .67f }
 					
 						);
-						
+
 
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::X].pos,
@@ -119,13 +119,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 							this->m_Communicator->m_EditorInputHandler->transformWidget.axisOBB[TransformWidget::Z],
 							*this->m_Communicator->m_EditorInputHandler->transformWidget.axisColors[TransformWidget::Z]
 						);
-
-
 					}
 				}
-
 			}
-
 		}
 	}
 	
@@ -150,6 +146,7 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 
 		m_Communicator->GetCamera()->UpdateProjection(aspect);
 	 m_Communicator->m_GraphicsHandler->SetCamera(m_Communicator->GetCamera());
+	 m_Communicator->m_EditorInputHandler->ViewPortChanged(h, w);
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)

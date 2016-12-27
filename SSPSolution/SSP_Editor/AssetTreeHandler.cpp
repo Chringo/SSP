@@ -35,6 +35,7 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 
 Ui::AssetTreeHandler::~AssetTreeHandler()
 {
+
 }
 
 bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData)

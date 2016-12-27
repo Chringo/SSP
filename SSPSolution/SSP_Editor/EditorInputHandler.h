@@ -189,6 +189,7 @@ public:
 	void keyReleased(QKeyEvent* evt);
 	void UpdatePos(int index);
 	void UpdateMouse();
+	void ViewPortChanged(float height, float width);
 	void mouseButtonDown(QMouseEvent* evt);
 	void mouseButtonRelease(QMouseEvent * evt);
 	void RotateObject(int direction);

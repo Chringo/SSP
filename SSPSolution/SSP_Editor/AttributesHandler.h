@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_UI_ATTRHANDLER_H
 #define SSPEDITOR_UI_ATTRHANDLER_H
 #include "ui_SSP_Editor.h"
+#include <qobject.h>
 #pragma region Description
 /*
 	Author: Martin Clementson
@@ -19,8 +20,9 @@
 #pragma endregion
 
 namespace Ui {
-	class AttributesHandler
+	class AttributesHandler : QObject
 	{
+		Q_OBJECT
 	private:
 		AttributesHandler();
 	public:
