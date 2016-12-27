@@ -11,6 +11,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	setFocusPolicy(Qt::StrongFocus);
 
 	
+	Ui::UiControlHandler::GetInstance()->Initialize(&m_ui);
 	/*a list of filters for the treeView*/
 	QStringList filters;
 	filters << "*.bbf";
@@ -21,24 +22,23 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 
 	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
 	
-	QColor color;
 
-	QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.assetTree);
-	model->setText(0, "Models");	
-	
-	model->setTextAlignment(0,Qt::AlignCenter);
-	m_ui.assetTree->addTopLevelItem(model);		
-	m_ui.assetTree->insertTopLevelItem(0, model);
-	
-	QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.assetTree);
-	anim->setText(0, "Animations");
-			
-	anim->setTextAlignment(0, Qt::AlignCenter);
-	m_ui.assetTree->addTopLevelItem(anim);	
-	m_ui.assetTree->insertTopLevelItem(1,anim);
-	m_ui.assetTree->setHeaderLabels(QStringList() << "Resources" );
-	
-	connect(m_ui.assetTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
+	//QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.assetTree);
+	//model->setText(0, "Models");	
+	//
+	//model->setTextAlignment(0,Qt::AlignCenter);
+	//m_ui.assetTree->addTopLevelItem(model);		
+	//m_ui.assetTree->insertTopLevelItem(0, model);
+	//
+	//QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.assetTree);
+	//anim->setText(0, "Animations");
+	//		
+	//anim->setTextAlignment(0, Qt::AlignCenter);
+	//m_ui.assetTree->addTopLevelItem(anim);	
+	//m_ui.assetTree->insertTopLevelItem(1,anim);
+	//m_ui.assetTree->setHeaderLabels(QStringList() << "Resources" );
+	//
+	//connect(m_ui.assetTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 	
 
 	/*connecting the rest of the buttons to the functions*/

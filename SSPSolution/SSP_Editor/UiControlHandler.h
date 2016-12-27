@@ -14,6 +14,7 @@ namespace Ui {
 	{
 	private:
 		AttributesHandler* m_AttrHandler = nullptr;
+		AssetTreeHandler* m_AssetTree    = nullptr;
 		Ui::SSP_EditorClass* ui          = nullptr;
 	public:
 		static UiControlHandler* GetInstance();
