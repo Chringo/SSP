@@ -208,6 +208,9 @@ public:
 "#transformFrame{\n"
 "	background : rgb(74, 74, 74);\n"
 "}\n"
+"#variousOptionsframe{\n"
+"background : rgb(74, 74, 74);\n"
+"}\n"
 "\n"
 "QLabel{\n"
 "color : white;\n"
@@ -473,6 +476,11 @@ public:
 
         variousOptionsframe = new QFrame(Values);
         variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
+        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
+        variousOptionsframe->setSizePolicy(sizePolicy4);
         variousOptionsframe->setFrameShape(QFrame::StyledPanel);
         variousOptionsframe->setFrameShadow(QFrame::Raised);
         formLayout = new QFormLayout(variousOptionsframe);
