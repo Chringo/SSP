@@ -13,7 +13,7 @@ namespace Ui {
 	class UiControlHandler
 	{
 	private:
-		AttributesHandler m_AttrHandler;
+		AttributesHandler* m_AttrHandler;
 		Ui::SSP_EditorClass* ui;
 
 	public:
