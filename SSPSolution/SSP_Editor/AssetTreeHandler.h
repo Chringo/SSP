@@ -29,8 +29,9 @@ namespace Ui {
 	public:
 		AssetTreeHandler(QTreeWidget* tree);
 		~AssetTreeHandler();
-	
-	
+		bool AddItem(AssetCategories type, std::string name);
+		bool AddItem(AssetCategories type, QTreeWidgetItem* item);
+		
 	public slots:
 		void on_treeView_doubleClicked();
 	

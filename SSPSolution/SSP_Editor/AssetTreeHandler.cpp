@@ -35,6 +35,21 @@ Ui::AssetTreeHandler::~AssetTreeHandler()
 {
 }
 
+bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name)
+{
+
+	QTreeWidgetItem *itm = new QTreeWidgetItem();
+	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+	m_tree->topLevelItem((int)type)->addChild(itm);
+	return true;
+}
+
+bool Ui::AssetTreeHandler::AddItem(AssetCategories type, QTreeWidgetItem * item)
+{
+	m_tree->topLevelItem((int)type)->addChild(item);
+	return true;
+}
+
 void Ui::AssetTreeHandler::on_treeView_doubleClicked() {
 
 	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
