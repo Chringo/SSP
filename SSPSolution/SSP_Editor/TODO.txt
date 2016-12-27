@@ -24,6 +24,8 @@ Add a class that handles the Attributes window
 	- Connect callbacks for name changed and all values changed
 	- Write new  user input values from QtBoxes to the model, update the model
 
+	Example: A "ObjectSelector" class that handles the selections of objects. Updating the UI,etc
+
 -----------------------------------------------------
 FileImporter:
 	- Add functions that handle the case of the server not being reachable ----------DONE---------
