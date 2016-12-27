@@ -47,14 +47,6 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QWidget *RenderWidget;
-    QLabel *label_2;
-    QPushButton *pushButton;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QVBoxLayout *verticalLayout;
-    QTreeWidget *treeWidget;
-    QWidget *tab_2;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -84,6 +76,16 @@ public:
     QCheckBox *isStaticCheck;
     QLabel *ISSTATICTEXT;
     QSpacerItem *verticalSpacer;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QVBoxLayout *verticalLayout;
+    QTreeWidget *assetTree;
+    QWidget *tab_2;
+    QVBoxLayout *verticalLayout_2;
+    QTreeWidget *scene_tree;
+    QPushButton *pushButton;
+    QLabel *label_2;
+    QWidget *RenderWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -250,71 +252,13 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        RenderWidget = new QWidget(centralWidget);
-        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
-        RenderWidget->setSizePolicy(sizePolicy);
-        RenderWidget->setMinimumSize(QSize(1, 1));
-        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
-        RenderWidget->setMouseTracking(true);
-        RenderWidget->setFocusPolicy(Qt::StrongFocus);
-        RenderWidget->setAcceptDrops(true);
-        RenderWidget->setAutoFillBackground(false);
-
-        gridLayout->addWidget(RenderWidget, 1, 2, 3, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
-
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        gridLayout->addWidget(pushButton, 3, 1, 1, 1);
-
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy1);
-        tabWidget->setMinimumSize(QSize(200, 0));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        verticalLayout = new QVBoxLayout(tab);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        treeWidget = new QTreeWidget(tab);
-        treeWidget->setObjectName(QStringLiteral("treeWidget"));
-        treeWidget->setLayoutDirection(Qt::LeftToRight);
-        treeWidget->setTextElideMode(Qt::ElideNone);
-        treeWidget->setSortingEnabled(true);
-        treeWidget->setHeaderHidden(true);
-        treeWidget->header()->setCascadingSectionResizes(false);
-
-        verticalLayout->addWidget(treeWidget);
-
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
-        tabWidget->addTab(tab_2, QString());
-
-        gridLayout->addWidget(tabWidget, 1, 1, 1, 1);
-
         Values = new QGroupBox(centralWidget);
         Values->setObjectName(QStringLiteral("Values"));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
-        Values->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
+        Values->setSizePolicy(sizePolicy);
         Values->setMinimumSize(QSize(250, 571));
         Values->setMaximumSize(QSize(250, 16777215));
         Values->setAutoFillBackground(false);
@@ -415,11 +359,11 @@ public:
 
         xValue_rot = new QDoubleSpinBox(transformFrame);
         xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
-        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
-        xValue_rot->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
+        xValue_rot->setSizePolicy(sizePolicy1);
         xValue_rot->setWrapping(true);
         xValue_rot->setFrame(true);
         xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -476,11 +420,11 @@ public:
 
         variousOptionsframe = new QFrame(Values);
         variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
-        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
-        variousOptionsframe->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
+        variousOptionsframe->setSizePolicy(sizePolicy2);
         variousOptionsframe->setFrameShape(QFrame::StyledPanel);
         variousOptionsframe->setFrameShadow(QFrame::Raised);
         formLayout = new QFormLayout(variousOptionsframe);
@@ -528,7 +472,80 @@ public:
         verticalLayout_3->addItem(verticalSpacer);
 
 
-        gridLayout->addWidget(Values, 1, 3, 3, 1);
+        gridLayout->addWidget(Values, 2, 3, 3, 1);
+
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy3);
+        tabWidget->setMinimumSize(QSize(200, 0));
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        verticalLayout = new QVBoxLayout(tab);
+        verticalLayout->setSpacing(0);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        assetTree = new QTreeWidget(tab);
+        assetTree->setObjectName(QStringLiteral("assetTree"));
+        assetTree->setLayoutDirection(Qt::LeftToRight);
+        assetTree->setTextElideMode(Qt::ElideNone);
+        assetTree->setSortingEnabled(true);
+        assetTree->setHeaderHidden(true);
+        assetTree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout->addWidget(assetTree);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        verticalLayout_2 = new QVBoxLayout(tab_2);
+        verticalLayout_2->setSpacing(0);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        scene_tree = new QTreeWidget(tab_2);
+        scene_tree->setObjectName(QStringLiteral("scene_tree"));
+        scene_tree->setLayoutDirection(Qt::LeftToRight);
+        scene_tree->setTextElideMode(Qt::ElideNone);
+        scene_tree->setSortingEnabled(true);
+        scene_tree->setHeaderHidden(true);
+        scene_tree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout_2->addWidget(scene_tree);
+
+        tabWidget->addTab(tab_2, QString());
+
+        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
+
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
+
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
+
+        RenderWidget = new QWidget(centralWidget);
+        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
+        RenderWidget->setSizePolicy(sizePolicy4);
+        RenderWidget->setMinimumSize(QSize(1, 1));
+        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
+        RenderWidget->setMouseTracking(true);
+        RenderWidget->setFocusPolicy(Qt::StrongFocus);
+        RenderWidget->setAcceptDrops(true);
+        RenderWidget->setAutoFillBackground(false);
+
+        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
 
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
@@ -568,12 +585,6 @@ public:
         actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
         actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
         actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem = treeWidget->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
         Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
         nameLabel->setText(QApplication::translate("SSP_EditorClass", "Name", Q_NULLPTR));
         rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
@@ -588,6 +599,14 @@ public:
         );
         isStaticCheck->setText(QString());
         ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
+        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
+        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 

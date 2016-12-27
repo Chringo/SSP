@@ -22,23 +22,23 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
 	
 	QColor color;
-	
-	QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.treeWidget);
+
+	QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.assetTree);
 	model->setText(0, "Models");	
 	
 	model->setTextAlignment(0,Qt::AlignCenter);
-	m_ui.treeWidget->addTopLevelItem(model);		
-	m_ui.treeWidget->insertTopLevelItem(0, model);
+	m_ui.assetTree->addTopLevelItem(model);		
+	m_ui.assetTree->insertTopLevelItem(0, model);
 	
-	QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.treeWidget);
+	QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.assetTree);
 	anim->setText(0, "Animations");
 			
 	anim->setTextAlignment(0, Qt::AlignCenter);
-	m_ui.treeWidget->addTopLevelItem(anim);	
-	m_ui.treeWidget->insertTopLevelItem(1,anim);
-	m_ui.treeWidget->setHeaderLabels(QStringList() << "Resources" );
+	m_ui.assetTree->addTopLevelItem(anim);	
+	m_ui.assetTree->insertTopLevelItem(1,anim);
+	m_ui.assetTree->setHeaderLabels(QStringList() << "Resources" );
 	
-	connect(m_ui.treeWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
+	connect(m_ui.assetTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 	
 	//for (size_t i = 0; i < 10; i++)
 	//{
@@ -71,7 +71,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	connect(m_ui.actionSave_scene, SIGNAL(triggered()), this, SLOT(on_SaveScene_clicked()));
 	connect(m_ui.actionBuild_BPF,  SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
 
-	this->m_fileImporter    = new FileImporter(m_ui.treeWidget);
+	this->m_fileImporter    = new FileImporter(m_ui.assetTree);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
 	this->m_fileImporter->Initialize();
 	 
@@ -106,7 +106,7 @@ SSP_Editor::~SSP_Editor()
 	delete this->m_model;
 	delete this->m_fileImporter;
 	delete m_D3DRenderWidget;
-	m_ui.treeWidget->clear();
+	m_ui.assetTree->clear();
 
 }
 
@@ -200,9 +200,9 @@ bool SSP_Editor::PromptSaveLevel()
 
 void SSP_Editor::on_treeView_doubleClicked()
 {
-	if (m_ui.treeWidget->currentItem()->parent() == NULL) //If a category window is clicked
+	if (m_ui.assetTree->currentItem()->parent() == NULL) //If a category window is clicked
 		return;
-	QModelIndex index = m_ui.treeWidget->currentIndex();
+	QModelIndex index = m_ui.assetTree->currentIndex();
 	
 	//use index.r to get the right mesh
 	/*checking to see if the selected object is valid*/
