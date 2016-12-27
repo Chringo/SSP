@@ -2,11 +2,11 @@
 
 
 
-UI::AttributesHandler::AttributesHandler()
+Ui::AttributesHandler::AttributesHandler()
 {
 }
 
 
-UI::AttributesHandler::~AttributesHandler()
+Ui::AttributesHandler::~AttributesHandler()
 {
 }

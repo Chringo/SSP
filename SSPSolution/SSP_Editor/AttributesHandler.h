@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_UI_ATTRHANDLER_H
 #define SSPEDITOR_UI_ATTRHANDLER_H
-
+#include "ui_SSP_Editor.h"
+#pragma region Description
 /*
 	Author: Martin Clementson
 
@@ -15,13 +16,18 @@
 	signals and slots.
 
 */
+#pragma endregion
 
-namespace UI {
+namespace Ui {
 	class AttributesHandler
 	{
-	public:
+	private:
 		AttributesHandler();
+	public:
+
+		AttributesHandler(Ui::SSP_EditorClass* ui);
 		~AttributesHandler();
+		
 	};
 }
 
