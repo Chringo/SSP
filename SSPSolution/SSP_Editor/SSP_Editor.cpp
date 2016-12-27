@@ -20,27 +20,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model->setNameFilters(filters);
 	this->m_model->setNameFilterDisables(false);
 
-	/*setting the fileSystemModel to the treeView and connecting the signal slot*/
 	
-
-	//QTreeWidgetItem* model = new QTreeWidgetItem(m_ui.assetTree);
-	//model->setText(0, "Models");	
-	//
-	//model->setTextAlignment(0,Qt::AlignCenter);
-	//m_ui.assetTree->addTopLevelItem(model);		
-	//m_ui.assetTree->insertTopLevelItem(0, model);
-	//
-	//QTreeWidgetItem* anim = new QTreeWidgetItem(m_ui.assetTree);
-	//anim->setText(0, "Animations");
-	//		
-	//anim->setTextAlignment(0, Qt::AlignCenter);
-	//m_ui.assetTree->addTopLevelItem(anim);	
-	//m_ui.assetTree->insertTopLevelItem(1,anim);
-	//m_ui.assetTree->setHeaderLabels(QStringList() << "Resources" );
-	//
-	//connect(m_ui.assetTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
-	
-
 	/*connecting the rest of the buttons to the functions*/
 	connect(m_ui.actionNew_scene,  SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
 	connect(m_ui.actionLoad_scene, SIGNAL(triggered()), this, SLOT(on_LoadScene_clicked()));
@@ -172,33 +152,4 @@ bool SSP_Editor::PromptSaveLevel()
 		break;
 	}
 	return true;
-}
-
-void SSP_Editor::on_treeView_doubleClicked()
-{
-	if (m_ui.assetTree->currentItem()->parent() == NULL) //If a category window is clicked
-		return;
-	QModelIndex index = m_ui.assetTree->currentIndex();
-	
-	//use index.r to get the right mesh
-	/*checking to see if the selected object is valid*/
-	if (!index.isValid()) return;
-
-	std::vector<Resources::Model*>* test = DataHandler::GetInstance()->GetModels(); //m_fileImporter->get_M_models();
-
-
-	DirectX::XMVECTOR pos = {
-		0.0f,0.0f,0.0f
-	};
-	DirectX::XMVECTOR rot = {
-		0.0f,0.0f,0.0f
-	};
-
-	this->m_D3DRenderWidget->getCommunicator()->AddModel(test->at(index.row())->GetId(),0,pos, rot);
-
-	//QFileInfo fileInfo = this->m_model->fileInfo(index);
-	//QString filePath = fileInfo.filePath();
-
-	/*send the filepath to the importer*/
-
 }

@@ -28,7 +28,6 @@
 		virtual void closeEvent(QCloseEvent * event);
 		virtual void resizeEvent(QResizeEvent *event);
 	public slots:
-	void on_treeView_doubleClicked();
 	void on_NewScene_clicked();
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();
