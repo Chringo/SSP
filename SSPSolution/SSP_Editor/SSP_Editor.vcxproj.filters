@@ -106,6 +106,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AssetTreeHandler.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AttributesHandler.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AttributesHandler.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -121,6 +127,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="AssetTreeHandler.h">
+      <Filter>Header Files\UI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AttributesHandler.h">
       <Filter>Header Files\UI</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -157,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="ResourceLibHeaders.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AttributesHandler.h">
-      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UiControlHandler.h">
       <Filter>Header Files\UI</Filter>

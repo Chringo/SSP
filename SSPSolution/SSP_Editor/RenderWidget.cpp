@@ -50,7 +50,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				{
 					if (InstancePtr->at(j).isDirty)
 					{
-						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(),j,InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 					}
 
 					BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
@@ -82,7 +82,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
 					DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
 					obj.ort = temp3;
-					
+
 
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 						modelPtr->at(i),
@@ -96,7 +96,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 							InstancePtr->at(j).position,
 							obj
 						);
-						
+
 						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 							this->m_Communicator->m_EditorInputHandler->m_Axis[0].pos,
 							this->m_Communicator->m_EditorInputHandler->m_Axis[0]
@@ -109,13 +109,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 							this->m_Communicator->m_EditorInputHandler->m_Axis[2].pos,
 							this->m_Communicator->m_EditorInputHandler->m_Axis[2]
 						);
-
-
 					}
 				}
-
 			}
-
 		}
 	}
 	
@@ -140,6 +136,7 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 
 		m_Communicator->GetCamera()->UpdateProjection(aspect);
 	 m_Communicator->m_GraphicsHandler->SetCamera(m_Communicator->GetCamera());
+	 m_Communicator->m_EditorInputHandler->ViewPortChanged(h, w);
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)

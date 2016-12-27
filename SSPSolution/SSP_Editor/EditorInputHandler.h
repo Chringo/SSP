@@ -76,6 +76,7 @@ public:
 	void MousePicking();
 	void keyReleased(QKeyEvent* evt);
 	void UpdatePos(int index);
+	void ViewPortChanged(float height, float width);
 
 
 
