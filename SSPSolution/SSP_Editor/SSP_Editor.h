@@ -30,7 +30,6 @@
 		virtual void mousePressEvent(QMouseEvent * evt);
 		virtual void mouseReleaseEvent(QMouseEvent * evt);
 	public slots:
-	void on_treeView_doubleClicked();
 	void on_NewScene_clicked();
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();

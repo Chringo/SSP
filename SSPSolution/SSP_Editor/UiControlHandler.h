@@ -19,6 +19,9 @@ namespace Ui {
 	public:
 		static UiControlHandler* GetInstance();
 		int Initialize(Ui::SSP_EditorClass* ui);
+
+		AssetTreeHandler* GetAssetTreeController() { return m_AssetTree; };
+		AttributesHandler* GetAttributesHandler() { return m_AttrHandler; };
 		~UiControlHandler();
 
 
