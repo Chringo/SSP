@@ -70,6 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssetTreeHandler.cpp" />
     <ClCompile Include="AttributesHandler.cpp" />
     <ClCompile Include="DataHandler.cpp" />
     <ClCompile Include="EditorCommunicator.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ResourceLibExporter.cpp" />
     <ClCompile Include="SSP_Editor.cpp" />
+    <ClCompile Include="UiControlHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -126,6 +128,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetTreeHandler.h" />
     <ClInclude Include="AttributesHandler.h" />
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
@@ -136,6 +139,7 @@
     <ClInclude Include="LevelHeaders.h" />
     <ClInclude Include="ResourceLibExporter.h" />
     <ClInclude Include="ResourceLibHeaders.h" />
+    <ClInclude Include="UiControlHandler.h" />
     <CustomBuild Include="RenderWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing RenderWidget.h...</Message>

@@ -14,7 +14,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	/*a list of filters for the treeView*/
 	QStringList filters;
 	filters << "*.bbf";
-	
+
 	/*setting the filters and disabling the user from seeing any other files*/
 	this->m_model->setNameFilters(filters);
 	this->m_model->setNameFilterDisables(false);
