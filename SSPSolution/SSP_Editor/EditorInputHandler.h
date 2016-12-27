@@ -80,10 +80,10 @@ public:
 			axisOBB[i].ort = selectedObject.ort;
 			axisOBB[i].pos = selectedObject.pos;
 			//relative to origin
-			//axisOBB[i].pos.m128_f32[i] += 1.f;
+			axisOBB[i].pos.m128_f32[i] += 1.f;
 
 			//relative to object
-			axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
+			//axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
 		}
 	};
 

@@ -253,33 +253,32 @@ void EditorInputHandler::RotateObject(int direction)
 		DirectX::XMVECTOR rotation;
 		float angle = DirectX::XMConvertToRadians(45.f);
 
+		
 
 		switch (direction)
 		{
 		case (Qt::Key_Up):
-			instance->rotation.m128_f32[0] += 45.f;
+			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
 			break;
 		case (Qt::Key_Down):
-			instance->rotation.m128_f32[0] -= 45.f;
+			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
 			break;
 		case (Qt::Key_Left):
-			instance->rotation.m128_f32[1] += 45.f;
+			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
 			break;
 		case (Qt::Key_Right):
-			instance->rotation.m128_f32[1] -= 45.f;
+			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
 			break;
 		default:
 			break;
 		}
-		//DirectX::XMVECTOR finalRot;
-		//float hej;
-		//DirectX::XMQuaternionToAxisAngle(&finalRot, &hej, rotation);
-		//hej = DirectX::XMConvertToDegrees(hej);
-		////float qScalar = rotation.m128_f32[3];
 
-		////finalRot = DirectX::XMVector3Rotate(instance->rotation, rotation);
-		//instance->rotation = finalRot;
-		//
+
+		if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
+			instance->rotation = rotation;
+		else
+			instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
+
 		instance->isDirty = true;
 	
 	}
@@ -411,7 +410,6 @@ bool EditorInputHandler::m_PickTransformWidget()
 			transformWidget.SelectAxis(TransformWidget::NONE);
 		}
 	}
-	//transformWidget.setActive(result);
 
 	return result;
 }
