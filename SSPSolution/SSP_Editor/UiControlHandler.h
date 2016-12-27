@@ -13,11 +13,11 @@ namespace Ui {
 	class UiControlHandler
 	{
 	private:
-		AttributesHandler* m_AttrHandler;
-		Ui::SSP_EditorClass* ui;
-
+		AttributesHandler* m_AttrHandler = nullptr;
+		Ui::SSP_EditorClass* ui          = nullptr;
 	public:
-		UiControlHandler(Ui::SSP_EditorClass* ui);
+		static UiControlHandler* GetInstance();
+		int Initialize(Ui::SSP_EditorClass* ui);
 		~UiControlHandler();
 
 

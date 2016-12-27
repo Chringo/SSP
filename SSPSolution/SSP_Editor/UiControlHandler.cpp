@@ -7,9 +7,19 @@ Ui::UiControlHandler::UiControlHandler()
 }
 
 
-Ui::UiControlHandler::UiControlHandler(Ui::SSP_EditorClass * ui)
+
+
+Ui::UiControlHandler * Ui::UiControlHandler::GetInstance()
 {
-	this->m_AttrHandler = new AttributesHandler(ui);
+	static UiControlHandler instance;
+	return &instance;
+}
+
+int Ui::UiControlHandler::Initialize(Ui::SSP_EditorClass * ui)
+{
+	m_AttrHandler = new AttributesHandler(ui);;
+	
+	return 1;
 }
 
 Ui::UiControlHandler::~UiControlHandler()
