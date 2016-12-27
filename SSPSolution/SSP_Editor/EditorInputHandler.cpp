@@ -212,7 +212,7 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 
 		bool object = false;
 		bool widget = false;
-
+		
 		if (transformWidget.IsActive())
 		{
 			widget = m_PickTransformWidget();
@@ -224,7 +224,7 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 		{
 			transformWidget.setActive(true);
 		}
-		else
+		else if(!this->m_KeysHeld[ALT])
 		{
 			transformWidget.setActive(false);
 		}
