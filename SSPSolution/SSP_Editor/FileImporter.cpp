@@ -16,10 +16,11 @@ FileImporter::~FileImporter()
 
 Resources::Status FileImporter::ImportFromServer()
 {
+	Ui::AssetTreeHandler* uiTree = Ui::UiControlHandler::GetInstance()->GetAssetTreeController();
 	DIR *dir;
 	struct dirent *ent;
 	QString dirPath = pathToBbfFolder + "/Models";
-	
+	int numModels = 0;
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -29,7 +30,9 @@ Resources::Status FileImporter::ImportFromServer()
 			{
 				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
-				AddListItem(ListItem::MODEL, ent->d_name);
+				uiTree->AddItem(
+					Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name,QVariant(numModels));
+				numModels += 1;
 				m_filepaths.push_back(pathName);
 			}
 		}
@@ -272,6 +275,7 @@ void FileImporter::handleModel(char * m_bbf_object)
 void FileImporter::AddListItem(ListItem category, std::string name)
 {
 	QTreeWidgetItem *itm = new QTreeWidgetItem();
+	
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
