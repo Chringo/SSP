@@ -8,7 +8,7 @@ Container struct
 Add a class that handles the scene info tab
 
 	- Lists the instances in a level by names in the scene info tab
-	- When an item is clicked, highlight the model in the scene (and update attribute window)
+	- When an item in the widget is clicked, highlight the model in the scene (and update attribute window)
 	- Remove items from the list when they are deleted.
 	- The class should have easy to use functions
 		- AddInstance(   /*Necessary arguments*/)
@@ -26,8 +26,8 @@ Add a class that handles the Attributes window
 
 -----------------------------------------------------
 FileImporter:
-	- Add functions that handle the case of the server not being reachable
-	- Ask if the user wants to manually enter a file path.
+	- Add functions that handle the case of the server not being reachable ----------DONE---------
+	- Ask if the user wants to manually enter a file path.				   ----------DONE---------
 	- Ask if the user would rather load from a BPF file.
 	- Add texture   loading
 	- Add material  loading
