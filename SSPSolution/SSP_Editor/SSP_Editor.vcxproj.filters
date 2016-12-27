@@ -38,6 +38,12 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{7bbad183-351d-4e86-844a-838ab7a306a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{2c3cd425-0af3-4dd6-8b7c-cc19dec42e60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,6 +90,9 @@
     </ClCompile>
     <ClCompile Include="ResourceLibExporter.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributesHandler.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="ResourceLibHeaders.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributesHandler.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
