@@ -301,6 +301,11 @@ bool FileImporter::HandlePathNotFound()
 std::string FileImporter::SelectNewPath()
 {
 
+	QMessageBox msgBox;
+	msgBox.setText("Please locate the folder \"bbf files\"");
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setDefaultButton(QMessageBox::Ok);
+	msgBox.exec();
 	QFileDialog dlg(NULL, "Load file");
 	dlg.setAcceptMode(QFileDialog::AcceptOpen);
 	//QFileDialog::ReadOnly

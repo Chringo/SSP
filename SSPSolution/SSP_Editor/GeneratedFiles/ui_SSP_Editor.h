@@ -555,7 +555,7 @@ public:
 
         retranslateUi(SSP_EditorClass);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
