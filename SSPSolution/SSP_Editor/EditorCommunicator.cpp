@@ -104,3 +104,12 @@ Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int i
 {
 	return m_currentLevel->RemoveModel(modelID, instanceID);
 }
+
+void Communicator::ViewPortChanged(float height, float width)
+{
+	if (height != 0) {
+		this->m_Camera->UpdateProjection(width / height);
+		this->m_Camera->Update();
+		this->m_EditorInputHandler->ViewPortChanged(height, width);
+	}
+}

@@ -143,10 +143,7 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 	this->frameGeometry().setHeight(h);
 	if (h != 0)
 		aspect = w / h;
-
-		m_Communicator->GetCamera()->UpdateProjection(aspect);
-	 m_Communicator->m_GraphicsHandler->SetCamera(m_Communicator->GetCamera());
-	 m_Communicator->m_EditorInputHandler->ViewPortChanged(h, w);
+	m_Communicator->ViewPortChanged(h, w);
 }
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)

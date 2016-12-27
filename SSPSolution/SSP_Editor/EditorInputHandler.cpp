@@ -739,7 +739,7 @@ void EditorInputHandler::UpdatePos(int index)
 void EditorInputHandler::ViewPortChanged(float height, float width)
 {
 	this->m_Height = height;
-	this->m_Width = width;
+	this->m_Width  = width;
 }
 
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
