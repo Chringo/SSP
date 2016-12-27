@@ -27,7 +27,7 @@ Resources::Status FileImporter::ImportFromServer()
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = dirPath.toStdString() + "/";//"//DESKTOP-BOKNO6D/server/Assets/bbf files/Models/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				AddListItem(ListItem::MODEL, ent->d_name);
 				m_filepaths.push_back(pathName);
@@ -44,14 +44,13 @@ Resources::Status FileImporter::ImportFromServer()
 
 	dirPath = pathToBbfFolder + "/Meshes";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
-		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL)
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = dirPath.toStdString() + "/";//DESKTOP-BOKNO6D/server/Assets/bbf files/Meshes/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				m_filepaths.push_back(pathName);
 			}
@@ -82,14 +81,13 @@ Resources::Status FileImporter::ImportFromServer()
 	dirPath = pathToBbfFolder + "/Materials";
 	// Load textures before Materials, So that the materials can find them.
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
-		//if ((dir = opendir("C:/Users/Cool_David_92/Desktop/hehee/Meshes")) != NULL)
 	{
 		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL)
 		{
 			if (*ent->d_name != '.')
 			{
-				std::string pathName = dirPath.toStdString() + "/";//"//DESKTOP-BOKNO6D/server/Assets/bbf files/Materials/";
+				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
 				//AddListItem(ListItem::MATERIAL, ent->d_name);
 				m_filepaths.push_back(pathName);
