@@ -111,6 +111,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ResourceLibExporter.cpp" />
+    <ClCompile Include="SelectionHandler.cpp" />
     <ClCompile Include="SSP_Editor.cpp" />
     <ClCompile Include="UiControlHandler.cpp" />
   </ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="LevelHeaders.h" />
     <ClInclude Include="ResourceLibExporter.h" />
     <ClInclude Include="ResourceLibHeaders.h" />
+    <ClInclude Include="SelectionHandler.h" />
     <ClInclude Include="UiControlHandler.h" />
     <CustomBuild Include="RenderWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

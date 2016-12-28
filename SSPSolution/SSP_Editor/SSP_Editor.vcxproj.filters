@@ -112,6 +112,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AttributesHandler.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="SelectionHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="UiControlHandler.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
