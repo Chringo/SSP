@@ -11,6 +11,7 @@
 #include "../ResourceLib/ResourceHandler.h"
 #include "Header.h"
 #include "ui_SSP_Editor.h"
+#include "SelectionHandler.h"
 
 #pragma comment (lib,"GraphicsDLL-d.lib")
 #pragma comment (lib,"ResourceLib.lib")
@@ -37,99 +38,99 @@ struct Mouse
 	bool leftHeld = false;
 };
 
-struct TransformWidget
-{
-public:
-	enum AXIS
-	{
-		NONE = -1,
-		X,
-		Y,
-		Z,
-
-		NUM_AXIS
-	};
-private:
-	bool m_active = false;
-	DirectX::XMVECTOR m_colors[4];
-public:
-	OBB selectedObjectOBB;
-	OBB axisOBB[NUM_AXIS];
-	DirectX::XMVECTOR * axisColors[NUM_AXIS];
-	int SelectedModelIndex = NONE;
-	unsigned int selectedAxis = NONE;
-	
-
-public:
-	bool IsActive()
-	{
-		return m_active;
-	};
-	void setActive(bool active)
-	{
-		this->m_active = active;
-	};
-	void SelectObb(OBB &selectedObject)
-	{
-		selectedObjectOBB = selectedObject;
-
-		
-
-		for (int i = 0; i < NUM_AXIS; i++)
-		{
-			axisOBB[i].ort = selectedObject.ort;
-			axisOBB[i].pos = selectedObject.pos;
-			//relative to origin
-			axisOBB[i].pos.m128_f32[i] += 1.f;
-
-			//relative to object
-			//axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
-		}
-	};
-
-	void SelectAxis(int i)
-	{
-		axisColors[X] = &m_colors[X];
-		axisColors[Y] = &m_colors[Y];
-		axisColors[Z] = &m_colors[Z];
-
-		if (i >= X && Z >= i)
-		{
-			selectedAxis = i;
-			axisColors[i] = &m_colors[NUM_AXIS];
-		}
-		else
-		{
-			selectedAxis = NONE;
-		}
-	}
-
-	TransformWidget()
-	{
-		for (int i = 0; i < NUM_AXIS; i++)
-		{
-			for (int j = 0; j < NUM_AXIS; j++)
-			{
-				axisOBB[i].ext[j] = 0.15;
-			}
-		}
-
-		m_colors[X] = { 1.0, 0.0, 0.0, 0.0 };
-		m_colors[Y] = { 0.0, 1.0, 0.0, 0.0 };
-		m_colors[Z] = { 0.0, 0.0, 1.0, 0.0 };
-		m_colors[NUM_AXIS] = { 1.0, 1.0, 1.0, 0.0 };
-		
-		axisColors[X] = &m_colors[X];
-		axisColors[Y] = &m_colors[Y];
-		axisColors[Z] = &m_colors[Z];
-
-	};
-};
-
-struct PickRay
-{
-	DirectX::XMVECTOR origin, direction, localOrigin;
-};
+//struct TransformWidget
+//{
+//public:
+//	enum AXIS
+//	{
+//		NONE = -1,
+//		X,
+//		Y,
+//		Z,
+//
+//		NUM_AXIS
+//	};
+//private:
+//	bool m_active = false;
+//	DirectX::XMVECTOR m_colors[4];
+//public:
+//	OBB selectedObjectOBB;
+//	OBB axisOBB[NUM_AXIS];
+//	DirectX::XMVECTOR * axisColors[NUM_AXIS];
+//	int SelectedModelIndex = NONE;
+//	unsigned int selectedAxis = NONE;
+//	
+//
+//public:
+//	bool IsActive()
+//	{
+//		return m_active;
+//	};
+//	void setActive(bool active)
+//	{
+//		this->m_active = active;
+//	};
+//	void SelectObb(OBB &selectedObject)
+//	{
+//		selectedObjectOBB = selectedObject;
+//
+//		
+//
+//		for (int i = 0; i < NUM_AXIS; i++)
+//		{
+//			axisOBB[i].ort = selectedObject.ort;
+//			axisOBB[i].pos = selectedObject.pos;
+//			//relative to origin
+//			axisOBB[i].pos.m128_f32[i] += 1.f;
+//
+//			//relative to object
+//			//axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
+//		}
+//	};
+//
+//	void SelectAxis(int i)
+//	{
+//		axisColors[X] = &m_colors[X];
+//		axisColors[Y] = &m_colors[Y];
+//		axisColors[Z] = &m_colors[Z];
+//
+//		if (i >= X && Z >= i)
+//		{
+//			selectedAxis = i;
+//			axisColors[i] = &m_colors[NUM_AXIS];
+//		}
+//		else
+//		{
+//			selectedAxis = NONE;
+//		}
+//	}
+//
+//	TransformWidget()
+//	{
+//		for (int i = 0; i < NUM_AXIS; i++)
+//		{
+//			for (int j = 0; j < NUM_AXIS; j++)
+//			{
+//				axisOBB[i].ext[j] = 0.15;
+//			}
+//		}
+//
+//		m_colors[X] = { 1.0, 0.0, 0.0, 0.0 };
+//		m_colors[Y] = { 0.0, 1.0, 0.0, 0.0 };
+//		m_colors[Z] = { 0.0, 0.0, 1.0, 0.0 };
+//		m_colors[NUM_AXIS] = { 1.0, 1.0, 1.0, 0.0 };
+//		
+//		axisColors[X] = &m_colors[X];
+//		axisColors[Y] = &m_colors[Y];
+//		axisColors[Z] = &m_colors[Z];
+//
+//	};
+//};
+//
+//struct PickRay
+//{
+//	DirectX::XMVECTOR origin, direction, localOrigin;
+//};
 
 enum Bools {
 	SHIFT = 0,
@@ -150,7 +151,7 @@ class EditorInputHandler
 {
 private:
 	Mouse m_mouse;
-	PickRay m_ray;
+	//PickRay m_ray;
 	int m_Width;
 	int m_Height;
 
@@ -170,12 +171,12 @@ private:
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIMouse;
 private:
-	void m_ProjectRay(int X, int Y);
-	bool m_PickTransformWidget();
-	bool m_PickObjectSelection();
+	//void m_ProjectRay(int X, int Y);
+	//bool m_PickTransformWidget();
+	//bool m_PickObjectSelection();
 public:
 	//OBB m_Axis[3];
-	TransformWidget transformWidget = TransformWidget();
+	//TransformWidget transformWidget = TransformWidget();
 	
 	HasPicked m_Picked;
 	HasPicked m_LastPicked;
@@ -185,15 +186,14 @@ public:
 	void MouseMovement(double dT);
 	void MouseZoom(double dT);
 	void CameraReset();
-	void MousePicking();
+	//void MousePicking();
 	void keyReleased(QKeyEvent* evt);
-	void UpdatePos(int index);
 	void UpdateMouse();
 	void ViewPortChanged(float height, float width);
 	void mouseButtonDown(QMouseEvent* evt);
 	void mouseButtonRelease(QMouseEvent * evt);
-	void RotateObject(int direction);
-	void MoveObject();
+	//void RotateObject(int direction);
+	//void MoveObject();
 
 
 

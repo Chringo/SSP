@@ -8,11 +8,55 @@ SelectionHandler::~SelectionHandler()
 {
 }
 
+void SelectionHandler::Initialize(Camera * camera,
+	int winWidth, 
+	int winHeight,
+	Level * currentLevel,
+	std::vector<Resources::Model*>* modelPtr)
+{
+	this->m_Camera = camera;
+	this->m_Width = winWidth;
+	this->m_Height = winHeight;
+	this->m_currentLevel = currentLevel;
+	this->m_modelPtr = modelPtr;
+
+	this->m_ray.direction = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+	this->m_ray.origin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
+}
+
+void SelectionHandler::updateWindowSize(int winHeight, int winWidth)
+{
+	this->m_Height = winHeight;
+	this->m_Width = winWidth;
+}
+
 SelectionHandler * SelectionHandler::GetInstance()
 {
 	static SelectionHandler selectionHandler;
 
 	return &selectionHandler;
+}
+
+
+Container * SelectionHandler::GetSelected()
+{
+	return this->transformWidget.GetContainer();
+}
+
+TransformWidget * SelectionHandler::GetTransformWidget()
+{
+	return &this->transformWidget;
+}
+
+const unsigned int SelectionHandler::GetModelID()
+{
+	return transformWidget.GetModelID();
+}
+
+const unsigned int SelectionHandler::GetInstanceID()
+{
+	return transformWidget.GetInstanceID();
 }
 
 void SelectionHandler::ProjectRay(int X, int Y)
@@ -65,7 +109,6 @@ bool SelectionHandler::PickObjectSelection()
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 	if (!m_Map->empty())
 	{
-		BoundingBoxHeader boundingBox;
 		Resources::Status st;
 		std::vector<Container>* InstancePtr = nullptr;
 		for (size_t i = 0; i < m_modelPtr->size(); i++)
@@ -79,34 +122,7 @@ bool SelectionHandler::PickObjectSelection()
 				InstancePtr = &got->second;
 				for (size_t j = 0; j < InstancePtr->size(); j++)
 				{
-					boundingBox = m_modelPtr->at(i)->GetOBBData();
-					OBB obj;
-					obj.ext[0] = boundingBox.extension[0];
-					obj.ext[1] = boundingBox.extension[1];
-					obj.ext[2] = boundingBox.extension[2];
-
-					obj.pos = DirectX::XMVectorSet(
-						InstancePtr->at(j).position.m128_f32[0],
-						InstancePtr->at(j).position.m128_f32[1],
-						InstancePtr->at(j).position.m128_f32[2],
-						1.0f);
-
-
-					DirectX::XMMATRIX extensionMatrix;
-					extensionMatrix = DirectX::XMMatrixSet(
-						boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
-						boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
-						boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
-						0.0f, 0.0f, 0.0f, 1.0f
-					);
-
-					obj.ort = extensionMatrix;
-
-					//OBB obj = *(OBB*)&boundingBox;
-					//DONT FORGET TO MULTIPLY MATRIX
-					DirectX::XMMATRIX tempWorld = InstancePtr->at(j).component.worldMatrix;
-					DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
-					obj.ort = finalOrt;
+					OBB obj = m_ConvertOBB(m_modelPtr->at(i)->GetOBBData(), &InstancePtr->at(j));
 
 					bool result = false;
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
@@ -114,9 +130,6 @@ bool SelectionHandler::PickObjectSelection()
 					//transformWidget.setActive(result);
 					if (result)
 					{
-						
-
-
 						//update widget with the intersected obb
 						this->transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
 
@@ -127,7 +140,8 @@ bool SelectionHandler::PickObjectSelection()
 				}
 				if (!gotHit)
 				{
-					this->transformWidget.DeSelect();
+
+					//this->transformWidget.DeSelect();
 				}
 			}
 		}
@@ -135,4 +149,135 @@ bool SelectionHandler::PickObjectSelection()
 	return gotHit;
 
 	//return true;
+}
+
+void SelectionHandler::MoveObject()
+{
+	if (transformWidget.IsActive() && transformWidget.selectedAxis != TransformWidget::NONE)
+	{
+		Container * instance;
+		
+		instance = transformWidget.GetContainer();
+
+		//*PLANE INTERSECTION*//
+		//Plane position is the position of the axis widget
+		DirectX::XMVECTOR plane = transformWidget.axisOBB[transformWidget.selectedAxis].pos;
+		DirectX::XMVECTOR N;
+
+		//Normal is vector from axis widget to eye direction [SOMETHING'S PROBABLY WRONG HERE]
+		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetLookAt()), DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()));
+		N = DirectX::XMVectorScale(N, -1.f);
+
+		//plane normal relative to eye position
+		//N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+
+		//t is amount of ray unit vectors to reach point, p is point on plane
+		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, N).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, N).m128_f32[0]);
+		DirectX::XMVECTOR P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
+
+		//*MOVEMENT*//
+		//Difference between point on plane relative to axis widget
+		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+
+		//Change position
+		//Snap
+		if (Diff.m128_f32[transformWidget.selectedAxis] > 1.0)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] += 1.0f;
+		}
+		else if (Diff.m128_f32[transformWidget.selectedAxis] < -1.0)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] -= 1.0f;
+		}
+		//Non snap
+		if (false)
+		{
+			instance->position.m128_f32[transformWidget.selectedAxis] =
+				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
+		}
+
+
+		//*Bounding box update, just... just turn around and walk away*//
+		transformWidget.UpdateOBB(this->m_ConvertOBB(m_modelPtr->at(transformWidget.GetModelIndex())->GetOBBData(), transformWidget.GetContainer()));
+
+
+		//flag instance for update
+		instance->isDirty = true;
+	}
+
+}
+
+void SelectionHandler::RotateObject(int direction)
+{
+	//if (transformWidget.IsActive())
+	//{
+	//	Container * instance = transformWidget.GetContainer();
+
+
+	//	DirectX::XMVECTOR rotation;
+	//	float angle = DirectX::XMConvertToRadians(45.f);
+
+
+
+	//	switch (direction)
+	//	{
+	//	case (Qt::Key_Up):
+	//		rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
+	//		break;
+	//	case (Qt::Key_Down):
+	//		rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
+	//		break;
+	//	case (Qt::Key_Left):
+	//		rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
+	//		break;
+	//	case (Qt::Key_Right):
+	//		rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
+	//		break;
+	//	default:
+	//		break;
+	//	}
+
+
+	//	if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
+	//		instance->rotation = rotation;
+	//	else
+	//		instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
+
+	//	instance->isDirty = true;
+
+	//}
+
+}
+
+OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * instancePtr)
+{
+	OBB obj;
+
+	obj.ext[0] = boundingBox.extension[0];
+	obj.ext[1] = boundingBox.extension[1];
+	obj.ext[2] = boundingBox.extension[2];
+
+	obj.pos = DirectX::XMVectorSet(
+		instancePtr->position.m128_f32[0],
+		instancePtr->position.m128_f32[1],
+		instancePtr->position.m128_f32[2],
+		1.0f);
+
+
+	DirectX::XMMATRIX extensionMatrix;
+	extensionMatrix = DirectX::XMMatrixSet(
+		boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+		boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+		boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	obj.ort = extensionMatrix;
+
+	//into worldspace we go!
+	DirectX::XMMATRIX tempWorld = instancePtr->component.worldMatrix;
+	DirectX::XMMATRIX finalOrt = DirectX::XMMatrixMultiply(extensionMatrix, tempWorld);
+	obj.ort = finalOrt;
+
+	return obj;
 }

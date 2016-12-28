@@ -4,6 +4,7 @@
 #include "Header.h"
 #include "TransformWidget.h"
 #include "../physicsDLL/PhysicsHandler.h"
+#include "Level.h"
 
 class SelectionHandler
 {
@@ -14,22 +15,26 @@ public:
 	};
 
 private:
-
+	OBB m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * instancePtr);
 
 
 public:
 	SelectionHandler();
 	~SelectionHandler();
 
-	void Initialize(Camera * camera, int winWidth, int winHeight, PhysicsHandler* physicsHandler);
+	void Initialize(Camera * camera,
+		int winWidth,
+		int winHeight,
+		Level * currentLevel,
+		std::vector<Resources::Model*>* modelPtr);
+	void updateWindowSize(int winHeight, int winWidth);
 	static SelectionHandler* GetInstance();
-	void SelectObject(Container * container, unsigned int modelID, OBB obb);
-	void UpdateSelected(
-		DirectX::XMVECTOR position = { 0.0 },
-		DirectX::XMVECTOR rotation = { 0.0 },
-		DirectX::XMVECTOR scale = { 0.0 });
+
 	Container * GetSelected();
 	TransformWidget * GetTransformWidget();
+
+	const unsigned int GetModelID();
+	const unsigned int GetInstanceID();
 
 	void ProjectRay(int X, int Y);
 	void RotateObject(int direction);
@@ -43,10 +48,10 @@ private:
 
 	PickRay m_ray;
 	Camera * m_Camera;
-	TransformWidget transformWidget;
+	TransformWidget transformWidget = TransformWidget();
 	int m_Width;
 	int m_Height;
-
+	Level * m_currentLevel;
 };
 
 

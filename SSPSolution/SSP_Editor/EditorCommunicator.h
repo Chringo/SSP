@@ -4,6 +4,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "LevelHandler.h"
+#include "SelectionHandler.h"
 
 
 //struct Container
@@ -30,10 +31,13 @@ public:
 	bool m_IsPreview;
 	GraphicsHandler* m_GraphicsHandler;
 	EditorInputHandler* m_EditorInputHandler;
+	
 	Communicator();
 	~Communicator();
 	Resources::Status Initialize(HWND hwnd, HINSTANCE hinstance, int w, int h, bool isPreview, std::vector<Resources::Model*>* modelPtr);
 	Resources::Status Release();
+
+	SelectionHandler * GetSelectionHandler() { return SelectionHandler::GetInstance(); };
 
 public:
 	ID3D11Device* GetDevice() { return this->m_GraphicsHandler->GetDevice(); };

@@ -30,6 +30,20 @@ public:
 
 
 public:
+	unsigned int GetInstanceID() { return instanceID; };
+	unsigned int GetModelID() { return modelID; };
+	int GetModelIndex() { return modelIndex; };
+	Container * GetContainer() { return selectedContainer; };
+
+	void UpdateOBB(const OBB &boundingBox)
+	{
+		selectedObjectOBB.ext[0] = boundingBox.ext[0];
+		selectedObjectOBB.ext[1] = boundingBox.ext[1];
+		selectedObjectOBB.ext[2] = boundingBox.ext[2];
+		selectedObjectOBB.ort = boundingBox.ort;
+		selectedObjectOBB.pos = boundingBox.pos;
+	};
+
 	bool IsActive()
 	{
 		return m_active;
@@ -82,14 +96,17 @@ public:
 	}
 	void DeSelect()
 	{
-		this->selectedObjectOBB = *(OBB*)nullptr;
-		this->selectedContainer = nullptr;
-		this->modelIndex = NONE;
-		this->instanceID = NULL;
-		this->modelID = NULL;
+		if (m_active)
+		{
+			//this->selectedObjectOBB;
+			this->selectedContainer = nullptr;
+			this->modelIndex = NONE;
+			this->instanceID = NULL;
+			this->modelID = NULL;
 
-		SelectAxis(NONE);
-		setActive(false);
+			SelectAxis(NONE);
+			setActive(false);
+		}
 	};
 	TransformWidget()
 	{

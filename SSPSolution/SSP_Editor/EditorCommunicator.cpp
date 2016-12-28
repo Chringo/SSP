@@ -33,6 +33,14 @@ Resources::Status Communicator::Initialize(
 
 	if (!isPreview)
 	{
+		SelectionHandler::GetInstance()->Initialize(
+			this->m_Camera,
+			this->m_Width,
+			this->m_Height,
+			this->m_currentLevel,
+			modelPtr
+		);
+
 		this->m_EditorInputHandler = new EditorInputHandler(
 			this->m_hInstance,
 			this->m_hwnd,
