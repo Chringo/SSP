@@ -171,6 +171,7 @@
     <ClInclude Include="ResourceLibExporter.h" />
     <ClInclude Include="ResourceLibHeaders.h" />
     <ClInclude Include="SelectionHandler.h" />
+    <ClInclude Include="TransformWidget.h" />
     <ClInclude Include="UiControlHandler.h" />
     <CustomBuild Include="RenderWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

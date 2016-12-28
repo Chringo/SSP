@@ -44,6 +44,12 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{2c3cd425-0af3-4dd6-8b7c-cc19dec42e60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Selection">
+      <UniqueIdentifier>{6542f4ce-efc2-42e2-baa0-590457c0b35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Selection">
+      <UniqueIdentifier>{5893cf19-2b0b-48e5-b497-bbdb41ccea95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -113,7 +119,7 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="SelectionHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Selection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +180,10 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="SelectionHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Selection</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformWidget.h">
+      <Filter>Header Files\Selection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
