@@ -654,7 +654,7 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 void EditorInputHandler::ViewPortChanged(float height, float width)
 {
 	this->m_Height = height;
-	this->m_Width = width;
+	this->m_Width  = width;
 
 	SelectionHandler::GetInstance()->updateWindowSize(height, width);
 }
