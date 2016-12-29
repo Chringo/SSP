@@ -46,10 +46,7 @@ Resources::Status Communicator::Initialize(
 			this->m_hwnd,
 			this->m_Camera,
 			this->m_Width,
-			this->m_Height,
-			this->m_GraphicsHandler,
-			this->m_currentLevel,
-			modelPtr
+			this->m_Height
 		);
 	}
 

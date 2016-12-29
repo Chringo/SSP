@@ -56,77 +56,45 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 					}
 
-
-					
-
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
-
-
-
-					if (this->m_Communicator->GetSelectionHandler()->GetModelID() == modelPtr->at(i)->GetId() && this->m_Communicator->GetSelectionHandler()->GetInstanceID() == j && this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->IsActive())
-					{
-						BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
-						OBB obj;
-						obj.ext[0] = boundingBox.extension[0];
-						obj.ext[1] = boundingBox.extension[1];
-						obj.ext[2] = boundingBox.extension[2];
-
-						DirectX::XMFLOAT3 temp;
-						temp.x = InstancePtr->at(j).position.m128_f32[0];
-						temp.y = InstancePtr->at(j).position.m128_f32[1];
-						temp.z = InstancePtr->at(j).position.m128_f32[2];
-						obj.pos = DirectX::XMLoadFloat3(&temp);
-
-						obj.ort;
-						boundingBox.extensionDir;
-						DirectX::XMMATRIX temp2;
-						temp2 = DirectX::XMMatrixSet(
-							boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
-							boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
-							boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
-							0.0f, 0.0f, 0.0f, 1.0f
-						);
-
-						obj.ort = temp2;
-
-						//OBB obj = *(OBB*)&boundingBox;
-						//DONT FORGET TO MULTIPLY MATRIX
-						DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
-						DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
-						obj.ort = temp3;
-
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							InstancePtr->at(j).position,
-							obj,
-							{ .0f, .65f, .67f }
-					
-						);
-						
-
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::X].pos,
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::X],
-							*this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisColors[TransformWidget::X]
-						);
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::Y].pos,
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::Y],
-							*this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisColors[TransformWidget::Y]
-						);
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::Z].pos,
-							this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisOBB[TransformWidget::Z],
-							*this->m_Communicator->GetSelectionHandler()->GetTransformWidget()->axisColors[TransformWidget::Z]
-						);
-					}
 				}
 			}
 		}
 	}
 	
+	if (SelectionHandler::GetInstance()->HasSelection())
+	{
+		static OBB* axisOBBs;
+		static OBB* selectedObjectOBB;
+		static DirectX::XMVECTOR ** axisColors;
+		static DirectX::XMVECTOR * OBBColor;
+
+		if (SelectionHandler::GetInstance()->NeedsUpdate())
+		{
+			SelectionHandler::GetInstance()->Update();
+			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisColors, selectedObjectOBB, OBBColor);
+		}
+
+		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+			SelectionHandler::GetInstance()->GetSelected()->position,
+			*selectedObjectOBB,
+			*OBBColor
+		);
+
+		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
+		{
+			this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+				axisOBBs[i].pos,
+				axisOBBs[i],
+				*axisColors[i]
+			);
+		}
+	}
+
+
 	this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	this->update();
 	

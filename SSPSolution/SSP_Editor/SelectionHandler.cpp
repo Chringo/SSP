@@ -38,25 +38,63 @@ SelectionHandler * SelectionHandler::GetInstance()
 	return &selectionHandler;
 }
 
+void SelectionHandler::Update()
+{
+	if (m_IsDirty)
+	{
+		m_transformWidget.UpdateOBB(this->m_ConvertOBB(m_modelPtr->at(m_transformWidget.GetModelIndex())->GetOBBData(), m_transformWidget.GetContainer()));
+		m_IsDirty = false;
+	}
+}
+
+bool SelectionHandler::NeedsUpdate()
+{
+	return m_IsDirty;
+}
+
 
 Container * SelectionHandler::GetSelected()
 {
-	return this->transformWidget.GetContainer();
+	return this->m_transformWidget.GetContainer();
 }
 
-TransformWidget * SelectionHandler::GetTransformWidget()
+bool SelectionHandler::HasSelection()
 {
-	return &this->transformWidget;
+	return m_transformWidget.IsActive();
 }
+
+void SelectionHandler::SetSelection(bool selection)
+{
+	this->m_transformWidget.setActive(selection);
+}
+
+void SelectionHandler::SetActiveAxis(int axis)
+{
+	this->m_transformWidget.SelectAxis(axis);
+}
+
 
 const unsigned int SelectionHandler::GetModelID()
 {
-	return transformWidget.GetModelID();
+	return m_transformWidget.GetModelID();
 }
 
 const unsigned int SelectionHandler::GetInstanceID()
 {
-	return transformWidget.GetInstanceID();
+	return m_transformWidget.GetInstanceID();
+}
+
+void SelectionHandler::GetSelectionRenderComponents(
+	OBB*& axisOBBs,
+	DirectX::XMVECTOR**& axisColors,
+	OBB*& objectOBB,
+	DirectX::XMVECTOR*& objectColor) 
+{
+	axisOBBs = this->m_transformWidget.GetAxisOBBs();
+	axisColors = this->m_transformWidget.GetAxisColors();
+
+	objectOBB = this->m_transformWidget.GetSelectedObjectOBB();
+	objectColor = this->m_transformWidget.GetSelectedObjectOBBColor();
 }
 
 void SelectionHandler::ProjectRay(int X, int Y)
@@ -86,15 +124,15 @@ bool SelectionHandler::PickTransformWidget()
 	{
 		result = this->m_PhysicsHandler->IntersectRayOBB(
 			this->m_ray.localOrigin, this->m_ray.direction,
-			this->transformWidget.axisOBB[i], this->transformWidget.axisOBB[i].pos);
+			this->m_transformWidget.GetAxisOBBs()[i], this->m_transformWidget.GetAxisOBBs()[i].pos);
 		if (result)
 		{
-			transformWidget.SelectAxis(i);
+			m_transformWidget.SelectAxis(i);
 			break;
 		}
 		else
 		{
-			transformWidget.SelectAxis(TransformWidget::NONE);
+			m_transformWidget.SelectAxis(TransformWidget::NONE);
 		}
 	}
 
@@ -131,7 +169,7 @@ bool SelectionHandler::PickObjectSelection()
 					if (result)
 					{
 						//update widget with the intersected obb
-						this->transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
+						this->m_transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
 
 
 						gotHit = result;
@@ -153,15 +191,15 @@ bool SelectionHandler::PickObjectSelection()
 
 void SelectionHandler::MoveObject()
 {
-	if (transformWidget.IsActive() && transformWidget.selectedAxis != TransformWidget::NONE)
+	if (m_transformWidget.IsActive() && m_transformWidget.GetSelectedAxis() != TransformWidget::NONE)
 	{
 		Container * instance;
 		
-		instance = transformWidget.GetContainer();
+		instance = m_transformWidget.GetContainer();
 
 		//*PLANE INTERSECTION*//
 		//Plane position is the position of the axis widget
-		DirectX::XMVECTOR plane = transformWidget.axisOBB[transformWidget.selectedAxis].pos;
+		DirectX::XMVECTOR plane = m_transformWidget.GetAxisOBBs()[m_transformWidget.GetSelectedAxis()].pos;
 		DirectX::XMVECTOR N;
 
 		//Normal is vector from axis widget to eye direction [SOMETHING'S PROBABLY WRONG HERE]
@@ -177,31 +215,28 @@ void SelectionHandler::MoveObject()
 
 		//*MOVEMENT*//
 		//Difference between point on plane relative to axis widget
-		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, transformWidget.axisOBB[transformWidget.selectedAxis].pos);
+		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, m_transformWidget.GetAxisOBBs()[m_transformWidget.GetSelectedAxis()].pos);
 
 		//Change position
 		//Snap
-		if (Diff.m128_f32[transformWidget.selectedAxis] > 1.0)
+		if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
 		{
-			instance->position.m128_f32[transformWidget.selectedAxis] += 1.0f;
+			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
 		}
-		else if (Diff.m128_f32[transformWidget.selectedAxis] < -1.0)
+		else if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] < -1.0)
 		{
-			instance->position.m128_f32[transformWidget.selectedAxis] -= 1.0f;
+			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
 		}
 		//Non snap
 		if (false)
 		{
-			instance->position.m128_f32[transformWidget.selectedAxis] =
-				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[transformWidget.selectedAxis];
+			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
+				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
 		}
 
 
-		//*Bounding box update, just... just turn around and walk away*//
-		transformWidget.UpdateOBB(this->m_ConvertOBB(m_modelPtr->at(transformWidget.GetModelIndex())->GetOBBData(), transformWidget.GetContainer()));
-
-
 		//flag instance for update
+		m_IsDirty = true;
 		instance->isDirty = true;
 	}
 
@@ -209,14 +244,13 @@ void SelectionHandler::MoveObject()
 
 void SelectionHandler::RotateObject(int direction)
 {
-	if (transformWidget.IsActive())
+	if (m_transformWidget.IsActive())
 	{
-		Container * instance = transformWidget.GetContainer();
+		Container * instance = m_transformWidget.GetContainer();
 
 
 		DirectX::XMVECTOR rotation;
 		float angle = DirectX::XMConvertToRadians(45.f);
-
 
 
 		switch (direction)
@@ -237,14 +271,13 @@ void SelectionHandler::RotateObject(int direction)
 			break;
 		}
 
-
 		if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
 			instance->rotation = rotation;
 		else
 			instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
 
+		m_IsDirty = true;
 		instance->isDirty = true;
-
 	}
 
 }

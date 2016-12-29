@@ -36,12 +36,22 @@ public:
 		std::vector<Resources::Model*>* modelPtr);
 	void updateWindowSize(int winHeight, int winWidth);
 	static SelectionHandler* GetInstance();
+	void Update();
+	bool NeedsUpdate();
 
 	Container * GetSelected();
-	TransformWidget * GetTransformWidget();
+	bool HasSelection();
+	void SetSelection(bool selection);
+	void SetActiveAxis(int axis);
 
 	const unsigned int GetModelID();
 	const unsigned int GetInstanceID();
+	void GetSelectionRenderComponents(
+		OBB*& axisOBBs,
+		DirectX::XMVECTOR**& axisColors,
+		OBB*& objectOBB,
+		DirectX::XMVECTOR*& objectColor);
+	
 
 	void ProjectRay(int X, int Y);
 	void RotateObject(int direction);
@@ -49,13 +59,15 @@ public:
 	bool PickTransformWidget();
 	bool PickObjectSelection();
 
+
 private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::vector<Resources::Model*>* m_modelPtr;
 
+	bool m_IsDirty = true;
 	PickRay m_ray;
 	Camera * m_Camera;
-	TransformWidget transformWidget = TransformWidget();
+	TransformWidget m_transformWidget = TransformWidget();
 	int m_Width;
 	int m_Height;
 	Level * m_currentLevel;
