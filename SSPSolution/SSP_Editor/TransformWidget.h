@@ -42,6 +42,17 @@ public:
 		selectedObjectOBB.ext[2] = boundingBox.ext[2];
 		selectedObjectOBB.ort = boundingBox.ort;
 		selectedObjectOBB.pos = boundingBox.pos;
+
+		for (int i = 0; i < NUM_AXIS; i++)
+		{
+			axisOBB[i].ort = selectedObjectOBB.ort;
+			axisOBB[i].pos = selectedObjectOBB.pos;
+			//relative to origin
+			axisOBB[i].pos.m128_f32[i] += 1.f;
+
+			//relative to object
+			//axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
+		}
 	};
 
 	bool IsActive()

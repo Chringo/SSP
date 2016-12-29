@@ -28,6 +28,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	{
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
 		this->m_Communicator->m_EditorInputHandler->UpdateMouse();
+		SelectionHandler::GetInstance()->MoveObject();
 		//this->m_Communicator->m_EditorInputHandler->MoveObject();
 		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}

@@ -201,6 +201,9 @@ void EditorInputHandler::UpdateMouse()
 		this->m_mouse.y = this->m_Height;
 	else if (this->m_mouse.y < 0)
 		this->m_mouse.y = 0;
+
+	if (this->m_mouse.leftHeld)
+		SelectionHandler::GetInstance()->ProjectRay(m_mouse.x, m_mouse.y);
 }
 
 void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
@@ -212,7 +215,6 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 
 		bool object = false;
 		bool widget = false;
-		//
 
 		
 		if (SelectionHandler::GetInstance()->GetTransformWidget()->IsActive())
@@ -240,8 +242,7 @@ void EditorInputHandler::mouseButtonRelease(QMouseEvent * evt)
 	if (evt->button() == Qt::LeftButton)
 	{
 		this->m_mouse.leftHeld = false;
-		//this->transformWidget.SelectAxis(TransformWidget::NONE);
-
+		SelectionHandler::GetInstance()->GetTransformWidget()->SelectAxis(TransformWidget::NONE);
 	}
 }
 //void EditorInputHandler::RotateObject(int direction)
