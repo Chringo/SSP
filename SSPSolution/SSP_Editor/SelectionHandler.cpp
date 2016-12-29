@@ -209,43 +209,43 @@ void SelectionHandler::MoveObject()
 
 void SelectionHandler::RotateObject(int direction)
 {
-	//if (transformWidget.IsActive())
-	//{
-	//	Container * instance = transformWidget.GetContainer();
+	if (transformWidget.IsActive())
+	{
+		Container * instance = transformWidget.GetContainer();
 
 
-	//	DirectX::XMVECTOR rotation;
-	//	float angle = DirectX::XMConvertToRadians(45.f);
+		DirectX::XMVECTOR rotation;
+		float angle = DirectX::XMConvertToRadians(45.f);
 
 
 
-	//	switch (direction)
-	//	{
-	//	case (Qt::Key_Up):
-	//		rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
-	//		break;
-	//	case (Qt::Key_Down):
-	//		rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
-	//		break;
-	//	case (Qt::Key_Left):
-	//		rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
-	//		break;
-	//	case (Qt::Key_Right):
-	//		rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
-	//		break;
-	//	default:
-	//		break;
-	//	}
+		switch (direction)
+		{
+		case (Key_Up):
+			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
+			break;
+		case (Key_Down):
+			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
+			break;
+		case (Key_Left):
+			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
+			break;
+		case (Key_Right):
+			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
+			break;
+		default:
+			break;
+		}
 
 
-	//	if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
-	//		instance->rotation = rotation;
-	//	else
-	//		instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
+		if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
+			instance->rotation = rotation;
+		else
+			instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
 
-	//	instance->isDirty = true;
+		instance->isDirty = true;
 
-	//}
+	}
 
 }
 

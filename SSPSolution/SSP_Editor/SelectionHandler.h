@@ -15,6 +15,13 @@ public:
 	};
 
 private:
+	enum DIRECTION
+	{
+		Key_Left = 0x01000012,
+		Key_Up = 0x01000013,
+		Key_Right = 0x01000014,
+		Key_Down = 0x01000015,
+	};
 	OBB m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * instancePtr);
 
 

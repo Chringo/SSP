@@ -721,7 +721,7 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 		case (Qt::Key_Down):
 		case (Qt::Key_Left):
 		case (Qt::Key_Right):
-			//this->RotateObject(evt->key());
+			SelectionHandler::GetInstance()->RotateObject(evt->key());
 			break;
 		default:
 			break;
