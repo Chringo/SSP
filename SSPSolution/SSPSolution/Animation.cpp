@@ -8,8 +8,8 @@ Animation::Animation()
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
 	this->m_graphicsAnimationComponent->joints = 19;
 
-	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixRotationY(270);
-	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
+	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixRotationX(90);
+	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
 	for (int i = 0; i < 32; i++)
 	{
 		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
