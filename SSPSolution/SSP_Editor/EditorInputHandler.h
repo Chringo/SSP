@@ -11,6 +11,7 @@
 #include "../ResourceLib/ResourceHandler.h"
 #include "Header.h"
 #include "ui_SSP_Editor.h"
+#include "SelectionHandler.h"
 
 #pragma comment (lib,"GraphicsDLL-d.lib")
 #pragma comment (lib,"ResourceLib.lib")
@@ -18,11 +19,20 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
-struct HasPicked
+
+struct Mouse
 {
-	int ID = 0;
-	int listInstance = 0;
+	DIMOUSESTATE currentState;
+	DIMOUSESTATE lastState;
+	int x;
+	int y;
+	int lastX;
+	int lastY;
+
+	bool rightHeld = false;
+	bool leftHeld = false;
 };
+
 
 enum Bools {
 	SHIFT = 0,
@@ -42,21 +52,17 @@ enum Bools {
 class EditorInputHandler
 {
 private:
+	Mouse m_mouse;
 	int m_Width;
 	int m_Height;
-	int m_MouseX;
-	int m_MouseY;
-	int m_LastMouseX;
-	int m_LastMouseY;
+
 	bool m_KeysHeld[Bools::NUMBOOLS];
+	
 	QPoint m_point;
 	Level* m_currentLevel;
 
 	DirectX::XMFLOAT3 m_PreviousPos;
 	HWND m_hwnd;
-	GraphicsHandler* m_GraphicsHandler;
-	PhysicsHandler* m_PhysicsHandler;
-	std::vector<Resources::Model*>* modelPtr;
 	Camera* m_Camera;
 
 	DIMOUSESTATE		 m_mouseLastState;
@@ -64,19 +70,19 @@ private:
 	IDirectInputDevice8* DIMouse;
 
 public:
-	OBB m_Axis[3];
-	HasPicked m_Picked;
-	HasPicked m_LastPicked;
+
+
 	void detectInput(double dT, QKeyEvent* key);
 	void SetMousePos(QPoint point) { this->m_point = point; };
 	void KeyboardMovement(double dT);
 	void MouseMovement(double dT);
 	void MouseZoom(double dT);
 	void CameraReset();
-	void MousePicking();
 	void keyReleased(QKeyEvent* evt);
-	void UpdatePos(int index);
-
+	void UpdateMouse();
+	void ViewPortChanged(float height, float width);
+	void mouseButtonDown(QMouseEvent* evt);
+	void mouseButtonRelease(QMouseEvent * evt);
 
 
 
@@ -84,11 +90,8 @@ public:
 		HINSTANCE handleInstance,
 		HWND handle,
 		Camera* camera,
-		int,
-		int,
-		GraphicsHandler* graphicshandler,
-		Level* m_currentLevel,
-		std::vector<Resources::Model*>* modelPtr
+		int width,
+		int height
 	);
 	~EditorInputHandler();
 };

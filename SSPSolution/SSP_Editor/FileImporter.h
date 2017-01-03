@@ -10,7 +10,9 @@
 #include "../ResourceLib/TextureHandler.h"
 #include <QtWidgets\qtreewidget.h>
 #include "DataHandler.h"
-
+#include "qmessagebox.h"
+#include "qfiledialog.h"
+#include "UiControlHandler.h"
 class FileImporter
 {
 private:
@@ -25,21 +27,22 @@ private:
 	std::vector<std::string> m_filepaths;
 	Resources::FileLoader *m_fileLoader;
 	DataHandler* m_data;
-	//put model vector hetrer;
-	std::vector<Resources::Model*> m_models;
+	
 	QTreeWidget *m_itemList;
 	ID3D11Device* m_Device;
+	QString pathToBbfFolder = "//DESKTOP-BOKNO6D/server/Assets/bbf files";
 
 public:
 	FileImporter(QTreeWidget *itemList);
 	~FileImporter();
 
-	void ImportFromServer();
+	Resources::Status ImportFromServer();
 	void LoadImportedFiles();
 	void setDevice(ID3D11Device* device) { this->m_Device = device; };
+	Resources::Status Initialize();
 
 	std::vector<Resources::Model*>* get_M_models() { return this->m_data->GetModels(); }
-	Resources::Model* get_model(unsigned int modelID);
+
 private:
 	/*functions*/
 	void handleMesh(char * m_bbf_object);
@@ -47,5 +50,8 @@ private:
 	void handleModel(char *m_bbf_object);
 
 	void AddListItem(ListItem category, std::string name);
+
+	bool HandlePathNotFound();
+	std::string SelectNewPath();
 };
 #endif

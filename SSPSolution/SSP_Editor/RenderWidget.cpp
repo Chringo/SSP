@@ -27,14 +27,17 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	if (!this->m_Communicator->m_IsPreview)
 	{
 		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
-		this->m_Communicator->m_EditorInputHandler->MousePicking();
+		this->m_Communicator->m_EditorInputHandler->UpdateMouse();
+		SelectionHandler::GetInstance()->MoveObject();
+		//this->m_Communicator->m_EditorInputHandler->MoveObject();
+		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
 	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
 	if (!m_ModelMap->empty())
 	{
 	Resources::Status st;
 	std::vector<Container>* InstancePtr = nullptr;
-	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();// this->m_fileImporter->get_M_models();
+	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();
 	
 
 	for (size_t i = 0; i < modelPtr->size(); i++)
@@ -50,88 +53,89 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				{
 					if (InstancePtr->at(j).isDirty)
 					{
-						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(),j,InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 					}
-
-					BoundingBoxHeader boundingBox = modelPtr->at(i)->GetOBBData();
-					OBB obj;
-					obj.ext[0] = boundingBox.extension[0];
-					obj.ext[1] = boundingBox.extension[1];
-					obj.ext[2] = boundingBox.extension[2];
-
-					DirectX::XMFLOAT3 temp;
-					temp.x = InstancePtr->at(j).position.m128_f32[0];
-					temp.y = InstancePtr->at(j).position.m128_f32[1];
-					temp.z = InstancePtr->at(j).position.m128_f32[2];
-					obj.pos = DirectX::XMLoadFloat3(&temp);
-
-					obj.ort;
-					boundingBox.extensionDir;
-					DirectX::XMMATRIX temp2;
-					temp2 = DirectX::XMMatrixSet(
-						boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
-						boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
-						boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
-						0.0f, 0.0f, 0.0f, 1.0f
-					);
-
-					obj.ort = temp2;
-
-					//OBB obj = *(OBB*)&boundingBox;
-					//DONT FORGET TO MULTIPLY MATRIX
-					DirectX::XMMATRIX temp4 = InstancePtr->at(j).component.worldMatrix;
-					DirectX::XMMATRIX temp3 = DirectX::XMMatrixMultiply(temp2, temp4);
-					obj.ort = temp3;
-					
 
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
-
-
-					if (this->m_Communicator->m_EditorInputHandler->m_Picked.ID == modelPtr->at(i)->GetId() && this->m_Communicator->m_EditorInputHandler->m_Picked.listInstance == j)
-					{
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							InstancePtr->at(j).position,
-							obj
-						);
-						
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[0].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[0]
-						);
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[1].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[1]
-						);
-						this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-							this->m_Communicator->m_EditorInputHandler->m_Axis[2].pos,
-							this->m_Communicator->m_EditorInputHandler->m_Axis[2]
-						);
-
-
-					}
 				}
-
 			}
-
 		}
 	}
-		this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
+	
+	if (SelectionHandler::GetInstance()->HasSelection())
+	{
+		static OBB* axisOBBs;
+		static OBB* selectedObjectOBB;
+		static DirectX::XMVECTOR ** axisColors;
+		static DirectX::XMVECTOR * OBBColor;
+
+		if (SelectionHandler::GetInstance()->NeedsUpdate())
+		{
+			SelectionHandler::GetInstance()->Update();
+			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisColors, selectedObjectOBB, OBBColor);
+		}
+
+		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+			SelectionHandler::GetInstance()->GetSelected()->position,
+			*selectedObjectOBB,
+			*OBBColor
+		);
+
+		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
+		{
+			this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+				axisOBBs[i].pos,
+				axisOBBs[i],
+				*axisColors[i]
+			);
+		}
+	}
+
+
+	this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
 	this->update();
 	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
 }
 
+void D3DRenderWidget::resizeEvent(QResizeEvent * event)
+{
+	
+
+	float aspect = 1.0f;
+	float h = (float)parent->frameGeometry().height();
+	float w = (float)parent->frameGeometry().width();
+
+	this->frameGeometry().setWidth(w);
+	this->frameGeometry().setHeight(h);
+	if (h != 0)
+		aspect = w / h;
+	m_Communicator->ViewPortChanged(h, w);
+}
+
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
 {
 	this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime, evt);
+
+	
 }
 
 void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 {
 	this->m_Communicator->m_EditorInputHandler->keyReleased(evt);
+}
+
+void D3DRenderWidget::mousePressEvent(QMouseEvent * evt)
+{
+	this->m_Communicator->m_EditorInputHandler->mouseButtonDown(evt);
+}
+
+void D3DRenderWidget::mouseReleaseEvent(QMouseEvent * evt)
+{
+	this->m_Communicator->m_EditorInputHandler->mouseButtonRelease(evt);
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
@@ -140,27 +144,36 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	InitDosConsole();
 	
 	this->m_Communicator = new Communicator();
-	this->m_hwnd = (HWND)parent->winId();
-	this->m_hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+	this->m_hwnd		 = (HWND)parent->winId();
+	this->m_hInstance    = (HINSTANCE)::GetModuleHandle(NULL);
+
+	float h = (float)parent->frameGeometry().height();
+	float w = (float)parent->frameGeometry().width();
 
 	st = this->m_Communicator->Initialize(
 		this->m_hwnd,
 		this->m_hInstance,
-		parent->width(),
-		parent->height(),
+		w, 
+		h, 
 		isPreview,
-		fileImporter->get_M_models()
+		DataHandler::GetInstance()->GetModels()
 	);
+	
+	
+
+	this->frameGeometry().setWidth(w);
+	this->frameGeometry().setHeight(h);
 	
 	this->m_Device = this->m_Communicator->GetDevice();
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);
 	DataHandler::GetInstance()->GetTextureHandler()->SetDevice(m_Device);
+	//this->resizeEvent(nullptr); // Update the camera projection matrix to fit the widget window
 }
 
 D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	: QWidget(parent) {
-
+	this->parent = parent;
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);

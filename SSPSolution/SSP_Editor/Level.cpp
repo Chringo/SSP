@@ -98,7 +98,8 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
 				DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+				//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 				modelPtr->at(i).component.worldMatrix = containerMatrix;

@@ -19,7 +19,7 @@ Resources::Status Communicator::Initialize(
 
 	this->m_GraphicsHandler->Initialize(
 		&this->m_hwnd,
-		DirectX::XMINT2(m_Width, m_Height), true
+		DirectX::XMINT2(1920.0f, 1080.0f), true
 	);
 	this->m_GraphicsHandler->InitializeGrid();
 
@@ -33,15 +33,20 @@ Resources::Status Communicator::Initialize(
 
 	if (!isPreview)
 	{
+		SelectionHandler::GetInstance()->Initialize(
+			this->m_Camera,
+			this->m_Width,
+			this->m_Height,
+			this->m_currentLevel,
+			modelPtr
+		);
+
 		this->m_EditorInputHandler = new EditorInputHandler(
 			this->m_hInstance,
 			this->m_hwnd,
 			this->m_Camera,
 			this->m_Width,
-			this->m_Height,
-			this->m_GraphicsHandler,
-			this->m_currentLevel,
-			modelPtr
+			this->m_Height
 		);
 	}
 
@@ -56,6 +61,7 @@ Communicator::Communicator()
 
 Communicator::~Communicator()
 {
+	
 
 }
 
@@ -63,7 +69,7 @@ Resources::Status Communicator::Release()
 {
 	this->m_GraphicsHandler->Shutdown();
 	delete this->m_GraphicsHandler;
-
+	delete this->m_Camera;
 	if (!this->m_IsPreview)
 	{
 		delete this->m_EditorInputHandler;
@@ -102,4 +108,13 @@ Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int i
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
 {
 	return m_currentLevel->RemoveModel(modelID, instanceID);
+}
+
+void Communicator::ViewPortChanged(float height, float width)
+{
+	if (height != 0) {
+		this->m_Camera->UpdateProjection(width / height);
+		this->m_Camera->Update();
+		this->m_EditorInputHandler->ViewPortChanged(height, width);
+	}
 }
