@@ -5,8 +5,6 @@ Direct3DHandler::Direct3DHandler()
 	this->m_activeWindow = nullptr;
 	this->m_backBufferRTV = nullptr;
 	this->m_depthStencilBuffer = nullptr;
-	this->m_depthStencilState = nullptr;
-	this->m_depthStencilView = nullptr;
 	this->m_gDevice = nullptr;
 	this->m_gDeviceContext = nullptr;
 	this->m_rasterizerState = nullptr;
@@ -27,9 +25,9 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
+	
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
-		NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
+		NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
 		NULL, &this->m_gDeviceContext);
 	if (FAILED(hResult))
 	{
@@ -52,7 +50,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	swapChainDesc.SampleDesc.Count = 1; //No MSAA
 	swapChainDesc.SampleDesc.Quality = 0;
 
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = *windowHandle;
 	swapChainDesc.Windowed = true; //Hardcoded windowed mode
@@ -88,14 +86,22 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the backbuffer render target view \\
 
-	ID3D11Texture2D* backBufferPrt;
-	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBufferPrt));
-
-	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, 0, &this->m_backBufferRTV);
+	ID3D11Texture2D* backBufferPrt = nullptr;
+	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
+	
+	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
+
+	hResult = this->m_gDevice->CreateShaderResourceView(backBufferPrt, nullptr, &this->m_backBufferSRV);
+
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 
 	backBufferPrt->Release();
 
@@ -123,65 +129,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	this->m_gDeviceContext->RSSetState(this->m_rasterizerState); //Set the rasterstate
 
-	// Create the depth buffer and view \\
-
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-
-	depthBufferDesc.Width = resolution.x;
-	depthBufferDesc.Height = resolution.y;
-	depthBufferDesc.MipLevels = 1;
-	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	depthBufferDesc.SampleDesc.Count = 1; //No MSAA
-	depthBufferDesc.SampleDesc.Quality = 0;
-
-	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthBufferDesc.CPUAccessFlags = 0;
-	depthBufferDesc.MiscFlags = 0;
-
-	hResult = this->m_gDevice->CreateTexture2D(&depthBufferDesc, NULL, &this->m_depthStencilBuffer);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
-
-	hResult = this->m_gDevice->CreateDepthStencilView(this->m_depthStencilBuffer, NULL, &this->m_depthStencilView);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
-
-	// Create the depth stecil state \\
-
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
-
-	depthStencilDesc.DepthEnable = true;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	//Frontfacing triangles
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	//Backfacing triangles
-	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	hResult = this->m_gDevice->CreateDepthStencilState(&depthStencilDesc, &this->m_depthStencilState);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
-
-	// Create and set the viewport \\
 	
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
@@ -225,27 +172,6 @@ int Direct3DHandler::InitializeGridRasterizer()
 	return 0;
 }
 
-int Direct3DHandler::ClearDepthAndRTV()
-{
-	float black[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-
-	this->m_gDeviceContext->ClearRenderTargetView(this->m_backBufferRTV, black);
-
-	this->m_gDeviceContext->ClearDepthStencilView(this->m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	return 0;
-}
-
-int Direct3DHandler::ClearDepthAndRTV(ID3D11DepthStencilView * hejssan)
-{
-	float black[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-	this->m_gDeviceContext->ClearRenderTargetView(this->m_backBufferRTV, black);
-
-	this->m_gDeviceContext->ClearDepthStencilView(hejssan, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	return 0;
-}
 
 
 int Direct3DHandler::PresentScene()
@@ -257,20 +183,10 @@ int Direct3DHandler::PresentScene()
 
 void Direct3DHandler::Shutdown()
 {
-	if (this->m_depthStencilState)
-	{
-		this->m_depthStencilState->Release();
-		this->m_depthStencilState = nullptr;
-	}
 	if (this->m_depthStencilBuffer)
 	{
 		this->m_depthStencilBuffer->Release();
 		this->m_depthStencilBuffer = nullptr;
-	}
-	if (this->m_depthStencilView)
-	{
-		this->m_depthStencilView->Release();
-		this->m_depthStencilView = nullptr;
 	}
 
 	if (this->m_rasterizerState)
@@ -289,6 +205,12 @@ void Direct3DHandler::Shutdown()
 	{
 		this->m_backBufferRTV->Release();
 		this->m_backBufferRTV = nullptr;
+	}
+
+	if (this->m_backBufferSRV)
+	{
+		this->m_backBufferSRV->Release();
+		this->m_backBufferSRV = nullptr;
 	}
 
 	if (this->m_swapChain)
@@ -314,6 +236,12 @@ void Direct3DHandler::Shutdown()
 		delete this->m_viewport;
 		this->m_viewport = nullptr;
 	}
+
+	if (this->m_rasterizerStateWireFrame)
+	{
+		m_rasterizerStateWireFrame->Release();
+		this->m_rasterizerStateWireFrame = nullptr;
+	}
 }
 
 ID3D11Device * Direct3DHandler::GetDevice()
@@ -324,6 +252,16 @@ ID3D11Device * Direct3DHandler::GetDevice()
 ID3D11DeviceContext * Direct3DHandler::GetDeviceContext()
 {
 	return this->m_gDeviceContext;
+}
+
+ID3D11RenderTargetView * Direct3DHandler::GetBackbufferRTV()
+{
+	return this->m_backBufferRTV;
+}
+
+ID3D11ShaderResourceView * Direct3DHandler::GetBackbufferSRV()
+{
+	return this->m_backBufferSRV;
 }
 
 int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
@@ -347,15 +285,3 @@ int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
 	return 0;
 }
 
-int Direct3DHandler::SetBackBuffer()
-{
-	this->m_gDeviceContext->OMSetRenderTargets(1, &this->m_backBufferRTV, this->m_depthStencilView);
-
-	return 0;
-}
-int Direct3DHandler::SetBackBuffer(ID3D11DepthStencilView * hejssan)
-{
-	this->m_gDeviceContext->OMSetRenderTargets(1, &this->m_backBufferRTV, hejssan);
-
-	return 0;
-}

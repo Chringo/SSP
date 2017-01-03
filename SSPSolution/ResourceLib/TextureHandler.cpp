@@ -54,6 +54,20 @@ Resources::Status Resources::TextureHandler::GetTexture(const unsigned int & id,
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::TextureHandler::GetTexture(const unsigned int & id, Texture *& texturePtr)
+{
+	std::unordered_map<unsigned int, ResourceContainer>::iterator got = m_textures.find(id);
+	if (got == m_textures.end()) { // if the texture does not exists in memory
+
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		texturePtr = (Texture*)&got->second.resource;
+	}
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id, ResourceContainer *& texturePtr)
 {
 	char* data = nullptr;
@@ -112,10 +126,6 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
      /*T E M P*/
 	Resource::RawResourceData temp;
 	temp.m_resType = RES_TEXTURE;
-	temp.m_name[0] = 'T';
-	temp.m_name[1] = 'E';
-	temp.m_name[2] = 'X';
-	temp.m_name[3] = '\0';
 	temp.m_id = 7869;
 	newTexture->Create(&temp);   //Initialize it with data
 	/***************/
@@ -177,10 +187,6 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 	/*T E M P*/
 	Resource::RawResourceData temp;
 	temp.m_resType = RES_TEXTURE;
-	temp.m_name[0] = 'T';
-	temp.m_name[1] = 'E';
-	temp.m_name[2] = 'X';
-	temp.m_name[3] = '\0';
 	temp.m_id = 7869;
 	/***************/
 	Status st;
@@ -193,6 +199,7 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 		}
 #pragma region Load Textures
 		std::string path_str[5];
+		std::string path_str_EDITOR[5];
 		wchar_t path[5][256];
 		size_t length[5];
 		ID3D11ShaderResourceView* textureView[5];
@@ -204,6 +211,14 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 		path_str[TEXTURE_NORMAL]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
 		path_str[TEXTURE_AO]		= std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
 
+		
+		path_str_EDITOR[TEXTURE_ALBEDO]     = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
+		path_str_EDITOR[TEXTURE_SPECULAR]   = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
+		path_str_EDITOR[TEXTURE_ROUGHNESS]  = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
+		path_str_EDITOR[TEXTURE_NORMAL]     = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
+		path_str_EDITOR[TEXTURE_AO]			= std::string("../../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
+
+
 
 		/*JOHN Textures*/
 		//path_str[TEXTURE_ALBEDO]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
@@ -214,14 +229,10 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 
 		for (size_t i = 0; i < 5; i++)
 		{
-
-		 length[i] = strlen(path_str[i].c_str());
+			 length[i] = strlen(path_str[i].c_str());
 		
-		mbstowcs_s(&length[i], path[i], path_str[i].c_str(), length[i]);
-
-		
-		
-
+			mbstowcs_s(&length[i], path[i], path_str[i].c_str(), length[i]);
+	
 		HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
 			path[i],
 			&textureResource[i],
@@ -231,16 +242,31 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 
 		if (FAILED(hr))
 		{
+			//Try the editor filepath
+			length[i] = strlen(path_str_EDITOR[i].c_str());
+
+			mbstowcs_s(&length[i], path[i], path_str_EDITOR[i].c_str(), length[i]);
+
+			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
+				path[i],
+				&textureResource[i],
+				&textureView[i],
+				size_t(2048),
+				(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
+
+			if (FAILED(hr)) //If it still doesent work, there  is a problem
+			{
 #ifdef _DEBUG
-			std::cout << "Could not open texture file : " << path << std::endl;
+				std::cout << "Could not open texture file : " << path_str[i] << std::endl;
 #endif // _DEBUG
-			return false;
+				return false;
+			}
 		}
-		else {
+		
 #ifdef _DEBUG
 			std::cout << "Opened file : " << path_str[i] << std::endl;
 #endif // _DEBUG
-		}
+		
 
 
 

@@ -7,11 +7,6 @@ Texture2D aoTex			 : register(t4);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-cbuffer worldMatrix : register(b0)
-{
-    matrix worldMatrix;
-}
-
 
 struct VS_OUT
 {
