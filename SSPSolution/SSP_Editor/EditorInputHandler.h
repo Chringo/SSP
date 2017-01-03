@@ -90,8 +90,8 @@ public:
 		HINSTANCE handleInstance,
 		HWND handle,
 		Camera* camera,
-		int,
-		int
+		int width,
+		int height
 	);
 	~EditorInputHandler();
 };
