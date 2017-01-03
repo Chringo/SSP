@@ -42,7 +42,12 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 	
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_AnimLayer1.anim";
+	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Crouching.anim";
+	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Jumping.anim";
+	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Throwing.anim";
+	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Walking.anim";
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Kicking.anim";
+	
 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
 	if (st != ST_OK)
 		return st;

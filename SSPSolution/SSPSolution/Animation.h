@@ -91,8 +91,6 @@ public:
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
-	void CalculateGlobalInverseBindPose(std::vector<DirectX::XMMATRIX>& globalInverseBindPose);
-
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
 	/*Maybe this is more suitable for being in another class? I might consider
