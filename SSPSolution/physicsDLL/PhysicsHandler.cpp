@@ -1106,9 +1106,9 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(DirectX::XMVectorSet(3, 10, 60, 0), false);
 		
-		next->PC_AABB.ext[0] = 0.5;
-		next->PC_AABB.ext[1] = 0.5;
-		next->PC_AABB.ext[2] = 0.5;
+		next->PC_AABB.ext[0] = 0.1;
+		next->PC_AABB.ext[1] = 0.1;
+		next->PC_AABB.ext[2] = 0.1;
 
 		link.CL_previous = previous;
 		link.CL_next = next;

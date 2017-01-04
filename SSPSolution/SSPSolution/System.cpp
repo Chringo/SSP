@@ -511,20 +511,20 @@ void System::CreateDummyObjects()
 	tempPos = DirectX::XMVectorSet(0, 1.0, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
 	ptr->PC_mass = 200;
-	ptr->PC_AABB.ext[0] = 1;
-	ptr->PC_AABB.ext[1] = 1;
-	ptr->PC_AABB.ext[2] = 1;
+	ptr->PC_AABB.ext[0] = 0.3;
+	ptr->PC_AABB.ext[1] = 0.3;
+	ptr->PC_AABB.ext[2] = 0.3;
 	//AABB by default
 
 	//playår
 	tempPos = DirectX::XMVectorSet(10.0, 1.0, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
 	ptr->PC_mass = 70;
-	ptr->PC_AABB.ext[0] = 1.5;
-	ptr->PC_AABB.ext[1] = 1.5;
-	ptr->PC_AABB.ext[2] = 1.5;
+	ptr->PC_AABB.ext[0] = 0.5;
+	ptr->PC_AABB.ext[1] = 0.5;
+	ptr->PC_AABB.ext[2] = 0.5;
 	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 2);
+	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2);
 
 
 	//the gölv
