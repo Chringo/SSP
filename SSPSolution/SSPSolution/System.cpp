@@ -510,42 +510,42 @@ void System::CreateDummyObjects()
 	//ball
 	tempPos = DirectX::XMVectorSet(0, 1.0, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 200;
-	ptr->PC_AABB.ext[0] = 1;
-	ptr->PC_AABB.ext[1] = 1;
-	ptr->PC_AABB.ext[2] = 1;
+	ptr->PC_mass = 200.f;
+	ptr->PC_AABB.ext[0] = 0.3f;
+	ptr->PC_AABB.ext[1] = 0.3f;
+	ptr->PC_AABB.ext[2] = 0.3f;
 	//AABB by default
 
 	//playår
 	tempPos = DirectX::XMVectorSet(10.0, 1.0, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 70;
-	ptr->PC_AABB.ext[0] = 1.5;
-	ptr->PC_AABB.ext[1] = 1.5;
-	ptr->PC_AABB.ext[2] = 1.5;
+	ptr->PC_mass = 70.f;
+	ptr->PC_AABB.ext[0] = 0.5f;
+	ptr->PC_AABB.ext[1] = 0.5f;
+	ptr->PC_AABB.ext[2] = 0.5f;
 	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 2);
+	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2);
 
 
 	//the gölv
-	tempPos = DirectX::XMVectorSet(0.0, 0.0, 60, 0);
+	tempPos = DirectX::XMVectorSet(0.0f, 0.0f, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
 	ptr->PC_BVtype = BoundingVolumeType::BV_Plane;
 	ptr->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
 
-	ptr->PC_friction = 0.2;
-	ptr->PC_elasticity = 0.5;
+	ptr->PC_friction = 0.2f;
+	ptr->PC_elasticity = 0.5f;
 
 
 	//the plätförm
 	tempPos = DirectX::XMVectorSet(40.0, 5.0, 60, 0);
 	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
-	ptr->PC_AABB.ext[0] = 20;
-	ptr->PC_AABB.ext[1] = 3.0;
-	ptr->PC_AABB.ext[2] = 200;
+	ptr->PC_AABB.ext[0] = 20.f;
+	ptr->PC_AABB.ext[1] = 3.0f;
+	ptr->PC_AABB.ext[2] = 200.f;
 
-	ptr->PC_friction = 0.2;
-	ptr->PC_elasticity = 0.5;
+	ptr->PC_friction = 0.2f;
+	ptr->PC_elasticity = 0.5f;
 
 
 }
