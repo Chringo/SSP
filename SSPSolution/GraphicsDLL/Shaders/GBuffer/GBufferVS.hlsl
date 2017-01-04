@@ -48,9 +48,10 @@ VS_OUT VS_main(VS_IN input)
     output.Pos = mul(output.Pos, WVP);
 
     //output.Pos = mul(float4(input.Pos, 1), projectionMatrix); //mul(float4(input.Pos, 1), WVP);
-    output.Normal = mul(float4(input.Normal, 1), worldMatrix).rgb;
+    output.Normal = mul(float4(input.Normal, 0.0f), worldMatrix).rgb;
+	//output.Normal = input.Normal.rgb;
     output.UV = input.UV;
-    output.Tangent = mul(float4(input.Tangent, 1), worldMatrix).rgb;
+    output.Tangent = mul(float4(input.Tangent, 0.0f), worldMatrix).rgb;
     //output.wPos = mul(float4(input.Pos, 1), worldMatrix);
 
     return output;

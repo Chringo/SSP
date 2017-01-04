@@ -79,18 +79,18 @@ void GS_main(triangle VS_OUT input[3],
     GS_OUT element = (GS_OUT)0;
 
 
-    float4 vec1 = input[0].Pos - input[1].Pos;
+    /*float4 vec1 = input[0].Pos - input[1].Pos;
     float4 vec2 = input[1].Pos - input[2].Pos;
     float4 vec3 = input[2].Pos - input[0].Pos;
 
     float4 newNormal = float4(cross(vec1.xyz, vec2.xyz), 1);
-    newNormal = normalize(newNormal);
+    newNormal = normalize(newNormal);*/
 
     for (uint vertex = 0; vertex < 3; vertex++)
     {
         element.Pos = input[vertex].Pos;
-        //element.Normal = input[vertex].Normal; //mul(float4(input[vertex].Normal, 0.0), worldMatrix).rgb;
-		element.Normal = newNormal.xyz;
+        element.Normal = input[vertex].Normal; //mul(float4(input[vertex].Normal, 0.0), worldMatrix).rgb;
+		//element.Normal = newNormal.xyz;
         element.UV = input[vertex].UV;
        
         element.wPos = input[vertex].wPos;

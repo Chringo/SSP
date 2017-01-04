@@ -206,7 +206,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
 
-        //return V.rgbr;
+        //return N.rgbr;
     }
 
 
