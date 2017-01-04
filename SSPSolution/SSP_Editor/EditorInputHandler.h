@@ -69,6 +69,8 @@ private:
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIMouse;
 
+	void deleteModel();
+
 public:
 
 
