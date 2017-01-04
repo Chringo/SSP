@@ -253,6 +253,38 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+
+	/*Testing to play different animations here based on the input. Temp place right now*/
+	int animState = 0;
+
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
+	{
+		animState = 0;
+		m_Anim->Push(animState, true);
+		m_Anim->Pop();
+	}
+
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_2))
+	{
+		animState = 1;
+		m_Anim->Pop();
+		m_Anim->Push(animState, true);
+	}
+
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_3))
+	{
+		animState = 2;
+		m_Anim->Pop();
+		m_Anim->Push(animState, true);
+	}
+
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_4))
+	{
+		animState = 3;
+		m_Anim->Pop();
+		m_Anim->Push(animState, true);
+	}
+
 	//Update animations here. Temp place right now.
 	m_Anim->Update(deltaTime);
 	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());

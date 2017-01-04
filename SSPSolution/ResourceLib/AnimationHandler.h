@@ -19,7 +19,7 @@ namespace Resources {
 		~AnimationHandler();
 
 		Resources::Status GetAnimation   (const unsigned int& id, ResourceContainer *& animPtr);
-		Resources::Status LoadAnimation  (const unsigned int& id, ResourceContainer *& animPtr);
+		Resources::Status LoadAnimation  (const unsigned int& id, ResourceContainer *& animPtr, unsigned int index);
 		Resources::Status UnloadAnimation(const unsigned int& id);
 	};
 }

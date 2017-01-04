@@ -37,18 +37,23 @@ Resources::Status Resources::AnimationHandler::GetAnimation(const unsigned int &
 	return Resources::Status::ST_OK;
 }
 
-Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int & id, ResourceContainer *& animPtr)
+Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int & id, ResourceContainer *& animPtr, unsigned int index)
 {
-	
 	char* data = nullptr;
 	size_t size = 0;
-	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Crouching.anim";
-	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Jumping.anim";
-	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Throwing.anim";
-	//std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Walking.anim";
-	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_Kicking.anim";
 	
-	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
+	std::string path1 = "../ResourceLib/AssetFiles/SkelMesh1_Walking.anim";
+	std::string path2 = "../ResourceLib/AssetFiles/SkelMesh1_Jumping.anim";
+	std::string path3 = "../ResourceLib/AssetFiles/SkelMesh1_Crouching.anim";
+	std::string path4 = "../ResourceLib/AssetFiles/SkelMesh1_Kicking.anim";
+
+	std::string path[4];
+	path[0] = path1;
+	path[1] = path2;
+	path[2] = path3;
+	path[3] = path4;
+
+	Status st = FileLoader::GetInstance()->LoadFile(path[index], data, &size);
 	if (st != ST_OK)
 		return st;
 

@@ -2,41 +2,24 @@
 
 Animation::Animation()
 {
-	int animIndex = 0;
 	this->elapsedTime = 0.0f;
-	this->currentAnimation = IDLE_STATE;
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
 	this->m_graphicsAnimationComponent->joints = 19;
 
-	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixRotationX(90);
 	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
+	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
 	for (int i = 0; i < 32; i++)
 	{
 		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
 	}
-
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
-
-	skeletonPtr = modelPtr->GetSkeleton();
-
-	jointList = skeletonPtr->GetSkeletonData()->joints;
-	jointCount = skeletonPtr->GetSkeletonData()->jointCount;
-
-	interpolatedTransforms.resize(jointCount);
+	
+	/*Initialize the stack with a default "IDLE" animation.*/
+	Push(0, false);
 
 	for (int i = 0; i < jointCount; i++)
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
-	animationPtr = skeletonPtr->GetAnimation(currentAnimation);
-
-	animatedJointsList = animationPtr->GetAllJoints();
-
-	float startFrame = animatedJointsList->keyframes[0].timeValue;
-	float endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
-
-	/*Initialize the stack with a default "IDLE" animation.*/
-	Push(currentAnimation, true, startFrame, endFrame, 0);
 }
 
 Animation::~Animation()
@@ -47,14 +30,8 @@ Animation::~Animation()
 
 void Animation::Update(float dt)
 {
-	/*Need to check in this function what the time in the animation is.
-	If the last frame have been reached, we should check if the time is
-	at the end of the animation and if it's a looping animation.*/
-
-	bool newAnimation = false;
-	
 	/*Check if there is a current animation in the stack.*/
-	if (!animationStack.empty() || currentAnimation == IDLE_STATE)
+	if (!animationStack.empty())
 	{
 		/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
 		float toSeconds = dt / 1000000;
@@ -66,49 +43,13 @@ void Animation::Update(float dt)
 			elapsedTime = 0.0f;
 		}
 
-		/*If the animation reaches the last frame and the animation is NOT looping, */
-		else if (elapsedTime >= animationStack.top().endFrame && animationStack.top().isLooping == false)
+		else if (newAnimation == true)
 		{
-			/*Send the elapsed time from previous animation clip, it's index and the index to the next animation.*/
-			/*Blend between animations.*/
-			//Blend(elapsedTime, currentAnimation, 0); //<---- Somehow get the new animation state as input argument here. 
-
+			newAnimation = false;
 			elapsedTime = 0.0f;
-
-			/*Remove the previous played animation clip from stack.*/
-			Pop();
-
-			/*The animation is new and not the default state.*/
-			if (newAnimation != IDLE_STATE)
-			{
-				//GetAnimationData(currentAnimation, isLooping, startFrame, endFrame, duration);
-
-				/*Push the new animation to the stack.*/
-				Push(0, false, 0, 0, 0);
-			}
-
-			/*The animation is the default state.*/
-			else
-			{
-				Push(IDLE_STATE, true, 0, 0, 0);
-			}
 		}
 
-		//else if (elapsedTime > animationStack.top().startFrame || elapsedTime < animationStack.top().endFrame && newAnimation == true)
-		//{
-		//	Push(0, false, 0, 0, 0);
-
-		//	//Blend(elapsedTime, currentAnimation, 0);
-		//}
-
-		/*Call this function and check if the elapsedTime is at the start, between frames or at the end.*/
 		Interpolate(elapsedTime);
-	}
-
-	/*No current animation, the physics are currently controlling the "animatible entity".*/
-	if(currentAnimation == PHYSICS_STATE)
-	{
-		/*Have some kind of function here that pauses the playing of any animation, while physics do the job.*/
 	}
 }
 
@@ -128,19 +69,6 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[startFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
 
-			//tempTrans.x *= -1.0;
-			//tempTrans.y *= -1.0;
-			tempTrans.z *= -1.0;
-
-			//tempQuat.x *= -1.0;
-			//tempQuat.y *= -1.0;
-			//tempQuat.z *= -1.0;
-			//tempQuat.w *= -1.0;
-
-			//tempScale.x *= -1.0;
-			//tempScale.y *= -1.0;
-			//tempScale.z *= -1.0;
-
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
 			DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
@@ -152,9 +80,6 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -168,19 +93,6 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[endFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
 
-			//tempTrans.x *= -1.0;
-			//tempTrans.y *= -1.0;
-			tempTrans.z *= -1.0;
-
-			//tempQuat.x *= -1.0;
-			//tempQuat.y *= -1.0;
-			//tempQuat.z *= -1.0;
-			//tempQuat.w *= -1.0;
-			
-			//tempScale.x *= -1.0;
-			//tempScale.y *= -1.0;
-			//tempScale.z *= -1.0;
-
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
 			DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
@@ -191,10 +103,7 @@ void Animation::Interpolate(float currentTime)
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
 		}
@@ -223,32 +132,6 @@ void Animation::Interpolate(float currentTime)
 					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
 					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
 
-					//tempTrans1.x *= -1.0;
-					//tempTrans1.y *= -1.0;
-					tempTrans1.z *= -1.0;
-
-					//tempTrans2.x *= -1.0;
-					//tempTrans2.y *= -1.0;
-					tempTrans2.z *= -1.0;
-
-					//tempQuat1.x *= -1.0;
-					//tempQuat1.y *= -1.0;
-					//tempQuat1.z *= -1.0;
-					//tempQuat1.w *= -1.0;
-
-					//tempQuat2.x *= -1.0;
-					//tempQuat2.y *= -1.0;
-					//tempQuat2.z *= -1.0;
-					//tempQuat2.w *= -1.0;
-
-					//tempScale1.x *= -1.0;
-					//tempScale1.y *= -1.0;
-					//tempScale1.z *= -1.0;
-
-					//tempScale2.x *= -1.0;
-					//tempScale2.y *= -1.0;
-					//tempScale2.z *= -1.0;
-
 					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
 					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
 					DirectX::XMVECTOR rot1 = DirectX::XMLoadFloat3(&tempRot1);
@@ -270,10 +153,6 @@ void Animation::Interpolate(float currentTime)
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, rotMat), scaleMat);
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, rotMat), transMat);
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(scaleMat, quatMat), transMat);
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 					/*Update the transform for each joint in the skeleton.*/
 					DirectX::XMStoreFloat4x4(&interpolatedTransforms[jointIndex], localTransform);
@@ -328,18 +207,13 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 	}
 }
 
-void Animation::Blend(int lastFrame, int prevState, int newState)
+void Animation::Push(int animationState, bool newAnimation)
 {
-}
-
-void Animation::Push(int currentAnimation, bool isLooping, float startFrame, float endFrame, float duration)
-{
-	this->currentAnimation = currentAnimation;
-
 	AnimationClip clip;
-	clip.isLooping = isLooping;
-	clip.startFrame = startFrame;
-	clip.endFrame = endFrame;
+
+	GetAnimationState(animationState, clip);
+
+	this->newAnimation = newAnimation;
 
 	animationStack.push(clip);
 }
@@ -350,5 +224,30 @@ void Animation::Pop()
 	{
 		animationStack.pop();
 	}
+}
+
+void Animation::GetAnimationState(int animationState, AnimationClip & clip)
+{
+	/*Temp place for both Model and skeleton.*/
+
+	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
+
+	skeletonPtr = modelPtr->GetSkeleton();
+
+	jointList = skeletonPtr->GetSkeletonData()->joints;
+	jointCount = skeletonPtr->GetSkeletonData()->jointCount;
+
+	interpolatedTransforms.resize(jointCount);
+
+	animationPtr = skeletonPtr->GetAnimation(currentAnimation);
+
+	animatedJointsList = animationPtr->GetAllJoints();
+
+	clip.animationState = animationState;
+	clip.startFrame = animatedJointsList->keyframes[0].timeValue;
+	clip.endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
+	clip.isLooping = true;
+
+	this->currentAnimation = animationState;
 }
 

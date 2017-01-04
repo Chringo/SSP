@@ -2,9 +2,9 @@
 #define SSPAPPLICATION_CORE_ANIMATION_H
 
 #include <stack>
+#include <queue>
 #include <DirectXMath.h>
 #include <vector>
-#include <chrono>
 #include <iostream>
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
@@ -33,18 +33,19 @@ enum AnimationStates
 	THROW_STATE  =	4
 };
 
-struct AnimationClip
-{
-	bool isLooping;
-	float startFrame;
-	float endFrame; 
-};
-
 struct SkelTemp
 {
 	int parentIndex;
 	int jointIndex;
 	DirectX::XMMATRIX invBindPose;
+};
+
+struct AnimationClip
+{
+	int animationState;
+	bool isLooping;
+	float startFrame;
+	float endFrame;
 };
 
 class Animation
@@ -71,6 +72,7 @@ private:
 
 	int currentAnimation;
 	float elapsedTime;
+	bool newAnimation;
 
 public: 
 	Animation();
@@ -80,10 +82,12 @@ public:
 	void Update(float dt);
 
 	/*Adds a new animation to the stack. Input arguments should come from somewhere else containing frame data.*/
-	void Push(int newAnimation, bool isLooping, float startFrame, float endFrame, float duration);
+	void Push(int animationState, bool newAnimation);
 
 	/*Removes the animation that is on the top of the stack.*/
 	void Pop();
+
+	void GetAnimationState(int animationState, AnimationClip& clip);
 
 	/*Don't know if this is suppose to be here? Maybe this is a function
 	we call from Update(), having another class holding interpolation func?*/
@@ -92,10 +96,6 @@ public:
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
-
-	/*Maybe this is more suitable for being in another class? I might consider
-	calling this in the Update() from another class pointer.*/
-	void Blend(int lastFrame, int prevState, int newState);
 
 	GraphicsAnimationComponent * GetAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
 };
