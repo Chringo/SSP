@@ -253,7 +253,7 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box
 	DirectX::XMVECTOR zDir ;
 
 	DirectX::XMVECTOR zDirInv;
-	xDir = DirectX::XMVectorScale(normXDir, 2);// box.ext[0]);
+	xDir = DirectX::XMVectorScale(normXDir, box.ext[0]);
 	yDir = DirectX::XMVectorScale(normYDir, box.ext[1]);
 	zDir = DirectX::XMVectorScale(normZDir, box.ext[2]);
 
