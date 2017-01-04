@@ -12,6 +12,14 @@
 
 #pragma region
 
+enum BoundingVolumeType
+{
+	BV_AABB,
+	BV_OBB,
+	BV_Sphere,
+	BV_Plane
+};
+
 struct AABB
 {
 	//float pos[3];
@@ -56,44 +64,29 @@ __declspec(align(16)) struct PhysicsComponent
 	bool PC_coolides;
 	float PC_friction;
 	float PC_elasticity;
-
-	//bool m_collided;
+	BoundingVolumeType PC_BVtype;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
 	Sphere PC_Sphere;
 	Plane PC_Plane;
-	//AABB PC_looseBoundingBox
-	//BoundingVolume* PC_tightBoundingVolume; 
-	//std::vector<int entityID, event EVENT> PC_eventlist;
-
 };
-struct Chain
+struct ChainLink
 {
-	float CH_linkLenght;
-	float CH_totalLenght;
-	std::vector<PhysicsComponent*> CH_links;
+	float CL_lenght;
+	PhysicsComponent* CL_next; 
+	PhysicsComponent* CL_previous;
 };
 
 class PHYSICSDLL_PHYSICS_PHYSICSLIBRARY_API PhysicsHandler
 {
 private:
 	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
-	PhysicsComponent m_floor;
-	PhysicsComponent m_wall1;
-	PhysicsComponent m_wall2;
-	PhysicsComponent m_wall3;
-	PhysicsComponent m_wall4;
-	PhysicsComponent m_roof;
-
-
-	Chain m_chain;
-
 
 	DirectX::XMVECTOR m_gravity;
 
-	void IntersectionTesting();
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
@@ -103,18 +96,19 @@ private:
 	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB);
 	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB);
 	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2);
-	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane);
+	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane, float dt);
 	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane);
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane);
+	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
+
+	void CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent* obj2, DirectX::XMVECTOR normal, float dt);
 
 	//Math functions
 	float DotProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
 	DirectX::XMFLOAT3 CrossProduct(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
-	float CrossProductf(const DirectX::XMVECTOR &v1, const DirectX::XMVECTOR &v2) const;
+	float DotProduct(const DirectX::XMVECTOR &v1, const DirectX::XMVECTOR &v2) const;
 
 	DirectX::XMFLOAT3 VectorSubstract(const DirectX::XMFLOAT3 &v1, const DirectX::XMFLOAT3 &v2) const;
-
-	void UpdateAABB(PhysicsComponent* src);
 
 	//void CreateBB();
 	void CreateDefaultBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
@@ -129,8 +123,6 @@ public:
 	void ShutDown();
 	void Update(float deltaTime);
 
-	void InitializeChain(int start, int end);
-
 	DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);
 	DirectX::XMMATRIX RotateBB_Z(PhysicsComponent* src, const float &radian);
@@ -139,27 +131,31 @@ public:
 	void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	void Add_toRotateVec(PhysicsComponent* src);
 
-	void DoChainPhysics(PhysicsComponent* current, PhysicsComponent* next, float dt);
-	void AdjustChainLinkPosition();
+	void DoChainPhysics(ChainLink* link, float dt);
+	void AdjustChainLinkPosition(ChainLink* link);
 
-	PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos);
+	void ApplyForceToComponent(PhysicsComponent* componentPtr, DirectX::XMVECTOR force, float dt);
+
+	PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
+
+	void CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 
 	void SimpleCollition(float dt);
 	void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
 	int getNrOfComponents()const;
-	PhysicsComponent* getDynamicComponents(int index)const;
+	PhysicsComponent* getDynamicComponentAt(int index)const;
 
 	void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	bool checkCollition();
 
+#ifdef _DEBUG
 	void GetPhysicsComponentOBB(OBB*& src, int index);
 	void GetPhysicsComponentAABB(AABB*& src, int index);
-
-	
-	PhysicsComponent* GetTempFloor();
+	void GetPhysicsComponentPlane(Plane*& src, int index);
+#endif
 };
 
 #endif
