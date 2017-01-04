@@ -12,6 +12,7 @@
 #include "Header.h"
 #include "ui_SSP_Editor.h"
 #include "SelectionHandler.h"
+#include "LevelHandler.h"
 
 #pragma comment (lib,"GraphicsDLL-d.lib")
 #pragma comment (lib,"ResourceLib.lib")

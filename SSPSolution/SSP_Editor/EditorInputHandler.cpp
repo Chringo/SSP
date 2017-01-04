@@ -291,6 +291,10 @@ void EditorInputHandler::ViewPortChanged(float height, float width)
 
 void EditorInputHandler::deleteModel()
 {
+	//delete currentSelection;
+	LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
+
+	printf("hejsna");
 }
 
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
