@@ -22,6 +22,7 @@ namespace Resources
 		virtual ~TextureHandler();
 
 		Resources::Status GetTexture(const unsigned int& id, ResourceContainer*& texturePtr);
+		Resources::Status GetTexture(const unsigned int& id, Texture*& texturePtr);
 		Resources::Status LoadTexture(const unsigned int& id, ResourceContainer*& texturePtr);
 		Resources::Status UnloadTexture(const unsigned int& id);
 

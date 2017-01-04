@@ -8,7 +8,7 @@ namespace Resources {
 		public Resource
 	{
 	private:
-		char m_filePath[256];
+		char m_fileName[256];
 		ID3D11ShaderResourceView* textureView	= nullptr;
 		ID3D11Resource* textureResource			= nullptr;
 
@@ -23,7 +23,7 @@ namespace Resources {
 		Resources::Status SetTexture(ID3D11ShaderResourceView* view, ID3D11Resource* texture);
 		ID3D11ShaderResourceView* GetResourceView() { return textureView; };
 		ID3D11Resource* GetTextureResource() { return textureResource; };
-
+		char* GetFileName() { return m_fileName; };
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 	};
 }

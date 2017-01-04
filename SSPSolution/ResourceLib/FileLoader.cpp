@@ -63,10 +63,10 @@ bool Resources::FileLoader::CloseFile(Files file)
 	return true;
 }
 
-Resources::FileLoader::RegIndex * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
+RegistryItem * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
 {
 
-	std::unordered_map<unsigned int, RegIndex>::iterator got = m_fileRegistry.find(objectId);
+	std::unordered_map<unsigned int, RegistryItem>::iterator got = m_fileRegistry.find(objectId);
 	if (got == m_fileRegistry.end()) { // if the index does not exists in memory
 
 		return nullptr;

@@ -6,7 +6,7 @@
 struct GraphicsComponent
 {
 	int active = 0;
-	int modelID = -1;
+	unsigned int modelID = 0;
 	DirectX::XMMATRIX worldMatrix;
 };
 
