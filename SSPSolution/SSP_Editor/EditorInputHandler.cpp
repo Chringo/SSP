@@ -289,6 +289,13 @@ void EditorInputHandler::ViewPortChanged(float height, float width)
 	SelectionHandler::GetInstance()->updateWindowSize(height, width);
 }
 
+void EditorInputHandler::deleteModel()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
+		(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
+	SelectionHandler::GetInstance()->SetSelection(false);
+}
+
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 {
 		switch (evt->key())
@@ -338,11 +345,24 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 				m_KeysHeld[Bools::SPACE] = true;
 			}
 			break;
+		case Qt::Key_R:
+			CameraReset();
+			break;
+		case Qt::Key_Delete:
+			deleteModel();
+			break;
+		case (Qt::Key_Up) :
+		case (Qt::Key_Down) :
+		case (Qt::Key_Left) :
+		case (Qt::Key_Right) :
+			SelectionHandler::GetInstance()->RotateObject(evt->key());
+			break;
+
 		default:
 			break;
 		}
 
-		switch (evt->key())
+		/*switch (evt->key())
 		{
 		case Qt::Key_R:
 			CameraReset();
@@ -355,5 +375,5 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 			break;
 		default:
 			break;
-		}
+		}*/
 }

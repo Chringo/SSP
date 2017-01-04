@@ -59,7 +59,6 @@ public:
 	bool PickTransformWidget();
 	bool PickObjectSelection();
 
-
 private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::vector<Resources::Model*>* m_modelPtr;
