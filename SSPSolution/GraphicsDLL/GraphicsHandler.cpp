@@ -392,14 +392,6 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
-	{
-		if (this->m_graphicsComponents[i] != nullptr)
-		{
-			delete this->m_graphicsComponents[i];
-			this->m_graphicsComponents[i] = nullptr;
-		}
-	}
 
 	//for (int i = 1; i < 2; i++)
 	//{
@@ -408,6 +400,15 @@ void GraphicsHandler::Shutdown()
 	//}
 	if (!editorMode)
 	{
+		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+		{
+			if (this->m_graphicsComponents[i] != nullptr)
+			{
+				delete this->m_graphicsComponents[i];
+				this->m_graphicsComponents[i] = nullptr;
+			}
+		}
+
 	
 		delete this->m_animGraphicsComponents[1];
 		delete[] this->m_modelsPtr;
