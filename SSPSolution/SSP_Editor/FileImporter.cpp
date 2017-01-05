@@ -247,13 +247,13 @@ void FileImporter::handleMat(char * m_bbf_object)
 	//Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
 	//add all the textures here
 
-	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
-	//																				   // TEMPORARY
-	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
-	//newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
+	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+																					   // TEMPORARY
+	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 	ImportTextures((char*)(m_bbf_object + sizeof(MainHeader)), m_MatH);
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
@@ -305,6 +305,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 
 		Resources::Status st;
 
+		unsigned int offset = 0;
 		Resources::Texture *textures[5] = { nullptr,nullptr ,nullptr ,nullptr ,nullptr };
 		for (size_t i = 0; i < 5; i++)
 		{
@@ -318,8 +319,10 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 				st = textures[i]->Create(&temp);
 				if (st != Resources::ST_OK)
 					return false;
+				textures[i]->SetFileName((char*)(m_bbf_object + offset), m_Mheader->textureNameLength[i]);
 				m_data->AddTexture(textures[i]);
 			}
+			offset += m_Mheader->textureNameLength[i];
 		}
 #pragma region Load Textures
 		std::string path_str[5];
@@ -362,7 +365,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 
 
 
-			st = textures[i].SetTexture(textureView[i], textureResource[i]);
+			st = textures[i]->SetTexture(textureView[i], textureResource[i]);
 			if (st != Resources::ST_OK)
 			{
 				Resources::SAFE_RELEASE(textureView[i]);
