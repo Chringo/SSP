@@ -39,5 +39,9 @@ FileImporter:
 ---------------------------------------------------------
 EXPORT / IMPORT:
 	- Change the material file to print the filename of the textures instead of texture ID! ------DONE------
-
-
+	- Pivot position
+---------------------------------------------------------
+SELECTION HANDLER:
+	- Should selected obb pos be equal to instance position? For now it is
+	- Pivot support for rotate/translate
+	- Ability to place player spawn positions
