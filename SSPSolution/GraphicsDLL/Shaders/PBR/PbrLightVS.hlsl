@@ -1,4 +1,4 @@
-cbuffer camera : register(b1)
+cbuffer frame : register(b1)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;

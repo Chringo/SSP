@@ -7,7 +7,7 @@ SamplerState pointSampler : register(s1);
 uniform float WIN_WIDTH = 1280;
 uniform float WIN_HEIGHT = 720;
 
-cbuffer camera : register(b1)
+cbuffer frame : register(b1)
 {
 	float4x4 viewMatrix;
 	float4x4 projectionMatrix;
