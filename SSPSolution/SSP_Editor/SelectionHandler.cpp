@@ -142,6 +142,9 @@ bool SelectionHandler::PickTransformWidget()
 bool SelectionHandler::PickObjectSelection()
 {
 	bool gotHit = false;
+	float hitDistance = FLT_MAX;
+	float minHitDistance = FLT_MAX;
+
 
 	//checks if we picked on a model by iterating
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
@@ -163,11 +166,13 @@ bool SelectionHandler::PickObjectSelection()
 					OBB obj = m_ConvertOBB(m_modelPtr->at(i)->GetOBBData(), &InstancePtr->at(j));
 
 					bool result = false;
+					
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
-					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
 					//transformWidget.setActive(result);
-					if (result)
+					if (result && hitDistance < minHitDistance)
 					{
+						minHitDistance = hitDistance;
 						//update widget with the intersected obb
 						this->m_transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
 
