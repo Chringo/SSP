@@ -80,7 +80,7 @@ public:
 	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode = false);
 	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
-	int Render();
+	int Render(float deltaTime);
 
 	int SetComponentArraySize(int newSize);
 	GraphicsComponent* GetNextAvailableComponent();

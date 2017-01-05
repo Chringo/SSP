@@ -228,18 +228,22 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 	return tempCam;
 }
 
-int GraphicsHandler::Render()
+int GraphicsHandler::Render(float deltaTime)
 {
 	m_shaderControl->ClearFrame();
+	static float elapsedTime = 0.0f;
+	elapsedTime += deltaTime / 1000000;
+
 
 	/*TEMP CBUFFER STUFF*/
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	frame.cTimer = elapsedTime;
 	/********************/
 
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
@@ -299,12 +303,12 @@ int GraphicsHandler::InitializeGrid()
 int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* component) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
 
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 	
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
@@ -319,11 +323,11 @@ int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* comp
 int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
 {
 
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
