@@ -351,6 +351,7 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 		case Qt::Key_Delete:
 			deleteModel();
 			break;
+		case (Qt::Key_0):
 		case (Qt::Key_Up) :
 		case (Qt::Key_Down) :
 		case (Qt::Key_Left) :

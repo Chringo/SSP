@@ -38,6 +38,6 @@ FileImporter:
 
 ---------------------------------------------------------
 EXPORT / IMPORT:
-	- Change the material file to print the filename of the textures instead of texture ID!
+	- Change the material file to print the filename of the textures instead of texture ID! ------DONE------
 
 
