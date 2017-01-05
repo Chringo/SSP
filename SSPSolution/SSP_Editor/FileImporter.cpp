@@ -232,13 +232,26 @@ void FileImporter::handleMat(char * m_bbf_object)
 
 	Resources::Material* newMaterial = new Resources::Material(*res_Data);
 	
-	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
-																					   // TEMPORARY
-	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
-	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
-	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
-	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
-	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
+	char* albedoName = (char*)m_MatH + sizeof(MaterialHeader); 	//m_MatH->m_EmissiveValue;
+	char* metallicName = (char*)albedoName + m_MatH->textureIDs[0];
+	char* voffName = (char*)metallicName + m_MatH->textureIDs[1];
+	char* normalName = (char*)voffName + m_MatH->textureIDs[2];
+	char* aoName = (char*)normalName + m_MatH->textureIDs[3];
+
+	//Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim)((char)m_meshH + sizeof(MeshHeader));
+	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
+	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
+
+	Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
+	Resources::Texture *test;
+	
+	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+	//																				   // TEMPORARY
+	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	//newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);
