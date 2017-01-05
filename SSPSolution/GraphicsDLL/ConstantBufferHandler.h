@@ -68,6 +68,7 @@ public:
 				DirectX::XMFLOAT4X4 pView;
 				DirectX::XMFLOAT4X4 pProjection;
 				DirectX::XMFLOAT4 pPos;
+				float pTimer, padding1 = 0.f, padding2 = 0.f, padding3 = 0.f;
 			};
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
@@ -76,6 +77,7 @@ public:
 				DirectX::XMMATRIX cView;
 				DirectX::XMMATRIX cProjection;
 				DirectX::XMVECTOR cPos;
+				float cTimer;
 			};
 			ID3D11Buffer * D3DBuffer = nullptr;
 			pData p;
@@ -85,7 +87,7 @@ public:
 				DirectX::XMStoreFloat4x4(&p.pView, DirectX::XMMatrixTranspose(c.cView));
 				DirectX::XMStoreFloat4x4(&p.pProjection, DirectX::XMMatrixTranspose(c.cProjection));
 				DirectX::XMStoreFloat4(&p.pPos, c.cPos);
-
+				p.pTimer = c.cTimer;
 				return p;
 			};
 			template <typename T>

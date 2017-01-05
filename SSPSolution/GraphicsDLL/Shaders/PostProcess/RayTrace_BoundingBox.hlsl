@@ -13,8 +13,8 @@ cbuffer frame : register(b1)
 	float4x4 projectionMatrix;
 
 	float4 camPos;
-	
-	// do not need padding here. float4 = 16bit
+    float timer;
+    float padding1, padding2, padding3;
 }
 struct AABB
 {

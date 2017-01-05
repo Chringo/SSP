@@ -228,15 +228,19 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 	return tempCam;
 }
 
-int GraphicsHandler::Render()
+int GraphicsHandler::Render(float deltaTime)
 {
 	m_shaderControl->ClearFrame();
+	static float elapsedTime = 0.0f;
+	elapsedTime += deltaTime / 1000000;
+
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
 	this->m_camera->GetCameraPos(frame.cPos);
 	this->m_camera->GetViewMatrix(frame.cView);
 	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	frame.cTimer = elapsedTime;
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
