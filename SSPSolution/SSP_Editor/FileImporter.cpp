@@ -243,16 +243,16 @@ void FileImporter::handleMat(char * m_bbf_object)
 	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
 	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
 
-	Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
+	//Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
 	//add all the textures here
 
-	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
-	//																				   // TEMPORARY
-	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
-	//newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
-	//newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
+	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+																					   // TEMPORARY
+	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);

@@ -170,19 +170,21 @@ Resources::Status Resources::TextureHandler::ImportTextures(char * m_bbf_object,
 	std::cout << "Importing textures from server" << std::endl;
 #endif // _DEBUG
 
-
-	/*T E M P*/
-	Resource::RawResourceData temp;
-	temp.m_resType = RES_TEXTURE;
-	temp.m_id = 7869;
-	/***************/
 	Status st;
 
-	//placeHolder = new Texture[5];
+	for (size_t i = 0; i < 5; i++)
+	{
+		Resource::RawResourceData temp;
+		temp.m_resType = RES_TEXTURE;
+		temp.m_id = m_Mheader->textureIDs[i];
+
+		st = m_containers[i].Create(&temp);
+		if (st != ST_OK)
+			return Resources::Status::ST_RES_MISSING;
+	}
 #pragma region Load Textures
 	std::string path_str[5];
 	wchar_t path[5][256];
-	//size_t length[5];
 	ID3D11ShaderResourceView* textureView[5];
 	ID3D11Resource*			textureResource[5];
 
@@ -227,7 +229,7 @@ Resources::Status Resources::TextureHandler::ImportTextures(char * m_bbf_object,
 
 
 
-		st = placeHolder[i].SetTexture(textureView[i], textureResource[i]);
+		st = m_containers[i].SetTexture(textureView[i], textureResource[i]);
 		if (st != ST_OK)
 		{
 			Resources::SAFE_RELEASE(textureView[i]);

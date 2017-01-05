@@ -267,6 +267,11 @@ void SelectionHandler::RotateObject(int direction)
 		case (Key_Right):
 			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
 			break;
+		case (Key_0):
+			instance->rotation = DirectX::XMQuaternionIdentity();
+			m_IsDirty = true;
+			instance->isDirty = true;
+			return;
 		default:
 			break;
 		}
