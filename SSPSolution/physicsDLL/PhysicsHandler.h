@@ -22,13 +22,11 @@ enum BoundingVolumeType
 
 struct AABB
 {
-	//float pos[3];
 	float ext[3];
 };
 
 struct OBB
 {
-	DirectX::XMVECTOR pos;
 	float ext[3];
 	DirectX::XMMATRIX ort;
 };

@@ -814,7 +814,7 @@ void PhysicsHandler::CreateDefaultOBB(const DirectX::XMVECTOR & pos, PhysicsComp
 {
 	//AABB components
 
-	src->PC_OBB.pos = pos;
+	src->PC_pos = pos;
 
 	src->PC_OBB.ext[0] = 1.0f;
 	src->PC_OBB.ext[1] = 1.0f;
@@ -914,7 +914,6 @@ void PhysicsHandler::Update(float deltaTime)
 				current->PC_pos = DirectX::XMVectorSet(temp.x, 2, temp.z, 0);
 				current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			}
-			current->PC_OBB.pos = current->PC_pos;
 		}
 		else
 		{
@@ -1036,7 +1035,7 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 	{
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght + 0.1)));
-		link->CL_next->PC_OBB.pos = link->CL_next->PC_pos;
+		link->CL_next->PC_pos = link->CL_next->PC_pos;
 	}
 
 }
