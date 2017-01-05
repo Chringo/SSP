@@ -35,18 +35,18 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.ByteWidth = sizeof(ConstantBuffer::camera::p);
+	bufferDesc.ByteWidth = sizeof(ConstantBuffer::frame::p);
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
-	hResult = device->CreateBuffer(&bufferDesc, nullptr, &camera.D3DBuffer);
+	hResult = device->CreateBuffer(&bufferDesc, nullptr, &frame.D3DBuffer);
 	if (SUCCEEDED(hResult))
 	{
-		deviceContext->VSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
-		deviceContext->PSSetConstantBuffers(CB_CAMERA_B1, 1, &camera.D3DBuffer);
+		deviceContext->VSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
+		deviceContext->PSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
 	}
 	else
 		return 1;
@@ -93,7 +93,6 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	else
 		return	1;
 
-
 	return 0;
 }
 
@@ -101,8 +100,8 @@ int ConstantBufferHandler::Shutdown()
 {
 	if (world.D3DBuffer)
 		world.D3DBuffer->Release();
-	if (camera.D3DBuffer)
-		camera.D3DBuffer->Release();
+	if (frame.D3DBuffer)
+		frame.D3DBuffer->Release();
 	if (skeleton.D3DBuffer)
 		skeleton.D3DBuffer->Release();
 	

@@ -21,6 +21,7 @@ private:
 		Key_Up = 0x01000013,
 		Key_Right = 0x01000014,
 		Key_Down = 0x01000015,
+		Key_0 = 0x30,
 	};
 	OBB m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * instancePtr);
 
@@ -58,7 +59,6 @@ public:
 	void MoveObject();
 	bool PickTransformWidget();
 	bool PickObjectSelection();
-
 
 private:
 	PhysicsHandler* m_PhysicsHandler;

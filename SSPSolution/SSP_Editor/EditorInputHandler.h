@@ -12,6 +12,7 @@
 #include "Header.h"
 #include "ui_SSP_Editor.h"
 #include "SelectionHandler.h"
+#include "LevelHandler.h"
 
 #pragma comment (lib,"GraphicsDLL-d.lib")
 #pragma comment (lib,"ResourceLib.lib")
@@ -68,6 +69,8 @@ private:
 	DIMOUSESTATE		 m_mouseLastState;
 	LPDIRECTINPUT8		 m_directInput;
 	IDirectInputDevice8* DIMouse;
+
+	void deleteModel();
 
 public:
 

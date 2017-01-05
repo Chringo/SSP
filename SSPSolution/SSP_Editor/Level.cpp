@@ -123,7 +123,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	}
 	else {
 		modelPtr = &got->second;
-		modelPtr->erase(modelPtr->begin() + instanceID - 1);
+		modelPtr->erase(modelPtr->begin() + instanceID);
 		return Resources::Status::ST_OK;
 	}
 }
