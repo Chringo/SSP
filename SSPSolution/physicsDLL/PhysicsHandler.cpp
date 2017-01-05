@@ -882,6 +882,7 @@ void PhysicsHandler::Update(float deltaTime)
 				if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
 				{
 					//to be continued
+
 				}
 
 				if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
@@ -1139,10 +1140,6 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 
 	DirectX::XMVECTOR sideVector[NR_OF_NORMALS];
 
-	//sideVector[0] = this->Bu; // slabs Bu
-	//sideVector[1] = this->Bv; // slabs Bv
-	//sideVector[2] = this->Bw; // slabs Bw
-
 	sideVector[0] = obj.ort.r[0];
 	sideVector[1] = obj.ort.r[1];
 	sideVector[2] = obj.ort.r[2];
@@ -1209,6 +1206,142 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 			return false;
 		}
 	}
+
+	DirectX::XMVECTOR totalRay;
+	if (tMin > 0)
+	{
+		//min intersect
+		//return tMin
+	}
+	else
+	{
+		//max intersect
+		//return tMax;
+	}
+
+	/*
+	if (tMin > 0)
+	{
+		// min intersect
+		if (tMin < hit.t || hit.t == -1)
+		{
+			hit.t = tMin;
+			hit.lastShape = this;
+			pointVec = ray.o + ray.d*tMin; //calc point were it hits
+			hit.lastNormal = this->normal(pointVec);
+			//hit.color = this->c;
+		}
+	}
+	else
+	{
+		//max intersect
+		if (tMax < hit.t || hit.t == -1)
+		{
+			hit.t = tMax;
+			hit.lastShape = this;
+			pointVec = ray.o + ray.d*tMax; //calc point were it hits
+			hit.lastNormal = this->normal(pointVec);
+			//hit.color = this->c;
+		}
+	}
+	*/
+	return true;
+}
+
+bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB & obj, const DirectX::XMVECTOR & obbPos, float & distanceToOBB)
+{
+	Ray ray;
+	ray.Origin = rayOrigin;
+	ray.RayDir = rayDir;
+
+
+	float t1, t2 = 0.0;
+	const int NR_OF_NORMALS = 3;
+
+	//Vec rayD = ray.d;
+	DirectX::XMVECTOR radD = ray.RayDir;
+
+	DirectX::XMVECTOR sideVector[NR_OF_NORMALS];
+
+	sideVector[0] = obj.ort.r[0];
+	sideVector[1] = obj.ort.r[1];
+	sideVector[2] = obj.ort.r[2];
+
+	float tMin;
+	float tMax;
+
+	tMin = -INFINITY;
+	tMax = INFINITY;
+
+	//Vec pointVec = this->Bcenter - ray.o;
+	DirectX::XMVECTOR pointVec = DirectX::XMVectorSubtract(obbPos, ray.Origin);
+
+	//rayD.Normalize();
+	ray.RayDir = DirectX::XMVector3Normalize(radD);
+
+	float temp;
+	float length[NR_OF_NORMALS];
+
+	length[0] = obj.ext[0];
+	length[1] = obj.ext[1];
+	length[2] = obj.ext[2];
+
+	float e = 0.0f;
+	float f = 0.0f;
+
+	distanceToOBB = 0;
+	for (int i = 0; i < NR_OF_NORMALS; i++)
+	{
+
+		e = this->DotProduct(sideVector[i], pointVec);
+		f = this->DotProduct(sideVector[i], ray.RayDir);
+
+		if (abs(f) > 1e-20f)
+		{
+			t1 = (e + length[i]) / f;
+			t2 = (e - length[i]) / f;
+
+			if (t1 > t2)
+			{
+				//swap
+				temp = t2;
+				t2 = t1;
+				t1 = temp;
+			}
+			if (t1 > tMin)
+			{
+				tMin = t1;
+			}
+			if (t2 < tMax)
+			{
+				tMax = t2;
+			}
+			if (tMin > tMax)
+			{
+				return false;
+			}
+			if (tMax < 0)
+			{
+				return false;
+			}
+		}
+		else if ((-e - length[i]) > 0 || (-e + length[i] < 0))
+		{
+			return false;
+		}
+	}
+
+	if (tMin > 0)
+	{
+		//min intersect
+		distanceToOBB = tMin;
+	}
+	else
+	{
+		//max intersect
+		distanceToOBB = tMax;
+	}
+
 	return true;
 }
 

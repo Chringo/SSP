@@ -140,6 +140,7 @@ public:
 
 	void CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght);
 	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
+	bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 
 	void SimpleCollition(float dt);
 	void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
