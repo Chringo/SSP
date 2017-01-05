@@ -392,7 +392,7 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 	{
 		if (this->m_graphicsComponents[i] != nullptr)
 		{

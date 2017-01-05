@@ -165,14 +165,15 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
 
     //N = normalize(N);
-    float3 V = normalize(wPosSamp.xyz - camPos.xyz);
+    float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++)
     {
         //PBR variables 
-        float3 L = normalize((wPosSamp.xyz) - light[i].lightPos);
+       //float3 L = normalize((wPosSamp.xyz) - light[i].lightPos);
+		float3 L = normalize(light[i].lightPos - (wPosSamp.xyz));
         float3 H = normalize(V + L);
         float lightPower = 0;
 
@@ -205,7 +206,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
 
-        //return V.rgbr;
+        //return N.rgbr;
     }
 
 
