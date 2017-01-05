@@ -4,9 +4,6 @@ cbuffer camera : register(b1)
     float4x4 projectionMatrix;
 
     float4 camPos;
-    float4 padding1;
-    float4 padding2;
-    float4 padding3;
 }
 
 struct VS_IN

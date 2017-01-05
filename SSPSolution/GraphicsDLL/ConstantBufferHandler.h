@@ -9,10 +9,11 @@ class ConstantBufferHandler
 	enum CBufferType
 	{
 		CB_WORLD_B0,
-		CB_CAMERA_B1,
+		CB_FRAME_B1,
 		CB_MATERIAL_B2,
 		CB_LIGHT_B3, 
 		CB_SKELETON_B4,
+		CB_LIGHT_B5,
 
 		CB_TYPE_COUNT
 	};
@@ -59,7 +60,7 @@ public:
 			}
 		};
 
-		struct camera
+		struct frame
 		{
 		private:
 			struct pData
@@ -67,9 +68,6 @@ public:
 				DirectX::XMFLOAT4X4 pView;
 				DirectX::XMFLOAT4X4 pProjection;
 				DirectX::XMFLOAT4 pPos;
-				DirectX::XMFLOAT4 padding1;
-				DirectX::XMFLOAT4 padding2;
-				DirectX::XMFLOAT4 padding3;
 			};
 				D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
@@ -193,6 +191,7 @@ public:
 				return 0;
 			}
 		};
+
 	};
 
 private:
@@ -207,7 +206,7 @@ public:
 
 
 	ConstantBuffer::world world;
-	ConstantBuffer::camera camera;
+	ConstantBuffer::frame frame;
 	ConstantBuffer::light light;
 	ConstantBuffer::material material;
 	ConstantBuffer::skeleton skeleton;
