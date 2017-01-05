@@ -10,6 +10,8 @@ cbuffer frame : register(b1)
     float4x4 projectionMatrix;
 
     float4 camPos;
+    float timer,
+    padding1, padding2, padding3;
 }
 cbuffer skeleton : register(b5)
 {
