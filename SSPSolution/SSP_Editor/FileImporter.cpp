@@ -232,19 +232,20 @@ void FileImporter::handleMat(char * m_bbf_object)
 
 	Resources::Material* newMaterial = new Resources::Material(*res_Data);
 	
-	char* albedoName = (char*)m_MatH + sizeof(MaterialHeader); 	//m_MatH->m_EmissiveValue;
-	char* metallicName = (char*)albedoName + m_MatH->textureIDs[0];
-	char* voffName = (char*)metallicName + m_MatH->textureIDs[1];
-	char* normalName = (char*)voffName + m_MatH->textureIDs[2];
-	char* aoName = (char*)normalName + m_MatH->textureIDs[3];
+	/*just temp for reference*/
+	//char* albedoName = (char*)m_MatH + sizeof(MaterialHeader);
+	//char* metallicName = (char*)albedoName + m_MatH->textureNameLength[0];
+	//char* voffName = (char*)metallicName + m_MatH->textureNameLength[1];
+	//char* normalName = (char*)voffName + m_MatH->textureNameLength[2];
+	//char* aoName = (char*)normalName + m_MatH->textureNameLength[3];
 
 	//Resources::Mesh::VertexAnim* vertices = (Resources::Mesh::VertexAnim)((char)m_meshH + sizeof(MeshHeader));
 	//newMesh->SetVertices(vertices, nullptr, m_meshH->numVerts, true);
 	//indices = (unsigned int)((char)vertices + (sizeof(Resources::Mesh::VertexAnim)* m_meshH->numVerts));
 
 	Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
-	Resources::Texture *test;
-	
+	//add all the textures here
+
 	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
 	//																				   // TEMPORARY
 	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
