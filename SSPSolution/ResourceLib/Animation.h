@@ -3,23 +3,26 @@
 
 #include "Resource.h"
 
-namespace Resources {
-
+namespace Resources 
+{
 	class Animation :
 		public Resource
 	{
 	public:
-		struct Keyframe {
+		struct Keyframe 
+		{
 			float timeValue = 0;
 			float translation[3]{0.0f,0.0f,0.0f };
 			float quaternion[4] {0.0f,0.0f,0.0f };
 			float scale[3]		{0.0f,0.0f,0.0f };
 		};
-		struct AnimationJoint {
+		struct AnimationJoint 
+		{
 			unsigned int keyframeCount	= 0;
 			Keyframe*	 keyframes	    = nullptr;
 		}; 
-		struct AnimationData {
+		struct AnimationData 
+		{
 			unsigned int jointCount		= 0;
 			AnimationJoint* joints		= nullptr;
 		};
@@ -34,9 +37,9 @@ namespace Resources {
 		Resources::Status Create(Resource::RawResourceData* resData, AnimationData* animData);
 		Resources::Status Destroy(); // Deincrement references to connected data, free container
 
-		const unsigned int*   GetJointCount()		   { return &m_anim.jointCount;		};
-		const AnimationJoint* GetJoint(int& index) { return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
-		const AnimationJoint* GetAllJoints() const { return m_anim.joints; };
+		const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };
+		const AnimationJoint* GetJoint(int& index)	{ return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
+		const AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
 
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 

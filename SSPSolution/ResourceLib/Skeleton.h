@@ -2,18 +2,20 @@
 #define RESOURCELIB_SKELETON_SKELETON_H
 #include "Resource.h"
 #include "Animation.h"
-namespace Resources {
-
+namespace Resources 
+{
 	class Skeleton :
 		public Resource
 	{
 	public:
-		struct Joint {
+		struct Joint 
+		{
 			float invBindPose[16];
 			int jointIndex   = 0;
 			int parentIndex  = 0;
 		};
-		struct RawSkeletonData {
+		struct RawSkeletonData 
+		{
 			unsigned int jointCount		= 0;
 			Joint*		 joints		    = nullptr;
 			RawSkeletonData& RawSkeletonData::operator= (const RawSkeletonData & other)
@@ -55,7 +57,6 @@ namespace Resources {
 		const Animation*				  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
 		const std::vector<unsigned int> * GetAllAnimationIds()		const { return &m_animationIds; };
 		virtual std::shared_ptr<char>	  GetDataAsBinary(size_t* size, bool* result = nullptr);
-
 
 	};
 }
