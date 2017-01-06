@@ -29,7 +29,9 @@ void ResourceLibExporter::ExportBPF()
 {
 	Open();
 
+	/*building the registry*/
 	BuildRegistry();
+
 	
 	Close();
 }
@@ -44,6 +46,8 @@ void ResourceLibExporter::BuildRegistry()
 	for (int i = 0; i < sceneModels->size(); ++i)
 	{
 		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
 		item.id = sceneModels->at(i)->GetId();
 		m_Items.push_back(item);
 	}
@@ -52,6 +56,8 @@ void ResourceLibExporter::BuildRegistry()
 	for (int i = 0; i < sceneMeshes->size(); ++i)
 	{
 		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
 		item.id = sceneMeshes->at(i)->GetId();
 		m_Items.push_back(item);
 	}
@@ -60,6 +66,8 @@ void ResourceLibExporter::BuildRegistry()
 	for (int i = 0; i < sceneMaterials->size(); ++i)
 	{
 		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
 		item.id = sceneMaterials->at(i)->GetId();
 		m_Items.push_back(item);
 	}
@@ -69,6 +77,8 @@ void ResourceLibExporter::BuildRegistry()
 	{
 		Resources::Texture * node = iterator->second;
 		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
 		item.id = node->GetId();
 		m_Items.push_back(item);
 	}
