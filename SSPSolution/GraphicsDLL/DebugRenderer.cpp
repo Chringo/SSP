@@ -12,8 +12,8 @@ DebugRenderer::DebugRenderer()
 	NUM_POINTS[M_PLANE]   = 4;
 	NUM_INDICES[M_PLANE]  = 6;
 
-	NUM_POINTS[M_SPHERE]  = 3;
-	NUM_INDICES[M_SPHERE] = 3;
+	NUM_POINTS[M_SPHERE]  = 24;
+	NUM_INDICES[M_SPHERE] = 24;
 
 
 	m_indices[M_CUBE] = new UINT[NUM_INDICES[M_CUBE]]
@@ -38,7 +38,21 @@ DebugRenderer::DebugRenderer()
 		2,1,3
 		
 	};
-	m_indices[M_SPHERE] = new UINT[NUM_INDICES[M_SPHERE]];
+	m_indices[M_SPHERE] = new UINT[NUM_INDICES[M_SPHERE]]
+	{
+		0,1,
+		2,3,
+		4,5,
+		6,7,
+		8,9,
+		10,11,
+		12,13,
+		14,15,
+		16,17,
+		18,19,
+		20,21,
+		22,23
+	};
 }
 
 
@@ -228,6 +242,20 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVE
 	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PLANE], &m_vertexSize, &offset);
 	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PLANE], DXGI_FORMAT_R32_UINT, 0);
 	
+	m_deviceContext->DrawIndexed(NUM_INDICES[M_PLANE], 0, 0);
+
+}
+
+
+void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XMVECTOR color)
+{
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ID3D11Buffer* buf = GenerateLinelist(pos, sphere, color);
+	UINT32 offset = 0;
+	UINT32 m_vertexSize = sizeof(Point);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PLANE], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PLANE], DXGI_FORMAT_R32_UINT, 0);
+
 	m_deviceContext->DrawIndexed(NUM_INDICES[M_PLANE], 0, 0);
 
 }
@@ -433,6 +461,22 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 	m_deviceContext->Unmap(m_PointBuffer[M_PLANE], 0);
 
 	return m_PointBuffer[M_PLANE];
+}
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere & box, DirectX::XMVECTOR color)
+{
+	DirectX::XM_PI;
+	box.radius;
+
+
+	for (size_t i = 0; i < NUM_POINTS[M_SPHERE]; i++)
+	{
+		
+
+
+	}
+
+
+	return nullptr;
 }
 	/*
 		 _________________________

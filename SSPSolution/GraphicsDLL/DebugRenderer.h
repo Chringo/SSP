@@ -58,12 +58,14 @@ public:
 	void Render(DirectX::XMVECTOR& pos, AABB&  box,   DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 	void Render(DirectX::XMVECTOR& pos, OBB&   box,   DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
 	void Render(DirectX::XMVECTOR& pos, Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	void Render(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	void SetActive();
 
 private:
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, AABB& box , DirectX::XMVECTOR color);
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, OBB& box ,  DirectX::XMVECTOR color);
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Plane& box, DirectX::XMVECTOR color);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Sphere& box, DirectX::XMVECTOR color);
 
 
 };
