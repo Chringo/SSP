@@ -235,7 +235,7 @@ void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR c
 
 void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
-	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	ID3D11Buffer* buf = GenerateLinelist(pos, plane,color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
@@ -253,10 +253,10 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 	ID3D11Buffer* buf = GenerateLinelist(pos, sphere, color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
-	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PLANE], &m_vertexSize, &offset);
-	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PLANE], DXGI_FORMAT_R32_UINT, 0);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_SPHERE], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_SPHERE], DXGI_FORMAT_R32_UINT, 0);
 
-	m_deviceContext->DrawIndexed(NUM_INDICES[M_PLANE], 0, 0);
+	m_deviceContext->DrawIndexed(NUM_INDICES[M_SPHERE], 0, 0);
 
 }
 
@@ -474,15 +474,29 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 
 	for (size_t i = 0; i < NUM_POINTS[M_SPHERE]; i++)
 	{
-		DirectX::XMVECTOR point;
+		DirectX::XMVECTOR point = pos;
 
-		//point = DirectX::XMScalarCos(theta);
-
-
+		point.m128_f32[0] += box.radius * DirectX::XMScalarCos(theta);
 
 
+		point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 		m_points[M_SPHERE][i] = Point(point.m128_f32, color.m128_f32);
+
+
+
+		theta += theta;
 	}
+
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	HRESULT hr = m_deviceContext->Map(m_PointBuffer[M_SPHERE], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	Point* tempData = (Point*)mappedResource.pData;
+	memcpy(tempData, (void*)m_points[M_SPHERE], sizeof(Point) * NUM_POINTS[M_SPHERE]);
+	m_deviceContext->Unmap(m_PointBuffer[M_SPHERE], 0);
+
+	return m_PointBuffer[M_SPHERE];
 
 
 	return nullptr;
