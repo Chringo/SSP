@@ -7,6 +7,7 @@ FileImporter::FileImporter(QTreeWidget *itemList)
 	m_data = DataHandler::GetInstance();
 	this->m_itemList = itemList;
 	m_fileLoader = Resources::FileLoader::GetInstance();
+
 }
 
 
@@ -245,14 +246,15 @@ void FileImporter::handleMat(char * m_bbf_object)
 
 	//Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
 	//add all the textures here
+	ImportTextures((char*)(m_bbf_object + sizeof(MainHeader) + sizeof(MaterialHeader)), m_MatH, newMaterial);
 
-	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
-																					   // TEMPORARY
-	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
-	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
-	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
-	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
-	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
+	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+	//																				   // TEMPORARY
+	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	//newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);
@@ -293,6 +295,88 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
 
+}
+
+bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
+{
+#ifdef _DEBUG
+		std::cout << "Importing textures from server" << std::endl;
+#endif // _DEBUG
+
+		Resources::Status st;
+
+		unsigned int offset = 0;
+		Resources::Texture *textures[5] = { nullptr,nullptr ,nullptr ,nullptr ,nullptr };
+		for (size_t i = 0; i < 5; i++)
+		{
+			Resources::Resource::RawResourceData temp;
+			temp.m_resType = Resources::RES_TEXTURE;
+			temp.m_id = m_Mheader->textureIDs[i];
+
+			if ((m_data->GetTexture((m_bbf_object + offset), textures[i])) == Resources::Status::ST_RES_MISSING)
+			{
+				textures[i] = new Resources::Texture;
+				st = textures[i]->Create(&temp);
+				if (st != Resources::ST_OK)
+					return false;
+				textures[i]->SetFileName((char*)(m_bbf_object + offset), m_Mheader->textureNameLength[i]);
+				m_data->AddTexture(textures[i]);
+			}
+			offset += m_Mheader->textureNameLength[i];
+		}
+#pragma region Load Textures
+		std::string path_str[5];
+		wchar_t path[5][256];
+		ID3D11ShaderResourceView* textureView[5];
+		ID3D11Resource*			textureResource[5];
+
+		///*PBR textures*/
+		path_str[0] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[0];
+		path_str[1] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[1];
+		path_str[2] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[2];
+		path_str[3] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[3];
+		path_str[4] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[4];
+		
+
+		for (size_t i = 0; i < 5; i++)
+		{
+
+			mbstowcs_s(&m_Mheader->textureNameLength[i], path[i], path_str[i].c_str(), m_Mheader->textureNameLength[i]);
+
+			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_Device,
+				path[i],
+				&textureResource[i],
+				&textureView[i],
+				size_t(2048),
+				(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
+
+			if (FAILED(hr)) //If it still doesent work, there  is a problem
+			{
+#ifdef _DEBUG
+				std::cout << "Could not open texture file : " << path_str[i] << std::endl;
+#endif // _DEBUG
+				return Resources::Status::ST_ERROR_OPENING_FILE;
+			}
+
+#ifdef _DEBUG
+			std::cout << "Opened file : " << path_str[i] << std::endl;
+#endif // _DEBUG
+
+
+
+
+			st = textures[i]->SetTexture(textureView[i], textureResource[i]);
+			newMaterial->SetTexture(textures[i], (Resources::TextureType)i);
+			if (st != Resources::ST_OK)
+			{
+				Resources::SAFE_RELEASE(textureView[i]);
+				Resources::SAFE_RELEASE(textureResource[i]);
+				return false;
+			}
+		}
+#pragma endregion
+
+		return true;
 }
 
 bool FileImporter::HandlePathNotFound()

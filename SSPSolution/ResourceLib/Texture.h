@@ -20,6 +20,7 @@ namespace Resources {
 		Resources::Status Create(Resource::RawResourceData* resData);
 		Resources::Status Destroy(); 
 
+		void SetFileName(char * fileName, unsigned int nameLength) { memcpy((char*)&m_fileName, fileName, nameLength); }
 		Resources::Status SetTexture(ID3D11ShaderResourceView* view, ID3D11Resource* texture);
 		ID3D11ShaderResourceView* GetResourceView() { return textureView; };
 		ID3D11Resource* GetTextureResource() { return textureResource; };
