@@ -5,6 +5,15 @@
 Level::Level()
 {
 	m_ModelMap.reserve(50);
+
+	//Container player1;
+	//Container player2;
+
+	//player1.position = { 1.0f, 0.0, 0.0f };
+	//player2.position = { -1.0f, 0.0, 0.0f };
+	//this->m_ModelMap[modelID].push_back(newComponent);
+	//this->m_ModelMap[modelID].push_back(newComponent);
+
 }
 
 
