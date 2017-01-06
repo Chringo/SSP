@@ -92,7 +92,7 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;
 	// Query list of states to see if the state exists
-	for (int i = 0; i < m_states.size(); i++)
+	for (unsigned int i = 0; i < m_states.size(); i++)
 	{
 		if (m_states[i].stateID == newState)
 		{

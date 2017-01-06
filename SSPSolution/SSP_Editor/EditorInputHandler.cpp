@@ -32,6 +32,7 @@ EditorInputHandler::EditorInputHandler(
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
 	this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
+
 	this->m_PreviousPos = camera->GetCameraPos();
 	for (size_t i = 0; i < NUMBOOLS; i++)
 	{
