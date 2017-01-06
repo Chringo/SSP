@@ -66,12 +66,13 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 
 	char* data	= nullptr;
 	size_t size = 0;
-	//FileLoader::GetInstance()->LoadResource(id, data, size);
+	FileLoader::GetInstance()->LoadResource(id, data, &size);
 
 
 
 	//additional headers could be added here,
-	Model* newModel = m_emptyContainers.front();		//Get an empty container
+	
+	Model* newModel = GetEmptyContainer();		//Get an empty container
 	//newModel->Create((Resource::RawResourceData*)data); //Initialize it with data
 	//Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	//if (resData->m_resType != RES_TEXTURE)
@@ -257,4 +258,14 @@ bool Resources::ModelHandler::CreatePlaceHolder()
 #endif // _DEBUG
 
 	return false;
+}
+
+Resources::Model * Resources::ModelHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Model());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
 }

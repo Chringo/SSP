@@ -89,7 +89,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	std::cout << "Loading new Mesh | ID : " << resData->m_id << std::endl;
 #endif // DEBUG
 
-	Mesh* newMesh = m_emptyContainers.front();		//Get an empty container
+	Mesh* newMesh = GetEmptyContainer();		//Get an empty container
 	st = newMesh->Create(resData); //Initialize it with data
 
 	if (st != ST_OK)
@@ -101,40 +101,18 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 		newMesh->SetVertices(vertices,m_device, meshData->numVerts);
 		indices = (unsigned int*) ((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 		
-#ifdef _DEBUG
-	//for (size_t i = 0; i < meshData->numVerts; i++)
-	//{
-	//	std::cout << vertices[i].position[0] << ","
-	//		<< vertices[i].position[1] << ","
-	//		<< vertices[i].position[2] << std::endl;
-	//}
-#endif // _DEBUG
 	}
 	else
 	{
 		Mesh::Vertex *vertices = (Mesh::Vertex*)((char*)meshData + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, m_device, meshData->numVerts);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
-#ifdef _DEBUG
-	//for (size_t i = 0; i < meshData->numVerts; i++)
-	//{
-	//	std::cout << vertices[i].position[0] << ","
-	//		<< vertices[i].position[1] << ","
-	//		<< vertices[i].position[2] << std::endl;
-	//}
-	//	for (size_t i = 0; i < meshData->indexLength; i++)
-	//	{
-	//		std::cout << indices[i] << std::endl;
-	//	}
-#endif
+
 	}
 
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
 
-
-	
-	
 	m_meshes[id] = ResourceContainer(newMesh, 1); // put it into the map
 	m_emptyContainers.pop_front(); //remove from empty container queue;
 
@@ -232,4 +210,14 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		st = Status::ST_BUFFER_ERROR;
 
 	return st;
+}
+
+Resources::Mesh * Resources::MeshHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Mesh());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
 }
