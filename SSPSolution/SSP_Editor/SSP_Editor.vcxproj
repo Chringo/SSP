@@ -70,6 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ResourceLib\TextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="AssetTreeHandler.cpp" />
     <ClCompile Include="AttributesHandler.cpp" />
     <ClCompile Include="DataHandler.cpp" />
@@ -161,6 +162,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(ProjectDir)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(ProjectDir)\include\QtCore" "-I$(ProjectDir)\include\QtGui" "-I$(ProjectDir)\include\QtWidgets"</Command>
     </CustomBuild>
+    <ClInclude Include="..\ResourceLib\TextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />
@@ -207,7 +209,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2015" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="5.7_32" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

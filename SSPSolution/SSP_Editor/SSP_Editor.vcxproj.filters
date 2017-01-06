@@ -121,6 +121,9 @@
     <ClCompile Include="SelectionHandler.cpp">
       <Filter>Source Files\Selection</Filter>
     </ClCompile>
+    <ClCompile Include="..\ResourceLib\TextureLoader\DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="TransformWidget.h">
       <Filter>Header Files\Selection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ResourceLib\TextureLoader\DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
