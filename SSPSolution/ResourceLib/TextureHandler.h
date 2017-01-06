@@ -25,7 +25,7 @@ namespace Resources
 		Resources::Status GetTexture(const unsigned int& id, Texture*& texturePtr);
 		Resources::Status LoadTexture(const unsigned int& id, ResourceContainer*& texturePtr);
 		Resources::Status UnloadTexture(const unsigned int& id);
-		Resources::Status ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader);
+		
 
 		void SetDevice(ID3D11Device* device);
 

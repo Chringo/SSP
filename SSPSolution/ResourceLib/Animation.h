@@ -35,7 +35,7 @@ namespace Resources {
 		Resources::Status Destroy(); // Deincrement references to connected data, free container
 
 		const unsigned int*   GetJointCount()		   { return &m_anim.jointCount;		};
-		const AnimationJoint* GetJoint(int& index) { return (index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
+		const AnimationJoint* GetJoint(int& index) { return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
 		const AnimationJoint* GetAllJoints() const { return m_anim.joints; };
 
 		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);

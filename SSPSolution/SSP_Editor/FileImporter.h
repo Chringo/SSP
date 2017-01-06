@@ -7,12 +7,13 @@
 #include "../ResourceLib/FileLoader.h"
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/FileHeaders.h"
-#include "../ResourceLib/TextureHandler.h"
 #include <QtWidgets\qtreewidget.h>
 #include "DataHandler.h"
 #include "qmessagebox.h"
 #include "qfiledialog.h"
 #include "UiControlHandler.h"
+#include "../ResourceLib/TextureLoader/DDSTextureLoader.h"
+
 class FileImporter
 {
 private:
@@ -37,9 +38,9 @@ public:
 	~FileImporter();
 
 	Resources::Status ImportFromServer();
+	Resources::Status Initialize();
 	void LoadImportedFiles();
 	void setDevice(ID3D11Device* device) { this->m_Device = device; };
-	Resources::Status Initialize();
 
 	std::vector<Resources::Model*>* get_M_models() { return this->m_data->GetModels(); }
 
@@ -50,6 +51,7 @@ private:
 	void handleModel(char *m_bbf_object);
 
 	void AddListItem(ListItem category, std::string name);
+	bool ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader, Resources::Material * newMaterial);
 
 	bool HandlePathNotFound();
 	std::string SelectNewPath();
