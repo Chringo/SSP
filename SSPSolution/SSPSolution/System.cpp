@@ -339,7 +339,7 @@ int System::Update(float deltaTime)
 	}
 
 	//locks camera to the player
-	this->LockCameraToPlayer(translateCameraX, translateCameraY, translateCameraZ);
+	this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
@@ -524,7 +524,7 @@ void System::CreateDummyObjects()
 	ptr->PC_AABB.ext[1] = 0.5f;
 	ptr->PC_AABB.ext[2] = 0.5f;
 	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2);
+	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2f);
 
 
 	//the gölv

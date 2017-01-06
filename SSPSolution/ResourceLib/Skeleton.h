@@ -52,7 +52,7 @@ namespace Resources {
 		
 		const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
 		const RawSkeletonData*			  GetSkeletonData()			const { return &m_skelData;		 };
-		const Animation*				  GetAnimation(int& index)  const { return (index < m_numAnimations ? m_animations[index] : nullptr); };
+		const Animation*				  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
 		const std::vector<unsigned int> * GetAllAnimationIds()		const { return &m_animationIds; };
 		virtual std::shared_ptr<char>	  GetDataAsBinary(size_t* size, bool* result = nullptr);
 

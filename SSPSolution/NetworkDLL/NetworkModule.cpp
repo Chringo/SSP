@@ -430,7 +430,7 @@ void NetworkModule::ReadMessagesFromClients()
 			syP.deserialize(network_data);	// Read the binary data into the object
 			
 			// Sync clock (Still not used)
-			this->time_current = syP.timestamp;
+			this->time_current = (int)syP.timestamp;
 			this->time_start = syP.time_start;
 			
 			this->SendFlagPacket(TEST_PACKET);
@@ -535,7 +535,7 @@ void NetworkModule::ReadMessagesFromClients()
 float NetworkModule::GetTimeStamp()
 {
 	this->time_current = (std::clock() - this->time_start);
-	return this->time_current;
+	return (float)this->time_current;
 }
 
 int NetworkModule::GetMyIp()
