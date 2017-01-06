@@ -12,6 +12,8 @@ class ResourceLibExporter
 public:
 	ResourceLibExporter();
 	~ResourceLibExporter();
+
+	static ResourceLibExporter* GetInstance();
 };
 
 #endif
