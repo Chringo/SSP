@@ -246,15 +246,15 @@ void FileImporter::handleMat(char * m_bbf_object)
 
 	//Resources::TextureHandler* test2 = new Resources::TextureHandler(5, this->m_Device);
 	//add all the textures here
+	ImportTextures((char*)(m_bbf_object + sizeof(MainHeader) + sizeof(MaterialHeader)), m_MatH, newMaterial);
 
-	Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
-																					   // TEMPORARY
-	newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
-	newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
-	newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
-	newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
-	newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
-	ImportTextures((char*)(m_bbf_object + sizeof(MainHeader)), m_MatH);
+	//Resources::Texture *test = m_data->GetTextureHandler()->GetPlaceHolderTextures();  // TEMPORARY
+	//																				   // TEMPORARY
+	//newMaterial->SetTexture(&test[0], Resources::TEXTURE_ALBEDO);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[1], Resources::TEXTURE_SPECULAR);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[2], Resources::TEXTURE_ROUGHNESS);				   // TEMPORARY
+	//newMaterial->SetTexture(&test[3], Resources::TEXTURE_NORMAL);					   // TEMPORARY
+	//newMaterial->SetTexture(&test[4], Resources::TEXTURE_AO);						   // TEMPORARY
 
 	newMaterial->SetMetallic(m_MatH->m_Metallic);
 	newMaterial->SetRoughness(m_MatH->m_Roughness);
@@ -297,7 +297,7 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 
 }
 
-bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader)
+bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
 {
 #ifdef _DEBUG
 		std::cout << "Importing textures from server" << std::endl;
@@ -313,7 +313,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 			temp.m_resType = Resources::RES_TEXTURE;
 			temp.m_id = m_Mheader->textureIDs[i];
 
-			if ((m_data->GetTexture(m_bbf_object, textures[i])) == Resources::Status::ST_RES_MISSING)
+			if ((m_data->GetTexture((m_bbf_object + offset), textures[i])) == Resources::Status::ST_RES_MISSING)
 			{
 				textures[i] = new Resources::Texture;
 				st = textures[i]->Create(&temp);
@@ -366,6 +366,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 
 
 			st = textures[i]->SetTexture(textureView[i], textureResource[i]);
+			newMaterial->SetTexture(textures[i], (Resources::TextureType)i);
 			if (st != Resources::ST_OK)
 			{
 				Resources::SAFE_RELEASE(textureView[i]);

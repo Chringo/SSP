@@ -51,7 +51,7 @@ private:
 	void handleModel(char *m_bbf_object);
 
 	void AddListItem(ListItem category, std::string name);
-	bool ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader);
+	bool ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader, Resources::Material * newMaterial);
 
 	bool HandlePathNotFound();
 	std::string SelectNewPath();
