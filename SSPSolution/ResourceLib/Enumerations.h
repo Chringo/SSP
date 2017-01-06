@@ -1,6 +1,5 @@
 #ifndef RESOURCELIB_ENUM_ENUM_H
 #define RESOURCELIB_ENUM_ENUM_H
-#pragma warning( disable: 4251 )
 #pragma warning( disable: 4996 )
 #include <d3d11.h>
 
