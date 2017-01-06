@@ -35,7 +35,29 @@ void ResourceLibExporter::BuildRegistry()
 {
 	RegistryHeader m_Header{ m_FileImporter->GetFilePaths()->size() };
 	m_Items.reserve(m_Header.numIds);
+	
+	std::vector<Resources::Model*>* sceneModels = m_Data->GetModels();
+	
+	/*for (int i = 0; i < sceneModels->size(); ++i)
+	{
+		RegistryItem modelId;
+		modelId->id = sceneModels->at(i)->GetId();
+		m_Items.push_back(modelId);
 
+		if (sceneModels->at(i)->GetMesh() != nullptr)
+		{
+			RegistryItem* meshId = new RegistryItem;
+			meshId->id = sceneModels->at(i)->GetMesh()->GetId();
+			m_Items.push_back(meshId);
+		}
+		if (sceneModels->at(i)->GetMaterial() != nullptr)
+		{
+
+			RegistryItem* materialId = new RegistryItem;
+			materialId->id = sceneModels->at(i)->GetMaterial()->GetId();
+			m_Items.push_back(materialId);
+		}
+	}*/
 }
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)

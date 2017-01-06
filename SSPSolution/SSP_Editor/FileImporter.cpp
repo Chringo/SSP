@@ -132,8 +132,6 @@ void FileImporter::LoadImportedFiles()
 				break;
 			case Resources::ResourceType::RES_SKELETON:
 				break;
-			case Resources::ResourceType::RES_TEXTURE:
-				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
 				break;

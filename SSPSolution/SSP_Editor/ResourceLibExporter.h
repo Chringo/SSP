@@ -15,8 +15,8 @@ class ResourceLibExporter
 {
 private:
 	ResourceLibExporter();
-	std::string m_DestinationPath = "../ResourceLib/AssetFiles/";
-	std::vector<RegistryItem*> m_Items;
+	std::string m_DestinationPath = "../ResourceLib/AssetFiles/AssetFile.bpf";
+	std::vector<RegistryItem> m_Items;
 	std::ofstream* m_Output;
 	unsigned int m_Offset = 0;
 

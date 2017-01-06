@@ -35,6 +35,9 @@ public:
 	~DataHandler();
 
 	std::vector<Resources::Model*>* GetModels() { return &this->m_models; };
+	std::vector<Resources::Mesh*>*  GetMeshes() { return &this->m_meshes; };
+	std::vector<Resources::Material*>* GetMaterials() { return &this->m_materials; };
+
 	Resources::Status GetTexture(std::string id, Resources::Texture*& texture);
 
 	/*Temp*/Resources::TextureHandler* GetTextureHandler() { return this->m_textureHandler; };
