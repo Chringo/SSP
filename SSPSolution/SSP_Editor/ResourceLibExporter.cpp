@@ -81,6 +81,7 @@ void ResourceLibExporter::BuildRegistry()
 	I know! I'm going to put this file, which has nothing to do with our binary files in
 	the binary files folders! Smart. Really smart.*/
 	m_Header.numIds = m_Items.size();
+	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 }
 
