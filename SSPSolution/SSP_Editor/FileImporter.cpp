@@ -25,16 +25,52 @@ Resources::Status FileImporter::ImportFromServer()
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				if (pathName == (dirPath.toStdString()+"/player1.model"))
+				{
+					uiTree->AddItem(
+						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+					numModels += 1;
+					m_filepaths.push_back(pathName);
+				}
+				else if (pathName == (dirPath.toStdString() + "/player2.model"))
+				{
+					uiTree->AddItem(
+						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+					numModels += 1;
+					m_filepaths.push_back(pathName);
+				}
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
 		while ((ent = readdir(dir)) != NULL) 
 		{
 			if (*ent->d_name != '.')
 			{
 				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
-				uiTree->AddItem(
-					Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name,QVariant(numModels));
-				numModels += 1;
-				m_filepaths.push_back(pathName);
+				if (pathName != (dirPath.toStdString() + "/player1.model") && pathName != (dirPath.toStdString() + "/player2.model"))
+				{
+					uiTree->AddItem(
+						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+					numModels += 1;
+					m_filepaths.push_back(pathName);
+				}
 			}
 		}
 		closedir(dir);
