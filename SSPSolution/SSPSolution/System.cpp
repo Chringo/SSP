@@ -524,7 +524,7 @@ void System::CreateDummyObjects()
 	ptr->PC_AABB.ext[1] = 0.5f;
 	ptr->PC_AABB.ext[2] = 0.5f;
 	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2);
+	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2f);
 
 
 	//the gölv

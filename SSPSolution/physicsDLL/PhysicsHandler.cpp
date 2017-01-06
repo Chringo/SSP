@@ -590,7 +590,7 @@ bool PhysicsHandler::OBBPlaneIntersectionTest(PhysicsComponent * objOBB, Physics
 	if (result)
 	{
 		DirectX::XMVECTOR resultVel = DirectX::XMVector3Reflect(objOBB->PC_velocity, objPlane->PC_Plane.PC_normal);
-		resultVel = DirectX::XMVectorScale(resultVel, 0.7);
+		resultVel = DirectX::XMVectorScale(resultVel, 0.7f);
 		//objOBB->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, pParallel);
 		objOBB->PC_velocity = resultVel;
 	}
@@ -747,7 +747,7 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_X(PhysicsComponent* src, const float 
 
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
-	float rotAngle = (3.14159265359 / 180.0);
+	float rotAngle = (3.14159265359f / 180.0f);
 
 	xMatrix = DirectX::XMMatrixRotationX(radian);
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
@@ -781,7 +781,7 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_Z(PhysicsComponent* src, const float 
 	DirectX::XMMATRIX xMatrix;
 	DirectX::XMMATRIX test = src->PC_OBB.ort;
 
-	float rotAngle = (3.14159265359 / 180.0);
+	float rotAngle = (3.14159265359f / 180.0f);
 
 	xMatrix = DirectX::XMMatrixRotationZ(radian);
 	test = DirectX::XMMatrixMultiply(test, xMatrix);
@@ -833,7 +833,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0, -0.05, 0, 0);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -959,7 +959,7 @@ void PhysicsHandler::DoChainPhysics(ChainLink * link, float dt)
 		//spring force
 		if (type == 0)
 		{
-			DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->CL_lenght), 0.2);
+			DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->CL_lenght), 0.2f);
 			//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->CL_previous->PC_velocity, link->CL_next->PC_velocity), 0.5));
 
 			this->ApplyForceToComponent(link->CL_next, force, dt);
@@ -1106,9 +1106,9 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(DirectX::XMVectorSet(3, 10, 60, 0), false);
 		
-		next->PC_AABB.ext[0] = 0.1;
-		next->PC_AABB.ext[1] = 0.1;
-		next->PC_AABB.ext[2] = 0.1;
+		next->PC_AABB.ext[0] = 0.1f;
+		next->PC_AABB.ext[1] = 0.1f;
+		next->PC_AABB.ext[2] = 0.1f;
 
 		link.CL_previous = previous;
 		link.CL_next = next;
