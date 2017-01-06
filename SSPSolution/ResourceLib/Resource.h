@@ -11,10 +11,10 @@ namespace Resources
 {
 
 /*This is the base class of all resources. Each resource class i a descendant of this class*/
-	class DLL_OPERATION Resource
+	class Resource
 	{
 	public:
-		struct DLL_OPERATION RawResourceData
+		struct RawResourceData
 		{
 			//char m_name[256]; 
 			unsigned int m_id;
@@ -27,19 +27,16 @@ namespace Resources
 		RawResourceData m_resourceData;
 
 	public:
-		Resource(RawResourceData data);
-		virtual ~Resource();
+		DLL_OPERATION Resource(RawResourceData data);
+		DLL_OPERATION virtual ~Resource();
 
-		const bool IsType(ResourceType type) const;
-		const ResourceType GetResourceType() const { return m_resourceData.m_resType; };
+		DLL_OPERATION const bool IsType(ResourceType type) const;
+		DLL_OPERATION const ResourceType GetResourceType() const { return m_resourceData.m_resType; };
 
-		const unsigned int GetId() const;
-		
-	
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr) = 0;
+		DLL_OPERATION const unsigned int GetId() const;
 
-		
-		
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr) = 0;
+
 	};
 
 	/*
