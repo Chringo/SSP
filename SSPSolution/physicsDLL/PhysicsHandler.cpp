@@ -663,9 +663,9 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		for (int i = 0; i < 3; i++)
 		{
 
-			v1_new[i] = (v1_old[i] * (m1 - m2*e) + m2*v2_old[i] * (1.0 + e)) / (m1 + m2);
+			v1_new[i] = (v1_old[i] * (m1 - m2*e) + m2*v2_old[i] * (1.0f + e)) / (m1 + m2);
 
-			v2_new[i] = (v1_old[i] * m1*(1.0 + e) + (m2 - e*m1)*v2_old[i]) / (m1 + m2);
+			v2_new[i] = (v1_old[i] * m1*(1.0f + e) + (m2 - e*m1)*v2_old[i]) / (m1 + m2);
 
 		}
 		v1_new[0] += DirectX::XMVectorGetX(pPerpendicular1);
@@ -1264,7 +1264,7 @@ int PhysicsHandler::getNrOfComponents()const
 
 PhysicsComponent* PhysicsHandler::getDynamicComponentAt(int index)const
 {
-	if (index >= 0 && index < this->m_dynamicComponents.size())
+	if (index >= 0 && index < (signed int)this->m_dynamicComponents.size())
 	{
 		return this->m_dynamicComponents.at(index);
 	}
