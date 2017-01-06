@@ -28,7 +28,9 @@ void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
 void ResourceLibExporter::ExportBPF()
 {
 	Open();
+
 	BuildRegistry();
+	
 	Close();
 }
 
@@ -73,6 +75,11 @@ void ResourceLibExporter::BuildRegistry()
 
 	/*add skeleton here*/
 	/*add animations here*/
+
+	/*Assigning the right amount of space required, just in case someone "accidentally" put
+	a file on the server in one of the folders who are meant for binary files. Like hey!
+	I know! I'm going to put this file, which has nothing to do with our binary files in
+	the binary files folders! Smart. Really smart.*/
 	m_Header.numIds = m_Items.size();
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 }
