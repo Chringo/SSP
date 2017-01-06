@@ -61,28 +61,25 @@ Resources::Model * Resources::ModelHandler::GetPlaceholderModel()
 
 Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceContainer*& modelPtr)
 {
-
-	//COMMENTED CODE BECAUSE THERE IS NO FILES TO LOAD YET
-
 	char* data	= nullptr;
 	size_t size = 0;
-	FileLoader::GetInstance()->LoadResource(id, data, &size);
+	Resources::Status st = Status::ST_OK;
 
-
-
-	//additional headers could be added here,
+	st = FileLoader::GetInstance()->LoadResource(id, data, &size); //Get the raw data from file
 	
+	if (st != ST_OK)
+		return st;
+																   //additional headers could be added here,
 	Model* newModel = GetEmptyContainer();		//Get an empty container
-	//newModel->Create((Resource::RawResourceData*)data); //Initialize it with data
-	//Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
-	//if (resData->m_resType != RES_TEXTURE)
-	//{
-	//#ifdef _DEBUG
-	//	std::cout << "Wrong resource type. Wanted Texture, got type: " << resData->m_id << std::endl;
-	//#endif // _DEBUG
-	//
-	//	return ST_WRONG_RESTYPE;
-	//}
+	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
+	if (resData->m_resType != RES_MODEL)
+	{
+		#ifdef _DEBUG
+			std::cout << "Wrong resource type. Wanted Model, got type: " << resData->m_resType << std::endl;
+		#endif // _DEBUG
+		return ST_WRONG_RESTYPE;
+	}
+	newModel->Create((Resource::RawResourceData*)data); //Initialize it with data
 
 	/*T E M P*/ 
 	Resource::RawResourceData temp;
@@ -98,7 +95,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 
 	Resources::ResourceContainer* meshPtr = nullptr;
 
-	Resources::Status st = Status::ST_OK;
+	
 
 #pragma region Load Mesh
 	st = m_meshHandler->GetMesh(meshID, meshPtr); //Get the mesh
