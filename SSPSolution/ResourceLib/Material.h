@@ -2,12 +2,11 @@
 #define RESOURCELIB_MATERIAL_MATERIAL_H
 #include "Texture.h"
 
-namespace Resources {
-	
+namespace Resources 
+{
 	class Material :
 		public Resource
 	{
-
 	private:
 		Texture* m_Textures[5]{nullptr,nullptr,nullptr,nullptr,nullptr};
 		float m_Metallic		= 0.0f;
@@ -37,6 +36,5 @@ namespace Resources {
 		};
 	};
 }
-
 #endif
 

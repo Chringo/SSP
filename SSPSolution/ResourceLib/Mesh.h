@@ -1,4 +1,3 @@
-
 #ifndef RESOURCELIB_MESH_MESH_H
 #define RESOURCELIB_MESH_MESH_H
 
@@ -6,15 +5,10 @@
 
 namespace Resources
 {
-	
-
-
 	class Mesh :
 		public Resources::Resource
 	{
-	
 	public:
-
 		struct Vertex
 		{
 			float position[3];

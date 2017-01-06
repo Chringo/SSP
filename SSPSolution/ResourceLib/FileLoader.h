@@ -22,15 +22,17 @@ namespace Resources
 	The function reads the whole file and puts it into a char buffer.
 	*/
 
-
-	class FileLoader{
+	class FileLoader
+	{
 	public:
-		enum Files{
+		enum Files
+		{
 			BPF_FILE,
 
 			NUM_FILES
 		};
-		enum FileState{
+		enum FileState
+		{
 			CLOSED = 0,	//This is used to keep a file open. 
 			OPEN   = 1	//When loading a level, we dont want to open/close the BPF for every function call.
 		};
@@ -38,8 +40,7 @@ namespace Resources
 	private:
 		static const size_t LEVEL_MEMORY	= 128; //kb
 		static const size_t RESOURCE_MEMORY = 256; //kb
-		
-											 
+							 
 		FileState     fileStates [NUM_FILES]; 
 		std::string	  filePaths  [NUM_FILES];
 		std::ifstream fileHandles[NUM_FILES];

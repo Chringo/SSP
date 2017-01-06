@@ -4,8 +4,8 @@
 #include "Material.h"
 #include "Skeleton.h"
 #include "FileHeaders.h"
-namespace Resources {
-
+namespace Resources 
+{
 	class Model :
 		public Resource
 	{

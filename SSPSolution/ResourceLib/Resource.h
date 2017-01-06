@@ -9,8 +9,7 @@
 
 namespace Resources
 {
-
-/*This is the base class of all resources. Each resource class i a descendant of this class*/
+	/* This is the base class of all resources. Each resource class is a descendant of this class */
 	class Resource
 	{
 	public:
