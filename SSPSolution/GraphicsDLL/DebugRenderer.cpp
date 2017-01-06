@@ -235,7 +235,7 @@ void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR c
 
 void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
-	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ID3D11Buffer* buf = GenerateLinelist(pos, plane, color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
