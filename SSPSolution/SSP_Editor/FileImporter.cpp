@@ -389,7 +389,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 #ifdef _DEBUG
 				std::cout << "Could not open texture file : " << path_str[i] << std::endl;
 #endif // _DEBUG
-				return Resources::Status::ST_ERROR_OPENING_FILE;
+				return false;
 			}
 
 #ifdef _DEBUG
