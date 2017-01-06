@@ -21,7 +21,7 @@ Resources::Status Communicator::Initialize(
 		&this->m_hwnd,
 		DirectX::XMINT2(1920.0f, 1080.0f), true
 	);
-	this->m_GraphicsHandler->InitializeGrid();
+	//this->m_GraphicsHandler->InitializeGrid();
 
 	this->m_Camera = new Camera();
 	this->m_Camera->Initialize(this->m_Width / this->m_Height);

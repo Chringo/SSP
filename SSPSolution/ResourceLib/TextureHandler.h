@@ -4,10 +4,11 @@
 #include "FileHeaders.h"
 #include "Texture.h"
 #include "TextureLoader\DDSTextureLoader.h"
+
 namespace Resources
 {
 
-	class DLL_OPERATION TextureHandler
+	class TextureHandler
 	{
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_textures;
@@ -18,18 +19,17 @@ namespace Resources
 		Texture* placeHolder = nullptr;
 		TextureHandler();
 	public:
-		TextureHandler(size_t textureAmount, ID3D11Device* device = nullptr);
-		virtual ~TextureHandler();
+		DLL_OPERATION TextureHandler(size_t textureAmount, ID3D11Device* device = nullptr);
+		DLL_OPERATION virtual ~TextureHandler();
 
-		Resources::Status GetTexture(const unsigned int& id, ResourceContainer*& texturePtr);
-		Resources::Status GetTexture(const unsigned int& id, Texture*& texturePtr);
-		Resources::Status LoadTexture(const unsigned int& id, ResourceContainer*& texturePtr);
-		Resources::Status UnloadTexture(const unsigned int& id);
+		DLL_OPERATION Resources::Status GetTexture(const unsigned int& id, ResourceContainer*& texturePtr);
+		DLL_OPERATION Resources::Status GetTexture(const unsigned int& id, Texture*& texturePtr);
+		DLL_OPERATION Resources::Status LoadTexture(const unsigned int& id, ResourceContainer*& texturePtr);
+		DLL_OPERATION Resources::Status UnloadTexture(const unsigned int& id);
 		
+		DLL_OPERATION void SetDevice(ID3D11Device* device);
 
-		void SetDevice(ID3D11Device* device);
-
-		Texture* GetPlaceHolderTextures();
+		DLL_OPERATION Texture* GetPlaceHolderTextures();
 	private:
 		bool LoadPlaceHolderTextures();
 	};

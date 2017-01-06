@@ -35,6 +35,7 @@ private:
 	std::vector<OBB  *>   obbBoxes;
 	std::vector<AABB *>  aabbBoxes;
 	std::vector<Plane*> planes;
+	std::vector<Sphere*> spheres;
 
 	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
 	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
@@ -44,6 +45,7 @@ public:
 	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
 	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 private:
 	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
