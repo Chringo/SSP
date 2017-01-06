@@ -27,13 +27,15 @@ void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
 
 void ResourceLibExporter::ExportBPF()
 {
-	Open();
+	if (Open())
+	{
 
-	/*building the registry*/
-	BuildRegistry();
+		/*building the registry*/
+		BuildRegistry();
 
-	
-	Close();
+
+		Close();
+	}
 }
 
 void ResourceLibExporter::BuildRegistry()
@@ -93,6 +95,7 @@ void ResourceLibExporter::BuildRegistry()
 	m_Header.numIds = m_Items.size();
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
+	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
 }
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
