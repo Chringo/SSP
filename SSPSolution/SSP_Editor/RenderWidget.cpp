@@ -65,13 +65,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		}
 	}
 
-	/*TEMP SPHERETEST*/
-	Sphere sphere;
-	sphere.radius = 1.0f;
-	DirectX::XMVECTOR testSpherePos = { 0.0f, 0.0f, -1.0f, 0.0f };
-	DirectX::XMVECTOR testSphereColor = { 1.0f, 1.0f, 1.0f, 0.0f };
-	this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(testSpherePos, sphere, testSphereColor);
-	/*END*/
 
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
