@@ -66,7 +66,7 @@ public:
 	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
 	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
 
-	NETWORKDLL_API //Public packet functions (send to all other clients e.g the only other player)
+	//Public packet functions (send to all other clients e.g the only other player)
 	NETWORKDLL_API void SendFlagPacket(PacketTypes type);
 	NETWORKDLL_API void SendSyncPacket();
 	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
@@ -74,12 +74,12 @@ public:
 	NETWORKDLL_API void SendStatePacket(unsigned int entityID, bool newState);
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
 
-	NETWORKDLL_API // Mutex functions
+	// Mutex functions
 	NETWORKDLL_API bool PacketBuffer_isLocked();
 	NETWORKDLL_API void PacketBuffer_Lock();
 	NETWORKDLL_API void PacketBuffer_UnLock();
 
-	NETWORKDLL_API // PacketBuffer functions
+	// PacketBuffer functions
 	NETWORKDLL_API std::list<EntityPacket>		PacketBuffer_GetEntityPackets();		//Get all packets in packet_Buffer_Entity	
 	NETWORKDLL_API std::list<AnimationPacket>	PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
 	NETWORKDLL_API std::list<StatePacket>		PacketBuffer_GetStatePackets();			//Get all packets in packet_Buffer_State	
