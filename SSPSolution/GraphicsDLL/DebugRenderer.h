@@ -65,7 +65,7 @@ private:
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, AABB& box , DirectX::XMVECTOR color);
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, OBB& box ,  DirectX::XMVECTOR color);
 	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Plane& box, DirectX::XMVECTOR color);
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Sphere& box, DirectX::XMVECTOR color);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Sphere& box, DirectX::XMVECTOR color, int ringIndex);
 
 
 };
