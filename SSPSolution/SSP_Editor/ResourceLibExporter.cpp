@@ -33,6 +33,7 @@ void ResourceLibExporter::ExportBPF()
 		/*building the registry*/
 		BuildRegistry();
 
+		
 
 		Close();
 	}
@@ -96,6 +97,14 @@ void ResourceLibExporter::BuildRegistry()
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
+
+	/*
+	outfile.write ("This is an apple",16);
+  long pos = outfile.tellp();
+  outfile.seekp (pos-7);
+  outfile.write (" sam",4);
+  output will be "this is a sample"
+  */
 }
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
