@@ -53,12 +53,12 @@ namespace Resources
 	
 		bool OpenFile(Files file);
 		bool CloseFile(Files file);
-		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
 		Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
 		Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
 		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 
 	private:
+		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
 		Resources::Status LoadRegistryFile(); //Load registry into memory on startup
 	};
 

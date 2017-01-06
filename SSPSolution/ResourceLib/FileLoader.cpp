@@ -82,8 +82,6 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 		return Status::ST_FILE_CLOSED;
 
 	}
-
-
 	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
 	std::ifstream* infile = &fileHandles[BPF_FILE];
 
