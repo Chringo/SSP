@@ -20,7 +20,7 @@ Animation::Animation()
 	jointList = skeletonPtr->GetSkeletonData()->joints;
 	jointCount = skeletonPtr->GetSkeletonData()->jointCount;
 
-	for (int i = 0; i < jointCount; i++)
+	for (unsigned int i = 0; i < jointCount; i++)
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
@@ -32,7 +32,7 @@ Animation::Animation()
 	float endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
 
 	/*Initialize the stack with a default "IDLE" animation.*/
-	Push(currentAnimation, true, startFrame, endFrame, 0);
+	Push(currentAnimation, true, (int)startFrame, (int)endFrame, 0);
 }
 
 Animation::~Animation()
@@ -112,14 +112,14 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 {
 	interpolatedTransforms.resize(jointCount);
 
-	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		Resources::Animation::AnimationJoint animatedJoint = animatedJointsList[jointIndex];
 
 		/*The current time is the first keyframe.*/
 		if (currentTime <= animationStack.top().startFrame)
 		{
-			int startFrame = animationStack.top().startFrame;
+			int startFrame = (int)animationStack.top().startFrame;
 
 			XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
@@ -136,7 +136,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 		/*The current time is the last keyframe.*/
 		else if (currentTime >= animationStack.top().endFrame)
 		{
-			int endFrame = animationStack.top().endFrame;
+			int endFrame = (int)animationStack.top().endFrame;
 
 			XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
@@ -216,7 +216,7 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> childTransform)
 {
 
-	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		XMMATRIX childTransformation = XMLoadFloat4x4(&childTransform[jointIndex]);
 		XMMATRIX invBindPose = XMLoadFloat4x4(&skeltempVec[jointIndex].invBindPose);
@@ -252,8 +252,8 @@ void Animation::Push(int currentAnimation, bool isLooping, int startFrame, int e
 
 	AnimationClip clip;
 	clip.isLooping = isLooping;
-	clip.startFrame = startFrame;
-	clip.endFrame = endFrame;
+	clip.startFrame = (float)startFrame;
+	clip.endFrame = (float)endFrame;
 
 	animationStack.push(clip);
 }

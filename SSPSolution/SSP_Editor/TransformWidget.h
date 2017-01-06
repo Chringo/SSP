@@ -23,6 +23,7 @@ private:
 	 unsigned int m_instanceID = NULL;
 	 unsigned int m_modelID = NULL;
 	OBB m_selectedObjectOBB;
+	DirectX::XMVECTOR m_axisOBBpos[NUM_AXIS];
 	OBB m_axisOBB[NUM_AXIS];
 	DirectX::XMVECTOR * m_axisColors[NUM_AXIS];
 	DirectX::XMVECTOR  SelectedObjectOBBColor;
@@ -32,9 +33,9 @@ private:
 	{
 		for (int i = 0; i < NUM_AXIS; i++)
 		{
-			m_axisOBB[i].pos = m_selectedObjectOBB.pos;
+			m_axisOBBpos[i] = m_selectedContainer->position;
 			//relative to origin
-			m_axisOBB[i].pos.m128_f32[i] += 1.f;
+			m_axisOBBpos[i].m128_f32[i] += 1.f;
 
 			//relative to object
 			//axisOBB[i].pos.m128_f32[i] += selectedObject.ort.r[i].m128_f32[i] + .1f;
@@ -47,6 +48,7 @@ public:
 	int GetModelIndex() { return m_modelIndex; };
 	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
+	DirectX::XMVECTOR * GetAxisOBBpositons() { return m_axisOBBpos; };
 	DirectX::XMVECTOR * GetSelectedObjectOBBColor(){ return &SelectedObjectOBBColor; };
 	OBB * GetAxisOBBs() { return m_axisOBB; };
 	OBB * GetSelectedObjectOBB() { return &m_selectedObjectOBB; };
@@ -58,7 +60,7 @@ public:
 		m_selectedObjectOBB.ext[1] = boundingBox.ext[1];
 		m_selectedObjectOBB.ext[2] = boundingBox.ext[2];
 		m_selectedObjectOBB.ort = boundingBox.ort;
-		m_selectedObjectOBB.pos = boundingBox.pos;
+		//m_selectedObjectOBB.pos = boundingBox.pos;
 
 		m_UpdateAxies();
 	};

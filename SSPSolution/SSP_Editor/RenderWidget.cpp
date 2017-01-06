@@ -68,6 +68,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
 		static OBB* axisOBBs;
+		static DirectX::XMVECTOR* axisOBBpositions;
 		static OBB* selectedObjectOBB;
 		static DirectX::XMVECTOR ** axisColors;
 		static DirectX::XMVECTOR * OBBColor;
@@ -75,7 +76,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (SelectionHandler::GetInstance()->NeedsUpdate())
 		{
 			SelectionHandler::GetInstance()->Update();
-			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisColors, selectedObjectOBB, OBBColor);
+			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 		}
 
 		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
@@ -87,7 +88,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
 		{
 			this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-				axisOBBs[i].pos,
+				axisOBBpositions[i],
 				axisOBBs[i],
 				*axisColors[i]
 			);

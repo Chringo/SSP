@@ -49,6 +49,7 @@ public:
 	const unsigned int GetInstanceID();
 	void GetSelectionRenderComponents(
 		OBB*& axisOBBs,
+		DirectX::XMVECTOR*& axisOBBpos,
 		DirectX::XMVECTOR**& axisColors,
 		OBB*& objectOBB,
 		DirectX::XMVECTOR*& objectColor);
