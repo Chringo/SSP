@@ -95,7 +95,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 
 	if (st != ST_OK)
 		return st;
-
+	BoundingBoxHeader* obbdataPtr;
 	if (meshData->skeleton)
 	{
 		Mesh::VertexAnim* vertices = (Mesh::VertexAnim*)((char*)meshData + sizeof(MeshHeader));
@@ -110,18 +110,17 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
 
 	}
-
+	obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * meshData->indexLength);
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
 
+	newMesh->SetOBBData(*obbdataPtr);
 	m_meshes[id] = ResourceContainer(newMesh, 1); // put it into the map
 	m_emptyContainers.pop_front(); //remove from empty container queue;
 
 
 	meshPtr = &m_meshes[id];
 	
-	
-
 	return st;
 }
 

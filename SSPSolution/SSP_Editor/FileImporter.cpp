@@ -214,7 +214,7 @@ void FileImporter::handleMesh(char * m_bbf_object)
 	if (DataHandler::GetInstance()->IDExists(res_Data->m_id))
 		return;
 
-	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(MainHeader));
+	MeshHeader *m_meshH = (MeshHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
 
 	Resources::Mesh *newMesh = new Resources::Mesh(*res_Data); //memory handled in Datahandler
 
