@@ -261,7 +261,7 @@ int System::Update(float deltaTime)
 			}
 			else
 			{
-				printf("Failed to connect to the client\n", this->m_ip);
+				printf("Failed to connect to the client %s\n", this->m_ip);
 			}
 			
 		}
