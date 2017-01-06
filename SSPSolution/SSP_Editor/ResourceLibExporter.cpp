@@ -21,6 +21,17 @@ ResourceLibExporter * ResourceLibExporter::GetInstance()
 	return &resourceLibExporter;
 }
 
+void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
+{
+	this->m_FileImporter = m_FileImporter;
+}
+
 void ResourceLibExporter::ExportBPF()
 {
+}
+
+void ResourceLibExporter::BuildRegistry()
+{
+	RegistryHeader m_Header{ m_FileImporter->GetFilePaths()->size() };
+	m_Items.reserve(m_Header.numIds);
 }

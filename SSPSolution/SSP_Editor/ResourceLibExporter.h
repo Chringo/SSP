@@ -16,14 +16,16 @@ private:
 	ResourceLibExporter();
 	std::string m_DestinationPath = "../ResourceLib/AssetFiles/";
 	std::vector<RegistryItem*> m_Items;
-
-	DataHandler* m_Data = DataHandler::GetInstance();
 	unsigned int m_Offset = 0;
 
+	DataHandler* m_Data = DataHandler::GetInstance();
+	FileImporter* m_FileImporter = nullptr;
 public:
 	~ResourceLibExporter();
 
 	static ResourceLibExporter* GetInstance();
+	
+	void Initialize(FileImporter* m_FileImporter);
 	void ExportBPF();
 private:
 	void BuildRegistry();
