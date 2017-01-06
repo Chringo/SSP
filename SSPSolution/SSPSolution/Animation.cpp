@@ -20,7 +20,7 @@ Animation::Animation()
 	jointList = skeletonPtr->GetSkeletonData()->joints;
 	jointCount = skeletonPtr->GetSkeletonData()->jointCount;
 
-	for (int i = 0; i < jointCount; i++)
+	for (unsigned int i = 0; i < jointCount; i++)
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
@@ -112,7 +112,7 @@ void Animation::Interpolate(float currentTime, std::vector<XMFLOAT4X4> interpola
 {
 	interpolatedTransforms.resize(jointCount);
 
-	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		Resources::Animation::AnimationJoint animatedJoint = animatedJointsList[jointIndex];
 
@@ -216,7 +216,7 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 void Animation::CalculateFinalTransform(std::vector<XMFLOAT4X4> childTransform)
 {
 
-	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		XMMATRIX childTransformation = XMLoadFloat4x4(&childTransform[jointIndex]);
 		XMMATRIX invBindPose = XMLoadFloat4x4(&skeltempVec[jointIndex].invBindPose);

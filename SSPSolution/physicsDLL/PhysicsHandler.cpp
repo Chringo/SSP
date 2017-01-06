@@ -898,7 +898,7 @@ void PhysicsHandler::Update(float deltaTime)
 
 		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
 
-		DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, current->PC_gravityInfluence),current->PC_mass), 1.0);
+		DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, (float)current->PC_gravityInfluence),current->PC_mass), 1.0f);
 		
 		this->ApplyForceToComponent(current, gravityForce, dt);
 
@@ -1034,7 +1034,7 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 	if (distance > link->CL_lenght + 0.1)
 	{
 		diffVec = DirectX::XMVector3Normalize(diffVec);
-		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght + 0.1)));
+		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght + 0.1f)));
 		link->CL_next->PC_OBB.pos = link->CL_next->PC_pos;
 	}
 
@@ -1096,7 +1096,7 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 	PhysicsComponent* next = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_dynamicComponents.at(index2)->PC_pos,this->m_dynamicComponents.at(index1)->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfLinks, nrOfLinks, nrOfLinks, nrOfLinks));
+	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet((float)nrOfLinks, (float)nrOfLinks, (float)nrOfLinks, (float)nrOfLinks));
 
 	for (int i = 1; i <= nrOfLinks; i++)
 	{

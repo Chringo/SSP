@@ -90,7 +90,7 @@ int DebugHandler::CreateCustomLabel(std::string label, float value)
 
 int DebugHandler::UpdateCustomLabel(int labelID, float newValue)
 {
-	if (labelID < this->m_labelsValues.size())
+	if ((unsigned int)labelID < this->m_labelsValues.size())
 	{
 		this->m_customValues.at(labelID) = newValue;
 	}
@@ -104,7 +104,7 @@ int DebugHandler::UpdateCustomLabel(int labelID, float newValue)
 
 int DebugHandler::UpdateCustomLabelIncrease(int labelID, float addValue)
 {
-	if (labelID < this->m_labelsValues.size())
+	if ((unsigned int)labelID < this->m_labelsValues.size())
 	{
 		this->m_customValues.at(labelID) += addValue;
 	}
