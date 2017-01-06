@@ -1035,7 +1035,7 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 	{
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght + 0.1f)));
-		link->CL_next->PC_OBB.pos = link->CL_next->PC_pos;
+		link->CL_next->PC_pos = link->CL_next->PC_pos;
 	}
 
 }
