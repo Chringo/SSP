@@ -76,7 +76,7 @@ RegistryItem * Resources::FileLoader::GetRegistryIndex(const unsigned int & obje
 
 Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, char*& data, size_t * size)
 {
-	if (fileStates[RESOURCE_FILE] == CLOSED)
+	if (fileStates[BPF_FILE] == CLOSED)
 	{
 		std::cout << "File is closed" << std::endl;
 		return Status::ST_FILE_CLOSED;
@@ -85,7 +85,7 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 
 
 	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
-	std::ifstream* infile = &fileHandles[RESOURCE_FILE];
+	std::ifstream* infile = &fileHandles[BPF_FILE];
 
 	MainHeader mainHeader;
 	infile->read((char*)&mainHeader, sizeof(MainHeader));

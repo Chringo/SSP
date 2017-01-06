@@ -14,7 +14,7 @@ namespace Resources
 	
 	public:
 
-		struct Vertex
+		struct DLL_OPERATION Vertex
 		{
 			float position[3];
 			float normal[3];
@@ -22,7 +22,7 @@ namespace Resources
 			float uv[2];
 
 		};
-		struct VertexAnim
+		struct DLL_OPERATION VertexAnim
 		{
 			float position[3];
 			float normal[3];
@@ -31,7 +31,7 @@ namespace Resources
 			float weights[4];
 			int influence[4];
 		};
-		struct RawMeshData {
+		struct DLL_OPERATION RawMeshData {
 
 			unsigned int  m_numVerts      = 0;
 			unsigned int  m_numIndices    = 0;

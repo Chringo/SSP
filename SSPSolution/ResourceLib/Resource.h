@@ -14,7 +14,7 @@ namespace Resources
 	class DLL_OPERATION Resource
 	{
 	public:
-		struct RawResourceData
+		struct DLL_OPERATION RawResourceData
 		{
 			//char m_name[256]; 
 			unsigned int m_id;
