@@ -67,7 +67,9 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	size_t dataSize = 0;
 	std::string path = "../ResourceLib/AssetFiles/grid.bbf";
 	//std::string path = "../ResourceLib/AssetFiles/grid.bbf";
-	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
+//	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
+
+	Status st = FileLoader::GetInstance()->LoadResource(id ,data, &dataSize);
 	if (st != ST_OK)
 		return st;
 	
@@ -78,7 +80,6 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 #ifdef _DEBUG
 		std::cout << "Wrong resource type. Wanted mesh, got type: " << resData->m_resType << std::endl;
 #endif // _DEBUG
-
 		return ST_WRONG_RESTYPE;
 	}
 	

@@ -69,7 +69,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 	
 	if (st != ST_OK)
 		return st;
-																   //additional headers could be added here,
+											    //additional headers could be added here,
 	Model* newModel = GetEmptyContainer();		//Get an empty container
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	if (resData->m_resType != RES_MODEL)
@@ -79,24 +79,17 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 		#endif // _DEBUG
 		return ST_WRONG_RESTYPE;
 	}
-	newModel->Create((Resource::RawResourceData*)data); //Initialize it with data
+	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(data + sizeof(Resource::RawResourceData));
 
-	/*T E M P*/ 
-	Resource::RawResourceData temp;
-	temp.m_resType = RES_MODEL;
-	temp.m_id = 1337;
-	newModel->Create(&temp); //Initialize it with data
-	/***************/
-
-	m_models[1337/*((Resource::RawResourceData*)data)->m_id*/] = ResourceContainer(newModel,1); // put it into the map
- 	m_emptyContainers.pop_front(); //remove from empty container queue
-	Model::RawModelData* modelData = (Model::RawModelData*)data;
-	unsigned int meshID = 124354234; // ((Model::RawModelData*)data)->meshId;
+	newModel->Create(resData,raw_model_Data);				 //Initialize it with data
+	m_models[resData->m_id] = ResourceContainer(newModel,1); //Put it into the map
+ 	m_emptyContainers.pop_front();							 //remove from empty container queue
+	
+	unsigned int meshID = raw_model_Data->meshId;
+	unsigned int matID  = raw_model_Data->materialId;
+	unsigned int skelID = raw_model_Data->skeletonId;
 
 	Resources::ResourceContainer* meshPtr = nullptr;
-
-	
-
 #pragma region Load Mesh
 	st = m_meshHandler->GetMesh(meshID, meshPtr); //Get the mesh
 
@@ -118,25 +111,25 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			newModel->SetMesh((Mesh*)meshPtr->resource);
 			break;
 		}
+		default:
+			return st;
 	}
 #pragma endregion
 
 		
 #pragma region Load Material
 		ResourceContainer* matPtr;
-		unsigned int matID = 1151 /*modelData->materialId*/;
+		
 		st = m_materialHandler->GetMaterial(matID, matPtr); // Get Material
 		switch (st)
 		{
 		case Status::ST_RES_MISSING:
 		{
-			//Commented because there are no files to read yet!
-
-			//Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
-			//if (mSt != ST_OK)
+			Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
+			if (mSt != ST_OK)
 				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
-			//else
-			//	newModel->SetMaterial((Material*)matPtr->resource);
+			else
+				newModel->SetMaterial((Material*)matPtr->resource);
 			break;
 		}
 		case Status::ST_OK:
@@ -145,37 +138,37 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			newModel->SetMaterial((Material*)matPtr->resource);
 			break;
 		}
+		default:
+			return st;
 		}
 #pragma endregion
 
 		
 #pragma region Load Skeleton
-		/*TEMP*/
-		UINT hej = 1;
-		ResourceContainer* yo;
-		m_skeletonHandler->LoadSkeleton(hej, yo);
-		newModel->SetSkeleton((Skeleton*)yo->resource);
-//		if(modelData->skeletonId != 0){
-//			Resources::ResourceContainer* skeletonPtr = nullptr;
-//			 st = m_skeletonHandler->GetSkeleton(modelData->skeletonId, skeletonPtr);
-//			switch (st){
-//				case Status::ST_RES_MISSING:{ //if it doesent exist
-//					Status mSt= m_skeletonHandler->LoadSkeleton(modelData->skeletonId,skeletonPtr); //load the skeleton
-//					if (mSt != ST_OK){
-//					 //Panic
-//					}
-//					else
-//					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
-//					break;
-//				}
-//				case Status::ST_OK:{
-//					skeletonPtr->refCount += 1;
-//					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
-//					break;
-//				}
-//			}
-//		}
-//
+
+		if(skelID != 0){
+			Resources::ResourceContainer* skeletonPtr = nullptr;
+			 st = m_skeletonHandler->GetSkeleton(skelID, skeletonPtr);
+			switch (st){
+				case Status::ST_RES_MISSING:{ //if it doesent exist
+					Status mSt= m_skeletonHandler->LoadSkeleton(skelID,skeletonPtr); //load the skeleton
+					if (mSt != ST_OK){
+					 //Panic
+					}
+					else
+					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
+					break;
+				}
+				case Status::ST_OK:{
+					skeletonPtr->refCount += 1;
+					newModel->SetSkeleton((Skeleton*)skeletonPtr->resource);
+					break;
+				}
+				default:
+					return st;
+		}
+	}
+
 #pragma endregion
 	
 	return Resources::Status::ST_OK;

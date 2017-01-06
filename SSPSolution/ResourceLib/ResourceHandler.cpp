@@ -141,7 +141,6 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 			modelPtr->refCount += 1; //Add the reference count
 			break;
 		}
-
 	}
 	if (m_CurrentLevel != nullptr)
 		UnloadLevel(m_CurrentLevel); //Unload the previous level

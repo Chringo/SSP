@@ -22,7 +22,6 @@ namespace Resources
 		Mesh*	      m_modelMesh	= nullptr;
 		Material*	  m_material	= nullptr;
 		Skeleton*	  m_skeleton	= nullptr;	
-		BoundingBoxHeader pickingBox;
 		//Animation*  m_animations  = nullptr;
 	public:
 		DLL_OPERATION Model(Resource::RawResourceData resData);
@@ -42,8 +41,8 @@ namespace Resources
 		DLL_OPERATION void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
 		DLL_OPERATION Skeleton* GetSkeleton() { return this->m_skeleton; };
 
-		DLL_OPERATION void SetOBBData(BoundingBoxHeader obbdata) { this->pickingBox = obbdata; };
-		DLL_OPERATION BoundingBoxHeader GetOBBData() { return this->pickingBox; };
+		DLL_OPERATION void SetOBBData(BoundingBoxHeader obbdata) { this->m_modelMesh->SetOBBData(obbdata); };
+		DLL_OPERATION BoundingBoxHeader GetOBBData() { return this->m_modelMesh->GetOBBData(); };
 	
 	};
 }

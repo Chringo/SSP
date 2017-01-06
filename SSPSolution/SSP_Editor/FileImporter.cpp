@@ -315,7 +315,7 @@ void FileImporter::handleModel(char * m_bbf_object)
 	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 	if (m_data->IDExists(res_Data->m_id))
 		return;
-	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(m_bbf_object + sizeof(MainHeader));
+	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
 
 	Resources::Model *newModel = new Resources::Model();
 
