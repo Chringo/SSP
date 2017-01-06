@@ -46,8 +46,15 @@ Resources::Status Resources::Texture::Destroy()
 
 Resources::Status Resources::Texture::SetTexture(ID3D11ShaderResourceView * view, ID3D11Resource * texture)
 {
-	Status st = Destroy();
-	if (st == ST_OK)
+	//Status st = Destroy();
+	if (!Resources::SAFE_RELEASE(this->textureView))
+		return Resources::Status::ST_BUFFER_ERROR;
+	textureView = nullptr;
+
+	if (!Resources::SAFE_RELEASE(this->textureResource))
+		return Resources::Status::ST_BUFFER_ERROR;
+	textureResource = nullptr;
+	//if (st == ST_OK)
 	{
 		this->textureResource = texture;
 		this->textureView	  = view;
