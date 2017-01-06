@@ -249,7 +249,7 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVE
 
 void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XMVECTOR color)
 {
-	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	ID3D11Buffer* buf = GenerateLinelist(pos, sphere, color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
@@ -469,22 +469,22 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
 
 
-	float theta = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
-
+	float step = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
+	float theta = 0.0f;
 
 	for (size_t i = 0; i < NUM_POINTS[M_SPHERE]; i++)
 	{
 		DirectX::XMVECTOR point = pos;
 
 		point.m128_f32[0] += box.radius * DirectX::XMScalarCos(theta);
-
+		point.m128_f32[1] += box.radius * DirectX::XMScalarSin(theta);
 
 		point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 		m_points[M_SPHERE][i] = Point(point.m128_f32, color.m128_f32);
 
 
 
-		theta += theta;
+		theta += step;
 	}
 
 

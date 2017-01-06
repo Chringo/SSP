@@ -61,8 +61,8 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	{
 		m_debugRender.Render(*positions[T_SPHERE].at(i), *spheres.at(i), colors[T_SPHERE].at(i));
 	}
-	positions[T_PLANE].clear();
-	colors[T_PLANE].clear();
+	positions[T_SPHERE].clear();
+	colors[T_SPHERE].clear();
 
 
 	planes.clear();
