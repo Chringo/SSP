@@ -171,7 +171,7 @@ Resources::Status Resources::FileLoader::LoadRegistryFile()
 	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
-		//MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
+		MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
@@ -186,8 +186,6 @@ Resources::Status Resources::FileLoader::LoadRegistryFile()
 		fileHandles[BPF_FILE].read((char*)&item, sizeof(RegistryItem));
 		this->m_fileRegistry[item.id] = item;
 	}
-
-	//fileHandles[REG_FILE].read()
 
 	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;
