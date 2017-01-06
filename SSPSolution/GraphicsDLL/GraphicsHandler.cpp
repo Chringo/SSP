@@ -23,6 +23,12 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plan
 	positions[T_PLANE].push_back(&pos);
 	colors[T_PLANE].push_back(color);
 }
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XMVECTOR color)
+{
+	spheres.push_back(&sphere);
+	positions[T_SPHERE].push_back(&pos);
+	colors[T_SPHERE].push_back(color);
+}
 
 void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 {
@@ -51,10 +57,18 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	}
 	positions[T_PLANE].clear();
 	colors[T_PLANE].clear();
+	for (size_t i = 0; i < spheres.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_SPHERE].at(i), *spheres.at(i), colors[T_SPHERE].at(i));
+	}
+	positions[T_SPHERE].clear();
+	colors[T_SPHERE].clear();
+
 
 	planes.clear();
 	obbBoxes.clear();
 	aabbBoxes.clear();
+	spheres.clear();
 
 }
 #endif // _DEBUG
@@ -212,6 +226,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	 obbBoxes.reserve(20);
 	 aabbBoxes.reserve(20);
 	 planes.reserve(20);
+	 spheres.reserve(20);
 	 dsv = m_shaderControl->GetBackBufferDSV();
 	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 #endif // _DEBUG

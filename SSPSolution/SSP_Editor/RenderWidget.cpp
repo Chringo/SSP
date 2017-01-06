@@ -64,7 +64,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			}
 		}
 	}
-	
+
+
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
 		static OBB* axisOBBs;
