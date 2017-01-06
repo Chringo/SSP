@@ -86,12 +86,15 @@ const unsigned int SelectionHandler::GetInstanceID()
 
 void SelectionHandler::GetSelectionRenderComponents(
 	OBB*& axisOBBs,
+	DirectX::XMVECTOR*& axisOBBpos,
 	DirectX::XMVECTOR**& axisColors,
 	OBB*& objectOBB,
+	/*DirectX::XMVECTOR*& objectOBBpos,*/
 	DirectX::XMVECTOR*& objectColor) 
 {
 	axisOBBs = this->m_transformWidget.GetAxisOBBs();
 	axisColors = this->m_transformWidget.GetAxisColors();
+	axisOBBpos = this->m_transformWidget.GetAxisOBBpositons();
 
 	objectOBB = this->m_transformWidget.GetSelectedObjectOBB();
 	objectColor = this->m_transformWidget.GetSelectedObjectOBBColor();
@@ -124,7 +127,7 @@ bool SelectionHandler::PickTransformWidget()
 	{
 		result = this->m_PhysicsHandler->IntersectRayOBB(
 			this->m_ray.localOrigin, this->m_ray.direction,
-			this->m_transformWidget.GetAxisOBBs()[i], this->m_transformWidget.GetAxisOBBs()[i].pos);
+			this->m_transformWidget.GetAxisOBBs()[i], this->m_transformWidget.GetAxisOBBpositons()[i]);
 		if (result)
 		{
 			m_transformWidget.SelectAxis(i);
@@ -142,6 +145,9 @@ bool SelectionHandler::PickTransformWidget()
 bool SelectionHandler::PickObjectSelection()
 {
 	bool gotHit = false;
+	float hitDistance = FLT_MAX;
+	float minHitDistance = FLT_MAX;
+
 
 	//checks if we picked on a model by iterating
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
@@ -163,11 +169,13 @@ bool SelectionHandler::PickObjectSelection()
 					OBB obj = m_ConvertOBB(m_modelPtr->at(i)->GetOBBData(), &InstancePtr->at(j));
 
 					bool result = false;
+					
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
-					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position);
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
 					//transformWidget.setActive(result);
-					if (result)
+					if (result && hitDistance < minHitDistance)
 					{
+						minHitDistance = hitDistance;
 						//update widget with the intersected obb
 						this->m_transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
 
@@ -199,7 +207,7 @@ void SelectionHandler::MoveObject()
 
 		//*PLANE INTERSECTION*//
 		//Plane position is the position of the axis widget
-		DirectX::XMVECTOR plane = m_transformWidget.GetAxisOBBs()[m_transformWidget.GetSelectedAxis()].pos;
+		DirectX::XMVECTOR plane = m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()];
 		DirectX::XMVECTOR N;
 
 		//Normal is vector from axis widget to eye direction [SOMETHING'S PROBABLY WRONG HERE]
@@ -215,7 +223,7 @@ void SelectionHandler::MoveObject()
 
 		//*MOVEMENT*//
 		//Difference between point on plane relative to axis widget
-		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, m_transformWidget.GetAxisOBBs()[m_transformWidget.GetSelectedAxis()].pos);
+		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()]);
 
 		//Change position
 		//Snap
@@ -267,6 +275,11 @@ void SelectionHandler::RotateObject(int direction)
 		case (Key_Right):
 			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
 			break;
+		case (Key_0):
+			instance->rotation = DirectX::XMQuaternionIdentity();
+			m_IsDirty = true;
+			instance->isDirty = true;
+			return;
 		default:
 			break;
 		}
@@ -290,11 +303,11 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 	obj.ext[1] = boundingBox.extension[1];
 	obj.ext[2] = boundingBox.extension[2];
 
-	obj.pos = DirectX::XMVectorSet(
-		instancePtr->position.m128_f32[0],
-		instancePtr->position.m128_f32[1],
-		instancePtr->position.m128_f32[2],
-		1.0f);
+	//obj.pos = DirectX::XMVectorSet(
+	//	instancePtr->position.m128_f32[0],
+	//	instancePtr->position.m128_f32[1],
+	//	instancePtr->position.m128_f32[2],
+	//	1.0f);
 
 
 	DirectX::XMMATRIX extensionMatrix;

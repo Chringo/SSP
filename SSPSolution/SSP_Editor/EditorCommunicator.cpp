@@ -28,6 +28,8 @@ Resources::Status Communicator::Initialize(
 	Camera* oldCam = this->m_GraphicsHandler->SetCamera(this->m_Camera);
 	delete oldCam;
 	oldCam = nullptr;
+	this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
+	this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
 	this->m_Camera->UpdateProjection();
 	this->m_Camera->Update();
 

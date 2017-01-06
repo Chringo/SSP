@@ -32,6 +32,7 @@ EditorInputHandler::EditorInputHandler(
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
 	this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
+
 	this->m_PreviousPos = camera->GetCameraPos();
 	for (size_t i = 0; i < NUMBOOLS; i++)
 	{
@@ -289,6 +290,13 @@ void EditorInputHandler::ViewPortChanged(float height, float width)
 	SelectionHandler::GetInstance()->updateWindowSize(height, width);
 }
 
+void EditorInputHandler::deleteModel()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
+		(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
+	SelectionHandler::GetInstance()->SetSelection(false);
+}
+
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 {
 		switch (evt->key())
@@ -338,11 +346,25 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 				m_KeysHeld[Bools::SPACE] = true;
 			}
 			break;
+		case Qt::Key_R:
+			CameraReset();
+			break;
+		case Qt::Key_Delete:
+			deleteModel();
+			break;
+		case (Qt::Key_0):
+		case (Qt::Key_Up) :
+		case (Qt::Key_Down) :
+		case (Qt::Key_Left) :
+		case (Qt::Key_Right) :
+			SelectionHandler::GetInstance()->RotateObject(evt->key());
+			break;
+
 		default:
 			break;
 		}
 
-		switch (evt->key())
+		/*switch (evt->key())
 		{
 		case Qt::Key_R:
 			CameraReset();
@@ -355,5 +377,5 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 			break;
 		default:
 			break;
-		}
+		}*/
 }

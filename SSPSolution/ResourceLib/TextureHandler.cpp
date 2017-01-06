@@ -164,6 +164,84 @@ Resources::Status Resources::TextureHandler::UnloadTexture(const unsigned int & 
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::TextureHandler::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader)
+{
+#ifdef _DEBUG
+	std::cout << "Importing textures from server" << std::endl;
+#endif // _DEBUG
+
+	Status st;
+
+	for (size_t i = 0; i < 5; i++)
+	{
+		Resource::RawResourceData temp;
+		temp.m_resType = RES_TEXTURE;
+		temp.m_id = m_Mheader->textureIDs[i];
+
+		st = m_containers[i].Create(&temp);
+		if (st != ST_OK)
+			return Resources::Status::ST_RES_MISSING;
+	}
+#pragma region Load Textures
+	std::string path_str[5];
+	wchar_t path[5][256];
+	ID3D11ShaderResourceView* textureView[5];
+	ID3D11Resource*			textureResource[5];
+
+	///*PBR textures*/
+	path_str[TEXTURE_ALBEDO] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[TEXTURE_ALBEDO];
+	path_str[TEXTURE_SPECULAR] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[TEXTURE_SPECULAR];
+	path_str[TEXTURE_ROUGHNESS] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[TEXTURE_ROUGHNESS];
+	path_str[TEXTURE_NORMAL] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[TEXTURE_NORMAL];
+	path_str[TEXTURE_AO] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[TEXTURE_AO];
+
+	/*JOHN Textures*/
+	//path_str[TEXTURE_ALBEDO]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
+	//path_str[TEXTURE_SPECULAR]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_METALLIC.dds");
+	//path_str[TEXTURE_ROUGHNESS]  = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ROUGHNESS.dds");
+	//path_str[TEXTURE_NORMAL]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_NORMAL.dds");
+	//path_str[TEXTURE_AO]		 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_AO.dds");
+
+	for (size_t i = 0; i < 5; i++)
+	{
+
+		mbstowcs_s(&m_Mheader->textureNameLength[i], path[i], path_str[i].c_str(), m_Mheader->textureNameLength[i]);
+
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
+			path[i],
+			&textureResource[i],
+			&textureView[i],
+			size_t(2048),
+			(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN);
+
+		if (FAILED(hr)) //If it still doesent work, there  is a problem
+		{
+#ifdef _DEBUG
+			std::cout << "Could not open texture file : " << path_str[i] << std::endl;
+#endif // _DEBUG
+			return Resources::Status::ST_ERROR_OPENING_FILE;
+		}
+
+#ifdef _DEBUG
+		std::cout << "Opened file : " << path_str[i] << std::endl;
+#endif // _DEBUG
+
+
+
+
+		st = m_containers[i].SetTexture(textureView[i], textureResource[i]);
+		if (st != ST_OK)
+		{
+			Resources::SAFE_RELEASE(textureView[i]);
+			Resources::SAFE_RELEASE(textureResource[i]);
+			return Resources::Status::ST_BUFFER_ERROR;
+		}
+	}
+#pragma endregion
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Texture * Resources::TextureHandler::GetPlaceHolderTextures()
 {
 	if (this->placeHolder == nullptr)
