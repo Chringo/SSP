@@ -9,12 +9,13 @@ namespace Resources
 	
 
 
-	class DLL_OPERATION Mesh :public Resources::Resource
+	class Mesh :
+		public Resources::Resource
 	{
 	
 	public:
 
-		struct DLL_OPERATION Vertex
+		struct Vertex
 		{
 			float position[3];
 			float normal[3];
@@ -22,7 +23,7 @@ namespace Resources
 			float uv[2];
 
 		};
-		struct DLL_OPERATION VertexAnim
+		struct VertexAnim
 		{
 			float position[3];
 			float normal[3];
@@ -31,8 +32,8 @@ namespace Resources
 			float weights[4];
 			int influence[4];
 		};
-		struct DLL_OPERATION RawMeshData {
-
+		struct RawMeshData 
+		{
 			unsigned int  m_numVerts      = 0;
 			unsigned int  m_numIndices    = 0;
 			Vertex*       m_vertices	  = nullptr;
@@ -55,29 +56,28 @@ namespace Resources
 		ID3D11Buffer* m_AnimVertBuffer	= nullptr;
 		ID3D11Buffer* m_indexBuffer		= nullptr;
 	public:
-		Mesh(Resource::RawResourceData resData, RawMeshData meshData, ID3D11Device* dev = nullptr,bool keepRawData = false);
-		Mesh(Resource::RawResourceData resData);
-		Mesh();
+		DLL_OPERATION Mesh(Resource::RawResourceData resData, RawMeshData meshData, ID3D11Device* dev = nullptr,bool keepRawData = false);
+		DLL_OPERATION Mesh(Resource::RawResourceData resData);
+		DLL_OPERATION Mesh();
 
-		Resources::Status Create(Resource::RawResourceData* resData, ID3D11Device* dev = nullptr,RawMeshData* = nullptr, bool keepRawData = false);
-		Resources::Status Destroy();
-		
-		virtual ~Mesh();
-		bool HasAnimation() { return m_meshData.hasAnimation; };
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, ID3D11Device* dev = nullptr,RawMeshData* = nullptr, bool keepRawData = false);
+		DLL_OPERATION Resources::Status Destroy();
+
+		DLL_OPERATION virtual ~Mesh();
+		DLL_OPERATION bool HasAnimation() { return m_meshData.hasAnimation; };
 		/* Set */
-		bool SetVertices(Vertex* data, ID3D11Device* dev = nullptr, unsigned int numVerts = 0, bool keepRawData = false);
-		bool SetVertices(VertexAnim* data, ID3D11Device* dev = nullptr,unsigned int numVerts = 0, bool keepRawData = false);
-		bool SetIndices(unsigned int* indices, unsigned int numIndices, ID3D11Device* dev = nullptr, bool keepRawData = false);
-		bool SetMeshData(RawMeshData* newMeshData, ID3D11Device* dev = nullptr, bool keepRawData = false); //This function will delete the existing information and add the new data.
+		DLL_OPERATION bool SetVertices(Vertex* data, ID3D11Device* dev = nullptr, unsigned int numVerts = 0, bool keepRawData = false);
+		DLL_OPERATION bool SetVertices(VertexAnim* data, ID3D11Device* dev = nullptr,unsigned int numVerts = 0, bool keepRawData = false);
+		DLL_OPERATION bool SetIndices(unsigned int* indices, unsigned int numIndices, ID3D11Device* dev = nullptr, bool keepRawData = false);
+		DLL_OPERATION bool SetMeshData(RawMeshData* newMeshData, ID3D11Device* dev = nullptr, bool keepRawData = false); //This function will delete the existing information and add the new data.
 		/* Get */
-		ID3D11Buffer* GetVerticesBuffer()     const { return m_vertBuffer; };
-		ID3D11Buffer* GetAnimVerticesBuffer() const { return m_AnimVertBuffer; };
-		ID3D11Buffer* GetIndicesBuffer()      const { return m_indexBuffer; };
-		const unsigned int  GetNumIndices()   const { return m_meshData.m_numIndices; };
-		const unsigned int  GetNumVertices()  const { return m_meshData.m_numVerts; };
+		DLL_OPERATION ID3D11Buffer* GetVerticesBuffer()     const { return m_vertBuffer; };
+		DLL_OPERATION ID3D11Buffer* GetAnimVerticesBuffer() const { return m_AnimVertBuffer; };
+		DLL_OPERATION ID3D11Buffer* GetIndicesBuffer()      const { return m_indexBuffer; };
+		DLL_OPERATION const unsigned int  GetNumIndices()   const { return m_meshData.m_numIndices; };
+		DLL_OPERATION const unsigned int  GetNumVertices()  const { return m_meshData.m_numVerts; };
 
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
-
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 
 	private:
 		bool EraseMeshData(); // Helper function to erase existing memory.
