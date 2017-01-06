@@ -23,7 +23,7 @@ namespace Resources
 	*/
 
 
-	class DLL_OPERATION FileLoader{
+	class FileLoader{
 	public:
 		enum Files{
 			BPF_FILE,
@@ -48,15 +48,15 @@ namespace Resources
 		MemoryManager mem_manager;
 		FileLoader();
 	public:
-		static FileLoader* GetInstance(); //Singleton
-		virtual ~FileLoader();
-	
-		bool OpenFile(Files file);
-		bool CloseFile(Files file);
-		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
-		Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
-		Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
-		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
+		DLL_OPERATION static FileLoader* GetInstance(); //Singleton
+		DLL_OPERATION virtual ~FileLoader();
+
+		DLL_OPERATION bool OpenFile(Files file);
+		DLL_OPERATION bool CloseFile(Files file);
+		DLL_OPERATION RegistryItem* GetRegistryIndex(const unsigned int& objectId);
+		DLL_OPERATION Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
+		DLL_OPERATION Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
+		DLL_OPERATION Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 
 	private:
 		Resources::Status LoadRegistryFile(); //Load registry into memory on startup

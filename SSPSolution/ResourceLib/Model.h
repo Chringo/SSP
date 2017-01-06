@@ -6,7 +6,7 @@
 #include "FileHeaders.h"
 namespace Resources {
 
-	class DLL_OPERATION Model :
+	class Model :
 		public Resource
 	{
 	public:
@@ -25,25 +25,25 @@ namespace Resources {
 		BoundingBoxHeader pickingBox;
 		//Animation*  m_animations  = nullptr;
 	public:
-		Model(Resource::RawResourceData resData);
-		Model();
-		virtual ~Model();
-		Resources::Status Create(Resource::RawResourceData* resData, RawModelData* = nullptr,bool keepRawData = false);
-		Resources::Status Destroy(); // Deincrement references to connected data
-		RawModelData* GetRawModelData() { return this->m_rawData; }
+		DLL_OPERATION Model(Resource::RawResourceData resData);
+		DLL_OPERATION Model();
+		DLL_OPERATION virtual ~Model();
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, RawModelData* = nullptr,bool keepRawData = false);
+		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data
+		DLL_OPERATION RawModelData* GetRawModelData() { return this->m_rawData; }
+		
+		DLL_OPERATION void SetMesh(Mesh* modelMesh) { this->m_modelMesh = modelMesh;};
+		DLL_OPERATION Mesh* GetMesh() const { return this->m_modelMesh; };
+		
+		DLL_OPERATION void SetMaterial(Material* material) { this->m_material = material; };
+		DLL_OPERATION Material* GetMaterial() { return this->m_material; };
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
+		
+		DLL_OPERATION void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
+		DLL_OPERATION Skeleton* GetSkeleton() { return this->m_skeleton; };
 
-		void SetMesh(Mesh* modelMesh) { this->m_modelMesh = modelMesh;};
-		Mesh* GetMesh() const { return this->m_modelMesh; };
-
-		void SetMaterial(Material* material) { this->m_material = material; };
-		Material* GetMaterial() { return this->m_material; };
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
-
-		void SetSkeleton(Skeleton* skeleton) { this->m_skeleton = skeleton; };
-		Skeleton* GetSkeleton() { return this->m_skeleton; };
-
-		void SetOBBData(BoundingBoxHeader obbdata) { this->pickingBox = obbdata; };
-		BoundingBoxHeader GetOBBData() { return this->pickingBox; };
+		DLL_OPERATION void SetOBBData(BoundingBoxHeader obbdata) { this->pickingBox = obbdata; };
+		DLL_OPERATION BoundingBoxHeader GetOBBData() { return this->pickingBox; };
 	
 	};
 }

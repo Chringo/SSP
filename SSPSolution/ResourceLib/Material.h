@@ -4,7 +4,7 @@
 
 namespace Resources {
 	
-	class DLL_OPERATION Material :
+	class Material :
 		public Resource
 	{
 
@@ -14,23 +14,23 @@ namespace Resources {
 		float m_Roughness		= 0.0f;
 		float m_EmissiveValue	= 0.0f;
 	public:
-		Material(Resource::RawResourceData resData);
-		Material();
-		virtual ~Material();
+		DLL_OPERATION Material(Resource::RawResourceData resData);
+		DLL_OPERATION Material();
+		DLL_OPERATION virtual ~Material();
+		
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData);
+		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data
+		
+		DLL_OPERATION Resources::Status SetTexture(Texture* texture, TextureType type);
+		DLL_OPERATION Texture** GetAllTextures() { return m_Textures; };
+		DLL_OPERATION Texture* GetTexture(TextureType type) { return (type == TextureType::TEXTURE_UNKNOWN ? nullptr : m_Textures[type]); }
+		
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 
-		Resources::Status Create(Resource::RawResourceData* resData);
-		Resources::Status Destroy(); // Deincrement references to connected data
-	
-		Resources::Status SetTexture(Texture* texture, TextureType type);
-		Texture** GetAllTextures() { return m_Textures; };
-		Texture* GetTexture(TextureType type) { return (type == TextureType::TEXTURE_UNKNOWN ? nullptr : m_Textures[type]); }
-
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
-	
-		void SetMetallic(const float& val) { m_Metallic = val; };
-		void SetRoughness(const float& val) { m_Roughness = val; };
-		void SetEmissive(const float& val) { m_EmissiveValue = val; };
-		void SetValues(const float& metal, const float& roughness, const float& emissive) {
+		DLL_OPERATION void SetMetallic(const float& val) { m_Metallic = val; };
+		DLL_OPERATION void SetRoughness(const float& val) { m_Roughness = val; };
+		DLL_OPERATION void SetEmissive(const float& val) { m_EmissiveValue = val; };
+		DLL_OPERATION void SetValues(const float& metal, const float& roughness, const float& emissive) {
 			m_Metallic = metal;
 			 m_Roughness = roughness;
 			m_EmissiveValue = emissive;
