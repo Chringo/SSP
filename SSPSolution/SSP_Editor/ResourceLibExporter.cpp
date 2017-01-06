@@ -11,8 +11,6 @@ ResourceLibExporter::ResourceLibExporter()
 ResourceLibExporter::~ResourceLibExporter()
 {
 	delete m_Output;
-	for (int i = 0; i < m_Items.size(); ++i)
-		delete m_Items.at(i);
 }
 
 ResourceLibExporter * ResourceLibExporter::GetInstance()
@@ -29,6 +27,9 @@ void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
 
 void ResourceLibExporter::ExportBPF()
 {
+	Open();
+	BuildRegistry();
+	Close();
 }
 
 void ResourceLibExporter::BuildRegistry()
@@ -38,26 +39,42 @@ void ResourceLibExporter::BuildRegistry()
 	
 	std::vector<Resources::Model*>* sceneModels = m_Data->GetModels();
 	
-	/*for (int i = 0; i < sceneModels->size(); ++i)
+	for (int i = 0; i < sceneModels->size(); ++i)
 	{
-		RegistryItem modelId;
-		modelId->id = sceneModels->at(i)->GetId();
-		m_Items.push_back(modelId);
+		RegistryItem item;
+		item.id = sceneModels->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 
-		if (sceneModels->at(i)->GetMesh() != nullptr)
-		{
-			RegistryItem* meshId = new RegistryItem;
-			meshId->id = sceneModels->at(i)->GetMesh()->GetId();
-			m_Items.push_back(meshId);
-		}
-		if (sceneModels->at(i)->GetMaterial() != nullptr)
-		{
+	std::vector<Resources::Mesh*>* sceneMeshes = m_Data->GetMeshes();
+	for (int i = 0; i < sceneMeshes->size(); ++i)
+	{
+		RegistryItem item;
+		item.id = sceneMeshes->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 
-			RegistryItem* materialId = new RegistryItem;
-			materialId->id = sceneModels->at(i)->GetMaterial()->GetId();
-			m_Items.push_back(materialId);
-		}
-	}*/
+	std::vector<Resources::Material*>* sceneMaterials = m_Data->GetMaterials();
+	for (int i = 0; i < sceneMaterials->size(); ++i)
+	{
+		RegistryItem item;
+		item.id = sceneMaterials->at(i)->GetId();
+		m_Items.push_back(item);
+	}
+
+	std::unordered_map<std::string, Resources::Texture*>* sceneTextures = m_Data->GetTextures();
+	for (auto iterator = sceneTextures->begin(); iterator != sceneTextures->end(); ++iterator)
+	{
+		Resources::Texture * node = iterator->second;
+		RegistryItem item;
+		item.id = node->GetId();
+		m_Items.push_back(item);
+	}
+
+	/*add skeleton here*/
+	/*add animations here*/
+	m_Header.numIds = m_Items.size();
+	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 }
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
