@@ -5,6 +5,7 @@
 #include "DataHandler.h"
 #include <vector>
 #include "FileImporter.h"
+#include <fstream>
 /*
 	Author: Martin Clementson
 	This Class takes all the raw data that is on the server and creates a
@@ -16,6 +17,7 @@ private:
 	ResourceLibExporter();
 	std::string m_DestinationPath = "../ResourceLib/AssetFiles/";
 	std::vector<RegistryItem*> m_Items;
+	std::ofstream* m_Output;
 	unsigned int m_Offset = 0;
 
 	DataHandler* m_Data = DataHandler::GetInstance();
@@ -29,7 +31,11 @@ public:
 	void ExportBPF();
 private:
 	void BuildRegistry();
+	void WriteToBPF(char* m_BBF_File, const unsigned int fileSize);
 
+	bool Open();
+	bool Close();
+	char* ImportFromServer(unsigned int index, unsigned int &FileSize);
 };
 
 #endif
