@@ -6,11 +6,9 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/grid.bbf");
-	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
+	filePaths[BPF_FILE] = std::string("../ResourceLib/AssetFiles/AssetFile.bpf");
 
-	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
-	fileHandles[REG_FILE].rdbuf()->pubsetbuf(0, 0);			 //Disable streaming buffers
+	fileHandles[BPF_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 
 	for (size_t i = 0; i < NUM_FILES; i++)
 	{
@@ -172,20 +170,27 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
 
-	if (!OpenFile(Files::REG_FILE))
+	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
-		//MessageBox(NULL, TEXT("No registry file found"), TEXT("Critical error!"), MB_OK);
+		//MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-//	char* data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
-
+	
+	RegistryHeader regHead;
+	fileHandles[BPF_FILE].read((char*)&regHead, sizeof(RegistryHeader));
+	m_fileRegistry.reserve((size_t)regHead.numIds);
+	for (size_t i = 0; i < regHead.numIds; i++)
+	{
+		RegistryItem item;
+		fileHandles[BPF_FILE].read((char*)&item, sizeof(RegistryItem));
+		this->m_fileRegistry[item.id] = item;
+	}
 
 	//fileHandles[REG_FILE].read()
 
-	CloseFile(Files::REG_FILE);
+	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;
 }

@@ -26,8 +26,9 @@ namespace Resources
 	class DLL_OPERATION FileLoader{
 	public:
 		enum Files{
-			RESOURCE_FILE = 0,
-			REG_FILE      = 1
+			BPF_FILE,
+
+			NUM_FILES
 		};
 		enum FileState{
 			CLOSED = 0,	//This is used to keep a file open. 
@@ -35,7 +36,6 @@ namespace Resources
 		};
 		
 	private:
-		static const size_t NUM_FILES		= 2;
 		static const size_t LEVEL_MEMORY	= 128; //kb
 		static const size_t RESOURCE_MEMORY = 256; //kb
 		
