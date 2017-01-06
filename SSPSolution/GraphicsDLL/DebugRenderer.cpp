@@ -464,15 +464,24 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 }
 ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere & box, DirectX::XMVECTOR color)
 {
-	DirectX::XM_PI;
+	
 	box.radius;
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
+
+
+	float theta = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
 
 
 	for (size_t i = 0; i < NUM_POINTS[M_SPHERE]; i++)
 	{
-		
+		DirectX::XMVECTOR point;
+
+		//point = DirectX::XMScalarCos(theta);
 
 
+
+
+		m_points[M_SPHERE][i] = Point(point.m128_f32, color.m128_f32);
 	}
 
 
