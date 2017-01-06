@@ -20,8 +20,6 @@ struct MainHeader
 	int resourceType;
 };
 
-
-
 struct MeshHeader{
 	unsigned int numVerts    = 0;
 	unsigned int indexLength = 0;
@@ -30,8 +28,8 @@ struct MeshHeader{
 
 struct BoundingBoxHeader
 {
-	Vector3 position; //positionen på boundingboxen
-	float extension[3]; //skalären
+	Vector3 position;		 //Positionen på boundingboxen
+	float extension[3];		 //Skalären
 	Vector3 extensionDir[3]; //Orto
 };
 

@@ -87,7 +87,7 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 		return ST_WRONG_RESTYPE;
 	}
 
-	Texture* newTexture = m_emptyContainers.front(); //Get an empty container
+	Texture* newTexture = GetEmptyContainer(); //Get an empty container
 	st = newTexture->Create(resData);
 	 if (st != ST_OK)
 		 return st;
@@ -283,6 +283,17 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 #pragma endregion
 
 	return true;
+}
+
+Resources::Texture * Resources::TextureHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Texture());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
+
 }
 
 void Resources::TextureHandler::SetDevice(ID3D11Device * device)
