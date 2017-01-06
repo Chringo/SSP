@@ -10,8 +10,8 @@ ResourceLibExporter::ResourceLibExporter()
 
 ResourceLibExporter::~ResourceLibExporter()
 {
-	if (m_Items != nullptr)
-		delete m_Items;
+	for (int i = 0; i < m_Items.size(); ++i)
+		delete m_Items.at(i);
 }
 
 ResourceLibExporter * ResourceLibExporter::GetInstance()

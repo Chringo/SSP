@@ -42,6 +42,7 @@ public:
 	Resources::Status Initialize();
 
 	std::vector<Resources::Model*>* get_M_models() { return this->m_data->GetModels(); }
+	std::vector<std::string>* GetFilePaths() { return &m_filepaths; }
 
 private:
 	/*functions*/
