@@ -4,12 +4,13 @@
 
 ResourceLibExporter::ResourceLibExporter()
 {
-	
+	m_Output = new std::ofstream();
 }
 
 
 ResourceLibExporter::~ResourceLibExporter()
 {
+	delete m_Output;
 	for (int i = 0; i < m_Items.size(); ++i)
 		delete m_Items.at(i);
 }
@@ -43,12 +44,18 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 
 bool ResourceLibExporter::Open()
 {
-	return true;
+	m_Output->open(m_DestinationPath, std::fstream::binary);
+	if(m_Output->is_open())
+		return true;
+	return false;
 }
 
 bool ResourceLibExporter::Close()
 {
-	return true;
+	m_Output->close();
+	if(!m_Output->is_open())
+		return true;
+	return false;
 }
 
 char * ResourceLibExporter::ImportFromServer(unsigned int index, unsigned int & FileSize)
