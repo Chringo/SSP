@@ -200,7 +200,7 @@ DLL_OPERATION Resources::Status Resources::FileLoader::LoadLevel(std::string & p
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
 	file.read(data + offset , modelSize);										  // read all the entity data
-	level.entities = (LevelData::EntityHeader*) data + offset;
+	level.entities = (LevelData::EntityHeader*) (data + offset);
 	offset += modelSize;
 
 	//Lights
