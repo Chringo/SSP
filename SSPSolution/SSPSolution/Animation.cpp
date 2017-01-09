@@ -7,7 +7,7 @@ Animation::Animation()
 	this->m_graphicsAnimationComponent->joints = 19;
 
 	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
-	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
+	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 4, 10);
 	for (int i = 0; i < 32; i++)
 	{
 		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
@@ -136,11 +136,11 @@ void Animation::Interpolate(float currentTime)
 					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
 					DirectX::XMVECTOR rot1 = DirectX::XMLoadFloat3(&tempRot1);
 					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
-					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
 
 					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
 					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
 					DirectX::XMVECTOR rot2 = DirectX::XMLoadFloat3(&tempRot2);
+					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
 
 					DirectX::XMVECTOR lerpTrans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					DirectX::XMVECTOR lerpScale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
@@ -244,6 +244,18 @@ void Animation::GetAnimationState(int animationState, AnimationClip & clip)
 	animatedJointsList = animationPtr->GetAllJoints();
 
 	clip.animationState = animationState;
+
+	if (animationStack.empty())
+	{
+		clip.previousState = -1;
+	}
+
+	else
+	{
+		clip.previousState = animationStack.top().animationState;
+		Pop();
+	}
+
 	clip.startFrame = animatedJointsList->keyframes[0].timeValue;
 	clip.endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
 	clip.isLooping = true;

@@ -43,6 +43,7 @@ struct SkelTemp
 struct AnimationClip
 {
 	int animationState;
+	int previousState;
 	bool isLooping;
 	float startFrame;
 	float endFrame;
@@ -89,9 +90,9 @@ public:
 
 	void GetAnimationState(int animationState, AnimationClip& clip);
 
-	/*Don't know if this is suppose to be here? Maybe this is a function
-	we call from Update(), having another class holding interpolation func?*/
 	void Interpolate(float currentTime);
+
+	void Blend();
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
