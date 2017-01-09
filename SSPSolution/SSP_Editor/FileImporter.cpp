@@ -361,7 +361,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 				st = textures[i]->Create(&temp);
 				if (st != Resources::ST_OK)
 					return false;
-				textures[i]->SetFileName((char*)(m_bbf_object + offset), m_Mheader->textureNameLength[i]);
+				textures[i]->SetFileName((char*)(m_bbf_object + offset), *textureNameLength[i]);
 				m_data->AddTexture(textures[i]);
 			}
 			offset += *textureNameLength[i];
