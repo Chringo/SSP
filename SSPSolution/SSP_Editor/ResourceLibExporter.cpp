@@ -149,17 +149,20 @@ void ResourceLibExporter::HandleSceneData()
 	for (int i = 0; i < serverFiles->size(); ++i)
 	{
 		//need to check if it's a material or texture;
-		if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
+		std::string dotName = serverFiles->at(i).substr(serverFiles->at(i).rfind(".")).c_str();
+		if (dotName != ".dds")
 		{
-			std::string dotName = serverFiles->at(i).substr(serverFiles->at(i).rfind(".")).c_str();
-
-			if (dotName != ".mat" && dotName != ".dds")
-			{
-				WriteToBPF(data, (const unsigned int)dataSize);
-			}
-			else if (dotName == ".mat")
+			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
+				if (dotName != ".mat")
+				{
+					WriteToBPF(data, (const unsigned int)dataSize);
+				}
+				else
+				{
+					WriteMatToBPF(data, (const unsigned int)dataSize);
+				}
 			}
 		}
 	}
