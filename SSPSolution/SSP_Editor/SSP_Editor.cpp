@@ -30,7 +30,8 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_fileImporter    = new FileImporter(m_ui.assetTree);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
 	this->m_fileImporter->Initialize();
-	 
+	this->m_resourceLibExporter->Initialize(this->m_fileImporter);
+
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
 	QString title = "Level: ";
@@ -126,6 +127,7 @@ void SSP_Editor::on_SaveScene_clicked()
 
 void SSP_Editor::on_BuildBPF_clicked()
 {
+	m_resourceLibExporter->ExportBPF();
 }
 
 bool SSP_Editor::PromptSaveLevel()
