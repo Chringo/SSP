@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_GAMESTATES_LEVELSTATE_H
 #include "GameState.h"
 #include "Player.h"
+#include "../SSP_Editor/LevelHeaders.h"
 class LevelState :
 	public GameState
 {
@@ -14,6 +15,7 @@ public:
 	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
 	int Update(float dt, InputHandler * inputHandler);
+	int CreateLevel(LevelData::Level* data);
 private:
 };
 

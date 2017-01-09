@@ -48,3 +48,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	return result;
 }
+
+int LevelState::CreateLevel(LevelData::Level * data)
+{
+
+
+
+	return 1;
+}
