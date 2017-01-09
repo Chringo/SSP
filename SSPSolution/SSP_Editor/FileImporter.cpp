@@ -168,8 +168,6 @@ void FileImporter::LoadImportedFiles()
 				break;
 			case Resources::ResourceType::RES_SKELETON:
 				break;
-			case Resources::ResourceType::RES_TEXTURE:
-				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
 				break;
@@ -342,6 +340,14 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 		Resources::Status st;
 
 		unsigned int offset = 0;
+
+		unsigned int* textureNameLength[5];
+		for (int i = 0; i < 5; ++i)
+		{
+			textureNameLength[i] = (unsigned int*)m_bbf_object;
+			m_bbf_object += sizeof(unsigned int);
+		}
+
 		Resources::Texture *textures[5] = { nullptr,nullptr ,nullptr ,nullptr ,nullptr };
 		for (size_t i = 0; i < 5; i++)
 		{
@@ -355,10 +361,10 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 				st = textures[i]->Create(&temp);
 				if (st != Resources::ST_OK)
 					return false;
-				textures[i]->SetFileName((char*)(m_bbf_object + offset), m_Mheader->textureNameLength[i]);
+				textures[i]->SetFileName((char*)(m_bbf_object + offset), *textureNameLength[i]);
 				m_data->AddTexture(textures[i]);
 			}
-			offset += m_Mheader->textureNameLength[i];
+			offset += *textureNameLength[i];
 		}
 #pragma region Load Textures
 		std::string path_str[5];
@@ -367,17 +373,17 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 		ID3D11Resource*			textureResource[5];
 
 		///*PBR textures*/
-		path_str[0] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[0];
-		path_str[1] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[1];
-		path_str[2] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[2];
-		path_str[3] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[3];
-		path_str[4] = std::string(m_bbf_object); m_bbf_object += m_Mheader->textureNameLength[4];
+		path_str[0] = std::string(m_bbf_object); m_bbf_object += *textureNameLength[0];
+		path_str[1] = std::string(m_bbf_object); m_bbf_object += *textureNameLength[1];
+		path_str[2] = std::string(m_bbf_object); m_bbf_object += *textureNameLength[2];
+		path_str[3] = std::string(m_bbf_object); m_bbf_object += *textureNameLength[3];
+		path_str[4] = std::string(m_bbf_object); m_bbf_object += *textureNameLength[4];
 		
 
 		for (size_t i = 0; i < 5; i++)
 		{
 
-			mbstowcs_s(&m_Mheader->textureNameLength[i], path[i], path_str[i].c_str(), m_Mheader->textureNameLength[i]);
+			mbstowcs_s(&*textureNameLength[i], path[i], path_str[i].c_str(), *textureNameLength[i]);
 
 			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_Device,
 				path[i],
@@ -391,7 +397,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 #ifdef _DEBUG
 				std::cout << "Could not open texture file : " << path_str[i] << std::endl;
 #endif // _DEBUG
-				return Resources::Status::ST_ERROR_OPENING_FILE;
+				return false;
 			}
 
 #ifdef _DEBUG
