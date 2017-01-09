@@ -55,7 +55,14 @@ struct MaterialHeader
 	float m_EmissiveValue = 0.0f	;
 
 };
+struct BPFMaterialHeader
+{
+	unsigned int textureIDs[5]{ 0,0,0,0,0 };
 
+	float m_Metallic = 0.0f;
+	float m_Roughness = 0.0f;
+	float m_EmissiveValue = 0.0f;
+};
 struct TextureHeader
 {
 	char filePath[256];
