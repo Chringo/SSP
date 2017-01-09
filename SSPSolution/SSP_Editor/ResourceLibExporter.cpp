@@ -103,10 +103,11 @@ void ResourceLibExporter::BuildRegistry()
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 
 	//temp!!!!!!!!!!!!!!!!<--------------------------------------------------------------------------------
-	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
+	//m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
 
-
-	//m_Output->seekp(m_Output->tellp())
+	long pos = m_Output->tellp();
+	pos += sizeof(RegistryItem)*m_Items.size();
+	m_Output->seekp(pos);
 	/*
 	outfile.write ("This is an apple",16);
   long pos = outfile.tellp();
