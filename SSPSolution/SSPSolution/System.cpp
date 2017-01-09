@@ -540,7 +540,7 @@ void System::CreateDummyObjects()
 {
 	//create random content
 	PhysicsComponent* ptr = nullptr;
-	XMVECTOR tempPos;
+	DirectX::XMVECTOR tempPos;
 	
 
 	//ball
