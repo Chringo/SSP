@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_GAMESTATES_LEVELSELECTSTATE_H
 #include "GameState.h"
 #include "LevelState.h"
+#include "../ResourceLib/FileLoader.h"
 class LevelSelectState :
 	public GameState
 {
@@ -14,6 +15,7 @@ public:
 	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
 	int Update(float dt, InputHandler * inputHandler);
+	int LoadLevel(std::string path);
 
 private:
 };

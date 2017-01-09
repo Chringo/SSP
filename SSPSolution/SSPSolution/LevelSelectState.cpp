@@ -56,14 +56,22 @@ int LevelSelectState::LoadLevel(std::string path)
 	Resources::Status st = Resources::Status::ST_OK;
 	
 	LevelData::Level* level;    //pointer for data
+	//Load LevelData from file
 	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
-
-	if (st != Resources::ST_OK) //if not successful
+	//if not successful
+	if (st != Resources::ST_OK)
 		return 0;
-	 result = this->currentLevel->CreateLevel(level); //Create the level
-	 if (result <= 0)
-		 return result;
+	
+	//Load Resources of the level
+	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	//if not successful
+	if (st != Resources::ST_OK)
+		return 0;
+	
+	//Create level
+	result = this->currentLevel->CreateLevel(level); 
 
+	
+	return result;
 
-	return 1;
 }
