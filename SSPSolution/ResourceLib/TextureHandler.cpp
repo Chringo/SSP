@@ -83,7 +83,6 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 #ifdef _DEBUG
 		std::cout << "Wrong resource type. Wanted Texture, got type: " << resData->m_id << std::endl;
 #endif // _DEBUG
-
 		return ST_WRONG_RESTYPE;
 	}
 
@@ -123,16 +122,10 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 		return st;
 	}
 
-     /*T E M P*/
-	Resource::RawResourceData temp;
-	temp.m_resType = RES_TEXTURE;
-	temp.m_id = 7869;
-	newTexture->Create(&temp);   //Initialize it with data
-	/***************/
+
 
 	m_textures[newTexture->GetId()] = ResourceContainer(newTexture, 1); //put it into the map
 	m_emptyContainers.pop_front();
-
 
 
 		return Resources::Status::ST_OK;
