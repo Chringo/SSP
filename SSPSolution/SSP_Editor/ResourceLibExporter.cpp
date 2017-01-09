@@ -33,7 +33,7 @@ void ResourceLibExporter::ExportBPF()
 		/*building the registry*/
 		BuildRegistry();
 
-		
+		handleSceneData();
 
 		Close();
 	}
@@ -98,6 +98,8 @@ void ResourceLibExporter::BuildRegistry()
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
 
+
+	//m_Output->seekp(m_Output->tellp())
 	/*
 	outfile.write ("This is an apple",16);
   long pos = outfile.tellp();
@@ -109,6 +111,22 @@ void ResourceLibExporter::BuildRegistry()
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
+}
+
+void ResourceLibExporter::handleSceneData()
+{
+	std::ifstream* fromServer = new std::ifstream();
+	std::vector<std::string>* serverFiles = m_FileImporter->GetFilePaths();
+	for (int i = 0; i < serverFiles->size(); ++i)
+	{
+		fromServer->open(serverFiles->at(i), std::fstream::binary);
+		if (fromServer->is_open())
+		{
+
+		fromServer->close();	
+		}
+	}
+	delete fromServer;
 }
 
 bool ResourceLibExporter::Open()

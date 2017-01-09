@@ -32,6 +32,7 @@ public:
 private:
 	void BuildRegistry();
 	void WriteToBPF(char* m_BBF_File, const unsigned int fileSize);
+	void handleSceneData();
 
 	bool Open();
 	bool Close();
