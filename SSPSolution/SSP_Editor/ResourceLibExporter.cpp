@@ -101,6 +101,8 @@ void ResourceLibExporter::BuildRegistry()
 	m_Header.numIds = m_Items.size();
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
+
+	//temp!!!!!!!!!!!!!!!!<--------------------------------------------------------------------------------
 	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
 
 
@@ -116,6 +118,7 @@ void ResourceLibExporter::BuildRegistry()
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
+	//put check here to change the registry
 }
 
 void ResourceLibExporter::HandleSceneData()
