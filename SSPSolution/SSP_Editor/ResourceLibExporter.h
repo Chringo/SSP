@@ -7,9 +7,35 @@
 #include "FileImporter.h"
 #include <fstream>
 /*
-	Author: Martin Clementson
+	Author: Martin Clementson & David Wigelius
 	This Class takes all the raw data that is on the server and creates a
 	library file along with a registry file.
+
+	The output .bpf file will be written by writing parts and then jumping back.
+	The output file will be as following:
+	-RegistryHeader-
+	number of registry items
+	----------------
+	-RegistryItems-
+	nr of registry items will be based on how many files are
+	on the server, will convert all of them into the .bpf file
+	----------------
+	-bbf data-
+	Raw bbf data taken straight from the server, the registry tells
+	the application where the items are
+	----------------
+
+	The output file will be built in the following manner:
+	1. Registry header
+	2. Allocate space for the registry
+	3. Jump to a point in the ouputfile after the allocated registry memory
+	4. Iterate all the .bbf files
+		-Find the corresponding registry item to the file
+		-Fill the registry item with the startbit and the size of memory it will occopy
+		-Write the .bbf file to the .bpf file
+	5. All the registryItems are now filled with information
+	6. Jump to a point after the Header (Where there's allocated "trash" memory)
+	7. Write the registry items to the .bpf file
 */
 class ResourceLibExporter
 {

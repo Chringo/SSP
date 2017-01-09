@@ -49,8 +49,8 @@ void ResourceLibExporter::BuildRegistry()
 	RegistryHeader m_Header{ m_FileImporter->GetFilePaths()->size() };
 	m_Items.reserve(m_Header.numIds);
 	
+	/*iterating over all the models*/
 	std::vector<Resources::Model*>* sceneModels = m_Data->GetModels();
-	
 	for (int i = 0; i < sceneModels->size(); ++i)
 	{
 		RegistryItem item;
@@ -60,6 +60,7 @@ void ResourceLibExporter::BuildRegistry()
 		m_Items.push_back(item);
 	}
 
+	/*iterating over all the meshes*/
 	std::vector<Resources::Mesh*>* sceneMeshes = m_Data->GetMeshes();
 	for (int i = 0; i < sceneMeshes->size(); ++i)
 	{
@@ -70,6 +71,7 @@ void ResourceLibExporter::BuildRegistry()
 		m_Items.push_back(item);
 	}
 
+	/*iterating over all the materials*/
 	std::vector<Resources::Material*>* sceneMaterials = m_Data->GetMaterials();
 	for (int i = 0; i < sceneMaterials->size(); ++i)
 	{
@@ -80,6 +82,7 @@ void ResourceLibExporter::BuildRegistry()
 		m_Items.push_back(item);
 	}
 
+	/*iterating over all the textures*/
 	std::unordered_map<std::string, Resources::Texture*>* sceneTextures = m_Data->GetTextures();
 	for (auto iterator = sceneTextures->begin(); iterator != sceneTextures->end(); ++iterator)
 	{
@@ -102,24 +105,19 @@ void ResourceLibExporter::BuildRegistry()
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 
-	//temp!!!!!!!!!!!!!!!!<--------------------------------------------------------------------------------
-	//m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
-
+	/*			skipping over the registry to write later
+	I---------------------------------------------------------------------I
+	The files will be written in a space after the allocated "trash" memory
+	that the registry will occopy later
+	I---------------------------------------------------------------------I
+	*/
 	long pos = m_Output->tellp();
 	pos += sizeof(RegistryItem)*m_Items.size();
 	m_Output->seekp(pos);
-	/*
-	outfile.write ("This is an apple",16);
-  long pos = outfile.tellp();
-  outfile.seekp (pos-7);
-  outfile.write (" sam",4);
-  output will be "this is a sample"
-  */
 }
 
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
-	//put check here to change the registry
 	Resources::Resource::RawResourceData* u_data = (Resources::Resource::RawResourceData*)m_BBF_File;
 	for (int i = 0; i < m_Items.size(); ++i)
 	{
@@ -135,10 +133,12 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 
 void ResourceLibExporter::HandleSceneData()
 {
+	/*getting a pointer to the fileloader singleton, will be used to load the .bbf files*/
 	Resources::FileLoader* fromServer =	Resources::FileLoader::GetInstance();
 	std::vector<std::string>* serverFiles = m_FileImporter->GetFilePaths();
 	char* data; size_t dataSize;
 
+	/*iterating over all the serverfiles to write them to the .bpf file*/
 	for (int i = 0; i < serverFiles->size(); ++i)
 	{
 		//need to check if it's a material or texture;
