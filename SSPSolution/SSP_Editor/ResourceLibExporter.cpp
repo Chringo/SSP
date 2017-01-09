@@ -132,6 +132,12 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 	this->m_Output->write(m_BBF_File, fileSize);
 }
 
+void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fileSize)
+{
+	/*special case function that converts .mat files to raw data in the .bpf file*/
+
+}
+
 void ResourceLibExporter::HandleSceneData()
 {
 	/*getting a pointer to the fileloader singleton, will be used to load the .bbf files*/
@@ -151,9 +157,9 @@ void ResourceLibExporter::HandleSceneData()
 			{
 				WriteToBPF(data, (const unsigned int)dataSize);
 			}
-			else
+			else if (dotName == ".mat")
 			{
-				printf("material or texture\n");
+
 			}
 		}
 	}

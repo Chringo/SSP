@@ -58,6 +58,7 @@ public:
 private:
 	void BuildRegistry();
 	void WriteToBPF(char* m_BBF_File, const unsigned int fileSize);
+	void WriteMatToBPF(char* m_BBF_File, const unsigned int fileSize);
 	void HandleSceneData();
 	void WriteRegistry();
 
