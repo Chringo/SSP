@@ -151,6 +151,12 @@ void ResourceLibExporter::HandleSceneData()
 
 void ResourceLibExporter::WriteRegistry()
 {
+	/*setting the writing position to after the header*/
+	long pos = sizeof(RegistryHeader);
+	m_Output->seekp(pos);
+
+	/*writing the registry now that it has all the information*/
+	m_Output->write((char*)m_Items.data(), sizeof(RegistryItem)*m_Items.size());
 }
 
 bool ResourceLibExporter::Open()
