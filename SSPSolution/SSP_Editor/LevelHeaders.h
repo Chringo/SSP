@@ -37,4 +37,16 @@ namespace LevelData {
 		L_FILE_NOT_FOUND,
 		L_FILE_SAVE_CANCELED
 	};
+
+	struct Level {
+		unsigned int numResources;
+		ResourceHeader* resources;
+
+		unsigned int numEntities;
+		EntityHeader* entities;
+
+		unsigned int numLights;
+		LightHeader* lights;
+
+	};
 }

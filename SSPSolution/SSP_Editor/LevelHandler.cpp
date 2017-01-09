@@ -33,7 +33,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	file.write(data, sizeof(LevelData::MainLevelHeader));					 //Write the main header first
 
 	//Resource data
-	size_t resSize = sizeof(LevelData::ResourceHeader)* header.entityAmount; //size of resource data
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
 	char* resData  = new char[resSize];										 //Allocate for resource data
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
@@ -71,11 +71,11 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 
 	LevelData::MainLevelHeader header;
-	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader));				 //Read file header
 
 	//Resource data
-	size_t resSize = sizeof(LevelData::ResourceHeader)* header.entityAmount; //size of resource data
-	file.seekg(resSize, std::ios_base::cur);								 //Skip the resource data (only used by the game engine)
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
+	file.seekg(resSize, std::ios_base::cur);									  //Skip the resource data (only used by the game engine)
 	
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
