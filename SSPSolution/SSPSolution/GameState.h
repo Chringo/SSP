@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #include "InputHandler.h"
 #include "ComponentHandler.h"
+#include "LevelSelectState.h"
 class GameStateHandler;
 class GameState
 {
