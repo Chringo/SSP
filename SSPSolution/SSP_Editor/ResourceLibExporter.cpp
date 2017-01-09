@@ -120,20 +120,18 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 
 void ResourceLibExporter::HandleSceneData()
 {
-	std::ifstream* fromServer = new std::ifstream();
+	Resources::FileLoader* fromServer =	Resources::FileLoader::GetInstance();
 	std::vector<std::string>* serverFiles = m_FileImporter->GetFilePaths();
+	char* data; size_t dataSize;
+
 	for (int i = 0; i < serverFiles->size(); ++i)
 	{
-		fromServer->open(serverFiles->at(i), std::fstream::binary);
-		if (fromServer->is_open())
+		//need to check if it's a material or texture;
+		if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 		{
-			
-
-
-			fromServer->close();	
+			WriteToBPF(data, (const unsigned int)dataSize);
 		}
 	}
-	delete fromServer;
 }
 
 void ResourceLibExporter::WriteRegistry()
