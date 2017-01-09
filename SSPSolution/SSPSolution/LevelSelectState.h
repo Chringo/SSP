@@ -1,6 +1,6 @@
 #ifndef SSPAPPLICATION_GAMESTATES_LEVELSELECTSTATE_H
 #define SSPAPPLICATION_GAMESTATES_LEVELSELECTSTATE_H
-#include "GameState.h"
+//
 #include "LevelState.h"
 #include "../ResourceLib/FileLoader.h"
 class LevelSelectState :

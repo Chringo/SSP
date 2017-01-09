@@ -63,10 +63,10 @@ int LevelSelectState::LoadLevel(std::string path)
 		return 0;
 	
 	//Load Resources of the level
-	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
-	//if not successful
-	if (st != Resources::ST_OK)
-		return 0;
+	//st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	////if not successful
+	//if (st != Resources::ST_OK)
+	//	return 0;
 	
 	//Create level
 	result = this->currentLevel->CreateLevel(level); 

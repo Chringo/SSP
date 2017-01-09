@@ -339,7 +339,7 @@ int System::Update(float deltaTime)
 	}
 
 	//locks camera to the player
-	this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
+	//this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
