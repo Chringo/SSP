@@ -3,11 +3,14 @@
 #include "GameState.h"
 #include "Player.h"
 #include "../SSP_Editor/LevelHeaders.h"
+#include "../ResourceLib/ResourceHandler.h"
+#include "StaticEntity.h"
 class LevelState :
 	public GameState
 {
 private:
 	Player m_player1;
+	std::vector<Entity*> m_entities;
 public:
 	LevelState();
 	virtual ~LevelState();
