@@ -6,14 +6,27 @@ Level::Level()
 {
 	m_ModelMap.reserve(50);
 
-	//Container player1;
-	//Container player2;
+	Container player1;
+	Container player2;
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got;
 
-	//player1.position = { 1.0f, 0.0, 0.0f };
-	//player2.position = { -1.0f, 0.0, 0.0f };
-	//this->m_ModelMap[modelID].push_back(newComponent);
-	//this->m_ModelMap[modelID].push_back(newComponent);
 
+
+		player1.internalID = 0;
+		player1.position = { 1.0f, 0.0, 0.0f };
+		player1.rotation = { 0.0f, 0.0f, 0.0f };
+		player1.isDirty = true;
+		this->m_ModelMap[PLAYER1].push_back(player1);
+		this->m_uniqueModels.push_back(PLAYER1);
+	
+
+		player2.internalID = 1;
+		player2.position = { -1.0f, 0.0, 0.0f };
+		player2.rotation = { 0.0f, 0.0f, 0.0f };
+		player2.isDirty = true;
+		this->m_ModelMap[PLAYER2].push_back(player2);
+		this->m_uniqueModels.push_back(PLAYER2);
+	
 }
 
 
@@ -73,6 +86,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	newComponent.component.worldMatrix = containerMatrix;
 	newComponent.internalID = instanceID;
 	newComponent.isDirty = false;
+	
 
 
 	if (got == m_ModelMap.end()) { // if  does not exists in memory

@@ -4,6 +4,8 @@
 #include "Header.h"
 #include "../../ResourceLib/Enumerations.h"
 
+#define PLAYER1 2215164276 
+#define PLAYER2 3255160373
 /*
 	Author: Martin Clementson
 	
