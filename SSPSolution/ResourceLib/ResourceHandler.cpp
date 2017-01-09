@@ -189,6 +189,7 @@ Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& 
 	case Status::ST_RES_MISSING:
 		/*return placeholder MODEL*/
 		modelPtr = m_modelHandler->GetPlaceholderModel();
+		return  Resources::Status::ST_RES_MISSING;
 		break;
 	default:
 		return st;
