@@ -33,7 +33,12 @@ void ResourceLibExporter::ExportBPF()
 		/*building the registry*/
 		BuildRegistry();
 
-		handleSceneData();
+		/*handles all files in the scene and exports the raw data from the .bbf files
+		to the .bpf file*/
+		HandleSceneData();
+
+		/*writing the registry to .bpf file*/
+		WriteRegistry();
 
 		Close();
 	}
@@ -113,7 +118,7 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 {
 }
 
-void ResourceLibExporter::handleSceneData()
+void ResourceLibExporter::HandleSceneData()
 {
 	std::ifstream* fromServer = new std::ifstream();
 	std::vector<std::string>* serverFiles = m_FileImporter->GetFilePaths();
@@ -122,11 +127,17 @@ void ResourceLibExporter::handleSceneData()
 		fromServer->open(serverFiles->at(i), std::fstream::binary);
 		if (fromServer->is_open())
 		{
+			
 
-		fromServer->close();	
+
+			fromServer->close();	
 		}
 	}
 	delete fromServer;
+}
+
+void ResourceLibExporter::WriteRegistry()
+{
 }
 
 bool ResourceLibExporter::Open()
