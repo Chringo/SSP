@@ -6,11 +6,9 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/grid.bbf");
-	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
+	filePaths[BPF_FILE] = std::string("../ResourceLib/AssetFiles/AssetFile.bpf");
 
-	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
-	fileHandles[REG_FILE].rdbuf()->pubsetbuf(0, 0);			 //Disable streaming buffers
+	fileHandles[BPF_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 
 	for (size_t i = 0; i < NUM_FILES; i++)
 	{
@@ -63,10 +61,10 @@ bool Resources::FileLoader::CloseFile(Files file)
 	return true;
 }
 
-Resources::FileLoader::RegIndex * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
+RegistryItem * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
 {
 
-	std::unordered_map<unsigned int, RegIndex>::iterator got = m_fileRegistry.find(objectId);
+	std::unordered_map<unsigned int, RegistryItem>::iterator got = m_fileRegistry.find(objectId);
 	if (got == m_fileRegistry.end()) { // if the index does not exists in memory
 
 		return nullptr;
@@ -78,7 +76,7 @@ Resources::FileLoader::RegIndex * Resources::FileLoader::GetRegistryIndex(const 
 
 Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, char*& data, size_t * size)
 {
-	if (fileStates[RESOURCE_FILE] == CLOSED)
+	if (fileStates[BPF_FILE] == CLOSED)
 	{
 		std::cout << "File is closed" << std::endl;
 		return Status::ST_FILE_CLOSED;
@@ -87,7 +85,7 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 
 
 	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
-	std::ifstream* infile = &fileHandles[RESOURCE_FILE];
+	std::ifstream* infile = &fileHandles[BPF_FILE];
 
 	MainHeader mainHeader;
 	infile->read((char*)&mainHeader, sizeof(MainHeader));
@@ -172,20 +170,27 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
 
-	if (!OpenFile(Files::REG_FILE))
+	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
-		//MessageBox(NULL, TEXT("No registry file found"), TEXT("Critical error!"), MB_OK);
+		//MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-//	char* data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
-
+	
+	RegistryHeader regHead;
+	fileHandles[BPF_FILE].read((char*)&regHead, sizeof(RegistryHeader));
+	m_fileRegistry.reserve((size_t)regHead.numIds);
+	for (size_t i = 0; i < regHead.numIds; i++)
+	{
+		RegistryItem item;
+		fileHandles[BPF_FILE].read((char*)&item, sizeof(RegistryItem));
+		this->m_fileRegistry[item.id] = item;
+	}
 
 	//fileHandles[REG_FILE].read()
 
-	CloseFile(Files::REG_FILE);
+	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;
 }

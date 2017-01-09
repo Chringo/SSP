@@ -56,7 +56,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 
 	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
-	if (!fileLoader->OpenFile(Resources::FileLoader::Files::RESOURCE_FILE))
+	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
 		std::cout << "Could not open resource file"<<std::endl;
 		//return ST_ERROR_OPENING_FILE;
 
@@ -92,7 +92,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 	if(loadedLevel != 0)
 		UnloadLevel(loadedLevel); //Unload the previous level
 	loadedLevel = id;
-	fileLoader->CloseFile(Resources::FileLoader::Files::RESOURCE_FILE);
+	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
 	return Resources::Status::ST_OK;
 }
 

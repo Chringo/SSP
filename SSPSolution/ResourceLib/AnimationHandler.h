@@ -3,8 +3,8 @@
 #include "Animation.h"
 #include "FileLoader.h"
 #include "FileHeaders.h"
-namespace Resources {
-
+namespace Resources 
+{
 	/*
 	AUTHOR: Martin Clementson
 	This class holds all the mesh data in ram.
@@ -16,7 +16,6 @@ namespace Resources {
 	*/
 	class AnimationHandler
 	{
-
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_animations;
 		std::deque <Animation*> m_emptyContainers;

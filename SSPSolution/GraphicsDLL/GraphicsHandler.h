@@ -23,6 +23,7 @@ class GRAPHICSDLL_API GraphicsHandler
 
 #ifdef _DEBUG
 private:
+	bool editorMode = false;
 	enum BoundingTypes {
 		T_OBB,
 		T_AABB,
@@ -31,15 +32,22 @@ private:
 		T_NUM_TYPES
 	};
 	DebugRenderer m_debugRender;
-	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
-	std::vector<OBB*>   obbBoxes;
-	std::vector<AABB*>  aabbBoxes;
+	std::vector<OBB  *>   obbBoxes;
+	std::vector<AABB *>  aabbBoxes;
 	std::vector<Plane*> planes;
+	std::vector<Sphere*> spheres;
+
+	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
+	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
+	
 	ID3D11DepthStencilView* dsv;
 public:
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box);
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box);
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane);
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+private:
+	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
 
 private:
@@ -71,10 +79,10 @@ public:
 	GraphicsHandler();
 	~GraphicsHandler();
 
-	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode = false);
 	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	Camera* SetCamera(Camera* newCamera);
-	int Render();
+	int Render(float deltaTime);
 
 	int SetComponentArraySize(int newSize);
 	GraphicsComponent* GetNextAvailableComponent();

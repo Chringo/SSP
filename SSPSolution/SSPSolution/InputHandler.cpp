@@ -248,12 +248,12 @@ void InputHandler::ApplyMouseWheel(int x, int y)
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
-	return DirectX::XMFLOAT2(m_mouseX, m_mouseY);
+	return DirectX::XMFLOAT2((float)m_mouseX, (float)m_mouseY);
 }
 
 DirectX::XMFLOAT2 InputHandler::GetMouseDelta()
 {
-	return DirectX::XMFLOAT2(this->m_mouseDX, this->m_mouseDY);
+	return DirectX::XMFLOAT2((float)this->m_mouseDX, (float)this->m_mouseDY);
 }
 
 DirectX::XMFLOAT2 InputHandler::GetMouseWheel()

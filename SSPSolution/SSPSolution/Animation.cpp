@@ -16,7 +16,7 @@ Animation::Animation()
 	/*Initialize the stack with a default "IDLE" animation.*/
 	Push(0, false);
 
-	for (int i = 0; i < jointCount; i++)
+	for (unsigned int i = 0; i < jointCount; i++)
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
@@ -25,7 +25,7 @@ Animation::Animation()
 Animation::~Animation()
 {
 	delete m_graphicsAnimationComponent;
-	//delete modelPtr;
+
 }
 
 void Animation::Update(float dt)
@@ -55,14 +55,14 @@ void Animation::Update(float dt)
 
 void Animation::Interpolate(float currentTime)
 {
-	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		Resources::Animation::AnimationJoint animatedJoint = animatedJointsList[jointIndex];
 
 		/*The current time is the first keyframe.*/
 		if (currentTime <= animationStack.top().startFrame)
 		{
-			int startFrame = animationStack.top().startFrame;
+			int startFrame = (int)animationStack.top().startFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
@@ -86,7 +86,7 @@ void Animation::Interpolate(float currentTime)
 		/*The current time is the last keyframe.*/
 		else if (currentTime >= animationStack.top().endFrame)
 		{
-			int endFrame = animationStack.top().endFrame;
+			int endFrame = (int)animationStack.top().endFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);

@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Mesh.h"
 #include "MemoryManager.h"
+#include "FileHeaders.h"
 namespace Resources
 {
 	/*
@@ -21,45 +22,42 @@ namespace Resources
 	The function reads the whole file and puts it into a char buffer.
 	*/
 
-
-	class DLL_OPERATION FileLoader{
+	class FileLoader
+	{
 	public:
-		enum Files{
-			RESOURCE_FILE = 0,
-			REG_FILE      = 1
+		enum Files
+		{
+			BPF_FILE,
+
+			NUM_FILES
 		};
-		enum FileState{
+		enum FileState
+		{
 			CLOSED = 0,	//This is used to keep a file open. 
 			OPEN   = 1	//When loading a level, we dont want to open/close the BPF for every function call.
 		};
-		struct RegIndex {
-			unsigned int id;		// Resource id
-			unsigned int startBit;  // Place in BPF file
-			unsigned int byteSize;  // How many bytes to memcpy.
-		};
+		
 	private:
-		static const size_t NUM_FILES		= 2;
 		static const size_t LEVEL_MEMORY	= 128; //kb
 		static const size_t RESOURCE_MEMORY = 256; //kb
-		
-											 
+							 
 		FileState     fileStates [NUM_FILES]; 
 		std::string	  filePaths  [NUM_FILES];
 		std::ifstream fileHandles[NUM_FILES];
 
-		std::unordered_map<unsigned int, RegIndex> m_fileRegistry;
+		std::unordered_map<unsigned int, RegistryItem> m_fileRegistry;
 		MemoryManager mem_manager;
 		FileLoader();
 	public:
-		static FileLoader* GetInstance(); //Singleton
-		virtual ~FileLoader();
-	
-		bool OpenFile(Files file);
-		bool CloseFile(Files file);
-		RegIndex* GetRegistryIndex(const unsigned int& objectId);
-		Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
-		Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
-		Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
+		DLL_OPERATION static FileLoader* GetInstance(); //Singleton
+		DLL_OPERATION virtual ~FileLoader();
+
+		DLL_OPERATION bool OpenFile(Files file);
+		DLL_OPERATION bool CloseFile(Files file);
+		DLL_OPERATION RegistryItem* GetRegistryIndex(const unsigned int& objectId);
+		DLL_OPERATION Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
+		DLL_OPERATION Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
+		DLL_OPERATION Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 
 	private:
 		Resources::Status LoadRegistryFile(); //Load registry into memory on startup

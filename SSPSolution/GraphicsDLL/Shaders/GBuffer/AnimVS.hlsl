@@ -4,15 +4,14 @@ cbuffer worldMatrix : register(b0)
     float4x4 worldMatrix;
 }
 
-cbuffer camera : register(b1)
+cbuffer frame : register(b1)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
 
     float4 camPos;
-    float4 padding1;
-    float4 padding2;
-    float4 padding3;
+    float timer,
+    padding1, padding2, padding3;
 }
 cbuffer skeleton : register(b4)
 {

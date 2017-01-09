@@ -30,12 +30,16 @@ private:
 	//This is the window we render to
 	SDL_Window* m_window;
 
+	GameStateHandler m_gsh;
+
 	Camera* m_camera;
+	//This is the inputhandler which stores the state of the inputs
+	InputHandler* m_inputHandler;
 	//These are the subsystems
 	GraphicsHandler* m_graphicsHandler;
-	InputHandler* m_inputHandler;
-	//this is a physicsHandler
-	PhysicsHandler m_physicsHandler;
+	PhysicsHandler m_physicsHandler; //this is a physicsHandler
+	//This is the component handler which acts as an interface between the subsystems and the states
+	ComponentHandler m_componentHandler;
 	NetworkModule m_networkModule;
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
@@ -54,6 +58,10 @@ public:
 private:
 	int HandleEvents();
 	int FullscreenToggle();
+
+	//temporary functions
+	void LockCameraToPlayer(float translateCameraX, float translateCameraY, float translateCameraZ);
+	void CreateDummyObjects();
 };
 
 #endif
