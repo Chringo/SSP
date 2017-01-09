@@ -23,16 +23,17 @@ public:
 private: 	
 
 	// pointers to the main device and context
-	ID3D11Device		*m_Device		 = nullptr;
-	ID3D11DeviceContext *m_DeviceContext = nullptr;
-	ID3D11RenderTargetView* backBufferRTV;
-	ID3D11ShaderResourceView* backBufferSRV;
+	ID3D11Device			* m_Device				 = nullptr;
+	ID3D11DeviceContext		* m_DeviceContext		 = nullptr;
+	ID3D11RenderTargetView*   m_backBufferRTV		 = nullptr;
+	ID3D11ShaderResourceView* m_backBufferSRV		 = nullptr;
 	Shaders m_activeShader;
-public:
 	Shader* m_shaders[NUM_SHADERS];
+public:
 	ShaderControl();
 	~ShaderControl();
 	bool Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, const DirectX::XMINT2& resolution);
+	bool InitializeWireframe(ID3D11Device * device);
 	void Release();
 
 	void SetActive(Shaders type);
@@ -42,8 +43,8 @@ public:
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
 	void Draw(Resources::Model * model, penis * component);
+	ID3D11DepthStencilView* GetBackBufferDSV() const {return((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencilView();}
 
-	void DrawEditor(Resources::Model * model, GraphicsComponent * component);
 	void DrawFinal();
 
 	int ClearFrame();

@@ -24,6 +24,12 @@ bool ShaderControl::Initialize(ID3D11Device * gDevice, ID3D11DeviceContext * gDe
 	return true;
 }
 
+bool ShaderControl::InitializeWireframe(ID3D11Device * device)
+{
+	((DeferredShader*)m_shaders[DEFERRED])->InitializeGridShader(device);
+	return true;
+}
+
 void ShaderControl::Release()
 {
 	for (size_t i = 0; i < NUM_SHADERS; i++)
@@ -61,9 +67,8 @@ void ShaderControl::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 
 int ShaderControl::SetBackBuffer(ID3D11RenderTargetView * backBufferRTV, ID3D11ShaderResourceView* backBufferSRV)
 {
-	this->backBufferRTV = backBufferRTV;
-	this->backBufferSRV = backBufferSRV;
-	
+	this->m_backBufferRTV  = backBufferRTV;
+	this->m_backBufferSRV  = backBufferSRV;
 	((FinalShader*)m_shaders[FINAL])->SetRenderParameters(backBufferRTV,
 		((DeferredShader*)m_shaders[DEFERRED])->GetShaderResourceViews()
 	);
@@ -72,9 +77,10 @@ int ShaderControl::SetBackBuffer(ID3D11RenderTargetView * backBufferRTV, ID3D11S
 
 void ShaderControl::PostProcess()
 {
-	ID3D11RenderTargetView* rtv = this->backBufferRTV;
+	ID3D11RenderTargetView* rtv = this->m_backBufferRTV;
 	PostProcessShader::PostEffects fx;
 	bool processed = false;
+	m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, NULL);
 	for (size_t i = 0; i < PostProcessShader::NUM_TYPES; i++)
 	{
 		fx = PostProcessShader::PostEffects(i);
@@ -94,9 +100,9 @@ void ShaderControl::PostProcess()
 
 
 		ID3D11Resource* bbResource;
-		backBufferSRV->GetResource(&bbResource);
+		m_backBufferSRV->GetResource(&bbResource);
 		m_DeviceContext->CopyResource(bbResource,postResource);
-		m_DeviceContext->OMSetRenderTargets(1, &backBufferRTV, NULL);
+		m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, NULL);
 	}
 }
 
@@ -120,7 +126,7 @@ void ShaderControl::Draw(Resources::Model * model, GraphicsComponent * component
 	}
 }
 
-void ShaderControl::Draw(Resources::Model * model, penis * component)
+void ShaderControl::Draw(Resources::Model * model, penis * component) // FOR FAN
 {
 	switch (m_activeShader)
 	{
@@ -131,15 +137,6 @@ void ShaderControl::Draw(Resources::Model * model, penis * component)
 
 }
 
-void ShaderControl::DrawEditor(Resources::Model * model, GraphicsComponent * component)
-{
-	switch (m_activeShader)
-	{
-	case DEFERRED:
-		((DeferredShader*)m_shaders[DEFERRED])->DrawFromEditor(model);
-		break;
-	}
-}
 
 void ShaderControl::DrawFinal()
 {

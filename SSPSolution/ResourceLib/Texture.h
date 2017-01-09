@@ -4,7 +4,7 @@
 
 namespace Resources {
 
-	class Texture :
+	class DLL_OPERATION Texture :
 		public Resource
 	{
 	private:
