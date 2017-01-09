@@ -1,7 +1,6 @@
 #include "GameStateHandler.h"
 
 
-
 GameStateHandler::GameStateHandler()
 {
 }
@@ -48,6 +47,8 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler)
 	{
 		//Push it to the gamestate stack/vector
 		this->m_stateStack.push_back(levelSelect);
+		
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/complex.level"));
 	}
 	else
 	{
