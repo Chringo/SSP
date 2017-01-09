@@ -121,6 +121,7 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 	Resources::Resource::RawResourceData* u_data = (Resources::Resource::RawResourceData*)m_BBF_File;
 	for (int i = 0; i < m_Items.size(); ++i)
 	{
+		/*finding the corresponding item to the current bbf file and adding the startpoint and size*/
 		if (m_Items.at(i).id == u_data->m_id)
 		{
 			m_Items.at(i).startBit = this->m_Output->tellp();
@@ -144,7 +145,16 @@ void ResourceLibExporter::HandleSceneData()
 		//need to check if it's a material or texture;
 		if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 		{
-			WriteToBPF(data, (const unsigned int)dataSize);
+			std::string dotName = serverFiles->at(i).substr(serverFiles->at(i).rfind(".")).c_str();
+
+			if (dotName != ".mat" && dotName != ".dds")
+			{
+				WriteToBPF(data, (const unsigned int)dataSize);
+			}
+			else
+			{
+				printf("material or texture\n");
+			}
 		}
 	}
 }
