@@ -135,7 +135,50 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
 	/*special case function that converts .mat files to raw data in the .bpf file*/
+	Resources::Resource::RawResourceData* fileData = (Resources::Resource::RawResourceData*)m_BBF_File;
+	for (int i = 0; i < m_Items.size(); ++i)
+	{
+		/*finding the corresponding item to the current bbf file and adding the startpoint and size*/
+		if (m_Items.at(i).id == fileData->m_id)
+		{
+			m_Items.at(i).startBit = this->m_Output->tellp();
+			m_Items.at(i).byteSize = sizeof(Resources::Resource::RawResourceData) + sizeof(MaterialHeader);
+			break;
+		}
+	}
 
+	/*writing the material to the .bpf file*/
+	this->m_Output->write(m_BBF_File, (sizeof(Resources::Resource::RawResourceData) + sizeof(MaterialHeader)));
+	m_BBF_File += sizeof(Resources::Resource::RawResourceData);
+	MaterialHeader* exportMaterial = (MaterialHeader*)m_BBF_File;
+	m_BBF_File += sizeof(MaterialHeader);
+
+	/*getting the texture name lengths and stepping to the name lengths*/
+	unsigned int* textureNameLength[5];
+	for (int i = 0; i < 5; ++i)
+	{
+		textureNameLength[i] = (unsigned int*)m_BBF_File;
+		m_BBF_File += sizeof(unsigned int);
+	}
+
+	/*should probably copy the textures here*/
+	for (int i = 0; i < 5; ++i)
+	{
+		for (int j = 0; j < m_Items.size(); ++j)
+		{
+			if (m_Items.at(j).id == exportMaterial->textureIDs[i])
+			{
+				m_Items.at(j).startBit = this->m_Output->tellp();
+				
+				/* todo:
+				copy the textures into a folder. (specify where eith martin or someone)
+				remake the texturename to just the texturename
+				set the bytesize to the new namelength
+				write the information to the .bpf file after a break in this loop*/
+
+			}
+		}
+	}
 }
 
 void ResourceLibExporter::HandleSceneData()
