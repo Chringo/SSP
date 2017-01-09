@@ -13,6 +13,7 @@
 #include <qmessagebox.h>
 #include <qdatetime.h>
 #include "UiControlHandler.h"
+#include "ResourceLibExporter.h"
 
 	class SSP_Editor : public QMainWindow
 	{
@@ -42,6 +43,7 @@
 		QModelIndex *m_item;
 		D3DRenderWidget* m_D3DRenderWidget;
 		FileImporter* m_fileImporter;
+		ResourceLibExporter* m_resourceLibExporter = ResourceLibExporter::GetInstance();
 	
 		D3DRenderWidget* m_D3DRenderWidgetPreview;
 		 QDateTime time;
