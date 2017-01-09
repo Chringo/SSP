@@ -270,8 +270,9 @@ int GraphicsHandler::Render(float deltaTime)
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}
-	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
+
 	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
 
 	//RenderGrid(m_modelsPtr[1], )
@@ -412,11 +413,7 @@ void GraphicsHandler::Shutdown()
 		this->m_windowHandle = nullptr;
 	}
 
-	//for (int i = 1; i < 2; i++)
-	//{
-	//	delete this->m_animGraphicsComponents[i];
-	//	this->m_animGraphicsComponents[i] = nullptr;
-	//}
+
 	if (!editorMode)
 	{
 		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
@@ -539,18 +536,8 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new penis*[2];
-	for (int i = 0; i < 2; i++) {
-		this->m_animGraphicsComponents[i] = nullptr;
-	}
+	this->m_animGraphicsComponents = new penis*;
 
-	this->m_animGraphicsComponents[1] = new penis;
-
-	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
-	for (int j = 0; j < 32; j++)
-	{
-		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
-	}
 	
 	/*TEMP MODELS*/
 	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);

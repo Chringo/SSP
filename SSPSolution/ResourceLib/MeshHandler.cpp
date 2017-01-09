@@ -66,7 +66,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	char* data = nullptr;
 	size_t dataSize = 0;
 	std::string path = "../ResourceLib/AssetFiles/grid.bbf";
-	//std::string path = "../ResourceLib/AssetFiles/grid.bbf";
+
 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
 	if (st != ST_OK)
 		return st;
@@ -175,8 +175,8 @@ Resources::Status Resources::MeshHandler::UnloadMesh(const unsigned int & id)
 
 Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 {
-	//std::string path = "../ResourceLib/AssetFiles/SkelMesh_no_skel.bbf";
-	std::string path;
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.bbf";
+
 	char* data = nullptr;
 	size_t dataSize = 0;
 	Status st = FileLoader::GetInstance()->LoadPlaceHolderMesh(path, data, &dataSize);

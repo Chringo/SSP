@@ -124,8 +124,20 @@ Resources::Status Resources::FileLoader::LoadPlaceHolderMesh(std::string& path, 
 
 	MeshHeader meshHeader;
 
+	size_t sizetoRead;
+
 	infile.read((char*)&meshHeader, sizeof(MeshHeader));
-	size_t sizetoRead = sizeof(Resource::RawResourceData) + sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+
+	if (meshHeader.skeleton == true)
+	{
+		sizetoRead = sizeof(Resource::RawResourceData) + sizeof(MeshHeader) + (sizeof(Mesh::VertexAnim) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+	}
+
+	else
+	{
+		sizetoRead = sizeof(Resource::RawResourceData) + sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+	}
+	
 
 	Resource::RawResourceData tempRes;
 	tempRes.m_id = -11;
