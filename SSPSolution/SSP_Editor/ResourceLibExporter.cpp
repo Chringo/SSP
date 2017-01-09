@@ -119,9 +119,10 @@ void ResourceLibExporter::BuildRegistry()
 void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
 	//put check here to change the registry
+	Resources::Resource::RawResourceData* u_data = (Resources::Resource::RawResourceData*)m_BBF_File;
 	for (int i = 0; i < m_Items.size(); ++i)
 	{
-		if (m_Items.at(i).id == (unsigned int)m_BBF_File)
+		if (m_Items.at(i).id == u_data->m_id)
 		{
 			m_Items.at(i).startBit = this->m_Output->tellp();
 			m_Items.at(i).byteSize = fileSize;
