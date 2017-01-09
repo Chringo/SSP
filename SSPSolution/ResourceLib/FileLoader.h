@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "MemoryManager.h"
 #include "FileHeaders.h"
+#include "../SSP_Editor/LevelHeaders.h"
 namespace Resources
 {
 	/*
@@ -57,6 +58,7 @@ namespace Resources
 		DLL_OPERATION Resources::Status LoadResource(const unsigned int& id, char*& data, size_t* size);
 		DLL_OPERATION Resources::Status LoadPlaceHolderMesh(std::string& path, char*& data, size_t* size);
 		DLL_OPERATION Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
+		DLL_OPERATION Resources::Status LoadLevel(std::string& path, LevelData::Level*& levelPtr);
 
 	private:
 		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
