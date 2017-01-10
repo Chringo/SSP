@@ -16,14 +16,17 @@ Level::Level()
 		player1.position = { 1.0f, 0.0, 0.0f };
 		player1.rotation = { 0.0f, 0.0f, 0.0f };
 		player1.isDirty = true;
+		player1.component.worldMatrix = DirectX::XMMatrixIdentity();
+		player1.component.modelID = PLAYER1;
 		this->m_ModelMap[PLAYER1].push_back(player1);
 		this->m_uniqueModels.push_back(PLAYER1);
 	
-
 		player2.internalID = 1;
 		player2.position = { -1.0f, 0.0, 0.0f };
 		player2.rotation = { 0.0f, 0.0f, 0.0f };
 		player2.isDirty = true;
+		player2.component.worldMatrix = DirectX::XMMatrixIdentity();
+		player2.component.modelID = PLAYER2;
 		this->m_ModelMap[PLAYER2].push_back(player2);
 		this->m_uniqueModels.push_back(PLAYER2);
 	
@@ -70,12 +73,6 @@ Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int insta
 
 Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
-	
-
-	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
-	std::vector<Container>* modelPtr;
-
-
 	if (modelID == PLAYER1 || modelID == PLAYER2)
 	{
 		switch (modelID)
@@ -86,15 +83,20 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 			this->m_ModelMap[modelID].at(0).isDirty = true;
 			break;
 		case PLAYER2:
-			this->m_ModelMap[modelID].at(1).position = { -1.0f, 0.0f, 0.0f };
-			this->m_ModelMap[modelID].at(1).rotation = { 0.0f, 0.0f, 0.0f };
-			this->m_ModelMap[modelID].at(1).isDirty = true;
+			this->m_ModelMap[modelID].at(0).position = { -1.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).rotation = { 0.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).isDirty = true;
 			break;
 		default:
-			return Resources::Status::ST_OK;
 			break;
 		}
+		//SelectionHandler::GetInstance()->SetSelection(false);
+		return Resources::Status::ST_OK;
 	}
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
+	std::vector<Container>* modelPtr;
+
+
 
 	Container newComponent;
 
