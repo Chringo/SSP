@@ -170,12 +170,12 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 		{
 			if (m_Items.at(j).id == exportMaterial->textureIDs[i]) //doesnt work
 			{
-				m_Items.at(j).byteSize = textureName.rfind("/");
+				std::string substring = textureName.substr(textureName.rfind("/")+1, m_Items.at(j).byteSize); //check if this works
+				m_Items.at(j).byteSize = substring.length();
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				CopyTextureFile(&textureName);
-				std::string *substring = &textureName.substr(m_Items.at(j).byteSize); //check if this works
+				//CopyTextureFile(&textureName);
 
-				m_Output->write((char*)&textureName.substr(m_Items.at(j).byteSize), m_Items.at(j).byteSize);
+				m_Output->write((char*)&substring, m_Items.at(j).byteSize);
 				break;
 			}
 		}
@@ -185,7 +185,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 
 void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
-	std::string newFilePath = m_DestinationPath + file->substr(file->rfind("/"));
+	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind(".")) + file->substr(file->rfind("/"));
 	
 	/*edit bool if the desire for a check exists*/
 	CopyFile((LPCWSTR)*file->c_str(), (LPCWSTR)newFilePath.c_str(), false);
