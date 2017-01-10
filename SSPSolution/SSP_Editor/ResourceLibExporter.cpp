@@ -170,8 +170,8 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 		{
 			if (m_Items.at(j).id == exportMaterial->textureIDs[i]) //doesnt work
 			{
-				std::string substring = textureName.substr(textureName.rfind("/")+1, m_Items.at(j).byteSize); //check if this works
-				m_Items.at(j).byteSize = substring.length();
+				std::string substring = textureName.substr(textureName.rfind("/")+1);
+				m_Items.at(j).byteSize = (unsigned int)substring.length();
 				m_Items.at(j).startBit = this->m_Output->tellp();
 				CopyTextureFile(&textureName);
 
