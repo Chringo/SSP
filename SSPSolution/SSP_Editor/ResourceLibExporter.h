@@ -65,7 +65,6 @@ private:
 
 	bool Open();
 	bool Close();
-	char* ImportFromServer(unsigned int index, unsigned int &FileSize);
 };
 
 #endif

@@ -150,7 +150,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	/*writing the material to the .bpf file*/
 	this->m_Output->write(m_BBF_File, (sizeof(Resources::Resource::RawResourceData) + sizeof(MaterialHeader)));
 	m_BBF_File += sizeof(Resources::Resource::RawResourceData);
-	MaterialHeader* exportMaterial = (MaterialHeader*)m_BBF_File;
+	MaterialHeader* exportMaterial = (MaterialHeader*)(m_BBF_File);
 	m_BBF_File += sizeof(MaterialHeader);
 
 	/*getting the texture name lengths and stepping to the texture names*/
@@ -164,17 +164,18 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	/*should probably copy the textures here*/
 	for (int i = 0; i < 5; ++i)
 	{
-		std::string* textureName = (std::string*)m_BBF_File;
+		std::string textureName = m_BBF_File;
+
 		for (int j = 0; j < m_Items.size(); ++j)
 		{
-			if (m_Items.at(j).id == exportMaterial->textureIDs[i])
+			if (m_Items.at(j).id == exportMaterial->textureIDs[i]) //doesnt work
 			{
-				m_Items.at(j).byteSize = textureName->rfind("/");
+				m_Items.at(j).byteSize = textureName.rfind("/");
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				CopyTextureFile(textureName);
-				std::string *substring = &textureName->substr(m_Items.at(j).byteSize); //check if this works
+				CopyTextureFile(&textureName);
+				std::string *substring = &textureName.substr(m_Items.at(j).byteSize); //check if this works
 
-				m_Output->write((char*)&textureName->substr(m_Items.at(j).byteSize), m_Items.at(j).byteSize);
+				m_Output->write((char*)&textureName.substr(m_Items.at(j).byteSize), m_Items.at(j).byteSize);
 				break;
 			}
 		}
@@ -244,9 +245,4 @@ bool ResourceLibExporter::Close()
 	if(!m_Output->is_open())
 		return true;
 	return false;
-}
-
-char * ResourceLibExporter::ImportFromServer(unsigned int index, unsigned int & FileSize)
-{
-	return nullptr;
 }
