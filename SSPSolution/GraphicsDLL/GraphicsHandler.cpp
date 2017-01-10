@@ -85,7 +85,7 @@ int GraphicsHandler::IncreaseArraySize()
 		}
 		else
 		{
-			newArray[i] = nullptr;
+			newArray[i] = new GraphicsComponent();
 		}
 	}
 	delete[] this->m_graphicsComponents;
@@ -262,11 +262,13 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	for (int i = 1; i < 4; i++) //FOR EACH NORMAL GEOMETRY
+
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
 		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
 	}
+
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
 	//{
 	//}

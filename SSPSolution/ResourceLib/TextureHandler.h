@@ -32,6 +32,7 @@ namespace Resources
 		DLL_OPERATION Texture* GetPlaceHolderTextures();
 	private:
 		bool LoadPlaceHolderTextures();
+		Texture* GetEmptyContainer();
 	};
 }
 

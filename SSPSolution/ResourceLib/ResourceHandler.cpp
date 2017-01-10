@@ -22,6 +22,7 @@ Resources::ResourceHandler::~ResourceHandler()
 {
 
 	delete m_modelHandler;
+	delete m_CurrentLevel;
 }
 
 Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
@@ -45,14 +46,6 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 		- Then loop through the resources and check ref counting
 	*/
 
-	if (loadedLevel == id)
-	{
-#ifdef _DEBUG
-		std::cout << "Level already loaded" << std::endl;
-#endif // _DEBUG
-		return Resources::ST_RES_ALREADY_LOADED;	
-
-	}
 
 	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
@@ -89,9 +82,69 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 		}
 
 	}
-	if(loadedLevel != 0)
-		UnloadLevel(loadedLevel); //Unload the previous level
-	loadedLevel = id;
+	if(m_CurrentLevel != nullptr)
+		UnloadLevel(m_CurrentLevel); //Unload the previous level
+	//m_CurrentLevel = ne;
+	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+	return Resources::Status::ST_OK;
+}
+
+Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeader * levelResources, unsigned int numResources)
+{
+	if (m_device == nullptr) {
+		std::cout << "No device is set. Cannot load resources" << std::endl;
+		return Status::ST_DEVICE_MISSING;
+	}
+	/*
+	- Load level information,
+	- Load all models that are in the level.
+	- Construct the models, load resources if needed and add a reference counter to all the resources used in the model
+
+	- Unload the last level, decrement the reference counterof all the resources.
+	- if a reference counter hits 0, unload the resource
+
+	/* T e s t */
+	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
+	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
+	{
+		std::cout << "Could not open resource file" << std::endl;
+		return ST_ERROR_OPENING_FILE;
+	}
+
+	LevelResources* newLevel = new LevelResources;
+	newLevel->ids = new unsigned int[numResources];
+	newLevel->numResources = numResources;
+
+	// for each model in level
+	Status st;
+	for (size_t i = 0; i < numResources; i++)
+	{
+		//Get id of the model 
+		unsigned int id = levelResources[i].id;
+		newLevel->ids[i] = id;
+
+		ResourceContainer* modelPtr = nullptr;
+		
+		st = m_modelHandler->GetModel(id, modelPtr);
+		switch (st)
+		{
+		case Resources::Status::ST_RES_MISSING:
+		{
+#ifdef _DEBUG
+			std::cout << "Model missing, loading" << std::endl;
+#endif // _DEBUG
+			//Load the model
+			Status modelSt = m_modelHandler->LoadModel(id, modelPtr); //if this fails, placeholder will take the place
+			break;
+		}
+		case Resources::Status::ST_OK:
+			modelPtr->refCount += 1; //Add the reference count
+			break;
+		}
+	}
+	if (m_CurrentLevel != nullptr)
+		UnloadLevel(m_CurrentLevel); //Unload the previous level
+	m_CurrentLevel = newLevel;
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
 	return Resources::Status::ST_OK;
 }
@@ -136,6 +189,7 @@ Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& 
 	case Status::ST_RES_MISSING:
 		/*return placeholder MODEL*/
 		modelPtr = m_modelHandler->GetPlaceholderModel();
+		return  Resources::Status::ST_RES_MISSING;
 		break;
 	default:
 		return st;
@@ -144,14 +198,26 @@ Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& 
 	return  Resources::Status::ST_OK;
 }
 
-Resources::Status Resources::ResourceHandler::UnloadLevel(unsigned int & id)
+Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelRes)
 {
 
 	//for each model in level
 	//get id of model and unload id
-	Status st = m_modelHandler->UnloadModel(id);
-	if (st != ST_OK)
-		return st;
+	Status st;
+	for (size_t i = 0; i < levelRes->numResources; i++)
+	{
+		st = m_modelHandler->UnloadModel(levelRes->ids[i]);
+#ifdef _DEBUG
+		std::cout << "Model missing, loading" << std::endl;
+		if (st != ST_OK)
+		{
+			MessageBox(NULL, TEXT("Error in unloading model"), TEXT("ERROR"), MB_OK);
+			//return st;
+		}
+#endif // _DEBUG
+	}
+	
+	delete levelRes;
 
 	return Resources::Status::ST_OK;
 }
