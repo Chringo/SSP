@@ -153,7 +153,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	MaterialHeader* exportMaterial = (MaterialHeader*)m_BBF_File;
 	m_BBF_File += sizeof(MaterialHeader);
 
-	/*getting the texture name lengths and stepping to the name lengths*/
+	/*getting the texture name lengths and stepping to the texture names*/
 	unsigned int* textureNameLength[5];
 	for (int i = 0; i < 5; ++i)
 	{
@@ -164,21 +164,30 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	/*should probably copy the textures here*/
 	for (int i = 0; i < 5; ++i)
 	{
+		std::string* textureName = (std::string*)m_BBF_File;
 		for (int j = 0; j < m_Items.size(); ++j)
 		{
 			if (m_Items.at(j).id == exportMaterial->textureIDs[i])
 			{
+				m_Items.at(j).byteSize = textureName->rfind("/");
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				
-				/* todo:
-				copy the textures into a folder. (specify where eith martin or someone)
-				remake the texturename to just the texturename
-				set the bytesize to the new namelength
-				write the information to the .bpf file after a break in this loop*/
+				CopyTextureFile(textureName);
+				std::string *substring = &textureName->substr(m_Items.at(j).byteSize); //check if this works
 
+				m_Output->write((char*)&textureName->substr(m_Items.at(j).byteSize), m_Items.at(j).byteSize);
+				break;
 			}
 		}
+		m_BBF_File += *textureNameLength[i];
 	}
+}
+
+void ResourceLibExporter::CopyTextureFile(std::string * file)
+{
+	std::string newFilePath = m_DestinationPath + file->substr(file->rfind("/"));
+	
+	/*edit bool if the desire for a check exists*/
+	CopyFile((LPCWSTR)*file->c_str(), (LPCWSTR)newFilePath.c_str(), false);
 }
 
 void ResourceLibExporter::HandleSceneData()
