@@ -428,7 +428,7 @@ void GraphicsHandler::Shutdown()
 		}
 
 	
-		delete this->m_animGraphicsComponents[1];
+		//delete this->m_animGraphicsComponents[1];
 		delete[] this->m_modelsPtr;
 		delete[] this->m_animGraphicsComponents;
 	}

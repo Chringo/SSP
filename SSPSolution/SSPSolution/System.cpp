@@ -168,7 +168,10 @@ int System::Update(float deltaTime)
 	tempPlayer = this->m_physicsHandler.getDynamicComponentAt(1);
 	DirectX::XMFLOAT3 playerPos;
 	DirectX::XMFLOAT3 cameraPos = this->m_camera->GetCameraPos();
-	DirectX::XMStoreFloat3(&playerPos, tempPlayer->PC_pos);
+	
+	//uncomment this to move player with camera
+	//DirectX::XMStoreFloat3(&playerPos, tempPlayer->PC_pos);
+	
 	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
 
 	//translateCameraX = playerPos.x - cameraPos.x;
@@ -286,27 +289,23 @@ int System::Update(float deltaTime)
 	{
 		animState = 0;
 		m_Anim->Push(animState, true);
-		m_Anim->Pop();
 	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_2))
 	{
 		animState = 1;
-		m_Anim->Pop();
 		m_Anim->Push(animState, true);
 	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_3))
 	{
-		animState = 2;
-		m_Anim->Pop();
+		animState = 2;;
 		m_Anim->Push(animState, true);
 	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_4))
 	{
 		animState = 3;
-		m_Anim->Pop();
 		m_Anim->Push(animState, true);
 	}
 
