@@ -6,7 +6,7 @@ Level::Level()
 {
 	m_ModelMap.reserve(50);
 
-	/*Container player1;
+	Container player1;
 	Container player2;
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got;
 
@@ -28,7 +28,7 @@ Level::Level()
 		player2.component.worldMatrix = DirectX::XMMatrixIdentity();
 		player2.component.modelID = PLAYER2;
 		this->m_ModelMap[PLAYER2].push_back(player2);
-		this->m_uniqueModels.push_back(PLAYER2);*/
+		this->m_uniqueModels.push_back(PLAYER2);
 	
 }
 
@@ -73,26 +73,26 @@ Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int insta
 
 Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
-	//if (modelID == PLAYER1 || modelID == PLAYER2)
-	//{
-	//	switch (modelID)
-	//	{
-	//	case PLAYER1:
-	//		this->m_ModelMap[modelID].at(0).position = { 1.0f, 0.0f, 0.0f };
-	//		this->m_ModelMap[modelID].at(0).rotation = { 0.0f, 0.0f, 0.0f };
-	//		this->m_ModelMap[modelID].at(0).isDirty = true;
-	//		break;
-	//	case PLAYER2:
-	//		this->m_ModelMap[modelID].at(0).position = { -1.0f, 0.0f, 0.0f };
-	//		this->m_ModelMap[modelID].at(0).rotation = { 0.0f, 0.0f, 0.0f };
-	//		this->m_ModelMap[modelID].at(0).isDirty = true;
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	//SelectionHandler::GetInstance()->SetSelection(false);
-	//	return Resources::Status::ST_OK;
-	//}
+	if (modelID == PLAYER1 || modelID == PLAYER2)
+	{
+		switch (modelID)
+		{
+		case PLAYER1:
+			this->m_ModelMap[modelID].at(0).position = { 1.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).rotation = { 0.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).isDirty = true;
+			break;
+		case PLAYER2:
+			this->m_ModelMap[modelID].at(0).position = { -1.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).rotation = { 0.0f, 0.0f, 0.0f };
+			this->m_ModelMap[modelID].at(0).isDirty = true;
+			break;
+		default:
+			break;
+		}
+		//SelectionHandler::GetInstance()->SetSelection(false);
+		return Resources::Status::ST_OK;
+	}
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
 
@@ -162,8 +162,8 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
-	//if (modelID == PLAYER1 || modelID == PLAYER2)
-	//	return Resources::Status::ST_OK;
+	if (modelID == PLAYER1 || modelID == PLAYER2)
+		return Resources::Status::ST_OK;
 
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;

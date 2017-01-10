@@ -6,8 +6,6 @@ Resources::Texture::Texture() : Resource()
 {
 	m_resourceData.m_resType = ResourceType::RES_TEXTURE;
 	m_fileName[0] = '\0';
-	this->textureResource = nullptr;
-	this->textureView = nullptr;
 }
 
 
@@ -19,8 +17,6 @@ Resources::Texture::~Texture()
 Resources::Texture::Texture(Resource::RawResourceData resData): Resource(resData)
 {
 	m_resourceData.m_resType = ResourceType::RES_TEXTURE;
-	this->textureResource = nullptr;
-	this->textureView = nullptr;
 }
 
 Resources::Status Resources::Texture::Create(Resource::RawResourceData * resData)
@@ -28,7 +24,7 @@ Resources::Status Resources::Texture::Create(Resource::RawResourceData * resData
 	Destroy();
 	m_resourceData.m_id = resData->m_id;
 	m_resourceData.m_resType = RES_TEXTURE;
-	return Resources::Status::ST_OK;
+	return Resources::Status();
 }
 
 Resources::Status Resources::Texture::Destroy()

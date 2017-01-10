@@ -22,10 +22,10 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 	this->m_textures.reserve(textureAmount);
 	this->m_containers.reserve(textureAmount);
-	this->m_containers.insert(m_containers.begin(), textureAmount, new Texture());
+	this->m_containers.insert(m_containers.begin(), textureAmount, Texture());
 	for (size_t i = 0; i < textureAmount; i++)
 	{
-		m_emptyContainers.at(i) = m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(i);
 	}
 
 	if (device != nullptr) {
@@ -36,10 +36,6 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 Resources::TextureHandler::~TextureHandler()
 {
-	for (size_t i = 0; i < m_containers.size(); i++)
-	{
-		delete m_containers.at(i);
-	}
 	delete[] placeHolder;
 	placeHolder = nullptr;
 }
@@ -289,11 +285,8 @@ Resources::Texture * Resources::TextureHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)
 	{
-		Texture* newTex = new Texture();
-		m_containers.push_back(newTex);
-	
-		//m_emptyContainers.push_back(m_containers.end()._Ptr);
-		m_emptyContainers.push_back(m_containers.back());
+		m_containers.push_back(Texture());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
 	}
 	return m_emptyContainers.front();
 
