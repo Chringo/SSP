@@ -238,7 +238,12 @@ bool Resources::ModelHandler::CreatePlaceHolder()
 		placeHolderModel->Create(&data);
 		Mesh*     placeMesh = m_meshHandler->GetPlaceHolderMesh();
 		Material* placeMat  = m_materialHandler->GetPlaceHolderMaterial();
+
+		ResourceContainer* skel;
+		m_skeletonHandler->LoadSkeleton(0, skel);
+
 		placeHolderModel->SetMesh(placeMesh);
+		placeHolderModel->SetSkeleton((Skeleton*)skel->resource);
 		placeHolderModel->SetMaterial(placeMat);
 		return true;
 	}

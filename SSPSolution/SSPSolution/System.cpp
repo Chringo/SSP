@@ -96,7 +96,7 @@ int System::Initialize()
 	//Initialize the network module
 	this->m_networkModule.Initialize();
 
-	//this->m_Anim = new Animation();
+	this->m_Anim = new Animation();
 
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 
@@ -311,8 +311,8 @@ int System::Update(float deltaTime)
 	}
 
 	//Update animations here. Temp place right now.
-	//m_Anim->Update(deltaTime);
-	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+	m_Anim->Update(deltaTime);
+	m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
