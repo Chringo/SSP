@@ -211,11 +211,11 @@ void ResourceLibExporter::HandleSceneData()
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
-				if (dotName != ".mat")
+				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
 				}
-				else
+				else if (dotName == ".mat")
 				{
 					WriteMatToBPF(data, (const unsigned int)dataSize);
 				}
