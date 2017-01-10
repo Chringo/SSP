@@ -13,7 +13,7 @@ Animation::Animation()
 		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
+	Resources::Status st = Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), modelPtr);
 
 	skeletonPtr = modelPtr->GetSkeleton();
 

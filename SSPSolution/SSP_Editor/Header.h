@@ -10,3 +10,4 @@ struct Container
 	bool isDirty  = false;
 	bool isStatic = true;
 };
+

@@ -15,7 +15,6 @@ namespace Resources
 	public:
 		struct RawResourceData
 		{
-			//char m_name[256]; 
 			unsigned int m_id;
 			ResourceType m_resType = RES_UNKOWN;
 		};
