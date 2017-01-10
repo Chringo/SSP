@@ -271,7 +271,7 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (this->m_graphicsComponents[i]->active == false)
 			continue;
-		//Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
 		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
