@@ -51,8 +51,6 @@ VS_OUT VS_main(VS_IN input)
     float weight;
     int influences;
 
-	input.Pos[2] *= -1.0;
-
 	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
 	for (int i = 0; i < 4; i++)
 	{

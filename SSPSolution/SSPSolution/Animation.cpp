@@ -7,7 +7,7 @@ Animation::Animation()
 	this->m_graphicsAnimationComponent->joints = 19;
 
 	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
-	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 3, 10);
+	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 4, 10);
 	for (int i = 0; i < 32; i++)
 	{
 		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
@@ -20,6 +20,9 @@ Animation::Animation()
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
+
+	transitionDuration = 1.0f;
+	transitionTime = 0.0f;
 }
 
 Animation::~Animation()
@@ -43,13 +46,29 @@ void Animation::Update(float dt)
 			elapsedTime = 0.0f;
 		}
 
-		else if (newAnimation == true)
+		/*if (newAnimation == true)
 		{
+			Blend(animationStack.top().previousState, animationStack.top().animationState, elapsedTime);
+		}
+
+		else
+		{
+			Interpolate(elapsedTime);
+		}*/
+
+		if (newAnimation == true)
+		{
+			elapsedTime = 0;
 			newAnimation = false;
-			elapsedTime = 0.0f;
 		}
 
 		Interpolate(elapsedTime);
+	}
+
+	/*There is no current animation playing.*/
+	else
+	{
+		return;
 	}
 }
 
@@ -165,6 +184,23 @@ void Animation::Interpolate(float currentTime)
 	CalculateFinalTransform(interpolatedTransforms);
 }
 
+void Animation::Blend(int oldState, int newState, float currentTime)
+{
+	transitionTime += currentTime;
+
+	float duration = animationStack.top().endFrame;
+
+	float t = (transitionTime) / (animationStack.top().endFrame - animationStack.top().startFrame);
+
+	Interpolate(t);
+
+	if (t > 1)
+	{
+		transitionTime = 0;
+		std::cout << "Transition completed!" << std::endl;
+	}
+}
+
 void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
 {
 	DirectX::XMMATRIX matrix = DirectX::XMMATRIX(floatArray);
@@ -239,7 +275,7 @@ void Animation::GetAnimationState(int animationState, AnimationClip & clip)
 
 	interpolatedTransforms.resize(jointCount);
 
-	animationPtr = skeletonPtr->GetAnimation(currentAnimation);
+	animationPtr = skeletonPtr->GetAnimation(animationState);
 
 	animatedJointsList = animationPtr->GetAllJoints();
 
@@ -260,6 +296,5 @@ void Animation::GetAnimationState(int animationState, AnimationClip & clip)
 	clip.endFrame = animatedJointsList->keyframes[animatedJointsList->keyframeCount - 1].timeValue;
 	clip.isLooping = true;
 
-	this->currentAnimation = animationState;
 }
 

@@ -55,8 +55,6 @@ class Animation
 private:
 	std::stack<AnimationClip> animationStack;
 
-	std::vector<DirectX::XMFLOAT4X4> interpolatedTransforms;
-
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
 
 	Resources::Model* modelPtr;
@@ -71,9 +69,13 @@ private:
 
 	const Resources::Animation::AnimationJoint* animatedJointsList;
 
-	int currentAnimation;
+	std::vector<DirectX::XMFLOAT4X4> interpolatedTransforms;
+
 	float elapsedTime;
 	bool newAnimation;
+
+	float transitionTime;
+	float transitionDuration;
 
 public: 
 	Animation();
@@ -92,7 +94,7 @@ public:
 
 	void Interpolate(float currentTime);
 
-	void Blend();
+	void Blend(int oldState, int newState, float currentTime);
 
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
