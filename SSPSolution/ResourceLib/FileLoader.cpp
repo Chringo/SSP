@@ -80,7 +80,6 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 	{
 		std::cout << "File is closed" << std::endl;
 		return Status::ST_FILE_CLOSED;
-
 	}
 
 	RegistryItem* itemPtr = this->GetRegistryIndex(id);	//Get Registry info for this resource

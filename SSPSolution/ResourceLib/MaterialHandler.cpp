@@ -79,17 +79,16 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	if (st != ST_OK)
 		return st;
 
-	MaterialHeader* matData = (MaterialHeader*)(data + sizeof(Resource::RawResourceData));
+	MaterialHeader matData = *(MaterialHeader*)(data + sizeof(Resource::RawResourceData));
 
-	
 	for (size_t i = 0; i < 5; i++) // set the textures
 	{
-		if (matData->textureIDs[i] != 0){
+		if (matData.textureIDs[i] != 0){
 			ResourceContainer* temp = nullptr;
 			
-			st = m_textureHandler->GetTexture(matData->textureIDs[i], temp);
+			st = m_textureHandler->GetTexture(matData.textureIDs[i], temp);
 			if (st == ST_RES_MISSING) {
-				st = m_textureHandler->LoadTexture(id, temp);
+				st = m_textureHandler->LoadTexture(matData.textureIDs[i], temp);
 				if (st != ST_OK)
 					newMaterial->SetTexture(&m_textureHandler->GetPlaceHolderTextures()[i], TextureType(i));
 				else
@@ -103,12 +102,14 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	}
 
 	newMaterial->SetValues(
-		matData->m_Metallic,
-		matData->m_Roughness,
-		matData->m_EmissiveValue
+		matData.m_Metallic,
+		matData.m_Roughness,
+		matData.m_EmissiveValue
 	);
 
+	
 	m_materials[resData->m_id] = ResourceContainer(newMaterial, 1);
+	materialPtr = &m_materials[resData->m_id];
 	m_emptyContainers.pop_front();
 
 	return Resources::Status::ST_OK;
