@@ -92,6 +92,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
 	Resources::Status st = Resources::ST_OK;
+	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 		//For each entity in level
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
@@ -101,6 +102,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		GraphicsComponent* t_gc = m_cHandler->GetGraphicsComponent();
 		t_gc->modelID = currEntity->modelID;
 		t_gc->active = true;
+		resHandler->GetModel(t_gc->modelID, t_gc->modelPtr); //Get and apply a pointer to the model
 		//Create world matrix from data
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
