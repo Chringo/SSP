@@ -82,8 +82,6 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 		return Status::ST_FILE_CLOSED;
 
 	}
-
-
 	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
 	std::ifstream* infile = &fileHandles[BPF_FILE];
 
@@ -179,13 +177,64 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData::Level *& levelPtr)
+{
+	
+	static LevelData::Level level;
+	std::fstream file;
+	file.open(path, std::fstream::in | std::fstream::binary);
+	if (!file.is_open())
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+
+	mem_manager.Clear(Resources::Memory::MEM_LEVEL);
+
+	LevelData::MainLevelHeader header;
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
+
+	size_t totalMem = header.resAmount * sizeof(LevelData::ResourceHeader) + //Calculate file size
+		header.entityAmount * sizeof(LevelData::EntityHeader) +
+		header.lightAmount * sizeof(LevelData::LightHeader);
+
+	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, totalMem); //get memorychunk
+	size_t offset = 0;
+	
+	
+	level.numResources  = header.resAmount;
+	level.numLights		= header.lightAmount;
+	level.numEntities   = header.entityAmount;
+
+	//Resource data
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
+	file.read(data, resSize);						     //Read res data
+	level.resources = (LevelData::ResourceHeader*) data; //put data into level variable
+	offset += resSize;
+
+	//Model Entities
+	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
+	file.read(data + offset , modelSize);										  // read all the entity data
+	level.entities = (LevelData::EntityHeader*) (data + offset);
+	offset += modelSize;
+
+	//Lights
+	/*
+		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize
+		file.read(data + offset , lightSize);
+		level.lights = (LevelData::LightHeader*) data + offset;
+	*/
+	
+	file.close();
+
+	levelPtr = &level;
+	return  Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
 
 	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
-		//MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
+		MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
@@ -200,8 +249,6 @@ Resources::Status Resources::FileLoader::LoadRegistryFile()
 		fileHandles[BPF_FILE].read((char*)&item, sizeof(RegistryItem));
 		this->m_fileRegistry[item.id] = item;
 	}
-
-	//fileHandles[REG_FILE].read()
 
 	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;

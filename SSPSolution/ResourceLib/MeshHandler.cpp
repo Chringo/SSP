@@ -67,7 +67,9 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	size_t dataSize = 0;
 	std::string path = "../ResourceLib/AssetFiles/grid.bbf";
 
-	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
+//	Status st = FileLoader::GetInstance()->LoadFile(path, data, &dataSize);
+
+	Status st = FileLoader::GetInstance()->LoadResource(id ,data, &dataSize);
 	if (st != ST_OK)
 		return st;
 	
@@ -78,7 +80,6 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 #ifdef _DEBUG
 		std::cout << "Wrong resource type. Wanted mesh, got type: " << resData->m_resType << std::endl;
 #endif // _DEBUG
-
 		return ST_WRONG_RESTYPE;
 	}
 	
@@ -89,60 +90,37 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	std::cout << "Loading new Mesh | ID : " << resData->m_id << std::endl;
 #endif // DEBUG
 
-	Mesh* newMesh = m_emptyContainers.front();		//Get an empty container
+	Mesh* newMesh = GetEmptyContainer();		//Get an empty container
 	st = newMesh->Create(resData); //Initialize it with data
 
 	if (st != ST_OK)
 		return st;
-
+	BoundingBoxHeader* obbdataPtr;
 	if (meshData->skeleton)
 	{
 		Mesh::VertexAnim* vertices = (Mesh::VertexAnim*)((char*)meshData + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices,m_device, meshData->numVerts);
 		indices = (unsigned int*) ((char*)vertices + (sizeof(Mesh::VertexAnim)* meshData->numVerts));
 		
-#ifdef _DEBUG
-	//for (size_t i = 0; i < meshData->numVerts; i++)
-	//{
-	//	std::cout << vertices[i].position[0] << ","
-	//		<< vertices[i].position[1] << ","
-	//		<< vertices[i].position[2] << std::endl;
-	//}
-#endif // _DEBUG
 	}
 	else
 	{
 		Mesh::Vertex *vertices = (Mesh::Vertex*)((char*)meshData + sizeof(MeshHeader));
 		newMesh->SetVertices(vertices, m_device, meshData->numVerts);
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
-#ifdef _DEBUG
-	//for (size_t i = 0; i < meshData->numVerts; i++)
-	//{
-	//	std::cout << vertices[i].position[0] << ","
-	//		<< vertices[i].position[1] << ","
-	//		<< vertices[i].position[2] << std::endl;
-	//}
-	//	for (size_t i = 0; i < meshData->indexLength; i++)
-	//	{
-	//		std::cout << indices[i] << std::endl;
-	//	}
-#endif
-	}
 
+	}
+	obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * meshData->indexLength);
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
 
-
-	
-	
+	newMesh->SetOBBData(*obbdataPtr);
 	m_meshes[id] = ResourceContainer(newMesh, 1); // put it into the map
 	m_emptyContainers.pop_front(); //remove from empty container queue;
 
 
 	meshPtr = &m_meshes[id];
 	
-	
-
 	return st;
 }
 
@@ -231,4 +209,14 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 		st = Status::ST_BUFFER_ERROR;
 
 	return st;
+}
+
+Resources::Mesh * Resources::MeshHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Mesh());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
 }

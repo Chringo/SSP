@@ -2,7 +2,7 @@
 #define RESOURCELIB_MESH_MESH_H
 
 #include "Resource.h"
-
+#include "FileHeaders.h"
 namespace Resources
 {
 	class Mesh :
@@ -49,6 +49,7 @@ namespace Resources
 		ID3D11Buffer* m_vertBuffer		= nullptr;
 		ID3D11Buffer* m_AnimVertBuffer	= nullptr;
 		ID3D11Buffer* m_indexBuffer		= nullptr;
+		BoundingBoxHeader m_boundingBox;
 	public:
 		DLL_OPERATION Mesh(Resource::RawResourceData resData, RawMeshData meshData, ID3D11Device* dev = nullptr,bool keepRawData = false);
 		DLL_OPERATION Mesh(Resource::RawResourceData resData);
@@ -64,12 +65,16 @@ namespace Resources
 		DLL_OPERATION bool SetVertices(VertexAnim* data, ID3D11Device* dev = nullptr,unsigned int numVerts = 0, bool keepRawData = false);
 		DLL_OPERATION bool SetIndices(unsigned int* indices, unsigned int numIndices, ID3D11Device* dev = nullptr, bool keepRawData = false);
 		DLL_OPERATION bool SetMeshData(RawMeshData* newMeshData, ID3D11Device* dev = nullptr, bool keepRawData = false); //This function will delete the existing information and add the new data.
+		DLL_OPERATION void SetOBBData(BoundingBoxHeader obbdata) { this->m_boundingBox = obbdata; };
+
+
 		/* Get */
 		DLL_OPERATION ID3D11Buffer* GetVerticesBuffer()     const { return m_vertBuffer; };
 		DLL_OPERATION ID3D11Buffer* GetAnimVerticesBuffer() const { return m_AnimVertBuffer; };
 		DLL_OPERATION ID3D11Buffer* GetIndicesBuffer()      const { return m_indexBuffer; };
 		DLL_OPERATION const unsigned int  GetNumIndices()   const { return m_meshData.m_numIndices; };
 		DLL_OPERATION const unsigned int  GetNumVertices()  const { return m_meshData.m_numVerts; };
+		DLL_OPERATION BoundingBoxHeader   GetOBBData()      const { return this->m_boundingBox; };
 
 		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 
