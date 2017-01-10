@@ -173,7 +173,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				std::string substring = textureName.substr(textureName.rfind("/")+1, m_Items.at(j).byteSize); //check if this works
 				m_Items.at(j).byteSize = substring.length();
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				//CopyTextureFile(&textureName);
+				CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&substring, m_Items.at(j).byteSize);
 				break;
@@ -187,8 +187,11 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
 	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind(".")) + file->substr(file->rfind("/"));
 	
+	std::wstring oldPath(file->begin(), file->end());
+	std::wstring newPath(newFilePath.begin(), newFilePath.end());
+
 	/*edit bool if the desire for a check exists*/
-	CopyFile((LPCWSTR)*file->c_str(), (LPCWSTR)newFilePath.c_str(), false);
+	CopyFile(oldPath.c_str(), newPath.c_str(), false);
 }
 
 void ResourceLibExporter::HandleSceneData()
