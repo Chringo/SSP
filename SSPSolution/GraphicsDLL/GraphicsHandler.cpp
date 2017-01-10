@@ -262,11 +262,12 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-
+	Resources::Model* modelPtr = nullptr;
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
-		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
+		m_shaderControl->Draw(modelPtr, this->m_graphicsComponents[i]);
 	}
 
 	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
