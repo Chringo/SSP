@@ -102,8 +102,8 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 
 	- Unload the last level, decrement the reference counterof all the resources.
 	- if a reference counter hits 0, unload the resource
+	*/
 
-	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
 	{
