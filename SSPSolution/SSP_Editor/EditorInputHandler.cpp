@@ -176,6 +176,8 @@ void EditorInputHandler::MouseZoom(double dT)
 void EditorInputHandler::CameraReset()
 {
 		this->m_Camera->Initialize(this->m_Width / this->m_Height);
+		this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
+		this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
 		this->m_Camera->Update();
 }
 
