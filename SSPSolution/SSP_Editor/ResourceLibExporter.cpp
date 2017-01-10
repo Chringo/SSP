@@ -244,6 +244,7 @@ bool ResourceLibExporter::Open()
 
 bool ResourceLibExporter::Close()
 {
+	m_Items.clear();
 	m_Output->close();
 	if(!m_Output->is_open())
 		return true;
