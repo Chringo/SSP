@@ -4,13 +4,13 @@
 #include "FileHeaders.h"
 #include "Texture.h"
 #include "TextureLoader\DDSTextureLoader.h"
-
 namespace Resources
 {
 
 	class TextureHandler
 	{
 	private:
+		 std::string TEXTURE_PATH = "../ResourceLib/AssetFiles/";
 		std::unordered_map<unsigned int, ResourceContainer> m_textures;
 		std::deque<Texture*> m_emptyContainers;
 		std::vector<Texture> m_containers;

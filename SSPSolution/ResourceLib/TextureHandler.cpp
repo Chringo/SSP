@@ -92,13 +92,15 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 		 return st;
 	
 	TextureHeader* texData = (TextureHeader*)(data + sizeof(Resource::RawResourceData));
-
-	 size_t length = strlen(texData->filePath);
-	 wchar_t path[256];
-	 mbstowcs_s(&length, path, texData->filePath, length);
-
-	 ID3D11ShaderResourceView* textureView	=nullptr;
-	 ID3D11Resource*			textureResource		=nullptr;
+	
+	std::string fullpath = TEXTURE_PATH;
+	fullpath.append(texData->filePath);		//append the file name to the directory
+	size_t length = strlen(fullpath.c_str());
+	wchar_t path[256];
+	mbstowcs_s(&length, path, fullpath.c_str(), length);
+	
+	ID3D11ShaderResourceView* textureView	=nullptr;
+	ID3D11Resource*			textureResource		=nullptr;
 	HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
 		 path,
 		 &textureResource,
@@ -109,7 +111,7 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 	{
 		newTexture->Destroy();
 #ifdef _DEBUG
-		std::cout << "Could not open texture file : " << path << std::endl;
+		std::cout << "Could not open texture file : " << fullpath << std::endl;
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
@@ -125,6 +127,7 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 
 
 	m_textures[newTexture->GetId()] = ResourceContainer(newTexture, 1); //put it into the map
+	texturePtr = &m_textures[newTexture->GetId()];
 	m_emptyContainers.pop_front();
 
 
