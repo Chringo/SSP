@@ -179,7 +179,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
-				m_Output->write((char*)&substring, m_Items.at(j).byteSize);
+				m_Output->write((char*)&substring, (unsigned int)substring.length());
 				break;
 			}
 		}
