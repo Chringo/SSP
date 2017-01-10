@@ -165,7 +165,7 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 	return Resources::Status::ST_OK;
 }
 
-DLL_OPERATION Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData::Level *& levelPtr)
+Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData::Level *& levelPtr)
 {
 	
 	static LevelData::Level level;
