@@ -161,12 +161,17 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 		m_BBF_File += sizeof(unsigned int);
 	}
 
+	/*iterating over the 5 textures and writing the textures found in
+	the current materials texture id*/
 	for (int i = 0; i < 5; ++i)
 	{
 		std::string textureName = m_BBF_File;
 
 		for (int j = 0; j < m_Items.size(); ++j)
 		{
+			/*if the texture being processed corresponds to a texture in the
+			material, the function creates a RawResourceData struct and writes
+			the texture information to the .bpf file*/
 			if (m_Items.at(j).id == exportMaterial->textureIDs[i])
 			{
 				Resources::Resource::RawResourceData textureData;
@@ -179,10 +184,13 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
-				m_Output->write((char*)&substring, (unsigned int)substring.length());
+				m_Output->write((char*)substring.c_str(), (unsigned int)substring.length());
 				break;
 			}
 		}
+
+		/*even if the texture didn't exist in the material or did, the function jumps 
+		to the next texture in the .mat file to see if it needs to be processed*/
 		m_BBF_File += *textureNameLength[i];
 	}
 }
