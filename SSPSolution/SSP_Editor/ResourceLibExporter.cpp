@@ -135,7 +135,76 @@ void ResourceLibExporter::WriteToBPF(char * m_BBF_File, const unsigned int fileS
 void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fileSize)
 {
 	/*special case function that converts .mat files to raw data in the .bpf file*/
+	Resources::Resource::RawResourceData* fileData = (Resources::Resource::RawResourceData*)m_BBF_File;
+	for (int i = 0; i < m_Items.size(); ++i)
+	{
+		/*finding the corresponding item to the current bbf file and adding the startpoint and size*/
+		if (m_Items.at(i).id == fileData->m_id)
+		{
+			m_Items.at(i).startBit = this->m_Output->tellp();
+			m_Items.at(i).byteSize = sizeof(Resources::Resource::RawResourceData) + sizeof(MaterialHeader);
+			break;
+		}
+	}
 
+	/*writing the material to the .bpf file*/
+	this->m_Output->write(m_BBF_File, (sizeof(Resources::Resource::RawResourceData) + sizeof(MaterialHeader)));
+	m_BBF_File += sizeof(Resources::Resource::RawResourceData);
+	MaterialHeader* exportMaterial = (MaterialHeader*)(m_BBF_File);
+	m_BBF_File += sizeof(MaterialHeader);
+
+	/*getting the texture name lengths and stepping to the texture names*/
+	unsigned int* textureNameLength[5];
+	for (int i = 0; i < 5; ++i)
+	{
+		textureNameLength[i] = (unsigned int*)m_BBF_File;
+		m_BBF_File += sizeof(unsigned int);
+	}
+
+	/*iterating over the 5 textures and writing the textures found in
+	the current materials texture id*/
+	for (int i = 0; i < 5; ++i)
+	{
+		std::string textureName = m_BBF_File;
+
+		for (int j = 0; j < m_Items.size(); ++j)
+		{
+			/*if the texture being processed corresponds to a texture in the
+			material, the function creates a RawResourceData struct and writes
+			the texture information to the .bpf file*/
+			if (m_Items.at(j).id == exportMaterial->textureIDs[i])
+			{
+				Resources::Resource::RawResourceData textureData;
+				textureData.m_id = exportMaterial->textureIDs[i];
+				textureData.m_resType = Resources::ResourceType::RES_TEXTURE;
+
+				std::string substring = textureName.substr(textureName.rfind("/")+1);
+				substring += '\0';
+				m_Items.at(j).byteSize = (unsigned int)substring.length() + sizeof(Resources::Resource::RawResourceData);
+				m_Items.at(j).startBit = this->m_Output->tellp();
+				//CopyTextureFile(&textureName);
+
+				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
+				m_Output->write((char*)substring.c_str(), substring.length());
+				break;
+			}
+		}
+
+		/*even if the texture didn't exist in the material or did, the function jumps 
+		to the next texture in the .mat file to see if it needs to be processed*/
+		m_BBF_File += *textureNameLength[i];
+	}
+}
+
+void ResourceLibExporter::CopyTextureFile(std::string * file)
+{
+	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind(".")) + file->substr(file->rfind("/"));
+	
+	std::wstring oldPath(file->begin(), file->end());
+	std::wstring newPath(newFilePath.begin(), newFilePath.end());
+
+	/*edit bool if the desire for a check exists*/
+	CopyFile(oldPath.c_str(), newPath.c_str(), false);
 }
 
 void ResourceLibExporter::HandleSceneData()
@@ -149,17 +218,20 @@ void ResourceLibExporter::HandleSceneData()
 	for (int i = 0; i < serverFiles->size(); ++i)
 	{
 		//need to check if it's a material or texture;
-		if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
+		std::string dotName = serverFiles->at(i).substr(serverFiles->at(i).rfind(".")).c_str();
+		if (dotName != ".dds")
 		{
-			std::string dotName = serverFiles->at(i).substr(serverFiles->at(i).rfind(".")).c_str();
-
-			if (dotName != ".mat" && dotName != ".dds")
-			{
-				WriteToBPF(data, (const unsigned int)dataSize);
-			}
-			else if (dotName == ".mat")
+			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
+				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf")
+				{
+					WriteToBPF(data, (const unsigned int)dataSize);
+				}
+				else if (dotName == ".mat")
+				{
+					WriteMatToBPF(data, (const unsigned int)dataSize);
+				}
 			}
 		}
 	}
@@ -185,13 +257,9 @@ bool ResourceLibExporter::Open()
 
 bool ResourceLibExporter::Close()
 {
+	m_Items.clear();
 	m_Output->close();
 	if(!m_Output->is_open())
 		return true;
 	return false;
-}
-
-char * ResourceLibExporter::ImportFromServer(unsigned int index, unsigned int & FileSize)
-{
-	return nullptr;
 }
