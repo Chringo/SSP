@@ -2,15 +2,17 @@
 #define GRAPHICSDLL_GRAPHICSCOMPONENT_H
 
 #include <DirectXMath.h>
+#include "../ResourceLib/Model.h"
 
 struct GraphicsComponent
 {
 	int active = 0;
 	unsigned int modelID = 0;
+	Resources::Model* modelPtr;
 	DirectX::XMMATRIX worldMatrix;
 };
 
-struct penis
+struct penis //john....
 {
 	int active = 0;
 	int modelID = -1;
