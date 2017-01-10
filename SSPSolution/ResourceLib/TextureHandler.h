@@ -13,7 +13,7 @@ namespace Resources
 		 std::string TEXTURE_PATH = "../ResourceLib/AssetFiles/";
 		std::unordered_map<unsigned int, ResourceContainer> m_textures;
 		std::deque<Texture*> m_emptyContainers;
-		std::vector<Texture> m_containers;
+		std::vector<Texture*> m_containers;
 		ID3D11Device* m_device = nullptr;
 		
 		Texture* placeHolder = nullptr;

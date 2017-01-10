@@ -130,7 +130,10 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			if (mSt != ST_OK)
 				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
 			else
+			{
+				Material* tempa = (Material*)matPtr->resource;
 				newModel->SetMaterial((Material*)matPtr->resource);
+			}
 			break;
 		}
 		case Status::ST_OK:
@@ -171,7 +174,9 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 					return st;
 		}
 	}
-
+		m_models[newModel->GetId()] = ResourceContainer(newModel, 1);
+		modelPtr = &m_models[newModel->GetId()];
+		m_emptyContainers.pop_front();
 #pragma endregion
 	
 	return Resources::Status::ST_OK;
@@ -258,7 +263,7 @@ Resources::Model * Resources::ModelHandler::GetEmptyContainer()
 	if (m_emptyContainers.size() < 1)
 	{
 		m_containers.push_back(Model());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		m_emptyContainers.push_back(&m_containers.back());
 	}
 	return m_emptyContainers.front();
 }

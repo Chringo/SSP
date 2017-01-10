@@ -99,6 +99,8 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 				 newMaterial->SetTexture((Texture*)temp->resource, TextureType(i));
 			}
 		}
+		else
+			std::cout << " TEXTURE MISSING ON material" << std::endl;
 	}
 
 	newMaterial->SetValues(
@@ -132,7 +134,10 @@ Resources::Status Resources::MaterialHandler::UnloadMaterial( const unsigned int
 			{
 				unsigned int id = texs[i]->GetId();
 				if (id == 0)
+				{
+					
 					continue;
+				}
 				m_textureHandler->UnloadTexture(id);
 			}
 			((Material*)materialRes->resource)->Destroy();
