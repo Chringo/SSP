@@ -83,11 +83,10 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 #ifdef _DEBUG
 		std::cout << "Wrong resource type. Wanted Texture, got type: " << resData->m_id << std::endl;
 #endif // _DEBUG
-
 		return ST_WRONG_RESTYPE;
 	}
 
-	Texture* newTexture = m_emptyContainers.front(); //Get an empty container
+	Texture* newTexture = GetEmptyContainer(); //Get an empty container
 	st = newTexture->Create(resData);
 	 if (st != ST_OK)
 		 return st;
@@ -123,16 +122,10 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 		return st;
 	}
 
-     /*T E M P*/
-	Resource::RawResourceData temp;
-	temp.m_resType = RES_TEXTURE;
-	temp.m_id = 7869;
-	newTexture->Create(&temp);   //Initialize it with data
-	/***************/
+
 
 	m_textures[newTexture->GetId()] = ResourceContainer(newTexture, 1); //put it into the map
 	m_emptyContainers.pop_front();
-
 
 
 		return Resources::Status::ST_OK;
@@ -283,6 +276,17 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 #pragma endregion
 
 	return true;
+}
+
+Resources::Texture * Resources::TextureHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Texture());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
+
 }
 
 void Resources::TextureHandler::SetDevice(ID3D11Device * device)

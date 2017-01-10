@@ -1,7 +1,6 @@
 #include "GameStateHandler.h"
 
 
-
 GameStateHandler::GameStateHandler()
 {
 }
@@ -39,22 +38,43 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler)
 {
 	int result = 0;
 	
-	//Create, Initialize and push a LevelState
-	LevelState* tempState = new LevelState();
-	result = tempState->Initialize(this, cHandler);
+	//Create, Initialize and push a LevelSelectState
+	LevelSelectState* levelSelect = new LevelSelectState();
+	result = levelSelect->Initialize(this, cHandler);
+
 	//If the initialization was successful
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->m_stateStack.push_back(tempState);
+		this->m_stateStack.push_back(levelSelect);
+		
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/complex.level"));
 	}
 	else
 	{
 		//Delete it
-		delete tempState;
-		tempState = nullptr;
+		delete levelSelect;
+		levelSelect = nullptr;
 	}
 	return result;
+
+
+	////Create, Initialize and push a LevelState
+	//LevelState* tempState = new LevelState();
+	//result = tempState->Initialize(this, cHandler);
+	////If the initialization was successful
+	//if (result > 0)
+	//{
+	//	//Push it to the gamestate stack/vector
+	//	this->m_stateStack.push_back(tempState);
+	//}
+	//else
+	//{
+	//	//Delete it
+	//	delete tempState;
+	//	tempState = nullptr;
+	//}
+	//return result;
 }
 
 int GameStateHandler::Update(float dt, InputHandler * inputHandler)

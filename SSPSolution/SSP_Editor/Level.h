@@ -3,7 +3,10 @@
 #include <unordered_map>
 #include "Header.h"
 #include "../../ResourceLib/Enumerations.h"
+//#include "SelectionHandler.h"
 
+#define PLAYER1 2215164276 
+#define PLAYER2 3255160373
 /*
 	Author: Martin Clementson
 	
