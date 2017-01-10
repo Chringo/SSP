@@ -82,29 +82,39 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 		return Status::ST_FILE_CLOSED;
 
 	}
-	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
+
+	RegistryItem* itemPtr = this->GetRegistryIndex(id);	//Get Registry info for this resource
+	if (itemPtr == nullptr)
+		return Status::ST_RES_MISSING;
+
 	std::ifstream* infile = &fileHandles[BPF_FILE];
+	infile->seekg(itemPtr->startBit); // Jump to the start of the resource data in the library
 
-	MainHeader mainHeader;
-	infile->read((char*)&mainHeader, sizeof(MainHeader));
+	mem_manager.Clear(Resources::Memory::MEM_RES);							// Clear Resource Mem
+	data = mem_manager.Store(Resources::Memory::MEM_RES, itemPtr->byteSize);// Request new mem for this resource
 
-	MeshHeader meshHeader;
-	
-	infile->read((char*)&meshHeader, sizeof(MeshHeader));
-	size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
-	Resource::RawResourceData tempRes;
-	tempRes.m_id = id;
-	tempRes.m_resType = Resources::ResourceType::RES_MESH;
+	infile->read(data, itemPtr->byteSize); //Read the whole item data
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-	
-	data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
-
-	memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
-	memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
-
-	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
-	infile->read(data + offset, sizetoRead);
+//MainHeader mainHeader;
+//infile->read((char*)&mainHeader, sizeof(MainHeader)); //Read main header
+//
+//MeshHeader meshHeader;
+//
+//infile->read((char*)&meshHeader, sizeof(MeshHeader)); 
+//size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+//Resource::RawResourceData tempRes;
+//tempRes.m_id = id;
+//tempRes.m_resType = Resources::ResourceType::RES_MESH;
+//
+//mem_manager.Clear(Resources::Memory::MEM_RES);
+//
+//data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
+//
+//memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
+//memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
+//
+//UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
+//infile->read(data + offset, sizetoRead);
 
 	return Resources::Status::ST_OK;
 
