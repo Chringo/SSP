@@ -179,12 +179,13 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				textureData.m_resType = Resources::ResourceType::RES_TEXTURE;
 
 				std::string substring = textureName.substr(textureName.rfind("/")+1);
+				substring += '\0';
 				m_Items.at(j).byteSize = (unsigned int)substring.length() + sizeof(Resources::Resource::RawResourceData);
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				CopyTextureFile(&textureName);
+				//CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
-				m_Output->write((char*)substring.c_str(), (unsigned int)substring.length());
+				m_Output->write((char*)substring.c_str(), substring.length());
 				break;
 			}
 		}
