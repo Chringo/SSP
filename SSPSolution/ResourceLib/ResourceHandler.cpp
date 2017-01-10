@@ -135,6 +135,13 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 #endif // _DEBUG
 			//Load the model
 			Status modelSt = m_modelHandler->LoadModel(id, modelPtr); //if this fails, placeholder will take the place
+
+#ifdef _DEBUG
+			if (modelSt != ST_OK) {
+
+				std::cout << "Model not found in BPF, ID: " << id << std::endl;
+#endif // _DEBUG
+			}
 			break;
 		}
 		case Resources::Status::ST_OK:
