@@ -118,33 +118,32 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 
 		
 #pragma region Load Material
-	//UNCOMMENT WHEN MATERIAL IS EXPORTED IN THE BPF
 
-		//ResourceContainer* matPtr;
-		//
-		//st = m_materialHandler->GetMaterial(matID, matPtr); // Get Material
-		//switch (st)
-		//{
-		//case Status::ST_RES_MISSING:
-		//{
-		//	Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
-		//	if (mSt != ST_OK)
-		//		newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
-		//	else
-		//		newModel->SetMaterial((Material*)matPtr->resource);
-		//	break;
-		//}
-		//case Status::ST_OK:
-		//{
-		//	matPtr->refCount += 1;
-		//	newModel->SetMaterial((Material*)matPtr->resource);
-		//	break;
-		//}
-		//default:
-		//	return st;
-		//}
+		ResourceContainer* matPtr;
+		
+		st = m_materialHandler->GetMaterial(matID, matPtr); // Get Material
+		switch (st)
+		{
+		case Status::ST_RES_MISSING:
+		{
+			Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
+			if (mSt != ST_OK)
+				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
+			else
+				newModel->SetMaterial((Material*)matPtr->resource);
+			break;
+		}
+		case Status::ST_OK:
+		{
+			matPtr->refCount += 1;
+			newModel->SetMaterial((Material*)matPtr->resource);
+			break;
+		}
+		default:
+			return st;
+		}
 
-		newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
+		//newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
 #pragma endregion
 
 		
