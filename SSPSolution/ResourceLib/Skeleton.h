@@ -25,7 +25,7 @@ namespace Resources
 				delete this->joints;
 				jointCount = other.jointCount;
 				this->joints = new Joint[jointCount];
-				memcpy(joints, other.joints, sizeof(Joint) * jointCount);
+				memcpy(joints, other.joints, (sizeof(Joint) * jointCount));
 				return *this;
 			}
 			~RawSkeletonData()

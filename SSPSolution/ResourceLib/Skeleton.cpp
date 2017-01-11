@@ -39,7 +39,6 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 
 Resources::Skeleton::~Skeleton()
 {
-
 }
 
 Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, RawSkeletonData * skelData)
