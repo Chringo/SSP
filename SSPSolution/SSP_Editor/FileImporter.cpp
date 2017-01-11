@@ -352,11 +352,12 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	SkeletonHeader* m_SkelHeader = (SkeletonHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
 	m_bbf_object += sizeof(Resources::Resource::RawResourceData) + sizeof(SkeletonHeader);
 
-	Resources::Skeleton* m_Skel = new Resources::Skeleton(res_Data);
-
 	Resources::Skeleton::RawSkeletonData joints;
 	joints.jointCount = m_SkelHeader->jointCount;
-	joints.joints = (Resources::Skeleton::Joint*)m_bbf_object; //look here
+	joints.joints = new Resources::Skeleton::Joint[joints.jointCount];
+	joints.joints = (Resources::Skeleton::Joint*)m_bbf_object; 
+	
+	Resources::Skeleton* m_Skel = new Resources::Skeleton(res_Data, &joints);
 
 	printf("hejsnasmd");
 
