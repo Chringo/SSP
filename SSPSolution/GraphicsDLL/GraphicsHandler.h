@@ -60,7 +60,7 @@ private:
 	bool postProcessing = false;
 	Resources::Model** m_modelsPtr;
 
-	penis** m_animGraphicsComponents;
+	AnimationGraphicsComponent** m_animGraphicsComponents;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;

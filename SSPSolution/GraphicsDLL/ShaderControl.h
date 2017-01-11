@@ -42,7 +42,7 @@ public:
 	void PostProcess();
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
-	void Draw(Resources::Model * model, penis * component);
+	void Draw(Resources::Model * model, AnimationGraphicsComponent * component);
 	ID3D11DepthStencilView* GetBackBufferDSV() const {return((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencilView();}
 
 	void DrawFinal();

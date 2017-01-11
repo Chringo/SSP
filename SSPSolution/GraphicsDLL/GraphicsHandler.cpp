@@ -497,7 +497,7 @@ int GraphicsHandler::UpdateComponentList()
 
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
-	m_animGraphicsComponents[0] = (penis*)component;
+	m_animGraphicsComponents[0] = (AnimationGraphicsComponent*)component;
 }
 
 GraphicsComponent * GraphicsHandler::getComponent(int index)
@@ -538,7 +538,7 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new penis*;
+	this->m_animGraphicsComponents = new AnimationGraphicsComponent*;
 
 	
 	/*TEMP MODELS*/

@@ -1,16 +1,16 @@
-#include "Animation.h"
+#include "AnimationHandler.h"
 
-Animation::Animation()
+AnimationHandler::AnimationHandler()
 {
 	this->elapsedTime = 0.0f;
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
-	this->m_graphicsAnimationComponent->joints = 19;
+	this->m_graphicsAnimationComponent->jointCount = 19;
 
 	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
 	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 4, 10);
 	for (int i = 0; i < 32; i++)
 	{
-		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixIdentity();
+		m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 	
 	/*Initialize the stack with a default "IDLE" animation.*/
@@ -20,18 +20,15 @@ Animation::Animation()
 	{
 		ConvertFloatArrayToXMFloatMatrix(jointList[i].invBindPose, i);
 	}
-
-	transitionDuration = 1.0f;
-	transitionTime = 0.0f;
 }
 
-Animation::~Animation()
+AnimationHandler::~AnimationHandler()
 {
 	delete m_graphicsAnimationComponent;
 
 }
 
-void Animation::Update(float dt)
+void AnimationHandler::Update(float dt)
 {
 	/*Check if there is a current animation in the stack.*/
 	if (!animationStack.empty())
@@ -72,7 +69,7 @@ void Animation::Update(float dt)
 	}
 }
 
-void Animation::Interpolate(float currentTime)
+void AnimationHandler::Interpolate(float currentTime)
 {
 	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
@@ -184,24 +181,7 @@ void Animation::Interpolate(float currentTime)
 	CalculateFinalTransform(interpolatedTransforms);
 }
 
-void Animation::Blend(int oldState, int newState, float currentTime)
-{
-	transitionTime += currentTime;
-
-	float duration = animationStack.top().endFrame;
-
-	float t = (transitionTime) / (animationStack.top().endFrame - animationStack.top().startFrame);
-
-	Interpolate(t);
-
-	if (t > 1)
-	{
-		transitionTime = 0;
-		std::cout << "Transition completed!" << std::endl;
-	}
-}
-
-void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
+void AnimationHandler::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex)
 {
 	DirectX::XMMATRIX matrix = DirectX::XMMATRIX(floatArray);
 
@@ -213,7 +193,7 @@ void Animation::ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int joint
 	skeltempVec.push_back(temp);
 }
 
-void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices)
+void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices)
 {
 	DirectX::XMMATRIX childLocal = DirectX::XMLoadFloat4x4(&localMatrices[0]);
 
@@ -239,11 +219,11 @@ void Animation::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMa
 		DirectX::XMMATRIX invBindPose = skeltempVec[i].invBindPose;
 		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransform[i]);
 
-		m_graphicsAnimationComponent->finalTransforms[i] = DirectX::XMMatrixMultiply(invBindPose, toRoot);
+		m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixMultiply(invBindPose, toRoot);
 	}
 }
 
-void Animation::Push(int animationState, bool newAnimation)
+void AnimationHandler::Push(int animationState, bool newAnimation)
 {
 	AnimationClip clip;
 
@@ -254,7 +234,7 @@ void Animation::Push(int animationState, bool newAnimation)
 	animationStack.push(clip);
 }
 
-void Animation::Pop()
+void AnimationHandler::Pop()
 {
 	if (!animationStack.empty())
 	{
@@ -262,7 +242,7 @@ void Animation::Pop()
 	}
 }
 
-void Animation::GetAnimationState(int animationState, AnimationClip & clip)
+void AnimationHandler::GetAnimationState(int animationState, AnimationClip & clip)
 {
 	/*Temp place for both Model and skeleton.*/
 

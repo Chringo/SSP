@@ -9,7 +9,7 @@
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "Animation.h"
+#include "../SSPSolution/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
@@ -43,7 +43,7 @@ private:
 	NetworkModule m_networkModule;
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
-	Animation* m_Anim;
+	AnimationHandler* m_AnimationHandler;
 	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
 public:
 	System();

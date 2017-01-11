@@ -1,5 +1,5 @@
-#ifndef SSPAPPLICATION_CORE_ANIMATION_H
-#define SSPAPPLICATION_CORE_ANIMATION_H
+#ifndef SSPAPPLICATION_ANIMATION_ANIMATION_H
+#define SSPAPPLICATION_ANIMATION_ANIMATION_H
 
 #include <stack>
 #include <queue>
@@ -9,28 +9,21 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
-/*This class has the responsibility to play animations in a generic way.
-By generic it is meant for any "animatible entity" to be updated by
-this class. The result of playing each frame will update the entity of 
-the skeleton and it's hierarchy of joints.*/
 struct GraphicsAnimationComponent
 {
 	int active = 0;
 	int modelID = -1;
-	int joints = 0;
-	DirectX::XMMATRIX worldMatrix;
+	int jointCount = 0;
 
-	DirectX::XMMATRIX finalTransforms[32];
+	DirectX::XMMATRIX worldMatrix;
+	DirectX::XMMATRIX finalJointTransforms[32];
 };
 
-enum AnimationStates
+struct AnimationComponent
 {
-	PHYSICS_STATE = -1, 
-	IDLE_STATE	 =	0,
-	WALK_STATE   =	1,
-	RUN_STATE    =	2,
-	JUMP_STATE   =	3,
-	THROW_STATE  =	4
+	Resources::Model* model;
+	Resources::Skeleton* skeleton;
+	Resources::Animation* animations;
 };
 
 struct SkelTemp
@@ -49,7 +42,7 @@ struct AnimationClip
 	float endFrame;
 };
 
-class Animation
+class AnimationHandler
 {
 
 private:
@@ -74,12 +67,9 @@ private:
 	float elapsedTime;
 	bool newAnimation;
 
-	float transitionTime;
-	float transitionDuration;
-
 public: 
-	Animation();
-	~Animation();
+	AnimationHandler();
+	~AnimationHandler();
 
 	/*Update each frame in the current animation.*/
 	void Update(float dt);
@@ -94,13 +84,11 @@ public:
 
 	void Interpolate(float currentTime);
 
-	void Blend(int oldState, int newState, float currentTime);
-
 	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
-	GraphicsAnimationComponent * GetAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
+	GraphicsAnimationComponent * GetGraphicsAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
 };
 
 
