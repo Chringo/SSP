@@ -118,6 +118,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 
 		
 #pragma region Load Material
+
 		ResourceContainer* matPtr;
 		
 		st = m_materialHandler->GetMaterial(matID, matPtr); // Get Material
@@ -141,6 +142,8 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 		default:
 			return st;
 		}
+
+		//newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
 #pragma endregion
 
 		

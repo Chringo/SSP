@@ -58,9 +58,9 @@ private:
 	ShaderControl*			m_shaderControl;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
-	Resources::Model** m_modelsPtr;
+	
 
-	penis** m_animGraphicsComponents;
+	penis** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
