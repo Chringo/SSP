@@ -110,7 +110,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 	newComponent.component.worldMatrix = containerMatrix;
 	newComponent.internalID = instanceID;
-	newComponent.isDirty = false;
+	newComponent.isDirty = true;
 
 
 
@@ -146,7 +146,15 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
 				DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+
+				DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+				DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+				DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+				//Create the rotation matrix
+				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+				rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+				//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
 				//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
