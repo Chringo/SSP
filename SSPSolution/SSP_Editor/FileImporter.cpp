@@ -359,7 +359,11 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	
 	Resources::Skeleton* m_Skel = new Resources::Skeleton(res_Data, &joints);
 
-	printf("hejsnasmd");
+	m_bbf_object += sizeof(JointHeader) * joints.jointCount;
+
+	LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+
+	printf("hajsjds");
 
 }
 
