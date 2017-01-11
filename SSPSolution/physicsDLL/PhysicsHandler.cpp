@@ -834,6 +834,16 @@ PhysicsHandler::~PhysicsHandler()
 bool PhysicsHandler::Initialize()
 {
 	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f);
+	for (int i = 0; i < 100; i++)
+	{
+		PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(0, 0, 0, 0), false);
+		int R = rand() % 2;
+		if (R == 1)
+		{
+			ptr->PC_is_Static = true;
+		}
+	}
+	this->SortComponents();
 	return true;
 }
 
@@ -1427,12 +1437,42 @@ bool PhysicsHandler::checkCollition()
 
 void PhysicsHandler::SortComponents()
 {
-	this->m_nrOfStaticObjects = 20;
-	//int nrOfComponents = this->m_dynamicComponents.size();
-	//for (int i = 0; i < nrOfComponents; i++)
-	//{
+	//this->m_nrOfStaticObjects = 20;
+	int nrOfComponents = this->m_dynamicComponents.size();
+	PhysicsComponent* current;
+	for (int i = 0; i < nrOfComponents; i++)
+	{
+		current = this->m_dynamicComponents.at(i);
+		if (current->PC_is_Static)
+		{
+			this->m_nrOfStaticObjects++;
+		}
+	}
+	int pivot = nrOfComponents - this->m_nrOfStaticObjects;
+	int lastKnownStatic = pivot;
+	PhysicsComponent* dynamicToSwap = nullptr;
+	PhysicsComponent* staticToSwap = nullptr;
+	for (int i = pivot; i < nrOfComponents; i++)
+	{
+		current = this->m_dynamicComponents.at(i);
+		if(!current->PC_is_Static)
+		{ 
+			dynamicToSwap = this->m_dynamicComponents.at(i);
+			for (int x = lastKnownStatic; x >= 0 && dynamicToSwap != nullptr; x--)
+			{
+				staticToSwap = this->m_dynamicComponents.at(x);
+				if (staticToSwap->PC_is_Static)
+				{
+					lastKnownStatic = x;
+					this->m_dynamicComponents.at(i) = staticToSwap;
+					this->m_dynamicComponents.at(x) = dynamicToSwap;
+					dynamicToSwap = nullptr;
+				}
 
-	//}
+			}
+		}
+	}
+	int a = this->m_dynamicComponents.size();
 }
 
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
