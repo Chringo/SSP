@@ -322,6 +322,10 @@ void FileImporter::handleModel(char * m_bbf_object)
 	
 }
 
+void FileImporter::handleSkeleton(char * m_bbf_object)
+{
+}
+
 void FileImporter::AddListItem(ListItem category, std::string name)
 {
 	QTreeWidgetItem *itm = new QTreeWidgetItem();
