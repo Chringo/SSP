@@ -383,13 +383,19 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 
 	m_bbf_object += sizeof(JointHeader) * joints.jointCount;
 
-	LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
-	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i)
+	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
 	{
-		Resources::Animation newAnimation;
+		Resources::Resource::RawResourceData animationData;
+		animationData.m_id = (unsigned int)m_bbf_object;
+		animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
+
+		Resources::Animation newAnimation(&animationData);
+		m_Skel->AddAnimation(&newAnimation, i);
+		m_bbf_object += sizeof(LayerIdHeader);
 	}
 
-	//m_data add skeleton here
+	m_data->AddSkeleton(m_Skel);
 
 	printf("hajsjds");
 
