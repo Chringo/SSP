@@ -285,7 +285,7 @@ int System::Update(float deltaTime)
 	/*Testing to play different animations here based on the input. Temp place right now*/
 	int animState = 0;
 
-	/*if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
+	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
 	{
 		animState = 0;
 		m_AnimationHandler->Push(animState, true);
@@ -307,7 +307,7 @@ int System::Update(float deltaTime)
 	{
 		animState = 3;
 		m_AnimationHandler->Push(animState, true);
-	}*/
+	}
 
 	//Update animations here. Temp place right now.
 	m_AnimationHandler->Update(deltaTime);
@@ -374,7 +374,7 @@ int System::Update(float deltaTime)
 	}
 
 	//locks camera to the player
-	this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
+	//this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
