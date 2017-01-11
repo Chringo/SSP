@@ -18,7 +18,7 @@
 
 const int ARRAY_INC = 5;
 
-class GRAPHICSDLL_API GraphicsHandler
+class GraphicsHandler
 {
 
 #ifdef _DEBUG
@@ -42,10 +42,10 @@ private:
 	
 	ID3D11DepthStencilView* dsv;
 public:
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
-	void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 private:
 	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
@@ -76,31 +76,31 @@ private:
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
 public:
-	GraphicsHandler();
-	~GraphicsHandler();
+	GRAPHICSDLL_API GraphicsHandler();
+	GRAPHICSDLL_API ~GraphicsHandler();
 
-	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode = false);
-	ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
-	Camera* SetCamera(Camera* newCamera);
-	int Render(float deltaTime);
+	GRAPHICSDLL_API int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode = false);
+	GRAPHICSDLL_API ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
+	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
+	GRAPHICSDLL_API int Render(float deltaTime);
 
-	int SetComponentArraySize(int newSize);
-	GraphicsComponent* GetNextAvailableComponent();
-	int UpdateComponentList();
+	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API int UpdateComponentList();
 
 
 
-	int InitializeGrid();
-	int RenderGrid(Resources::Model* model, GraphicsComponent* component);
-	int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
-	int renderFinalEditor();
-	int clearEditor();
-	void Shutdown();
+	GRAPHICSDLL_API int InitializeGrid();
+	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
+	GRAPHICSDLL_API int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
+	GRAPHICSDLL_API int renderFinalEditor();
+	GRAPHICSDLL_API int clearEditor();
+	GRAPHICSDLL_API void Shutdown();
 
 	//TEMP STUFF
 public:
-	void SetTempAnimComponent(void*);
-	GraphicsComponent* getComponent(int index);
+	GRAPHICSDLL_API void SetTempAnimComponent(void*);
+	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };
