@@ -396,6 +396,16 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 		m_bbf_object += sizeof(LayerIdHeader);
 	}
 
+	std::vector<Resources::Model*>* models = m_data->GetModels();
+	for (int i = 0; i < models->size(); ++i)
+	{
+		if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
+		{
+			models->at(i)->SetSkeleton(m_Skel);
+		}
+	}
+
+
 	m_data->AddSkeleton(m_Skel);
 
 	printf("hajsjds");
