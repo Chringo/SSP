@@ -188,6 +188,7 @@ void FileImporter::LoadImportedFiles()
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
 			case Resources::ResourceType::RES_SKELETON:
+				handleSkeleton(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
@@ -345,6 +346,20 @@ void FileImporter::handleModel(char * m_bbf_object)
 
 void FileImporter::handleSkeleton(char * m_bbf_object)
 {
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	SkeletonHeader* m_SkelHeader = (SkeletonHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
+	m_bbf_object += sizeof(Resources::Resource::RawResourceData) + sizeof(SkeletonHeader);
+
+	Resources::Skeleton* m_Skel = new Resources::Skeleton(res_Data);
+
+	Resources::Skeleton::RawSkeletonData joints;
+	joints.jointCount = m_SkelHeader->jointCount;
+	joints.joints = (Resources::Skeleton::Joint*)m_bbf_object; //look here
+
+	printf("hejsnasmd");
+
 }
 
 void FileImporter::AddListItem(ListItem category, std::string name)
