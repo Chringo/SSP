@@ -183,12 +183,12 @@ void FileImporter::LoadImportedFiles()
 				handleModel(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MESH:
-				handleMesh(m_bbf_object); //also send integer for the index so we can add the qt
+				handleMesh(m_bbf_object); 
 				break;
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
 			case Resources::ResourceType::RES_SKELETON:
-				handleSkeleton(m_bbf_object);
+				//handleSkeleton(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
@@ -358,10 +358,17 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	joints.joints = (Resources::Skeleton::Joint*)m_bbf_object; 
 	
 	Resources::Skeleton* m_Skel = new Resources::Skeleton(res_Data, &joints);
+	m_Skel->SetNumAnimations(m_SkelHeader->animLayerCount);
 
 	m_bbf_object += sizeof(JointHeader) * joints.jointCount;
 
 	LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i)
+	{
+		Resources::Animation newAnimation;
+	}
+
+	//m_data add skeleton here
 
 	printf("hajsjds");
 
