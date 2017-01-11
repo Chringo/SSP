@@ -22,9 +22,9 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 	this->m_textures.reserve(textureAmount);
 	this->m_containers.reserve(textureAmount);
-	this->m_containers.insert(m_containers.begin(), textureAmount, new Texture());
 	for (size_t i = 0; i < textureAmount; i++)
 	{
+		m_containers.push_back(new Texture());
 		m_emptyContainers.at(i) = m_containers.at(i);
 	}
 
