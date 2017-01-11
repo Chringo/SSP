@@ -390,8 +390,8 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 		animationData.m_id = (unsigned int)m_bbf_object;
 		animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
 
-		Resources::Animation newAnimation(&animationData);
-		m_Skel->AddAnimation(&newAnimation, i);
+		Resources::Animation* newAnimation = new Resources::Animation(&animationData);
+		m_Skel->AddAnimation(newAnimation, i);
 		m_bbf_object += sizeof(LayerIdHeader);
 	}
 
