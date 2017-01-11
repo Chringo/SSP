@@ -4,7 +4,9 @@
 
 Resources::Status DataHandler::AddSkeleton(Resources::Skeleton * skeleton)
 {
-	return Resources::Status();
+	this->loadedIds[skeleton->GetId()] = true;
+	this->m_skeletons.push_back(skeleton);
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status DataHandler::AddModel(Resources::Model * model)
@@ -76,6 +78,11 @@ DataHandler::~DataHandler()
 		delete m_meshes.at(i);
 		m_meshes.at(i) = nullptr;
 	};
+	for (size_t i = 0; i < m_skeletons.size(); i++)
+	{
+		delete m_skeletons.at(i);
+		m_skeletons.at(i) = nullptr;
+	}
 
 	for (auto iterator = m_textures.begin(); iterator != m_textures.end(); ++iterator)
 	{
