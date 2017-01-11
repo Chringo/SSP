@@ -21,12 +21,13 @@ struct GraphicsAnimationComponent
 
 struct AnimationComponent
 {
-	Resources::Model* model;
-	Resources::Skeleton* skeleton;
-	Resources::Animation* animations;
+	int active = 0;
+	int modelID = -1;
+	int skeletonID = 1;
+	int animationState = 0;
 };
 
-struct SkelTemp
+struct SkeletonTemp
 {
 	int parentIndex;
 	int jointIndex;
@@ -37,54 +38,60 @@ struct AnimationClip
 {
 	int animationState;
 	int previousState;
+
 	bool isLooping;
+	bool isActive;
+
 	float startFrame;
 	float endFrame;
+
+	float weight;
 };
 
 class AnimationHandler
 {
 
 private:
-	std::stack<AnimationClip> animationStack;
+
+	std::vector<AnimationClip> m_animationStack;
 
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
 
-	Resources::Model* modelPtr;
+	bool m_newAnimation;
+	bool m_isComplete;
+	
+	float m_elapsedTime;
+	
+	float m_BlendDuration;
+	float m_BlendTimeLeft;
 
-	Resources::Skeleton* skeletonPtr;
-	Resources::Skeleton::Joint* jointList;
-	unsigned int jointCount;
+	std::vector<SkeletonTemp> m_skeletonContainer;
 
-	std::vector<SkelTemp> skeltempVec;
+	std::vector<const Resources::Animation::AnimationJoint*> m_animationContainer;
 
-	const Resources::Animation* animationPtr;
-
-	const Resources::Animation::AnimationJoint* animatedJointsList;
-
-	std::vector<DirectX::XMFLOAT4X4> interpolatedTransforms;
-
-	float elapsedTime;
-	bool newAnimation;
+	std::vector<DirectX::XMFLOAT4X4> m_localTransforms;
 
 public: 
+
 	AnimationHandler();
 	~AnimationHandler();
 
-	/*Update each frame in the current animation.*/
 	void Update(float dt);
 
-	/*Adds a new animation to the stack. Input arguments should come from somewhere else containing frame data.*/
-	void Push(int animationState, bool newAnimation);
+	void Push(int animationState, bool newAnimation, bool isLooping, float weight);
 
-	/*Removes the animation that is on the top of the stack.*/
 	void Pop();
 
-	void GetAnimationState(int animationState, AnimationClip& clip);
+	Resources::Model* GetAnimatedModel(int modelId);
+	Resources::Skeleton* GetSkeleton(Resources::Model* modelPtr);
+	Resources::Animation* GetAnimations(Resources::Skeleton* skeletonPtr);
+
+	float GetStartFrame(int animationState);
+	float GetEndFrame(int animationState);
+
+	void Blend(float currentTime, bool newAnimation);
 
 	void Interpolate(float currentTime);
-
-	void ConvertFloatArrayToXMFloatMatrix(float floatArray[16], int jointIndex);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
