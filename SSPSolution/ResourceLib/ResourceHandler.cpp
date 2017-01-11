@@ -136,7 +136,6 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 			//Load the model
 			Status modelSt = m_modelHandler->LoadModel(id, modelPtr); //if this fails, placeholder will take the place
 
-			Model* hej = (Model*)modelPtr->resource;
 #ifdef _DEBUG
 			if (modelSt != ST_OK) {
 
