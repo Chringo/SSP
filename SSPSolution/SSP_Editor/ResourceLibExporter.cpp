@@ -81,7 +81,7 @@ void ResourceLibExporter::BuildRegistry()
 		item.id = sceneMaterials->at(i)->GetId();
 		m_Items.push_back(item);
 	}
-
+	
 	/*iterating over all the textures*/
 	std::unordered_map<std::string, Resources::Texture*>* sceneTextures = m_Data->GetTextures();
 	for (auto iterator = sceneTextures->begin(); iterator != sceneTextures->end(); ++iterator)

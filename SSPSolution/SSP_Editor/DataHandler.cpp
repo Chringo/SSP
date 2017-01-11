@@ -2,6 +2,11 @@
 
 
 
+Resources::Status DataHandler::AddSkeleton(Resources::Skeleton * skeleton)
+{
+	return Resources::Status();
+}
+
 Resources::Status DataHandler::AddModel(Resources::Model * model)
 {
 	this->loadedIds[model->GetId()] = true;

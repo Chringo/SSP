@@ -124,6 +124,27 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+	//dirPath = pathToBbfFolder + "/Animations";
+	//if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	//{
+	//	/* append all the mesh names from the directory */
+	//	while ((ent = readdir(dir)) != NULL)
+	//	{
+	//		if (*ent->d_name != '.')
+	//		{
+	//			std::string pathName = dirPath.toStdString() + "/";
+	//			pathName += ent->d_name;
+	//			m_filepaths.push_back(pathName);
+	//		}
+	//	}
+	//	closedir(dir);
+	//}
+	//else
+	//{
+	//	return Resources::Status::ST_ERROR_OPENING_FILE;
+	//	/* could not open directory */
+	//	perror("");
+	//}
 	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
 	//{
 	//	/* append all the texture names from the directory */

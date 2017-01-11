@@ -18,6 +18,7 @@
 class DataHandler
 {
 private:
+	std::vector<Resources::Skeleton*> m_skeletons;
 	std::vector<Resources::Model*> m_models;
 	std::vector<Resources::Mesh*>  m_meshes;
 	std::vector<Resources::Material*> m_materials;
@@ -26,6 +27,7 @@ private:
 	std::unordered_map<unsigned int, bool> loadedIds; //keeps track of all id's loaded.
 	DataHandler();
 public:
+	Resources::Status AddSkeleton(Resources::Skeleton* skeleton);
 	Resources::Status AddModel(Resources::Model* model);
 	Resources::Status AddMesh(Resources::Mesh* mesh);
 	Resources::Status AddMaterial(Resources::Material* material);
@@ -34,6 +36,7 @@ public:
 	static DataHandler* GetInstance();
 	~DataHandler();
 
+	std::vector<Resources::Skeleton*>* GetSkeletons() { return &this->m_skeletons; };
 	std::vector<Resources::Model*>* GetModels() { return &this->m_models; };
 	std::vector<Resources::Mesh*>*  GetMeshes() { return &this->m_meshes; };
 	std::vector<Resources::Material*>* GetMaterials() { return &this->m_materials; };
