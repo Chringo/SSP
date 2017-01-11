@@ -333,9 +333,7 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 
 bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
 {
-#ifdef _DEBUG
-		std::cout << "Importing textures from server" << std::endl;
-#endif // _DEBUG
+
 
 		Resources::Status st;
 
