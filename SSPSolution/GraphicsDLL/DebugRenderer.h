@@ -6,7 +6,8 @@ class DebugRenderer
 {
 
 private:
-	enum MeshTypes {
+	enum MeshTypes : unsigned int
+	{
 		M_CUBE    = 0,
 		M_PLANE   = 1,
 		M_SPHERE  = 2,
