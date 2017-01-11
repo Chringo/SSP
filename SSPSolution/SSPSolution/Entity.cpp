@@ -24,3 +24,9 @@ GraphicsComponent* Entity::SetGraphicsComponent(GraphicsComponent * gComp)
 	this->m_gComp = gComp;
 	return tempReturn;
 }
+
+PhysicsComponent * Entity::GetPhysiscComponent() const
+{
+	PhysicsComponent* ptr = this->m_pComp;
+	return ptr;
+}

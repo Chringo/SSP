@@ -32,7 +32,7 @@ GraphicsComponent * ComponentHandler::GetGraphicsComponent()
 PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 {
 	PhysicsComponent* newComponent = nullptr;
-	DirectX::XMVECTOR tempPos;
+	DirectX::XMVECTOR tempPos = DirectX::XMVectorSet(0, 8, 60, 0);
 	newComponent = this->m_physicsHandler->CreatePhysicsComponent(tempPos, false);
 	return newComponent;
 }

@@ -16,7 +16,7 @@ Player::~Player()
 int Player::Initialize()
 {
 	int result = 0;
-	this->m_speed = 1.0f;
+	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	return result;
 }
@@ -42,6 +42,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
 	{
 		sideways--;
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	{
+		//assumes grabbedis ALWAYS the ball and never nullptr
+		this->m_grabbed->GetPhysiscComponent()->PC_velocity = DirectX::XMVectorSet(0, 3, 1, 0);
+
 	}
 	//Check if player is grounded
 
@@ -74,6 +80,11 @@ int Player::React(int entityID, EVENT reactEvent)
 	int result = 0;
 
 	return result;
+}
+
+void Player::SetGrabbed(Entity * ptr)
+{
+	this->m_grabbed = ptr;
 }
 
 float Player::SetSpeed(float speed)

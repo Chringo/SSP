@@ -150,6 +150,8 @@ public:
 
 	bool checkCollition();
 
+	void SortComponents(); //sorts the array so the dynamic components are first and static are last
+
 #ifdef _DEBUG
 	void GetPhysicsComponentOBB(OBB*& src, int index);
 	void GetPhysicsComponentAABB(AABB*& src, int index);

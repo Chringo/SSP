@@ -833,8 +833,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
-
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f);
 	return true;
 }
 
@@ -1066,8 +1065,8 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_mass = 1.0f;
 	newObject->PC_gravityInfluence = 1.0f;
 	newObject->PC_Sphere.radius = 1.0f;
-	newObject->PC_friction = 1.0f;
-	newObject->PC_elasticity = 1.0f;
+	newObject->PC_friction = 0.5f;
+	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
 
 	this->CreateDefaultBB(pos, newObject);
@@ -1424,6 +1423,16 @@ bool PhysicsHandler::checkCollition()
 	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
 	return result;
+}
+
+void PhysicsHandler::SortComponents()
+{
+	this->m_nrOfStaticObjects = 20;
+	//int nrOfComponents = this->m_dynamicComponents.size();
+	//for (int i = 0; i < nrOfComponents; i++)
+	//{
+
+	//}
 }
 
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)

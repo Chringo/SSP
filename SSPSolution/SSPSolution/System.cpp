@@ -84,7 +84,6 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 
 	this->m_physicsHandler.Initialize();
-	this->CreateDummyObjects();
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -93,6 +92,7 @@ int System::Initialize()
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler);
+	this->m_physicsHandler.SortComponents();
 	//Initialize the network module
 	this->m_networkModule.Initialize();
 
@@ -292,26 +292,6 @@ int System::Update(float deltaTime)
 #pragma endregion
 
 	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
-	//temp input for testing chain
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponentAt(0);
-		DirectX::XMVECTOR dir;
-		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
-		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
-		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
-		dir = DirectX::XMVectorScale(dir, 500);
-
-
-		this->m_physicsHandler.ApplyForceToComponent(ballPtr, dir, 1.0);
-		//ballPtr->PC_velocity = DirectX::XMVectorSet(3, 2, 0, 0);
-		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
-	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponentAt(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-3, 2, 0, 0);
-	}
 
 	this->m_physicsHandler.Update(deltaTime);
 
@@ -337,9 +317,6 @@ int System::Update(float deltaTime)
 			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
 		}
 	}
-
-	//locks camera to the player
-	//this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
@@ -500,52 +477,4 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 	this->m_physicsHandler.ApplyForceToComponent(player, DirectX::XMVectorSet(translateCameraX, translateCameraY, translateCameraZ, 0), 1.0f);
 }
 
-void System::CreateDummyObjects()
-{
-	//create random content
-	PhysicsComponent* ptr = nullptr;
-	DirectX::XMVECTOR tempPos;
-	
 
-	//ball
-	tempPos = DirectX::XMVectorSet(0, 1.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 200.f;
-	ptr->PC_AABB.ext[0] = 0.3f;
-	ptr->PC_AABB.ext[1] = 0.3f;
-	ptr->PC_AABB.ext[2] = 0.3f;
-	//AABB by default
-
-	//playår
-	tempPos = DirectX::XMVectorSet(10.0, 1.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 70.f;
-	ptr->PC_AABB.ext[0] = 0.5f;
-	ptr->PC_AABB.ext[1] = 0.5f;
-	ptr->PC_AABB.ext[2] = 0.5f;
-	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2f);
-
-
-	//the gölv
-	tempPos = DirectX::XMVectorSet(0.0f, 0.0f, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
-	ptr->PC_BVtype = BoundingVolumeType::BV_Plane;
-	ptr->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
-
-	ptr->PC_friction = 0.2f;
-	ptr->PC_elasticity = 0.5f;
-
-
-	//the plätförm
-	tempPos = DirectX::XMVectorSet(40.0, 5.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
-	ptr->PC_AABB.ext[0] = 20.f;
-	ptr->PC_AABB.ext[1] = 3.0f;
-	ptr->PC_AABB.ext[2] = 200.f;
-
-	ptr->PC_friction = 0.2f;
-	ptr->PC_elasticity = 0.5f;
-
-
-}
