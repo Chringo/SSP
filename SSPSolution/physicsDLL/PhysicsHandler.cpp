@@ -834,16 +834,16 @@ PhysicsHandler::~PhysicsHandler()
 bool PhysicsHandler::Initialize()
 {
 	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f);
-	for (int i = 0; i < 100; i++)
-	{
-		PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(0, 0, 0, 0), false);
-		int R = rand() % 2;
-		if (R == 1)
-		{
-			ptr->PC_is_Static = true;
-		}
-	}
-	this->SortComponents();
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(0, 0, 0, 0), false);
+	//	int R = rand() % 2;
+	//	if (R == 1)
+	//	{
+	//		ptr->PC_is_Static = true;
+	//	}
+	//}
+	//this->SortComponents();
 	return true;
 }
 
