@@ -11,36 +11,35 @@
 #include <DirectXMath.h>
 #include <vector>
 
-class AIDLL_API AIHandler
+class AIHandler
 {
 private:
 	std::vector<AIComponent*> m_AIComponents;
 	int m_nrOfAIComponents;
 
 public:
-	AIHandler();
-	~AIHandler();
-	int Shutdown();
+	AIDLL_API AIHandler();
+	AIDLL_API ~AIHandler();
+	AIDLL_API int Shutdown();
 
-	int Initialize(int nrOfAIComponents);
-	int Update(float deltaTime);
+	AIDLL_API int Initialize(int nrOfAIComponents);
+	AIDLL_API int Update(float deltaTime);
 
 	// Setters
-	void SetComponentActive(int compID);
-	void SetComponentFalse(int compID);
+	AIDLL_API void SetComponentActive(int compID);
+	AIDLL_API void SetComponentFalse(int compID);
 
-	void SetEntityID(int compID, int entityID);
-	void SetTriggered(int compID, bool triggered);
-	void SetTime(int compID, int time);
-	void SetSpeed(int compID, int speed);
-	void SetDirection(int compID, int direction);
-	void SetCurrentWaypoint(int compID, int currentWaypoint);
-	void SetNrOfWaypoints(int compID, int nrOfWaypoints);
-	void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
+	AIDLL_API void SetEntityID(int compID, int entityID);
+	AIDLL_API void SetTriggered(int compID, bool triggered);
+	AIDLL_API void SetTime(int compID, int time);
+	AIDLL_API void SetSpeed(int compID, int speed);
+	AIDLL_API void SetDirection(int compID, int direction);
+	AIDLL_API void SetCurrentWaypoint(int compID, int currentWaypoint);
+	AIDLL_API void SetNrOfWaypoints(int compID, int nrOfWaypoints);
+	AIDLL_API void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
 
 	// Getters
-	int GetNrOfAIComponents() const;
-
+	AIDLL_API int GetNrOfAIComponents() const;
 	
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
