@@ -1,8 +1,6 @@
 #include "GraphicsHandler.h"
 
 #ifdef _DEBUG
-
-
 void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 	obbBoxes.push_back(&box);
@@ -209,8 +207,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->editorMode = editorMode;
 	if (!editorMode)
 	{
-		Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
-		this->m_CreateTempsTestComponents();
+		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+		//this->m_CreateTempsTestComponents();
+	}
+	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent();
+
 	}
 
 
@@ -262,21 +266,16 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-
+	Resources::Model* modelPtr = nullptr;
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
-		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
-		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
+		if (this->m_graphicsComponents[i]->active == false)
+			continue;
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
+		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
-	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
-	//{
-	//}
-	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
-	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
-
-	//RenderGrid(m_modelsPtr[1], )
+	
 
 
 	m_shaderControl->DrawFinal();
@@ -310,7 +309,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 int GraphicsHandler::InitializeGrid()
 {
-	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
+
 	m_d3dHandler->InitializeGridRasterizer();
 
 	this->m_shaderControl->InitializeWireframe(this->m_d3dHandler->GetDevice());
@@ -431,9 +430,11 @@ void GraphicsHandler::Shutdown()
 		}
 
 	
+	
+		if (m_animGraphicsComponents != nullptr) {
 		delete this->m_animGraphicsComponents[1];
-		delete[] this->m_modelsPtr;
 		delete[] this->m_animGraphicsComponents;
+		}
 	}
 	
 	delete[] this->m_graphicsComponents;
@@ -510,7 +511,7 @@ GraphicsComponent * GraphicsHandler::getComponent(int index)
 
 void GraphicsHandler::m_CreateTempsTestComponents()
 {
-	this->m_modelsPtr = new Resources::Model*[2];
+	
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
@@ -554,9 +555,6 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
-	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
-	
+
 
 }

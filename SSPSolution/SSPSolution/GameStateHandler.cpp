@@ -34,13 +34,13 @@ int GameStateHandler::ShutDown()
 }
 
 
-int GameStateHandler::Initialize(ComponentHandler * cHandler)
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 {
 	int result = 0;
 	
 	//Create, Initialize and push a LevelSelectState
 	LevelSelectState* levelSelect = new LevelSelectState();
-	result = levelSelect->Initialize(this, cHandler);
+	result = levelSelect->Initialize(this, cHandler, cameraRef);
 
 	//If the initialization was successful
 	if (result > 0)
@@ -48,7 +48,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler)
 		//Push it to the gamestate stack/vector
 		this->m_stateStack.push_back(levelSelect);
 		
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/complex.level"));
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
 	}
 	else
 	{

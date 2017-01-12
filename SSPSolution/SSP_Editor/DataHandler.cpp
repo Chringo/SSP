@@ -94,6 +94,17 @@ DataHandler::~DataHandler()
 	delete m_textureHandler;
 }
 
+Resources::Model * DataHandler::GetModel(unsigned int & id)
+{
+	for (size_t i = 0; i < m_models.size(); i++)
+	{
+		if (id == m_models.at(i)->GetId())
+			return m_models.at(i);
+	}
+
+	return nullptr;
+}
+
 Resources::Status DataHandler::GetTexture(std::string id, Resources::Texture *& texture)
 {
 	std::unordered_map<std::string, Resources::Texture*>::iterator got = m_textures.find(id);

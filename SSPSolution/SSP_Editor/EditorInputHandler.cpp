@@ -51,24 +51,49 @@ void EditorInputHandler::KeyboardMovement(double dT)
 {
 	float speed = 2.0f * dT;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
-
-	if (this->m_KeysHeld[Bools::W] == true)
-		translateCameraZ += speed;
-
-	if (this->m_KeysHeld[Bools::A] == true)
-		translateCameraX -= speed;
-	if (this->m_KeysHeld[Bools::S] == true)
-		translateCameraZ -= speed;
-	if (this->m_KeysHeld[Bools::D] == true)
-		translateCameraX += speed;
-	if (this->m_KeysHeld[Bools::C] == true)
-		translateCameraY -= speed;
+	if (m_KeysHeld[Bools::SHIFT] == true)
+	{
+		if (this->m_KeysHeld[Bools::W] == true)
+			translateCameraZ += speed;
+	
+		if (this->m_KeysHeld[Bools::A] == true)
+			translateCameraX -= speed;
+		if (this->m_KeysHeld[Bools::S] == true)
+			translateCameraZ -= speed;
+		if (this->m_KeysHeld[Bools::D] == true)
+			translateCameraX += speed;
+		if (this->m_KeysHeld[Bools::C] == true)
+			translateCameraY -= speed;
+		if (this->m_KeysHeld[Bools::SPACE] == true)
+			translateCameraY -= speed;
+	
+			MouseZoom(dT);
+	}
+	else {
 	if (this->m_KeysHeld[Bools::SPACE] == true)
 		translateCameraY += speed;
+	}
 	if (this->m_KeysHeld[ALT] == true)
 		MouseMovement(dT);
-	if (this->m_KeysHeld[SHIFT] == true)
-		MouseZoom(dT);
+		
+	
+
+	//if (this->m_KeysHeld[Bools::CONTROL] == true)
+	//{
+	//	if (m_KeysHeld[Bools::D])
+	//	{
+	//		if (SelectionHandler::GetInstance()->HasSelection())
+	//		{
+	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
+	//			Container* newEntity = nullptr;
+	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+	//			if (st == Resources::Status::ST_OK)
+	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+	//		}
+	//		m_KeysHeld[Bools::D] = false;
+	//	}
+	//}
+		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
@@ -247,18 +272,13 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 		{
 		case Qt::Key_Shift:
 			m_KeysHeld[Bools::SHIFT] = false;
-			m_KeysHeld[Bools::W]	 = false;
-			m_KeysHeld[Bools::A]	 = false;
-			m_KeysHeld[Bools::S]	 = false;
-			m_KeysHeld[Bools::D]	 = false;
-			m_KeysHeld[Bools::C]	 = false;
-			m_KeysHeld[Bools::SPACE] = false;
 			break;
 		case Qt::Key_Alt:
 			m_KeysHeld[Bools::ALT] = false;
 			break;
 		case Qt::Key_Control:
 			m_KeysHeld[Bools::CONTROL] = false;
+			m_ableToDuplicate = true;
 			break;
 		case Qt::Key_W:
 			m_KeysHeld[Bools::W] = false;
@@ -313,40 +333,39 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 			m_KeysHeld[Bools::CONTROL] = true;
 			break;
 		case Qt::Key_W:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
-				m_KeysHeld[Bools::W] = true;
-			}
+			m_KeysHeld[Bools::W] = true;
 			break;
 		case Qt::Key_A:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::A] = true;
-			}
 			break;
 		case Qt::Key_S:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::S] = true;
-			}
 			break;
 		case Qt::Key_D:
-			if (m_KeysHeld[Bools::SHIFT] == true)
+			if (m_ableToDuplicate)
 			{
-				m_KeysHeld[Bools::D] = true;
+				if (this->m_KeysHeld[Bools::CONTROL] == true)
+				{
+					
+						if (SelectionHandler::GetInstance()->HasSelection())
+						{
+							Container* temp = SelectionHandler::GetInstance()->GetSelected();
+							Container* newEntity = nullptr;
+							Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+							if (st == Resources::Status::ST_OK)
+								SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+						}
+						m_ableToDuplicate = false;
+				}
 			}
+			m_KeysHeld[Bools::D] = true;
 			break;
+			
 		case Qt::Key_C:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::C] = true;
-			}
 			break;
 		case Qt::Key_Space:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::SPACE] = true;
-			}
 			break;
 		case Qt::Key_R:
 			CameraReset();

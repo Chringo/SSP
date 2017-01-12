@@ -17,10 +17,10 @@ int StartState::ShutDown()
 	return result;
 }
 
-int StartState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	return result;
 }
 

@@ -424,9 +424,7 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 
 bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
 {
-#ifdef _DEBUG
-		std::cout << "Importing textures from server" << std::endl;
-#endif // _DEBUG
+
 
 		Resources::Status st;
 
@@ -440,6 +438,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 		}
 
 		Resources::Texture *textures[5] = { nullptr,nullptr ,nullptr ,nullptr ,nullptr };
+		bool textureExists[5]		    = { false,	false,	false,	false,	false };
 		for (size_t i = 0; i < 5; i++)
 		{
 			Resources::Resource::RawResourceData temp;
@@ -455,6 +454,9 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 				textures[i]->SetFileName((char*)(m_bbf_object + offset), *textureNameLength[i]);
 				m_data->AddTexture(textures[i]);
 			}
+			else
+				textureExists[i] = true;
+			
 			offset += *textureNameLength[i];
 		}
 #pragma region Load Textures
@@ -473,7 +475,8 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 
 		for (size_t i = 0; i < 5; i++)
 		{
-
+			if (textureExists[i])
+				continue;
 			mbstowcs_s(&*textureNameLength[i], path[i], path_str[i].c_str(), *textureNameLength[i]);
 
 			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_Device,

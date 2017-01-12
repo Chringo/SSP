@@ -47,26 +47,27 @@ int LevelState::ShutDown()
 	return result;
 }
 
-int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 
-	//Read from file
-	//Get Components
-	GraphicsComponent* tempGComp = this->m_cHandler->GetGraphicsComponent();
-	PhysicsComponent* tempPComp = this->m_cHandler->GetPhysicsComponent();
-	//Set Component values
-	tempGComp->active = 1;
-	tempGComp->modelID = 1337;
-	tempGComp->worldMatrix = DirectX::XMMatrixIdentity();
-	tempPComp->PC_active = 1;
-	tempPComp->PC_pos = DirectX::XMVectorSet(0.0f, 1.0f, 6.0f, 1.0f);
-	//Give Components to entities
-	this->m_player1.Initialize();
-	this->m_player1.SetGraphicsComponent(tempGComp);
-	this->m_player1.SetPhysicsComponent(tempPComp);
-	this->m_player1.SetSpeed(0.1f);
+	////Read from file
+	////Get Components
+	//GraphicsComponent* tempGComp = this->m_cHandler->GetGraphicsComponent();
+	//PhysicsComponent* tempPComp = this->m_cHandler->GetPhysicsComponent();
+	////Set Component values
+	//tempGComp->active = 1;
+	//tempGComp->modelID = 1337;
+	//tempGComp->worldMatrix = DirectX::XMMatrixIdentity();
+	//tempPComp->PC_active = 1;
+	//tempPComp->PC_pos = DirectX::XMVectorSet(0.0f, 1.0f, 6.0f, 1.0f);
+	////Give Components to entities
+	//this->m_player1.Initialize();
+	//this->m_player1.SetGraphicsComponent(tempGComp);
+	//this->m_player1.SetPhysicsComponent(tempPComp);
+	//this->m_player1.SetSpeed(0.1f);
+
 	return result;
 }
 
@@ -74,7 +75,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = 1000000 / dt;
-	this->m_player1.Update(dt, inputHandler);
+	//this->m_player1.Update(dt, inputHandler);
 	
 	for (size_t i = 0; i < m_entities.size(); i++)
 	{
@@ -92,6 +93,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
 	Resources::Status st = Resources::ST_OK;
+	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 		//For each entity in level
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
@@ -101,11 +103,18 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		GraphicsComponent* t_gc = m_cHandler->GetGraphicsComponent();
 		t_gc->modelID = currEntity->modelID;
 		t_gc->active = true;
+		resHandler->GetModel(t_gc->modelID, t_gc->modelPtr); //Get and apply a pointer to the model
 		//Create world matrix from data
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(pos);
-		rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate,translate);
 
 		//Create Physics component

@@ -516,6 +516,11 @@ int DeferredShader::Draw(Resources::Model * model)
 
 int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component)
 {
+#ifdef _DEBUG
+	if (model == nullptr) 												   //This is a check, If a component has no ptr to a model
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);  //This should never occur, But with hardcoded test components in the system
+																		   //means that this is needed. This snippet should be removed in a later stage. As level loading fixes these problems
+#endif // _DEBUG
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf		 = meshPtr->GetVerticesBuffer();

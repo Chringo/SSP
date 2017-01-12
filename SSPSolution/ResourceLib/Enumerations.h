@@ -51,7 +51,7 @@ namespace Resources
 	static bool SAFE_RELEASE(IUnknown* dxBuffer)
 	{
 
- 		if (dxBuffer != nullptr)
+ 		if (dxBuffer != nullptr || dxBuffer != NULL)
 		{
 			try {
 				while (dxBuffer->Release()>0);

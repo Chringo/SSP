@@ -14,7 +14,7 @@ public:
 
 	int ShutDown();
 
-	int Initialize(ComponentHandler* cHandler);
+	int Initialize(ComponentHandler* cHandler, Camera* cameraRef);
 
 	int Update(float dt, InputHandler* inputHandler);
 private:
