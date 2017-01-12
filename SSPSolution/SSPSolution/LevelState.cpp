@@ -75,7 +75,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	int result = 1;
 	dt = 1000000 / dt;
 	//this->m_player1.Update(dt, inputHandler);
-	
+
 	for (size_t i = 0; i < m_entities.size(); i++)
 	{
 		this->m_entities.at(i)->Update(dt, inputHandler);
@@ -127,6 +127,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	ballP->PC_AABB.ext[0] = 1.5;
 	ballP->PC_AABB.ext[1] = 1.5;
 	ballP->PC_AABB.ext[2] = 1.5;
+	ballP->PC_mass = 10;
 	ball->Initialize();
 	ball->SetGraphicsComponent(ballG);
 	ball->SetPhysicsComponent(ballP);
@@ -134,6 +135,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	Player* ptr = (Player*)player;
 	ptr->SetGrabbed(ball);
+
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
 
 	Entity* golv = new StaticEntity();
 	GraphicsComponent* golvG = m_cHandler->GetGraphicsComponent();

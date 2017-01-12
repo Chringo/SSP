@@ -8,6 +8,8 @@ private:
 	//Meters per second
 	float m_speed;
 	Entity* m_grabbed;
+
+	DirectX::XMVECTOR m_lookDir;
 public:
 	Player();
 	~Player();
@@ -21,6 +23,7 @@ public:
 
 	//Returns the old speed
 	float SetSpeed(float speed);
+	void SetLookDir(DirectX::XMVECTOR lookDir);
 private:
 
 };

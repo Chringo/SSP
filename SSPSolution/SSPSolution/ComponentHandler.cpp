@@ -47,3 +47,9 @@ void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
 	return;
 }
+
+PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
+{
+	return this->m_physicsHandler;
+}
+

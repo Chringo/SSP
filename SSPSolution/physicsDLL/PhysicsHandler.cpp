@@ -833,7 +833,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.5f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
 	//for (int i = 0; i < 100; i++)
 	//{
 	//	PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(0, 0, 0, 0), false);

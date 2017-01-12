@@ -18,6 +18,7 @@ int Player::Initialize()
 	int result = 0;
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
+	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	return result;
 }
 
@@ -27,6 +28,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Determine the player behavior that should accour based on the user input
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
+	float rotationY = 0.0f;
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		forwards++;
@@ -46,7 +48,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
 		//assumes grabbedis ALWAYS the ball and never nullptr
-		this->m_grabbed->GetPhysiscComponent()->PC_velocity = DirectX::XMVectorSet(0, 3, 1, 0);
+		float strenght = 1.5f;
+		this->m_grabbed->GetPhysiscComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1, 0, 0)), strenght);
 
 	}
 	//Check if player is grounded
@@ -92,4 +95,9 @@ float Player::SetSpeed(float speed)
 	float oldSpeed = this->m_speed;
 	this->m_speed = speed;
 	return oldSpeed;
+}
+
+void Player::SetLookDir(DirectX::XMVECTOR lookDir)
+{
+	this->m_lookDir = lookDir;
 }

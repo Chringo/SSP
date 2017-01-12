@@ -164,17 +164,7 @@ int System::Update(float deltaTime)
 	//Update the network module
 	this->m_networkModule.Update();
 
-	PhysicsComponent* tempPlayer = nullptr;
-	tempPlayer = this->m_physicsHandler.getDynamicComponentAt(1);
-	DirectX::XMFLOAT3 playerPos;
-	DirectX::XMFLOAT3 cameraPos = this->m_camera->GetCameraPos();
-	DirectX::XMStoreFloat3(&playerPos, tempPlayer->PC_pos);
 	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
-
-	//translateCameraX = playerPos.x - cameraPos.x;
-	//translateCameraY = playerPos.y - cameraPos.y;
-	//translateCameraZ = playerPos.z - cameraPos.z;
-	//tempPlayer->PC_pos = DirectX::XMLoadFloat3(&cameraPos);
 
 	int rotateCameraY = 0;
 	std::list<CameraPacket> cList;
@@ -294,6 +284,8 @@ int System::Update(float deltaTime)
 	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
 
 	this->m_physicsHandler.Update(deltaTime);
+
+	this->LockCameraToPlayer(translateCameraX, translateCameraY, translateCameraZ);
 
 	for (int i = 0; i < nrOfComponents; i++)
 	{
@@ -465,7 +457,7 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
 	
-	player = this->m_physicsHandler.getDynamicComponentAt(1);
+	player = this->m_physicsHandler.getDynamicComponentAt(0);
 
 	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
 	camPos = DirectX::XMVectorAdd(camPos, DirectX::XMVectorSet(0, 3, 0, 0));
