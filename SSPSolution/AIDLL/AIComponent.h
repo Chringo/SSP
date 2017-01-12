@@ -5,7 +5,7 @@
 
 __declspec(align(16)) struct AIComponent
 {
-	// system variables
+	// System variables
 	int m_active = 0;
 	int m_entityID = -1;
 

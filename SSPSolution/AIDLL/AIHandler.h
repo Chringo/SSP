@@ -26,6 +26,8 @@ public:
 	int Update(float deltaTime);
 
 	// Setters
+	void setComponentActive(int compID);
+	void setComponentFalse(int compID);
 
 	// Getters
 	int getNrOfAIComponents() const;
