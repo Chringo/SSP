@@ -33,6 +33,7 @@ struct UIComponent
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
 	float scale = 1.f;
 	float rotation = 0.f;
+	float layerDepth = 1.f;
 
 	void UpdateClicked(DirectX::XMFLOAT2 mousePos)
 	{
@@ -74,5 +75,6 @@ struct TextComponent
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
 	DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.f, 1.f);
 	float rotation = 0.f;
+	float layerDepth = 0.f;
 };
 #endif
