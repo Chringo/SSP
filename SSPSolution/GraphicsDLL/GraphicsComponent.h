@@ -72,7 +72,7 @@ struct TextComponent
 	int active = 0;
 	std::wstring text = L"";
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
-	float scale = 1.f;
+	DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.f, 1.f);
 	float rotation = 0.f;
 };
 #endif

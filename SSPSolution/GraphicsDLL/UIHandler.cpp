@@ -27,7 +27,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
-	this->m_spriteFont = new DirectX::SpriteFont(device, L"myfile.spritefont");
+	this->m_spriteFont = new DirectX::SpriteFont(device, L"testfont.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
 
 	this->m_UIComponents.at(0)->position = DirectX::XMFLOAT2(10.f, 10.f);
@@ -39,16 +39,26 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_UIComponents.at(1)->rotation = 2.0f;
 	this->m_UIComponents.at(1)->active = true;
 	this->m_nrOfUIComponents++;
+
+	this->m_textComponents.at(0)->active = true;
+	this->m_textComponents.at(0)->text = L"Hello World!";
+	this->m_nrOfTextComponents++;
 }
 
 void UIHandler::DrawUI()
 {
-	UIComponent* tempComp = nullptr;
+	UIComponent* tempUIComp = nullptr;
+	TextComponent* tempTextComp = nullptr;
 	this->m_spriteBatch->Begin();
 	for (int i = 0; i < this->m_nrOfUIComponents; i++)
 	{
-		tempComp = this->m_UIComponents.at(i);
-		this->m_spriteBatch->Draw(this->m_texture, tempComp->position, nullptr, DirectX::Colors::White, tempComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempComp->scale);
+		tempUIComp = this->m_UIComponents.at(i);
+		this->m_spriteBatch->Draw(this->m_texture, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale);
+	}
+	for (int i = 0; i < this->m_nrOfTextComponents; i++)
+	{
+		tempTextComp = this->m_textComponents.at(i);
+		this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), DirectX::XMFLOAT2(0.f, 0.f));
 	}
 	this->m_spriteBatch->End();
 }
