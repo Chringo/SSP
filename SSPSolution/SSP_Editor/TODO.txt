@@ -1,0 +1,47 @@
+
+----------------------------------------------------------------------
+Container struct
+	- Add a name variable. This is so that the creator can keep track of items in large scenes
+	- standard name is model file name + unique instance id : eg. pCube_1, pCube_2 ,etc
+
+--------------------------------------------------------------------
+Add a class that handles the scene info tab
+
+	- Lists the instances in a level by names in the scene info tab
+	- When an item in the widget is clicked, highlight the model in the scene (and update attribute window)
+	- Remove items from the list when they are deleted.
+	- The class should have easy to use functions
+		- AddInstance(   /*Necessary arguments*/)
+		- RemoveInstance(/*Necessary arguments*/)
+		- ItemSelected() //Callback?
+		- NewScene(Level* new level) // Clears the scene info and loads the level info
+
+---------------------------------------------------------------------
+Add a class that handles the Attributes window
+
+	- Update the name box  with the selected instance name
+	- Update the value boxes with the selected instance values
+	- Connect callbacks for name changed and all values changed
+	- Write new  user input values from QtBoxes to the model, update the model
+
+	Example: A "ObjectSelector" class that handles the selections of objects. Updating the UI,etc
+
+-----------------------------------------------------
+FileImporter:
+	- Add functions that handle the case of the server not being reachable ----------DONE---------
+	- Ask if the user wants to manually enter a file path.				   ----------DONE---------
+	- Ask if the user would rather load from a BPF file.
+	- Add texture   loading
+	- Add material  loading
+	- Add animation loading
+	- Add skeleton  loading
+
+---------------------------------------------------------
+EXPORT / IMPORT:
+	- Change the material file to print the filename of the textures instead of texture ID! ------DONE------
+	- Pivot position
+---------------------------------------------------------
+SELECTION HANDLER:
+	- Should selected obb pos be equal to instance position? For now it is
+	- Pivot support for rotate/translate
+	- Ability to place player spawn positions

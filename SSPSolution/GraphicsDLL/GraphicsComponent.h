@@ -3,15 +3,17 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "../ResourceLib/Model.h"
 
 struct GraphicsComponent
 {
 	int active = 0;
-	int modelID = -1;
+	unsigned int modelID = 0;
+	Resources::Model* modelPtr;
 	DirectX::XMMATRIX worldMatrix;
 };
 
-struct penis
+struct penis //john....
 {
 	int active = 0;
 	int modelID = -1;

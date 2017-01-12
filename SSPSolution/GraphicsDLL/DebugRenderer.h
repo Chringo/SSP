@@ -6,7 +6,8 @@ class DebugRenderer
 {
 
 private:
-	enum MeshTypes {
+	enum MeshTypes : unsigned int
+	{
 		M_CUBE    = 0,
 		M_PLANE   = 1,
 		M_SPHERE  = 2,
@@ -55,15 +56,17 @@ public:
 	~DebugRenderer();
 	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
 	void Release();
-	void Render(DirectX::XMVECTOR& pos, AABB&  box);
-	void Render(DirectX::XMVECTOR& pos, OBB&   box);
-	void Render(DirectX::XMVECTOR& pos, Plane& plane);
+	void Render(DirectX::XMVECTOR& pos, AABB&  box,   DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
+	void Render(DirectX::XMVECTOR& pos, OBB&   box,   DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
+	void Render(DirectX::XMVECTOR& pos, Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	void Render(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	void SetActive();
 
 private:
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, AABB& box);
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, OBB& box);
-	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Plane& box);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, AABB& box , DirectX::XMVECTOR color);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, OBB& box ,  DirectX::XMVECTOR color);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Plane& box, DirectX::XMVECTOR color);
+	ID3D11Buffer* GenerateLinelist(DirectX::XMVECTOR& pos, Sphere& box, DirectX::XMVECTOR color, int ringIndex);
 
 
 };

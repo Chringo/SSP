@@ -6,11 +6,9 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[RESOURCE_FILE] = std::string("../ResourceLib/AssetFiles/grid.bbf");
-	filePaths[REG_FILE] = std::string("../ResourceLib/AssetFiles/regfile.reg");
+	filePaths[BPF_FILE] = std::string("../ResourceLib/AssetFiles/AssetFile.bpf");
 
-	fileHandles[RESOURCE_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
-	fileHandles[REG_FILE].rdbuf()->pubsetbuf(0, 0);			 //Disable streaming buffers
+	fileHandles[BPF_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 
 	for (size_t i = 0; i < NUM_FILES; i++)
 	{
@@ -63,10 +61,10 @@ bool Resources::FileLoader::CloseFile(Files file)
 	return true;
 }
 
-Resources::FileLoader::RegIndex * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
+RegistryItem * Resources::FileLoader::GetRegistryIndex(const unsigned int & objectId)
 {
 
-	std::unordered_map<unsigned int, RegIndex>::iterator got = m_fileRegistry.find(objectId);
+	std::unordered_map<unsigned int, RegistryItem>::iterator got = m_fileRegistry.find(objectId);
 	if (got == m_fileRegistry.end()) { // if the index does not exists in memory
 
 		return nullptr;
@@ -78,37 +76,44 @@ Resources::FileLoader::RegIndex * Resources::FileLoader::GetRegistryIndex(const 
 
 Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, char*& data, size_t * size)
 {
-	if (fileStates[RESOURCE_FILE] == CLOSED)
+	if (fileStates[BPF_FILE] == CLOSED)
 	{
 		std::cout << "File is closed" << std::endl;
 		return Status::ST_FILE_CLOSED;
-
 	}
 
+	RegistryItem* itemPtr = this->GetRegistryIndex(id);	//Get Registry info for this resource
+	if (itemPtr == nullptr)
+		return Status::ST_RES_MISSING;
 
-	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
-	std::ifstream* infile = &fileHandles[RESOURCE_FILE];
+	std::ifstream* infile = &fileHandles[BPF_FILE];
+	infile->seekg(itemPtr->startBit); // Jump to the start of the resource data in the library
 
-	MainHeader mainHeader;
-	infile->read((char*)&mainHeader, sizeof(MainHeader));
+	mem_manager.Clear(Resources::Memory::MEM_RES);							// Clear Resource Mem
+	data = mem_manager.Store(Resources::Memory::MEM_RES, itemPtr->byteSize);// Request new mem for this resource
 
-	MeshHeader meshHeader;
-	
-	infile->read((char*)&meshHeader, sizeof(MeshHeader));
-	size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
-	Resource::RawResourceData tempRes;
-	tempRes.m_id = id;
-	tempRes.m_resType = Resources::ResourceType::RES_MESH;
+	infile->read(data, itemPtr->byteSize); //Read the whole item data
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-	
-	data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
-
-	memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
-	memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
-
-	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
-	infile->read(data + offset, sizetoRead);
+//MainHeader mainHeader;
+//infile->read((char*)&mainHeader, sizeof(MainHeader)); //Read main header
+//
+//MeshHeader meshHeader;
+//
+//infile->read((char*)&meshHeader, sizeof(MeshHeader)); 
+//size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+//Resource::RawResourceData tempRes;
+//tempRes.m_id = id;
+//tempRes.m_resType = Resources::ResourceType::RES_MESH;
+//
+//mem_manager.Clear(Resources::Memory::MEM_RES);
+//
+//data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
+//
+//memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
+//memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
+//
+//UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
+//infile->read(data + offset, sizetoRead);
 
 	return Resources::Status::ST_OK;
 
@@ -169,23 +174,79 @@ Resources::Status Resources::FileLoader::LoadFile(std::string & path, char *& da
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData::Level *& levelPtr)
+{
+	
+	static LevelData::Level level;
+	std::fstream file;
+	file.open(path, std::fstream::in | std::fstream::binary);
+	if (!file.is_open())
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+
+	mem_manager.Clear(Resources::Memory::MEM_LEVEL);
+
+	LevelData::MainLevelHeader header;
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
+
+	size_t totalMem = header.resAmount * sizeof(LevelData::ResourceHeader) + //Calculate file size
+		header.entityAmount * sizeof(LevelData::EntityHeader) +
+		header.lightAmount * sizeof(LevelData::LightHeader);
+
+	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, totalMem); //get memorychunk
+	size_t offset = 0;
+	
+	
+	level.numResources  = header.resAmount;
+	level.numLights		= header.lightAmount;
+	level.numEntities   = header.entityAmount;
+
+	//Resource data
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
+	file.read(data, resSize);						     //Read res data
+	level.resources = (LevelData::ResourceHeader*) data; //put data into level variable
+	offset += resSize;
+
+	//Model Entities
+	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
+	file.read(data + offset , modelSize);										  // read all the entity data
+	level.entities = (LevelData::EntityHeader*) (data + offset);
+	offset += modelSize;
+
+	//Lights
+	/*
+		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize
+		file.read(data + offset , lightSize);
+		level.lights = (LevelData::LightHeader*) data + offset;
+	*/
+	
+	file.close();
+
+	levelPtr = &level;
+	return  Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
 
-	if (!OpenFile(Files::REG_FILE))
+	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
-		//MessageBox(NULL, TEXT("No registry file found"), TEXT("Critical error!"), MB_OK);
+		MessageBox(NULL, TEXT("No BPF file found"), TEXT("Critical error!"), MB_OK);
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-//	char* data = mem_manager.Store(Resources::Memory::MEM_RES, *size);
+	
+	RegistryHeader regHead;
+	fileHandles[BPF_FILE].read((char*)&regHead, sizeof(RegistryHeader));
+	m_fileRegistry.reserve((size_t)regHead.numIds);
+	for (size_t i = 0; i < regHead.numIds; i++)
+	{
+		RegistryItem item;
+		fileHandles[BPF_FILE].read((char*)&item, sizeof(RegistryItem));
+		this->m_fileRegistry[item.id] = item;
+	}
 
-
-	//fileHandles[REG_FILE].read()
-
-	CloseFile(Files::REG_FILE);
+	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;
 }

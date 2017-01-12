@@ -20,7 +20,7 @@
 #define NETWORKDLL_API __declspec(dllimport)   
 #endif  
 
-class NETWORKDLL_API NetworkModule
+class NetworkModule
 {
 
 private:
@@ -56,34 +56,34 @@ private:
 	DirectX::XMFLOAT3 testFloat3 = DirectX::XMFLOAT3(1.f,2.f,3.f);
 
 public:
-	NetworkModule();
-	~NetworkModule();
+	NETWORKDLL_API NetworkModule();
+	NETWORKDLL_API ~NetworkModule();
 
-	int Initialize();	// When initialized we will automaticly be joinable and clients can connect to our ip
-	int Shutdown();		// On Shutdown we will remove all still connected clients
-
-	void	Update();				// Accept new clients and read incoming packets 
-	int		Join(char* ip);			// Will try to Join a host with the chosen ip
-	int GetNrOfConnectedClients();	// Return the number of conencted clients
+	NETWORKDLL_API int Initialize();	// When initialized we will automaticly be joinable and clients can connect to our ip
+	NETWORKDLL_API int Shutdown();		// On Shutdown we will remove all still connected clients
+	
+	NETWORKDLL_API void	Update();				// Accept new clients and read incoming packets 
+	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
+	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
 
 	//Public packet functions (send to all other clients e.g the only other player)
-	void SendFlagPacket(PacketTypes type);
-	void SendSyncPacket();
-	void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
-	void SendAnimationPacket(unsigned int entityID);
-	void SendStatePacket(unsigned int entityID, bool newState);
-	void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
+	NETWORKDLL_API void SendFlagPacket(PacketTypes type);
+	NETWORKDLL_API void SendSyncPacket();
+	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
+	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID);
+	NETWORKDLL_API void SendStatePacket(unsigned int entityID, bool newState);
+	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
 
 	// Mutex functions
-	bool PacketBuffer_isLocked();
-	void PacketBuffer_Lock();
-	void PacketBuffer_UnLock();
+	NETWORKDLL_API bool PacketBuffer_isLocked();
+	NETWORKDLL_API void PacketBuffer_Lock();
+	NETWORKDLL_API void PacketBuffer_UnLock();
 
 	// PacketBuffer functions
-	std::list<EntityPacket>		PacketBuffer_GetEntityPackets();		//Get all packets in packet_Buffer_Entity	
-	std::list<AnimationPacket>	PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
-	std::list<StatePacket>		PacketBuffer_GetStatePackets();			//Get all packets in packet_Buffer_State	
-	std::list<CameraPacket>		PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
+	NETWORKDLL_API std::list<EntityPacket>		PacketBuffer_GetEntityPackets();		//Get all packets in packet_Buffer_Entity	
+	NETWORKDLL_API std::list<AnimationPacket>	PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
+	NETWORKDLL_API std::list<StatePacket>		PacketBuffer_GetStatePackets();			//Get all packets in packet_Buffer_State	
+	NETWORKDLL_API std::list<CameraPacket>		PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
 
 };
 
