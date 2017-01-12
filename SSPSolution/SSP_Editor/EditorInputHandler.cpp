@@ -49,7 +49,7 @@ EditorInputHandler::~EditorInputHandler()
 
 void EditorInputHandler::KeyboardMovement(double dT)
 {
-	float speed = 2.0f * dT;
+	float speed = 4.0f * dT;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
 	if (m_KeysHeld[Bools::SHIFT] == true)
 	{
