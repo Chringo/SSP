@@ -103,6 +103,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	newComponent.component.modelID = modelID;
 	newComponent.position = position;
 	newComponent.rotation = rotation;
+	newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(modelID);
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
@@ -183,6 +184,27 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	else {
 		modelPtr = &got->second;
 		modelPtr->erase(modelPtr->begin() + instanceID);
+		return Resources::Status::ST_OK;
+	}
+}
+
+Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
+{
+
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
+	std::vector<Container>* modelPtr;
+
+	if (got == m_ModelMap.end()) { // if  does not exists in memory
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		Container temp = *source;
+		temp.component.modelPtr = source->component.modelPtr;
+		temp.internalID = source->internalID + 1;
+		modelPtr = &got->second;
+		modelPtr->push_back(temp);
+		destination = &modelPtr->back();
+		//SelectionHandler::GetInstance()->SetSelectedContainer()
 		return Resources::Status::ST_OK;
 	}
 }

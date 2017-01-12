@@ -10,6 +10,14 @@ struct GraphicsComponent
 	unsigned int modelID = 0;
 	Resources::Model* modelPtr;
 	DirectX::XMMATRIX worldMatrix;
+	GraphicsComponent() {}
+	GraphicsComponent(const GraphicsComponent& a) {
+
+		this->active	  = a.active;
+		this->modelID     = a.modelID;
+		this->modelPtr    = a.modelPtr;
+		this->worldMatrix = a.worldMatrix;
+	} // user-defined copy ctor
 };
 
 struct penis //john....
