@@ -16,10 +16,12 @@ int AIHandler::Shutdown()
 
 int AIHandler::Initialize(int nrOfAIComponents)
 {
-	if (this->m_nrOfAIComponents < 0)
+	this->m_nrOfAIComponents = 0;
+
+	if (nrOfAIComponents < 0)
 		return FAIL;
 	
-	m_nrOfAIComponents = nrOfAIComponents;
+	this->m_nrOfAIComponents = nrOfAIComponents;
 
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
@@ -28,7 +30,7 @@ int AIHandler::Initialize(int nrOfAIComponents)
 
 	return SUCCESS;
 }
-int AIHandler::Update(float dt)
+int AIHandler::Update(float deltaTime)
 {
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
@@ -56,6 +58,16 @@ int AIHandler::Update(float dt)
 	}
 
 	return SUCCESS;
+}
+
+void AIHandler::setComponentActive(int compID)
+{
+	this->m_AIComponents.at(compID)->m_active = true;
+}
+
+void AIHandler::setComponentFalse(int compID)
+{
+	this->m_AIComponents.at(compID)->m_active = false;
 }
 
 int AIHandler::getNrOfAIComponents() const

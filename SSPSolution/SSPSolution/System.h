@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
+#include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")
 /* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
@@ -45,7 +46,11 @@ private:
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
 	Animation* m_Anim;
+	/*AI*/
+	AIHandler* m_AIHandler;
+
 	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
+
 public:
 	System();
 	~System();
