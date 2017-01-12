@@ -58,6 +58,7 @@ private:
 	int m_Height;
 
 	bool m_KeysHeld[Bools::NUMBOOLS];
+	bool m_ableToDuplicate = true; //This is used so that the user can't mass duplicate by holding the buttons
 	
 	QPoint m_point;
 	Level* m_currentLevel;

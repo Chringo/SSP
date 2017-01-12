@@ -188,7 +188,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	}
 }
 
-Resources::Status Level::DuplicateEntity( Container *& source)
+Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
 {
 
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
@@ -201,8 +201,9 @@ Resources::Status Level::DuplicateEntity( Container *& source)
 		Container temp = *source;
 		temp.component.modelPtr = source->component.modelPtr;
 		modelPtr = &got->second;
+		temp.internalID = modelPtr->size();
 		modelPtr->push_back(temp);
-
+		destination = &modelPtr->back();
 		//SelectionHandler::GetInstance()->SetSelectedContainer()
 		return Resources::Status::ST_OK;
 	}
@@ -239,4 +240,5 @@ void Level::Destroy()
 	m_ModelMap.clear();
 	m_LightMap.clear();
 	levelName = "untitled_level";
+	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
 }
