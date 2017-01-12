@@ -29,8 +29,8 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	DirectX::XMStoreFloat4x4(&this->m_baseViewMatrix, DirectX::XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixIdentity());
 	//The three vectors that defines the new coordinate system
-	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 2.0f, -2.5f, 1.0f);
-	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 2.0f, 1.0f, 1.0f);
+	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 2.0f, 7.0f, 1.0f);
+	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 2.0f, 8.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	//this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,6 +94,15 @@ int Camera::UpdateProjection()
 	}
 
 	return result;
+}
+
+int Camera::UpdateProjection(float screenAspect , float fieldOfView , float nearPlane, float farPlane ) {
+
+	//Update the projection matrix
+	this->m_screenAspect = screenAspect;
+	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
+
+	return 1;
 }
 
 #pragma region

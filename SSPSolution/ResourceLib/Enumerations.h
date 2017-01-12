@@ -1,6 +1,6 @@
 #ifndef RESOURCELIB_ENUM_ENUM_H
 #define RESOURCELIB_ENUM_ENUM_H
-
+#pragma warning( disable: 4996 )
 #include <d3d11.h>
 
 namespace Resources
@@ -51,7 +51,7 @@ namespace Resources
 	static bool SAFE_RELEASE(IUnknown* dxBuffer)
 	{
 
- 		if (dxBuffer != nullptr)
+ 		if (dxBuffer != nullptr || dxBuffer != NULL)
 		{
 			try {
 				while (dxBuffer->Release()>0);

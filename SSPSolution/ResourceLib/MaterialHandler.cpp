@@ -73,25 +73,24 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	}
 
 
-	Material* newMaterial = m_emptyContainers.front(); //Get an empty container
+	Material* newMaterial = GetEmptyContainer(); //Get an empty container
 
 	st = newMaterial->Create(resData);
 	if (st != ST_OK)
 		return st;
 
-	MaterialHeader* matData = (MaterialHeader*)(data + sizeof(Resource::RawResourceData));
+	MaterialHeader matData = *(MaterialHeader*)(data + sizeof(Resource::RawResourceData));
 
-	
 	for (size_t i = 0; i < 5; i++) // set the textures
 	{
-		if (matData->textureIDs[i] != 0){
+		if (matData.textureIDs[i] != 0){
 			ResourceContainer* temp = nullptr;
 			
-			st = m_textureHandler->GetTexture(matData->textureIDs[i], temp);
+			st = m_textureHandler->GetTexture(matData.textureIDs[i], temp);
 			if (st == ST_RES_MISSING) {
-				st = m_textureHandler->LoadTexture(id, temp);
+				st = m_textureHandler->LoadTexture(matData.textureIDs[i], temp);
 				if (st != ST_OK)
-					newMaterial->SetTexture(m_textureHandler->GetPlaceHolderTextures(), TextureType(i));
+					newMaterial->SetTexture(&m_textureHandler->GetPlaceHolderTextures()[i], TextureType(i));
 				else
 					newMaterial->SetTexture((Texture*)temp->resource, TextureType(i));
 			}
@@ -103,12 +102,14 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	}
 
 	newMaterial->SetValues(
-		matData->m_Metallic,
-		matData->m_Roughness,
-		matData->m_EmissiveValue
+		matData.m_Metallic,
+		matData.m_Roughness,
+		matData.m_EmissiveValue
 	);
 
+	
 	m_materials[resData->m_id] = ResourceContainer(newMaterial, 1);
+	materialPtr = &m_materials[resData->m_id];
 	m_emptyContainers.pop_front();
 
 	return Resources::Status::ST_OK;
@@ -180,4 +181,15 @@ Resources::Status Resources::MaterialHandler::CreatePlaceHolder()
 	}
 
 	return Resources::ST_DEVICE_MISSING;
+}
+
+Resources::Material * Resources::MaterialHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(Material());
+		m_emptyContainers.push_back(m_containers.end()._Ptr);
+	}
+	return m_emptyContainers.front();
+
 }

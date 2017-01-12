@@ -37,6 +37,7 @@ namespace Resources
 		Material* GetPlaceHolderMaterial();
 	private:
 		Resources::Status CreatePlaceHolder();
+		Material* GetEmptyContainer();
 	};
 
 }
