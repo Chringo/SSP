@@ -47,10 +47,10 @@ int LevelState::ShutDown()
 	return result;
 }
 
-int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 
 	////Read from file
 	////Get Components
@@ -67,6 +67,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	//this->m_player1.SetGraphicsComponent(tempGComp);
 	//this->m_player1.SetPhysicsComponent(tempPComp);
 	//this->m_player1.SetSpeed(0.1f);
+
 	return result;
 }
 

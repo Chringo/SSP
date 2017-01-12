@@ -10,7 +10,7 @@ public:
 	~MenuState();
 
 	int ShutDown();
-	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
+	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
 private:
 };
