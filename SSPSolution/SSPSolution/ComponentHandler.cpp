@@ -42,6 +42,11 @@ UIComponent* ComponentHandler::GetUIComponent()
 	return this->m_graphicsHandler->GetNextAvailableUIComponent();
 }
 
+TextComponent * ComponentHandler::GetTextComponent()
+{
+	return this->m_graphicsHandler->GetNextAvailableTextComponent();
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
