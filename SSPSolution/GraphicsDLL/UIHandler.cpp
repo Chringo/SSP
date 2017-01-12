@@ -25,23 +25,20 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_UIComponents.at(0)->active = true;
 	this->m_nrOfComponents++;
 
-	this->m_UIComponents.at(1)->position = DirectX::XMFLOAT2(100.f, 100.f);
+	this->m_UIComponents.at(1)->position = DirectX::XMFLOAT2(200.f, 100.f);
 	this->m_UIComponents.at(1)->scale = 0.5f;
+	this->m_UIComponents.at(1)->rotation = 2.0f;
 	this->m_UIComponents.at(1)->active = true;
-	this->m_nrOfComponents++;
-
-	this->m_UIComponents.at(2)->position = DirectX::XMFLOAT2(220.f, 200.f);
-	this->m_UIComponents.at(2)->rotation = 2.0f;
-	this->m_UIComponents.at(2)->active = true;
 	this->m_nrOfComponents++;
 }
 
 void UIHandler::DrawUI()
 {
+	UIComponent* tempComp = nullptr;
 	this->m_spriteBatch->Begin();
 	for (int i = 0; i < this->m_nrOfComponents; i++)
 	{
-		UIComponent* tempComp = this->m_UIComponents.at(i);
+		tempComp = this->m_UIComponents.at(i);
 		this->m_spriteBatch->Draw(this->m_texture, tempComp->position, nullptr, DirectX::Colors::White, tempComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempComp->scale);
 	}
 	this->m_spriteBatch->End();
