@@ -78,19 +78,21 @@ void EditorInputHandler::KeyboardMovement(double dT)
 		
 	
 
-	if (this->m_KeysHeld[Bools::CONTROL] == true)
-	{
-		if (m_KeysHeld[Bools::D])
-		{
-			if (SelectionHandler::GetInstance()->HasSelection())
-			{
-				Container* temp = SelectionHandler::GetInstance()->GetSelected();
-				Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp);
-				if (st == Resources::Status::ST_OK)
-					SelectionHandler::GetInstance()->SetSelectedContainer(temp);
-			}
-		}
-	}
+	//if (this->m_KeysHeld[Bools::CONTROL] == true)
+	//{
+	//	if (m_KeysHeld[Bools::D])
+	//	{
+	//		if (SelectionHandler::GetInstance()->HasSelection())
+	//		{
+	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
+	//			Container* newEntity = nullptr;
+	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+	//			if (st == Resources::Status::ST_OK)
+	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+	//		}
+	//		m_KeysHeld[Bools::D] = false;
+	//	}
+	//}
 		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
@@ -276,6 +278,7 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 			break;
 		case Qt::Key_Control:
 			m_KeysHeld[Bools::CONTROL] = false;
+			m_ableToDuplicate = true;
 			break;
 		case Qt::Key_W:
 			m_KeysHeld[Bools::W] = false;
@@ -339,9 +342,25 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 				m_KeysHeld[Bools::S] = true;
 			break;
 		case Qt::Key_D:
-				m_KeysHeld[Bools::D] = true;
-				break;
+			if (m_ableToDuplicate)
+			{
+				if (this->m_KeysHeld[Bools::CONTROL] == true)
+				{
+					
+						if (SelectionHandler::GetInstance()->HasSelection())
+						{
+							Container* temp = SelectionHandler::GetInstance()->GetSelected();
+							Container* newEntity = nullptr;
+							Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+							if (st == Resources::Status::ST_OK)
+								SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+						}
+						m_ableToDuplicate = false;
+				}
+			}
+			m_KeysHeld[Bools::D] = true;
 			break;
+			
 		case Qt::Key_C:
 				m_KeysHeld[Bools::C] = true;
 			break;
