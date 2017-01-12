@@ -27,7 +27,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
-	this->m_spriteFont = new DirectX::SpriteFont(device, L"segoe.spritefont");
+	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
 
 	this->m_UIComponents.at(0)->position = DirectX::XMFLOAT2(10.f, 10.f);
