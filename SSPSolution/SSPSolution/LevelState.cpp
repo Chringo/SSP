@@ -38,10 +38,18 @@ int LevelState::ShutDown()
 {
 
 	int result = 1;
-	for (size_t i = 0; i < m_entities.size(); i++)
+	// Clear the dynamic entitys
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
-		delete m_entities[i];
-		m_entities[i] = nullptr;
+		delete this->m_dynamicEntitys[i];
+		this->m_dynamicEntitys[i] = nullptr;
+	}
+	
+	// Clear the static entitys
+	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
+	{
+		delete this->m_staticEntitys[i];
+		this->m_staticEntitys[i] = nullptr;
 	}
 	
 	return result;
@@ -77,9 +85,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	dt = 1000000 / dt;
 	//this->m_player1.Update(dt, inputHandler);
 	
-	for (size_t i = 0; i < m_entities.size(); i++)
+	// Update dynamic Entitys
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
-		this->m_entities.at(i)->Update(dt, inputHandler);
+		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+	}
+
+	// Update static Entitys
+	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
+	{
+		this->m_staticEntitys.at(i)->Update(dt, inputHandler);
 	}
 
 	return result;
@@ -133,18 +148,19 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		t_pc->PC_OBB = m_ConvertOBB( modelPtr->GetOBBData()); //Convert and insert OBB data
 	
-		Entity* te;
 		if (t_pc->PC_is_Static) {
-			te = new StaticEntity();
+			StaticEntity* tse = new StaticEntity();
+			tse->SetGraphicsComponent(t_gc);
+			tse->SetPhysicsComponent(t_pc);
+			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-			te = new Player(); //TEMP! Change this to future class, such as dynamicEntity
+			//te = new Player(); //TEMP! Change this to future class, such as dynamicEntity
+			DynamicEntity* tde = new DynamicEntity();
+			tde->SetGraphicsComponent(t_gc);
+			tde->SetPhysicsComponent(t_pc);
+			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 		}
-
-		te->SetGraphicsComponent(t_gc);
-		te->SetPhysicsComponent(t_pc);
-		
-		this->m_entities.push_back(te); //Push new entity to list
 
 	}
 
