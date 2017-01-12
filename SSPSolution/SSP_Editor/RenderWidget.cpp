@@ -16,13 +16,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	this->m_Communicator->m_EditorInputHandler->SetMousePos(local);
 	this->m_Communicator->m_GraphicsHandler->clearEditor();
 	this->m_frameCount++;
-
-	static OBB* axisOBBs;
-	static DirectX::XMVECTOR* axisOBBpositions;
-	static OBB* selectedObjectOBB;
-	static DirectX::XMVECTOR ** axisColors;
-	static DirectX::XMVECTOR * OBBColor;
-
 	if (getTime() > 1.0f)
 	{
 		this->m_fps = this->m_frameCount;
@@ -39,8 +32,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		//this->m_Communicator->m_EditorInputHandler->MoveObject();
 		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
-
-
 	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
 	if (!m_ModelMap->empty())
 	{
@@ -75,16 +66,19 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 
 
-
-	if (SelectionHandler::GetInstance()->NeedsUpdate())
-	{
-		SelectionHandler::GetInstance()->Update();
-		SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
-	}
-
-
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
+		static OBB* axisOBBs;
+		static DirectX::XMVECTOR* axisOBBpositions;
+		static OBB* selectedObjectOBB;
+		static DirectX::XMVECTOR ** axisColors;
+		static DirectX::XMVECTOR * OBBColor;
+
+		if (SelectionHandler::GetInstance()->NeedsUpdate())
+		{
+			SelectionHandler::GetInstance()->Update();
+			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+		}
 
 		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 			SelectionHandler::GetInstance()->GetSelected()->position,

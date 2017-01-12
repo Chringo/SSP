@@ -54,14 +54,9 @@ public:
 
 	void UpdateOBB()
 	{
+		m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
 
-		if (m_selectedContainer != nullptr)
-		{
-
-			m_selectedObjectOBB.ort = m_selectedContainer->component.worldMatrix;
-			m_UpdateAxies();
-		} 
-
+		m_UpdateAxies();
 	};
 
 	bool IsActive()
