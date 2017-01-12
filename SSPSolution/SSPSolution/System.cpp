@@ -28,6 +28,8 @@ int System::Shutdown()
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler->Shutdown();
+	delete this->m_AIHandler;
+	this->m_AIHandler = nullptr;
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
@@ -254,7 +256,7 @@ int System::Update(float deltaTime)
 	this->m_camera->Update();
 
 	//AI
-	this->m_AIHandler->Update(deltaTime);
+//	this->m_AIHandler->Update(deltaTime);
 
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
