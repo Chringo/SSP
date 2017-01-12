@@ -1,3 +1,6 @@
+# Paths
+SSPSolution/packages/**
+
 # Temporary compiled files
 *.idb
 *.tlog
