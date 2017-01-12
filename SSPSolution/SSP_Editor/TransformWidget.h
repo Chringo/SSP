@@ -55,6 +55,8 @@ public:
 	void UpdateOBB()
 	{
 
+		m_selectedObjectOBB.ort = DirectX::XMMatrixMultiply(m_selectedObjectOBB.ort, m_selectedContainer->component.worldMatrix);
+
 		m_UpdateAxies();
 	};
 
