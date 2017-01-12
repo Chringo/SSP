@@ -41,7 +41,12 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_nrOfUIComponents++;
 
 	this->m_textComponents.at(0)->active = true;
-	this->m_textComponents.at(0)->text = L"Hello World!";
+	this->m_textComponents.at(0)->text = L"Hello";
+	this->m_nrOfTextComponents++;
+	
+	this->m_textComponents.at(1)->active = true;
+	this->m_textComponents.at(1)->text = L"World";
+	this->m_textComponents.at(1)->position = DirectX::XMFLOAT2(20.f, 100.f);
 	this->m_nrOfTextComponents++;
 }
 
