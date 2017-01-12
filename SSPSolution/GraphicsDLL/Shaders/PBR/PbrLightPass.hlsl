@@ -43,7 +43,7 @@ LIGHT initLight()
 {
     LIGHT light;
     light.lightPos = float3(0.0f, 0.0f, -1.5f);
-	light.lightDir = float4(0.0f, 0.5f, 1.0f, 1.0f);
+	light.lightDir = float3(0.0f, 0.5f, 1.0f);
     light.lightColor = float3(1.0f, 1.0f, 1.0f);
     light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
 
@@ -54,7 +54,7 @@ LIGHT initCustomLight(float3 pos, float3 color)
 {
     LIGHT light;
     light.lightPos = pos;
-	light.lightDir = float4(0.0f, 0.5f, 1.0f, 1.0f);
+	light.lightDir = float3(0.0f, 0.5f, 1.0f);
     light.lightColor = color;
     light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
 

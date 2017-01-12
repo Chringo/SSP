@@ -92,7 +92,7 @@ int System::Initialize()
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
 	//Initialize the GameStateHandler
-	this->m_gsh.Initialize(&this->m_componentHandler);
+	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 	//Initialize the network module
 	this->m_networkModule.Initialize();
 
@@ -274,6 +274,36 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
+
+	//Save progress
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
+	{
+		bool result = Progression::instance().WriteToFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with saving to file\n");
+		}
+		else
+		{
+			printf("Saved to file\n");
+		}
+	}
+	//Load
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
+	{
+		bool result = Progression::instance().ReadFromFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with loading from file\n");
+		}
+		else
+		{
+			printf("Loaded from file\n");
+		}
+	}
+
 	//Update animations here. Temp place right now.
 	//m_Anim->Update(deltaTime);
 	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());

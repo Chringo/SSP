@@ -3,8 +3,7 @@
 #include <unordered_map>
 #include "Header.h"
 #include "../../ResourceLib/Enumerations.h"
-//#include "SelectionHandler.h"
-
+#include "DataHandler.h"
 #define PLAYER1 2215164276 
 #define PLAYER2 3255160373
 /*
@@ -34,7 +33,7 @@ public:
 	Resources::Status AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
-	
+	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
 
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);

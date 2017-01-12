@@ -42,7 +42,7 @@ void SelectionHandler::Update()
 {
 	if (m_IsDirty)
 	{
-		m_transformWidget.UpdateOBB(this->m_ConvertOBB(m_modelPtr->at(m_transformWidget.GetModelIndex())->GetOBBData(), m_transformWidget.GetContainer()));
+		m_transformWidget.UpdateOBB();
 		m_IsDirty = false;
 	}
 }
@@ -66,6 +66,15 @@ bool SelectionHandler::HasSelection()
 void SelectionHandler::SetSelection(bool selection)
 {
 	this->m_transformWidget.setActive(selection);
+}
+
+void SelectionHandler::SetSelectedContainer(Container * selection)
+{
+	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
+	
+	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
+
+	//m_transformWidget.Select()
 }
 
 void SelectionHandler::SetActiveAxis(int axis)
@@ -177,7 +186,7 @@ bool SelectionHandler::PickObjectSelection()
 					{
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
-						this->m_transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
+						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
 
 
 						gotHit = result;
@@ -258,22 +267,26 @@ void SelectionHandler::RotateObject(int direction)
 
 
 		DirectX::XMVECTOR rotation;
-		float angle = DirectX::XMConvertToRadians(45.f);
+		float angle = 45.f;//DirectX::XMConvertToRadians(45.f);
 
 
 		switch (direction)
 		{
 		case (Key_Up):
-			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
+			//rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, angle);
+			instance->rotation.m128_f32[0] += angle;
 			break;
 		case (Key_Down):
-			rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
+			//rotation = DirectX::XMQuaternionRotationNormal({ 1.0f,0.0f,0.0f }, -angle);
+			instance->rotation.m128_f32[0] -= angle;
 			break;
 		case (Key_Left):
-			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
+			//rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, angle);
+			instance->rotation.m128_f32[1] += angle;
 			break;
 		case (Key_Right):
-			rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
+			//rotation = DirectX::XMQuaternionRotationNormal({ 0.0f,1.0f,0.0f }, -angle);
+			instance->rotation.m128_f32[1] -= angle;
 			break;
 		case (Key_0):
 			instance->rotation = DirectX::XMQuaternionIdentity();
@@ -284,10 +297,10 @@ void SelectionHandler::RotateObject(int direction)
 			break;
 		}
 
-		if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
-			instance->rotation = rotation;
-		else
-			instance->rotation = DirectX::XMQuaternionMultiply(instance->rotation, rotation);
+		//if (DirectX::XMVector3Length(instance->rotation).m128_f32[0] < 0.01f)
+		//	instance->rotation = rotation;
+		//else
+			//instance->rotation = rotation; //DirectX::XMQuaternionMultiply(instance->rotation, rotation);
 
 		m_IsDirty = true;
 		instance->isDirty = true;
