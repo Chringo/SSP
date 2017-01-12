@@ -47,10 +47,10 @@ int LevelState::ShutDown()
 	return result;
 }
 
-int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 
 	////Read from file
 	////Get Components
@@ -67,6 +67,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	//this->m_player1.SetGraphicsComponent(tempGComp);
 	//this->m_player1.SetPhysicsComponent(tempPComp);
 	//this->m_player1.SetSpeed(0.1f);
+
 	return result;
 }
 
@@ -170,7 +171,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(pos);
-		rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate,translate);
 
 		//Create Physics component

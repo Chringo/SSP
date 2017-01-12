@@ -103,6 +103,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	newComponent.component.modelID = modelID;
 	newComponent.position = position;
 	newComponent.rotation = rotation;
+	newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(modelID);
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
@@ -110,7 +111,7 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 	newComponent.component.worldMatrix = containerMatrix;
 	newComponent.internalID = instanceID;
-	newComponent.isDirty = false;
+	newComponent.isDirty = true;
 
 
 
@@ -146,7 +147,15 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
 				DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
-				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+
+				DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+				DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+				DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+				//Create the rotation matrix
+				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+				rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+				//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
 				//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 				containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
@@ -175,6 +184,27 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	else {
 		modelPtr = &got->second;
 		modelPtr->erase(modelPtr->begin() + instanceID);
+		return Resources::Status::ST_OK;
+	}
+}
+
+Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
+{
+
+	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
+	std::vector<Container>* modelPtr;
+
+	if (got == m_ModelMap.end()) { // if  does not exists in memory
+		return Resources::Status::ST_RES_MISSING;
+	}
+	else {
+		Container temp = *source;
+		temp.component.modelPtr = source->component.modelPtr;
+		temp.internalID = source->internalID + 1;
+		modelPtr = &got->second;
+		modelPtr->push_back(temp);
+		destination = &modelPtr->back();
+		//SelectionHandler::GetInstance()->SetSelectedContainer()
 		return Resources::Status::ST_OK;
 	}
 }
