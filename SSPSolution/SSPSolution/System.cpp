@@ -345,6 +345,7 @@ int System::Update(float deltaTime)
 
 	this->m_physicsHandler.Update(deltaTime);
 
+#ifdef _DEBUG
 	for (int i = 0; i < nrOfComponents; i++)
 	{
 		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponentAt(i);
@@ -367,6 +368,8 @@ int System::Update(float deltaTime)
 			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
 		}
 	}
+#endif // _DEBUG
+
 
 	//locks camera to the player
 	//this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
