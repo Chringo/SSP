@@ -140,8 +140,8 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 			if (modelSt != ST_OK) {
 
 				std::cout << "Model not found in BPF, ID: " << id << std::endl;
-#endif // _DEBUG
 			}
+#endif // _DEBUG
 			break;
 		}
 		case Resources::Status::ST_OK:
