@@ -188,7 +188,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	}
 }
 
-Resources::Status Level::DuplicateEntity( Container *& source)
+Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
 {
 
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
@@ -200,9 +200,10 @@ Resources::Status Level::DuplicateEntity( Container *& source)
 	else {
 		Container temp = *source;
 		temp.component.modelPtr = source->component.modelPtr;
+		temp.internalID = source->internalID + 1;
 		modelPtr = &got->second;
 		modelPtr->push_back(temp);
-
+		destination = &modelPtr->back();
 		//SelectionHandler::GetInstance()->SetSelectedContainer()
 		return Resources::Status::ST_OK;
 	}

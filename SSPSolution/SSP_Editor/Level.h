@@ -33,7 +33,7 @@ public:
 	Resources::Status AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
-	Resources::Status DuplicateEntity(  Container*& source);
+	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
 
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);
