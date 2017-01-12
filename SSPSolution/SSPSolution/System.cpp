@@ -27,14 +27,13 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
+	this->m_AIHandler->Shutdown();
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
 	return result;
-	
-
 }
 
 int System::Initialize()
@@ -95,6 +94,9 @@ int System::Initialize()
 	this->m_gsh.Initialize(&this->m_componentHandler);
 	//Initialize the network module
 	this->m_networkModule.Initialize();
+	//Initialize the AIHandler with a specific number of AIComponents
+	this->m_AIHandler = new AIHandler();
+	this->m_AIHandler->Initialize(1);
 
 	//this->m_Anim = new Animation();
 
@@ -250,6 +252,10 @@ int System::Update(float deltaTime)
 
 	}
 	this->m_camera->Update();
+
+	//AI
+	this->m_AIHandler->Update(deltaTime);
+
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
 	{
