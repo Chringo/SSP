@@ -229,7 +229,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_uiHandler = new UIHandler;
 	this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
-	this->m_CreateTempsTestComponents();
+	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG
 	 obbBoxes.reserve(20);
