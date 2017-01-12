@@ -3,6 +3,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <string>
 #include "../ResourceLib/Model.h"
 
 struct GraphicsComponent
@@ -64,5 +65,14 @@ struct UIComponent
 			return false;
 		}
 	}
+};
+
+struct TextComponent
+{
+	int active = 0;
+	std::wstring text = L"";
+	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
+	float scale = 1.f;
+	float rotation = 0.f;
 };
 #endif
