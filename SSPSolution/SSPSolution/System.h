@@ -16,7 +16,6 @@
 #include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")
-/* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
@@ -48,9 +47,6 @@ private:
 	Animation* m_Anim;
 	/*AI*/
 	AIHandler* m_AIHandler;
-
-	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
-
 public:
 	System();
 	~System();
