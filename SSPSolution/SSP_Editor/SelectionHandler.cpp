@@ -42,7 +42,7 @@ void SelectionHandler::Update()
 {
 	if (m_IsDirty)
 	{
-		m_transformWidget.UpdateOBB(this->m_ConvertOBB(m_modelPtr->at(m_transformWidget.GetModelIndex())->GetOBBData(), m_transformWidget.GetContainer()));
+		m_transformWidget.UpdateOBB();
 		m_IsDirty = false;
 	}
 }
@@ -66,6 +66,15 @@ bool SelectionHandler::HasSelection()
 void SelectionHandler::SetSelection(bool selection)
 {
 	this->m_transformWidget.setActive(selection);
+}
+
+void SelectionHandler::SetSelectedContainer(Container * selection)
+{
+	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
+	
+	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
+
+	//m_transformWidget.Select()
 }
 
 void SelectionHandler::SetActiveAxis(int axis)
@@ -177,7 +186,7 @@ bool SelectionHandler::PickObjectSelection()
 					{
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
-						this->m_transformWidget.Select(obj, &InstancePtr->at(j), i, j, m_modelPtr->at(i)->GetId());
+						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
 
 
 						gotHit = result;
