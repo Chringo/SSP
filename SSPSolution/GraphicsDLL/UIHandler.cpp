@@ -27,26 +27,30 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
-	this->m_spriteFont = new DirectX::SpriteFont(device, L"testfont.spritefont");
+	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
 
 	this->m_UIComponents.at(0)->position = DirectX::XMFLOAT2(10.f, 10.f);
+	this->m_UIComponents.at(0)->layerDepth = 1.f;
 	this->m_UIComponents.at(0)->active = true;
 	this->m_nrOfUIComponents++;
 
 	this->m_UIComponents.at(1)->position = DirectX::XMFLOAT2(200.f, 100.f);
 	this->m_UIComponents.at(1)->scale = 0.5f;
 	this->m_UIComponents.at(1)->rotation = 2.0f;
+	this->m_UIComponents.at(1)->layerDepth = 0.f;
 	this->m_UIComponents.at(1)->active = true;
 	this->m_nrOfUIComponents++;
 
 	this->m_textComponents.at(0)->active = true;
 	this->m_textComponents.at(0)->text = L"Hello";
+	this->m_textComponents.at(0)->layerDepth = 0.5f;
 	this->m_nrOfTextComponents++;
 	
 	this->m_textComponents.at(1)->active = true;
 	this->m_textComponents.at(1)->text = L"World";
-	this->m_textComponents.at(1)->position = DirectX::XMFLOAT2(20.f, 100.f);
+	this->m_textComponents.at(1)->position = DirectX::XMFLOAT2(100.f, 100.f);
+	this->m_textComponents.at(1)->layerDepth = 0.5f;
 	this->m_nrOfTextComponents++;
 }
 
