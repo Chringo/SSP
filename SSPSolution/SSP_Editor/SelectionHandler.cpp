@@ -208,7 +208,7 @@ bool SelectionHandler::PickObjectSelection()
 	//return true;
 }
 
-void SelectionHandler::MoveObject()
+void SelectionHandler::MoveObject(bool noSnap)
 {
 	if (m_transformWidget.IsActive() && m_transformWidget.GetSelectedAxis() != TransformWidget::NONE)
 	{
@@ -247,8 +247,15 @@ void SelectionHandler::MoveObject()
 
 
 		
-		if (true)//snap
+		if (noSnap)//snap
 		{
+			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
+				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
+		}
+		else//snap
+		{
+			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] = (int)instance->position.m128_f32[m_transformWidget.GetSelectedAxis()];
+
 			if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
@@ -257,12 +264,6 @@ void SelectionHandler::MoveObject()
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
 			}
-		}
-
-		if (false)//Non 
-		{
-			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
-				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
 		}
 
 
