@@ -10,7 +10,7 @@ Camera::Camera()
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	//this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	this->m_screenAspect = 0.0f;
 	this->m_fieldOfView = 0.0f;
@@ -32,7 +32,7 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_cameraPos = DirectX::XMFLOAT4(0.0f, 2.0f, 7.0f, 1.0f);
 	this->m_lookAt = DirectX::XMFLOAT4(0.0f, 2.0f, 8.0f, 1.0f);
 	this->m_cameraUp = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	//this->m_rotateAroundPos = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	this->m_screenAspect = 0.0f;
 	this->m_fieldOfView = 0.0f;
@@ -44,11 +44,11 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	DirectX::XMStoreFloat4x4(&this->m_baseViewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
-	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
+	//DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
 	//Transform the three components of the view matrix based on the rotations
-	camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
-	lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
-	camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
+	//camPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraPos), camRotationMatrix);
+	//lookAt = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_lookAt), camRotationMatrix);
+	//camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
 	//Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
 	
@@ -62,20 +62,20 @@ int Camera::Update()
 	int result = 1;
 
 	//Define a transformation matrix based on the three rotations a 3D object is capable of
-	DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
-	this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	//DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->m_rotation));
+	//this->m_rotation = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	//Transform the three components of the view matrix based on the rotations
-	DirectX::XMFLOAT4 tempLookAt = DirectX::XMFLOAT4(this->m_lookAt.x - this->m_cameraPos.x, this->m_lookAt.y - this->m_cameraPos.y, this->m_lookAt.z - this->m_cameraPos.z, 1.0f);
-	DirectX::XMVECTOR lookAt = DirectX::XMVectorAdd(DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&tempLookAt), camRotationMatrix), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	//DirectX::XMFLOAT4 tempLookAt = DirectX::XMFLOAT4(this->m_lookAt.x - this->m_cameraPos.x, this->m_lookAt.y - this->m_cameraPos.y, this->m_lookAt.z - this->m_cameraPos.z, 1.0f);
+	//DirectX::XMVECTOR lookAt = DirectX::XMVectorAdd(DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&tempLookAt), camRotationMatrix), DirectX::XMLoadFloat4(&this->m_cameraPos));
 	/*DirectX::XMVECTOR camPos = DirectX::XMVectorSet(-this->m_rotateAroundPos.x, -this->m_rotateAroundPos.y, -this->m_rotateAroundPos.z, 1.0f);
 	camPos = DirectX::XMVectorAdd(DirectX::XMVector3TransformCoord(camPos, camRotationMatrix), DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_rotateAroundPos), DirectX::XMLoadFloat4(&this->m_cameraPos)));*/
-	DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
+	//DirectX::XMVECTOR camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
 
-	DirectX::XMStoreFloat4(&this->m_lookAt, lookAt);
+	//DirectX::XMStoreFloat4(&this->m_lookAt, lookAt);
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPos);
-	DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
+	//DirectX::XMStoreFloat4(&this->m_cameraUp, camUp);
 	//Define the view matrix based on the transformed positions
-	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), lookAt, camUp));
+	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 
 	return result;
 }
@@ -232,10 +232,10 @@ void Camera::SetCameraUp(DirectX::XMVECTOR newCamUp)
 	return;
 }
 
-void Camera::SetRotation(DirectX::XMFLOAT4 newRotation)
-{
-	this->m_rotation = newRotation;
-}
+//void Camera::SetRotation(DirectX::XMFLOAT4 newRotation)
+//{
+//	this->m_rotation = newRotation;
+//}
 
 void Camera::AddToCameraPos(DirectX::XMFLOAT3 applyValue)
 {
@@ -273,10 +273,45 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 	return;
 }
 
-void Camera::ApplyRotation(DirectX::XMFLOAT4 rotationAddition)
+//void Camera::ApplyRotation(DirectX::XMFLOAT4 rotationAddition)
+//{
+//	//this->m_rotation = DirectX::XMFLOAT4(this->m_rotation.x + rotationAddition.x, this->m_rotation.y + rotationAddition.y, this->m_rotation.z + rotationAddition.z, this->m_rotation.w + rotationAddition.w);
+//	DirectX::XMStoreFloat4(&this->m_rotation, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&rotationAddition), DirectX::XMLoadFloat4(&this->m_rotation)));
+//	return;
+//}
+
+void Camera::RotateCamera(double x, double y, double z, double angle)
 {
-	//this->m_rotation = DirectX::XMFLOAT4(this->m_rotation.x + rotationAddition.x, this->m_rotation.y + rotationAddition.y, this->m_rotation.z + rotationAddition.z, this->m_rotation.w + rotationAddition.w);
-	DirectX::XMStoreFloat4(&this->m_rotation, DirectX::XMVectorMultiply(DirectX::XMLoadFloat4(&rotationAddition), DirectX::XMLoadFloat4(&this->m_rotation)));
+	DirectX::XMVECTOR temp, quatView, result;
+	temp = quatView = result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	float scalarSin = DirectX::XMScalarSin(angle / 2.0f);
+	DirectX::XMVectorSetX(temp, x * scalarSin);
+	DirectX::XMVectorSetY(temp, y * scalarSin);
+	DirectX::XMVectorSetZ(temp, z * scalarSin);
+	DirectX::XMVectorSetW(temp, angle * scalarSin);
+
+	DirectX::XMVectorSetX(quatView, this->m_lookAt.x);
+	DirectX::XMVectorSetY(quatView, this->m_lookAt.y);
+	DirectX::XMVectorSetW(quatView, this->m_lookAt.z);
+	DirectX::XMVectorSetW(quatView, 0.0f);
+
+	result = mult(mult(temp, quatView), conjugate(temp));
+
+	this->m_lookAt.x = DirectX::XMVectorGetX(result);
+	this->m_lookAt.y = DirectX::XMVectorGetY(result);
+	this->m_lookAt.w = DirectX::XMVectorGetZ(result);
+	return;
+}
+
+void Camera::RotateCamera(DirectX::XMFLOAT4 rotation)
+{
+	this->RotateCamera(rotation.x, rotation.y, rotation.z, rotation.w);
+	return;
+}
+
+void Camera::RotateCamera(DirectX::XMVECTOR rotation)
+{
+	this->RotateCamera(DirectX::XMVectorGetX(rotation), DirectX::XMVectorGetY(rotation), DirectX::XMVectorGetZ(rotation), DirectX::XMVectorGetW(rotation));
 	return;
 }
 
@@ -330,28 +365,39 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 }
 void Camera::AlignWithRay(DirectX::XMVECTOR direction)
 {
+	//Create a new look at vector
+	DirectX::XMVECTOR newLookAt = DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_cameraPos), direction);
+	DirectX::XMStoreFloat4(&this->m_lookAt, newLookAt);
+
 	//Align camera rotation with direction
 	//Define the rotation between the ray and the camera
-	DirectX::XMVECTOR cameraDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
-	DirectX::XMVECTOR rotateVec = DirectX::XMVector3Cross(direction, cameraDir);
-	float rotateAmount = DirectX::XMScalarACos(DirectX::XMVectorGetX(DirectX::XMVector3Dot(direction, cameraDir)));
-	float tempRotateAxis = DirectX::XMScalarASin(rotateAmount / 2);
+	//DirectX::XMVECTOR cameraDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraPos));
+	//DirectX::XMVECTOR rotateVec = DirectX::XMVector3Cross(direction, cameraDir);
+	//float rotateAmount = DirectX::XMScalarACos(DirectX::XMVectorGetX(DirectX::XMVector3Dot(direction, cameraDir)));
+	//float tempRotateAxis = DirectX::XMScalarASin(rotateAmount / 2);
 	//Define the rotation as a quaternion
-	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(tempRotateAxis * DirectX::XMVectorGetX(rotateVec), tempRotateAxis * DirectX::XMVectorGetY(rotateVec), tempRotateAxis * DirectX::XMVectorGetZ(rotateVec), DirectX::XMScalarACos(rotateAmount / 2));
+	//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(tempRotateAxis * DirectX::XMVectorGetX(rotateVec), tempRotateAxis * DirectX::XMVectorGetY(rotateVec), tempRotateAxis * DirectX::XMVectorGetZ(rotateVec), DirectX::XMScalarACos(rotateAmount / 2));
 	//Apply the rotation
-	DirectX::XMStoreFloat4(&this->m_rotation, rotation);
+	//DirectX::XMStoreFloat4(&this->m_rotation, rotation);
 	this->Update();
 }
-//void Camera::SetRotationAroundPosOffset(float x, float y, float z)
-//{
-//	this->m_rotateAroundPos.x = x;
-//	this->m_rotateAroundPos.y = y;
-//	this->m_rotateAroundPos.z = z;
-//}
-//void Camera::SetRotationAroundPos(float x, float y, float z)
-//{
-//	this->m_rotateAroundPos.x = x - this->m_cameraPos.x;
-//	this->m_rotateAroundPos.y = y - this->m_cameraPos.y;
-//	this->m_rotateAroundPos.z = z - this->m_cameraPos.z;
-//}
+DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
+{
+	DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(quat) * -1);
+	DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(quat) * -1);
+	DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(quat) * -1);
+	
+	return result;
+}
+DirectX::XMVECTOR Camera::mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+{
+	DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMVectorSetX(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetX(b) + DirectX::XMVectorGetX(a) * DirectX::XMVectorGetW(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetZ(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetY(b));
+	DirectX::XMVectorSetY(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetX(a) * DirectX::XMVectorGetZ(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetW(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetX(b));
+	DirectX::XMVectorSetZ(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetZ(b) + DirectX::XMVectorGetX(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetX(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetW(b));
+	DirectX::XMVectorSetW(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetW(b) - DirectX::XMVectorGetX(a) * DirectX::XMVectorGetX(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetZ(b));
+
+	return result;
+}
 #pragma endregion setters

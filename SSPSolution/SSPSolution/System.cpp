@@ -237,7 +237,8 @@ int System::Update(float deltaTime)
 		float rotationAmount = DirectX::XM_PI / 6;
 		rotationAmount *= deltaTime / 1000000.0f;
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
-		this->m_camera->SetRotation(newRotation);
+		this->m_camera->RotateCamera(newRotation);
+
 		//this->m_camera->Update();
 
 		//Send updates over the network
