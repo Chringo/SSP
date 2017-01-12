@@ -12,9 +12,11 @@ class UIHandler
 
 private:
 	std::vector<UIComponent*> m_UIComponents;
-	std::vector<TextComponent> m_textComponents;
-	unsigned int m_nrOfComponents;
-	unsigned int m_maxComponents;
+	std::vector<TextComponent*> m_textComponents;
+	unsigned int m_nrOfUIComponents;
+	unsigned int m_maxUIComponents;
+	unsigned int m_nrOfTextComponents;
+	unsigned int m_maxTextComponents;
 	DirectX::SpriteBatch* m_spriteBatch;
 	DirectX::SpriteFont* m_spriteFont;
 	ID3D11ShaderResourceView* m_texture;
@@ -28,6 +30,7 @@ public:
 	void Shutdown();
 
 	UIComponent* GetNextUIComponent();
+	TextComponent* GetNextTextComponent();
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos);
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize);
 };
