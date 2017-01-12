@@ -75,7 +75,6 @@ void Ui::AttributesHandler::SetSelection(Container * selection)
 		m_uniqueID->setText(QString::number(selection->internalID));
 	}
 
-
 }
 
 void Ui::AttributesHandler::Deselect()

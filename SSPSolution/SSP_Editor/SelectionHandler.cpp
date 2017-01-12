@@ -40,11 +40,12 @@ SelectionHandler * SelectionHandler::GetInstance()
 
 void SelectionHandler::Update()
 {
-	if (m_IsDirty)
-	{
+	
+
+
 		m_transformWidget.UpdateOBB();
 		m_IsDirty = false;
-	}
+	
 }
 
 bool SelectionHandler::NeedsUpdate()

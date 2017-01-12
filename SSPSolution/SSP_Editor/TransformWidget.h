@@ -19,8 +19,8 @@ private:
 	DirectX::XMVECTOR m_colors[4];
 	Container * m_selectedContainer = nullptr;
 
-	 unsigned int m_instanceID = NULL;
-	 unsigned int m_modelID = NULL;
+	unsigned int m_instanceID = NULL;
+	unsigned int m_modelID = NULL;
 	OBB m_selectedObjectOBB;
 	DirectX::XMVECTOR m_axisOBBpos[NUM_AXIS];
 	OBB m_axisOBB[NUM_AXIS];

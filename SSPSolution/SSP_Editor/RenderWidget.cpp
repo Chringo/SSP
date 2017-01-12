@@ -23,6 +23,12 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		startTimer();
 	}
 	this->m_frameTime = getFrameTime();
+
+	static OBB* axisOBBs;
+	static DirectX::XMVECTOR* axisOBBpositions;
+	static OBB* selectedObjectOBB;
+	static DirectX::XMVECTOR ** axisColors;
+	static DirectX::XMVECTOR * OBBColor;
 	
 	if (!this->m_Communicator->m_IsPreview)
 	{
@@ -54,6 +60,12 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					if (InstancePtr->at(j).isDirty)
 					{
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						if (SelectionHandler::GetInstance()->HasSelection())
+						{
+
+							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+							SelectionHandler::GetInstance()->Update();
+						}
 					}
 
 					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
@@ -68,17 +80,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
-		static OBB* axisOBBs;
-		static DirectX::XMVECTOR* axisOBBpositions;
-		static OBB* selectedObjectOBB;
-		static DirectX::XMVECTOR ** axisColors;
-		static DirectX::XMVECTOR * OBBColor;
-
 		if (SelectionHandler::GetInstance()->NeedsUpdate())
-		{
-			SelectionHandler::GetInstance()->Update();
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
-		}
 
 		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
 			SelectionHandler::GetInstance()->GetSelected()->position,
