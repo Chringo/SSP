@@ -200,8 +200,8 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 	else {
 		Container temp = *source;
 		temp.component.modelPtr = source->component.modelPtr;
-		temp.internalID = source->internalID + 1;
 		modelPtr = &got->second;
+		temp.internalID = modelPtr->size();
 		modelPtr->push_back(temp);
 		destination = &modelPtr->back();
 		//SelectionHandler::GetInstance()->SetSelectedContainer()
@@ -240,4 +240,5 @@ void Level::Destroy()
 	m_ModelMap.clear();
 	m_LightMap.clear();
 	levelName = "untitled_level";
+	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
 }

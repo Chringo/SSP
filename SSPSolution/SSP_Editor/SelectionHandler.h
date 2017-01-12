@@ -5,6 +5,7 @@
 #include "TransformWidget.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "Level.h"
+#include "UiControlHandler.h"
 
 class SelectionHandler
 {
