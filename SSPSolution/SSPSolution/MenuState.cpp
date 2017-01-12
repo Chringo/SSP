@@ -17,10 +17,10 @@ int MenuState::ShutDown()
 	return result;
 }
 
-int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	return result;
 }
 

@@ -16,7 +16,7 @@ public:
 	virtual ~LevelState();
 
 	int ShutDown();
-	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler);
+	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
 	int CreateLevel(LevelData::Level* data);
 private:
