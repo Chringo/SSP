@@ -73,6 +73,7 @@ void SelectionHandler::SetSelectedContainer(Container * selection)
 	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
 	
 	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
+	Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(selection);
 
 	//m_transformWidget.Select()
 }
@@ -187,7 +188,7 @@ bool SelectionHandler::PickObjectSelection()
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
 						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
-
+						Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(&InstancePtr->at(j));
 
 						gotHit = result;
 					}
@@ -255,6 +256,7 @@ void SelectionHandler::MoveObject()
 		//flag instance for update
 		m_IsDirty = true;
 		instance->isDirty = true;
+		Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->UpdateSelection();
 	}
 
 }
