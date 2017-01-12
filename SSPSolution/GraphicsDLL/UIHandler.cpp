@@ -49,7 +49,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	
 	this->m_textComponents.at(1)->active = true;
 	this->m_textComponents.at(1)->text = L"Darkness my old friend";
-	this->m_textComponents.at(1)->position = DirectX::XMFLOAT2(50.f, 75.f);
+	this->m_textComponents.at(1)->position = DirectX::XMFLOAT2(50.f, 85.f);
 	this->m_textComponents.at(1)->scale = DirectX::XMFLOAT2(0.5f, 0.5f);
 	this->m_textComponents.at(1)->layerDepth = 0.5f;
 	this->m_nrOfTextComponents++;
