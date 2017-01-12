@@ -212,42 +212,54 @@ void SelectionHandler::MoveObject()
 {
 	if (m_transformWidget.IsActive() && m_transformWidget.GetSelectedAxis() != TransformWidget::NONE)
 	{
-		Container * instance;
+		Container * instance = m_transformWidget.GetContainer();
+		static const DirectX::XMVECTOR normals[TransformWidget::NUM_AXIS] = { { 1.0f,0.0f,0.0f },{ 0.0f,1.0f,0.0f }, { 0.0f,0.0f,1.0f } };
+		DirectX::XMVECTOR planes[TransformWidget::NUM_AXIS];
+		float t[TransformWidget::NUM_AXIS];
+		DirectX::XMVECTOR P[TransformWidget::NUM_AXIS];
+
+		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
+		{
+			planes[i] = DirectX::XMPlaneFromPointNormal(m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()], normals[i]);
+			t[i] = -((DirectX::XMVector3Dot(m_ray.localOrigin, normals[i]).m128_f32[0] + planes[i].m128_f32[3]) / DirectX::XMVector3Dot(m_ray.direction, normals[i]).m128_f32[0]);
+			P[i] = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t[i]));
+		}
+
 		
-		instance = m_transformWidget.GetContainer();
-
-		//*PLANE INTERSECTION*//
-		//Plane position is the position of the axis widget
-		DirectX::XMVECTOR plane = m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()];
-		DirectX::XMVECTOR N;
-
-		//Normal is vector from axis widget to eye direction [SOMETHING'S PROBABLY WRONG HERE]
-		N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetLookAt()), DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()));
-		N = DirectX::XMVectorScale(N, -1.f);
-
-		//plane normal relative to eye position
-		//N = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&m_Camera->GetCameraPos()), transformWidget.axisOBB[transformWidget.selectedAxis].pos);
-
-		//t is amount of ray unit vectors to reach point, p is point on plane
-		float t = -(DirectX::XMVector3Dot(m_ray.localOrigin, N).m128_f32[0] / DirectX::XMVector3Dot(m_ray.direction, N).m128_f32[0]);
-		DirectX::XMVECTOR P = DirectX::XMVectorAdd(m_ray.localOrigin, DirectX::XMVectorScale(m_ray.direction, t));
-
-		//*MOVEMENT*//
-		//Difference between point on plane relative to axis widget
-		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P, m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()]);
-
-		//Change position
-		//Snap
-		if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
+		float d = 0.0f;
+		int planeAxis;
+		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
 		{
-			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
+			if (i != m_transformWidget.GetSelectedAxis())
+			{
+				float dot = abs(DirectX::XMPlaneDotNormal(planes[i], m_ray.direction).m128_f32[0]);
+
+				if (d < dot && i)
+				{
+					d = dot;
+					planeAxis = i;
+				}
+			}
 		}
-		else if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] < -1.0)
+
+
+		DirectX::XMVECTOR Diff = DirectX::XMVectorSubtract(P[planeAxis], m_transformWidget.GetAxisOBBpositons()[m_transformWidget.GetSelectedAxis()]);
+
+
+		
+		if (true)//snap
 		{
-			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
+			if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
+			{
+				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
+			}
+			else if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] < -1.0)
+			{
+				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
+			}
 		}
-		//Non snap
-		if (false)
+
+		if (false)//Non 
 		{
 			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
 				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
