@@ -16,7 +16,7 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 	HRESULT hResult;
 	CD3D11_BUFFER_DESC bufferDesc;
-
+	
 
 	//Creating world constant buffer																 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
