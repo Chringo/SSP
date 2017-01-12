@@ -79,9 +79,21 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	for (size_t i = 0; i < m_entities.size(); i++)
 	{
+		if (i == 0)
+		{
+			Player* ptr = (Player*)this->m_entities.at(i);
+			DirectX::XMVECTOR lookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
+			DirectX::XMFLOAT3 temp;
+			this->m_cameraRef->GetCameraUp(temp);
+			DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
+			DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, lookDir);
+			ptr->SetLookDir(lookDir);
+			ptr->SetRightDir(rightDir);
+			ptr->SetUpDir(upDir);
+		}
 		this->m_entities.at(i)->Update(dt, inputHandler);
 	}
-
+	this->LockCameraToPlayer();
 	return result;
 }
 
@@ -97,14 +109,16 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	Entity* player = new Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
-	playerG->modelID = 0;
+	playerG->modelID = 1337;
 	playerG->active = true;
+	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 0;								//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 5, 0, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
+	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_AABB;
 	playerP->PC_AABB.ext[0] = 1.5;
 	playerP->PC_AABB.ext[1] = 1.5;
@@ -114,12 +128,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	player->SetPhysicsComponent(playerP);
 	this->m_entities.push_back(player);
 
-	Entity* ball = new StaticEntity();
+	Entity* ball = new Player();
 	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
-	ballG->modelID = 1;
+	ballG->modelID = 1337;
 	ballG->active = true;
+	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 0;								//Set Entity ID
+	ballP->PC_entityID = 1;								//Set Entity ID
 	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -134,17 +149,19 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	ball->SetPhysicsComponent(ballP);
 	this->m_entities.push_back(ball);
 
+
 	Player* ptr = (Player*)player;
 	ptr->SetGrabbed(ball);
 
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
 
-	Entity* golv = new StaticEntity();
+	Entity* golv = new Player();
 	GraphicsComponent* golvG = m_cHandler->GetGraphicsComponent();
-	golvG->modelID = 1;
+	golvG->modelID = 1337;
 	golvG->active = true;
+	resHandler->GetModel(golvG->modelID, golvG->modelPtr);
 	PhysicsComponent* golvP = m_cHandler->GetPhysicsComponent();
-	golvP->PC_entityID = 0;								//Set Entity ID
+	golvP->PC_entityID = 1;								//Set Entity ID
 	golvP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	golvP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	golvP->PC_is_Static = true;							//Set IsStatic
@@ -152,6 +169,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	golvP->PC_BVtype = BV_Plane;
 	golvP->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	golvP->PC_friction = 0.9;
 	golv->Initialize();
 	golv->SetGraphicsComponent(golvG);
 	golv->SetPhysicsComponent(golvP);
@@ -214,5 +232,26 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_entities.push_back(te); //Push new entity to list
 
 	}
+
 	return 1;
+}
+
+void LevelState::LockCameraToPlayer()
+{
+	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos());
+	DirectX::XMVECTOR camLookAt = DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt());
+	PhysicsComponent* player = nullptr;
+
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
+
+	player = this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0);
+
+	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
+	camPos = DirectX::XMVectorAdd(camPos, DirectX::XMVectorSet(0, 3, 0, 0));
+	camLookAt = DirectX::XMVectorAdd(camPos, diffVec);
+
+	this->m_cameraRef->SetCameraPos(camPos);
+	this->m_cameraRef->SetLookAt(camLookAt);
+
+	//this->m_physicsHandler.ApplyForceToComponent(player, DirectX::XMVectorSet(translateCameraX, translateCameraY, translateCameraZ, 0), 1.0f);
 }

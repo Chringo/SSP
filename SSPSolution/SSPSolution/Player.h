@@ -10,6 +10,8 @@ private:
 	Entity* m_grabbed;
 
 	DirectX::XMVECTOR m_lookDir;
+	DirectX::XMVECTOR m_upDir;
+	DirectX::XMVECTOR m_rightDir;
 public:
 	Player();
 	~Player();
@@ -24,6 +26,8 @@ public:
 	//Returns the old speed
 	float SetSpeed(float speed);
 	void SetLookDir(DirectX::XMVECTOR lookDir);
+	void SetUpDir(DirectX::XMVECTOR upDir);
+	void SetRightDir(DirectX::XMVECTOR rightDir);
 private:
 
 };

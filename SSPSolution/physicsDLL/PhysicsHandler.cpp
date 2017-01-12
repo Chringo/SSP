@@ -1398,12 +1398,12 @@ void PhysicsHandler::SimpleGravity(PhysicsComponent* componentPtr, const float &
 
 }
 
-int PhysicsHandler::getNrOfComponents()const
+int PhysicsHandler::GetNrOfComponents()const
 {
 	return this->m_dynamicComponents.size();
 }
 
-PhysicsComponent* PhysicsHandler::getDynamicComponentAt(int index)const
+PhysicsComponent* PhysicsHandler::GetDynamicComponentAt(int index)const
 {
 	if (index >= 0 && index < (signed int)this->m_dynamicComponents.size())
 	{

@@ -143,8 +143,8 @@ public:
 	void SimpleCollition(float dt);
 	void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
-	int getNrOfComponents()const;
-	PhysicsComponent* getDynamicComponentAt(int index)const;
+	int GetNrOfComponents()const;
+	PhysicsComponent* GetDynamicComponentAt(int index)const;
 
 	void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 

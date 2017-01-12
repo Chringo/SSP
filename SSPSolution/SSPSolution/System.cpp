@@ -91,10 +91,17 @@ int System::Initialize()
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
 	//Initialize the GameStateHandler
-	this->m_gsh.Initialize(&this->m_componentHandler);
+	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 	this->m_physicsHandler.SortComponents();
 	//Initialize the network module
 	this->m_networkModule.Initialize();
+
+	//temporary floor for demonstration
+	PhysicsComponent* ptr = this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(0, 5, 40, 0), true);
+	ptr->PC_AABB.ext[0] = 10;
+	ptr->PC_AABB.ext[1] = 1;
+	ptr->PC_AABB.ext[2] = 10;
+	ptr->PC_BVtype = BV_AABB;
 
 	//this->m_Anim = new Animation();
 
@@ -281,15 +288,15 @@ int System::Update(float deltaTime)
 	}
 #pragma endregion
 
-	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
+	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 
 	this->m_physicsHandler.Update(deltaTime);
 
-	this->LockCameraToPlayer(translateCameraX, translateCameraY, translateCameraZ);
+	//this->LockCameraToPlayer(translateCameraX, translateCameraY, translateCameraZ);
 
 	for (int i = 0; i < nrOfComponents; i++)
 	{
-		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponentAt(i);
+		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
 		if (temp->PC_BVtype == BV_AABB)
 		{
 			AABB* AABB_holder = nullptr;
@@ -457,7 +464,7 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
 	
-	player = this->m_physicsHandler.getDynamicComponentAt(0);
+	player = this->m_physicsHandler.GetDynamicComponentAt(0);
 
 	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
 	camPos = DirectX::XMVectorAdd(camPos, DirectX::XMVectorSet(0, 3, 0, 0));
