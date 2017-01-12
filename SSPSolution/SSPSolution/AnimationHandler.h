@@ -45,7 +45,7 @@ struct AnimationClip
 	float startFrame;
 	float endFrame;
 
-	float weight;
+	float localTime;
 };
 
 class AnimationHandler
@@ -60,7 +60,7 @@ private:
 	bool m_newAnimation;
 	bool m_isComplete;
 	
-	float m_elapsedTime;
+	float m_globalTimeElapsed;
 	
 	float m_BlendDuration;
 	float m_BlendTimeLeft;
@@ -89,9 +89,7 @@ public:
 	float GetStartFrame(int animationState);
 	float GetEndFrame(int animationState);
 
-	void Blend(float currentTime, bool newAnimation);
-
-	void Interpolate(float currentTime);
+	void Interpolate(AnimationClip clipA, float globalTimeElapsed);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 

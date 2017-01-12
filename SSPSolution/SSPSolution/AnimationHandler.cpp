@@ -11,7 +11,7 @@ AnimationHandler::AnimationHandler()
 	/*Gets all animations and saves them in a container to use for playing and blending animations.*/
 	GetAnimations(skeleton);
 
-	this->m_elapsedTime = 0.0f;
+	this->m_globalTimeElapsed = 0.0f;
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
 	this->m_graphicsAnimationComponent->jointCount = 19;
 
@@ -27,8 +27,6 @@ AnimationHandler::AnimationHandler()
 
 	m_BlendTimeLeft = 0;
 	m_BlendDuration = 1;
-	
-	m_elapsedTime = 0;
 	
 	/*Initialize the stack with a default "IDLE" animation.*/
 	Push(0, m_newAnimation, true, 1);
@@ -46,22 +44,24 @@ void AnimationHandler::Update(float dt)
 	{
 		/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
 		float toSeconds = dt / 1000000;
-		m_elapsedTime += toSeconds;
+		m_globalTimeElapsed += toSeconds;
 
 		/*If the animation reaches the last frame and the animation is looping, reset elapsedTime to ZERO.*/
-		if (m_elapsedTime >= m_animationStack.front().endFrame && m_animationStack.front().isLooping == true)
+		if (m_globalTimeElapsed >= m_animationStack.front().endFrame && m_animationStack.front().isLooping == true)
 		{
-			m_elapsedTime = 0.0f;
+			m_globalTimeElapsed = 0.0f;
 		}
 
+		/*If there is a new animation starting to play, start the blending process with both clip A and clip B.*/
 		if (m_newAnimation == true)
 		{
-			m_elapsedTime = 0.0f;
-			//m_newAnimation = false;
-			Blend(m_elapsedTime, m_newAnimation);
+			m_globalTimeElapsed = 0.0f; //Comment out for testing blending.
 		}
 
-		Interpolate(m_elapsedTime);
+		else
+		{
+			Interpolate(m_animationStack.front(), m_globalTimeElapsed);
+		}
 	}
 
 	/*There is no current animation playing.*/
@@ -71,13 +71,13 @@ void AnimationHandler::Update(float dt)
 	}
 }
 
-void AnimationHandler::Interpolate(float currentTime)
+void AnimationHandler::Interpolate(AnimationClip clipA, float currentTime)
 {
 	int jointCount = m_skeletonContainer.size();
 
 	m_localTransforms.resize(jointCount);
 
-	int currentAnimation = m_animationStack.front().animationState;
+	int currentAnimation = clipA.animationState;
 
 	const Resources::Animation::AnimationJoint* animatedJoints = m_animationContainer[currentAnimation];
 
@@ -86,9 +86,9 @@ void AnimationHandler::Interpolate(float currentTime)
 		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
 
 		/*The current time is the first keyframe.*/
-		if (currentTime <= m_animationStack.front().startFrame)
+		if (currentTime <= clipA.startFrame)
 		{
-			int startFrame = (int)m_animationStack.front().startFrame;
+			int startFrame = (int)clipA.startFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
@@ -110,9 +110,9 @@ void AnimationHandler::Interpolate(float currentTime)
 			DirectX::XMStoreFloat4x4(&m_localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is the last keyframe.*/
-		else if (currentTime >= m_animationStack.front().endFrame)
+		else if (currentTime >= clipA.endFrame)
 		{
-			int endFrame = (int)m_animationStack.front().endFrame;
+			int endFrame = (int)clipA.endFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
@@ -185,6 +185,8 @@ void AnimationHandler::Interpolate(float currentTime)
 				}
 			}
 		}
+
+		m_animationStack.front().localTime = (currentTime / (clipA.endFrame - clipA.startFrame));
 	}
 
 	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
@@ -249,15 +251,17 @@ void AnimationHandler::Push(int animationState, bool newAnimation, bool isLoopin
 	clip.startFrame = GetStartFrame(animationState);
 	clip.endFrame = GetEndFrame(animationState);
 	clip.isLooping = isLooping;
-	clip.weight = weight;
+	clip.localTime = 0;
 
 	m_animationStack.push_back(clip);
 }
 
 void AnimationHandler::Pop()
 {
+	/*Function swaps the two elements in the vector and removes the last element in vector.*/
 	if (!m_animationStack.empty())
 	{
+		std::swap(m_animationStack.front(), m_animationStack.back());
 		m_animationStack.pop_back();
 	}
 }
@@ -342,13 +346,3 @@ float AnimationHandler::GetEndFrame(int animationState)
 	float endFrame = m_animationContainer[animationState]->keyframes[keyframeCount - 1].timeValue;
 	return endFrame;
 }
-
-void AnimationHandler::Blend(float currentTime, bool newAnimation)
-{
-	/*If the time left to blend from one animation to the other, we keep doing this until reaching value of m_blendDuration.*/
-	if (m_BlendTimeLeft > 0)
-	{
-		
-	}
-}
-
