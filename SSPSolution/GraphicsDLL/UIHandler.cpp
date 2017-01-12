@@ -19,6 +19,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
+	this->m_spriteFont = new DirectX::SpriteFont(device, L"myfile.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
 
 	this->m_UIComponents.at(0)->position = DirectX::XMFLOAT2(10.f, 10.f);
@@ -55,6 +56,11 @@ void UIHandler::Shutdown()
 	{
 		delete this->m_spriteBatch;
 		this->m_spriteBatch = nullptr;
+	}
+	if (this->m_spriteFont)
+	{
+		delete this->m_spriteFont;
+		this->m_spriteFont = nullptr;
 	}
 	if (this->m_texture)
 	{

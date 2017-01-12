@@ -4,6 +4,7 @@
 #include "GraphicsComponent.h"
 #include <vector>
 #include "SpriteBatch.h"
+#include "SpriteFont.h"
 #include "WICTextureLoader.h"
 
 class UIHandler
@@ -11,9 +12,11 @@ class UIHandler
 
 private:
 	std::vector<UIComponent*> m_UIComponents;
+	std::vector<TextComponent> m_textComponents;
 	unsigned int m_nrOfComponents;
 	unsigned int m_maxComponents;
 	DirectX::SpriteBatch* m_spriteBatch;
+	DirectX::SpriteFont* m_spriteFont;
 	ID3D11ShaderResourceView* m_texture;
 
 public:
