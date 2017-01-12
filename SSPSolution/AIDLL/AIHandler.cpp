@@ -60,17 +60,60 @@ int AIHandler::Update(float deltaTime)
 	return SUCCESS;
 }
 
-void AIHandler::setComponentActive(int compID)
+void AIHandler::SetComponentActive(int compID)
 {
 	this->m_AIComponents.at(compID)->m_active = true;
 }
 
-void AIHandler::setComponentFalse(int compID)
+void AIHandler::SetComponentFalse(int compID)
 {
 	this->m_AIComponents.at(compID)->m_active = false;
 }
 
-int AIHandler::getNrOfAIComponents() const
+void AIHandler::SetEntityID(int compID, int entityID)
+{
+	this->m_AIComponents.at(compID)->m_entityID = entityID;
+}
+
+void AIHandler::SetTriggered(int compID, bool triggered)
+{
+	this->m_AIComponents.at(compID)->m_triggered = triggered;
+}
+
+void AIHandler::SetTime(int compID, int time)
+{
+	this->m_AIComponents.at(compID)->m_time = time;
+}
+
+void AIHandler::SetSpeed(int compID, int speed)
+{
+	this->m_AIComponents.at(compID)->m_speed = speed;
+}
+
+void AIHandler::SetDirection(int compID, int direction)
+{
+	this->m_AIComponents.at(compID)->m_direction = direction;
+}
+
+void AIHandler::SetCurrentWaypoint(int compID, int currentWaypoint)
+{
+	this->m_AIComponents.at(compID)->m_currentWaypoint = currentWaypoint;
+}
+
+void AIHandler::SetNrOfWaypoints(int compID, int nrOfWaypoints)
+{
+	this->m_AIComponents.at(compID)->m_nrOfWaypoint = nrOfWaypoints;
+}
+
+void AIHandler::SetWaypoints(int compID, DirectX::XMVECTOR waypoints[])
+{
+	for (int i = 0; i < 8; i++)
+	{
+		this->m_AIComponents.at(compID)->m_waypoints[i] = waypoints[i];
+	}
+}
+
+int AIHandler::GetNrOfAIComponents() const
 {
 	return this->m_nrOfAIComponents;
 }
@@ -97,4 +140,3 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 
 	return newComponent;
 }
-
