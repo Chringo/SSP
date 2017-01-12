@@ -54,10 +54,14 @@ public:
 
 	void UpdateOBB()
 	{
-		DirectX::XMMATRIX newOrt = DirectX::XMMatrixMultiply(m_selectedObjectOBB.ort, m_selectedContainer->component.worldMatrix);
-		m_selectedObjectOBB.ort = newOrt;
 
-		m_UpdateAxies();
+		if (m_selectedContainer != nullptr)
+		{
+
+			m_selectedObjectOBB.ort = m_selectedContainer->component.worldMatrix;
+			m_UpdateAxies();
+		} 
+
 	};
 
 	bool IsActive()
