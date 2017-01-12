@@ -13,7 +13,7 @@
 
 class AIDLL_API AIHandler
 {
-private:	// Variables
+private:
 	std::vector<AIComponent*> m_AIComponents;
 	int m_nrOfAIComponents;
 
@@ -26,11 +26,21 @@ public:
 	int Update(float deltaTime);
 
 	// Setters
-	void setComponentActive(int compID);
-	void setComponentFalse(int compID);
+	void SetComponentActive(int compID);
+	void SetComponentFalse(int compID);
+
+	void SetEntityID(int compID, int entityID);
+	void SetTriggered(int compID, bool triggered);
+	void SetTime(int compID, int time);
+	void SetSpeed(int compID, int speed);
+	void SetDirection(int compID, int direction);
+	void SetCurrentWaypoint(int compID, int currentWaypoint);
+	void SetNrOfWaypoints(int compID, int nrOfWaypoints);
+	void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
 
 	// Getters
-	int getNrOfAIComponents() const;
+	int GetNrOfAIComponents() const;
+
 	
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
