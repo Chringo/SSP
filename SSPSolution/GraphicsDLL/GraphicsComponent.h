@@ -28,11 +28,13 @@ struct UIComponent
 	bool wasClicked = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
+	float scale = 1.f;
 
 	void UpdateClicked(DirectX::XMFLOAT2 mousePos)
 	{
 		if ((mousePos.x > this->position.x - this->size.x && mousePos.x < this->position.x + this->size.x)
-			&& (mousePos.y > this->position.y - this->size.y && mousePos.y < this->position.y + this->size.y)) {
+			&& (mousePos.y > this->position.y - this->size.y && mousePos.y < this->position.y + this->size.y)) 
+		{
 			this->wasClicked = true;
 		}
 	}
@@ -42,7 +44,8 @@ struct UIComponent
 		float mouseY = mousePos.y - (GetSystemMetrics(SM_CYSCREEN) - windowSize.y) / 2;
 
 		if ((mouseX > this->position.x - this->size.x && mouseX < this->position.x + this->size.x) 
-			&& (mouseY > this->position.y - this->size.y && mouseY < this->position.y + this->size.y)) {
+			&& (mouseY > this->position.y - this->size.y && mouseY < this->position.y + this->size.y)) 
+		{
 			this->wasClicked = true;
 		}
 	}
@@ -53,7 +56,8 @@ struct UIComponent
 			this->wasClicked = false;
 			return true;
 		}
-		else {
+		else 
+		{
 			return false;
 		}
 	}

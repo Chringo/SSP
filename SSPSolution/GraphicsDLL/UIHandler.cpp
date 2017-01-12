@@ -20,12 +20,24 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture);
+
+	this->m_UIComponents.at(0)->position = DirectX::XMFLOAT2(10.f, 10.f);
+	this->m_UIComponents.at(0)->active = true;
+	this->m_nrOfComponents++;
+
+	this->m_UIComponents.at(1)->position = DirectX::XMFLOAT2(100.f, 100.f);
+	this->m_UIComponents.at(1)->scale = 0.5f;
+	this->m_UIComponents.at(1)->active = true;
+	this->m_nrOfComponents++;
 }
 
 void UIHandler::DrawUI()
 {
 	this->m_spriteBatch->Begin();
-	this->m_spriteBatch->Draw(this->m_texture, DirectX::XMFLOAT2(0.0f, 0.0f));
+	for (int i = 0; i < this->m_nrOfComponents; i++)
+	{
+		this->m_spriteBatch->Draw(this->m_texture, this->m_UIComponents.at(i)->position, nullptr, DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f), this->m_UIComponents.at(i)->scale);
+	}
 	this->m_spriteBatch->End();
 }
 
