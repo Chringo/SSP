@@ -371,19 +371,25 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 
 	SkeletonHeader* m_SkelHeader = (SkeletonHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
-	m_bbf_object += sizeof(Resources::Resource::RawResourceData) + sizeof(SkeletonHeader);
+	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
 
-	Resources::Skeleton::RawSkeletonData joints;
-	joints.jointCount = m_SkelHeader->jointCount;
-	joints.joints = (Resources::Skeleton::Joint*)m_bbf_object;
+	Resources::Skeleton::RawSkeletonData skelData;
+	//joints.jointCount = m_SkelHeader->jointCount;
+	//joints.joints = (Resources::Skeleton::Joint*)m_bbf_object;
 	//joints->joints = new Resources::Skeleton::Joint[joints->jointCount];
 	//memcpy((char*)&joints->joints, &m_bbf_object, sizeof(JointHeader)*joints->jointCount); 
-	
+	skelData.jointCount = ((SkeletonHeader*)m_bbf_object)->jointCount;
+	unsigned int* animCount = &((SkeletonHeader*)m_bbf_object)->animLayerCount;
+	m_bbf_object += sizeof(SkeletonHeader);
+	skelData.joints = (Resources::Skeleton::Joint*)m_bbf_object;
+	m_bbf_object += sizeof(JointHeader) * skelData.jointCount;
+
+
 	Resources::Skeleton* m_Skel = new Resources::Skeleton();
-	m_Skel->Create(res_Data, &joints);
+	m_Skel->Create(res_Data, &skelData);
 	m_Skel->SetNumAnimations(m_SkelHeader->animLayerCount);
 
-	m_bbf_object += sizeof(JointHeader) * joints.jointCount;
+	m_bbf_object += sizeof(JointHeader) * *animCount;
 
 	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
 	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
@@ -403,6 +409,7 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 		if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
 		{
 			models->at(i)->SetSkeleton(m_Skel);
+			break;
 		}
 	}
 
