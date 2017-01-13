@@ -29,13 +29,19 @@ public:
 	AIDLL_API void SetComponentActive(int compID);
 	AIDLL_API void SetComponentFalse(int compID);
 
+	//Entity ID
 	AIDLL_API void SetEntityID(int compID, int entityID);
+	//Active in-game
 	AIDLL_API void SetTriggered(int compID, bool triggered);
+	//Time limited activity
 	AIDLL_API void SetTime(int compID, int time);
+	//Speed for AI movement calculation
 	AIDLL_API void SetSpeed(int compID, int speed);
+	//Direction between waypoints for logic
 	AIDLL_API void SetDirection(int compID, int direction);
+	//Used as a index and to know where you are moving from	
 	AIDLL_API void SetCurrentWaypoint(int compID, int currentWaypoint);
-	AIDLL_API void SetNrOfWaypoints(int compID, int nrOfWaypoints);
+	//Set waypoints, nrOfWaypoints++
 	AIDLL_API void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
 
 	// Getters

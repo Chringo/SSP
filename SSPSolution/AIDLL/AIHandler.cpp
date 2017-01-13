@@ -100,16 +100,12 @@ void AIHandler::SetCurrentWaypoint(int compID, int currentWaypoint)
 	this->m_AIComponents.at(compID)->m_currentWaypoint = currentWaypoint;
 }
 
-void AIHandler::SetNrOfWaypoints(int compID, int nrOfWaypoints)
-{
-	this->m_AIComponents.at(compID)->m_nrOfWaypoint = nrOfWaypoints;
-}
-
 void AIHandler::SetWaypoints(int compID, DirectX::XMVECTOR waypoints[])
 {
 	for (int i = 0; i < 8; i++)
 	{
 		this->m_AIComponents.at(compID)->m_waypoints[i] = waypoints[i];
+		this->m_AIComponents.at(compID)->m_nrOfWaypoint++;
 	}
 }
 
