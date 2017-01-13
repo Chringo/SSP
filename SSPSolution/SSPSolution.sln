@@ -32,8 +32,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "physicsDLL", "physicsDLL\ph
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AIDLL", "AIDLL\AIDLL.vcxproj", "{C07D2EAA-EBAE-4781-A16F-50B4A1822AF0}"
 EndProject
-Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "ModelingProject1", "ModelingProject1\ModelingProject1.modelproj", "{AD4F4C78-3461-457F-8589-6AE810BE04FA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -68,10 +66,6 @@ Global
 		{C07D2EAA-EBAE-4781-A16F-50B4A1822AF0}.Debug|x86.Build.0 = Debug|Win32
 		{C07D2EAA-EBAE-4781-A16F-50B4A1822AF0}.Release|x86.ActiveCfg = Release|Win32
 		{C07D2EAA-EBAE-4781-A16F-50B4A1822AF0}.Release|x86.Build.0 = Release|Win32
-		{AD4F4C78-3461-457F-8589-6AE810BE04FA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AD4F4C78-3461-457F-8589-6AE810BE04FA}.Debug|x86.Build.0 = Debug|Any CPU
-		{AD4F4C78-3461-457F-8589-6AE810BE04FA}.Release|x86.ActiveCfg = Release|Any CPU
-		{AD4F4C78-3461-457F-8589-6AE810BE04FA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
