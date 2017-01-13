@@ -44,7 +44,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -58,9 +57,6 @@
 copy /Y "$(SolutionDir)Debug\GraphicsDLL-d.dll" "$(OutDir)GraphicsDLL-d.dll"
 copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     </PreBuildEvent>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
