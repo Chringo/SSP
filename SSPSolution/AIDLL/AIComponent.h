@@ -8,9 +8,11 @@ __declspec(align(16)) struct AIComponent
 	// System variables
 	int m_active = 0;
 	int m_entityID = -1;
+	DirectX::XMVECTOR m_position;
 
 	// AI variables
 	bool m_triggered;
+	int m_pattern;
 	int m_time;
 	int m_speed;
 	int m_direction;
