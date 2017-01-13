@@ -15,6 +15,8 @@ Player::~Player()
 
 int Player::Initialize()
 {
+	this->InitializeBase();
+
 	int result = 0;
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;

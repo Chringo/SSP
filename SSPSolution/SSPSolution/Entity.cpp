@@ -2,6 +2,12 @@
 
 
 
+int Entity::InitializeBase()
+{
+	this->m_subject = Subject();
+	return 0;
+}
+
 Entity::Entity()
 {
 }

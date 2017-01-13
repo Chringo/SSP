@@ -13,6 +13,7 @@ StaticEntity::~StaticEntity()
 
 int StaticEntity::Initialize()
 {
+	this->InitializeBase();
 	return 0;
 }
 
