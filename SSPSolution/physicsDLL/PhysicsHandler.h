@@ -79,12 +79,15 @@ struct ChainLink
 class PhysicsHandler
 {
 private:
-	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<PhysicsComponent*> m_physicsComponents;
 	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 
 	DirectX::XMVECTOR m_gravity;
 
+	unsigned int	m_startIndex;		// At what index to start to check colision
+	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
+	bool			m_isHost;			// isHost is to check if this client should check collision between dynamic entities
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
@@ -112,6 +115,10 @@ private:
 	void CreateDefaultBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
 	void CreateDefaultAABB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
 	void CreateDefaultOBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
+
+	void SetStartIndex(unsigned int newStartIndex);
+	void SetNumberOfDynamics(unsigned int newNumberOfDynamics);
+	void SetIsHost(bool newIsHost);
 
 public:
 	PHYSICSDLL_API PhysicsHandler();
