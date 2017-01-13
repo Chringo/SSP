@@ -59,7 +59,7 @@ public:
 
 	void ProjectRay(int X, int Y);
 	void RotateObject(int direction);
-	void MoveObject();
+	void MoveObject(bool noSnap);
 	bool PickTransformWidget();
 	bool PickObjectSelection();
 
