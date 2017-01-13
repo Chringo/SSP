@@ -55,6 +55,7 @@ private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
 
 	DirectX::XMVECTOR pos;
+	DirectX::XMVECTOR dirVector;
 
 };
 #endif
