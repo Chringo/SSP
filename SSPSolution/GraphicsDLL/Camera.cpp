@@ -286,12 +286,12 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	DirectX::XMVECTOR temp, quatView, result;
 	temp = quatView = result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	//Precalculate the sin of the angle
-	float scalarSin = DirectX::XMScalarSin(angle / 2.0f);
+	float scalarSin = DirectX::XMScalarSin(float(angle)/ 2.0f);
 	//Calculate the quaternion rotation
-	temp = DirectX::XMVectorSetX(temp, x * scalarSin);
-	temp = DirectX::XMVectorSetY(temp, y * scalarSin);
-	temp = DirectX::XMVectorSetZ(temp, z * scalarSin);
-	temp = DirectX::XMVectorSetW(temp, DirectX::XMScalarCos(angle / 2.0f));
+	temp = DirectX::XMVectorSetX(temp, float(x) * scalarSin);
+	temp = DirectX::XMVectorSetY(temp, float(y) * scalarSin);
+	temp = DirectX::XMVectorSetZ(temp, float(z) * scalarSin);
+	temp = DirectX::XMVectorSetW(temp, DirectX::XMScalarCos(float(angle) / 2.0f));
 	//Calculate the old lookat vector direction
 	quatView = DirectX::XMVectorSetX(quatView, this->m_lookAt.x - this->m_cameraPos.x);
 	quatView = DirectX::XMVectorSetY(quatView, this->m_lookAt.y - this->m_cameraPos.y);
