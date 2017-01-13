@@ -6,23 +6,27 @@ namespace FSMEnvironment
 {
 
 #pragma region temp
-	enum Hint
+	enum Hint : unsigned int
 	{
 		NONE = 0,
 		EXAMPLE
 	};
-	struct State
+
+	
+
+	class State
 	{
-		// System variables
+	public:
 		int stateID = -1;
 		// TODO: Data that allows the functions to be generic
 
 		// State - Data
 		int timeDelay = -1;
 		Hint hint = Hint::NONE;
+		
 
 		// Sub-states
-		//void Initialize();//Reset state
+		void Initialize();//Reset state
 		int CheckTransitions();
 		void Enter();
 		void Exit();
