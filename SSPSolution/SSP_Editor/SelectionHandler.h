@@ -5,6 +5,7 @@
 #include "TransformWidget.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "Level.h"
+#include "UiControlHandler.h"
 
 class SelectionHandler
 {
@@ -58,7 +59,7 @@ public:
 
 	void ProjectRay(int X, int Y);
 	void RotateObject(int direction);
-	void MoveObject();
+	void MoveObject(bool noSnap);
 	bool PickTransformWidget();
 	bool PickObjectSelection();
 

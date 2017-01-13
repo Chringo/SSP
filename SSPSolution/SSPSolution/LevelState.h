@@ -5,12 +5,15 @@
 #include "../SSP_Editor/LevelHeaders.h"
 #include "../ResourceLib/ResourceHandler.h"
 #include "StaticEntity.h"
+#include "DynamicEntity.h"
+
 class LevelState :
 	public GameState
 {
 private:
 	Player m_player1;
-	std::vector<Entity*> m_entities;
+	std::vector<DynamicEntity*> m_dynamicEntitys;
+	std::vector<StaticEntity*>	m_staticEntitys;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -19,6 +22,8 @@ public:
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
 	int CreateLevel(LevelData::Level* data);
+
+	void LockCameraToPlayer();
 private:
 };
 

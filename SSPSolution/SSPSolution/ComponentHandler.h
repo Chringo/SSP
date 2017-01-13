@@ -22,6 +22,9 @@ public:
 	PhysicsComponent* GetPhysicsComponent();
 	void UpdateGraphicsComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
+
+	//temporary function
+	PhysicsHandler* GetPhysicsHandler() const;
 };
 
 #endif
