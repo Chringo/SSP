@@ -452,6 +452,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->time_start = syP.time_start;
 			
 			this->SendFlagPacket(TEST_PACKET);
+			this->SendPhysicSyncPacket(1,2,true);
 
 			//DEBUG
 			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
@@ -540,6 +541,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			//DEBUG
 			printf("Recived SYNC_PHYSICS packet\n");
+			this->SendPhysicSyncPacket(2,1,false);
 
 			iter++;
 			break;
