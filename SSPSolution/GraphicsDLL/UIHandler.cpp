@@ -63,12 +63,18 @@ void UIHandler::DrawUI()
 	for (int i = 0; i < this->m_nrOfUIComponents; i++)
 	{
 		tempUIComp = this->m_UIComponents.at(i);
-		this->m_spriteBatch->Draw(this->m_texture, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+		if (tempUIComp->active) 
+		{
+			this->m_spriteBatch->Draw(this->m_texture, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+		}
 	}
 	for (int i = 0; i < this->m_nrOfTextComponents; i++)
 	{
 		tempTextComp = this->m_textComponents.at(i);
-		this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), tempTextComp->position, DirectX::Colors::White, tempTextComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempTextComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempTextComp->layerDepth);
+		if (tempTextComp->active)
+		{
+			this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), tempTextComp->position, DirectX::Colors::White, tempTextComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempTextComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempTextComp->layerDepth);
+		}
 	}
 	this->m_spriteBatch->End();
 }
