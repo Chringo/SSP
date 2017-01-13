@@ -155,7 +155,7 @@ void EditorInputHandler::MouseMovement(double dT)
 
 	DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
 
-	DirectX::XMVECTOR camRight = DirectX::XMVector3Cross(camDir, camUpVec);
+	DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
 
 	camRight.m128_f32[3] = rotationAmount * -yaw;
 	camUpVec.m128_f32[3] = rotationAmount * pitch;
