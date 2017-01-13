@@ -143,12 +143,14 @@ public:
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
-	PHYSICSDLL_API int getNrOfComponents()const;
-	PHYSICSDLL_API PhysicsComponent* getDynamicComponentAt(int index)const;
+	PHYSICSDLL_API int GetNrOfComponents()const;
+	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	PHYSICSDLL_API bool checkCollition();
+
+	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

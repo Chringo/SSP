@@ -27,10 +27,10 @@ GraphicsComponent* Entity::SetGraphicsComponent(GraphicsComponent * gComp)
 
 PhysicsComponent * Entity::GetPhysicsComponent()
 {
-	return this->GetPhysicsComponent();
+	return this->m_pComp;
 }
 
 GraphicsComponent * Entity::GetGraphicComponent()
 {
-	return this->GetGraphicComponent();
+	return this->m_gComp;
 }
