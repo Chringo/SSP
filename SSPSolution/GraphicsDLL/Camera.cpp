@@ -298,12 +298,14 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z - this->m_cameraPos.z);
 	quatView = DirectX::XMVectorSetW(quatView, 0.0f);
 	//Rotate the vector and normalize it
-	result = mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp));
-	result = DirectX::XMVector3Normalize(result);
+	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
 	//Move the lookAt vector back to the camera
 	this->m_lookAt.x = DirectX::XMVectorGetX(result) + this->m_cameraPos.x;
 	this->m_lookAt.y = DirectX::XMVectorGetY(result) + this->m_cameraPos.y;
 	this->m_lookAt.z = DirectX::XMVectorGetZ(result) + this->m_cameraPos.z;
+	quatView = DirectX::XMLoadFloat4(&this->m_cameraUp);
+	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
+	DirectX::XMStoreFloat4(&this->m_cameraUp, result);
 	return;
 }
 
