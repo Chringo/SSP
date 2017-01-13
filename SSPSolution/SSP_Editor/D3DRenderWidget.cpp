@@ -1,4 +1,4 @@
-#include "RenderWidget.h"
+#include "D3DRenderWidget.h"
 
 D3DRenderWidget::~D3DRenderWidget()
 {
