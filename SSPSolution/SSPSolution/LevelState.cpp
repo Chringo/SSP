@@ -78,6 +78,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[0] = 1.5;
 	playerP->PC_AABB.ext[1] = 1.5;
 	playerP->PC_AABB.ext[2] = 1.5;
+	playerG->worldMatrix = DirectX::XMMatrixIdentity();	//FIX THIS
 	this->m_player1.Initialize();
 	this->m_player1.SetGraphicsComponent(playerG);
 	this->m_player1.SetPhysicsComponent(playerP);
@@ -99,11 +100,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[1] = 1.5;
 	ballP->PC_AABB.ext[2] = 1.5;
 	ballP->PC_mass = 10;
+	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize();
 	ball->SetGraphicsComponent(ballG);
 	ball->SetPhysicsComponent(ballP);
 	this->m_dynamicEntitys.push_back(ball);
-
 
 	Entity* ptr = (Entity*)ball;
 	this->m_player1.SetGrabbed(ball);
@@ -125,6 +126,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvP->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
 	golvP->PC_friction = 0.9;
+	golvG->worldMatrix = DirectX::XMMatrixIdentity();
 	golv->Initialize();
 	golv->SetGraphicsComponent(golvG);
 	golv->SetPhysicsComponent(golvP);
