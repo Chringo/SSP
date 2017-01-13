@@ -221,7 +221,10 @@ void EditorInputHandler::UpdateMouse()
 		this->m_mouse.y = 0;
 
 	if (this->m_mouse.leftHeld)
+	{
 		SelectionHandler::GetInstance()->ProjectRay(m_mouse.x, m_mouse.y);
+		SelectionHandler::GetInstance()->MoveObject(m_KeysHeld[Bools::CONTROL]);
+	}
 }
 
 void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)

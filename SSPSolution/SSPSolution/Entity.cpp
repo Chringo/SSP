@@ -24,3 +24,13 @@ GraphicsComponent* Entity::SetGraphicsComponent(GraphicsComponent * gComp)
 	this->m_gComp = gComp;
 	return tempReturn;
 }
+
+PhysicsComponent * Entity::GetPhysicsComponent()
+{
+	return this->GetPhysicsComponent();
+}
+
+GraphicsComponent * Entity::GetGraphicComponent()
+{
+	return this->GetGraphicComponent();
+}
