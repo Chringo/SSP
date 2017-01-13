@@ -290,16 +290,22 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	temp = DirectX::XMVectorSetZ(temp, z * scalarSin);
 	temp = DirectX::XMVectorSetW(temp, angle * DirectX::XMScalarCos(angle / 2.0f));
 
+	//quatView = DirectX::XMVectorSetX(quatView, this->m_lookAt.x);
+	//quatView = DirectX::XMVectorSetY(quatView, this->m_lookAt.y);
+	//quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z);
 	quatView = DirectX::XMVectorSetX(quatView, this->m_lookAt.x - this->m_cameraPos.x);
 	quatView = DirectX::XMVectorSetY(quatView, this->m_lookAt.y - this->m_cameraPos.y);
 	quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z - this->m_cameraPos.z);
 	quatView = DirectX::XMVectorSetW(quatView, 0.0f);
 
 	result = mult(mult(temp, quatView), conjugate(temp));
-
+	result = DirectX::XMVector3Normalize(result);
+	//this->m_lookAt.x = DirectX::XMVectorGetX(result);
+	//this->m_lookAt.y = DirectX::XMVectorGetY(result);
+	//this->m_lookAt.z = DirectX::XMVectorGetZ(result);
 	this->m_lookAt.x = DirectX::XMVectorGetX(result) + this->m_cameraPos.x;
 	this->m_lookAt.y = DirectX::XMVectorGetY(result) + this->m_cameraPos.y;
-	this->m_lookAt.w = DirectX::XMVectorGetZ(result) + this->m_cameraPos.z;
+	this->m_lookAt.z = DirectX::XMVectorGetZ(result) + this->m_cameraPos.z;
 	return;
 }
 
