@@ -190,6 +190,21 @@ void Camera::GetCameraUp(DirectX::XMFLOAT3 & storeIn)
 	storeIn = DirectX::XMFLOAT3(this->m_cameraUp.x, this->m_cameraUp.y, this->m_cameraUp.z);
 	return;
 }
+GRAPHICSDLL_API void Camera::GetCameraFrameData(cameraFrameData & storeIn)
+{
+	storeIn.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
+	storeIn.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
+	storeIn.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	return;
+}
+GRAPHICSDLL_API cameraFrameData Camera::GetCameraFrameData()
+{
+	cameraFrameData myData;
+	myData.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
+	myData.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
+	myData.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	return  myData;
+}
 #pragma endregion getters
 #pragma region
 
