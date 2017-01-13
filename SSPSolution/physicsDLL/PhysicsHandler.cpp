@@ -1425,7 +1425,7 @@ bool PhysicsHandler::checkCollition()
 
 	return result;
 }
-
+#ifdef _DEBUG
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_OBB);
@@ -1440,3 +1440,4 @@ void PhysicsHandler::GetPhysicsComponentPlane(Plane*& src, int index)
 {
 	src = &(this->m_dynamicComponents.at(index)->PC_Plane);
 }
+#endif // _DEBUG
