@@ -209,7 +209,7 @@ void FileImporter::LoadImportedFiles()
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
 			case Resources::ResourceType::RES_SKELETON:
-				handleSkeleton(m_bbf_object);
+				//handleSkeleton(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
