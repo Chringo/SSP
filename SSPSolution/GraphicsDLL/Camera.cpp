@@ -288,7 +288,7 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	temp = DirectX::XMVectorSetX(temp, x * scalarSin);
 	temp = DirectX::XMVectorSetY(temp, y * scalarSin);
 	temp = DirectX::XMVectorSetZ(temp, z * scalarSin);
-	temp = DirectX::XMVectorSetW(temp, angle * DirectX::XMScalarCos(angle / 2.0f));
+	temp = DirectX::XMVectorSetW(temp, DirectX::XMScalarCos(angle / 2.0f));
 
 	//quatView = DirectX::XMVectorSetX(quatView, this->m_lookAt.x);
 	//quatView = DirectX::XMVectorSetY(quatView, this->m_lookAt.y);
@@ -298,7 +298,7 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z - this->m_cameraPos.z);
 	quatView = DirectX::XMVectorSetW(quatView, 0.0f);
 
-	result = mult(mult(temp, quatView), conjugate(temp));
+	result = mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp));
 	result = DirectX::XMVector3Normalize(result);
 	//this->m_lookAt.x = DirectX::XMVectorGetX(result);
 	//this->m_lookAt.y = DirectX::XMVectorGetY(result);
@@ -393,7 +393,7 @@ DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
 	result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(quat) * -1);
 	result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(quat) * -1);
 	result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(quat) * -1);
-	
+	result = DirectX::XMVectorSetW(result, DirectX::XMVectorGetW(quat));
 	return result;
 }
 DirectX::XMVECTOR Camera::mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
@@ -401,17 +401,24 @@ DirectX::XMVECTOR Camera::mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 	DirectX::XMFLOAT4 C, A, B;
 	DirectX::XMStoreFloat4(&A, a);
 	DirectX::XMStoreFloat4(&B, b);
+	//Old
 	C.x = A.w*B.x + A.x*B.w + A.y*B.z - A.z*B.y;
 	C.y = A.w*B.y - A.x*B.z + A.y*B.w + A.z*B.x;
 	C.z = A.w*B.z + A.x*B.y - A.y*B.x + A.z*B.w;
 	C.w = A.w*B.w - A.x*B.x - A.y*B.y - A.z*B.z;
+	//New
+	/*C.x = A.w*B.x + A.x*B.w - A.y*B.z + A.z*B.y;
+	C.y = A.w*B.y + A.x*B.z + A.y*B.w - A.z*B.x;
+	C.z = A.w*B.z - A.x*B.y + A.y*B.x + A.z*B.w;
+	C.w = A.w*B.w - A.x*B.x - A.y*B.y - A.z*B.z;*/
 
 	/*DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetX(b) + DirectX::XMVectorGetX(a) * DirectX::XMVectorGetW(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetZ(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetY(b));
 	result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetX(a) * DirectX::XMVectorGetZ(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetW(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetX(b));
 	result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetZ(b) + DirectX::XMVectorGetX(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetX(b) + DirectX::XMVectorGetY(a) * DirectX::XMVectorGetW(b));
 	result = DirectX::XMVectorSetW(result, DirectX::XMVectorGetW(a) * DirectX::XMVectorGetW(b) - DirectX::XMVectorGetX(a) * DirectX::XMVectorGetX(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a) * DirectX::XMVectorGetZ(b));
-*/
+	return result;*/
+
 	return DirectX::XMLoadFloat4(&C);
 }
 #pragma endregion setters

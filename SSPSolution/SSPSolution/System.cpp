@@ -234,12 +234,12 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
 		this->m_camera->ApplyLocalTranslation(posTranslation);
 		//this->m_camera->AddToLookAt(posTranslation);
-		float rotationAmount = DirectX::XM_PI / 6;
+		float rotationAmount = DirectX::XM_PI / 4;
 		rotationAmount *= deltaTime / 1000000.0f;
 		//DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY, 0.0f, 0.0f);
 		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&newRotation)));
-		if (length > 0.000000001f)
+		/*if (length > 0.000000001f)*/
 			this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
 
 		//this->m_camera->Update();
