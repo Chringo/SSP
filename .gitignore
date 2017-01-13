@@ -1,6 +1,9 @@
 # Paths
 SSPSolution/packages/**
 
+# Other databases
+*.bsc
+
 # Temporary compiled files
 *.idb
 *.tlog
