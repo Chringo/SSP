@@ -190,6 +190,21 @@ void Camera::GetCameraUp(DirectX::XMFLOAT3 & storeIn)
 	storeIn = DirectX::XMFLOAT3(this->m_cameraUp.x, this->m_cameraUp.y, this->m_cameraUp.z);
 	return;
 }
+GRAPHICSDLL_API void Camera::GetCameraFrameData(cameraFrameData & storeIn)
+{
+	storeIn.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
+	storeIn.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
+	storeIn.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	return;
+}
+GRAPHICSDLL_API cameraFrameData Camera::GetCameraFrameData()
+{
+	cameraFrameData myData;
+	myData.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
+	myData.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
+	myData.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	return  myData;
+}
 #pragma endregion getters
 #pragma region
 
@@ -286,24 +301,26 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	DirectX::XMVECTOR temp, quatView, result;
 	temp = quatView = result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	//Precalculate the sin of the angle
-	float scalarSin = DirectX::XMScalarSin(angle / 2.0f);
+	float scalarSin = DirectX::XMScalarSin(float(angle)/ 2.0f);
 	//Calculate the quaternion rotation
-	temp = DirectX::XMVectorSetX(temp, x * scalarSin);
-	temp = DirectX::XMVectorSetY(temp, y * scalarSin);
-	temp = DirectX::XMVectorSetZ(temp, z * scalarSin);
-	temp = DirectX::XMVectorSetW(temp, DirectX::XMScalarCos(angle / 2.0f));
+	temp = DirectX::XMVectorSetX(temp, float(x) * scalarSin);
+	temp = DirectX::XMVectorSetY(temp, float(y) * scalarSin);
+	temp = DirectX::XMVectorSetZ(temp, float(z) * scalarSin);
+	temp = DirectX::XMVectorSetW(temp, DirectX::XMScalarCos(float(angle) / 2.0f));
 	//Calculate the old lookat vector direction
 	quatView = DirectX::XMVectorSetX(quatView, this->m_lookAt.x - this->m_cameraPos.x);
 	quatView = DirectX::XMVectorSetY(quatView, this->m_lookAt.y - this->m_cameraPos.y);
 	quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z - this->m_cameraPos.z);
 	quatView = DirectX::XMVectorSetW(quatView, 0.0f);
 	//Rotate the vector and normalize it
-	result = mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp));
-	result = DirectX::XMVector3Normalize(result);
+	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
 	//Move the lookAt vector back to the camera
 	this->m_lookAt.x = DirectX::XMVectorGetX(result) + this->m_cameraPos.x;
 	this->m_lookAt.y = DirectX::XMVectorGetY(result) + this->m_cameraPos.y;
 	this->m_lookAt.z = DirectX::XMVectorGetZ(result) + this->m_cameraPos.z;
+	quatView = DirectX::XMLoadFloat4(&this->m_cameraUp);
+	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
+	DirectX::XMStoreFloat4(&this->m_cameraUp, result);
 	return;
 }
 

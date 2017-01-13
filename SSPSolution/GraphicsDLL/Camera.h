@@ -8,6 +8,14 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
+
+struct cameraFrameData
+{
+	DirectX::XMMATRIX pView;
+	DirectX::XMMATRIX pProjection;
+	DirectX::XMVECTOR pPos;
+};
+
 class Camera
 {
 private:
@@ -54,6 +62,9 @@ public:
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMVECTOR& storeIn);
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT4& storeIn);
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT3& storeIn);
+
+	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
+	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
 
 #pragma endregion getters
 #pragma region
