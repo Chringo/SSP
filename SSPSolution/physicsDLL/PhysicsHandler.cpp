@@ -1459,11 +1459,11 @@ bool PhysicsHandler::checkCollition()
 void PhysicsHandler::SortComponents()
 {
 	//this->m_nrOfStaticObjects = 20;
-	int nrOfComponents = this->m_dynamicComponents.size();
+	int nrOfComponents = this->m_physicsComponents.size();
 	PhysicsComponent* current;
 	for (int i = 0; i < nrOfComponents; i++)
 	{
-		current = this->m_dynamicComponents.at(i);
+		current = this->m_physicsComponents.at(i);
 		if (current->PC_is_Static)
 		{
 			this->m_nrOfStaticObjects++;
@@ -1475,25 +1475,25 @@ void PhysicsHandler::SortComponents()
 	PhysicsComponent* staticToSwap = nullptr;
 	for (int i = pivot; i < nrOfComponents; i++)
 	{
-		current = this->m_dynamicComponents.at(i);
+		current = this->m_physicsComponents.at(i);
 		if(!current->PC_is_Static)
 		{ 
-			dynamicToSwap = this->m_dynamicComponents.at(i);
+			dynamicToSwap = this->m_physicsComponents.at(i);
 			for (int x = lastKnownStatic; x >= 0 && dynamicToSwap != nullptr; x--)
 			{
-				staticToSwap = this->m_dynamicComponents.at(x);
+				staticToSwap = this->m_physicsComponents.at(x);
 				if (staticToSwap->PC_is_Static)
 				{
 					lastKnownStatic = x;
-					this->m_dynamicComponents.at(i) = staticToSwap;
-					this->m_dynamicComponents.at(x) = dynamicToSwap;
+					this->m_physicsComponents.at(i) = staticToSwap;
+					this->m_physicsComponents.at(x) = dynamicToSwap;
 					dynamicToSwap = nullptr;
 				}
 
 			}
 		}
 	}
-	int a = this->m_dynamicComponents.size();
+	int a = this->m_physicsComponents.size();
 }
 
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
