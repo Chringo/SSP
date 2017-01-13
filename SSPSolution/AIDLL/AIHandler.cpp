@@ -32,12 +32,13 @@ int AIHandler::Initialize(int nrOfAIComponents)
 }
 int AIHandler::Update(float deltaTime)
 {
+	using namespace DirectX;
+
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents.at(i)->m_active && this->m_AIComponents.at(i)->m_triggered)
 		{
-			// AIComponent logic/behavior
-			// movement of e.g. platforms
+			// AIComponent logic/behavior, movement of e.g. platforms
 			int currentWaypoint = this->m_AIComponents.at(i)->m_currentWaypoint;
 			int nrOfWaypoint = this->m_AIComponents.at(i)->m_nrOfWaypoint;
 			int pattern = this->m_AIComponents.at(i)->m_pattern;
@@ -63,11 +64,12 @@ int AIHandler::Update(float deltaTime)
 				//Identical to pattern 2 (Circular)
 				if (direction == 0)
 				{
-					using namespace DirectX;
+					XMVECTOR waypointTo = this->m_AIComponents.at(i)->m_waypoints[i];
+					XMVECTOR waypointFrom = this->m_AIComponents.at(i)->m_waypoints[i];
 
-					this->m_AIComponents.at(i)->m_waypoints[i] - this->m_AIComponents.at(i)->m_waypoints[i];
-					DirectX::XMVECTOR x;
-
+					// <-- vector direction
+					XMVECTOR dirVector = waypointTo - waypointFrom;
+	
 					//Should be speed dependent
 					currentWaypoint;
 					this->pos;
