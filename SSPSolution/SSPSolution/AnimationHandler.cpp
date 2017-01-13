@@ -15,21 +15,17 @@ AnimationHandler::AnimationHandler()
 	this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
 	this->m_graphicsAnimationComponent->jointCount = 19;
 
-	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixIdentity();
 	this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 4, 10);
 	for (int i = 0; i < 32; i++)
 	{
 		m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 
-	m_isComplete = false;
-	m_newAnimation = false;
-
-	m_BlendTimeLeft = 0;
-	m_BlendDuration = 1;
+	m_TransitionTimeLeft = 0;
+	m_TransitionDuration = 0;
 	
 	/*Initialize the stack with a default "IDLE" animation.*/
-	Push(0, m_newAnimation, true, 1);
+	Push(0, true, 0);
 }
 
 AnimationHandler::~AnimationHandler()
@@ -37,101 +33,157 @@ AnimationHandler::~AnimationHandler()
 	delete m_graphicsAnimationComponent;
 }
 
-void AnimationHandler::Update(float dt)
+void AnimationHandler::AddAnimation(int animationState, bool isLooping, float transitionTime)
 {
-	/*Check if there is a current animation in the stack.*/
-	if (!m_animationStack.empty())
+	if (m_animationStack.front().animationState == animationState)
 	{
-		/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
-		float toSeconds = dt / 1000000;
-		m_globalTimeElapsed += toSeconds;
-
-		/*If the animation reaches the last frame and the animation is looping, reset elapsedTime to ZERO.*/
-		if (m_globalTimeElapsed >= m_animationStack.front().endFrame && m_animationStack.front().isLooping == true)
-		{
-			m_globalTimeElapsed = 0.0f;
-		}
-
-		/*If there is a new animation starting to play, start the blending process with both clip A and clip B.*/
-		if (m_newAnimation == true)
-		{
-			m_globalTimeElapsed = 0.0f; //Comment out for testing blending.
-		}
-
-		else
-		{
-			Interpolate(m_animationStack.front(), m_globalTimeElapsed);
-		}
+		/*Don't do anything. Animation already exists and plays.*/
 	}
 
-	/*There is no current animation playing.*/
 	else
 	{
-		return;
+		/*Animation is new. Add it to the stack.*/
+		Push(animationState, isLooping, transitionTime);
 	}
+
 }
 
-void AnimationHandler::Interpolate(AnimationClip clipA, float currentTime)
+void AnimationHandler::Update(float dt)
 {
-	int jointCount = m_skeletonContainer.size();
+	/*Convert the delta-time to be in seconds unit format.*/
+	float seconds = dt / 1000000;
 
-	m_localTransforms.resize(jointCount);
+	if (!m_animationStack.empty())
+	{
+		m_animationStack.front().localTime += seconds;
+	}
+	
+	switch (m_BlendState)
+	{
+		/*If only one animation is playing, there should be no transition.*/
+		case (BlendingStates::NO_TRANSITION):
+		{
+			/*If the animation reaches the last frame, either reset animation or switch to idle state.*/
+			if (m_animationStack.front().localTime >= m_animationStack.front().endFrame)
+			{
+				/*Animation is looping. Reset the time of the animation.*/
+				if (m_animationStack.front().isLooping == true)
+				{
+					m_animationStack.front().localTime = 0;
+				}
 
-	int currentAnimation = clipA.animationState;
+				else
+				{
+					/*Push the IDLE state to the stack.*/
+					Push(IDLE_STATE, true, 3);
+					m_BlendState = SMOOTH_TRANSITION;
+				}
+			}
 
-	const Resources::Animation::AnimationJoint* animatedJoints = m_animationContainer[currentAnimation];
+			/*Interpolate the keyframes of this animation.*/
+			InterpolateKeys(m_animationStack.front(), m_animationStack.front().localTime);
+				
+			break;
+		}
 
-	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+		/*If two animations are playing, there should be a smooth transition.*/
+		case (BlendingStates::SMOOTH_TRANSITION):
+		{
+			/*Transition is complete. Swap the animations and remove the old animation.*/
+			if (m_TransitionComplete == true)
+			{
+				m_BlendState = NO_TRANSITION;
+				m_TransitionComplete = false;
+				
+				Pop();
+			}
+
+			/*Blending is not complete. Proceed the transition process.*/
+			else
+			{
+				Blend(m_animationStack.front(), m_animationStack.back(), m_animationStack.front().localTime);
+			}
+
+			break;
+		}
+	}
+
+	///*Check if there is a current animation in the stack.*/
+	//if (!m_animationStack.empty())
+	//{
+	//	/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
+	//	float toSeconds = dt / 1000000;
+	//	m_globalTimeElapsed += toSeconds;
+
+	//	/*If the animation reaches the last frame and the animation is looping, reset elapsedTime to ZERO.*/
+	//	if (m_globalTimeElapsed >= m_animationStack.front().endFrame && m_animationStack.front().isLooping == true)
+	//	{
+	//		m_globalTimeElapsed = 0.0f;
+	//	}
+
+	//	InterpolateKeys(m_animationStack.front(), m_globalTimeElapsed);
+	//}
+}
+
+
+
+void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float currentTime)
+{
+	std::vector<DirectX::XMFLOAT4X4> localTransforms;
+
+	int jointSize = m_skeletonContainer.size();
+
+	localTransforms.resize(jointSize);
+
+	int animationState = animationClip.animationState;
+
+	const Resources::Animation::AnimationJoint* animatedJoints = m_animationContainer[animationState];
+
+	for (unsigned int jointIndex = 0; jointIndex < jointSize; jointIndex++)
 	{
 		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
 
 		/*The current time is the first keyframe.*/
-		if (currentTime <= clipA.startFrame)
+		if (currentTime <= animationClip.startFrame)
 		{
-			int startFrame = (int)clipA.startFrame;
+			int startFrame = (int)animationClip.startFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
-			DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[startFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
 
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
-			DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
 			DirectX::XMVECTOR quat = XMLoadFloat4(&tempQuat);
 
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
-			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 
-			DirectX::XMStoreFloat4x4(&m_localTransforms[jointIndex], localTransform);
+			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is the last keyframe.*/
-		else if (currentTime >= clipA.endFrame)
+		else if (currentTime >= animationClip.endFrame)
 		{
-			int endFrame = (int)clipA.endFrame;
+			int endFrame = (int)animationClip.endFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
-			DirectX::XMFLOAT3 tempRot(animatedJoint.keyframes[endFrame].rotation);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
 
 			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
 			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
-			DirectX::XMVECTOR rot = XMLoadFloat3(&tempRot);
 			DirectX::XMVECTOR quat = XMLoadFloat4(&tempQuat);
 
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
-			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 
-			DirectX::XMStoreFloat4x4(&m_localTransforms[jointIndex], localTransform);
+			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is between two keyframes.*/
 		else
@@ -153,44 +205,209 @@ void AnimationHandler::Interpolate(AnimationClip clipA, float currentTime)
 					DirectX::XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
 					DirectX::XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
 					DirectX::XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
-					DirectX::XMFLOAT3 tempRot1(animatedJoint.keyframes[i].rotation);
-					DirectX::XMFLOAT3 tempRot2(animatedJoint.keyframes[i + 1].rotation);
 					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
 					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
 
 					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
 					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
-					DirectX::XMVECTOR rot1 = DirectX::XMLoadFloat3(&tempRot1);
 					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
 
 					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
 					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
-					DirectX::XMVECTOR rot2 = DirectX::XMLoadFloat3(&tempRot2);
 					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
 
 					DirectX::XMVECTOR lerpTrans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					DirectX::XMVECTOR lerpScale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
-					DirectX::XMVECTOR lerpRot = DirectX::XMVectorLerp(rot1, rot2, lerpFactor);
 					DirectX::XMVECTOR lerpQuat = DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor);
 
 					DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpScale);
-					DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYawFromVector(lerpRot);
 					DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpQuat);
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 
 					/*Update the transform for each joint in the skeleton.*/
-					DirectX::XMStoreFloat4x4(&m_localTransforms[jointIndex], localTransform);
+					DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 				}
 			}
 		}
-
-		m_animationStack.front().localTime = (currentTime / (clipA.endFrame - clipA.startFrame));
 	}
 
 	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
-	CalculateFinalTransform(m_localTransforms);
+	CalculateFinalTransform(localTransforms);
+}
+
+void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float currentTime, int animIndex)
+{
+	int jointCount = m_skeletonContainer.size();
+
+	int animationState = animationClip.animationState;
+
+	const Resources::Animation::AnimationJoint* animatedJoints = m_animationContainer[animationState];
+
+	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	{
+		BlendKeyframe blendKey;
+
+		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
+
+		/*The current time is the first keyframe.*/
+		if (currentTime <= animationClip.startFrame)
+		{
+			int startFrame = (int)animationClip.startFrame;
+
+			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
+			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
+			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
+
+			blendKey.trans = XMLoadFloat3(&tempTrans);
+			blendKey.scale = XMLoadFloat3(&tempScale);
+			blendKey.quat = XMLoadFloat4(&tempQuat);
+
+			blendKeysPerAnimation[animIndex].push_back(blendKey);
+		}
+
+		/*The current time is the last keyframe.*/
+		else if (currentTime >= animationClip.endFrame)
+		{
+			int endFrame = (int)animationClip.endFrame;
+
+			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
+			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
+			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
+
+			blendKey.trans = XMLoadFloat3(&tempTrans);
+			blendKey.scale = XMLoadFloat3(&tempScale);
+			blendKey.quat = XMLoadFloat4(&tempQuat);
+
+			blendKeysPerAnimation[animIndex].push_back(blendKey);
+		}
+
+		/*The current time is between two keyframes.*/
+		else
+		{
+			int keyFrameCount = animatedJoint.keyframeCount;
+
+			for (int i = 0; i < keyFrameCount; i++)
+			{
+				float timeKeyframe1 = animatedJoint.keyframes[i].timeValue;
+				float timeKeyframe2 = animatedJoint.keyframes[i + 1].timeValue;
+
+				/*Check if the current time is between two keyframes for each joint.*/
+				if (currentTime > timeKeyframe1 && currentTime < timeKeyframe2)
+				{
+					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
+					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
+
+					DirectX::XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
+					DirectX::XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
+					DirectX::XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
+					DirectX::XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
+					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
+					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
+
+					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
+					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
+					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
+
+					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
+					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
+					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
+
+					blendKey.trans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
+					blendKey.scale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
+					blendKey.quat = DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor);
+
+					blendKeysPerAnimation[animIndex].push_back(blendKey);
+				}
+			}
+		}
+	}
+}
+
+void AnimationHandler::BlendKeys(float transitionTime)
+{
+	std::vector<DirectX::XMFLOAT4X4> localTransforms;
+
+	int jointSize = m_skeletonContainer.size();
+
+	localTransforms.resize(jointSize);
+
+	for (int jointIndex = 0; jointIndex < jointSize; jointIndex++)
+	{
+		DirectX::XMVECTOR transAnim1 = blendKeysPerAnimation[0][jointIndex].trans;
+		DirectX::XMVECTOR transAnim2 = blendKeysPerAnimation[1][jointIndex].trans;
+
+		DirectX::XMVECTOR scaleAnim1 = blendKeysPerAnimation[0][jointIndex].scale;
+		DirectX::XMVECTOR scaleAnim2 = blendKeysPerAnimation[1][jointIndex].scale;
+
+		DirectX::XMVECTOR quatAnim1 = blendKeysPerAnimation[0][jointIndex].quat;
+		DirectX::XMVECTOR quatAnim2 = blendKeysPerAnimation[1][jointIndex].quat;
+
+		float blendFactor = (transitionTime / (m_animationStack.front().endFrame - m_animationStack.front().startFrame));
+
+		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, blendFactor);
+		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, blendFactor);
+		DirectX::XMVECTOR lerpBlendQuat = DirectX::XMQuaternionSlerp(quatAnim1, quatAnim2, blendFactor);
+
+		DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpBlendTrans);
+		DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpBlendScale);
+		DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpBlendQuat);
+
+		DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+
+		/*Update the transform for each joint in the skeleton.*/
+		DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
+	}
+
+	blendKeysPerAnimation[0].clear();
+	blendKeysPerAnimation[0].shrink_to_fit();
+
+	blendKeysPerAnimation[1].clear();
+	blendKeysPerAnimation[1].shrink_to_fit();
+
+	CalculateFinalTransform(localTransforms);
+}
+
+void AnimationHandler::Blend(AnimationClip clipA, AnimationClip clipB, float globalTimeElapsed)
+{
+	/*If the transition time have reached the duration of the transition.*/
+	if (m_TransitionTimeLeft >= m_TransitionDuration)
+	{
+		m_TransitionComplete = true;
+		m_TransitionTimeLeft = 0;
+	}
+
+	/*Transition is still proceeding. Update both animations and blend them.*/
+	else
+	{
+		blendKeysPerAnimation.resize(m_animationStack.size());
+
+		for (int animClipIndex = 0; animClipIndex < m_animationStack.size(); animClipIndex++)
+		{
+			if (m_animationStack[animClipIndex].localTime <= GetStartFrame(animClipIndex))
+			{
+				m_animationStack[animClipIndex].localTime = GetStartFrame(animClipIndex);
+			}
+
+			else if (m_animationStack[animClipIndex].localTime >= GetEndFrame(animClipIndex))
+			{
+				m_animationStack[animClipIndex].localTime = GetEndFrame(animClipIndex);
+			}
+
+			else if (m_animationStack[animClipIndex].localTime > GetStartFrame(animClipIndex) && m_animationStack[animClipIndex].localTime < GetEndFrame(animClipIndex))
+			{
+				m_animationStack[animClipIndex].localTime += globalTimeElapsed;
+			}
+
+			ExtractBlendingKeys(m_animationStack[animClipIndex], m_animationStack[animClipIndex].localTime, animClipIndex);
+		}
+
+		BlendKeys(m_TransitionTimeLeft);
+
+		/*Calculate the blend time with the delta-time.*/
+		m_TransitionTimeLeft += globalTimeElapsed;
+	}
 }
 
 void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localTransforms)
@@ -225,7 +442,7 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 	}
 }
 
-void AnimationHandler::Push(int animationState, bool newAnimation, bool isLooping, float weight)
+void AnimationHandler::Push(int animationState, bool isLooping, float transitionTime)
 {
 	AnimationClip clip;
 
@@ -239,14 +456,22 @@ void AnimationHandler::Push(int animationState, bool newAnimation, bool isLoopin
 	{
 		clip.previousState = m_animationStack.front().animationState;
 		
-		Pop(); // Comment out when writing blend code. 
+		//Pop(); // Comment out when writing blend code. 
 	}
 
+	/*The animations are the same, no transition will be made.*/
 	if (clip.previousState == -1 || clip.previousState == clip.animationState)
-		m_newAnimation = false;
+	{
+		m_BlendState = BlendingStates::NO_TRANSITION;
+	}
 
+
+	/*The animations are different, smooth transition will be made.*/
 	else
-		m_newAnimation = true;
+	{
+		m_TransitionDuration = transitionTime;
+		m_BlendState = BlendingStates::SMOOTH_TRANSITION;
+	}
 		
 	clip.startFrame = GetStartFrame(animationState);
 	clip.endFrame = GetEndFrame(animationState);
@@ -263,6 +488,7 @@ void AnimationHandler::Pop()
 	{
 		std::swap(m_animationStack.front(), m_animationStack.back());
 		m_animationStack.pop_back();
+		m_animationStack.shrink_to_fit();
 	}
 }
 

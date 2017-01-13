@@ -5,6 +5,7 @@
 #include <queue>
 #include <DirectXMath.h>
 #include <vector>
+#include <map>
 #include <iostream>
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
@@ -48,6 +49,29 @@ struct AnimationClip
 	float localTime;
 };
 
+enum AnimationStates
+{
+	IDLE_STATE	=	0, 
+	WALK_STATE	=	1,
+	RUN_STATE	=	2, 
+	JUMP_STATE	=	3,
+	THROW_STATE =	4
+};
+
+enum BlendingStates
+{
+	NO_TRANSITION		=	0,
+	SMOOTH_TRANSITION	=	1,
+	FROZEN_TRANSITION	=	2
+};
+
+struct BlendKeyframe
+{
+	DirectX::XMVECTOR trans;
+	DirectX::XMVECTOR scale;
+	DirectX::XMVECTOR quat;
+};
+
 class AnimationHandler
 {
 
@@ -57,28 +81,32 @@ private:
 
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
 
-	bool m_newAnimation;
-	bool m_isComplete;
+	BlendingStates m_BlendState;
+	bool m_TransitionComplete;
 	
 	float m_globalTimeElapsed;
 	
-	float m_BlendDuration;
-	float m_BlendTimeLeft;
+	float m_TransitionDuration;
+	float m_TransitionTimeLeft;
 
 	std::vector<SkeletonTemp> m_skeletonContainer;
 
 	std::vector<const Resources::Animation::AnimationJoint*> m_animationContainer;
 
-	std::vector<DirectX::XMFLOAT4X4> m_localTransforms;
+	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
+
+	//std::vector<DirectX::XMFLOAT4X4> m_localTransforms;
 
 public: 
 
 	AnimationHandler();
 	~AnimationHandler();
 
+	void AddAnimation(int animationState, bool isLooping, float transitionTime);
+
 	void Update(float dt);
 
-	void Push(int animationState, bool newAnimation, bool isLooping, float weight);
+	void Push(int animationState, bool isLooping, float transitionTime);
 
 	void Pop();
 
@@ -89,7 +117,12 @@ public:
 	float GetStartFrame(int animationState);
 	float GetEndFrame(int animationState);
 
-	void Interpolate(AnimationClip clipA, float globalTimeElapsed);
+	void InterpolateKeys(AnimationClip animationClip, float globalTimeElapsed);
+	void ExtractBlendingKeys(AnimationClip animationClip, float globalTimeElapsed, int animIndex);
+
+	void BlendKeys(float transitionTime);
+
+	void Blend(AnimationClip clipA, AnimationClip clipB, float globalTimeElapsed);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 

@@ -285,28 +285,22 @@ int System::Update(float deltaTime)
 	/*Testing to play different animations here based on the input. Temp place right now*/
 	int animState = 0;
 
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_1))
-	{
-		animState = 0;
-	    m_AnimationHandler->Push(animState, true, true, 0);
-	}
-
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_2))
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_1))
 	{
 		animState = 1;
-		m_AnimationHandler->Push(animState, true, true, 0);
+	    m_AnimationHandler->AddAnimation(AnimationStates::WALK_STATE, true, 5);
 	}
 
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_3))
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_2))
 	{
 		animState = 2;
-		m_AnimationHandler->Push(animState, true, true, 0);
+		m_AnimationHandler->AddAnimation(AnimationStates::RUN_STATE, true, 3);
 	}
 
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_4))
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_3))
 	{
 		animState = 3;
-		m_AnimationHandler->Push(animState, true, true, 0);
+		m_AnimationHandler->AddAnimation(JUMP_STATE, false, 2);
 	}
 
 	//Update animations here. Temp place right now.
