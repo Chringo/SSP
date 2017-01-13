@@ -41,6 +41,7 @@ private:
 	std::list<AnimationPacket>	packet_Buffer_Animation;
 	std::list<StatePacket>		packet_Buffer_State;
 	std::list<CameraPacket>		packet_Buffer_Camera;
+	std::list<SyncPhysicPacket> packet_Buffer_Physic;
 
 	// Help functions
 	int		ReceiveData(unsigned int client_id, char * recvbuf);	// Recive the binary data and stores it into recvbuf
@@ -72,7 +73,8 @@ public:
 	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
 	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID);
 	NETWORKDLL_API void SendStatePacket(unsigned int entityID, bool newState);
-	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLOAT4 newRotation*/);
+	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);
+	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost);
 
 	// Mutex functions
 	NETWORKDLL_API bool PacketBuffer_isLocked();
@@ -84,6 +86,7 @@ public:
 	NETWORKDLL_API std::list<AnimationPacket>	PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
 	NETWORKDLL_API std::list<StatePacket>		PacketBuffer_GetStatePackets();			//Get all packets in packet_Buffer_State	
 	NETWORKDLL_API std::list<CameraPacket>		PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
+	NETWORKDLL_API std::list<SyncPhysicPacket>	PacketBuffer_GetPhysicPacket();			//Get all packets in packet_Buffer_Physic
 
 };
 

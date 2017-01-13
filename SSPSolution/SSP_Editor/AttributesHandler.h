@@ -2,6 +2,8 @@
 #define SSPEDITOR_UI_ATTRHANDLER_H
 #include "ui_SSP_Editor.h"
 #include <qobject.h>
+#include "Header.h"
+
 #pragma region Description
 /*
 	Author: Martin Clementson
@@ -20,17 +22,52 @@
 #pragma endregion
 
 namespace Ui {
+	enum NumericAttributes {
+		TRANSLATE = 0,
+		ROTATE,
+		SCALE,
+		NUM_NUMERIC_ATTR
+	};
+	enum VectorIndices {
+		X = 0,
+		Y,
+		Z,
+		NUM_VECTOR_INDICES
+	};
 	class AttributesHandler : QObject
 	{
+		
 		Q_OBJECT
 	private:
 		AttributesHandler();
+		QDoubleSpinBox* m_numericBoxes[NUM_NUMERIC_ATTR][NUM_VECTOR_INDICES] ;
+		QLineEdit*		m_nameBox;
+		QLabel*			m_uniqueID;
+		Container*		m_selection = nullptr;
 	public:
-
-		AttributesHandler(Ui::SSP_EditorClass* ui);
+		static AttributesHandler* GetInstance(); // Singleton
+		AttributesHandler(const Ui::SSP_EditorClass* ui);
+		void Initialize(const Ui::SSP_EditorClass* ui);
 		~AttributesHandler();
-		
+		void SetSelection(Container* selection);
+		void Deselect();
+		void UpdateSelection();
+
+	public slots:
+		void on_translate_X_changed(double val);
+		void on_translate_Y_changed(double val);
+		void on_translate_Z_changed(double val);
+
+		void on_rotation_X_changed(double val);
+		void on_rotation_Y_changed(double val);
+		void on_rotation_Z_changed(double val);
+
+		void on_scale_X_changed(double val);
+		void on_scale_Y_changed(double val);
+		void on_scale_Z_changed(double val);
+	
 	};
 }
 
 #endif
+//connect(m_ui.actionBuild_BPF, SIGNAL(triggered()), this, SLOT(on_BuildBPF_clicked()));
