@@ -335,6 +335,23 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
+NETWORKDLL_API void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+{
+	const unsigned int packet_size = sizeof(SyncPhysicPacket);
+	char packet_data[packet_size];
+
+	SyncPhysicPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = SYNC_PHYSICS;
+	packet.startIndex = startIndex;
+	packet.nrOfDynamics = nrOfDynamics;
+	packet.isHost = isHost;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
@@ -389,6 +406,7 @@ void NetworkModule::ReadMessagesFromClients()
 	AnimationPacket aP;
 	StatePacket sP;
 	CameraPacket cP;
+	SyncPhysicPacket sPP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
 	
@@ -511,6 +529,18 @@ void NetworkModule::ReadMessagesFromClients()
 			//DEBUG
 			//printf("Recived CAMERA_UPDATE packet\n");
 			
+			iter++;
+			break;
+		
+		case SYNC_PHYSICS:
+
+			sPP.deserialize(network_data);	// Read the binary data into the object
+
+			this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
+
+			//DEBUG
+			printf("Recived SYNC_PHYSICS packet\n");
+
 			iter++;
 			break;
 
@@ -707,6 +737,28 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 		{
 				result.push_back(*iter);					//We should always be able to cast since the header is correct
 				iter = this->packet_Buffer_Camera.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+NETWORKDLL_API std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
+{
+	std::list<SyncPhysicPacket> result;
+	std::list<SyncPhysicPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Physic.begin(); iter != this->packet_Buffer_Physic.end();)
+	{
+		if (iter->packet_type == UPDATE_CAMERA)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Physic.erase(iter);	//Returns the next element after the errased element
 		}
 		else
 		{

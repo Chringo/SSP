@@ -118,7 +118,7 @@ struct CameraPacket : public Packet
 
 struct SyncPhysicPacket : public Packet
 {
-	unsingned int	startIndex;
+	unsigned int	startIndex;
 	unsigned int	nrOfDynamics;
 	bool			isHost;
 
