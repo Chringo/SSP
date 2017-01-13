@@ -308,13 +308,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-
-			//te = new Player(); //TEMP! Change this to future class, such as dynamicEntity
-			//te->Initialize();
-			//t_pc->PC_AABB.ext[0] = 2;
-			//t_pc->PC_AABB.ext[1] = 2;
-			//t_pc->PC_AABB.ext[2] = 2;
-
+			
+			DynamicEntity* tde = new DynamicEntity();
+			tde->SetGraphicsComponent(t_gc);
+			tde->SetPhysicsComponent(t_pc);
+			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
+			
 		}
 
 	}
