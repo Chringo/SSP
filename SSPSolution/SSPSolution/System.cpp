@@ -223,11 +223,11 @@ int System::Update(float deltaTime)
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
-		rotateCameraY += 3;
+		rotateCameraY += 1;
 	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
 	{
-		rotateCameraY -= 3;
+		rotateCameraY -= 1;
 	}
 	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
@@ -235,8 +235,9 @@ int System::Update(float deltaTime)
 		this->m_camera->ApplyLocalTranslation(posTranslation);
 		//this->m_camera->AddToLookAt(posTranslation);
 		float rotationAmount = DirectX::XM_PI / 6;
-		rotationAmount *= deltaTime / 1000000.0f;
-		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
+		rotationAmount *= deltaTime / 10000.0f;
+		//DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
+		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY, 0.0f, rotationAmount);
 		this->m_camera->RotateCamera(newRotation);
 
 		//this->m_camera->Update();
