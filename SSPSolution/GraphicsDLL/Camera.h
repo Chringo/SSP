@@ -23,8 +23,7 @@ private:
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
-	//The 4 values of a quaternion  
-	DirectX::XMFLOAT4 m_rotation;
+	//DirectX::XMFLOAT4 m_rotation;
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
@@ -64,7 +63,7 @@ public:
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMVECTOR newLookAt);
 	GRAPHICSDLL_API void SetCameraUp(DirectX::XMFLOAT4 newCamUp);
 	GRAPHICSDLL_API void SetCameraUp(DirectX::XMVECTOR newCamUp);
-	GRAPHICSDLL_API void SetRotation(DirectX::XMFLOAT4 newRotation);
+	//GRAPHICSDLL_API void SetRotation(DirectX::XMFLOAT4 newRotation);
 	//Additional value control methods
 	GRAPHICSDLL_API void AddToCameraPos(DirectX::XMFLOAT3 applyValue);
 	GRAPHICSDLL_API void AddToLookAt(DirectX::XMFLOAT3 applyValue);
@@ -73,7 +72,10 @@ public:
 	GRAPHICSDLL_API void MultiplyLookAt(DirectX::XMFLOAT3 multiplyValue);
 	GRAPHICSDLL_API void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
 	//Warning: As the camera uses quaternion rotations and only stores these in one position this functions can only be called once after setting a rotation and before updating.
-	GRAPHICSDLL_API void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
+	//GRAPHICSDLL_API void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
+	GRAPHICSDLL_API void RotateCamera(double x, double y, double z, double angle);
+	GRAPHICSDLL_API void RotateCamera(DirectX::XMFLOAT4 rotation);
+	GRAPHICSDLL_API void RotateCamera(DirectX::XMVECTOR rotation);
 	//Sets the camera position along the rotated coordinate system of the camera
 	GRAPHICSDLL_API void SetLocalTranslation(float x, float y, float z);
 	//Translates the camera along the rotated coordinate system of the camera
@@ -85,6 +87,8 @@ public:
 	
 #pragma endregion setters
 private:
+	DirectX::XMVECTOR conjugate(DirectX::XMVECTOR quat);
+	DirectX::XMVECTOR mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
 };
 
 #endif
