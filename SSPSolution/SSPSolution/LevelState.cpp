@@ -51,6 +51,9 @@ int LevelState::ShutDown()
 		delete this->m_staticEntitys[i];
 		this->m_staticEntitys[i] = nullptr;
 	}
+
+	// Clear level director
+	this->m_director.Shutdown();
 	
 	return result;
 }
@@ -76,6 +79,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//this->m_player1.SetPhysicsComponent(tempPComp);
 	//this->m_player1.SetSpeed(0.1f);
 
+	this->m_director.Initialize();
+
 	return result;
 }
 
@@ -96,6 +101,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_staticEntitys.at(i)->Update(dt, inputHandler);
 	}
+
+	// Reactionary level director acts
+	this->m_director.Update(dt);
 
 	return result;
 }
