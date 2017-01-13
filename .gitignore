@@ -3,6 +3,7 @@ SSPSolution/packages/**
 
 # Other databases
 *.bsc
+*.sbr
 
 # Temporary compiled files
 *.idb
