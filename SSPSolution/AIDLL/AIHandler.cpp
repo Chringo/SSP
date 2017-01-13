@@ -40,19 +40,42 @@ int AIHandler::Update(float deltaTime)
 			// movement of e.g. platforms
 			int currentWaypoint = this->m_AIComponents.at(i)->m_currentWaypoint;
 			int nrOfWaypoint = this->m_AIComponents.at(i)->m_nrOfWaypoint;
+			int pattern = this->m_AIComponents.at(i)->m_pattern;
 			int time = this->m_AIComponents.at(i)->m_time;
+			int direction = this->m_AIComponents.at(i)->m_direction;
 
-			if (!currentWaypoint == 0 || !currentWaypoint == nrOfWaypoint)
+			if (pattern == 1)
 			{
-				// TODO More to behavior and types of behavior
-				time--;
+				if (currentWaypoint == 0 || currentWaypoint == nrOfWaypoint)
+				{
+					if (direction == 0)
+						this->m_AIComponents.at(i)->m_direction = 1;
+					else
+						this->m_AIComponents.at(i)->m_direction = 0;
+				}
+			}
+			else if (pattern == 3)
+			{
+				//TODO Random pattern
 			}
 			else
 			{
-				if (this->m_AIComponents.at(i)->m_direction == 0)
-					this->m_AIComponents.at(i)->m_direction = 1;
+				//Identical to pattern 2 (Circular)
+				if (direction == 0)
+				{
+					using namespace DirectX;
+
+					this->m_AIComponents.at(i)->m_waypoints[i] - this->m_AIComponents.at(i)->m_waypoints[i];
+					DirectX::XMVECTOR x;
+
+					//Should be speed dependent
+					currentWaypoint;
+					this->pos;
+				}
 				else
-					this->m_AIComponents.at(i)->m_direction = 0;
+				{
+					this->pos;
+				}
 			}
 		}
 	}
@@ -100,6 +123,11 @@ void AIHandler::SetCurrentWaypoint(int compID, int currentWaypoint)
 	this->m_AIComponents.at(compID)->m_currentWaypoint = currentWaypoint;
 }
 
+AIDLL_API void AIHandler::SetPattern(int compID, int pattern)
+{
+	this->m_AIComponents.at(compID)->m_pattern = pattern;
+}
+
 void AIHandler::SetWaypoints(int compID, DirectX::XMVECTOR waypoints[])
 {
 	for (int i = 0; i < 8; i++)
@@ -114,6 +142,11 @@ int AIHandler::GetNrOfAIComponents() const
 	return this->m_nrOfAIComponents;
 }
 
+AIDLL_API DirectX::XMVECTOR AIHandler::GetPosition(int compID) const
+{
+	return this->m_AIComponents.at(compID)->m_position;
+}
+
 AIComponent* AIHandler::CreateAIComponent(int entityID)
 {
 	AIComponent* newComponent = nullptr;
@@ -121,6 +154,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 
 	newComponent->m_active = 0;
 	newComponent->m_entityID = entityID;
+	newComponent->m_position = DirectX::XMVECTOR();
 
 	newComponent->m_triggered = false;
 	newComponent->m_time = 0;

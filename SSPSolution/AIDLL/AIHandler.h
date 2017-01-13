@@ -41,13 +41,20 @@ public:
 	AIDLL_API void SetDirection(int compID, int direction);
 	//Used as a index and to know where you are moving from	
 	AIDLL_API void SetCurrentWaypoint(int compID, int currentWaypoint);
+	//Set the pattern for the entity. (Linear = 1, Circular = 2, Random = 3)
+	AIDLL_API void SetPattern(int compID, int pattern);
 	//Set waypoints, nrOfWaypoints++
 	AIDLL_API void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
 
 	// Getters
 	AIDLL_API int GetNrOfAIComponents() const;
-	
+	//Get new position for the Object
+	AIDLL_API DirectX::XMVECTOR GetPosition(int compID) const;
+
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
+
+	DirectX::XMVECTOR pos;
+
 };
 #endif
