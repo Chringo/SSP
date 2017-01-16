@@ -1,6 +1,6 @@
 #include "GameState.h"
 #include "GameStateHandler.h"
-NetworkModule* GameState::m_networkModule = nullptr;
+//NetworkModule* GameState::m_networkModule = nullptr;
 
 GameState::GameState()
 {
@@ -33,8 +33,8 @@ int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandle
 
 	//if (this->m_networkModule == nullptr)	//If it isnt already initiated earlier
 	//{
-	//	this->m_networkModule = new NetworkModule();
-	//	this->m_networkModule->Initialize();
+	//	GameState::m_networkModule = new NetworkModule();
+	//	GameState::m_networkModule->Initialize();
 	//}
 	return result;
 }

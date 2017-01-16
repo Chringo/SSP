@@ -750,7 +750,7 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 	return result;
 }
 
-NETWORKDLL_API std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
+std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 {
 	std::list<SyncPhysicPacket> result;
 	std::list<SyncPhysicPacket>::iterator iter;

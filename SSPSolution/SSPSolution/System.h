@@ -12,6 +12,7 @@
 #include "../GraphicsDLL/Camera.h"
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
+#include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")
 /* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
@@ -29,7 +30,6 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
-
 	GameStateHandler m_gsh;
 
 	Camera* m_camera;
