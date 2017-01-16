@@ -179,7 +179,8 @@ bool SelectionHandler::PickObjectSelection()
 					bool result = false;
 					
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
-					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
+					//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, *this->m_transformWidget.GetOBBCenterPostition(), hitDistance);
 					//transformWidget.setActive(result);
 					if (result && hitDistance < minHitDistance)
 					{
@@ -248,6 +249,9 @@ void SelectionHandler::MoveObject(bool noSnap)
 		{
 			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
 				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
+			
+			this->m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] =
+				DirectX::XMVectorAdd(*m_transformWidget.GetOBBCenterPostition(), Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
 		}
 		else//snap
 		{
@@ -256,14 +260,16 @@ void SelectionHandler::MoveObject(bool noSnap)
 			if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
+				m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
 			}
 			else if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] < -1.0)
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
+				m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
 			}
 		}
 
-
+		//this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(*this->m_transformWidget.GetOBBCenterPostition()));
 		//flag instance for update
 		m_IsDirty = true;
 		instance->isDirty = true;
@@ -334,8 +340,13 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 	//	instancePtr->position.m128_f32[1],
 	//	instancePtr->position.m128_f32[2],
 	//	1.0f);
-	this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
-		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });
+	
+
+	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });*/
+	this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z }, instancePtr->position));
+
 
 
 	DirectX::XMMATRIX extensionMatrix;
