@@ -24,6 +24,8 @@ public:
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
 	int CreateLevel(LevelData::Level* data);
+
+	void LockCameraToPlayer();
 private:
 };
 

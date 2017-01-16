@@ -63,7 +63,6 @@ private:
 
 	//temporary functions
 	void LockCameraToPlayer(float translateCameraX, float translateCameraY, float translateCameraZ);
-	void CreateDummyObjects();
 };
 
 #endif

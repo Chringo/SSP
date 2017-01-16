@@ -79,12 +79,15 @@ struct ChainLink
 class PhysicsHandler
 {
 private:
-	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<PhysicsComponent*> m_physicsComponents;
 	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 
 	DirectX::XMVECTOR m_gravity;
 
+	unsigned int	m_startIndex;		// At what index to start to check colision
+	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
+	bool			m_isHost;			// isHost is to check if this client should check collision between dynamic entities
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
@@ -112,6 +115,10 @@ private:
 	void CreateDefaultBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
 	void CreateDefaultAABB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
 	void CreateDefaultOBB(const DirectX::XMVECTOR &pos, PhysicsComponent* src);
+
+	void SetStartIndex(unsigned int newStartIndex);
+	void SetNumberOfDynamics(unsigned int newNumberOfDynamics);
+	void SetIsHost(bool newIsHost);
 
 public:
 	PHYSICSDLL_API PhysicsHandler();
@@ -143,12 +150,14 @@ public:
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
-	PHYSICSDLL_API int getNrOfComponents()const;
-	PHYSICSDLL_API PhysicsComponent* getDynamicComponentAt(int index)const;
+	PHYSICSDLL_API int GetNrOfComponents()const;
+	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	PHYSICSDLL_API bool checkCollition();
+
+	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);
