@@ -48,7 +48,7 @@ private:
 protected:
 	void UnsafeSyncComponents();
 	//Returns 1 for correct and 0 for incorrect initialization.
-	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
+	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp = nullptr);
 
 };
 

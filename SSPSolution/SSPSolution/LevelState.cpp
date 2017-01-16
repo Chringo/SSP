@@ -126,7 +126,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
 	golvP->PC_friction = 0.9;
 	golvG->worldMatrix = DirectX::XMMatrixIdentity();
-	golv->Initialize(2, golvP, golvG);
+	golv->Initialize(2, golvP, golvG, nullptr);
 	this->m_staticEntitys.push_back(golv);
 
 	this->m_director.Initialize();

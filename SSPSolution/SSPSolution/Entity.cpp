@@ -104,7 +104,7 @@ int Entity::GetEntityID()
 	return this->m_entityID;
 }
 
-int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp)
+int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp)
 {
 	int result = 1;
 	this->m_isGrabbed = false;
@@ -112,5 +112,6 @@ int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsCompon
 	this->m_entityID = entityID;
 	this->m_pComp = pComp;
 	this->m_gComp = gComp;
+	this->m_aiComp = aiComp;
 	return result;
 }
