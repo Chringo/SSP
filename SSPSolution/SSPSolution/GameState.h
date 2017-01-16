@@ -3,7 +3,7 @@
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "../NetworkDLL/NetworkModule.h"
+//#include "../NetworkDLL/NetworkModule.h"
 
 
 //class NetworkModule;
