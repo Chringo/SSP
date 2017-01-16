@@ -43,6 +43,7 @@ namespace Ui {
 		QDoubleSpinBox* m_numericBoxes[NUM_NUMERIC_ATTR][NUM_VECTOR_INDICES] ;
 		QLineEdit*		m_nameBox;
 		QLabel*			m_uniqueID;
+		QCheckBox*		m_isStaticBox;
 		Container*		m_selection = nullptr;
 	public:
 		static AttributesHandler* GetInstance(); // Singleton
@@ -65,7 +66,7 @@ namespace Ui {
 		void on_scale_X_changed(double val);
 		void on_scale_Y_changed(double val);
 		void on_scale_Z_changed(double val);
-	
+		void on_isStatic_changed(int state);
 	};
 }
 

@@ -18,12 +18,12 @@
 class DataHandler
 {
 private:
-	std::vector<Resources::Model*> m_models;
-	std::vector<Resources::Mesh*>  m_meshes;
+	std::vector<Resources::Model*>	  m_models;
+	std::vector<Resources::Mesh*>	  m_meshes;
 	std::vector<Resources::Material*> m_materials;
-	Resources::TextureHandler* m_textureHandler;
 	std::unordered_map<std::string, Resources::Texture*> m_textures;
 	std::unordered_map<unsigned int, bool> loadedIds; //keeps track of all id's loaded.
+	Resources::TextureHandler* m_textureHandler;
 	DataHandler();
 public:
 	Resources::Status AddModel(Resources::Model* model);
