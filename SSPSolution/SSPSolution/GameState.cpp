@@ -1,8 +1,11 @@
 #include "GameState.h"
 #include "GameStateHandler.h"
+NetworkModule* GameState::m_networkModule = nullptr;
 
 GameState::GameState()
 {
+
+
 }
 
 
@@ -27,5 +30,11 @@ int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandle
 		this->m_cameraRef = cameraRef;
 		result = 1;
 	}
+
+	//if (this->m_networkModule == nullptr)	//If it isnt already initiated earlier
+	//{
+	//	this->m_networkModule = new NetworkModule();
+	//	this->m_networkModule->Initialize();
+	//}
 	return result;
 }

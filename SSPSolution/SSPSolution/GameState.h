@@ -4,6 +4,7 @@
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
 
+class NetworkModule;
 class GameStateHandler;
 class GameState
 {
@@ -12,6 +13,9 @@ protected:
 	GameStateHandler* m_gsh;
 	ComponentHandler* m_cHandler;
 	Camera* m_cameraRef;
+
+	static NetworkModule* m_networkModule;
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 public:
