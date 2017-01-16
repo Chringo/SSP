@@ -92,9 +92,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (SelectionHandler::GetInstance()->NeedsUpdate())
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 
-
 		GraphicsHptr->RenderBoundingVolume(
-			SelectionHandler::GetInstance()->GetSelected()->position,
+			//SelectionHandler::GetInstance()->GetSelected()->position,
+			*SelectionHandler::GetInstance()->GetOBBCenterPosition(),
 			*selectedObjectOBB,
 			*OBBColor
 		);
