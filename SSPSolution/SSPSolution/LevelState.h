@@ -14,6 +14,11 @@ class LevelState :
 private:
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
+	Player m_player2;
+
+	DirectX::XMVECTOR m_player1_Spawn;
+	DirectX::XMVECTOR m_player2_Spawn;
+
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	std::vector<StaticEntity*>	m_staticEntitys;
 public:

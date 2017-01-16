@@ -32,6 +32,7 @@ private:
 	LevelData::MainLevelHeader GetMainHeader();
 	LevelData::LevelStatus GetEntityData(char* dataPtr);
 	LevelData::LevelStatus GetResourceData(char* dataPtr);
+	LevelData::LevelStatus GetSpawnData(char* dataPtr);
 #pragma endregion
 
 #pragma region Load Functions
