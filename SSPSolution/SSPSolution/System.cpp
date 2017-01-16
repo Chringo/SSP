@@ -332,7 +332,7 @@ int System::Update(float deltaTime)
 		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
 		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
 		dir = DirectX::XMVectorScale(dir, 500);
-
+	}
 	this->m_physicsHandler.Update(deltaTime);
 
 #ifdef _DEBUG
