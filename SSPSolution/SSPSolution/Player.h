@@ -7,7 +7,10 @@ class Player :
 private:
 	//Meters per second
 	float m_speed;
+	float m_throwStrength;
+
 	Entity* m_grabbed;
+	DirectX::XMVECTOR m_carryOffset;
 
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
