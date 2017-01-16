@@ -6,6 +6,7 @@
 //Subject includes this for the events
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
+#include "../AIDLL/AIHandler.h"
 #include "ComponentHandler.h"
 class Entity :
 	public Observer
@@ -16,6 +17,7 @@ protected:
 	Subject m_subject;
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
+	AIComponent* m_aiComp;
 	int InitializeBase();
 
 public:
@@ -29,10 +31,11 @@ public:
 
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
+	AIComponent* SetAIComponent(AIComponent* aiComp);
 
 	PhysicsComponent* GetPhysicsComponent();
 	GraphicsComponent* GetGraphicComponent();
-
+	AIComponent* GetAIComponent();
 
 
 private:

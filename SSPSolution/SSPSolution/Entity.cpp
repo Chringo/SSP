@@ -31,6 +31,13 @@ GraphicsComponent* Entity::SetGraphicsComponent(GraphicsComponent * gComp)
 	return tempReturn;
 }
 
+AIComponent * Entity::SetAIComponent(AIComponent * aiComp)
+{
+	AIComponent* tempReturn = this->m_aiComp;
+	this->m_aiComp = aiComp;
+	return tempReturn;
+}
+
 PhysicsComponent * Entity::GetPhysicsComponent()
 {
 	return this->m_pComp;
@@ -39,4 +46,9 @@ PhysicsComponent * Entity::GetPhysicsComponent()
 GraphicsComponent * Entity::GetGraphicComponent()
 {
 	return this->m_gComp;
+}
+
+AIComponent * Entity::GetAIComponent()
+{
+	return this->m_aiComp;
 }
