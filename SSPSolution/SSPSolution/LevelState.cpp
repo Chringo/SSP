@@ -161,6 +161,43 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//	this->m_entities.at(i)->Update(dt, inputHandler);
 	//}
 
+
+	float yaw = inputHandler->GetMouseDelta().x;
+	float pitch = inputHandler->GetMouseDelta().y;
+	float mouseSens = 0.02;
+	float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
+
+
+	DirectX::XMFLOAT4 camUpFloat;
+	DirectX::XMFLOAT3 camPosFloat;
+	DirectX::XMFLOAT3 camTargetFloat;
+	this->m_cameraRef->GetCameraUp(camUpFloat);
+	camPosFloat = this->m_cameraRef->GetCameraPos();
+	camTargetFloat = this->m_cameraRef->GetLookAt();
+
+	DirectX::XMVECTOR rotationVector;
+
+	DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
+	DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
+	DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
+
+	DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
+
+	DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
+
+	camRight.m128_f32[3] = rotationAmount * pitch;
+	camUpVec.m128_f32[3] = rotationAmount * -yaw;
+
+	this->m_cameraRef->RotateCamera(camRight);
+	this->m_cameraRef->RotateCamera(camUpVec);
+
+	this->m_cameraRef->Update();
+
+
+
+
+
+
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
 	DirectX::XMFLOAT3 temp;
@@ -181,7 +218,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
 
-	this->LockCameraToPlayer();
+	//this->LockCameraToPlayer();
+
+
 
 	return result;
 }
