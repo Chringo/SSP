@@ -168,6 +168,19 @@ DirectX::XMVECTOR AIHandler::GetPosition(int compID) const
 	return this->m_AIComponents.at(compID)->m_position;
 }
 
+AIComponent * AIHandler::GetNextAvailableComponents()
+{
+	if (this->m_nrOfAIComponents < this->m_maxOfAIComponents)
+	{
+		this->m_nrOfAIComponents++;
+		return this->m_AIComponents[this->m_nrOfAIComponents - 1];
+	}
+	else
+	{
+		// TODO: increase vector
+	}
+}
+
 AIComponent* AIHandler::CreateAIComponent(int entityID)
 {
 	AIComponent* newComponent = nullptr;

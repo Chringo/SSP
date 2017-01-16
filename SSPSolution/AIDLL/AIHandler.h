@@ -51,6 +51,7 @@ public:
 	AIDLL_API int GetNrOfAIComponents() const;
 	//Get new position for the Object
 	AIDLL_API DirectX::XMVECTOR GetPosition(int compID) const;
+	AIDLL_API AIComponent* GetNextAvailableComponents();
 
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
