@@ -70,33 +70,36 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	//Check if player is grounded
 
-
-	//Check if the player should update its physics component
-	if (this->m_pComp->PC_entityID == 0)
+	//Check if the player CAN	 update its physics component
+	if (this->m_pComp != nullptr)
 	{
-		if (forwards != 0 || sideways != 0)
+		//Check if the player should update its physics component
+		if (this->m_pComp->PC_entityID == 0)
 		{
-			//Use those values for the player behaviour calculations
-			//Get the rotation around the Y-axis, also called the Yaw axis
-			//float yaw = this->m_pComp->rotation.y;
+			if (forwards != 0 || sideways != 0)
+			{
+				//Use those values for the player behaviour calculations
+				//Get the rotation around the Y-axis, also called the Yaw axis
+				//float yaw = this->m_pComp->rotation.y;
 
-			//Define a quaternion rotation so we can rotate the velocity vector
-			//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
-			float forwardsVel = 0.0f, sidewaysVel = 0.0f;
-			DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
-			velocity = DirectX::XMVectorScale(this->m_lookDir, m_speed * forwards);
-			velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
-			//Rotate the velocity vector
-			//velocity = DirectX::XMVector3Rotate(velocity, rotation);
-			//Add the velocity to our physicsComponent
-			this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
+				//Define a quaternion rotation so we can rotate the velocity vector
+				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
+				float forwardsVel = 0.0f, sidewaysVel = 0.0f;
+				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
+				velocity = DirectX::XMVectorScale(this->m_lookDir, m_speed * forwards);
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
+				//Rotate the velocity vector
+				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
+				//Add the velocity to our physicsComponent
+				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 
+			}
 		}
-		//Temporary fix for moving data between components
+
+		if (this->m_pComp != nullptr && this->m_gComp != nullptr)
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 	}
 
-
-	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 	//End the update
 	return result;
 }
