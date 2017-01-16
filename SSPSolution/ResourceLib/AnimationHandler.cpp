@@ -42,10 +42,10 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 	char* data = nullptr;
 	size_t size = 0;
 	
-	std::string path1 = "../ResourceLib/AssetFiles/SkelMesh1_Walking.anim";
-	std::string path2 = "../ResourceLib/AssetFiles/SkelMesh1_Jumping.anim";
-	std::string path3 = "../ResourceLib/AssetFiles/SkelMesh1_Crouching.anim";
-	std::string path4 = "../ResourceLib/AssetFiles/SkelMesh1_Kicking.anim";
+	std::string path1 = "../ResourceLib/AssetFiles/SkelMesh1_IdleState.anim";
+	std::string path2 = "../ResourceLib/AssetFiles/SkelMesh1_WalkState.anim";
+	std::string path3 = "../ResourceLib/AssetFiles/SkelMesh1_RunState.anim";
+	std::string path4 = "../ResourceLib/AssetFiles/SkelMesh1_ThrowState.anim";
 
 	std::string path[4];
 	path[0] = path1;

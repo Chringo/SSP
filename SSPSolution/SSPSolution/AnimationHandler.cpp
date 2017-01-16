@@ -53,16 +53,18 @@ void AnimationHandler::Update(float dt)
 	/*Convert the delta-time to be in seconds unit format.*/
 	float seconds = dt / 1000000;
 
-	if (!m_animationStack.empty())
-	{
-		m_animationStack.front().localTime += seconds;
-	}
-	
+	m_globalTimeElapsed += seconds;
+
 	switch (m_BlendState)
 	{
 		/*If only one animation is playing, there should be no transition.*/
 		case (BlendingStates::NO_TRANSITION):
 		{
+			if (!m_animationStack.empty())
+			{
+				m_animationStack.front().localTime += seconds;
+			}
+
 			/*If the animation reaches the last frame, either reset animation or switch to idle state.*/
 			if (m_animationStack.front().localTime >= m_animationStack.front().endFrame)
 			{
@@ -75,8 +77,9 @@ void AnimationHandler::Update(float dt)
 				else
 				{
 					/*Push the IDLE state to the stack.*/
-					Push(IDLE_STATE, true, 3);
+					Push(IDLE_STATE, true, 1);
 					m_BlendState = SMOOTH_TRANSITION;
+					break;
 				}
 			}
 
@@ -101,7 +104,7 @@ void AnimationHandler::Update(float dt)
 			/*Blending is not complete. Proceed the transition process.*/
 			else
 			{
-				Blend(m_animationStack.front(), m_animationStack.back(), m_animationStack.front().localTime);
+				Blend(seconds);
 			}
 
 			break;
@@ -124,8 +127,6 @@ void AnimationHandler::Update(float dt)
 	//	InterpolateKeys(m_animationStack.front(), m_globalTimeElapsed);
 	//}
 }
-
-
 
 void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float currentTime)
 {
@@ -167,7 +168,7 @@ void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float curren
 		/*The current time is the last keyframe.*/
 		else if (currentTime >= animationClip.endFrame)
 		{
-			int endFrame = (int)animationClip.endFrame;
+			int endFrame = animatedJoint.keyframeCount - 1;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
@@ -237,7 +238,7 @@ void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float curren
 	CalculateFinalTransform(localTransforms);
 }
 
-void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float currentTime, int animIndex)
+void AnimationHandler::ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimationClip animationClip, float currentTime, int animIndex)
 {
 	int jointCount = m_skeletonContainer.size();
 
@@ -260,9 +261,9 @@ void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float cu
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
 
-			blendKey.trans = XMLoadFloat3(&tempTrans);
-			blendKey.scale = XMLoadFloat3(&tempScale);
-			blendKey.quat = XMLoadFloat4(&tempQuat);
+			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
+			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
+			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
 
 			blendKeysPerAnimation[animIndex].push_back(blendKey);
 		}
@@ -270,15 +271,15 @@ void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float cu
 		/*The current time is the last keyframe.*/
 		else if (currentTime >= animationClip.endFrame)
 		{
-			int endFrame = (int)animationClip.endFrame;
+			int endFrame = animatedJoint.keyframeCount - 1;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
 			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
 
-			blendKey.trans = XMLoadFloat3(&tempTrans);
-			blendKey.scale = XMLoadFloat3(&tempScale);
-			blendKey.quat = XMLoadFloat4(&tempQuat);
+			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
+			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
+			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
 
 			blendKeysPerAnimation[animIndex].push_back(blendKey);
 		}
@@ -308,11 +309,11 @@ void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float cu
 
 					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
 					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
-					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
+					DirectX::XMVECTOR quat1 = DirectX::XMLoadFloat4(&tempQuat1);
 
 					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
 					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
-					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
+					DirectX::XMVECTOR quat2 = DirectX::XMLoadFloat4(&tempQuat2);
 
 					blendKey.trans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					blendKey.scale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
@@ -325,7 +326,7 @@ void AnimationHandler::ExtractBlendingKeys(AnimationClip animationClip, float cu
 	}
 }
 
-void AnimationHandler::BlendKeys(float transitionTime)
+void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime)
 {
 	std::vector<DirectX::XMFLOAT4X4> localTransforms;
 
@@ -344,11 +345,12 @@ void AnimationHandler::BlendKeys(float transitionTime)
 		DirectX::XMVECTOR quatAnim1 = blendKeysPerAnimation[0][jointIndex].quat;
 		DirectX::XMVECTOR quatAnim2 = blendKeysPerAnimation[1][jointIndex].quat;
 
-		float blendFactor = (transitionTime / (m_animationStack.front().endFrame - m_animationStack.front().startFrame));
+		float weightA = 1.0f - (transitionTime / m_TransitionDuration);
+		float weightB = transitionTime / m_TransitionDuration;
 
-		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, blendFactor);
-		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, blendFactor);
-		DirectX::XMVECTOR lerpBlendQuat = DirectX::XMQuaternionSlerp(quatAnim1, quatAnim2, blendFactor);
+		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, weightA + weightA);
+		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, weightA + weightA);
+		DirectX::XMVECTOR lerpBlendQuat = DirectX::XMQuaternionSlerp(quatAnim1, quatAnim2, weightA + weightA);
 
 		DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpBlendTrans);
 		DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpBlendScale);
@@ -360,17 +362,13 @@ void AnimationHandler::BlendKeys(float transitionTime)
 		DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 	}
 
-	blendKeysPerAnimation[0].clear();
-	blendKeysPerAnimation[0].shrink_to_fit();
-
-	blendKeysPerAnimation[1].clear();
-	blendKeysPerAnimation[1].shrink_to_fit();
-
 	CalculateFinalTransform(localTransforms);
 }
 
-void AnimationHandler::Blend(AnimationClip clipA, AnimationClip clipB, float globalTimeElapsed)
+void AnimationHandler::Blend(float secondsElapsed)
 {
+	m_TransitionTimeLeft += secondsElapsed;
+
 	/*If the transition time have reached the duration of the transition.*/
 	if (m_TransitionTimeLeft >= m_TransitionDuration)
 	{
@@ -381,7 +379,9 @@ void AnimationHandler::Blend(AnimationClip clipA, AnimationClip clipB, float glo
 	/*Transition is still proceeding. Update both animations and blend them.*/
 	else
 	{
-		blendKeysPerAnimation.resize(m_animationStack.size());
+		std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
+
+		blendKeysPerAnimation.resize(2);
 
 		for (int animClipIndex = 0; animClipIndex < m_animationStack.size(); animClipIndex++)
 		{
@@ -397,16 +397,15 @@ void AnimationHandler::Blend(AnimationClip clipA, AnimationClip clipB, float glo
 
 			else if (m_animationStack[animClipIndex].localTime > GetStartFrame(animClipIndex) && m_animationStack[animClipIndex].localTime < GetEndFrame(animClipIndex))
 			{
-				m_animationStack[animClipIndex].localTime += globalTimeElapsed;
+				m_animationStack[animClipIndex].localTime += secondsElapsed;
 			}
 
-			ExtractBlendingKeys(m_animationStack[animClipIndex], m_animationStack[animClipIndex].localTime, animClipIndex);
+			ExtractBlendingKeys(blendKeysPerAnimation, m_animationStack[animClipIndex], m_animationStack[animClipIndex].localTime, animClipIndex);
 		}
 
-		BlendKeys(m_TransitionTimeLeft);
-
 		/*Calculate the blend time with the delta-time.*/
-		m_TransitionTimeLeft += globalTimeElapsed;
+
+		BlendKeys(blendKeysPerAnimation, m_TransitionTimeLeft);
 	}
 }
 

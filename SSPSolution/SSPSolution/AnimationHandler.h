@@ -54,8 +54,7 @@ enum AnimationStates
 	IDLE_STATE	=	0, 
 	WALK_STATE	=	1,
 	RUN_STATE	=	2, 
-	JUMP_STATE	=	3,
-	THROW_STATE =	4
+	THROW_STATE =	3
 };
 
 enum BlendingStates
@@ -93,7 +92,7 @@ private:
 
 	std::vector<const Resources::Animation::AnimationJoint*> m_animationContainer;
 
-	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
+	//std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
 
 	//std::vector<DirectX::XMFLOAT4X4> m_localTransforms;
 
@@ -118,11 +117,11 @@ public:
 	float GetEndFrame(int animationState);
 
 	void InterpolateKeys(AnimationClip animationClip, float globalTimeElapsed);
-	void ExtractBlendingKeys(AnimationClip animationClip, float globalTimeElapsed, int animIndex);
+	void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimationClip animationClip, float globalTimeElapsed, int animIndex);
 
-	void BlendKeys(float transitionTime);
+	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 
-	void Blend(AnimationClip clipA, AnimationClip clipB, float globalTimeElapsed);
+	void Blend(float secondsElapsed);
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
