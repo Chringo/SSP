@@ -38,6 +38,16 @@ PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 	return newComponent;
 }
 
+AIComponent * ComponentHandler::GetAIComponent()
+{
+	AIComponent* newComp = nullptr;
+	if (this->m_aiHandler != nullptr)
+	{
+		newComp = this->m_aiHandler->GetNextAvailableComponents();
+	}
+	return newComp;
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
