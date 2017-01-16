@@ -93,7 +93,7 @@ int AIHandler::Update(float deltaTime)
 			m = DirectX::XMVectorScale(DirectX::XMVector3Normalize(v), 10); //Speed?
 			m = DirectX::XMVectorScale(m, deltaTime);
 			
-			this->m_AIComponents.at(i)->m_position = m;
+			this->m_AIComponents.at(i)->m_position = DirectX::XMVectorMultiply(m, this->m_AIComponents.at(i)->m_position);
 		}
 	}
 
