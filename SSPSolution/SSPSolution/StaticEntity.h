@@ -4,6 +4,8 @@
 class StaticEntity :
 	public Entity
 {
+private:
+	//Variables
 public:
 	StaticEntity();
 	~StaticEntity();
@@ -12,7 +14,7 @@ public:
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
-
-
+private:
+	//Functions
 };
 #endif
