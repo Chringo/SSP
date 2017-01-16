@@ -28,7 +28,7 @@ public:
 	virtual int React(int entityID, EVENT reactEvent) = 0;
 
 	//Returns 1 if synchronization was needed, -1 if physicscomponent was missing, -2 if graphicscomponent was missing, -3 if both components were missing.
-	inline int SyncComponents();
+	int SyncComponents();
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 	bool SetGrabbed(int isGrabbed);
@@ -41,7 +41,7 @@ public:
 private:
 	//Functions
 protected:
-	inline void UnsafeSyncComponents();
+	void UnsafeSyncComponents();
 	//Returns 1 for correct and 0 for incorrect initialization.
 	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
 
