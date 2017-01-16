@@ -131,7 +131,7 @@ void AIHandler::SetCurrentWaypoint(int compID, int currentWaypoint)
 	this->m_AIComponents.at(compID)->m_currentWaypoint = currentWaypoint;
 }
 
-AIDLL_API void AIHandler::SetPattern(int compID, int pattern)
+void AIHandler::SetPattern(int compID, int pattern)
 {
 	this->m_AIComponents.at(compID)->m_pattern = pattern;
 }
@@ -150,7 +150,7 @@ int AIHandler::GetNrOfAIComponents() const
 	return this->m_nrOfAIComponents;
 }
 
-AIDLL_API DirectX::XMVECTOR AIHandler::GetPosition(int compID) const
+DirectX::XMVECTOR AIHandler::GetPosition(int compID) const
 {
 	return this->m_AIComponents.at(compID)->m_position;
 }
