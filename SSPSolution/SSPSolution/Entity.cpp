@@ -39,7 +39,7 @@ int Entity::SyncComponents()
 	return result;
 }
 
-inline void Entity::UnsafeSyncComponents()
+void Entity::UnsafeSyncComponents()
 {
 	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 }
