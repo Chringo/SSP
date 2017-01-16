@@ -17,7 +17,12 @@ int DynamicEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCo
 
 int DynamicEntity::Update(float dT, InputHandler * inputHandler)
 {
-	return 0;
+	int result = 1;
+
+	//Copy the world matrix into the graphics component for rendering purposes
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+
+	return result;
 }
 
 int DynamicEntity::React(int entityID, EVENT reactEvent)
