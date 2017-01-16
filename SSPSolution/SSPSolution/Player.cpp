@@ -95,9 +95,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 			}
 		}
-
-		if (this->m_pComp != nullptr && this->m_gComp != nullptr)
-			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+		if (this->m_gComp != nullptr)
+		{
+			this->UnsafeSyncComponents();
+		}
 	}
 
 	//End the update

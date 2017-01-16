@@ -20,7 +20,7 @@ int DynamicEntity::Update(float dT, InputHandler * inputHandler)
 	int result = 1;
 
 	//Copy the world matrix into the graphics component for rendering purposes
-	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	this->SyncComponents();
 
 	return result;
 }

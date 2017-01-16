@@ -11,6 +11,39 @@ Entity::~Entity()
 {
 }
 
+int Entity::SyncComponents()
+{
+	int result = 1;
+
+	if (this->m_pComp != nullptr)
+	{
+		if (this->m_gComp != nullptr)
+		{
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+			result = 1;
+		}
+		else
+		{
+			result = -2;
+		}
+	}
+	else
+	{
+		if (this->m_gComp == nullptr)
+		{
+			result = -3;
+		}
+		result = -1;
+	}
+
+	return result;
+}
+
+inline void Entity::UnsafeSyncComponents()
+{
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+}
+
 PhysicsComponent* Entity::SetPhysicsComponent(PhysicsComponent * pComp)
 {
 	PhysicsComponent* tempReturn = this->m_pComp;
