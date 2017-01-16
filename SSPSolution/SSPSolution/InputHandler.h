@@ -36,7 +36,7 @@ private:
 public:
 	InputHandler();
 	~InputHandler();
-	void Initialize(int screenWidth, int screenHeight);
+	void Initialize(int screenWidth, int screenHeight, SDL_Window * window);
 	void Shutdown();
 	void Update();
 
@@ -61,6 +61,7 @@ public:
 	void SetMousePos(int x, int y);
 	void SetMouseWheel(int x, int y);
 	void ApplyMouseWheel(int x, int y);
+	void mouseMovement(SDL_Window * window, float &pitch, float &yaw);
 
 	DirectX::XMFLOAT2 GetMousePos();
 	DirectX::XMFLOAT2 GetMouseDelta();
