@@ -81,10 +81,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[0] = 1.5;
 	playerP->PC_AABB.ext[1] = 1.5;
 	playerP->PC_AABB.ext[2] = 1.5;
-	playerG->worldMatrix = DirectX::XMMatrixIdentity();	//FIX THIS
-	this->m_player1.Initialize();
-	this->m_player1.SetGraphicsComponent(playerG);
-	this->m_player1.SetPhysicsComponent(playerP);
+	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	this->m_player1.Initialize(0, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
@@ -94,9 +92,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 1;								//Set Entity ID
+	ballP->PC_entityID = 1;									//Set Entity ID
 	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
-	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_AABB;
@@ -105,9 +103,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[2] = 1.5;
 	ballP->PC_mass = 10;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	ball->Initialize();
-	ball->SetGraphicsComponent(ballG);
-	ball->SetPhysicsComponent(ballP);
+	ball->Initialize(1, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
 	Entity* ptr = (Entity*)ball;
@@ -131,9 +127,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
 	golvP->PC_friction = 0.9;
 	golvG->worldMatrix = DirectX::XMMatrixIdentity();
-	golv->Initialize();
-	golv->SetGraphicsComponent(golvG);
-	golv->SetPhysicsComponent(golvP);
+	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
 
 	this->m_director.Initialize();
