@@ -334,6 +334,8 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 	//	instancePtr->position.m128_f32[1],
 	//	instancePtr->position.m128_f32[2],
 	//	1.0f);
+	this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });
 
 
 	DirectX::XMMATRIX extensionMatrix;

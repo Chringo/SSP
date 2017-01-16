@@ -26,6 +26,7 @@ struct BoundingBoxHeader{
 	Vector3 position;		 //Positionen på boundingboxen
 	float extension[3];		 //Skalären
 	Vector3 extensionDir[3]; //Orto
+	Vector3 PivotPosition;
 };
 
 struct SkeletonHeader {

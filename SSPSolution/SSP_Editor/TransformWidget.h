@@ -26,6 +26,7 @@ private:
 	OBB m_axisOBB[NUM_AXIS];
 	DirectX::XMVECTOR * m_axisColors[NUM_AXIS];
 	DirectX::XMVECTOR  SelectedObjectOBBColor;
+	DirectX::XMVECTOR m_obbCenterPosition;
 	int m_selectedAxis = NONE;
 private:
 	inline void m_UpdateAxies()
@@ -48,9 +49,12 @@ public:
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
 	DirectX::XMVECTOR * GetAxisOBBpositons() { return m_axisOBBpos; };
 	DirectX::XMVECTOR * GetSelectedObjectOBBColor(){ return &SelectedObjectOBBColor; };
+	DirectX::XMVECTOR * GetOBBCenterPostition() { return &m_obbCenterPosition; };
 	OBB * GetAxisOBBs() { return m_axisOBB; };
 	OBB * GetSelectedObjectOBB() { return &m_selectedObjectOBB; };
 	int GetSelectedAxis() { return m_selectedAxis; };
+	void SetOBBCenterPosition(DirectX::XMVECTOR centerPosition) { this->m_obbCenterPosition = centerPosition; };
+
 
 	void UpdateOBB()
 	{
