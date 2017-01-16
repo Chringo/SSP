@@ -85,20 +85,20 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 
 	this->m_physicsHandler.Initialize();
+	//Initialize the AIHandler
+	this->m_AIHandler = new AIHandler();
+	this->m_AIHandler->Initialize(3);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, this->m_AIHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 	this->m_physicsHandler.SortComponents();
 	//Initialize the network module
 	this->m_networkModule.Initialize();
-	//Initialize the AIHandler with a specific number of AIComponents
-	this->m_AIHandler = new AIHandler();
-	this->m_AIHandler->Initialize(1);
 
 	//temporary floor for demonstration
 	PhysicsComponent* ptr = this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(0, 5, 40, 0), true);

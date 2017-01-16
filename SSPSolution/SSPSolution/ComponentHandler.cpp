@@ -9,12 +9,13 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr)
+	this->m_aiHandler = aiHandler;
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
 		result = 0;
 	return result;
 }
