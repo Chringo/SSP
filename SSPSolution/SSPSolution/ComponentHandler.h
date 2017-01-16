@@ -1,7 +1,6 @@
 #ifndef SSPAPPLICATION_COMPONENTHANDLER_H
 #define SSPAPPLICATION_COMPONENTHANDLER_H
 
-#include "../GraphicsDLL/GraphicsHandler.h"
 //#include "ComponentStructs.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
