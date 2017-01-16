@@ -13,11 +13,12 @@ Player::~Player()
 {
 }
 
-int Player::Initialize()
-{
-	this->InitializeBase();
 
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+{
 	int result = 0;
+
+	this->InitializeBase(entityID, pComp, gComp);
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);

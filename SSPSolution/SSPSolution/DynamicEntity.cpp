@@ -8,9 +8,10 @@ DynamicEntity::~DynamicEntity()
 {
 }
 
-int DynamicEntity::Initialize()
+
+int DynamicEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
 {
-	this->InitializeBase();
+	this->InitializeBase(entityID, pComp, gComp);
 	return 0;
 }
 
