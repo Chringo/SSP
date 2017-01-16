@@ -32,13 +32,12 @@ int AIHandler::Initialize(int nrOfAIComponents)
 }
 int AIHandler::Update(float deltaTime)
 {
-	using namespace DirectX;
-
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents.at(i)->m_active && this->m_AIComponents.at(i)->m_triggered)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
+			DirectX::XMVECTOR pos = this->m_AIComponents.at(i)->m_position;
 			int currentWaypoint = this->m_AIComponents.at(i)->m_currentWaypoint;
 			int nrOfWaypoint = this->m_AIComponents.at(i)->m_nrOfWaypoint;
 			int pattern = this->m_AIComponents.at(i)->m_pattern;
@@ -84,7 +83,17 @@ int AIHandler::Update(float deltaTime)
 				}
 			}
 
-			//TODO Update position
+			//Update position
+			DirectX::XMVECTOR v;
+			v = DirectX::XMVectorSubtract(
+				this->m_AIComponents.at(i)->m_waypoints[this->m_AIComponents.at(i)->m_nextWaypoint],
+				pos);
+
+			DirectX::XMVECTOR m;
+			m = DirectX::XMVectorScale(DirectX::XMVector3Normalize(v), 10); //Speed?
+			m = DirectX::XMVectorScale(m, deltaTime);
+			
+			this->m_AIComponents.at(i)->m_position = m;
 		}
 	}
 
