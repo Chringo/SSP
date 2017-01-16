@@ -99,8 +99,6 @@ LevelData::LevelStatus LevelHandler::NewLevel()
 	return LevelData::LevelStatus::L_OK;
 }
 
-
-
 std::string LevelHandler::GetFilePathAndName(Operation flag)
 {
 	if (flag == Operation::SAVE)
