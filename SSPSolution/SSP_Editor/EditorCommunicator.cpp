@@ -107,6 +107,11 @@ Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int i
 	return m_currentLevel->UpdateModel(modelID, instanceID, position, rotation);
 }
 
+Resources::Status Communicator::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+{
+	return m_currentLevel->UpdateSpawnPoint( instanceID, position, rotation);
+}
+
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
 {
 	return m_currentLevel->RemoveModel(modelID, instanceID);
