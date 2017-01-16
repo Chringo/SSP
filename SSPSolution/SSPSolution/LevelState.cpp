@@ -205,16 +205,25 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::Status st = Resources::ST_OK;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
-	m_player1.GetPhysicsComponent()->PC_pos =
-		DirectX::XMVectorSet(
-			data->spawns[0].position[0],
-			data->spawns[0].position[1],
-			data->spawns[0].position[2], 
-			0);
-	//memcpy(pos.m128_f32, data->spawns[0].position, sizeof(float) * 3);
-	//m_player1.GetGraphicComponent()->worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
-		//For each entity in level
-		
+	
+
+
+	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
+		data->spawns[0].position[0],
+		data->spawns[0].position[1],
+		data->spawns[0].position[2],
+		0);
+
+	m_player2_Spawn = DirectX::XMVectorSet(	//Store spawnPoint for player 2
+		data->spawns[1].position[0],
+		data->spawns[1].position[1],
+		data->spawns[1].position[2],
+		0);
+
+
+
+	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
