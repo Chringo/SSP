@@ -2,12 +2,6 @@
 
 
 
-int Entity::InitializeBase()
-{
-	this->m_subject = Subject();
-	return 0;
-}
-
 Entity::Entity()
 {
 }
@@ -31,6 +25,20 @@ GraphicsComponent* Entity::SetGraphicsComponent(GraphicsComponent * gComp)
 	return tempReturn;
 }
 
+bool Entity::SetGrabbed(int isGrabbed)
+{
+	bool lastValue = this->m_isGrabbed;
+	this->m_isGrabbed = isGrabbed;
+	return lastValue;
+}
+
+int Entity::SetEntityID(int entityID)
+{
+	int lastValue = this->m_entityID;
+	this->m_entityID = entityID;
+	return lastValue;
+}
+
 PhysicsComponent * Entity::GetPhysicsComponent()
 {
 	return this->m_pComp;
@@ -39,4 +47,25 @@ PhysicsComponent * Entity::GetPhysicsComponent()
 GraphicsComponent * Entity::GetGraphicComponent()
 {
 	return this->m_gComp;
+}
+
+bool Entity::GetGrabbed()
+{
+	return this->m_isGrabbed;
+}
+
+int Entity::GetEntityID()
+{
+	return this->m_entityID;
+}
+
+int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp)
+{
+	int result = 1;
+	this->m_isGrabbed = false;
+	this->m_subject = Subject();
+	this->m_entityID = entityID;
+	this->m_pComp = pComp;
+	this->m_gComp = gComp;
+	return result;
 }
