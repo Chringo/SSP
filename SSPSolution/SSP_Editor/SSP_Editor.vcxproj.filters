@@ -73,9 +73,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_RenderWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="RenderWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EditorInputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -124,6 +121,9 @@
     <ClCompile Include="..\ResourceLib\TextureLoader\DDSTextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3DRenderWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -135,14 +135,14 @@
     <CustomBuild Include="SSP_Editor.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="RenderWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="AssetTreeHandler.h">
       <Filter>Header Files\UI</Filter>
     </CustomBuild>
     <CustomBuild Include="AttributesHandler.h">
       <Filter>Header Files\UI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D3DRenderWidget.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
