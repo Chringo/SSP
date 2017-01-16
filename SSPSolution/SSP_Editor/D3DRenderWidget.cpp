@@ -146,7 +146,7 @@ void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 
 	//get the desired values from EditorCommunicator
 	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->detectInput(this->m_frameTime, evt);
+	//EditorInputHptr->detectInput(this->m_frameTime, evt);
 	EditorInputHptr->keyReleased(evt);
 }
 
