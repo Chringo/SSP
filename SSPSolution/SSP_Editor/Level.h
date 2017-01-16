@@ -49,9 +49,11 @@ public:
 	unsigned int GetNumEntities();
 	unsigned int GetNumLights();
 	Container* GetSpawnPoint(int index);
+	
 	const std::string* GetName() { return &levelName; };
 	void SetName(std::string& newName) { this->levelName = newName; };
 	void Destroy(); //Clears the whole level, This is used when a new scene is loaded
+	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
 };
 
 #endif

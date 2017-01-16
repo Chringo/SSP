@@ -265,3 +265,14 @@ void Level::Destroy()
 	m_SpawnPoints[1].isDirty = true;
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
 }
+
+void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
+{
+
+	if (index != 0 && index != 1)
+		return;
+
+	m_SpawnPoints[index].position = DirectX::XMVectorSet(data.position[0], data.position[1], data.position[2], 0.0);
+	m_SpawnPoints[index].rotation = DirectX::XMVectorSet(data.rotation[0], data.rotation[1], data.rotation[2], 0.0);
+	m_SpawnPoints[index].isDirty = true;
+}
