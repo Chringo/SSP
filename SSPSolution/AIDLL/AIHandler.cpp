@@ -178,9 +178,11 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	newComponent->m_position = DirectX::XMVECTOR();
 
 	newComponent->m_triggered = false;
+	newComponent->m_pattern = 0;
 	newComponent->m_time = 0;
 	newComponent->m_speed = 0;
 	newComponent->m_direction = 0;
+	newComponent->m_nextWaypoint = 0;
 	newComponent->m_currentWaypoint = 0;
 	newComponent->m_nrOfWaypoint = 0;
 
@@ -214,13 +216,6 @@ bool AIHandler::WaypointApprox(int compID)
 
 int AIHandler::GetNextWaypoint(int compID, int pattern)
 {
-	/*const int ARR_LEN = 10;
-
-	int arr[ARR_LEN] = { 0,1,2,3,4,5,6,7,8,9 };
-
-	for (int i = 0; i < ARR_LEN * 2; ++i)
-	cout << arr[i % ARR_LEN] << " ";*/
-
 	int next = this->m_AIComponents.at(compID)->m_currentWaypoint;
 	int current = this->m_AIComponents.at(compID)->m_nextWaypoint;
 
@@ -230,7 +225,7 @@ int AIHandler::GetNextWaypoint(int compID, int pattern)
 	}
 	else
 	{
-		//if (this->m_AIComponents.at(compID)->m_nrOfWaypoint)
+
 	}
 
 	if (next == current)
@@ -240,8 +235,6 @@ int AIHandler::GetNextWaypoint(int compID, int pattern)
 
 	this->m_AIComponents.at(compID)->m_currentWaypoint;
 	this->m_AIComponents.at(compID)->m_direction;
-
-	//this->m_AIComponents.at(compID)->m_waypoints[i];
 
 	return 0;
 }
