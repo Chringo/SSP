@@ -11,26 +11,51 @@
 #include <DirectXMath.h>
 #include <vector>
 
-class AIDLL_API AIHandler
+class AIHandler
 {
-private:	// Variables
+private:
 	std::vector<AIComponent*> m_AIComponents;
 	int m_nrOfAIComponents;
 
 public:
-	AIHandler();
-	~AIHandler();
-	int Shutdown();
+	AIDLL_API AIHandler();
+	AIDLL_API ~AIHandler();
+	AIDLL_API int Shutdown();
 
-	int Initialize(int nrOfAIComponents);
-	int Update(float deltaTime);
+	AIDLL_API int Initialize(int nrOfAIComponents);
+	AIDLL_API int Update(float deltaTime);
 
 	// Setters
+	AIDLL_API void SetComponentActive(int compID);
+	AIDLL_API void SetComponentFalse(int compID);
+
+	//Entity ID
+	AIDLL_API void SetEntityID(int compID, int entityID);
+	//Active in-game
+	AIDLL_API void SetTriggered(int compID, bool triggered);
+	//Time limited activity
+	AIDLL_API void SetTime(int compID, int time);
+	//Speed for AI movement calculation
+	AIDLL_API void SetSpeed(int compID, int speed);
+	//Direction between waypoints for logic
+	AIDLL_API void SetDirection(int compID, int direction);
+	//Used as a index and to know where you are moving from	
+	AIDLL_API void SetCurrentWaypoint(int compID, int currentWaypoint);
+	//Set the pattern for the entity. (Linear = 1, Circular = 2, Random = 3)
+	AIDLL_API void SetPattern(int compID, int pattern);
+	//Set waypoints, nrOfWaypoints++
+	AIDLL_API void SetWaypoints(int compID, DirectX::XMVECTOR waypoints[]);
 
 	// Getters
-	int getNrOfAIComponents() const;
-	
+	AIDLL_API int GetNrOfAIComponents() const;
+	//Get new position for the Object
+	AIDLL_API DirectX::XMVECTOR GetPosition(int compID) const;
+
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
+
+	DirectX::XMVECTOR pos;
+	DirectX::XMVECTOR dirVector;
+
 };
 #endif

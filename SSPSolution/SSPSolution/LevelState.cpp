@@ -51,6 +51,9 @@ int LevelState::ShutDown()
 		delete this->m_staticEntitys[i];
 		this->m_staticEntitys[i] = nullptr;
 	}
+
+	// Clear level director
+	this->m_director.Shutdown();
 	
 	return result;
 }
@@ -133,6 +136,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golv->SetPhysicsComponent(golvP);
 	this->m_staticEntitys.push_back(golv);
 
+	this->m_director.Initialize();
+
 	return result;
 }
 
@@ -183,6 +188,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	//this->LockCameraToPlayer();
+
+	// Reactionary level director acts
+	this->m_director.Update(dt);
 
 	return result;
 }

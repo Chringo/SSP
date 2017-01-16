@@ -45,7 +45,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
-	char* modelData = new char[modelSize];					//Allocate for modelEntity data
+	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
 	file.write(modelData, modelSize);						//Write all modelEntities
 
@@ -102,8 +102,6 @@ LevelData::LevelStatus LevelHandler::NewLevel()
 	this->m_currentLevel.Destroy();
 	return LevelData::LevelStatus::L_OK;
 }
-
-
 
 std::string LevelHandler::GetFilePathAndName(Operation flag)
 {
