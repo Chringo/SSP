@@ -57,8 +57,5 @@ private:	// Helper functions
 	int GetNextWaypoint(int compID, int pattern);
 	float VectorLength(DirectX::XMVECTOR v);
 
-	DirectX::XMVECTOR pos;
-	DirectX::XMVECTOR dirVector;
-
 };
 #endif
