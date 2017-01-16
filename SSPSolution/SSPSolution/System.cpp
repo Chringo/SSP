@@ -96,12 +96,7 @@ int System::Initialize()
 	//Initialize the network module
 	this->m_networkModule.Initialize();
 
-	//temporary floor for demonstration
-	PhysicsComponent* ptr = this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(0, 5, 40, 0), true);
-	ptr->PC_AABB.ext[0] = 10;
-	ptr->PC_AABB.ext[1] = 1;
-	ptr->PC_AABB.ext[2] = 10;
-	ptr->PC_BVtype = BV_AABB;
+
 
 	//this->m_Anim = new Animation();
 
@@ -347,6 +342,18 @@ int System::Update(float deltaTime)
 			Plane* planeHolder = nullptr;
 			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
 			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+		}
+		if (temp->PC_BVtype == BV_Sphere)
+		{
+			Sphere* sphereHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+			AABB test;
+			test.ext[0] = sphereHolder->radius;
+			test.ext[1] = sphereHolder->radius;
+			test.ext[2] = sphereHolder->radius;
+			AABB* ptr = &test;
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 		}
 	}
 #endif // _DEBUG
