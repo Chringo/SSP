@@ -114,7 +114,6 @@ Resources::Status Level::AddModelEntity(unsigned int modelID, unsigned int insta
 	newComponent.isDirty = true;
 
 
-
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
 		this->m_ModelMap[modelID].push_back(newComponent);
 		this->m_uniqueModels.push_back(modelID);

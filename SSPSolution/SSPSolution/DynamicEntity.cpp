@@ -10,6 +10,7 @@ DynamicEntity::~DynamicEntity()
 
 int DynamicEntity::Initialize()
 {
+	this->InitializeBase();
 	return 0;
 }
 

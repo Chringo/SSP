@@ -46,6 +46,11 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_nameBox = ui->lineEdit;
 
 	m_uniqueID = ui->uniqueIDLabel;
+
+	m_isStaticBox = ui->isStaticCheck;
+	connect(ui->isStaticCheck, SIGNAL(stateChanged(int)), this, SLOT(on_isStatic_changed(int)));
+
+	
 }
 
 Ui::AttributesHandler::~AttributesHandler()
@@ -73,6 +78,9 @@ void Ui::AttributesHandler::SetSelection(Container * selection)
 		m_nameBox->setText("oops");
 		
 		m_uniqueID->setText(QString::number(selection->internalID));
+	
+		m_isStaticBox->setChecked(m_selection->isStatic);
+	
 	}
 
 }
@@ -164,4 +172,20 @@ void Ui::AttributesHandler::on_scale_Y_changed(double val)
 void Ui::AttributesHandler::on_scale_Z_changed(double val)
 {
 	if (m_selection != nullptr) {}
+}
+
+void Ui::AttributesHandler::on_isStatic_changed(int state)
+{
+	if (m_selection != nullptr)
+	{
+		switch (Qt::CheckState(state)) {
+
+		case Qt::Unchecked:
+			m_selection->isStatic = false;
+			break;
+		case Qt::Checked:
+			m_selection->isStatic = true;
+			break;
+		}
+	}
 }

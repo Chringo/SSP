@@ -51,6 +51,9 @@ int LevelState::ShutDown()
 		delete this->m_staticEntitys[i];
 		this->m_staticEntitys[i] = nullptr;
 	}
+
+	// Clear level director
+	this->m_director.Shutdown();
 	
 	return result;
 }
@@ -78,6 +81,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[0] = 1.5;
 	playerP->PC_AABB.ext[1] = 1.5;
 	playerP->PC_AABB.ext[2] = 1.5;
+	playerG->worldMatrix = DirectX::XMMatrixIdentity();	//FIX THIS
 	this->m_player1.Initialize();
 	this->m_player1.SetGraphicsComponent(playerG);
 	this->m_player1.SetPhysicsComponent(playerP);
@@ -99,11 +103,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[1] = 1.5;
 	ballP->PC_AABB.ext[2] = 1.5;
 	ballP->PC_mass = 10;
+	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize();
 	ball->SetGraphicsComponent(ballG);
 	ball->SetPhysicsComponent(ballP);
 	this->m_dynamicEntitys.push_back(ball);
-
 
 	Entity* ptr = (Entity*)ball;
 	this->m_player1.SetGrabbed(ball);
@@ -125,10 +129,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvP->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
 	golvP->PC_friction = 0.9;
+	golvG->worldMatrix = DirectX::XMMatrixIdentity();
 	golv->Initialize();
 	golv->SetGraphicsComponent(golvG);
 	golv->SetPhysicsComponent(golvP);
 	this->m_staticEntitys.push_back(golv);
+
+	this->m_director.Initialize();
 
 	return result;
 }
@@ -180,6 +187,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	this->LockCameraToPlayer();
+
+	// Reactionary level director acts
+	this->m_director.Update(dt);
 
 	return result;
 }
@@ -308,13 +318,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-
-			//te = new Player(); //TEMP! Change this to future class, such as dynamicEntity
-			//te->Initialize();
-			//t_pc->PC_AABB.ext[0] = 2;
-			//t_pc->PC_AABB.ext[1] = 2;
-			//t_pc->PC_AABB.ext[2] = 2;
-
+			
+			DynamicEntity* tde = new DynamicEntity();
+			tde->SetGraphicsComponent(t_gc);
+			tde->SetPhysicsComponent(t_pc);
+			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
+			
 		}
 
 	}

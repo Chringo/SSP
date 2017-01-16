@@ -13,9 +13,11 @@ class Entity :
 private:
 protected:
 	int m_entityID;
-	Subject* m_subject;
+	Subject m_subject;
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
+	int InitializeBase();
+
 public:
 	Entity();
 	virtual ~Entity();
