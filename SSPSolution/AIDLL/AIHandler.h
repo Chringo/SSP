@@ -53,6 +53,9 @@ public:
 
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
+	bool WaypointApprox(int compID);
+	int GetNextWaypoint(int compID, int pattern);
+	float VectorLength(DirectX::XMVECTOR v);
 
 	DirectX::XMVECTOR pos;
 	DirectX::XMVECTOR dirVector;

@@ -16,6 +16,7 @@ __declspec(align(16)) struct AIComponent
 	int m_time;
 	int m_speed;
 	int m_direction;
+	int m_nextWaypoint;
 	int m_currentWaypoint;
 	int m_nrOfWaypoint;
 

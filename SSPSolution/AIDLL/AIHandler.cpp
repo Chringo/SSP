@@ -64,6 +64,13 @@ int AIHandler::Update(float deltaTime)
 				//Identical to pattern 2 (Circular)
 				if (direction == 0)
 				{
+					/*const int ARR_LEN = 10;
+
+					int arr[ARR_LEN] = { 0,1,2,3,4,5,6,7,8,9 };
+
+					for (int i = 0; i < ARR_LEN * 2; ++i)
+						cout << arr[i % ARR_LEN] << " ";*/
+
 					XMVECTOR waypointTo = this->m_AIComponents.at(i)->m_waypoints[i];
 					XMVECTOR waypointFrom = this->m_AIComponents.at(i)->m_waypoints[i];
 
@@ -171,4 +178,64 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	}
 
 	return newComponent;
+}
+
+bool AIHandler::WaypointApprox(int compID)
+{
+	using namespace DirectX;
+
+	int next = this->m_AIComponents.at(compID)->m_currentWaypoint;
+	int current = this->m_AIComponents.at(compID)->m_nextWaypoint;
+
+	DirectX::XMVECTOR v = DirectX::XMVectorSubtract(this->m_AIComponents.at(compID)->m_waypoints[next]
+		,this->m_AIComponents.at(compID)->m_waypoints[current]);
+
+	float length = VectorLength(v);
+
+	if (length > 0.1)
+	{	
+		return true;
+	}
+
+	return false;
+}
+
+int AIHandler::GetNextWaypoint(int compID, int pattern)
+{
+	/*const int ARR_LEN = 10;
+
+	int arr[ARR_LEN] = { 0,1,2,3,4,5,6,7,8,9 };
+
+	for (int i = 0; i < ARR_LEN * 2; ++i)
+	cout << arr[i % ARR_LEN] << " ";*/
+
+	int next = this->m_AIComponents.at(compID)->m_currentWaypoint;
+	int current = this->m_AIComponents.at(compID)->m_nextWaypoint;
+
+	if (pattern == 1)
+	{
+		//TODO Linear pattern next waypoint logic
+	}
+	else
+	{
+		//if (this->m_AIComponents.at(compID)->m_nrOfWaypoint)
+	}
+
+	if (next == current)
+	{
+
+	}
+
+	this->m_AIComponents.at(compID)->m_currentWaypoint;
+	this->m_AIComponents.at(compID)->m_direction;
+
+	//this->m_AIComponents.at(compID)->m_waypoints[i];
+
+	return 0;
+}
+
+float AIHandler::VectorLength(DirectX::XMVECTOR v)
+{
+	float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(v));
+	return length;
 }
