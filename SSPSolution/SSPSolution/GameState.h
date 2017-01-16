@@ -1,6 +1,5 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATE_H
-#pragma once
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
