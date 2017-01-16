@@ -38,18 +38,25 @@ int LevelState::ShutDown()
 {
 
 	int result = 1;
-	// Clear the dynamic entitys
+	// Clear the dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
 		delete this->m_dynamicEntitys[i];
 		this->m_dynamicEntitys[i] = nullptr;
 	}
 	
-	// Clear the static entitys
+	// Clear the static entities
 	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
 	{
 		delete this->m_staticEntitys[i];
 		this->m_staticEntitys[i] = nullptr;
+	}
+
+	//Clear the puzzle entities
+	for (size_t i = 0; i < this->m_puzzleElements.size(); i++)
+	{
+		delete this->m_puzzleElements[i];
+		this->m_puzzleElements[i] = nullptr;
 	}
 
 	// Clear level director

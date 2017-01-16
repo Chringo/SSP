@@ -16,6 +16,7 @@ private:
 	Player m_player1;
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	std::vector<StaticEntity*>	m_staticEntitys;
+	std::vector<Entity*> m_puzzleElements;
 public:
 	LevelState();
 	virtual ~LevelState();
