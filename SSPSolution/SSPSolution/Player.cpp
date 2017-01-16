@@ -50,21 +50,21 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
-		//assumes grabbedis ALWAYS the ball and never nullptr
+		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			float strenght = 1.5f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1.5, 0, 0)), strenght);
+			float strength = 1.5f;
+			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1.5f, 0, 0)), strength);
 		}
 
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_I))
 	{
-		//assumes grabbedis ALWAYS the ball and never nullptr
+		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			float strenght = 1.5f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strenght);
+			float strength = 1.5f;
+			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 		}
 
 	}
@@ -108,9 +108,11 @@ int Player::React(int entityID, EVENT reactEvent)
 	return result;
 }
 
-void Player::SetGrabbed(Entity * ptr)
+Entity* Player::SetGrabbed(Entity * entityPtr)
 {
-	this->m_grabbed = ptr;
+	Entity* oldValue = this->m_grabbed;
+	this->m_grabbed = entityPtr;
+	return oldValue;
 }
 
 float Player::SetSpeed(float speed)
@@ -120,17 +122,43 @@ float Player::SetSpeed(float speed)
 	return oldSpeed;
 }
 
-void Player::SetLookDir(DirectX::XMVECTOR lookDir)
+DirectX::XMVECTOR Player::SetLookDir(DirectX::XMVECTOR lookDir)
 {
+	DirectX::XMVECTOR oldValue = this->m_lookDir;
 	this->m_lookDir = lookDir;
+	return oldValue;
 }
 
-void Player::SetUpDir(DirectX::XMVECTOR upDir)
+DirectX::XMVECTOR Player::SetUpDir(DirectX::XMVECTOR upDir)
 {
+	DirectX::XMVECTOR oldValue = this->m_upDir;
 	this->m_upDir = upDir;
+	return oldValue;
 }
 
-void Player::SetRightDir(DirectX::XMVECTOR rightDir)
+DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 {
+	DirectX::XMVECTOR oldValue = this->m_rightDir;
 	this->m_rightDir = rightDir;
+	return oldValue;
+}
+
+float Player::GetSpeed()
+{
+	return this->m_speed;
+}
+
+DirectX::XMVECTOR Player::GetLookDir()
+{
+	return this->m_lookDir;
+}
+
+DirectX::XMVECTOR Player::GetUpDir()
+{
+	return this->m_upDir;
+}
+
+DirectX::XMVECTOR Player::GetRightDir()
+{
+	return this->m_rightDir;
 }

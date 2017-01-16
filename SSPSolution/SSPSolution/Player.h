@@ -24,13 +24,18 @@ public:
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
-	void SetGrabbed(Entity* ptr);
-
-	//Returns the old speed
+	//Returns the old value
+	Entity* SetGrabbed(Entity* entityPtr);
 	float SetSpeed(float speed);
-	void SetLookDir(DirectX::XMVECTOR lookDir);
-	void SetUpDir(DirectX::XMVECTOR upDir);
-	void SetRightDir(DirectX::XMVECTOR rightDir);
+	DirectX::XMVECTOR SetLookDir(DirectX::XMVECTOR lookDir);
+	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
+	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
+
+
+	float GetSpeed();
+	DirectX::XMVECTOR GetLookDir();
+	DirectX::XMVECTOR GetUpDir();
+	DirectX::XMVECTOR GetRightDir();
 private:
 
 };
