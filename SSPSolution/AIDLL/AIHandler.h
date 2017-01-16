@@ -16,13 +16,14 @@ class AIHandler
 private:
 	std::vector<AIComponent*> m_AIComponents;
 	int m_nrOfAIComponents;
+	int m_maxOfAIComponents;
 
 public:
 	AIDLL_API AIHandler();
 	AIDLL_API ~AIHandler();
 	AIDLL_API int Shutdown();
 
-	AIDLL_API int Initialize(int nrOfAIComponents);
+	AIDLL_API int Initialize(int maxOfAIComponents);
 	AIDLL_API int Update(float deltaTime);
 
 	// Setters

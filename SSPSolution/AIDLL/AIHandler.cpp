@@ -14,16 +14,20 @@ int AIHandler::Shutdown()
 	return SUCCESS;
 }
 
-int AIHandler::Initialize(int nrOfAIComponents)
+int AIHandler::Initialize(int max)
 {
 	this->m_nrOfAIComponents = 0;
 
-	if (nrOfAIComponents < 0)
-		return FAIL;
+	if (max < 0)
+	{
+		// temp
+		m_maxOfAIComponents = 3;
+		//return FAIL;
+	}
 	
-	this->m_nrOfAIComponents = nrOfAIComponents;
+	this->m_maxOfAIComponents = max;
 
-	for (int i = 0; i < this->m_nrOfAIComponents; i++)
+	for (int i = 0; i < this->m_maxOfAIComponents; i++)
 	{
 		m_AIComponents.push_back(CreateAIComponent(i));
 	}
