@@ -184,6 +184,16 @@ bool SelectionHandler::PickObjectSelection()
 					//transformWidget.setActive(result);
 					if (result && hitDistance < minHitDistance)
 					{
+						DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
+							m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
+							m_modelPtr->at(i)->GetOBBData().position.z });
+
+						tempPos = tempPos * InstancePtr->at(j).component.worldMatrix;
+						this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);
+
+						/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
+							m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
+							m_modelPtr->at(i)->GetOBBData().position.z }, InstancePtr->at(j).position));*/
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
 						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
@@ -274,6 +284,7 @@ void SelectionHandler::MoveObject(bool noSnap)
 		m_IsDirty = true;
 		instance->isDirty = true;
 		Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->UpdateSelection();
+		
 	}
 
 }
@@ -344,8 +355,8 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 
 	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
 		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });*/
-	this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
-		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z }, instancePtr->position));
+	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z }, instancePtr->position));*/
 
 
 
