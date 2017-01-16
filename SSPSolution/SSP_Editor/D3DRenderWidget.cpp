@@ -89,7 +89,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	for (size_t i = 0; i < 2; i++)
 	{
 		Container* spawn =  m_Communicator->GetCurrentLevel()->GetSpawnPoint(i);
-		this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+		this->m_Communicator->GetGraphicsHandler()->RenderFromEditor(
 			spawn->component.modelPtr,
 			&spawn->component);
 

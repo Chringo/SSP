@@ -230,8 +230,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		//Create GraphicsComponent
 		GraphicsComponent* t_gc = m_cHandler->GetGraphicsComponent();
-		t_gc->modelID = currEntity->modelID;
-		t_gc->active = true;
+		t_gc->modelID			= currEntity->modelID;
+		t_gc->active			= true;
 		resHandler->GetModel(t_gc->modelID, t_gc->modelPtr); //Get and apply a pointer to the model
 		//Create world matrix from data
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
@@ -248,11 +248,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		//Create Physics component
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_entityID  = currEntity->EntityID;		//Set Entity ID
-		t_pc->PC_pos	   = pos;						//Set Position
-		t_pc->PC_rotation  = rot;						//Set Rotation
-		t_pc->PC_is_Static = currEntity->isStatic;		//Set IsStatic
-		t_pc->PC_active    = true;						//Set Active
+		t_pc->PC_entityID	   = currEntity->EntityID;		//Set Entity ID
+		t_pc->PC_pos		   = pos;						//Set Position
+		t_pc->PC_rotation	   = rot;						//Set Rotation
+		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
+		t_pc->PC_active		   = true;						//Set Active
 
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 #ifdef _DEBUG

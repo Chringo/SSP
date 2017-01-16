@@ -81,6 +81,12 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
 	file.seekg(resSize, std::ios_base::cur);									  //Skip the resource data (only used by the game engine)
 	
+	//Spawn Points
+	LevelData::SpawnHeader spawns[2];
+	file.read((char*)spawns, sizeof(LevelData::SpawnHeader) * 2);
+	m_currentLevel.SetSpawnPoint(spawns[0], 0);
+	m_currentLevel.SetSpawnPoint(spawns[1], 1);
+
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
 	char* modelData = new char[modelSize];										  //allocate for the entities
