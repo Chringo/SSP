@@ -52,6 +52,8 @@ public:
 	Resources::Status GetComponent(unsigned int modelID, unsigned int instanceID, Container& container);
 	Resources::Status AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	void ViewPortChanged(float height, float width);
 	Level* GetCurrentLevel() { return m_currentLevel; };

@@ -10,7 +10,6 @@ struct Vector3{
 struct Vector4{
 	float x, y, z, w;
 };
-
 struct MainHeader{
 	unsigned int id;
 	int resourceType;
@@ -30,7 +29,7 @@ struct BoundingBoxHeader{
 };
 
 struct SkeletonHeader {
-	unsigned int jointCount = 0;
+	unsigned int jointCount		= 0;
 	unsigned int animLayerCount = 0;
 };
 struct LayerIdHeader{

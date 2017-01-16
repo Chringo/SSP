@@ -23,7 +23,7 @@ InputHandler::~InputHandler()
 	this->Shutdown();
 }
 
-void InputHandler::Initialize(int screenWidth, int screenHeight)
+void InputHandler::Initialize(int screenWidth, int screenHeight, SDL_Window * window)
 {
 	this->m_mouseX = 0;
 	this->m_mouseY = 0;
@@ -40,6 +40,9 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
+
+	SDL_WarpMouseInWindow(window, m_screenWidth/2, m_screenHeight/2);
+	
 	return;
 }
 
@@ -245,6 +248,26 @@ void InputHandler::ApplyMouseWheel(int x, int y)
 	this->m_mouseWheelY += y;
 	return;
 }
+
+void InputHandler::mouseMovement(SDL_Window * window, float &pitch, float &yaw)
+{
+	int tmpx, tmpy;
+	float mouseSens = 0.02;
+
+	int midx = this->m_screenWidth / 2;
+	int midy = this->m_screenHeight / 2;
+
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_GetMouseState(&tmpx, &tmpy);
+	
+	yaw = mouseSens * (midx - tmpx);
+	pitch = mouseSens * (midy - tmpy);
+
+
+	SDL_WarpMouseInWindow(window, midx, midy);
+}
+
+
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {
