@@ -6,6 +6,7 @@ class ButtonEntity :
 {
 private:
 	//Variables
+	int isActive;
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();

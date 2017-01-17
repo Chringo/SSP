@@ -27,5 +27,6 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp);
+	this->isActive = 0;
 	return result;
 }
