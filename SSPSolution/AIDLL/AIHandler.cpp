@@ -170,15 +170,18 @@ DirectX::XMVECTOR AIHandler::GetPosition(int compID) const
 
 AIComponent * AIHandler::GetNextAvailableComponents()
 {
-	if (this->m_nrOfAIComponents < this->m_maxOfAIComponents)
+	// Increase vector by initiating new AIComponents
+	if (this->m_nrOfAIComponents == this->m_maxOfAIComponents)
 	{
-		this->m_nrOfAIComponents++;
-		return this->m_AIComponents[this->m_nrOfAIComponents - 1];
+		int oldMax = this->m_maxOfAIComponents;
+		this->m_maxOfAIComponents += this->m_maxOfAIComponents;
+		for (int i = oldMax; i < this->m_maxOfAIComponents; i++)
+		{
+			this->m_AIComponents.push_back(CreateAIComponent(i));
+		}
 	}
-	else
-	{
-		// TODO: increase vector
-	}
+	this->m_nrOfAIComponents++;
+	return this->m_AIComponents[this->m_nrOfAIComponents - 1];
 }
 
 AIComponent* AIHandler::CreateAIComponent(int entityID)
