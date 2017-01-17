@@ -14,7 +14,6 @@
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
-#pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
