@@ -6,8 +6,8 @@ class ButtonEntity :
 {
 private:
 	//Variables
-	int isActive;
-	float range;
+	int m_isActive;
+	float m_range;
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();
