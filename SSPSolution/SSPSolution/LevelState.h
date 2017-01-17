@@ -17,6 +17,7 @@ private:
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	std::vector<StaticEntity*>	m_staticEntitys;
 	std::vector<Entity*> m_puzzleElements;
+	int buttonCnt;
 public:
 	LevelState();
 	virtual ~LevelState();
