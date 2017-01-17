@@ -3,11 +3,11 @@
 #include <DirectXMath.h>
 #include <vector>
 
-enum EVENT 
+enum EVENT
 {
 	COLLIDED,
 	BUTTON_PRESSED,
-
+	BUTTON_TOGGLED
 };
 
 #endif
