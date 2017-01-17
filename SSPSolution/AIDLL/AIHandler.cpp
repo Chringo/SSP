@@ -28,7 +28,7 @@ int AIHandler::Initialize(int max)
 
 	for (int i = 0; i < this->m_maxOfAIComponents; i++)
 	{
-		this->m_AIComponents.push_back(CreateAIComponent(i));
+		this->m_AIComponents.push_back(CreateAIComponent(-1));
 	}
 
 	return SUCCESS;
