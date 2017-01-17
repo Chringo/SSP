@@ -373,7 +373,7 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	SkeletonHeader* m_SkelHeader = (SkeletonHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
 	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
 
-	Resources::Skeleton::RawSkeletonData skelData;
+	/*pointing to the loaded files*/
 	unsigned int* jointCount = &((SkeletonHeader*)m_bbf_object)->jointCount;
 	unsigned int* animCount = &((SkeletonHeader*)m_bbf_object)->animLayerCount;
 	m_bbf_object += sizeof(SkeletonHeader);
@@ -381,31 +381,30 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 
 	Resources::Skeleton *m_Skel = new Resources::Skeleton;
 	m_Skel->Create(res_Data, jointData, jointCount);
-	m_Skel->SetNumAnimations(m_SkelHeader->animLayerCount);
 
 	m_bbf_object += sizeof(JointHeader) * *jointCount;
 
-	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
-	//for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
-	//{
-	//	Resources::Resource::RawResourceData animationData;
-	//	animationData.m_id = (unsigned int)m_bbf_object;
-	//	animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
+	LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
+	{
+		Resources::Resource::RawResourceData animationData;
+		animationData.m_id = (unsigned int)m_bbf_object;
+		animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
 
-	//	Resources::Animation newAnimation(&animationData);
-	//	m_Skel->AddAnimation(&newAnimation, i);
-	//	m_bbf_object += sizeof(LayerIdHeader);
-	//}
+		Resources::Animation *newAnimation = new Resources::Animation(&animationData);
+		m_Skel->AddAnimation(newAnimation, i);
+		m_bbf_object += sizeof(LayerIdHeader);
+	}
 
-	//std::vector<Resources::Model*>* models = m_data->GetModels();
-	//for (int i = 0; i < models->size(); ++i)
-	//{
-	//	if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
-	//	{
-	//		models->at(i)->SetSkeleton(m_Skel);
-	//		break;
-	//	}
-	//}
+	std::vector<Resources::Model*>* models = m_data->GetModels();
+	for (int i = 0; i < models->size(); ++i)
+	{
+		if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
+		{
+			models->at(i)->SetSkeleton(m_Skel);
+			break;
+		}
+	}
 
 
 	m_data->AddSkeleton(m_Skel);
