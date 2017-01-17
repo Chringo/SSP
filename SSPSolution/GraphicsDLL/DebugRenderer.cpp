@@ -15,8 +15,8 @@ DebugRenderer::DebugRenderer()
 	NUM_POINTS[M_SPHERE]  = 24;
 	NUM_INDICES[M_SPHERE] = 24;
 
-	NUM_POINTS[M_PATH] = 8;
-	NUM_INDICES[M_PATH] = 8;
+	NUM_POINTS[M_PATH]  = 8;
+	NUM_INDICES[M_PATH] = 14;
 
 
 	m_indices[M_CUBE] = new UINT[NUM_INDICES[M_CUBE]]
@@ -60,7 +60,13 @@ DebugRenderer::DebugRenderer()
 
 	m_indices[M_PATH] = new UINT[NUM_INDICES[M_PATH]]
 	{
-		0,1,2,3,4,5,6,7
+		0,1,
+		1,2,
+		2,3,
+		3,4,
+		4,5,
+		5,6,
+		6,7,
 	};
 	
 }
@@ -296,13 +302,22 @@ void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, Dire
 
 	GenerateLinelist(wayPoints, numWaypoints, color);
 
-	UINT32 offset = 0;
+
+	int indicesToRender = 0;
+
+	if (numWaypoints < 8)
+		indicesToRender = (numWaypoints * 2) - 1;
+	else
+		indicesToRender = (numWaypoints * 2) - 2;
+
+
+	UINT32 offset		= 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PATH], &m_vertexSize, &offset);
 	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PATH], DXGI_FORMAT_R32_UINT, 0);
 
-	m_deviceContext->DrawIndexed(numWaypoints, 0, 0);
-
+	m_deviceContext->DrawIndexed(indicesToRender, 0, 0);
+	 
 }
 
 void DebugRenderer::SetActive()
@@ -553,10 +568,16 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 }
 ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
-
-	for (size_t i = 0; i < numWaypoints; i++) //For each waypoint
+	AABB pointBox;
+	pointBox.ext[0] = 0.2;
+	pointBox.ext[1] = 0.2;
+	pointBox.ext[2] = 0.2;
+	DirectX::XMVECTOR boxColor = { 0.5f,0.0f,0.5f };
+	for (int i = 0; i < numWaypoints; i++) //For each waypoint
 	{
 		m_points[M_PATH][i] = Point(wayPoints[i].m128_f32, color.m128_f32); //create the point
+	
+		this->Render(wayPoints[i], pointBox, boxColor);
 
 	}
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
