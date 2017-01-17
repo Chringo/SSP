@@ -7,9 +7,7 @@ class DoorEntity :
 	public Entity
 {
 private:
-	//There's two kinds of people
-	bool isOpened;
-	bool isClosed;
+	bool m_isOpened;
 
 public:
 	DoorEntity();
