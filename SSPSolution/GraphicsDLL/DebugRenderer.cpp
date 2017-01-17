@@ -281,6 +281,16 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 
 }
 
+void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+
+	//for (size_t i = 0; i < length; i++)
+	//{
+	//
+	//}
+
+}
+
 void DebugRenderer::SetActive()
 {
 	m_deviceContext->VSSetShader(this->m_vertexShader, NULL, 0);
