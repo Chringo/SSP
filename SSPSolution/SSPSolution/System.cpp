@@ -288,19 +288,19 @@ int System::Update(float deltaTime)
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_1))
 	{
 		animState = 1;
-	    m_AnimationHandler->AddAnimation(AnimationStates::WALK_STATE, true, 2);
+	    m_AnimationHandler->AddAnimation(AnimationStates::WALK_STATE, true, 0.5);
 	}
 
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_2))
 	{
 		animState = 2;
-		m_AnimationHandler->AddAnimation(AnimationStates::RUN_STATE, true, 2);
+		m_AnimationHandler->AddAnimation(AnimationStates::RUN_STATE, true, 0.5);
 	}
 
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_3))
 	{
 		animState = 3;
-		m_AnimationHandler->AddAnimation(AnimationStates::THROW_STATE, false, 2);
+		m_AnimationHandler->AddAnimation(AnimationStates::THROW_STATE, true, 0.5);
 	}
 
 	//Update animations here. Temp place right now.

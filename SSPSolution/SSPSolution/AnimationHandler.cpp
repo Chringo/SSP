@@ -77,7 +77,7 @@ void AnimationHandler::Update(float dt)
 				else
 				{
 					/*Push the IDLE state to the stack.*/
-					Push(IDLE_STATE, true, 1);
+					Push(IDLE_STATE, true, 0.5);
 					m_BlendState = SMOOTH_TRANSITION;
 					break;
 				}
@@ -110,22 +110,6 @@ void AnimationHandler::Update(float dt)
 			break;
 		}
 	}
-
-	///*Check if there is a current animation in the stack.*/
-	//if (!m_animationStack.empty())
-	//{
-	//	/*Increment elapsedTime with the delta-time. Consider to multiply framerate here?*/
-	//	float toSeconds = dt / 1000000;
-	//	m_globalTimeElapsed += toSeconds;
-
-	//	/*If the animation reaches the last frame and the animation is looping, reset elapsedTime to ZERO.*/
-	//	if (m_globalTimeElapsed >= m_animationStack.front().endFrame && m_animationStack.front().isLooping == true)
-	//	{
-	//		m_globalTimeElapsed = 0.0f;
-	//	}
-
-	//	InterpolateKeys(m_animationStack.front(), m_globalTimeElapsed);
-	//}
 }
 
 void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float currentTime)
@@ -223,6 +207,7 @@ void AnimationHandler::InterpolateKeys(AnimationClip animationClip, float curren
 
 					DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpScale);
 					DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpQuat);
+				
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
@@ -345,12 +330,17 @@ void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKe
 		DirectX::XMVECTOR quatAnim1 = blendKeysPerAnimation[0][jointIndex].quat;
 		DirectX::XMVECTOR quatAnim2 = blendKeysPerAnimation[1][jointIndex].quat;
 
-		float weightA = 1.0f - (transitionTime / m_TransitionDuration);
-		float weightB = transitionTime / m_TransitionDuration;
+		/*To make the blending work, it only seems that the blend factor of the new animation is required to make this work.*/
+		//float weightA = 1.0f - (transitionTime / m_TransitionDuration);
+		//float weightB = transitionTime / m_TransitionDuration;
+		float blendFactor = transitionTime / m_TransitionDuration;
 
-		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, weightA + weightA);
-		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, weightA + weightA);
-		DirectX::XMVECTOR lerpBlendQuat = DirectX::XMQuaternionSlerp(quatAnim1, quatAnim2, weightA + weightA);
+		std::cout << "Transition Blend Factor: " << blendFactor << std::endl;
+
+		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, blendFactor);
+		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, blendFactor);
+		DirectX::XMVECTOR lerpBlendQuat = DirectX::XMQuaternionSlerp(quatAnim1, quatAnim2, blendFactor
+		);
 
 		DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpBlendTrans);
 		DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpBlendScale);
@@ -519,7 +509,7 @@ Resources::Skeleton * AnimationHandler::GetSkeleton(Resources::Model * model)
 		for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 		{
 			DirectX::XMMATRIX matrix = DirectX::XMMATRIX(jointList[jointIndex].invBindPose);
-
+		
 			SkeletonTemp skelTemp;
 			skelTemp.jointIndex = jointList[jointIndex].jointIndex;
 			skelTemp.parentIndex = jointList[jointIndex].parentIndex;
