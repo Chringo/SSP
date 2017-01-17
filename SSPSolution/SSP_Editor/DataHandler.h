@@ -38,12 +38,13 @@ public:
 	static DataHandler* GetInstance();
 	~DataHandler();
 
+	std::vector<Resources::Animation*>* GetAnimations() { return &this->m_animations; };
 	std::vector<Resources::Skeleton*>* GetSkeletons() { return &this->m_skeletons; };
 	std::vector<Resources::Model*>* GetModels() { return &this->m_models; };
-	Resources::Model* GetModel(unsigned int& id);
 	std::vector<Resources::Mesh*>*  GetMeshes() { return &this->m_meshes; };
 	std::vector<Resources::Material*>* GetMaterials() { return &this->m_materials; };
 	std::unordered_map<std::string, Resources::Texture*>* GetTextures(){ return &this->m_textures; };
+	Resources::Model* GetModel(unsigned int& id);
 
 	Resources::Status GetTexture(std::string id, Resources::Texture*& texture);
 

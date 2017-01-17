@@ -105,6 +105,15 @@ void ResourceLibExporter::BuildRegistry()
 		m_Items.push_back(item);
 	}
 	/*add animations here*/
+	std::vector<Resources::Animation*>* sceneAnimations = m_Data->GetAnimations();
+	for (int i = 0; i < sceneAnimations->size(); ++i)
+	{
+		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
+		item.id = sceneAnimations->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 
 	/*Assigning the right amount of space required, just in case someone "accidentally" put
 	a file on the server in one of the folders who are meant for binary files. Like hey!
@@ -233,7 +242,8 @@ void ResourceLibExporter::HandleSceneData()
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
-				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" || dotName != ".mat" && dotName == ".skel")
+				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" 
+					|| dotName != ".mat" && dotName == ".skel" || dotName != ".mat" && dotName == ".anim")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
 				}
