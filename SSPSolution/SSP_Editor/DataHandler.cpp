@@ -2,6 +2,13 @@
 
 
 
+Resources::Status DataHandler::AddAnimations(Resources::Animation * animation)
+{
+	this->loadedIds[animation->GetId()] = true;
+	this->m_animations.push_back(animation);
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status DataHandler::AddSkeleton(Resources::Skeleton * skeleton)
 {
 	this->loadedIds[skeleton->GetId()] = true;

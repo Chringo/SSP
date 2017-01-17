@@ -18,6 +18,7 @@
 class DataHandler
 {
 private:
+	std::vector<Resources::Animation*> m_animations;
 	std::vector<Resources::Skeleton*> m_skeletons;
 	std::vector<Resources::Model*> m_models;
 	std::vector<Resources::Mesh*>  m_meshes;
@@ -27,6 +28,7 @@ private:
 	Resources::TextureHandler* m_textureHandler;
 	DataHandler();
 public:
+	Resources::Status AddAnimations(Resources::Animation* animation);
 	Resources::Status AddSkeleton(Resources::Skeleton* skeleton);
 	Resources::Status AddModel(Resources::Model* model);
 	Resources::Status AddMesh(Resources::Mesh* mesh);

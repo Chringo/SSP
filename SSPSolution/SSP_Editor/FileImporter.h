@@ -51,6 +51,7 @@ private:
 	void handleMat(char *m_bbf_object);
 	void handleModel(char *m_bbf_object);
 	void handleSkeleton(char *m_bbf_object);
+	void handleAnimation(char *m_bbf_object);
 
 	void AddListItem(ListItem category, std::string name);
 	bool ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader, Resources::Material * newMaterial);
