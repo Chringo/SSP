@@ -7,7 +7,7 @@ enum EVENT
 {
 	COLLIDED,
 	BUTTON_PRESSED,
-
+	BUTTON_TOGGLED
 };
 //
 //struct GraphicsComponent 
