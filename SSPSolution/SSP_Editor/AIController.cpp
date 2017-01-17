@@ -47,6 +47,11 @@ void AIController::RemoveWayPoint(int index)
 	m_component->m_nrOfWaypoint -= 1;
 }
 
+void AIController::DeletePath()
+{
+	m_component->m_nrOfWaypoint = 0;
+}
+
 void AIController::SetID(int entityID)
 {
 	m_component->m_entityID = entityID;

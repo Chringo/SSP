@@ -21,9 +21,10 @@ public:
 	void SetTime(float time);
 	void AddWaypoint(DirectX::XMVECTOR position);
 	void RemoveWayPoint(int index);
+	void DeletePath();
 	void SetID(int entityID);
-	AIComponent* GetComponent() { return m_component; };
 	void SetComponent(AIComponent* component) { this->m_component = component; };
+	AIComponent* GetComponent() { return m_component; };
 
 };
 
