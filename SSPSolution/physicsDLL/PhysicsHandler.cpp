@@ -967,7 +967,7 @@ PhysicsHandler::~PhysicsHandler()
 bool PhysicsHandler::Initialize()
 {
 	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
-	this->m_gravity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	//this->m_gravity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
 
 	this->m_startIndex = 0;
@@ -1291,15 +1291,24 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	return newObject;
 }
 
+
 void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght)
 {
+	//important function will link from index1 to index2 and change the position of the PhysicsComponent at index2
 
 	PhysicsComponent* ptr = this->m_physicsComponents.at(index1);
 	PhysicsComponent* previous = this->m_physicsComponents.at(index1);
 	PhysicsComponent* next = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_physicsComponents.at(index2)->PC_pos,this->m_physicsComponents.at(index1)->PC_pos);
+	
+	if (!DirectX::XMVector3NotEqual(diffVec, DirectX::XMVectorSet(0, 0, 0, 0)))
+	{
+		diffVec = DirectX::XMVectorSet((float)nrOfLinks, 0, 0, 0);
+	}
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet((float)nrOfLinks, (float)nrOfLinks, (float)nrOfLinks, (float)nrOfLinks));
+
+	DirectX::XMVECTOR nextPos = DirectX::XMVectorAdd(previous->PC_pos, diffVec);
 
 	for (int i = 1; i <= nrOfLinks; i++)
 	{
@@ -1307,7 +1316,7 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		link.CL_lenght = linkLenght;
 
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
-		next = this->CreatePhysicsComponent(DirectX::XMVectorSet(3, 10, 60, 0), false);
+		next = this->CreatePhysicsComponent(nextPos, false);
 		
 		next->PC_AABB.ext[0] = 0.1f;
 		next->PC_AABB.ext[1] = 0.1f;
@@ -1317,11 +1326,13 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		link.CL_next = next;
 		this->m_links.push_back(link);
 		previous = next;
+		nextPos = DirectX::XMVectorAdd(previous->PC_pos, diffVec);
 	}
 	ChainLink link;
 	link.CL_lenght = linkLenght;
 
 	next = this->m_physicsComponents.at(index2);
+	next->PC_pos = nextPos;
 	link.CL_previous = previous;
 	link.CL_next = next;
 	this->m_links.push_back(link);
