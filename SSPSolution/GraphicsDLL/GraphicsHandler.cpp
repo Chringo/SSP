@@ -218,12 +218,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
+#ifdef _DEBUG
 	this->editorMode = editorMode;
 	if (!editorMode)
 	{
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
+#endif //_DEBUG
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -432,6 +434,7 @@ void GraphicsHandler::Shutdown()
 	//	delete this->m_animGraphicsComponents[i];
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
+#ifdef _DEBUG
 	if (!editorMode)
 	{
 		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
@@ -443,13 +446,15 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 
-	
-	
+
+
 		if (m_animGraphicsComponents != nullptr) {
-		delete this->m_animGraphicsComponents[1];
-		delete[] this->m_animGraphicsComponents;
+			delete this->m_animGraphicsComponents[1];
+			delete[] this->m_animGraphicsComponents;
 		}
 	}
+#endif // _DEBUG
+
 	
 	delete[] this->m_graphicsComponents;
 #ifdef _DEBUG
