@@ -136,11 +136,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
 	platformG->worldMatrix = DirectX::XMMatrixIdentity();
 	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
-	platformP->PC_pos = DirectX::XMVectorSet(0, 10, 40, 0);
+	platformP->PC_pos = DirectX::XMVectorSet(90, 2, 20, 0);
 	platformP->PC_is_Static = true;
-	platformP->PC_AABB.ext[0] = 10;
+	platformP->PC_AABB.ext[0] = 15;
 	platformP->PC_AABB.ext[1] = 1;
-	platformP->PC_AABB.ext[2] = 10;
+	platformP->PC_AABB.ext[2] = 15;
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 	platformTERMINATOR->m_active = true;
 
