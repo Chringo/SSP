@@ -57,6 +57,9 @@ public:
 	int Run();
 	int Update(float deltaTime);
 
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
+
 private:
 	int HandleEvents();
 	int FullscreenToggle();
