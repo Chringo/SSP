@@ -28,6 +28,14 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sph
 	colors[T_SPHERE].push_back(color);
 }
 
+GRAPHICSDLL_API void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+	this->wayPoints    = wayPoints;
+	this->numWaypoints = numWaypoints;
+	this->pathColor	   = color;
+	return;
+}
+
 void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 {
 	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
@@ -62,6 +70,12 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	positions[T_SPHERE].clear();
 	colors[T_SPHERE].clear();
 
+	if (wayPoints != nullptr)
+	{
+		m_debugRender.Render(wayPoints, numWaypoints, pathColor);
+		wayPoints    = nullptr;
+		numWaypoints = 0;
+	}
 
 	planes.clear();
 	obbBoxes.clear();
