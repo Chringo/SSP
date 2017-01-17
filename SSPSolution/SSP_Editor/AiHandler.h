@@ -22,10 +22,12 @@ public:
 	AiHandler();
 	virtual ~AiHandler();
 
+	//Path Component Functions
 	AIComponent* NewPathComponent();
 	AIComponent* GetPathComponent(int EntityID);
 	std::vector<AIComponent>* GetAllPathComponents();
 	void DeletePathComponent(int EntityID);
+	/////////////////////////////////////////////
 
 	void Destroy(); //Used when a new level is loaded. 
 };
