@@ -19,7 +19,11 @@ public:
 
 	void SetSpeed(float speed);
 	void SetTime(float time);
+	void AddWaypoint(DirectX::XMVECTOR position);
+	void RemoveWayPoint(int index);
 	void SetID(int entityID);
+	AIComponent* GetComponent() { return m_component; };
+
 };
 
 #endif
