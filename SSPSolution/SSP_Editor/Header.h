@@ -1,12 +1,14 @@
 #pragma once
 #include <DirectXMath.h>
 #include "../GraphicsDLL/GraphicsHandler.h"
+#include "../AIDLL/AIComponent.h"
 struct Container
 {
 	unsigned int internalID;
 	DirectX::XMVECTOR position; // Total värde. 
 	DirectX::XMVECTOR rotation; //Total värde. 
 	GraphicsComponent component;
+	AIComponent*    aiComponent = nullptr;
 	bool isDirty  = false;
 	bool isStatic = true;
 };
