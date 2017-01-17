@@ -42,6 +42,8 @@ void AiHandler::DeletePathComponent(int EntityID)
 			return;
 		}
 	}
+	
+
 }
 
 void AiHandler::Destroy()
