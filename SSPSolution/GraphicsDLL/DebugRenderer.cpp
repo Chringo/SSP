@@ -15,6 +15,9 @@ DebugRenderer::DebugRenderer()
 	NUM_POINTS[M_SPHERE]  = 24;
 	NUM_INDICES[M_SPHERE] = 24;
 
+	NUM_POINTS[M_PATH] = 8;
+	NUM_INDICES[M_PATH] = 8;
+
 
 	m_indices[M_CUBE] = new UINT[NUM_INDICES[M_CUBE]]
 	{
@@ -53,6 +56,13 @@ DebugRenderer::DebugRenderer()
 		20,21,
 		22,23
 	};
+
+
+	m_indices[M_PATH] = new UINT[NUM_INDICES[M_PATH]]
+	{
+		0,1,2,3,4,5,6,7
+	}
+	
 }
 
 
@@ -288,6 +298,14 @@ void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, Dire
 	//{
 	//
 	//}
+	GenerateLinelist(wayPoints, numWaypoints, color);
+
+	UINT32 offset = 0;
+	UINT32 m_vertexSize = sizeof(Point);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PATH], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PATH], DXGI_FORMAT_R32_UINT, 0);
+
+	m_deviceContext->DrawIndexed(numWaypoints, 0, 0);
 
 }
 
@@ -536,6 +554,25 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 	m_deviceContext->Unmap(m_PointBuffer[M_SPHERE], 0);
 
 	return m_PointBuffer[M_SPHERE];
+}
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+
+	for (size_t i = 0; i < numWaypoints; i++) //For each waypoint
+	{
+		m_points[M_PATH][i] = Point(wayPoints[i].m128_f32, color.m128_f32); //create the point
+
+	}
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	HRESULT hr = m_deviceContext->Map(m_PointBuffer[M_PATH], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource); // map to buffer
+	Point* tempData = (Point*)mappedResource.pData;
+	memcpy(tempData, (void*)m_points[M_PATH], sizeof(Point) * numWaypoints);
+	m_deviceContext->Unmap(m_PointBuffer[M_PATH], 0);
+
+	return m_PointBuffer[M_PATH];
+
 }
 	/*
 		 _________________________
