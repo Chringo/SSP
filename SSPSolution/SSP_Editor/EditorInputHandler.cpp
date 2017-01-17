@@ -95,23 +95,23 @@ void EditorInputHandler::KeyboardMovement(double dT)
 	//}
 		
 
-	if ((translateCameraY || translateCameraZ || translateCameraX))
-	{
-		DirectX::XMFLOAT3 posTranslation =
-			DirectX::XMFLOAT3(
-				float(translateCameraX),
-				float(translateCameraY),
-				float(translateCameraZ)
-			);
+	//if ((translateCameraY || translateCameraZ || translateCameraX))
+	//{
+	//	DirectX::XMFLOAT3 posTranslation =
+	//		DirectX::XMFLOAT3(
+	//			float(translateCameraX),
+	//			float(translateCameraY),
+	//			float(translateCameraZ)
+	//		);
 
-		this->m_PreviousPos = this->m_Camera->GetCameraPos();
-		this->m_Camera->ApplyLocalTranslation(
-			float(translateCameraX),
-			float(translateCameraY),
-			float(translateCameraZ)
-		);
-		this->m_Camera->Update();
-	}
+	//	this->m_PreviousPos = this->m_Camera->GetCameraPos();
+	//	this->m_Camera->ApplyLocalTranslation(
+	//		float(translateCameraX),
+	//		float(translateCameraY),
+	//		float(translateCameraZ)
+	//	);
+	//	this->m_Camera->Update();
+	//}
 }
 
 void EditorInputHandler::MouseMovement(double dT)

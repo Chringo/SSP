@@ -31,6 +31,14 @@ private:
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMFLOAT4 m_lookAt;
 	DirectX::XMFLOAT4 m_cameraUp;
+
+	DirectX::XMVECTOR * m_focusPoint;
+	DirectX::XMVECTOR m_focusPointOffset;
+	DirectX::XMVECTOR m_focusVec;
+	DirectX::XMVECTOR m_targetCameraPos;
+	DirectX::XMVECTOR m_targetCameraRot;
+	DirectX::XMVECTOR m_targetCameraUp;
+	float m_distance;
 	//DirectX::XMFLOAT4 m_rotation;
 	//The values for the projection matrix
 	float m_screenAspect;
@@ -62,6 +70,7 @@ public:
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMVECTOR& storeIn);
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT4& storeIn);
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT3& storeIn);
+	GRAPHICSDLL_API DirectX::XMVECTOR GetCameraPivot();
 
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
@@ -70,6 +79,7 @@ public:
 #pragma region
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMFLOAT4 newCamPos);
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMVECTOR newCamPos);
+	GRAPHICSDLL_API void SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMFLOAT4 newLookAt);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMVECTOR newLookAt);
 	GRAPHICSDLL_API void SetCameraUp(DirectX::XMFLOAT4 newCamUp);
@@ -84,6 +94,7 @@ public:
 	GRAPHICSDLL_API void MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue);
 	//Warning: As the camera uses quaternion rotations and only stores these in one position this functions can only be called once after setting a rotation and before updating.
 	//GRAPHICSDLL_API void ApplyRotation(DirectX::XMFLOAT4 rotationAddition);
+	GRAPHICSDLL_API void RotateCameraPivot(float pitch, float yaw);
 	GRAPHICSDLL_API void RotateCamera(double x, double y, double z, double angle);
 	GRAPHICSDLL_API void RotateCamera(DirectX::XMFLOAT4 rotation);
 	GRAPHICSDLL_API void RotateCamera(DirectX::XMVECTOR rotation);
@@ -100,6 +111,9 @@ public:
 private:
 	DirectX::XMVECTOR conjugate(DirectX::XMVECTOR quat);
 	DirectX::XMVECTOR mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+	DirectX::XMVECTOR m_Dir();
+	DirectX::XMVECTOR m_Right();
+	void m_updatePos();
 };
 
 #endif
