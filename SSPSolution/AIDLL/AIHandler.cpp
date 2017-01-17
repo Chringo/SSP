@@ -18,18 +18,17 @@ int AIHandler::Initialize(int max)
 {
 	this->m_nrOfAIComponents = 0;
 
-	if (max < 0)
+	if (max <= 0)
 	{
-		// temp
-		m_maxOfAIComponents = 3;
-		//return FAIL;
+		// Don't allow negative or zero initiated components
+		max = 2;
 	}
 	
 	this->m_maxOfAIComponents = max;
 
 	for (int i = 0; i < this->m_maxOfAIComponents; i++)
 	{
-		m_AIComponents.push_back(CreateAIComponent(i));
+		this->m_AIComponents.push_back(CreateAIComponent(i));
 	}
 
 	return SUCCESS;
