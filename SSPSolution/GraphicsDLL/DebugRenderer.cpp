@@ -61,7 +61,7 @@ DebugRenderer::DebugRenderer()
 	m_indices[M_PATH] = new UINT[NUM_INDICES[M_PATH]]
 	{
 		0,1,2,3,4,5,6,7
-	}
+	};
 	
 }
 
@@ -294,10 +294,6 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
 
-	//for (size_t i = 0; i < length; i++)
-	//{
-	//
-	//}
 	GenerateLinelist(wayPoints, numWaypoints, color);
 
 	UINT32 offset = 0;
