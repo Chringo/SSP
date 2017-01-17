@@ -50,12 +50,18 @@ public:
 	AIDLL_API int GetNrOfAIComponents() const;
 	//Get new position for the Object
 	AIDLL_API DirectX::XMVECTOR GetPosition(int compID) const;
+	
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
+
 
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
 
 	DirectX::XMVECTOR pos;
 	DirectX::XMVECTOR dirVector;
+
+
 
 };
 #endif
