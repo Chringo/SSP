@@ -47,7 +47,7 @@ struct Plane
 };
 #pragma endregion
 
-__declspec(align(16)) struct PhysicsComponent
+struct PhysicsComponent
 {
 	DirectX::XMVECTOR PC_pos;
 	DirectX::XMVECTOR PC_velocity;
@@ -59,7 +59,7 @@ __declspec(align(16)) struct PhysicsComponent
 	int PC_entityID;
 	float PC_mass;
 	bool PC_is_Static;
-	bool PC_coolides;
+	bool PC_collides;
 	float PC_friction;
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;

@@ -182,7 +182,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
 
-	//this->LockCameraToPlayer();
+	this->LockCameraToPlayer();
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);

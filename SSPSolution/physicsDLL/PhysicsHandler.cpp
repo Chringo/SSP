@@ -754,9 +754,6 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		DirectX::XMVECTOR pPerpendicular1;
 		DirectX::XMVECTOR pPerpendicular2;
 
-		float forceVec1[3];
-		float forceVec2[3];
-
 		float v1_old[3];
 		float v1_new[3];
 		float m1 = obj1->PC_mass;
@@ -1177,9 +1174,6 @@ void PhysicsHandler::DoChainPhysics(ChainLink * link, float dt)
 			DirectX::XMVECTOR pPerpendicular1;
 			DirectX::XMVECTOR pPerpendicular2;
 
-			float forceVec1[3];
-			float forceVec2[3];
-
 			float v1_old[3];
 			float v1_new[3];
 			float m1 = link->CL_previous->PC_mass;
@@ -1263,7 +1257,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_active = 1;
-	newObject->PC_coolides = true;
+	newObject->PC_collides = true;
 	newObject->PC_entityID = 0;
 	newObject->PC_is_Static = isStatic;
 	newObject->PC_mass = 1.0f;
@@ -1420,7 +1414,6 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 		}
 	}
 
-	DirectX::XMVECTOR totalRay;
 	if (tMin > 0)
 	{
 		//min intersect
@@ -1696,7 +1689,7 @@ void PhysicsHandler::GetPhysicsComponentPlane(Plane*& src, int index)
 	src = &(this->m_physicsComponents.at(index)->PC_Plane);
 }
 
-PHYSICSDLL_API void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
+void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
 {
 	src = &(this->m_physicsComponents.at(index)->PC_Sphere);
 }
