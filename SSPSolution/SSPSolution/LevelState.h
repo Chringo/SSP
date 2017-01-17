@@ -7,6 +7,8 @@
 #include "StaticEntity.h"
 #include "DynamicEntity.h"
 #include "LevelDirector.h"
+#include "DoorEntity.h"
+#include "ButtonEntity.h"
 
 class LevelState :
 	public GameState
@@ -15,10 +17,11 @@ private:
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
 	std::vector<DynamicEntity*> m_dynamicEntitys;
+	//Entities where no data needs to be moved between the components
 	std::vector<StaticEntity*>	m_staticEntitys;
-	std::vector<Entity*> m_puzzleElements;
-	int m_buttonCnt;
-	int m_doorCnt;
+	//Puzzle entities
+	std::vector<DoorEntity> m_doorEntities;
+	std::vector<ButtonEntity> m_buttonEntities;
 public:
 	LevelState();
 	virtual ~LevelState();

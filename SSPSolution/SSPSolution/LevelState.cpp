@@ -53,12 +53,8 @@ int LevelState::ShutDown()
 	}
 
 	//Clear the puzzle entities
-	for (size_t i = 0; i < this->m_puzzleElements.size(); i++)
-	{
-		delete this->m_puzzleElements[i];
-		this->m_puzzleElements[i] = nullptr;
-	}
-
+	this->m_doorEntities.clear();
+	this->m_buttonEntities.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 	
@@ -70,7 +66,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 
-	this->m_buttonCnt = this->m_doorCnt = 0;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
 	// creating the player
