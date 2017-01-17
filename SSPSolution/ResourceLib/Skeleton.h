@@ -49,6 +49,7 @@ namespace Resources
 		DLL_OPERATION virtual ~Skeleton();
 
 		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, RawSkeletonData* skelData);
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, Joint* jointData, unsigned int * jointCount);
 		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data, free container
 		DLL_OPERATION Resources::Status AddAnimation(Animation* anim, int index);
 		

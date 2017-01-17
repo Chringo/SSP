@@ -209,7 +209,7 @@ void FileImporter::LoadImportedFiles()
 			case Resources::ResourceType::RES_ANIMATION:
 				break;
 			case Resources::ResourceType::RES_SKELETON:
-				//handleSkeleton(m_bbf_object);
+				handleSkeleton(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
@@ -374,44 +374,38 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
 
 	Resources::Skeleton::RawSkeletonData skelData;
-	//joints.jointCount = m_SkelHeader->jointCount;
-	//joints.joints = (Resources::Skeleton::Joint*)m_bbf_object;
-	//joints->joints = new Resources::Skeleton::Joint[joints->jointCount];
-	//memcpy((char*)&joints->joints, &m_bbf_object, sizeof(JointHeader)*joints->jointCount); 
-	skelData.jointCount = ((SkeletonHeader*)m_bbf_object)->jointCount;
+	unsigned int* jointCount = &((SkeletonHeader*)m_bbf_object)->jointCount;
 	unsigned int* animCount = &((SkeletonHeader*)m_bbf_object)->animLayerCount;
 	m_bbf_object += sizeof(SkeletonHeader);
-	skelData.joints = (Resources::Skeleton::Joint*)m_bbf_object;
-	m_bbf_object += sizeof(JointHeader) * skelData.jointCount;
+	Resources::Skeleton::Joint* jointData = (Resources::Skeleton::Joint*)m_bbf_object;
 
-
-	Resources::Skeleton* m_Skel = new Resources::Skeleton();
-	m_Skel->Create(res_Data, &skelData);
+	Resources::Skeleton *m_Skel = new Resources::Skeleton;
+	m_Skel->Create(res_Data, jointData, jointCount);
 	m_Skel->SetNumAnimations(m_SkelHeader->animLayerCount);
 
-	m_bbf_object += sizeof(JointHeader) * *animCount;
+	m_bbf_object += sizeof(JointHeader) * *jointCount;
 
 	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
-	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
-	{
-		Resources::Resource::RawResourceData animationData;
-		animationData.m_id = (unsigned int)m_bbf_object;
-		animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
+	//for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
+	//{
+	//	Resources::Resource::RawResourceData animationData;
+	//	animationData.m_id = (unsigned int)m_bbf_object;
+	//	animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
 
-		Resources::Animation newAnimation(&animationData);
-		m_Skel->AddAnimation(&newAnimation, i);
-		m_bbf_object += sizeof(LayerIdHeader);
-	}
+	//	Resources::Animation newAnimation(&animationData);
+	//	m_Skel->AddAnimation(&newAnimation, i);
+	//	m_bbf_object += sizeof(LayerIdHeader);
+	//}
 
-	std::vector<Resources::Model*>* models = m_data->GetModels();
-	for (int i = 0; i < models->size(); ++i)
-	{
-		if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
-		{
-			models->at(i)->SetSkeleton(m_Skel);
-			break;
-		}
-	}
+	//std::vector<Resources::Model*>* models = m_data->GetModels();
+	//for (int i = 0; i < models->size(); ++i)
+	//{
+	//	if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
+	//	{
+	//		models->at(i)->SetSkeleton(m_Skel);
+	//		break;
+	//	}
+	//}
 
 
 	m_data->AddSkeleton(m_Skel);
