@@ -12,7 +12,7 @@ private:
 	float m_maxRotation;
 	float m_rotateTime;
 	float m_rotatePerSec;
-	float m_interactionDist;
+	float m_range;
 public:
 	WheelEntity();
 	~WheelEntity();
