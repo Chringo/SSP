@@ -28,5 +28,18 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp);
 	this->isActive = 0;
+	this->range = 1.f;
 	return result;
+}
+
+int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
+{
+	if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < range
+		&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < range
+		&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < range)
+	{
+		this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_PRESSED);
+	}
+
+	return 0;
 }
