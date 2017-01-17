@@ -20,8 +20,6 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 
 int DoorEntity::Update(float dT, InputHandler * inputHandler)
 {
-	this->SyncComponents();
-
 	return 0;
 }
 
@@ -39,6 +37,7 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 			this->m_isOpened = false;
 			this->m_pComp->PC_rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 0.f);
 		}
+		this->SyncComponents();
 	}
 
 	return 0;
