@@ -89,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ButtonEntity.cpp" />
     <ClCompile Include="ComponentHandler.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationStorer.cpp" />
@@ -113,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="ButtonEntity.h" />
     <ClInclude Include="ComponentHandler.h" />
     <ClInclude Include="AnimationStorer.h" />
     <ClInclude Include="ComponentStructs.h" />
