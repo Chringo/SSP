@@ -124,6 +124,12 @@
     <ClCompile Include="D3DRenderWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AiHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SSP_Editor.h">
@@ -189,6 +195,12 @@
       <Filter>Header Files\Selection</Filter>
     </ClInclude>
     <ClInclude Include="..\ResourceLib\TextureLoader\DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AiHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

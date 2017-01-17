@@ -42,8 +42,6 @@ void AiHandler::DeleteComponent(int EntityID)
 			return;
 		}
 	}
-	
-
 }
 
 void AiHandler::Destroy()
