@@ -167,6 +167,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//	this->m_entities.at(i)->Update(dt, inputHandler);
 	//}
 
+#pragma region
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
 	DirectX::XMFLOAT3 temp;
@@ -180,13 +181,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1.SetUpDir(upDir);
 	this->m_player1.SetLookDir(playerLookDir);
 	this->m_player1.Update(dt, inputHandler);
+#pragma endregion temp player throw functionality
 
-	//update all dynamic (moving) entities
+	//update all dynamic entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
 
+	//Update all puzzle entities
+
+	//Lock the camera to the player
 	this->LockCameraToPlayer();
 
 	// Reactionary level director acts
