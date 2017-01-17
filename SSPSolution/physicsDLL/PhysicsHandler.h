@@ -68,6 +68,9 @@ __declspec(align(16)) struct PhysicsComponent
 	OBB PC_OBB;
 	Sphere PC_Sphere;
 	Plane PC_Plane;
+
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 struct ChainLink
 {

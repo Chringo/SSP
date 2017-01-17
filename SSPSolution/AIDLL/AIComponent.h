@@ -21,6 +21,9 @@ __declspec(align(16)) struct AIComponent
 	int m_nrOfWaypoint;
 
 	DirectX::XMVECTOR m_waypoints[8];
+
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 #endif

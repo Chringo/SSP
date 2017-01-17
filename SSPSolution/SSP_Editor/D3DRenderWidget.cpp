@@ -85,6 +85,26 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			}
 		}
 	}
+	
+	for (size_t i = 0; i < 2; i++)
+	{
+		Container* spawn =  m_Communicator->GetCurrentLevel()->GetSpawnPoint(i);
+		this->m_Communicator->GetGraphicsHandler()->RenderFromEditor(
+			spawn->component.modelPtr,
+			&spawn->component);
+
+		if (spawn->isDirty)
+		{
+			this->m_Communicator->UpdateSpawnPoint(i, spawn->position, spawn->rotation);
+			if (SelectionHandler::GetInstance()->HasSelection())
+			{
+
+				SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+				SelectionHandler::GetInstance()->Update();
+			}
+		}
+
+	}
 
 
 	if (SelectionHandler::GetInstance()->HasSelection())
