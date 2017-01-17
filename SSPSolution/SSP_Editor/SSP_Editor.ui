@@ -245,7 +245,7 @@ border: black;</string>
           <item>
            <widget class="QLabel" name="nameLabel">
             <property name="text">
-             <string>Name</string>
+             <string>Level Name</string>
             </property>
            </widget>
           </item>
@@ -1252,13 +1252,6 @@ border: black;</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="SPEEDTEXT">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="0">
                <widget class="QLabel" name="WAYPOINTTEXT">
                 <property name="text">
@@ -1266,17 +1259,36 @@ border: black;</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
-               <widget class="QPushButton" name="DeleteButton">
+              <item row="2" column="1" colspan="2">
+               <widget class="QComboBox" name="PatternDropDown">
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(129, 129, 129);</string>
+                 <string notr="true">background-color: rgb(48, 48, 48);</string>
                 </property>
+                <item>
+                 <property name="text">
+                  <string>Circular</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>One Way</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Round Trip</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="SPEEDTEXT">
                 <property name="text">
-                 <string>DEL</string>
+                 <string>Speed</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="7" column="1">
                <widget class="QPushButton" name="AddButton">
                 <property name="styleSheet">
                  <string notr="true">background-color: rgb(129, 129, 129);</string>
@@ -1286,27 +1298,27 @@ border: black;</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="2">
-               <widget class="QPushButton" name="UpButton">
+              <item row="0" column="2">
+               <widget class="QDoubleSpinBox" name="SpeedValue">
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(129, 129, 129);</string>
+                 <string notr="true">background-color: rgb(48, 48, 48);</string>
                 </property>
-                <property name="text">
-                 <string>UP</string>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
                </widget>
               </item>
-              <item row="6" column="3">
-               <widget class="QPushButton" name="DownButton">
+              <item row="1" column="2">
+               <widget class="QDoubleSpinBox" name="TimeValue">
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(129, 129, 129);</string>
+                 <string notr="true">background-color: rgb(48, 48, 48);</string>
                 </property>
-                <property name="text">
-                 <string>DOWN</string>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
                </widget>
               </item>
-              <item row="5" column="0" colspan="4">
+              <item row="5" column="0" colspan="3">
                <widget class="QListWidget" name="WaypointListWidget">
                 <property name="palette">
                  <palette>
@@ -1485,30 +1497,28 @@ border: black;</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="1" colspan="3">
-               <widget class="QComboBox" name="PatternDropDown">
+              <item row="7" column="2">
+               <widget class="QPushButton" name="DeleteButton">
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 <string notr="true">background-color: rgb(129, 129, 129);</string>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Circular</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>One Way</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Round Trip</string>
-                 </property>
-                </item>
+                <property name="text">
+                 <string>DEL</string>
+                </property>
                </widget>
               </item>
-              <item row="1" column="3">
-               <widget class="QDoubleSpinBox" name="TimeValue">
+              <item row="10" column="1">
+               <widget class="QLabel" name="TRIGGERTAGTEXTPATH">
+                <property name="text">
+                 <string>Trigger Tag</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QSpinBox" name="TriggerPathValue">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">background-color: rgb(48, 48, 48);</string>
                 </property>
@@ -1517,13 +1527,13 @@ border: black;</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="3">
-               <widget class="QDoubleSpinBox" name="SpeedValue">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(48, 48, 48);</string>
+              <item row="11" column="1" colspan="2">
+               <widget class="QCheckBox" name="TriggerPathCheckBox">
+                <property name="text">
+                 <string>Not Triggered</string>
                 </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
+                <property name="checked">
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -1750,6 +1760,70 @@ border: black;</string>
     <hint type="destinationlabel">
      <x>1039</x>
      <y>501</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TriggerPathCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>TriggerPathValue</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1007</x>
+     <y>611</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>631</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TriggerPathCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>TRIGGERTAGTEXTPATH</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1007</x>
+     <y>611</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>974</x>
+     <y>631</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TriggerPathCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>TRIGGERTAGTEXTPATH</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1007</x>
+     <y>611</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>974</x>
+     <y>631</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TriggerPathCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>TriggerPathValue</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1007</x>
+     <y>611</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>631</y>
     </hint>
    </hints>
   </connection>

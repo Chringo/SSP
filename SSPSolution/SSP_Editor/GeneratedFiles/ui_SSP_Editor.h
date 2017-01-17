@@ -30,6 +30,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
@@ -95,16 +96,17 @@ public:
     QGridLayout *gridLayout_2;
     QLabel *TIMETEXT;
     QLabel *PATTERNTEXT;
-    QLabel *SPEEDTEXT;
     QLabel *WAYPOINTTEXT;
-    QPushButton *DeleteButton;
-    QPushButton *AddButton;
-    QPushButton *UpButton;
-    QPushButton *DownButton;
-    QListWidget *WaypointListWidget;
     QComboBox *PatternDropDown;
-    QDoubleSpinBox *TimeValue;
+    QLabel *SPEEDTEXT;
+    QPushButton *AddButton;
     QDoubleSpinBox *SpeedValue;
+    QDoubleSpinBox *TimeValue;
+    QListWidget *WaypointListWidget;
+    QPushButton *DeleteButton;
+    QLabel *TRIGGERTAGTEXTPATH;
+    QSpinBox *TriggerPathValue;
+    QCheckBox *TriggerPathCheckBox;
     QSpacerItem *verticalSpacer;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -666,39 +668,41 @@ public:
 
         gridLayout_2->addWidget(PATTERNTEXT, 2, 0, 1, 1);
 
-        SPEEDTEXT = new QLabel(Behaviour_Path);
-        SPEEDTEXT->setObjectName(QStringLiteral("SPEEDTEXT"));
-
-        gridLayout_2->addWidget(SPEEDTEXT, 0, 0, 1, 1);
-
         WAYPOINTTEXT = new QLabel(Behaviour_Path);
         WAYPOINTTEXT->setObjectName(QStringLiteral("WAYPOINTTEXT"));
 
         gridLayout_2->addWidget(WAYPOINTTEXT, 4, 0, 1, 1);
 
-        DeleteButton = new QPushButton(Behaviour_Path);
-        DeleteButton->setObjectName(QStringLiteral("DeleteButton"));
-        DeleteButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+        PatternDropDown = new QComboBox(Behaviour_Path);
+        PatternDropDown->setObjectName(QStringLiteral("PatternDropDown"));
+        PatternDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
-        gridLayout_2->addWidget(DeleteButton, 6, 1, 1, 1);
+        gridLayout_2->addWidget(PatternDropDown, 2, 1, 1, 2);
+
+        SPEEDTEXT = new QLabel(Behaviour_Path);
+        SPEEDTEXT->setObjectName(QStringLiteral("SPEEDTEXT"));
+
+        gridLayout_2->addWidget(SPEEDTEXT, 0, 0, 1, 1);
 
         AddButton = new QPushButton(Behaviour_Path);
         AddButton->setObjectName(QStringLiteral("AddButton"));
         AddButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
 
-        gridLayout_2->addWidget(AddButton, 6, 0, 1, 1);
+        gridLayout_2->addWidget(AddButton, 7, 1, 1, 1);
 
-        UpButton = new QPushButton(Behaviour_Path);
-        UpButton->setObjectName(QStringLiteral("UpButton"));
-        UpButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+        SpeedValue = new QDoubleSpinBox(Behaviour_Path);
+        SpeedValue->setObjectName(QStringLiteral("SpeedValue"));
+        SpeedValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        SpeedValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
-        gridLayout_2->addWidget(UpButton, 6, 2, 1, 1);
+        gridLayout_2->addWidget(SpeedValue, 0, 2, 1, 1);
 
-        DownButton = new QPushButton(Behaviour_Path);
-        DownButton->setObjectName(QStringLiteral("DownButton"));
-        DownButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+        TimeValue = new QDoubleSpinBox(Behaviour_Path);
+        TimeValue->setObjectName(QStringLiteral("TimeValue"));
+        TimeValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        TimeValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
-        gridLayout_2->addWidget(DownButton, 6, 3, 1, 1);
+        gridLayout_2->addWidget(TimeValue, 1, 2, 1, 1);
 
         WaypointListWidget = new QListWidget(Behaviour_Path);
         WaypointListWidget->setObjectName(QStringLiteral("WaypointListWidget"));
@@ -726,27 +730,32 @@ public:
         WaypointListWidget->setPalette(palette2);
         WaypointListWidget->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
-        gridLayout_2->addWidget(WaypointListWidget, 5, 0, 1, 4);
+        gridLayout_2->addWidget(WaypointListWidget, 5, 0, 1, 3);
 
-        PatternDropDown = new QComboBox(Behaviour_Path);
-        PatternDropDown->setObjectName(QStringLiteral("PatternDropDown"));
-        PatternDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        DeleteButton = new QPushButton(Behaviour_Path);
+        DeleteButton->setObjectName(QStringLiteral("DeleteButton"));
+        DeleteButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
 
-        gridLayout_2->addWidget(PatternDropDown, 2, 1, 1, 3);
+        gridLayout_2->addWidget(DeleteButton, 7, 2, 1, 1);
 
-        TimeValue = new QDoubleSpinBox(Behaviour_Path);
-        TimeValue->setObjectName(QStringLiteral("TimeValue"));
-        TimeValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        TimeValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        TRIGGERTAGTEXTPATH = new QLabel(Behaviour_Path);
+        TRIGGERTAGTEXTPATH->setObjectName(QStringLiteral("TRIGGERTAGTEXTPATH"));
 
-        gridLayout_2->addWidget(TimeValue, 1, 3, 1, 1);
+        gridLayout_2->addWidget(TRIGGERTAGTEXTPATH, 10, 1, 1, 1);
 
-        SpeedValue = new QDoubleSpinBox(Behaviour_Path);
-        SpeedValue->setObjectName(QStringLiteral("SpeedValue"));
-        SpeedValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        SpeedValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        TriggerPathValue = new QSpinBox(Behaviour_Path);
+        TriggerPathValue->setObjectName(QStringLiteral("TriggerPathValue"));
+        TriggerPathValue->setEnabled(true);
+        TriggerPathValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        TriggerPathValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
-        gridLayout_2->addWidget(SpeedValue, 0, 3, 1, 1);
+        gridLayout_2->addWidget(TriggerPathValue, 10, 2, 1, 1);
+
+        TriggerPathCheckBox = new QCheckBox(Behaviour_Path);
+        TriggerPathCheckBox->setObjectName(QStringLiteral("TriggerPathCheckBox"));
+        TriggerPathCheckBox->setChecked(false);
+
+        gridLayout_2->addWidget(TriggerPathCheckBox, 11, 1, 1, 2);
 
         BehaviourStackWidget->addWidget(Behaviour_Path);
 
@@ -844,6 +853,10 @@ public:
 
         retranslateUi(SSP_EditorClass);
         QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
+        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setDisabled(bool)));
+        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setDisabled(bool)));
+        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setHidden(bool)));
+        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setHidden(bool)));
 
         BehaviourStackWidget->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
@@ -860,7 +873,7 @@ public:
         actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
         actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
         Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
-        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Name", 0));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", 0));
         rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", 0));
         scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", 0));
         translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
@@ -885,18 +898,18 @@ public:
         DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "Door", 0));
         TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
         PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
-        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
-        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
-        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
-        UpButton->setText(QApplication::translate("SSP_EditorClass", "UP", 0));
-        DownButton->setText(QApplication::translate("SSP_EditorClass", "DOWN", 0));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "Circular", 0)
          << QApplication::translate("SSP_EditorClass", "One Way", 0)
          << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
         );
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
+        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", 0));
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
