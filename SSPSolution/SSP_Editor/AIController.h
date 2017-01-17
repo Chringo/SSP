@@ -23,6 +23,7 @@ public:
 	void RemoveWayPoint(int index);
 	void SetID(int entityID);
 	AIComponent* GetComponent() { return m_component; };
+	void SetComponent(AIComponent* component) { this->m_component = component; };
 
 };
 
