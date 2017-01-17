@@ -95,6 +95,15 @@ void ResourceLibExporter::BuildRegistry()
 	}
 
 	/*add skeleton here*/
+	std::vector<Resources::Skeleton*>* sceneSkeletons = m_Data->GetSkeletons();
+	for (int i = 0; i < sceneSkeletons->size(); ++i)
+	{
+		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
+		item.id = sceneSkeletons->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 	/*add animations here*/
 
 	/*Assigning the right amount of space required, just in case someone "accidentally" put
@@ -224,7 +233,7 @@ void ResourceLibExporter::HandleSceneData()
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
-				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf")
+				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" || dotName != ".mat" && dotName == ".skel")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
 				}
