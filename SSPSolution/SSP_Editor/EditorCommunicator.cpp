@@ -79,6 +79,21 @@ Resources::Status Communicator::Release()
 	return Resources::ST_OK;
 }
 
+GraphicsHandler * Communicator::GetGraphicsHandler() const
+{
+	return this->m_GraphicsHandler;
+}
+
+EditorInputHandler * Communicator::GetEditorInputHandler() const
+{
+	return this->m_EditorInputHandler;
+}
+
+bool Communicator::GetIsPreview() const
+{
+	return this->m_IsPreview;
+}
+
 Resources::Status Communicator::FindModel(int modelID, std::vector<Container>* modelPtr)
 {
 	//std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
@@ -105,6 +120,11 @@ Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int inst
 Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
 	return m_currentLevel->UpdateModel(modelID, instanceID, position, rotation);
+}
+
+Resources::Status Communicator::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+{
+	return m_currentLevel->UpdateSpawnPoint( instanceID, position, rotation);
 }
 
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)

@@ -38,10 +38,14 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
 
+	//Spawn Points
+	LevelData::SpawnHeader spawns[2];
+	GetSpawnData((char*)spawns);
+	file.write((char*)spawns, sizeof(LevelData::SpawnHeader) * 2);
 
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
-	char* modelData = new char[modelSize];					//Allocate for modelEntity data
+	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
 	file.write(modelData, modelSize);						//Write all modelEntities
 
@@ -77,6 +81,12 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
 	file.seekg(resSize, std::ios_base::cur);									  //Skip the resource data (only used by the game engine)
 	
+	//Spawn Points
+	LevelData::SpawnHeader spawns[2];
+	file.read((char*)spawns, sizeof(LevelData::SpawnHeader) * 2);
+	m_currentLevel.SetSpawnPoint(spawns[0], 0);
+	m_currentLevel.SetSpawnPoint(spawns[1], 1);
+
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
 	char* modelData = new char[modelSize];										  //allocate for the entities
@@ -98,8 +108,6 @@ LevelData::LevelStatus LevelHandler::NewLevel()
 	this->m_currentLevel.Destroy();
 	return LevelData::LevelStatus::L_OK;
 }
-
-
 
 std::string LevelHandler::GetFilePathAndName(Operation flag)
 {
@@ -202,6 +210,29 @@ LevelData::LevelStatus LevelHandler::GetResourceData(char * dataPtr)
 	}
 
 
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
+{
+	
+	for (size_t i = 0; i < 2; i++)
+	{
+		Container* spawn = m_currentLevel.GetSpawnPoint(i);
+		LevelData::SpawnHeader spawnheader;
+
+		spawnheader.position[0] = spawn->position.m128_f32[0];
+		spawnheader.position[1] = spawn->position.m128_f32[1];	//Convert from Vector to float3
+		spawnheader.position[2] = spawn->position.m128_f32[2];
+
+		spawnheader.rotation[0] = spawn->rotation.m128_f32[0];
+		spawnheader.rotation[1] = spawn->rotation.m128_f32[1];	//Convert from Vector to float3
+		spawnheader.rotation[2] = spawn->rotation.m128_f32[2];
+
+		memcpy(dataPtr + sizeof(LevelData::SpawnHeader)* i, (char*)&spawnheader,sizeof(LevelData::SpawnHeader));
+
+
+	}
 	return LevelData::LevelStatus::L_OK;
 }
 
