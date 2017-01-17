@@ -770,6 +770,16 @@ border: black;</string>
             </item>
             <item>
              <property name="text">
+              <string>Trigger</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Door</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>Path</string>
              </property>
             </item>
@@ -1199,18 +1209,10 @@ border: black;</string>
              <string notr="true">background-color: rgb(74, 74, 74);</string>
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="Behaviour_None">
-             <layout class="QFormLayout" name="formLayout_6">
-              <item row="0" column="0">
-               <widget class="QLabel" name="NONETEXT">
-                <property name="text">
-                 <string>None</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <layout class="QFormLayout" name="formLayout_6"/>
             </widget>
             <widget class="QWidget" name="Behaviour_Trigger">
              <layout class="QFormLayout" name="formLayout_2">

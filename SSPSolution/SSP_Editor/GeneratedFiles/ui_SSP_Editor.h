@@ -24,11 +24,13 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
@@ -47,6 +49,7 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
+    QWidget *RenderWidget;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -56,25 +59,52 @@ public:
     QFrame *transformFrame;
     QGridLayout *gridLayout_3;
     QLabel *rotationlabel;
+    QLabel *scalelabel;
     QDoubleSpinBox *xValue_translate;
     QDoubleSpinBox *yValue_translate;
-    QLabel *scalelabel;
     QDoubleSpinBox *zValue_translate;
     QLabel *translateLabel;
-    QDoubleSpinBox *xValue_scale;
-    QDoubleSpinBox *xValue_rot;
     QDoubleSpinBox *yValue_scale;
-    QDoubleSpinBox *yValue_rot;
+    QDoubleSpinBox *xValue_rot;
+    QDoubleSpinBox *xValue_scale;
     QDoubleSpinBox *zValue_scale;
+    QDoubleSpinBox *yValue_rot;
     QDoubleSpinBox *zValue_rot;
     QFrame *variousOptionsframe;
     QFormLayout *formLayout;
     QLabel *UIDTEXT;
     QLabel *uniqueIDLabel;
-    QLabel *ANIMTEXT;
-    QComboBox *animationBox;
-    QCheckBox *isStaticCheck;
     QLabel *ISSTATICTEXT;
+    QCheckBox *isStaticCheck;
+    QComboBox *animationBox;
+    QLabel *ANIMTEXT;
+    QFrame *CustomBehaviourFrame;
+    QFormLayout *formLayout_3;
+    QLabel *BEHAVIOURTEXT;
+    QComboBox *BehaviourDropDown;
+    QStackedWidget *BehaviourStackWidget;
+    QWidget *Behaviour_None;
+    QFormLayout *formLayout_6;
+    QWidget *Behaviour_Trigger;
+    QFormLayout *formLayout_2;
+    QLabel *TRIGGERTEXT;
+    QWidget *Behaviour_Door;
+    QFormLayout *formLayout_4;
+    QLabel *DOORTEXT;
+    QWidget *Behaviour_Path;
+    QGridLayout *gridLayout_2;
+    QLabel *TIMETEXT;
+    QLabel *PATTERNTEXT;
+    QLabel *SPEEDTEXT;
+    QLabel *WAYPOINTTEXT;
+    QPushButton *DeleteButton;
+    QPushButton *AddButton;
+    QPushButton *UpButton;
+    QPushButton *DownButton;
+    QListWidget *WaypointListWidget;
+    QComboBox *PatternDropDown;
+    QDoubleSpinBox *TimeValue;
+    QDoubleSpinBox *SpeedValue;
     QSpacerItem *verticalSpacer;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -85,7 +115,6 @@ public:
     QTreeWidget *scene_tree;
     QPushButton *pushButton;
     QLabel *label_2;
-    QWidget *RenderWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -252,13 +281,29 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        Values = new QGroupBox(centralWidget);
-        Values->setObjectName(QStringLiteral("Values"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        RenderWidget = new QWidget(centralWidget);
+        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
-        Values->setSizePolicy(sizePolicy);
+        sizePolicy.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
+        RenderWidget->setSizePolicy(sizePolicy);
+        RenderWidget->setMinimumSize(QSize(1, 1));
+        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
+        RenderWidget->setMouseTracking(true);
+        RenderWidget->setFocusPolicy(Qt::StrongFocus);
+        RenderWidget->setAcceptDrops(true);
+        RenderWidget->setAutoFillBackground(false);
+
+        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+
+        Values = new QGroupBox(centralWidget);
+        Values->setObjectName(QStringLiteral("Values"));
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
+        Values->setSizePolicy(sizePolicy1);
         Values->setMinimumSize(QSize(250, 571));
         Values->setMaximumSize(QSize(250, 16777215));
         Values->setAutoFillBackground(false);
@@ -304,6 +349,11 @@ public:
 
         gridLayout_3->addWidget(rotationlabel, 4, 0, 1, 1);
 
+        scalelabel = new QLabel(transformFrame);
+        scalelabel->setObjectName(QStringLiteral("scalelabel"));
+
+        gridLayout_3->addWidget(scalelabel, 5, 0, 1, 1);
+
         xValue_translate = new QDoubleSpinBox(transformFrame);
         xValue_translate->setObjectName(QStringLiteral("xValue_translate"));
         xValue_translate->setWrapping(true);
@@ -325,11 +375,6 @@ public:
 
         gridLayout_3->addWidget(yValue_translate, 1, 2, 1, 1);
 
-        scalelabel = new QLabel(transformFrame);
-        scalelabel->setObjectName(QStringLiteral("scalelabel"));
-
-        gridLayout_3->addWidget(scalelabel, 5, 0, 1, 1);
-
         zValue_translate = new QDoubleSpinBox(transformFrame);
         zValue_translate->setObjectName(QStringLiteral("zValue_translate"));
         zValue_translate->setWrapping(true);
@@ -345,6 +390,33 @@ public:
 
         gridLayout_3->addWidget(translateLabel, 1, 0, 1, 1);
 
+        yValue_scale = new QDoubleSpinBox(transformFrame);
+        yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
+        yValue_scale->setMinimumSize(QSize(0, 0));
+        yValue_scale->setWrapping(true);
+        yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_scale->setDecimals(4);
+        yValue_scale->setMinimum(-10000);
+        yValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
+
+        xValue_rot = new QDoubleSpinBox(transformFrame);
+        xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
+        xValue_rot->setSizePolicy(sizePolicy2);
+        xValue_rot->setWrapping(true);
+        xValue_rot->setFrame(true);
+        xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        xValue_rot->setDecimals(4);
+        xValue_rot->setMinimum(-10000);
+        xValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
+
         xValue_scale = new QDoubleSpinBox(transformFrame);
         xValue_scale->setObjectName(QStringLiteral("xValue_scale"));
         xValue_scale->setMinimumSize(QSize(0, 0));
@@ -357,43 +429,6 @@ public:
 
         gridLayout_3->addWidget(xValue_scale, 5, 1, 1, 1);
 
-        xValue_rot = new QDoubleSpinBox(transformFrame);
-        xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
-        xValue_rot->setSizePolicy(sizePolicy1);
-        xValue_rot->setWrapping(true);
-        xValue_rot->setFrame(true);
-        xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        xValue_rot->setDecimals(4);
-        xValue_rot->setMinimum(-10000);
-        xValue_rot->setMaximum(10000);
-
-        gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
-
-        yValue_scale = new QDoubleSpinBox(transformFrame);
-        yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
-        yValue_scale->setMinimumSize(QSize(0, 0));
-        yValue_scale->setWrapping(true);
-        yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_scale->setDecimals(4);
-        yValue_scale->setMinimum(-10000);
-        yValue_scale->setMaximum(10000);
-
-        gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
-
-        yValue_rot = new QDoubleSpinBox(transformFrame);
-        yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
-        yValue_rot->setWrapping(true);
-        yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_rot->setDecimals(4);
-        yValue_rot->setMinimum(-10000);
-        yValue_rot->setMaximum(10000);
-
-        gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
-
         zValue_scale = new QDoubleSpinBox(transformFrame);
         zValue_scale->setObjectName(QStringLiteral("zValue_scale"));
         zValue_scale->setMinimumSize(QSize(0, 0));
@@ -404,6 +439,16 @@ public:
         zValue_scale->setMaximum(10000);
 
         gridLayout_3->addWidget(zValue_scale, 5, 3, 1, 1);
+
+        yValue_rot = new QDoubleSpinBox(transformFrame);
+        yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
+        yValue_rot->setWrapping(true);
+        yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_rot->setDecimals(4);
+        yValue_rot->setMinimum(-10000);
+        yValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
 
         zValue_rot = new QDoubleSpinBox(transformFrame);
         zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
@@ -420,11 +465,11 @@ public:
 
         variousOptionsframe = new QFrame(Values);
         variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
-        variousOptionsframe->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
+        variousOptionsframe->setSizePolicy(sizePolicy3);
         variousOptionsframe->setFrameShape(QFrame::StyledPanel);
         variousOptionsframe->setFrameShadow(QFrame::Raised);
         formLayout = new QFormLayout(variousOptionsframe);
@@ -441,16 +486,10 @@ public:
 
         formLayout->setWidget(0, QFormLayout::FieldRole, uniqueIDLabel);
 
-        ANIMTEXT = new QLabel(variousOptionsframe);
-        ANIMTEXT->setObjectName(QStringLiteral("ANIMTEXT"));
+        ISSTATICTEXT = new QLabel(variousOptionsframe);
+        ISSTATICTEXT->setObjectName(QStringLiteral("ISSTATICTEXT"));
 
-        formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
-
-        animationBox = new QComboBox(variousOptionsframe);
-        animationBox->setObjectName(QStringLiteral("animationBox"));
-        animationBox->setEnabled(false);
-
-        formLayout->setWidget(4, QFormLayout::FieldRole, animationBox);
+        formLayout->setWidget(3, QFormLayout::LabelRole, ISSTATICTEXT);
 
         isStaticCheck = new QCheckBox(variousOptionsframe);
         isStaticCheck->setObjectName(QStringLiteral("isStaticCheck"));
@@ -459,13 +498,262 @@ public:
 
         formLayout->setWidget(3, QFormLayout::FieldRole, isStaticCheck);
 
-        ISSTATICTEXT = new QLabel(variousOptionsframe);
-        ISSTATICTEXT->setObjectName(QStringLiteral("ISSTATICTEXT"));
+        animationBox = new QComboBox(variousOptionsframe);
+        animationBox->setObjectName(QStringLiteral("animationBox"));
+        animationBox->setEnabled(false);
 
-        formLayout->setWidget(3, QFormLayout::LabelRole, ISSTATICTEXT);
+        formLayout->setWidget(4, QFormLayout::FieldRole, animationBox);
+
+        ANIMTEXT = new QLabel(variousOptionsframe);
+        ANIMTEXT->setObjectName(QStringLiteral("ANIMTEXT"));
+
+        formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
 
 
         verticalLayout_3->addWidget(variousOptionsframe);
+
+        CustomBehaviourFrame = new QFrame(Values);
+        CustomBehaviourFrame->setObjectName(QStringLiteral("CustomBehaviourFrame"));
+        QPalette palette;
+        QBrush brush(QColor(255, 255, 255, 255));
+        brush.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        QBrush brush1(QColor(74, 74, 74, 255));
+        brush1.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Button, brush1);
+        palette.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Active, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Text, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        CustomBehaviourFrame->setPalette(palette);
+        CustomBehaviourFrame->setStyleSheet(QStringLiteral("background-color: rgb(74, 74, 74);"));
+        CustomBehaviourFrame->setFrameShape(QFrame::StyledPanel);
+        CustomBehaviourFrame->setFrameShadow(QFrame::Raised);
+        formLayout_3 = new QFormLayout(CustomBehaviourFrame);
+        formLayout_3->setSpacing(6);
+        formLayout_3->setContentsMargins(11, 11, 11, 11);
+        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
+        BEHAVIOURTEXT = new QLabel(CustomBehaviourFrame);
+        BEHAVIOURTEXT->setObjectName(QStringLiteral("BEHAVIOURTEXT"));
+
+        formLayout_3->setWidget(1, QFormLayout::FieldRole, BEHAVIOURTEXT);
+
+        BehaviourDropDown = new QComboBox(CustomBehaviourFrame);
+        BehaviourDropDown->setObjectName(QStringLiteral("BehaviourDropDown"));
+        BehaviourDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        formLayout_3->setWidget(2, QFormLayout::FieldRole, BehaviourDropDown);
+
+        BehaviourStackWidget = new QStackedWidget(CustomBehaviourFrame);
+        BehaviourStackWidget->setObjectName(QStringLiteral("BehaviourStackWidget"));
+        BehaviourStackWidget->setEnabled(true);
+        QPalette palette1;
+        palette1.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Button, brush1);
+        QBrush brush2(QColor(111, 111, 111, 255));
+        brush2.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Light, brush2);
+        QBrush brush3(QColor(92, 92, 92, 255));
+        brush3.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush3);
+        QBrush brush4(QColor(37, 37, 37, 255));
+        brush4.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Dark, brush4);
+        QBrush brush5(QColor(49, 49, 49, 255));
+        brush5.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Active, QPalette::BrightText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Window, brush1);
+        QBrush brush6(QColor(0, 0, 0, 255));
+        brush6.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Shadow, brush6);
+        palette1.setBrush(QPalette::Active, QPalette::AlternateBase, brush4);
+        QBrush brush7(QColor(255, 255, 220, 255));
+        brush7.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipBase, brush7);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipText, brush6);
+        palette1.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush2);
+        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush3);
+        palette1.setBrush(QPalette::Inactive, QPalette::Dark, brush4);
+        palette1.setBrush(QPalette::Inactive, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::BrightText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Shadow, brush6);
+        palette1.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush4);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush7);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush6);
+        palette1.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush3);
+        palette1.setBrush(QPalette::Disabled, QPalette::Dark, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Disabled, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::BrightText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Shadow, brush6);
+        palette1.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush7);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush6);
+        BehaviourStackWidget->setPalette(palette1);
+        BehaviourStackWidget->setStyleSheet(QStringLiteral("background-color: rgb(74, 74, 74);"));
+        Behaviour_None = new QWidget();
+        Behaviour_None->setObjectName(QStringLiteral("Behaviour_None"));
+        formLayout_6 = new QFormLayout(Behaviour_None);
+        formLayout_6->setSpacing(6);
+        formLayout_6->setContentsMargins(11, 11, 11, 11);
+        formLayout_6->setObjectName(QStringLiteral("formLayout_6"));
+        BehaviourStackWidget->addWidget(Behaviour_None);
+        Behaviour_Trigger = new QWidget();
+        Behaviour_Trigger->setObjectName(QStringLiteral("Behaviour_Trigger"));
+        formLayout_2 = new QFormLayout(Behaviour_Trigger);
+        formLayout_2->setSpacing(6);
+        formLayout_2->setContentsMargins(11, 11, 11, 11);
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        TRIGGERTEXT = new QLabel(Behaviour_Trigger);
+        TRIGGERTEXT->setObjectName(QStringLiteral("TRIGGERTEXT"));
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, TRIGGERTEXT);
+
+        BehaviourStackWidget->addWidget(Behaviour_Trigger);
+        Behaviour_Door = new QWidget();
+        Behaviour_Door->setObjectName(QStringLiteral("Behaviour_Door"));
+        formLayout_4 = new QFormLayout(Behaviour_Door);
+        formLayout_4->setSpacing(6);
+        formLayout_4->setContentsMargins(11, 11, 11, 11);
+        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        DOORTEXT = new QLabel(Behaviour_Door);
+        DOORTEXT->setObjectName(QStringLiteral("DOORTEXT"));
+
+        formLayout_4->setWidget(0, QFormLayout::LabelRole, DOORTEXT);
+
+        BehaviourStackWidget->addWidget(Behaviour_Door);
+        Behaviour_Path = new QWidget();
+        Behaviour_Path->setObjectName(QStringLiteral("Behaviour_Path"));
+        gridLayout_2 = new QGridLayout(Behaviour_Path);
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setContentsMargins(11, 11, 11, 11);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        TIMETEXT = new QLabel(Behaviour_Path);
+        TIMETEXT->setObjectName(QStringLiteral("TIMETEXT"));
+
+        gridLayout_2->addWidget(TIMETEXT, 1, 0, 1, 1);
+
+        PATTERNTEXT = new QLabel(Behaviour_Path);
+        PATTERNTEXT->setObjectName(QStringLiteral("PATTERNTEXT"));
+
+        gridLayout_2->addWidget(PATTERNTEXT, 2, 0, 1, 1);
+
+        SPEEDTEXT = new QLabel(Behaviour_Path);
+        SPEEDTEXT->setObjectName(QStringLiteral("SPEEDTEXT"));
+
+        gridLayout_2->addWidget(SPEEDTEXT, 0, 0, 1, 1);
+
+        WAYPOINTTEXT = new QLabel(Behaviour_Path);
+        WAYPOINTTEXT->setObjectName(QStringLiteral("WAYPOINTTEXT"));
+
+        gridLayout_2->addWidget(WAYPOINTTEXT, 4, 0, 1, 1);
+
+        DeleteButton = new QPushButton(Behaviour_Path);
+        DeleteButton->setObjectName(QStringLiteral("DeleteButton"));
+        DeleteButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_2->addWidget(DeleteButton, 6, 1, 1, 1);
+
+        AddButton = new QPushButton(Behaviour_Path);
+        AddButton->setObjectName(QStringLiteral("AddButton"));
+        AddButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_2->addWidget(AddButton, 6, 0, 1, 1);
+
+        UpButton = new QPushButton(Behaviour_Path);
+        UpButton->setObjectName(QStringLiteral("UpButton"));
+        UpButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_2->addWidget(UpButton, 6, 2, 1, 1);
+
+        DownButton = new QPushButton(Behaviour_Path);
+        DownButton->setObjectName(QStringLiteral("DownButton"));
+        DownButton->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_2->addWidget(DownButton, 6, 3, 1, 1);
+
+        WaypointListWidget = new QListWidget(Behaviour_Path);
+        WaypointListWidget->setObjectName(QStringLiteral("WaypointListWidget"));
+        QPalette palette2;
+        palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        QBrush brush8(QColor(48, 48, 48, 255));
+        brush8.setStyle(Qt::SolidPattern);
+        palette2.setBrush(QPalette::Active, QPalette::Button, brush8);
+        palette2.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Active, QPalette::Base, brush8);
+        palette2.setBrush(QPalette::Active, QPalette::Window, brush8);
+        palette2.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Button, brush8);
+        palette2.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Base, brush8);
+        palette2.setBrush(QPalette::Inactive, QPalette::Window, brush8);
+        palette2.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::Button, brush8);
+        palette2.setBrush(QPalette::Disabled, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::Base, brush8);
+        palette2.setBrush(QPalette::Disabled, QPalette::Window, brush8);
+        WaypointListWidget->setPalette(palette2);
+        WaypointListWidget->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        gridLayout_2->addWidget(WaypointListWidget, 5, 0, 1, 4);
+
+        PatternDropDown = new QComboBox(Behaviour_Path);
+        PatternDropDown->setObjectName(QStringLiteral("PatternDropDown"));
+        PatternDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        gridLayout_2->addWidget(PatternDropDown, 2, 1, 1, 3);
+
+        TimeValue = new QDoubleSpinBox(Behaviour_Path);
+        TimeValue->setObjectName(QStringLiteral("TimeValue"));
+        TimeValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        TimeValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_2->addWidget(TimeValue, 1, 3, 1, 1);
+
+        SpeedValue = new QDoubleSpinBox(Behaviour_Path);
+        SpeedValue->setObjectName(QStringLiteral("SpeedValue"));
+        SpeedValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        SpeedValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_2->addWidget(SpeedValue, 0, 3, 1, 1);
+
+        BehaviourStackWidget->addWidget(Behaviour_Path);
+
+        formLayout_3->setWidget(4, QFormLayout::FieldRole, BehaviourStackWidget);
+
+
+        verticalLayout_3->addWidget(CustomBehaviourFrame);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -476,11 +764,11 @@ public:
 
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy4);
         tabWidget->setMinimumSize(QSize(200, 0));
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
@@ -531,22 +819,6 @@ public:
 
         gridLayout->addWidget(label_2, 0, 2, 1, 1);
 
-        RenderWidget = new QWidget(centralWidget);
-        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
-        RenderWidget->setSizePolicy(sizePolicy4);
-        RenderWidget->setMinimumSize(QSize(1, 1));
-        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
-        RenderWidget->setMouseTracking(true);
-        RenderWidget->setFocusPolicy(Qt::StrongFocus);
-        RenderWidget->setAcceptDrops(true);
-        RenderWidget->setAutoFillBackground(false);
-
-        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
-
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -571,7 +843,9 @@ public:
         menuEditor->addAction(actionBuild_BPF);
 
         retranslateUi(SSP_EditorClass);
+        QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
 
+        BehaviourStackWidget->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
 
 
@@ -592,13 +866,37 @@ public:
         translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
         UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", 0));
         uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", 0));
-        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
+        isStaticCheck->setText(QString());
         animationBox->clear();
         animationBox->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "None", 0)
         );
-        isStaticCheck->setText(QString());
-        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
+        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", 0));
+        BehaviourDropDown->clear();
+        BehaviourDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "Trigger", 0)
+         << QApplication::translate("SSP_EditorClass", "Door", 0)
+         << QApplication::translate("SSP_EditorClass", "Path", 0)
+        );
+        TRIGGERTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger", 0));
+        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "Door", 0));
+        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
+        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
+        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
+        UpButton->setText(QApplication::translate("SSP_EditorClass", "UP", 0));
+        DownButton->setText(QApplication::translate("SSP_EditorClass", "DOWN", 0));
+        PatternDropDown->clear();
+        PatternDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "Circular", 0)
+         << QApplication::translate("SSP_EditorClass", "OneWay", 0)
+         << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
+        );
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
