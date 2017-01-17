@@ -54,10 +54,8 @@ public:
 	//Retrieve next available component in the vector
 	AIDLL_API AIComponent* GetNextAvailableComponents();
 
-	
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
 
 private:	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
