@@ -112,6 +112,7 @@
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="System.cpp" />
+    <ClCompile Include="WheelEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="WheelEntity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
