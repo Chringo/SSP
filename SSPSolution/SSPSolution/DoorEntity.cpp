@@ -29,7 +29,6 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 {
 	if (reactEvent == EVENT::BUTTON_PRESSED)
 	{
-		DirectX::XMVECTOR rotation;
 		if (!this->m_isOpened)
 		{
 			this->m_isOpened = true;
