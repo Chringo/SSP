@@ -69,6 +69,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 {
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+
+	this->m_buttonCnt = this->m_doorCnt = 0;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
 	// creating the player
@@ -135,7 +137,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvG->worldMatrix = DirectX::XMMatrixIdentity();
 	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
-
+	
+	
 	this->m_director.Initialize();
 
 	return result;
