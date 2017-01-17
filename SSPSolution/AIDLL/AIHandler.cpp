@@ -201,9 +201,9 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	newComponent->m_currentWaypoint = 0;
 	newComponent->m_nrOfWaypoint = 0;
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) 
+	{
 		newComponent->m_waypoints[i] = DirectX::XMVECTOR();
-		newComponent->m_nrOfWaypoint++;
 	}
 
 	return newComponent;
