@@ -22,6 +22,8 @@ Resources::Status FileImporter::ImportFromServer()
 	struct dirent *ent;
 	QString dirPath = pathToBbfFolder + "/Models";
 	int numModels = 0;
+
+	/*importing the player model files*/
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -55,6 +57,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+
+	/*importing the rest of the model files*/
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -82,6 +86,7 @@ Resources::Status FileImporter::ImportFromServer()
 		perror("");
 	}
 
+	/*importing the mesh files*/
 	dirPath = pathToBbfFolder + "/Meshes";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
@@ -103,6 +108,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+
+	/*importing the skeleton files*/
 	dirPath = pathToBbfFolder + "/Skeletons";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
@@ -124,6 +131,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+
+	/*importing the animation*/
 	//dirPath = pathToBbfFolder + "/Animations";
 	//if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	//{
@@ -145,23 +154,9 @@ Resources::Status FileImporter::ImportFromServer()
 	//	/* could not open directory */
 	//	perror("");
 	//}
-	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
-	//{
-	//	/* append all the texture names from the directory */
-	//	while ((ent = readdir(dir)) != NULL) 
-	//	{
-	//		if (*ent->d_name != '.')
-	//			m_filepaths.push_back(ent->d_name);
-	//	}
-	//	closedir(dir);
-	//}
-	//else 
-	//{
-	//	/* could not open directory */
-	//	perror("");
-	//}
+
+	/*Load the material files*/
 	dirPath = pathToBbfFolder + "/Materials";
-	// Load textures before Materials, So that the materials can find them.
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -207,6 +202,7 @@ void FileImporter::LoadImportedFiles()
 				handleMesh(m_bbf_object); 
 				break;
 			case Resources::ResourceType::RES_ANIMATION:
+				handleAnimation(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_SKELETON:
 				handleSkeleton(m_bbf_object);
@@ -409,12 +405,21 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 
 	m_data->AddSkeleton(m_Skel);
 
-	printf("hajsjds");
-
 }
 
 void FileImporter::handleAnimation(char * m_bbf_object)
 {
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
+	LayerIdHeader * jointCount = (LayerIdHeader*)m_bbf_object;
+	m_bbf_object += sizeof(LayerIdHeader);
+	for (int i = 0; i < jointCount->id; ++i)
+	{
+
+	}
+
 }
 
 void FileImporter::AddListItem(ListItem category, std::string name)
