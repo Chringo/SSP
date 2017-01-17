@@ -53,7 +53,17 @@ int LevelState::ShutDown()
 	}
 
 	//Clear the puzzle entities
+	for (size_t i = 0; i < this->m_doorEntities.size(); i++)
+	{
+		delete this->m_doorEntities[i];
+		this->m_doorEntities[i] = nullptr;
+	}
 	this->m_doorEntities.clear();
+	for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
+	{
+		delete this->m_buttonEntities[i];
+		this->m_buttonEntities[i] = nullptr;
+	}
 	this->m_buttonEntities.clear();
 	// Clear level director
 	this->m_director.Shutdown();
@@ -136,8 +146,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	
 	this->m_director.Initialize();
 
-	ButtonEntity button1;
-	DoorEntity door1;
+	ButtonEntity* button1 = new ButtonEntity();
+	DoorEntity* door1 = new DoorEntity();
 
 	//DOOR
 	GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
@@ -146,8 +156,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	door1G->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 	PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
-	door1P->PC_entityID = 0;								//Set Entity ID
-	door1P->PC_pos = DirectX::XMVectorSet(0, 5, 0, 0);		//Set Position
+	door1P->PC_entityID = 666;								//Set Entity ID
+	door1P->PC_pos = DirectX::XMVectorSet(0, 1, 5, 0);		//Set Position
 	door1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	door1P->PC_is_Static = true;							//Set IsStatic
 	door1P->PC_active = true;								//Set Active
@@ -156,7 +166,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	door1P->PC_AABB.ext[0] = 1.5;
 	door1P->PC_AABB.ext[1] = 1.5;
 	door1P->PC_AABB.ext[2] = 1.5;
-	door1.Initialize(666, door1P, door1G);
+	door1->Initialize(666, door1P, door1G, 0.0f, DirectX::XM_PI / 2.1f, 1.0f);
 
 	//BUTTON
 	GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
@@ -165,8 +175,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	button1G->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	resHandler->GetModel(button1G->modelID, button1G->modelPtr);
 	PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
-	button1P->PC_entityID = 0;									//Set Entity ID
-	button1P->PC_pos = DirectX::XMVectorSet(0, 5, 0, 0);		//Set Position
+	button1P->PC_entityID = 616;									//Set Entity ID
+	button1P->PC_pos = DirectX::XMVectorSet(0, 2, 8, 0);		//Set Position
 	button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	button1P->PC_is_Static = true;								//Set IsStatic
 	button1P->PC_active = true;									//Set Active
@@ -175,10 +185,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	button1P->PC_AABB.ext[0] = 1.5;
 	button1P->PC_AABB.ext[1] = 1.5;
 	button1P->PC_AABB.ext[2] = 1.5;
-	button1.Initialize(616, button1P, button1G);
+	button1->Initialize(616, button1P, button1G);
+	button1->AddObserver(door1, door1->GetEntityID());
 	this->m_buttonEntities.push_back(button1);
 
-	button1.AddObserver(&door1, door1.GetEntityID());
 	this->m_doorEntities.push_back(door1);
 
 	return result;
@@ -187,7 +197,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
-	dt = 1000000 / dt;
+	dt = dt / 1000000;
 	//this->m_player1.Update(dt, inputHandler);
 
 	//for (size_t i = 0; i < m_entities.size(); i++)
@@ -233,7 +243,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	//Update all puzzle entities
-
+	//Buttons require input for logical evaluation
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	{
+		for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+		{
+			DirectX::XMFLOAT3 playerPos;
+			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+			
+			(*i)->CheckPressed(playerPos);
+		}
+	}
+	//Doors require updates to change opening state
+	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+		if ((*i)->GetIsOpened())
+		{
+			printf("America Fuck yea!");
+		}
+	}
 	//Lock the camera to the player
 	this->LockCameraToPlayer();
 

@@ -14,10 +14,11 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->InitializeBase(entityID, pComp, gComp);
 
 	this->m_isOpened = false;
-	this->m_minRotation = 0.f;
-	this->m_maxRotation = 3.f;
-	this->m_rotateTime = 1.f;
+	this->m_minRotation = minRotation;
+	this->m_maxRotation = maxRotation;
+	this->m_rotateTime = rotateTime;
 	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
+	this->SyncComponents();
 
 	return 0;
 }
@@ -28,7 +29,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
 		{
-			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + this->m_rotatePerSec * dT);
+			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + (this->m_rotatePerSec * dT));
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
@@ -40,7 +41,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
 		{
-			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - this->m_rotatePerSec * dT);
+			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_rotatePerSec * dT));
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);

@@ -28,7 +28,8 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp);
 	this->m_isActive = 0;
-	this->m_range = 1.f;
+	this->m_range = 5.0f;
+	this->SyncComponents();
 	return result;
 }
 

@@ -20,8 +20,8 @@ private:
 	//Entities where no data needs to be moved between the components
 	std::vector<StaticEntity*>	m_staticEntitys;
 	//Puzzle entities
-	std::vector<DoorEntity> m_doorEntities;
-	std::vector<ButtonEntity> m_buttonEntities;
+	std::vector<DoorEntity*> m_doorEntities;
+	std::vector<ButtonEntity*> m_buttonEntities;
 public:
 	LevelState();
 	virtual ~LevelState();
