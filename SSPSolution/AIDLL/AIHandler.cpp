@@ -128,7 +128,7 @@ void AIHandler::SetTime(int compID, int time)
 	this->m_AIComponents.at(compID)->m_time = time;
 }
 
-void AIHandler::SetSpeed(int compID, int speed)
+void AIHandler::SetSpeed(int compID, float speed)
 {
 	this->m_AIComponents.at(compID)->m_speed = speed;
 }
@@ -138,9 +138,9 @@ void AIHandler::SetDirection(int compID, int direction)
 	this->m_AIComponents.at(compID)->m_direction = direction;
 }
 
-void AIHandler::SetCurrentWaypoint(int compID, int currentWaypoint)
+void AIHandler::SetCurrentWaypoint(int compID, int latestWaypoint)
 {
-	this->m_AIComponents.at(compID)->m_latestWaypointID = currentWaypoint;
+	this->m_AIComponents.at(compID)->m_latestWaypointID = latestWaypoint;
 }
 
 void AIHandler::SetPattern(int compID, int pattern)

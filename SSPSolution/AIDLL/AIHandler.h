@@ -37,7 +37,7 @@ public:
 	//Time limited activity
 	AIDLL_API void SetTime(int compID, int time);
 	//Speed for AI movement calculation
-	AIDLL_API void SetSpeed(int compID, int speed);
+	AIDLL_API void SetSpeed(int compID, float speed);
 	//Direction between waypoints for logic
 	AIDLL_API void SetDirection(int compID, int direction);
 	//Used as a index and to know where you are moving from	
