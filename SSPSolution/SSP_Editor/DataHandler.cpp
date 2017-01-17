@@ -90,6 +90,11 @@ DataHandler::~DataHandler()
 		delete m_skeletons.at(i);
 		m_skeletons.at(i) = nullptr;
 	}
+	for (size_t i = 0; i < m_animations.size(); i++)
+	{
+		delete m_animations.at(i);
+		m_animations.at(i) = nullptr;
+	}
 
 	for (auto iterator = m_textures.begin(); iterator != m_textures.end(); ++iterator)
 	{

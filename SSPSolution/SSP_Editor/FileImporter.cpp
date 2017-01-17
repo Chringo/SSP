@@ -454,6 +454,8 @@ void FileImporter::handleAnimation(char * m_bbf_object)
 		}
 	}
 
+	m_data->AddAnimations(animation);
+
 
 }
 
