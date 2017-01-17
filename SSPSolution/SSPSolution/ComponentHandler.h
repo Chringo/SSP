@@ -23,6 +23,7 @@ public:
 	PhysicsComponent* GetPhysicsComponent();
 	AIComponent* GetAIComponent();
 	void UpdateGraphicsComponents();
+	void UpdateAIComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
 
 	//temporary function

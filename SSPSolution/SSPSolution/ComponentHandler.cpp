@@ -53,6 +53,11 @@ void ComponentHandler::UpdateGraphicsComponents()
 	this->m_graphicsHandler->UpdateComponentList();
 }
 
+void ComponentHandler::UpdateAIComponents()
+{
+
+}
+
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
