@@ -126,8 +126,28 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
 	golvP->PC_friction = 0.9;
 	golvG->worldMatrix = DirectX::XMMatrixIdentity();
-	golv->Initialize(2, golvP, golvG, nullptr);
+	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
+
+	StaticEntity* platform = new StaticEntity();
+	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
+	platformG->modelID = 1337;
+	platformG->active = true;
+	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
+	platformG->worldMatrix = DirectX::XMMatrixIdentity();
+	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
+	platformP->PC_pos = DirectX::XMVectorSet(0, 10, 40, 0);
+	platformP->PC_is_Static = true;
+	platformP->PC_AABB.ext[0] = 10;
+	platformP->PC_AABB.ext[1] = 1;
+	platformP->PC_AABB.ext[2] = 10;
+	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
+	platformTERMINATOR->m_active = true;
+
+	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
+	platformP->PC_entityID = platform->GetEntityID();
+	platformTERMINATOR->m_entityID = platform->GetEntityID();
+	this->m_staticEntitys.push_back(platform);
 
 	this->m_director.Initialize();
 
