@@ -1,23 +1,23 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATE_H
+#include "../NetworkDLL/NetworkModule.h"
+#pragma comment (lib, "../Debug/NetworkDLL")
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
-//#include "../NetworkDLL/NetworkModule.h"
 
-
-//class NetworkModule;
 class GameStateHandler;
 class GameState
 {
-private:	//Variables
+private:	//Variables	
+	NetworkModule* m_networkModule;
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 protected:
 	GameStateHandler* m_gsh;
 	ComponentHandler* m_cHandler;
 	Camera* m_cameraRef;
 
-	//static NetworkModule* m_networkModule;
-	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+
 
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 public:

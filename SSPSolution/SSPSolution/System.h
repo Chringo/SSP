@@ -12,9 +12,7 @@
 #include "../GraphicsDLL/Camera.h"
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
-//#include "../NetworkDLL/NetworkModule.h"
 #pragma comment (lib, "../Debug/PhysicsDLL")
-//#pragma comment (lib, "../Debug/NetworkDLL")
 /* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
