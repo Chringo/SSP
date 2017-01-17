@@ -139,6 +139,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ButtonEntity button1;
 	DoorEntity door1;
 
+	//DOOR
 	GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
 	door1G->modelID = 1337;
 	door1G->active = true;
@@ -156,26 +157,29 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	door1P->PC_AABB.ext[1] = 1.5;
 	door1P->PC_AABB.ext[2] = 1.5;
 	door1.Initialize(666, door1P, door1G);
-	this->m_doorEntities.push_back(door1);
 
+	//BUTTON
 	GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
 	button1G->modelID = 1337;
 	button1G->active = true;
 	button1G->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	resHandler->GetModel(button1G->modelID, button1G->modelPtr);
 	PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
-	button1P->PC_entityID = 0;								//Set Entity ID
+	button1P->PC_entityID = 0;									//Set Entity ID
 	button1P->PC_pos = DirectX::XMVectorSet(0, 5, 0, 0);		//Set Position
 	button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	button1P->PC_is_Static = true;							//Set IsStatic
-	button1P->PC_active = true;								//Set Active
+	button1P->PC_is_Static = true;								//Set IsStatic
+	button1P->PC_active = true;									//Set Active
 	button1P->PC_mass = 5;
 	button1P->PC_BVtype = BV_AABB;
 	button1P->PC_AABB.ext[0] = 1.5;
 	button1P->PC_AABB.ext[1] = 1.5;
 	button1P->PC_AABB.ext[2] = 1.5;
-	button1.Initialize(666, button1P, button1G);
+	button1.Initialize(616, button1P, button1G);
 	this->m_buttonEntities.push_back(button1);
+
+	button1.AddObserver(&door1, door1.GetEntityID());
+	this->m_doorEntities.push_back(door1);
 
 	return result;
 }
