@@ -1209,7 +1209,7 @@ border: black;</string>
              <string notr="true">background-color: rgb(74, 74, 74);</string>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="Behaviour_None">
              <layout class="QFormLayout" name="formLayout_6"/>
@@ -1497,7 +1497,7 @@ border: black;</string>
                 </item>
                 <item>
                  <property name="text">
-                  <string>OneWay</string>
+                  <string>One Way</string>
                  </property>
                 </item>
                 <item>

@@ -49,8 +49,7 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 	m_isStaticBox = ui->isStaticCheck;
 	connect(ui->isStaticCheck, SIGNAL(stateChanged(int)), this, SLOT(on_isStatic_changed(int)));
-
-	
+	this->m_BehaviourHandler(ui);
 }
 
 Ui::AttributesHandler::~AttributesHandler()
