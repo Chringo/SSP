@@ -132,6 +132,9 @@
     <ClCompile Include="DynamicEntity.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="DoorEntity.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="DynamicEntity.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="DoorEntity.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
