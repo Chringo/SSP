@@ -76,6 +76,8 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ResourceLib\TextureLoader\DDSTextureLoader.cpp" />
+    <ClCompile Include="AIController.cpp" />
+    <ClCompile Include="AiHandler.cpp" />
     <ClCompile Include="AssetTreeHandler.cpp" />
     <ClCompile Include="AttributesHandler.cpp" />
     <ClCompile Include="BehaviourTypeHandler.cpp" />
@@ -183,6 +185,8 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(ProjectDir)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(ProjectDir)\include\QtCore" "-I$(ProjectDir)\include\QtGui" "-I$(ProjectDir)\include\QtWidgets"</Command>
     </CustomBuild>
+    <ClInclude Include="AIController.h" />
+    <ClInclude Include="AiHandler.h" />
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />

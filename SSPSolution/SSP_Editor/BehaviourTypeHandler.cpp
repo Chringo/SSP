@@ -1,15 +1,13 @@
 #include "BehaviourTypeHandler.h"
 
-Ui::BehaviourTypeHandler * Ui::BehaviourTypeHandler::GetInstance()
+Ui::BehaviourTypeHandler::BehaviourTypeHandler()
 {
-	static Ui::BehaviourTypeHandler instance;
-	return &instance;
 }
 
 Ui::BehaviourTypeHandler::BehaviourTypeHandler(const Ui::SSP_EditorClass * ui)
 {
-	this->Initialize(ui);
-	Deselect();
+	
+	//Deselect();
 }
 
 void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
@@ -26,7 +24,10 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 	this->m_WaypointList = ui->WaypointListWidget;
 
-
+	this->m_Add = ui->AddButton;
+	this->m_Del = ui->DeleteButton;
+	connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(on_Add()));
+	connect(ui->DeleteButton, SIGNAL(clicked()), this, SLOT(on_Del()));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -61,6 +62,7 @@ void Ui::BehaviourTypeHandler::on_Time_changed(double val)
 {
 	if (this->m_Current_Type == PATH)
 	{
+		int i = 0;
 		//do thing
 	}
 }
@@ -68,6 +70,7 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 {
 	if (this->m_Current_Type == PATH)
 	{
+		int i = 0;
 		//do thing
 	}
 }
@@ -85,18 +88,20 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 	this->m_Current_Type = (BehaviourType)val;
 }
 
-void Ui::BehaviourTypeHandler::on_Add(double val)
+void Ui::BehaviourTypeHandler::on_Add()
 {
 	if (this->m_Current_Type == PATH)
 	{
+		int i = 0;
 		//do thing
 	}
 }
 
-void Ui::BehaviourTypeHandler::on_Del(double val)
+void Ui::BehaviourTypeHandler::on_Del()
 {
 	if (this->m_Current_Type == PATH)
 	{
+		int i = 0;
 		//do thing
 	}
 }

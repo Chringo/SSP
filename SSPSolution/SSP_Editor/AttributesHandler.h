@@ -46,7 +46,7 @@ namespace Ui {
 		QLabel*			m_uniqueID;
 		QCheckBox*		m_isStaticBox;
 		Container*		m_selection = nullptr;
-		Ui::BehaviourTypeHandler* m_BehaviourHandler = nullptr;
+		BehaviourTypeHandler* m_BehaviourHandler = nullptr;
 	public:
 		static AttributesHandler* GetInstance(); // Singleton
 		AttributesHandler(const Ui::SSP_EditorClass* ui);

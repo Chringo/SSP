@@ -894,7 +894,7 @@ public:
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "Circular", 0)
-         << QApplication::translate("SSP_EditorClass", "OneWay", 0)
+         << QApplication::translate("SSP_EditorClass", "One Way", 0)
          << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
         );
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
