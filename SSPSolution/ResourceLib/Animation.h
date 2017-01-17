@@ -35,6 +35,7 @@ namespace Resources
 		DLL_OPERATION virtual ~Animation();
 
 		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, AnimationData* animData);
+		DLL_OPERATION Resources::Status CreateFromBBF(Resource::RawResourceData* resData, AnimationData* animData);
 		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data, free container
 
 		DLL_OPERATION const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };

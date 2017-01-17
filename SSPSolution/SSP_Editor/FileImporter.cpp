@@ -133,27 +133,27 @@ Resources::Status FileImporter::ImportFromServer()
 	}
 
 	/*importing the animation*/
-	//dirPath = pathToBbfFolder + "/Animations";
-	//if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
-	//{
-	//	/* append all the mesh names from the directory */
-	//	while ((ent = readdir(dir)) != NULL)
-	//	{
-	//		if (*ent->d_name != '.')
-	//		{
-	//			std::string pathName = dirPath.toStdString() + "/";
-	//			pathName += ent->d_name;
-	//			m_filepaths.push_back(pathName);
-	//		}
-	//	}
-	//	closedir(dir);
-	//}
-	//else
-	//{
-	//	return Resources::Status::ST_ERROR_OPENING_FILE;
-	//	/* could not open directory */
-	//	perror("");
-	//}
+	dirPath = pathToBbfFolder + "/Animations";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
 
 	/*Load the material files*/
 	dirPath = pathToBbfFolder + "/Materials";
@@ -380,15 +380,15 @@ void FileImporter::handleSkeleton(char * m_bbf_object)
 
 	m_bbf_object += sizeof(JointHeader) * *jointCount;
 
-	LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
 	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
 	{
-		Resources::Resource::RawResourceData animationData;
-		animationData.m_id = (unsigned int)m_bbf_object;
-		animationData.m_resType = Resources::ResourceType::RES_ANIMATION;
+		LayerIdHeader* animationID = (LayerIdHeader*)m_bbf_object;
+		//unsigned int animationID = (unsigned int)m_bbf_object;
 
-		Resources::Animation *newAnimation = new Resources::Animation(&animationData);
-		m_Skel->AddAnimation(newAnimation, i);
+		m_Skel->AddAnimationID(animationID->id);
+		/*Resources::Animation *newAnimation = new Resources::Animation(&animationData);
+		m_Skel->AddAnimation(newAnimation, i);*/
 		m_bbf_object += sizeof(LayerIdHeader);
 	}
 
@@ -412,13 +412,48 @@ void FileImporter::handleAnimation(char * m_bbf_object)
 	Resources::Status res;
 	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
 
+
+	/*getting the amount of joints that are animated*/
 	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
 	LayerIdHeader * jointCount = (LayerIdHeader*)m_bbf_object;
 	m_bbf_object += sizeof(LayerIdHeader);
+
+	Resources::Animation *animation = new Resources::Animation;
+
+	Resources::Animation::AnimationData animData;
+	animData.jointCount = jointCount->id;
+	animData.joints = new Resources::Animation::AnimationJoint[animData.jointCount];
 	for (int i = 0; i < jointCount->id; ++i)
 	{
+		/*getting the number of frames for the current joint*/
+		LayerIdHeader *nrKeyFrames = (LayerIdHeader*)m_bbf_object;
+		m_bbf_object += sizeof(LayerIdHeader);
 
+		Resources::Animation::AnimationJoint animatedJoint;
+		animatedJoint.keyframeCount = nrKeyFrames->id;
+		animatedJoint.keyframes = new Resources::Animation::Keyframe[animatedJoint.keyframeCount];
+		memcpy((char*)animatedJoint.keyframes, m_bbf_object, sizeof(Resources::Animation::Keyframe)*animatedJoint.keyframeCount);
+
+		animData.joints[i] = animatedJoint;
+		m_bbf_object += sizeof(Resources::Animation::Keyframe)*animatedJoint.keyframeCount;
 	}
+
+	animation->CreateFromBBF(res_Data, &animData);
+
+	std::vector<Resources::Skeleton*>* skeletons = m_data->GetSkeletons();
+	for (int i = 0; i < skeletons->size(); ++i)
+	{
+		const std::vector<unsigned int> *animIDS = skeletons->at(i)->GetAllAnimationIds();
+		for (int j = 0; j < animIDS->size(); ++j)
+		{
+			if (animIDS->at(j) == res_Data->m_id)
+			{
+				skeletons->at(i)->AddAnimation(animation, j);
+				break;
+			}
+		}
+	}
+
 
 }
 

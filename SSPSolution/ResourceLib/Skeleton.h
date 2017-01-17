@@ -55,10 +55,10 @@ namespace Resources
 		
 		DLL_OPERATION const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
 		DLL_OPERATION const RawSkeletonData*			  GetSkeletonData()			const { return &m_skelData;		 };
-		DLL_OPERATION const Animation*					  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
+		DLL_OPERATION Animation*						  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
 		DLL_OPERATION const std::vector<unsigned int> *	  GetAllAnimationIds()		const { return &m_animationIds; };
 		DLL_OPERATION virtual std::shared_ptr<char>		  GetDataAsBinary(size_t* size, bool* result = nullptr);
-		DLL_OPERATION void								  SetNumAnimations(unsigned int m_numAnimations) { this->m_numAnimations = m_numAnimations; };
+		DLL_OPERATION void								  AddAnimationID(unsigned int m_animationID) { this->m_animationIds.push_back(m_animationID); };
 
 	};
 }

@@ -40,6 +40,14 @@ struct JointHeader {
 	int jointIndex;
 	int parentIndex;
 };
+struct KeyFrameHeader
+{
+	float timeValue;
+	float translation[3];
+	float rotation[3];
+	float quaternion[4];
+	float scale[3];
+};
 struct MaterialHeader{
 	unsigned int textureIDs[5]{0,0,0,0,0};
 	//unsigned int textureNameLength[5]{0,0,0,0,0};
