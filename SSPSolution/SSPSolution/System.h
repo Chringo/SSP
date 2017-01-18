@@ -8,9 +8,9 @@
 #include "DebugHandler.h"
 #include "Progression.h"
 //Project DLLs
+#include "../SSPSolution/AnimationHandler.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "../SSPSolution/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
@@ -44,8 +44,6 @@ private:
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
 	AnimationHandler* m_AnimationHandler;
-	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
-
 	/*AI*/
 	AIHandler* m_AIHandler;
 public:
