@@ -502,11 +502,6 @@ int GraphicsHandler::UpdateComponentList()
 	return result;
 }
 
-void GraphicsHandler::SetTempAnimComponent(void * component)
-{
-	m_animGraphicsComponents[0] = (AnimationGraphicsComponent*)component;
-}
-
 GraphicsComponent * GraphicsHandler::getComponent(int index)
 {
 	return this->m_graphicsComponents[index];

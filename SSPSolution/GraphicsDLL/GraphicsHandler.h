@@ -99,7 +99,6 @@ public:
 
 	//TEMP STUFF
 public:
-	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
