@@ -2,7 +2,14 @@
 #define AIDLL_AI_AICOMPONENT_H
 
 #include <DirectXMath.h>
-
+enum Pattern : int
+{
+	AI_LINEAR = 1,
+	AI_CIRCULAR,
+	AI_ROUNTRIP,
+	AI_RANDOM,
+	AI_NONE = -1
+};
 __declspec(align(16)) struct AIComponent
 {
 	// System variables
