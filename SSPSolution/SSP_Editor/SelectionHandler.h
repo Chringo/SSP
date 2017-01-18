@@ -40,6 +40,7 @@ public:
 	static SelectionHandler* GetInstance();
 	void Update();
 	bool NeedsUpdate();
+	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
 	bool HasSelection();

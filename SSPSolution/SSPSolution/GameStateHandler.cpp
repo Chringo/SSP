@@ -24,12 +24,19 @@ int GameStateHandler::ShutDown()
 	//Delete the states that should have been popped
 	while (this->m_statesToRemove.size())
 	{
+		
 		GameState* temp;
 		temp = this->m_statesToRemove.back();
 		delete temp;
 		temp = nullptr;
 		this->m_statesToRemove.pop_back();
 	}
+
+	//Shutdown the NetworkModule that is shared with all GameStates
+	GameState::m_networkModule->Shutdown();
+	delete GameState::m_networkModule;
+	GameState::m_networkModule = nullptr;
+
 	return 1;
 }
 

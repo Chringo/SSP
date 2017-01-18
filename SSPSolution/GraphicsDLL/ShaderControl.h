@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_SHADERCONTROL_H
-#define GRAPHICSDLL_SHADERCONTROL_H
+#ifndef GRAPHICSDLL_SHADERS_SHADERCONTROL_H
+#define GRAPHICSDLL_SHADERS_SHADERCONTROL_H
 #include "FinalShader.h"
 #include "DeferredShader.h"
 #include "PostProcessShader.h"
@@ -42,7 +42,7 @@ public:
 	void PostProcess();
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
-	void Draw(Resources::Model * model, penis * component);
+	void Draw(Resources::Model * model, GraphicsAnimationComponent * component);
 	ID3D11DepthStencilView* GetBackBufferDSV() const {return((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencilView();}
 
 	void DrawFinal();
