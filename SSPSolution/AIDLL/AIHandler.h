@@ -57,7 +57,11 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 
-private:	// Helper functions
+private:
+	// Internal Variables
+	bool WaypointUpdated; //Update the XMVECTOR AP_dir for the component this frame 
+
+	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
 	bool WaypointApprox(int compID);
 	int GetNextWaypoint(int compID, int pattern);

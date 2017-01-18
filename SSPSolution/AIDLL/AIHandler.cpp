@@ -16,6 +16,7 @@ int AIHandler::Shutdown()
 
 int AIHandler::Initialize(int max)
 {
+	this->WaypointUpdated = false;
 	this->m_nrOfAIComponents = 0;
 
 	if (max <= 0)
@@ -87,16 +88,20 @@ int AIHandler::Update(float deltaTime)
 			}
 
 			//Update position
-			DirectX::XMVECTOR v;
-			v = DirectX::XMVectorSubtract(
-				this->m_AIComponents.at(i)->AP_waypoints[this->m_AIComponents.at(i)->AP_nextWaypointID],
-				pos);
+			if (this->WaypointUpdated == false)
+			{
+				this->m_AIComponents.at(i)->AP_dir = DirectX::XMVectorSubtract(
+					this->m_AIComponents.at(i)->AP_waypoints[this->m_AIComponents.at(i)->AP_nextWaypointID],
+					pos);
 
-			DirectX::XMVECTOR m;
-			m = DirectX::XMVectorScale(DirectX::XMVector3Normalize(v), 10); //Speed?
-			m = DirectX::XMVectorScale(m, deltaTime);
+				this->WaypointUpdated = true;
+			}
+
+			DirectX::XMVECTOR v;
+			v = DirectX::XMVectorScale(DirectX::XMVector3Normalize(v), this->m_AIComponents.at(i)->AP_speed);
+			v = DirectX::XMVectorScale(v, deltaTime);
 			
-			this->m_AIComponents.at(i)->AP_position = DirectX::XMVectorMultiply(m, this->m_AIComponents.at(i)->AP_position);
+			this->m_AIComponents.at(i)->AP_position = DirectX::XMVectorMultiply(v, this->m_AIComponents.at(i)->AP_position);
 		}
 	}
 
@@ -221,8 +226,9 @@ bool AIHandler::WaypointApprox(int compID)
 
 	float length = VectorLength(v);
 
-	if (length > 0.1)
+	if (length > 0.01)
 	{	
+		this->WaypointUpdated = false;
 		return true;
 	}
 
