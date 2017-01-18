@@ -130,6 +130,46 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
 
+	DynamicEntity* platform = new DynamicEntity();
+	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
+	platformG->modelID = 1337;
+	platformG->active = true;
+	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
+	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
+	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
+	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
+	platformP->PC_is_Static = true;
+	platformP->PC_AABB.ext[0] = 5;
+	platformP->PC_AABB.ext[1] = 0.1f;
+	platformP->PC_AABB.ext[2] = 5;
+	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
+#pragma region AIComp variables
+	platformTERMINATOR->AP_active = true;
+	// entityID resolved in initialise down below
+
+	platformTERMINATOR->AP_triggered = true;
+	platformTERMINATOR->AP_time = 0;
+
+	platformTERMINATOR->AP_speed = 0.3f;
+	// AP_dir resolved in update loop
+
+	platformTERMINATOR->AP_position = platformP->PC_pos;
+	platformTERMINATOR->AP_pattern = 2;// Circular
+	platformTERMINATOR->AP_direction = 0;
+	platformTERMINATOR->AP_latestWaypointID = 0;
+	platformTERMINATOR->AP_nextWaypointID = 1;
+	platformTERMINATOR->AP_nrOfWaypoint = 4;
+	platformTERMINATOR->AP_waypoints[0] = platformP->PC_pos;
+	platformTERMINATOR->AP_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
+	platformTERMINATOR->AP_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
+	platformTERMINATOR->AP_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
+#pragma endregion
+
+	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
+	platformP->PC_entityID = platform->GetEntityID();
+	platformTERMINATOR->AP_entityID = platform->GetEntityID();
+	this->m_dynamicEntitys.push_back(platform);
+
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
 	m_cameraRef->SetCameraPivot(
@@ -404,8 +444,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 
 	}
-
-
 
 	return 1;
 }
