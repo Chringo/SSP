@@ -56,3 +56,8 @@ void AIController::SetID(int entityID)
 {
 	m_component->m_entityID = entityID;
 }
+
+void AIController::SetPattern(int pattern)
+{
+	this->m_component->m_pattern = pattern;
+}
