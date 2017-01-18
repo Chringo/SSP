@@ -10,7 +10,7 @@
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "Animation.h"
+#include "../GraphicsDLL/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/NetworkDLL")
@@ -40,7 +40,7 @@ private:
 	ComponentHandler m_componentHandler;
 	
 	/*Testing for playing animation.*/
-	Animation* m_Anim;
+	AnimationHandler* m_Anim;
 	/*AI*/
 	AIHandler* m_AIHandler;
 public:

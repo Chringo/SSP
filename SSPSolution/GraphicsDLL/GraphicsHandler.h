@@ -64,7 +64,7 @@ private:
 	bool postProcessing = false;
 	
 
-	penis** m_animGraphicsComponents = nullptr;
+	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
