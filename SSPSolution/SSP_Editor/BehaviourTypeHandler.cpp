@@ -31,6 +31,7 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 	this->m_Add = ui->AddButton;
 	this->m_Del = ui->DeleteButton;
+	this->m_uniqueID = ui->uniqueIDLabel;
 	connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(on_Add()));
 	connect(ui->DeleteButton, SIGNAL(clicked()), this, SLOT(on_Del()));
 	for (int i = 0; i < NUM_WAYPOINTS; i++)
@@ -49,9 +50,36 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 	if (selection != nullptr)
 	{
 		m_selection = selection;
-		//this->m_Numerics[SPEED]->setValue(0);
-		//this->m_Numerics[TIME]->setValue(0);
-		//m_uniqueID->setText(QString::number(selection->internalID));
+		if (m_selection->aiComponent != nullptr)
+		{
+			
+			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->m_speed);
+			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->m_time);
+
+			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->m_triggered);
+			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->m_triggered);
+			
+			for (int i = 0; i < NUM_WAYPOINTS; i++)
+			{
+				if (this->m_ListItems[(ListItems)i] != nullptr)
+				{
+					this->m_WaypointList->takeItem(i);
+					delete this->m_ListItems[i];
+					this->m_ListItems[i] = nullptr;
+				}
+			}
+
+			for (size_t i = 0; i < m_selection->aiComponent->m_nrOfWaypoint; i++)
+			{
+				int temp = this->m_WaypointList->count();
+				QString WaypointLabel = "Waypoint ";
+				WaypointLabel += QString::number(temp + 1);
+				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
+
+
+			}
+			
+		}
 	}
 }
 
@@ -61,6 +89,8 @@ void Ui::BehaviourTypeHandler::Deselect()
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
 	m_uniqueID->setText(QString::number(0));
+	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
+	
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -115,6 +145,11 @@ void Ui::BehaviourTypeHandler::on_Time_changed(double val)
 	{
 		int i = 0;
 		//do thing
+		if (m_selection->aiComponent != nullptr)
+		{
+			AIController cont(m_selection->aiComponent);
+			cont.SetTime(val);
+		}
 	}
 }
 void Ui::BehaviourTypeHandler::on_Path_Trigger_changed(int val)
@@ -144,6 +179,11 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 	{
 		int i = 0;
 		//do thing
+		if (m_selection->aiComponent != nullptr)
+		{
+			AIController cont(m_selection->aiComponent);
+			cont.SetSpeed((float)val);
+		}
 	}
 }
 
@@ -152,6 +192,11 @@ void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 	if (this->m_Current_Type == PATH)
 	{
 		this->m_Current_Pattern = (Pattern)val;
+	}
+	if (m_selection->aiComponent != nullptr)
+	{
+		AIController cont(m_selection->aiComponent);
+		cont.SetPattern(val);
 	}
 }
 
@@ -177,8 +222,12 @@ void Ui::BehaviourTypeHandler::on_Add()
 			if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
 
 				//Ask The Ai handler to create a new Path Component
-				AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-				this->m_selection->aiComponent = newComponent;
+				if (m_selection->aiComponent == nullptr)
+				{
+					AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
+					this->m_selection->aiComponent = newComponent;
+					newComponent->m_entityID += m_selection->internalID;
+				}
 			}
 				AIController control(m_selection->aiComponent);
 				DirectX::XMVECTOR newPos = m_selection->position;

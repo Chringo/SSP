@@ -16,7 +16,7 @@ Ui::AttributesHandler * Ui::AttributesHandler::GetInstance()
 Ui::AttributesHandler::AttributesHandler(const Ui::SSP_EditorClass * ui)
 {
 	this->Initialize(ui);
-	Deselect();
+
 }
 
 void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
@@ -51,6 +51,8 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(ui->isStaticCheck, SIGNAL(stateChanged(int)), this, SLOT(on_isStatic_changed(int)));
 	m_BehaviourHandler = new BehaviourTypeHandler(ui);
 	m_BehaviourHandler->Initialize(ui);
+
+	Deselect();
 }
 
 Ui::AttributesHandler::~AttributesHandler()
@@ -104,6 +106,7 @@ void Ui::AttributesHandler::Deselect()
 	m_numericBoxes[SCALE][Z]->setValue(0);
 
 	m_uniqueID->setText(QString::number(0));
+	m_BehaviourHandler->Deselect();
 
 }
 
