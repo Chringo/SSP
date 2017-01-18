@@ -316,8 +316,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1.SetRightDir(rightDir);
 	this->m_player1.SetUpDir(upDir);
 	this->m_player1.SetLookDir(playerLookDir);
-	this->m_player1.Update(dt, inputHandler);
 
+	if (this->m_networkModule->IsHost())
+	{
+		this->m_player1.Update(dt, inputHandler);
+	}
+	else
+	{
+		this->m_player2.Update(dt, inputHandler);
+	}
+	
 	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
 	{
 		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
