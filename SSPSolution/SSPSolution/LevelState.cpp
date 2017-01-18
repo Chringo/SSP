@@ -150,7 +150,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformTERMINATOR->AP_triggered = true;
 	platformTERMINATOR->AP_time = 0;
 
-	platformTERMINATOR->AP_speed = 0.3f;
+	platformTERMINATOR->AP_speed = 0.005f;
 	// AP_dir resolved in update loop
 
 	platformTERMINATOR->AP_position = platformP->PC_pos;

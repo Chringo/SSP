@@ -36,11 +36,12 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
-	//float dt = 0;
+	float dt = 0;
 	//if (deltaTime < 0.000001f)
 	//	dt = 0.00001f;
 	//else
 	//	dt = (deltaTime * 0.00001f);
+	dt = 1000000 / deltaTime;
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents.at(i)->AP_active && this->m_AIComponents.at(i)->AP_triggered)
@@ -110,10 +111,10 @@ int AIHandler::Update(float deltaTime)
 
 			DirectX::XMVECTOR v = DirectX::XMVECTOR();
 			v = DirectX::XMVectorScale(DirectX::XMVector3Normalize(this->m_AIComponents.at(i)->AP_dir), this->m_AIComponents.at(i)->AP_speed);
-			//if (dt > 0.01f && dt < 1.0f)
-			//{
-			//	v = DirectX::XMVectorScale(v, dt);
-			//}
+			if (dt < 144.0f)
+			{
+				v = DirectX::XMVectorScale(v, dt);
+			}
 
 			this->m_AIComponents.at(i)->AP_position = DirectX::XMVectorAdd(v, this->m_AIComponents.at(i)->AP_position);
 		}
