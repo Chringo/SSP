@@ -28,7 +28,7 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sph
 	colors[T_SPHERE].push_back(color);
 }
 
-GRAPHICSDLL_API void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
 	positions[T_WAYPOINT].push_back(wayPoints);
 	colors[T_WAYPOINT].push_back(color);
