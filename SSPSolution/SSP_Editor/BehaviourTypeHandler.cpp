@@ -131,15 +131,7 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 				this->m_ListItems[i] = nullptr;
 			}
 		}
-		//remove AI COMP
-		//if (m_selection != nullptr)
-		//{
-		//	if (m_selection->aiComponent != nullptr)
-		//	{
-		//		AIController cont(m_selection->aiComponent);
-		//		cont.DeletePath();
-		//	}
-		//}
+	
 
 		break;
 	}
@@ -233,6 +225,15 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 		ResetType(this->m_Current_Type);
 		this->m_Current_Type = (BehaviourType)val;
 		m_BehaviourType->setCurrentIndex(val);
+		//remove AI COMP
+		if (m_selection != nullptr)
+		{
+			if (m_selection->aiComponent != nullptr)
+			{
+				AIController cont(m_selection->aiComponent);
+				cont.DeletePath();
+			}
+		}
 		//break;
 	//}
 	//}
