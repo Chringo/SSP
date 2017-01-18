@@ -1,5 +1,7 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATE_H
+#include "../NetworkDLL/NetworkModule.h"
+#pragma comment (lib, "../Debug/NetworkDLL")
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
@@ -7,14 +9,19 @@
 class GameStateHandler;
 class GameState
 {
-private:	//Variables
+private:	//Variables	
+
 protected:
 	GameStateHandler* m_gsh;
 	ComponentHandler* m_cHandler;
-	Camera* m_cameraRef;
+	Camera* m_cameraRef;	
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+
 
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 public:
+	static NetworkModule* m_networkModule;	// Is public so we can accses it from GameStateHandler for Shutdown
+
 	GameState();
 	virtual ~GameState();
 
