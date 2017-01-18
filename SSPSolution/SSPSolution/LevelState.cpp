@@ -143,8 +143,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_networkModule->Update();
 	
 	//Check for updates for enteties
+	this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();
 
-	//Apply changes
+	if (this->m_entityPacketList.size > 0)
+	{
+		// Apply each packet to the right entity
+		std::list<EntityPacket>::iterator itr;
+		for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
+		{
+			// Find the entity
+			DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
+			PhysicsComponent* pp = ent->GetPhysicsComponent();
+			
+			// Update the component
+			pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+			pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+
+		}
+	}
+	this->m_entityPacketList.clear();	//Clear the list
 
 	//Do local changes
 
