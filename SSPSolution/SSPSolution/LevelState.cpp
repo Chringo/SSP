@@ -139,27 +139,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = 1000000 / dt;
-	//this->m_player1.Update(dt, inputHandler);
 
-	//for (size_t i = 0; i < m_entities.size(); i++)
-	//{
-	//	if (i == 0)
-	//	{
-	//		Player* ptr = (Player*)this->m_entities.at(i);
-	//		DirectX::XMVECTOR lookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
-	//		DirectX::XMFLOAT3 temp;
-	//		this->m_cameraRef->GetCameraUp(temp);
+	this->m_networkModule->Update();
+	
+	//Check for updates for enteties
 
-	//		DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
-	//		DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, lookDir);
+	//Apply changes
 
-	//		ptr->SetLookDir(lookDir);
-	//		ptr->SetRightDir(rightDir);
-	//		ptr->SetUpDir(upDir);
-	//	}
+	//Do local changes
 
-	//	this->m_entities.at(i)->Update(dt, inputHandler);
-	//}
+	//Send changes
 
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
@@ -185,6 +174,32 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	{
+		if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+		{
+			if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
+			{
+				printf("Joined client with the ip %s\n", this->m_ip);
+			}
+			else
+			{
+				printf("Failed to connect to the client %s\n", this->m_ip);
+			}
+
+		}
+		else
+		{
+			printf("Join failed since this module is already connected to other clients\n");
+		}
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	{
+		this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
+	}
+#pragma endregion Network_Key_events
 
 	return result;
 }

@@ -12,7 +12,6 @@
 #include "../GraphicsDLL/Camera.h"
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
-#include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/NetworkDLL")
 const int SCREEN_WIDTH = 1280;

@@ -94,8 +94,7 @@ int System::Initialize()
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 	this->m_physicsHandler.SortComponents();
-	//Initialize the network module
-	this->m_networkModule.Initialize();
+
 	//Initialize the AIHandler with a specific number of AIComponents
 	this->m_AIHandler = new AIHandler();
 	this->m_AIHandler->Initialize(1);
@@ -227,31 +226,6 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler->Update(deltaTime);
 
-	//Network
-	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
-	{
-		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
-		{
-			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
-			{
-				printf("Joined client with the ip %s\n", this->m_ip);
-			}
-			else
-			{
-				printf("Failed to connect to the client %s\n", this->m_ip);
-			}
-			
-		}
-		else
-		{
-			printf("Join failed since this module is already connected to other clients\n");
-		}
-	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_K))
-	{
-		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
-	}
-
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -287,8 +261,6 @@ int System::Update(float deltaTime)
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
-	//Update the network module
-	this->m_networkModule.Update();
 	
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 	//temp input for testing chain
