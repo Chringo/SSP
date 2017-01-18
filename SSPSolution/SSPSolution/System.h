@@ -41,7 +41,7 @@ private:
 	ComponentHandler m_componentHandler;
 	
 	/*Testing for playing animation.*/
-	Animation* m_Anim;
+	AnimationHandler* m_Anim;
 public:
 	System();
 	~System();
