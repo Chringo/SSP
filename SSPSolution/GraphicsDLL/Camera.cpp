@@ -487,14 +487,18 @@ void Camera::m_updatePos()
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
 	m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
+	DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(finalFocus, oldTarget);
+
+	m_focusVec = DirectX::XMVectorAdd(m_focusVec, difference);
 	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusVec);
 
 
-	DirectX::XMVECTOR oldPos = DirectX::XMLoadFloat4(&m_cameraPos);
 	
-	DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(oldTarget, finalFocus);
-		
-	camPosVec = DirectX::XMVectorAdd(camPosVec, difference);
+	
+	//DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(finalFocus, oldTarget);
+
+
+	//camPosVec = DirectX::XMVectorAdd(camPosVec, difference);
 
 
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);

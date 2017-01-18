@@ -188,10 +188,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_update_entities
 
-
-	float yaw = inputHandler->GetMouseDelta().x;
-	float pitch = inputHandler->GetMouseDelta().y;
-	float mouseSens = 0.000018f * dt;
 	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
 	
 	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
@@ -220,16 +216,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	//this->m_cameraRef->Update();
 	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
-	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
-		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
-
-
-
-	DirectX::XMVECTOR playerPosG = this->m_player1.GetGraphicComponent()->worldMatrix.r[3];
-	DirectX::XMVECTOR playerPosP = this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos;
-
-	
-
 
 	float yaw = inputHandler->GetMouseDelta().x;
 	float pitch = inputHandler->GetMouseDelta().y;
