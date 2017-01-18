@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SSP_Editor.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -981,32 +981,32 @@ public:
 
     void retranslateUi(QMainWindow *SSP_EditorClass)
     {
-        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", 0));
-        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", 0));
-        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", 0));
-        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
-        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
-        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
-        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", 0));
-        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", 0));
-        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", 0));
-        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
-        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", 0));
-        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", 0));
-        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
+        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", Q_NULLPTR));
+        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", Q_NULLPTR));
+        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
+        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
+        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
+        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
+        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
+        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
+        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
+        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
+        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
         isStaticCheck->setText(QString());
         animationBox->clear();
         animationBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
         );
-        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
-        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", 0));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
+        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", Q_NULLPTR));
         BehaviourDropDown->clear();
         BehaviourDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", 0)
-         << QApplication::translate("SSP_EditorClass", "Trigger", 0)
-         << QApplication::translate("SSP_EditorClass", "Door", 0)
-         << QApplication::translate("SSP_EditorClass", "Path", 0)
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Door", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
         );
         label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
         checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", Q_NULLPTR));
@@ -1025,24 +1025,24 @@ public:
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "Circular", 0)
-         << QApplication::translate("SSP_EditorClass", "One Way", 0)
-         << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
+         << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "One Way", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
         );
-        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
-        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
-        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
-        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
-        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", 0));
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
+        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
-        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", 0));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
-        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
+        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
 };

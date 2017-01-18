@@ -100,7 +100,6 @@ public:
 
 	}
 
-
 	void SelectAxis(int i)
 	{
 		m_axisColors[X] = &m_colors[X];
