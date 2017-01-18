@@ -19,7 +19,7 @@ void SelectionHandler::Initialize(Camera * camera,
 	this->m_Height = winHeight;
 	this->m_currentLevel = currentLevel;
 	this->m_modelPtr = modelPtr;
-
+	this->m_attributesHandler = Ui::UiControlHandler::GetInstance()->GetAttributesHandler();
 	this->m_ray.direction = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_ray.origin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
@@ -64,6 +64,8 @@ bool SelectionHandler::HasSelection()
 void SelectionHandler::SetSelection(bool selection)
 {
 	this->m_transformWidget.setActive(selection);
+	if (selection == false)
+		m_attributesHandler->Deselect();
 }
 
 void SelectionHandler::SetSelectedContainer(Container * selection)
@@ -71,8 +73,7 @@ void SelectionHandler::SetSelectedContainer(Container * selection)
 	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
 	
 	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
-	Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(selection);
-
+	m_attributesHandler->SetSelection(selection);
 	//m_transformWidget.Select()
 }
 
@@ -155,6 +156,7 @@ bool SelectionHandler::PickObjectSelection()
 	bool gotHit = false;
 	float hitDistance = FLT_MAX;
 	float minHitDistance = FLT_MAX;
+
 
 
 	//checks if we picked on a model by iterating
@@ -246,6 +248,34 @@ bool SelectionHandler::PickObjectSelection()
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(spawn);
 
 			gotHit = result;
+		}
+	}
+	std::vector<AIComponent*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < container->size(); i++)
+	{
+		AIComponent* wayPoint = container->at(i);
+		OBB obj;
+		obj.ort.r[0] = { 1.0f,0.0f,0.0f };
+		obj.ort.r[1] = { 0.0f,1.0f,0.0f };
+		obj.ort.r[2] = { 0.0f,0.0f,1.0f };
+		obj.ext[0] = 0.2f;
+		obj.ext[1] = 0.2f;
+		obj.ext[2] = 0.2f;
+
+		for (size_t j = 0; j < wayPoint->m_nrOfWaypoint; j++)
+		{
+			bool result = false;
+			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->m_waypoints[j], hitDistance);
+			//transformWidget.setActive(result);
+			if (result && hitDistance < minHitDistance)
+			{
+				//minHitDistance = hitDistance;
+				//update widget with the intersected obb
+				this->m_transformWidget.Select(obj, wayPoint);
+				//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
+
+				//gotHit = result;
+			}
 		}
 
 	}

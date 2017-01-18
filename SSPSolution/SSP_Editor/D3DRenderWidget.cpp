@@ -132,19 +132,26 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 
 	
+	std::vector<AIComponent*>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < container->size(); i++)
+	{
+		GraphicsHptr->RenderBoundingVolume(
+			container->at(i)->m_waypoints, 
+			container->at(i)->m_nrOfWaypoint);
+	}
 	// TEMP TO TEST PATH
-	DirectX::XMVECTOR path[8];
-
-	path[0] = { 1.0f,0.0f,0.0f };
-	path[1] = { 5.0f,0.0f,0.0f };
-	path[2] = { 5.0f,5.0f,0.0f };
-	path[3] = { 5.0f,5.0f,5.0f };
-	path[4] = { 5.0f,0.0f,5.0f };
-	path[5] = { 3.0f,0.0f,5.0f };
-	path[6] = { 1.0f,5.0f,5.0f };
-	path[7] = { 0.0f,0.0f,0.0f };
-	GraphicsHptr->RenderBoundingVolume(path, 8);
-
+//DirectX::XMVECTOR path[8];
+//
+//path[0] = { 1.0f,0.0f,0.0f };
+//path[1] = { 5.0f,0.0f,0.0f };
+//path[2] = { 5.0f,5.0f,0.0f };
+//path[3] = { 5.0f,5.0f,5.0f };
+//path[4] = { 5.0f,0.0f,5.0f };
+//path[5] = { 3.0f,0.0f,5.0f };
+//path[6] = { 1.0f,5.0f,5.0f };
+//path[7] = { 0.0f,0.0f,0.0f };
+//GraphicsHptr->RenderBoundingVolume(path, 8);
+//
 	GraphicsHptr->renderFinalEditor();
 	this->update();
 	
@@ -242,7 +249,6 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-
 	Initialize(parent, false, fileImporter);
 	setFocusPolicy(Qt::StrongFocus);
 }

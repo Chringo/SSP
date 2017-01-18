@@ -30,6 +30,7 @@ private:
 public:
 	SelectionHandler();
 	~SelectionHandler();
+	Ui::AttributesHandler* m_attributesHandler;
 
 	void Initialize(Camera * camera,
 		int winWidth,
