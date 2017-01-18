@@ -51,7 +51,7 @@ public:
 	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
-	GRAPHICSDLL_API int Update();
+	GRAPHICSDLL_API int Update(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
@@ -105,7 +105,6 @@ public:
 	GRAPHICSDLL_API void ApplyLocalTranslation(float x, float y, float z);
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	GRAPHICSDLL_API void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
-	GRAPHICSDLL_API void AlignWithRay(DirectX::XMVECTOR direction);
 
 	
 #pragma endregion setters

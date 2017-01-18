@@ -32,6 +32,7 @@ private:
 	int m_screenHeight;
 	int m_mouseWheelX;
 	int m_mouseWheelY;
+	SDL_bool m_mouseCaptured;
 
 public:
 	InputHandler();
@@ -40,6 +41,7 @@ public:
 	void Shutdown();
 	void Update();
 
+	int captureMouse(SDL_bool boolean);
 	void SetMouseState(int button, bool state);
 	void SetKeyState(int key, bool state);
 	//Use SDL_SCANCODE_[key] where [key] is the key examined
