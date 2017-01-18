@@ -88,18 +88,17 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ClCompile Include="GeneratedFiles\Debug\moc_AttributesHandler.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_D3DRenderWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_AssetTreeHandler.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_AttributesHandler.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_D3DRenderWidget.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelHandler.cpp" />
     <ClCompile Include="D3DRenderWidget.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_RenderWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_SSP_Editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -108,9 +107,6 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_RenderWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_SSP_Editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -214,7 +210,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="qt_32_5.7.1" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="1" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2015" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
