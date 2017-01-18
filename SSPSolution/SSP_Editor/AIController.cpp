@@ -29,7 +29,7 @@ void AIController::SetTime(float time)
 void AIController::AddWaypoint(DirectX::XMVECTOR position)
 {
 	if (m_component->m_nrOfWaypoint < 8) {
-		m_component->m_waypoints[m_component->m_nrOfWaypoint - 1] = position;
+		m_component->m_waypoints[m_component->m_nrOfWaypoint] = position;
 		m_component->m_nrOfWaypoint += 1;
 	}
 }

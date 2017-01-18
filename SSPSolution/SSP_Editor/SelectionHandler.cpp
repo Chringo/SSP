@@ -231,9 +231,7 @@ bool SelectionHandler::PickObjectSelection()
 
 			gotHit = result;
 		}
-
 	}
-
 	std::vector<AIComponent>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
