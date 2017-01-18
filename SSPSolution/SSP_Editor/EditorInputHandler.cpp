@@ -75,25 +75,6 @@ void EditorInputHandler::KeyboardMovement(double dT)
 	}
 	if (this->m_KeysHeld[ALT] == true)
 		MouseMovement(dT);
-		
-	
-
-	//if (this->m_KeysHeld[Bools::CONTROL] == true)
-	//{
-	//	if (m_KeysHeld[Bools::D])
-	//	{
-	//		if (SelectionHandler::GetInstance()->HasSelection())
-	//		{
-	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
-	//			Container* newEntity = nullptr;
-	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
-	//			if (st == Resources::Status::ST_OK)
-	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
-	//		}
-	//		m_KeysHeld[Bools::D] = false;
-	//	}
-	//}
-		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
