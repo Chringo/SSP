@@ -136,7 +136,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformG->active = true;
 	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
 	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
-	platformP->PC_pos = DirectX::XMVectorSet(20, 1, 40, 0);
+	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
 	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	platformP->PC_is_Static = true;
 	platformP->PC_AABB.ext[0] = 5;
@@ -150,7 +150,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformTERMINATOR->AP_triggered = true;
 	platformTERMINATOR->AP_time = 0;
 
-	platformTERMINATOR->AP_speed = 0.03f;
+	platformTERMINATOR->AP_speed = 0.3f;
 	// AP_dir resolved in update loop
 
 	platformTERMINATOR->AP_position = platformP->PC_pos;
@@ -160,9 +160,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformTERMINATOR->AP_nextWaypointID = 1;
 	platformTERMINATOR->AP_nrOfWaypoint = 4;
 	platformTERMINATOR->AP_waypoints[0] = platformP->PC_pos;
-	platformTERMINATOR->AP_waypoints[1] = DirectX::XMVectorSet(20, 15, 40, 0);
-	platformTERMINATOR->AP_waypoints[2] = DirectX::XMVectorSet(-20, 15, 40, 0);
-	platformTERMINATOR->AP_waypoints[3] = DirectX::XMVectorSet(-20, 1, 40, 0);
+	platformTERMINATOR->AP_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
+	platformTERMINATOR->AP_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
+	platformTERMINATOR->AP_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
 
 	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
