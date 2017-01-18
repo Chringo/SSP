@@ -28,6 +28,11 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	this->m_Del = ui->DeleteButton;
 	connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(on_Add()));
 	connect(ui->DeleteButton, SIGNAL(clicked()), this, SLOT(on_Del()));
+	for (int i = 0; i < NUM_WAYPOINTS; i++)
+	{
+		this->m_ListItems[(ListItems)i] = nullptr;
+	}
+
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -85,6 +90,7 @@ void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 
 void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 {
+	//MUST ADD A CHECK THAT IF CURRENT TYPE WAS (SAY PATH) ALL PATH STUFF IS REMOVED BEFORE CHANGING CURRENT TYPE!
 	this->m_Current_Type = (BehaviourType)val;
 }
 
@@ -92,8 +98,15 @@ void Ui::BehaviourTypeHandler::on_Add()
 {
 	if (this->m_Current_Type == PATH)
 	{
-		int i = 0;
-		//do thing
+		int temp = this->m_WaypointList->count();
+		if (temp + 1 <= NUM_WAYPOINTS)
+		{
+			QString WaypointLabel = "Waypoint ";
+			WaypointLabel += QString::number(temp + 1);
+			this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
+
+			//do stuff
+		}
 	}
 }
 
@@ -101,8 +114,29 @@ void Ui::BehaviourTypeHandler::on_Del()
 {
 	if (this->m_Current_Type == PATH)
 	{
-		int i = 0;
-		//do thing
+		int currentRow = this->m_WaypointList->currentRow();
+		if (currentRow == -1) //no item Selected
+			return;
+		this->m_WaypointList->takeItem(currentRow);
+		delete this->m_ListItems[(ListItems)currentRow];
+		this->m_ListItems[(ListItems)currentRow] = nullptr;
+		for (int i = currentRow; i < NUM_WAYPOINTS; i++)
+		{
+			if (currentRow == WAYPOINT8)
+				continue;
+			else if (this->m_ListItems[(ListItems)i] != nullptr)
+				if (this->m_ListItems[(ListItems)i - 1] == nullptr)
+				{
+					QString WaypointLabel = "Waypoint ";
+					WaypointLabel += QString::number(i);
+					this->m_ListItems[(ListItems)i]->setText(WaypointLabel);
+					this->m_ListItems[(ListItems)i - 1] = this->m_ListItems[(ListItems)i];
+					this->m_ListItems[(ListItems)i] = nullptr;
+
+				}
+		}
+
+		//do stuff
 	}
 }
 

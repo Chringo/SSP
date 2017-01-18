@@ -239,7 +239,6 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-
 	Initialize(parent, false, fileImporter);
 	setFocusPolicy(Qt::StrongFocus);
 }

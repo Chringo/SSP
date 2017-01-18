@@ -20,21 +20,34 @@ namespace Ui {
 		TIME,
 		NUM_NUMERICS
 	};
+	enum ListItems {
+		WAYPOINT1 = 0,
+		WAYPOINT2,
+		WAYPOINT3,
+		WAYPOINT4,
+		WAYPOINT5,
+		WAYPOINT6,
+		WAYPOINT7,
+		WAYPOINT8,
+		NUM_WAYPOINTS
+	};
 	class BehaviourTypeHandler : QObject
 	{
 
 		Q_OBJECT
 	private:
-		BehaviourType	m_Current_Type;
-		Pattern		m_Current_Pattern;
-		QComboBox* 		m_BehaviourType;
-		QDoubleSpinBox* m_Numerics[NUM_NUMERICS];
-		QComboBox*		m_Pattern;
-		QListWidget*	m_WaypointList;
-		QPushButton*	m_Add;
-		QPushButton*	m_Del;
-		QPushButton*	m_Up;
-		QPushButton*	m_Down;
+		BehaviourType		m_Current_Type;
+		Pattern				m_Current_Pattern;
+		unsigned int		m_Current_Waypoint_Amt = 0;
+		QComboBox* 			m_BehaviourType;
+		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
+		QComboBox*			m_Pattern;
+		QListWidget*		m_WaypointList;
+		QListWidgetItem*	m_ListItems[NUM_WAYPOINTS];
+		QPushButton*		m_Add;
+		QPushButton*		m_Del;
+		QPushButton*		m_Up;
+		QPushButton*		m_Down;
 
 		QLabel*			m_uniqueID;
 		Container*		m_selection = nullptr;
