@@ -40,12 +40,17 @@ private:
 	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
 	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
 	
+	DirectX::XMVECTOR * wayPoints = nullptr;
+	DirectX::XMVECTOR  pathColor;
+	int numWaypoints = 0;
+	
 	ID3D11DepthStencilView* dsv;
 public:
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 private:
 	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
@@ -87,8 +92,6 @@ public:
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
-
-
 
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
