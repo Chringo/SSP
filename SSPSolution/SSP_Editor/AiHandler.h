@@ -17,7 +17,7 @@ When a new level is created. This class is cleared of its data.
 class AiHandler
 {
 private:
-	std::vector<AIComponent>m_Components;
+	std::vector<AIComponent*>m_Components;
 public:
 	AiHandler();
 	virtual ~AiHandler();
@@ -25,7 +25,7 @@ public:
 	//Path Component Functions
 	AIComponent* NewPathComponent();
 	AIComponent* GetPathComponent(int EntityID);
-	std::vector<AIComponent>* GetAllPathComponents();
+	std::vector<AIComponent*>* GetAllPathComponents();
 	void DeletePathComponent(int EntityID);
 	/////////////////////////////////////////////
 
