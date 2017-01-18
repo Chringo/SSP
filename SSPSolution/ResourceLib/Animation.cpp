@@ -32,7 +32,7 @@ Resources::Status Resources::Animation::Create(Resource::RawResourceData * resDa
 	return Resources::Status::ST_OK;
 }
 
-DLL_OPERATION Resources::Status Resources::Animation::CreateFromBBF(Resource::RawResourceData * resData, AnimationData * animData)
+Resources::Status Resources::Animation::CreateFromBBF(Resource::RawResourceData * resData, AnimationData * animData)
 {
 	this->Destroy();
 	m_resourceData.m_id = resData->m_id;

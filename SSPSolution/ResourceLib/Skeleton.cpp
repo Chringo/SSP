@@ -57,7 +57,7 @@ Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resDat
 	return Resources::Status::ST_OK;
 }
 
-DLL_OPERATION Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, Joint * jointData, unsigned int * jointCount)
+Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, Joint * jointData, unsigned int * jointCount)
 {
 	this->Destroy();
 	m_resourceData.m_id = resData->m_id;
