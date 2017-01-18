@@ -113,7 +113,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 
 		GraphicsHptr->RenderBoundingVolume(
-			SelectionHandler::GetInstance()->GetSelected()->position,
+			//SelectionHandler::GetInstance()->GetSelected()->position,
+			*SelectionHandler::GetInstance()->GetOBBCenterPosition(),
 			*selectedObjectOBB,
 			*OBBColor
 		);
@@ -178,7 +179,7 @@ void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 
 	//get the desired values from EditorCommunicator
 	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->detectInput(this->m_frameTime, evt);
+	//EditorInputHptr->detectInput(this->m_frameTime, evt);
 	EditorInputHptr->keyReleased(evt);
 }
 
