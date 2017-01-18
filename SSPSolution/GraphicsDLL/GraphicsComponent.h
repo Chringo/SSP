@@ -27,6 +27,7 @@ struct GraphicsAnimationComponent
 {
 	int active = 0;
 	int modelID = -1;
+	Resources::Model* modelPtr;
 	int jointCount = 0;
 	DirectX::XMMATRIX worldMatrix;
 	DirectX::XMMATRIX finalJointTransforms[32];

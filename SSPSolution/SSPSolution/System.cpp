@@ -106,8 +106,6 @@ int System::Initialize()
 	ptr->PC_AABB.ext[2] = 10;
 	ptr->PC_BVtype = BV_AABB;
 
-	//this->m_Anim = new Animation();
-
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 
 	return result;
