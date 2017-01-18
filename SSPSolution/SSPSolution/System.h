@@ -12,7 +12,6 @@
 #include "../GraphicsDLL/Camera.h"
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
-#include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/NetworkDLL")
 const int SCREEN_WIDTH = 1280;
@@ -29,7 +28,6 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
-
 	GameStateHandler m_gsh;
 
 	Camera* m_camera;
@@ -40,8 +38,7 @@ private:
 	PhysicsHandler m_physicsHandler; //this is a physicsHandler
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
-	NetworkModule m_networkModule;
-	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+	
 	/*Testing for playing animation.*/
 	Animation* m_Anim;
 	/*AI*/
