@@ -75,25 +75,6 @@ void EditorInputHandler::KeyboardMovement(double dT)
 	}
 	if (this->m_KeysHeld[ALT] == true)
 		MouseMovement(dT);
-		
-	
-
-	//if (this->m_KeysHeld[Bools::CONTROL] == true)
-	//{
-	//	if (m_KeysHeld[Bools::D])
-	//	{
-	//		if (SelectionHandler::GetInstance()->HasSelection())
-	//		{
-	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
-	//			Container* newEntity = nullptr;
-	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
-	//			if (st == Resources::Status::ST_OK)
-	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
-	//		}
-	//		m_KeysHeld[Bools::D] = false;
-	//	}
-	//}
-		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
@@ -110,7 +91,7 @@ void EditorInputHandler::KeyboardMovement(double dT)
 			float(translateCameraY),
 			float(translateCameraZ)
 		);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 	}
 }
 
@@ -149,7 +130,7 @@ void EditorInputHandler::MouseMovement(double dT)
 
 	DirectX::XMVECTOR rotationVector;
 
-	DirectX::XMVECTOR camUpVec = DirectX::XMLoadFloat4(&camUpFloat);
+	DirectX::XMVECTOR camUpVec = { 0.0f, 1.0f,0.0f,0.0f };//DirectX::XMLoadFloat4(&camUpFloat);
 	DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
 	DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
 
@@ -166,7 +147,7 @@ void EditorInputHandler::MouseMovement(double dT)
 		this->m_Camera->RotateCamera(camUpVec);
 	};
 
-	this->m_Camera->Update();
+	this->m_Camera->UpdateView();
 }
 
 
@@ -206,7 +187,7 @@ void EditorInputHandler::MouseZoom(double dT)
 			0.0f,
 			float(translateCameraZ)
 		);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 	}
 }
 
@@ -215,7 +196,7 @@ void EditorInputHandler::CameraReset()
 		this->m_Camera->Initialize(this->m_Width / this->m_Height);
 		this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
 		this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 }
 
 void EditorInputHandler::UpdateMouse()

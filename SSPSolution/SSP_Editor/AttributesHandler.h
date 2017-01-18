@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_UI_ATTRHANDLER_H
 #define SSPEDITOR_UI_ATTRHANDLER_H
 #include "ui_SSP_Editor.h"
+#include "BehaviourTypeHandler.h"
 #include <qobject.h>
 #include "Header.h"
 
@@ -45,6 +46,7 @@ namespace Ui {
 		QLabel*			m_uniqueID;
 		QCheckBox*		m_isStaticBox;
 		Container*		m_selection = nullptr;
+		BehaviourTypeHandler* m_BehaviourHandler = nullptr;
 	public:
 		static AttributesHandler* GetInstance(); // Singleton
 		AttributesHandler(const Ui::SSP_EditorClass* ui);

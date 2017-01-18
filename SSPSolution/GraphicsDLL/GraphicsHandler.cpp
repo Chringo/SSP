@@ -28,6 +28,15 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sph
 	colors[T_SPHERE].push_back(color);
 }
 
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+	positions[T_WAYPOINT].push_back(wayPoints);
+	colors[T_WAYPOINT].push_back(color);
+	this->numWaypoints.push_back(numWaypoints);
+	
+	return;
+}
+
 void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 {
 	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
@@ -61,6 +70,15 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	}
 	positions[T_SPHERE].clear();
 	colors[T_SPHERE].clear();
+
+	for (size_t i = 0; i < positions[T_WAYPOINT].size(); i++)
+	{
+		m_debugRender.Render(positions[T_WAYPOINT].at(i), numWaypoints.at(i), colors[T_WAYPOINT].at(i));
+	}
+	positions[T_WAYPOINT].clear();
+	colors[T_WAYPOINT].clear();
+	numWaypoints.clear();
+	
 
 
 	planes.clear();
@@ -506,7 +524,7 @@ int GraphicsHandler::UpdateComponentList()
 
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
-	m_animGraphicsComponents[0] = (penis*)component;
+	m_animGraphicsComponents[0] = (GraphicsAnimationComponent*)component;
 }
 
 GraphicsComponent * GraphicsHandler::getComponent(int index)
@@ -547,17 +565,17 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new penis*[2];
+	this->m_animGraphicsComponents = new GraphicsAnimationComponent*[2];
 	for (int i = 0; i < 2; i++) {
 		this->m_animGraphicsComponents[i] = nullptr;
 	}
 
-	this->m_animGraphicsComponents[1] = new penis;
+	this->m_animGraphicsComponents[1] = new GraphicsAnimationComponent;
 
 	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
 	for (int j = 0; j < 32; j++)
 	{
-		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
+		this->m_animGraphicsComponents[1]->finalJointTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
 
