@@ -17,9 +17,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	bool isPreview = false;
 
 	//get the desired values from EditorCommunicator
-	GraphicsHptr = this->m_Communicator->GetGraphicsHandler();
+	GraphicsHptr    = this->m_Communicator->GetGraphicsHandler();
 	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	isPreview = this->m_Communicator->GetIsPreview();
+	isPreview		= this->m_Communicator->GetIsPreview();
 
 	QPoint local = this->mapFromGlobal(QCursor::pos());
 	EditorInputHptr->SetMousePos(local);
@@ -113,7 +113,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 
 		GraphicsHptr->RenderBoundingVolume(
-			SelectionHandler::GetInstance()->GetSelected()->position,
+			//SelectionHandler::GetInstance()->GetSelected()->position,
+			*SelectionHandler::GetInstance()->GetOBBCenterPosition(),
 			*selectedObjectOBB,
 			*OBBColor
 		);
@@ -128,6 +129,19 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		}
 	}
 
+	
+	// TEMP TO TEST PATH
+	DirectX::XMVECTOR path[8];
+
+	path[0] = { 1.0f,0.0f,0.0f };
+	path[1] = { 5.0f,0.0f,0.0f };
+	path[2] = { 5.0f,5.0f,0.0f };
+	path[3] = { 5.0f,5.0f,5.0f };
+	path[4] = { 5.0f,0.0f,5.0f };
+	path[5] = { 3.0f,0.0f,5.0f };
+	path[6] = { 1.0f,5.0f,5.0f };
+	path[7] = { 0.0f,0.0f,0.0f };
+	GraphicsHptr->RenderBoundingVolume(path, 8);
 
 	GraphicsHptr->renderFinalEditor();
 	this->update();
@@ -165,7 +179,7 @@ void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 
 	//get the desired values from EditorCommunicator
 	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->detectInput(this->m_frameTime, evt);
+	//EditorInputHptr->detectInput(this->m_frameTime, evt);
 	EditorInputHptr->keyReleased(evt);
 }
 

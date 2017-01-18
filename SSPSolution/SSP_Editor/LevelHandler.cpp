@@ -22,7 +22,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	std::string path = GetFilePathAndName(Operation::SAVE);
 	if (path == "")
 	{
-		return LevelData::LevelStatus::L_FILE_SAVE_CANCELED;
+		return LevelData::LevelStatus::L_FILE_SAVE_CANCELLED;
 	}
 
 	std::fstream file;
@@ -66,7 +66,7 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	std::string path = GetFilePathAndName(Operation::LOAD);
 	if (path == "")
 	{
-		return LevelData::LevelStatus::L_FILE_SAVE_CANCELED;
+		return LevelData::LevelStatus::L_FILE_SAVE_CANCELLED;
 	}
 	NewLevel();		//Empty the current level object
 																		 

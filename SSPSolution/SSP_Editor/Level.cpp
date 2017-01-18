@@ -263,6 +263,8 @@ void Level::Destroy()
 	m_SpawnPoints[1].position = { -1.0f, 0.0, 0.0f };
 	m_SpawnPoints[1].rotation = { 0.0f, 0.0f, 0.0f };
 	m_SpawnPoints[1].isDirty = true;
+
+	m_LevelAi.Destroy();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
 }
 

@@ -388,38 +388,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
-			float yaw = 0;
-			float pitch = 0;
-			float rotationAmount = (DirectX::XM_PI / 8) / 2;
-
-			this->m_inputHandler->mouseMovement(m_window, pitch, yaw);
-			
-
-			DirectX::XMFLOAT4 camUpFloat;
-			DirectX::XMFLOAT3 camPosFloat;
-			DirectX::XMFLOAT3 camTargetFloat;
-			this->m_camera->GetCameraUp(camUpFloat);
-			camPosFloat = this->m_camera->GetCameraPos();
-			camTargetFloat = this->m_camera->GetLookAt();
-
-			DirectX::XMVECTOR rotationVector;
-
-			DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
-			DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
-			DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
-
-			DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
-
-			DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
-
-			camRight.m128_f32[3] = rotationAmount * pitch;
-			camUpVec.m128_f32[3] = rotationAmount * -yaw;
-			
-			this->m_camera->RotateCamera(camRight);
-			this->m_camera->RotateCamera(camUpVec);
-			
-			this->m_camera->Update();
-
+			this->m_inputHandler->mouseMovement(m_window);
 			break;
 		}
 		case SDL_QUIT:
