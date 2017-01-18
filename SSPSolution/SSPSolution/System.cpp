@@ -27,14 +27,15 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
+	this->m_AIHandler->Shutdown();
+	delete this->m_AIHandler;
+	this->m_AIHandler = nullptr;
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
 	return result;
-	
-
 }
 
 int System::Initialize()
@@ -95,6 +96,9 @@ int System::Initialize()
 	this->m_physicsHandler.SortComponents();
 	//Initialize the network module
 	this->m_networkModule.Initialize();
+	//Initialize the AIHandler with a specific number of AIComponents
+	this->m_AIHandler = new AIHandler();
+	this->m_AIHandler->Initialize(1);
 
 	//temporary floor for demonstration
 	PhysicsComponent* ptr = this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(0, 5, 40, 0), true);
@@ -251,6 +255,10 @@ int System::Update(float deltaTime)
 
 	}
 	this->m_camera->Update();
+
+	//AI
+	this->m_AIHandler->Update(deltaTime);
+
 	//Network
 	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
 	{
@@ -313,17 +321,18 @@ int System::Update(float deltaTime)
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	//Update the network module
 	this->m_networkModule.Update();
-
-#pragma region tempAI
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_L))
-	{
-		this->director.Initialize();
-		this->director.Update(0);
-	}
-#pragma endregion
-
+	
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-
+	//temp input for testing chain
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	{
+		PhysicsComponent* ballPtr = this->m_physicsHandler.GetDynamicComponentAt(0);
+		DirectX::XMVECTOR dir;
+		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
+		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
+		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
+		dir = DirectX::XMVectorScale(dir, 500);
+	}
 	this->m_physicsHandler.Update(deltaTime);
 
 #ifdef _DEBUG

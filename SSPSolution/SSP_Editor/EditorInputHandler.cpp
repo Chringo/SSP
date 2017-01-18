@@ -30,7 +30,7 @@ EditorInputHandler::EditorInputHandler(
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->m_hwnd	    = handle;
+	//this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
 
 	this->m_PreviousPos = camera->GetCameraPos();

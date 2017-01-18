@@ -13,9 +13,8 @@
 #include "Animation.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
-#pragma comment (lib, "../Debug/PhysicsDLL")
+#include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/NetworkDLL")
-/* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
@@ -45,7 +44,8 @@ private:
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
 	Animation* m_Anim;
-	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
+	/*AI*/
+	AIHandler* m_AIHandler;
 public:
 	System();
 	~System();
@@ -55,6 +55,9 @@ public:
 	//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 	int Run();
 	int Update(float deltaTime);
+
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 
 private:
 	int HandleEvents();
