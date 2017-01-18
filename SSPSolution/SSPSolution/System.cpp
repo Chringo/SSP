@@ -33,8 +33,8 @@ int System::Shutdown()
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	delete this->m_AnimationHandler;
+	this->m_AnimationHandler = nullptr;
 	return result;
 }
 
