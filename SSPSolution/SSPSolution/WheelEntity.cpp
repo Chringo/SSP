@@ -44,6 +44,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = 0;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_100);
 			}
+			else {
+				//Check if the rotation has exceeded a 10% increment
+			}
 
 			this->SyncComponents();
 		}
