@@ -17,6 +17,12 @@ int Entity::SyncComponents()
 
 	if (this->m_pComp != nullptr)
 	{
+		if (this->m_aiComp != nullptr)
+		{
+			// Assuming m_pComp->PC_is_Static is true
+			// Works for now since we're only handling platforms
+			this->m_pComp->PC_pos = this->m_aiComp->AP_position;
+		}
 		if (this->m_gComp != nullptr)
 		{
 			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
