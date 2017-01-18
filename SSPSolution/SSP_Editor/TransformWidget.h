@@ -18,6 +18,7 @@ private:
 	bool m_active = false;
 	DirectX::XMVECTOR m_colors[4];
 	Container * m_selectedContainer = nullptr;
+	AIComponent* m_aiContainer = nullptr;
 
 	unsigned int m_instanceID = NULL;
 	unsigned int m_modelID = NULL;
@@ -81,6 +82,17 @@ public:
 
 		setActive(true);
 	};
+
+	void Select(OBB &selectedOBB,
+		AIComponent * AiContainer)
+	{
+		DeSelect();
+		this->m_selectedContainer = nullptr;
+		this->m_aiContainer = AiContainer;
+		this->m_selectedObjectOBB = selectedOBB;
+		setActive(true);
+
+	}
 
 
 	void SelectAxis(int i)

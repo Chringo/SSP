@@ -1008,18 +1008,21 @@ public:
          << QApplication::translate("SSP_EditorClass", "Door", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
         );
-        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
-        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", 0));
-        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", 0));
-        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", 0));
-        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", 0));
-        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", 0));
-        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", 0));
-        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", 0));
-        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", 0));
-        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", 0));
-        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", 0));
-        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", Q_NULLPTR));
+        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", Q_NULLPTR));
+        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", Q_NULLPTR));
+        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", Q_NULLPTR));
+        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", Q_NULLPTR));
+        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", Q_NULLPTR));
+        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", Q_NULLPTR));
+        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", Q_NULLPTR));
+        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", Q_NULLPTR));
+        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", Q_NULLPTR));
+        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", Q_NULLPTR));
+        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", Q_NULLPTR));
+        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
