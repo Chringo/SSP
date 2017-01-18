@@ -30,7 +30,7 @@ int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandle
 		result = 1;
 	}
 
-	if (this->m_networkModule == nullptr)	//If it isnt already initiated earlier
+	if (this->m_networkModule == nullptr)	//If it isnt already initiated
 	{
 		this->m_networkModule = new NetworkModule();
 		this->m_networkModule->Initialize();
