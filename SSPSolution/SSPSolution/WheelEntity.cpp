@@ -37,6 +37,8 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	case 1:
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
 		{
+			//Rotation in percentage = rotationAMount / maxRotation
+			float rotationAmount = rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + (this->m_rotatePerSec * dT));
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
 			{
@@ -45,7 +47,19 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_100);
 			}
 			else {
-				//Check if the rotation has exceeded a 10% increment
+				//Check if the rotation increase has exceeded a 10% increment
+				//Rotation increase
+				float rotationAmountNew = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+				int percentIncOld = (int)(rotationAmount * 10.0f);
+				int percentIncNew = (int)(rotationAmountNew * 10.0f);
+
+				//Now we have calculated the amount of 10percent incrementation of the rotation we have and can check if it has changed
+				if (percentIncNew != percentIncOld)
+				{
+					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+				}
 			}
 
 			this->SyncComponents();
@@ -54,12 +68,29 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	case -1:
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
 		{
+			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_rotatePerSec * dT));
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
 				this->m_rotationState = 0;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_0);
+			}
+			else
+			{
+				//Check if the rotation increase has exceeded a 10% increment
+				//Rotation decrease
+				float rotationAmountNew = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+				int percentIncOld = (int)(rotationAmount * 10.0f);
+				int percentIncNew = (int)(rotationAmountNew * 10.0f);
+
+				//Now we have calculated the amount of 10percent incrementation of the rotation we have and can check if it has changed
+				if (percentIncNew != percentIncOld)
+				{
+					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+				}
 			}
 			this->SyncComponents();
 		}
