@@ -1,6 +1,8 @@
 #include "GameState.h"
 #include "GameStateHandler.h"
 
+NetworkModule* GameState::m_networkModule = nullptr;
+
 GameState::GameState()
 {
 

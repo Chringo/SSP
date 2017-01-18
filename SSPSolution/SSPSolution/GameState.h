@@ -15,8 +15,8 @@ protected:
 	GameStateHandler* m_gsh;
 	ComponentHandler* m_cHandler;
 	Camera* m_cameraRef;
-	NetworkModule* m_networkModule;
-	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+	static NetworkModule* m_networkModule;
+	char* m_ip = "192.168.1.141";	//Tobias NUC Specific local ip
 
 
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
