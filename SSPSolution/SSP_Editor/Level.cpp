@@ -23,15 +23,15 @@ Level::Level()
 		m_SpawnPoints[1].component.modelPtr = DataHandler::GetInstance()->GetModel(m_SpawnPoints[1].component.modelID);
 		
 		
-	//AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
-	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 3.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 1.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 0.0f,-5.0f,0.0f });
+		AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
+		cont.AddWaypoint( { 1.0f,0.0f,0.0f });						   //TEMP
+		cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
+		cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
+		cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
+		cont.AddWaypoint({ 5.0f,0.0f,5.0f });						   //TEMP
+		cont.AddWaypoint({ 3.0f,0.0f,5.0f });						   //TEMP
+		cont.AddWaypoint({ 1.0f,5.0f,5.0f });						   //TEMP
+		cont.AddWaypoint({ 0.0f,-5.0f,0.0f });
 	
 }
 
