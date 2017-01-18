@@ -30,6 +30,7 @@ private:
 	int				time_start;		// Start time for the network (This has no practical use currently since the stamps will be different on diffrent machines)
 	int				time_current;	// The up time for the network. (Togheter with time_start will calculate the time stamp for a packet)
 	std::string		my_ip;
+	bool			isHost;			// Bool to see if this client is a host or not
 
 	SOCKET							listenSocket;		// Socket that will listen for incoming data
 	SOCKET							connectSocket;		// Socket that connects to a SPECIFIC socket (is used when we want to comunicate with one specific client)
@@ -66,6 +67,7 @@ public:
 	NETWORKDLL_API void	Update();				// Accept new clients and read incoming packets 
 	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
 	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
+	NETWORKDLL_API bool	IsHost();					//Return if whatever this client is Host or not
 
 	//Public packet functions (send to all other clients e.g the only other player)
 	NETWORKDLL_API void SendFlagPacket(PacketTypes type);

@@ -94,6 +94,7 @@ int NetworkModule::Initialize()
 	this->GetMyIp();					// Set my_ip to local ip-address
 	this->time_start = std::clock();	// Start the network system clock
 	
+	this->isHost = true;
 	printf("Network module Initialized\n");
 
 	return 1;
@@ -234,6 +235,7 @@ int NetworkModule::Join(char* ip)
 		printf("client %d has been connected to the this client\n", this->client_id);
 		this->client_id++;
 
+		this->isHost = false;	//If you joined another client, you are not host
 		return 1;
 	}
 
@@ -335,7 +337,7 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-NETWORKDLL_API void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
 {
 	const unsigned int packet_size = sizeof(SyncPhysicPacket);
 	char packet_data[packet_size];
@@ -473,11 +475,13 @@ void NetworkModule::ReadMessagesFromClients()
 			p.deserialize(network_data);	// Read the binary data into the object
 			
 			this->RemoveClient(iter->first);
-
+			
 			//DEBUF
 			//printf("Client recived: DISCONNECT_ACCEPTED\n");
-
+			
 			iter = this->connectedClients.end();
+			this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
+			
 			break;
 
 		case UPDATE_ENTITY:
@@ -770,4 +774,9 @@ std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 int NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
+}
+
+bool NetworkModule::IsHost()
+{
+	return  this->isHost;
 }

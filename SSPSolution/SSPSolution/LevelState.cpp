@@ -195,7 +195,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1.SetLookDir(playerLookDir);
 	this->m_player1.Update(dt, inputHandler);
 
-	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
 	{
 		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
