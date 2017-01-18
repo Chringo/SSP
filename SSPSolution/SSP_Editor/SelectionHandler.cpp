@@ -157,6 +157,7 @@ bool SelectionHandler::PickObjectSelection()
 	float minHitDistance = FLT_MAX;
 
 
+
 	//checks if we picked on a model by iterating
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 	if (!m_Map->empty())
@@ -216,6 +217,27 @@ bool SelectionHandler::PickObjectSelection()
 			//update widget with the intersected obb
 			this->m_transformWidget.Select(obj, spawn, i, spawn->component.modelPtr->GetId());
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(spawn);
+
+			gotHit = result;
+		}
+
+	}
+
+	std::vector<AiContainer>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < container->size(); i++)
+	{
+		Container* wayPoint = &container->at(i);
+		OBB obj = m_ConvertOBB(wayPoint->component.modelPtr->GetOBBData(), wayPoint);
+
+		bool result = false;
+		result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->position, hitDistance);
+		//transformWidget.setActive(result);
+		if (result && hitDistance < minHitDistance)
+		{
+			minHitDistance = hitDistance;
+			//update widget with the intersected obb
+			this->m_transformWidget.Select(obj, wayPoint, i, wayPoint->component.modelPtr->GetId());
+			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
 
 			gotHit = result;
 		}

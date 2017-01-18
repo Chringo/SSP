@@ -8,8 +8,12 @@ struct Container
 	DirectX::XMVECTOR position; // Total värde. 
 	DirectX::XMVECTOR rotation; //Total värde. 
 	GraphicsComponent component;
-	AIComponent*    aiComponent = nullptr;
 	bool isDirty  = false;
 	bool isStatic = true;
+};
+
+struct AiContainer : public Container
+{
+	AIComponent    aiComponent;
 };
 
