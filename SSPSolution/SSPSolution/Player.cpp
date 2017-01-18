@@ -75,8 +75,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (this->m_pComp != nullptr)
 	{
 		//Check if the player should update its physics component
-		/*if (this->m_pComp->PC_entityID == 0)
-		{*/
+		if (this->m_pComp->PC_entityID == 0)
+		{
 			if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
@@ -95,7 +95,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 
 			}
-		//}
+		}
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
