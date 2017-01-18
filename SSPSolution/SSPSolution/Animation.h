@@ -22,6 +22,9 @@ struct GraphicsAnimationComponent
 	DirectX::XMMATRIX worldMatrix;
 
 	DirectX::XMMATRIX finalTransforms[32];
+
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 enum AnimationStates

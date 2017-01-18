@@ -28,6 +28,15 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sph
 	colors[T_SPHERE].push_back(color);
 }
 
+GRAPHICSDLL_API void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+	positions[T_WAYPOINT].push_back(wayPoints);
+	colors[T_WAYPOINT].push_back(color);
+	this->numWaypoints.push_back(numWaypoints);
+	
+	return;
+}
+
 void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 {
 	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
@@ -61,6 +70,15 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	}
 	positions[T_SPHERE].clear();
 	colors[T_SPHERE].clear();
+
+	for (size_t i = 0; i < positions[T_WAYPOINT].size(); i++)
+	{
+		m_debugRender.Render(positions[T_WAYPOINT].at(i), numWaypoints.at(i), colors[T_WAYPOINT].at(i));
+	}
+	positions[T_WAYPOINT].clear();
+	colors[T_WAYPOINT].clear();
+	numWaypoints.clear();
+	
 
 
 	planes.clear();
@@ -204,12 +222,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	{
 		return 1;
 	}
+#ifdef _DEBUG
 	this->editorMode = editorMode;
 	if (!editorMode)
 	{
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
+#endif //_DEBUG
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -418,6 +438,7 @@ void GraphicsHandler::Shutdown()
 	//	delete this->m_animGraphicsComponents[i];
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
+#ifdef _DEBUG
 	if (!editorMode)
 	{
 		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
@@ -429,13 +450,15 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 
-	
-	
+
+
 		if (m_animGraphicsComponents != nullptr) {
-		delete this->m_animGraphicsComponents[1];
-		delete[] this->m_animGraphicsComponents;
+			delete this->m_animGraphicsComponents[1];
+			delete[] this->m_animGraphicsComponents;
 		}
 	}
+#endif // _DEBUG
+
 	
 	delete[] this->m_graphicsComponents;
 #ifdef _DEBUG
