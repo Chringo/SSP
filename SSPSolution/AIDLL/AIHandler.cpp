@@ -97,7 +97,7 @@ int AIHandler::Update(float deltaTime)
 				this->WaypointUpdated = true;
 			}
 
-			DirectX::XMVECTOR v;
+			DirectX::XMVECTOR v = DirectX::XMVECTOR();
 			v = DirectX::XMVectorScale(DirectX::XMVector3Normalize(v), this->m_AIComponents.at(i)->AP_speed);
 			v = DirectX::XMVectorScale(v, deltaTime);
 			
