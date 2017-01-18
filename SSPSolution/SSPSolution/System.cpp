@@ -190,7 +190,7 @@ int System::Update(float deltaTime)
 		for (iter = cList.begin(); iter != cList.end();)
 		{
 			this->m_camera->SetCameraPos((iter)->pos);
-			this->m_camera->Update();
+			this->m_camera->Update(deltaTime);
 			iter++;	
 		}
 
@@ -241,7 +241,7 @@ int System::Update(float deltaTime)
 		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, float(rotateCameraY), 0.0f, 0.0f);
 		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&newRotation)));
 		/*if (length > 0.000000001f)*/
-			this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
+			//this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
 
 		//this->m_camera->Update();
 
@@ -254,7 +254,7 @@ int System::Update(float deltaTime)
 		}
 
 	}
-	this->m_camera->Update();
+	this->m_camera->Update(deltaTime);
 
 	//AI
 	this->m_AIHandler->Update(deltaTime);
