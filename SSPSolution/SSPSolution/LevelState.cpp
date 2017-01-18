@@ -212,6 +212,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
+	playerLookDir.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
 	DirectX::XMFLOAT3 temp;
 
 	this->m_cameraRef->GetCameraUp(temp);

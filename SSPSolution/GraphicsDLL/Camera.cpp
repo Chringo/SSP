@@ -71,13 +71,17 @@ int Camera::Update(float dt)
 	//DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
 	//
 
-
+	//DirectX::XMMATRIX hier = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset));
 
 	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
+	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
+	//
+	//view = DirectX::XMMatrixMultiply(hier, view);
+	//DirectX::XMStoreFloat4x4(&this->m_viewMatrix, view);
 
 	return result;
 }
@@ -475,6 +479,8 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
+	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
+
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 
@@ -482,6 +488,14 @@ void Camera::m_updatePos()
 	m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
 	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusVec);
+
+
+	DirectX::XMVECTOR oldPos = DirectX::XMLoadFloat4(&m_cameraPos);
+	
+	DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(oldTarget, finalFocus);
+		
+	camPosVec = DirectX::XMVectorAdd(camPosVec, difference);
+
 
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 }
