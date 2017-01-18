@@ -56,7 +56,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -134,6 +134,7 @@ int System::Run()
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
+		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
@@ -211,6 +212,7 @@ int System::Update(float deltaTime)
 	{
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
 		this->m_camera->ApplyLocalTranslation(posTranslation);
+
 		//this->m_camera->AddToLookAt(posTranslation);
 		float rotationAmount = DirectX::XM_PI / 4;
 		rotationAmount *= deltaTime / 1000000.0f;
@@ -219,9 +221,8 @@ int System::Update(float deltaTime)
 		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&newRotation)));
 		/*if (length > 0.000000001f)*/
 			this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
-
 	}
-	this->m_camera->Update();
+	this->m_camera->Update(deltaTime);
 
 	//AI
 	this->m_AIHandler->Update(deltaTime);
@@ -334,11 +335,15 @@ int System::HandleEvents()
 			}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 			{
+				this->m_inputHandler->captureMouse(SDL_TRUE);
+				//SDL_CaptureMouse(SDL_TRUE);
 				//OnInputFocus();
 				break;
 			}
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 			{
+				this->m_inputHandler->captureMouse(SDL_FALSE);
+				//SDL_CaptureMouse(SDL_FALSE);
 				//OnInputBlur();
 				break;
 			}
@@ -388,7 +393,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
-			this->m_inputHandler->mouseMovement(m_window);
+			
 			break;
 		}
 		case SDL_QUIT:

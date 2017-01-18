@@ -61,7 +61,7 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	return result;
 }
 
-int Camera::Update()
+int Camera::Update(float dt)
 {
 	int result = 1;
 	this->m_updatePos();
@@ -442,14 +442,7 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
-void Camera::AlignWithRay(DirectX::XMVECTOR direction)
-{
-	//Create a new look at vector.
-	DirectX::XMVECTOR newLookAt = DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMVector3Normalize(direction));
-	DirectX::XMStoreFloat4(&this->m_lookAt, newLookAt);
 
-	this->Update();
-}
 DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
 {
 	DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
