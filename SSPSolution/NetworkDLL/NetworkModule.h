@@ -70,7 +70,7 @@ public:
 	//Public packet functions (send to all other clients e.g the only other player)
 	NETWORKDLL_API void SendFlagPacket(PacketTypes type);
 	NETWORKDLL_API void SendSyncPacket();
-	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity);
+	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/);
 	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID);
 	NETWORKDLL_API void SendStatePacket(unsigned int entityID, bool newState);
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);

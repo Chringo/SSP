@@ -141,31 +141,45 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	dt = 1000000 / dt;
 
 	this->m_networkModule->Update();
-	
-	//Check for updates for enteties
-	this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();
 
-	if (this->m_entityPacketList.size > 0)
+#pragma region
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
 	{
-		// Apply each packet to the right entity
-		std::list<EntityPacket>::iterator itr;
-		for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
+		//Check for updates for enteties
+		this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_entityPacketList.size() > 0)
 		{
-			// Find the entity
-			DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
-			PhysicsComponent* pp = ent->GetPhysicsComponent();
-			
-			// Update the component
-			pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-			pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 
+			// Apply each packet to the right entity
+			std::list<EntityPacket>::iterator itr;
+			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
+			{
+
+				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
+				{
+					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = itr->newPos;
+					pp->PC_rotation = itr->newRotation;
+					pp->PC_velocity = itr->newVelocity;
+				}
+				else
+				{
+					// Find the entity
+					DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
+					PhysicsComponent* pp = ent->GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = itr->newPos;
+					pp->PC_rotation = itr->newRotation;
+				}
+			}
 		}
+		this->m_entityPacketList.clear();	//Clear the list
 	}
-	this->m_entityPacketList.clear();	//Clear the list
-
-	//Do local changes
-
-	//Send changes
+#pragma endregion Network_update_entities
 
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
@@ -180,6 +194,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1.SetUpDir(upDir);
 	this->m_player1.SetLookDir(playerLookDir);
 	this->m_player1.Update(dt, inputHandler);
+
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+	}
 
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
