@@ -37,12 +37,11 @@ private:
 	GraphicsHandler* m_graphicsHandler;
 	AnimationHandler* m_AnimHandler; //Handles all animations for entities. 
 	PhysicsHandler m_physicsHandler; //this is a physicsHandler
+	AIHandler* m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
 
 
-	/*AI*/
-	AIHandler* m_AIHandler;
 public:
 	System();
 	~System();
