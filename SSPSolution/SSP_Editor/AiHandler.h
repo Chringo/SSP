@@ -1,6 +1,6 @@
 #ifndef SSPEDITOR_AIHANDLER_AIHANDLER_H
 #define SSPEDITOR_AIHANDLER_AIHANDLER_H
-#include "../AIDLL/AIComponent.h"
+#include "Header.h"
 #include <vector>
 
 /*
@@ -16,16 +16,15 @@ When a new level is created. This class is cleared of its data.
 class AiHandler
 {
 private:
-	std::vector<AIComponent> m_PathComponents;
-
+	std::vector<AiContainer>m_PathComponents;
 public:
 	AiHandler();
 	virtual ~AiHandler();
 
 	//Path Component Functions
-	AIComponent* NewPathComponent();
-	AIComponent* GetPathComponent(int EntityID);
-	std::vector<AIComponent>* GetAllPathComponents();
+	AiContainer* NewPathComponent();
+	AiContainer* GetPathComponent(int EntityID);
+	std::vector<AiContainer>* GetAllPathComponents();
 	void DeletePathComponent(int EntityID);
 	/////////////////////////////////////////////
 

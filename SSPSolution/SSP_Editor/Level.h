@@ -22,8 +22,8 @@ private:
 	Container m_SpawnPoints[2];
 	AiHandler m_LevelAi; //Handler for the AI in the level
 	std::string levelName = "untitled_level";
-	std::vector<unsigned int> m_uniqueModels;							 //Every unique model used by the level
-	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of modelEntities in the level
+	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
+	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
 public:
 	Level();
