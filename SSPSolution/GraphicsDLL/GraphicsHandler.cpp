@@ -295,7 +295,9 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
-	
+
+	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
 
 
 	m_shaderControl->DrawFinal();
@@ -433,11 +435,7 @@ void GraphicsHandler::Shutdown()
 		this->m_windowHandle = nullptr;
 	}
 
-	//for (int i = 1; i < 2; i++)
-	//{
-	//	delete this->m_animGraphicsComponents[i];
-	//	this->m_animGraphicsComponents[i] = nullptr;
-	//}
+
 #ifdef _DEBUG
 	if (!editorMode)
 	{
@@ -450,7 +448,7 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 
-
+		delete[] this->m_animGraphicsComponents;
 
 		if (m_animGraphicsComponents != nullptr) {
 			delete this->m_animGraphicsComponents[1];
@@ -522,11 +520,6 @@ int GraphicsHandler::UpdateComponentList()
 	return result;
 }
 
-void GraphicsHandler::SetTempAnimComponent(void * component)
-{
-	m_animGraphicsComponents[0] = (penis*)component;
-}
-
 GraphicsComponent * GraphicsHandler::getComponent(int index)
 {
 	return this->m_graphicsComponents[index];
@@ -565,18 +558,8 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new penis*[2];
-	for (int i = 0; i < 2; i++) {
-		this->m_animGraphicsComponents[i] = nullptr;
-	}
+	this->m_animGraphicsComponents = new AnimationGraphicsComponent*;
 
-	this->m_animGraphicsComponents[1] = new penis;
-
-	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
-	for (int j = 0; j < 32; j++)
-	{
-		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
-	}
 	
 
 

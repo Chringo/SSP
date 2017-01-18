@@ -23,7 +23,7 @@ struct GraphicsComponent
 
 };
 
-struct penis //john....
+struct AnimationGraphicsComponent
 {
 	int active = 0;
 	int modelID = -1;

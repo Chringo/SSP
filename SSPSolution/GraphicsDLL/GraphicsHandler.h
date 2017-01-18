@@ -64,7 +64,7 @@ private:
 	bool postProcessing = false;
 	
 
-	penis** m_animGraphicsComponents = nullptr;
+	AnimationGraphicsComponent** m_animGraphicsComponents;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
@@ -101,7 +101,6 @@ public:
 
 	//TEMP STUFF
 public:
-	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 private:
 	void m_CreateTempsTestComponents();

@@ -45,7 +45,8 @@ LIGHT initLight()
     light.lightPos = float3(0.0f, 0.0f, -1.5f);
 	light.lightDir = float3(0.0f, 0.5f, 1.0f);
     light.lightColor = float3(1.0f, 1.0f, 1.0f);
-    light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
+    //light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
+	light.lightAmbient = float3(1.0f, 1.0f, 1.0f);
 
     return light;
 }

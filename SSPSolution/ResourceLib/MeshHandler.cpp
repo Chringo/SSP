@@ -150,9 +150,8 @@ Resources::Status Resources::MeshHandler::UnloadMesh(const unsigned int & id)
 
 Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 {
+	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.bbf";
 
-
-	std::string path = "../ResourceLib/AssetFiles/PlaceHolder.bbf";
 	char* data = nullptr;
 	size_t dataSize = 0;
 	Status st = FileLoader::GetInstance()->LoadPlaceHolderMesh(path, data, &dataSize);

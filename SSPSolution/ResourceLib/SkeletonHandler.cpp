@@ -90,9 +90,17 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	newSkeleton->AddAnimation
 	*/
 	ResourceContainer* animPtr;
-	
-	m_animHandler->LoadAnimation(UINT(213), animPtr);
-	newSkeleton->AddAnimation((Animation*)animPtr->resource, 0);
+	unsigned int ids[4];
+	ids[0] = 213;
+	ids[1] = 214;
+	ids[2] = 215;
+	ids[3] = 216;
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_animHandler->LoadAnimation(ids[i], animPtr, i);
+		newSkeleton->AddAnimation((Animation*)animPtr->resource, i);
+	}
 
 	//int animsloaded = 0;
 	//for (size_t i = 0; i < *animCount; i++)

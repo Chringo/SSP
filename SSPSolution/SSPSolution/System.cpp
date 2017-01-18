@@ -33,8 +33,8 @@ int System::Shutdown()
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	delete this->m_AnimationHandler;
+	this->m_AnimationHandler = nullptr;
 	return result;
 }
 
@@ -106,7 +106,7 @@ int System::Initialize()
 	ptr->PC_AABB.ext[2] = 10;
 	ptr->PC_BVtype = BV_AABB;
 
-	//this->m_Anim = new Animation();
+	this->m_AnimationHandler = new AnimationHandler();
 
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 

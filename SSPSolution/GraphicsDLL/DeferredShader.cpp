@@ -551,7 +551,7 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	return 0;
 }
 
-int DeferredShader::Draw(Resources::Model * model, penis * component)
+int DeferredShader::Draw(Resources::Model * model, AnimationGraphicsComponent * component)
 {
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
 	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalTransforms);

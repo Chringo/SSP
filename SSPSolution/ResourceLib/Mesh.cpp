@@ -137,11 +137,9 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 	if (numVerts == 0) 
 		return false;
 
-	
 	delete m_meshData.m_vertices;	    m_meshData.m_vertices	  = nullptr;
 	delete m_meshData.m_animVertices;	m_meshData.m_animVertices = nullptr;
 	
-
 	if (!Resources::SAFE_RELEASE(m_AnimVertBuffer)) {
 		Resources::OutputErrorString(this, std::string("could not release animBuffer")); 
 		return false;
@@ -156,7 +154,6 @@ bool Resources::Mesh::SetVertices(VertexAnim * data, ID3D11Device* dev, unsigned
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		bufferDesc.ByteWidth = sizeof(VertexAnim)* numVerts;
-	
 	
 		D3D11_SUBRESOURCE_DATA b_data;
 		b_data.pSysMem = data;

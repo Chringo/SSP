@@ -13,7 +13,7 @@ cbuffer frame : register(b1)
     float timer,
     padding1, padding2, padding3;
 }
-cbuffer skeleton : register(b5)
+cbuffer skeleton : register(b4)
 {
 	float4x4 joints[32];
 }
@@ -50,17 +50,20 @@ VS_OUT VS_main(VS_IN input)
 	float3 skinnedTan = float3(0.f, 0.f, 0.f);
     float weight;
     int influences;
+
 	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
 	for (int i = 0; i < 4; i++)
 	{
-        weight = input.weights[i];
         influences = input.influences[i];
-        if (influences > 0)
-        {          
-            skinnedPos += mul(mul(float4(input.Pos, 1.0f), joints[influences]), weight);
-            skinnedNormal += mul(mul(float4(input.Normal, 1.0f), joints[influences]), weight);
-            skinnedTan += mul(mul(float4(input.Tangent, 1.0f), joints[influences]), weight);
-        }
+
+		if (influences != -1)
+		{
+			weight = input.weights[i];
+
+			skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences]));
+			skinnedNormal += mul(weight, mul(float4(input.Normal, 1.0f), joints[influences]));
+			skinnedTan += mul(weight, mul(float4(input.Tangent, 1.0f), joints[influences]));
+		}
     }
 
 	matrix WV = mul(viewMatrix, projectionMatrix);
