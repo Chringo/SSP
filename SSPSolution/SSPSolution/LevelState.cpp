@@ -91,7 +91,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 0;								//Set Entity ID
+	playerP->PC_entityID = 3;								//Set Entity ID
 															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
@@ -102,7 +102,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 1.5;
 	playerP->PC_AABB.ext[2] = 1.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player1.Initialize(1, playerP, playerG);
+	this->m_player2.Initialize(3, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
@@ -156,7 +156,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	if (this->m_networkModule->IsHost())
 	{
 		m_cameraRef->SetCameraPivot(
-		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
+		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
 		targetOffset,
 		10.0f
 		);
@@ -164,7 +164,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	else // Player 2
 	{
 		m_cameraRef->SetCameraPivot(
-			&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+			&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
 			targetOffset,
 			10.0f
 		);
@@ -353,7 +353,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				//Move the camera to player 2 since we joined a game 
 				DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
 				m_cameraRef->SetCameraPivot(
-					&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+					&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
 					targetOffset,
 					10.0f
 				);
