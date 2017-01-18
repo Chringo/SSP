@@ -7,12 +7,13 @@ class WheelEntity :
 {
 private:
 	//Variables
-	bool m_isDone;
 	float m_minRotation;
 	float m_maxRotation;
 	float m_rotateTime;
 	float m_rotatePerSec;
 	float m_range;
+	// -2:minRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation | 2:maxRotation
+	int m_rotationState;
 public:
 	WheelEntity();
 	~WheelEntity();
@@ -22,7 +23,7 @@ public:
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
-	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos);
+	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increasing);
 private:
 	//Functions
 };
