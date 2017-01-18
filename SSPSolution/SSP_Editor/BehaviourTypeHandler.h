@@ -2,7 +2,9 @@
 #define SSPEDITOR_UI_BEHAVIOURHANDLER_H
 #include "ui_SSP_Editor.h"
 #include <qobject.h>
+#include "AIController.h"
 #include "Header.h"
+#include "LevelHandler.h"
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
