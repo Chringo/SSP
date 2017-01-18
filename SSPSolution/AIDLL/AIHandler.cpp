@@ -36,6 +36,11 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
+	//float dt = 0;
+	//if (deltaTime < 0.000001f)
+	//	dt = 0.00001f;
+	//else
+	//	dt = (deltaTime * 0.00001f);
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents.at(i)->AP_active && this->m_AIComponents.at(i)->AP_triggered)
@@ -72,6 +77,7 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AP_waypoints[this->m_AIComponents.at(i)->AP_nextWaypointID],
 						1.0f))
 					{
+						//this->m_AIComponents.at(i)->AP_position = this->m_AIComponents.at(i)->AP_waypoints[currentWaypoint];
 						currentWaypoint = this->m_AIComponents.at(i)->AP_nextWaypointID;
 						this->m_AIComponents.at(i)->AP_nextWaypointID++;
 						if (this->m_AIComponents.at(i)->AP_nextWaypointID >= this->m_AIComponents.at(i)->AP_nrOfWaypoint)
@@ -104,9 +110,11 @@ int AIHandler::Update(float deltaTime)
 
 			DirectX::XMVECTOR v = DirectX::XMVECTOR();
 			v = DirectX::XMVectorScale(DirectX::XMVector3Normalize(this->m_AIComponents.at(i)->AP_dir), this->m_AIComponents.at(i)->AP_speed);
-			//v = DirectX::XMVectorScale(v, deltaTime);
-			
-			//this->m_AIComponents.at(i)->AP_position = DirectX::XMVectorMultiply(v, this->m_AIComponents.at(i)->AP_position);
+			//if (dt > 0.01f && dt < 1.0f)
+			//{
+			//	v = DirectX::XMVectorScale(v, dt);
+			//}
+
 			this->m_AIComponents.at(i)->AP_position = DirectX::XMVectorAdd(v, this->m_AIComponents.at(i)->AP_position);
 		}
 	}
