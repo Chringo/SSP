@@ -143,7 +143,26 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
+#pragma region AIComp variables
 	platformTERMINATOR->AP_active = true;
+	// entityID resolved in initialise down below
+
+	platformTERMINATOR->AP_triggered = true;
+	platformTERMINATOR->AP_time = 0;
+
+	platformTERMINATOR->AP_speed = 0.3f;
+	// AP_dir resolved in update loop
+
+	platformTERMINATOR->AP_position = platformP->PC_pos;
+	platformTERMINATOR->AP_pattern = 2;// Circular
+	platformTERMINATOR->AP_direction = 0;
+	platformTERMINATOR->AP_latestWaypointID = 0;
+	platformTERMINATOR->AP_nextWaypointID = 1;
+	platformTERMINATOR->AP_nrOfWaypoint = 3;
+	platformTERMINATOR->AP_waypoints[0] = platformP->PC_pos;
+	platformTERMINATOR->AP_waypoints[1] = DirectX::XMVectorSet(20, 1, 0, 0);
+	platformTERMINATOR->AP_waypoints[2] = DirectX::XMVectorSet(20, 1, -10, 0);
+#pragma endregion
 
 	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
