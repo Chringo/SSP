@@ -2,8 +2,8 @@
 #define SUCCESS 1
 #define FAIL 0
 
-AIHandler::AIHandler(){}
-AIHandler::~AIHandler(){}
+AIHandler::AIHandler() {}
+AIHandler::~AIHandler() {}
 int AIHandler::Shutdown()
 {
 	for (int i = 0; i < this->m_maxOfAIComponents; i++)
@@ -157,7 +157,7 @@ void AIHandler::SetDirection(int compID, int direction)
 	this->m_AIComponents.at(compID)->AP_direction = direction;
 }
 
-void AIHandler::SetCurrentWaypoint(int compID, int latestWaypoint)
+void AIHandler::SetLatestWaypoint(int compID, int latestWaypoint)
 {
 	this->m_AIComponents.at(compID)->AP_latestWaypointID = latestWaypoint;
 }
