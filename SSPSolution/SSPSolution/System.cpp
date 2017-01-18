@@ -56,7 +56,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -385,11 +385,15 @@ int System::HandleEvents()
 			}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 			{
+				this->m_inputHandler->captureMouse(SDL_TRUE);
+				//SDL_CaptureMouse(SDL_TRUE);
 				//OnInputFocus();
 				break;
 			}
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 			{
+				this->m_inputHandler->captureMouse(SDL_FALSE);
+				//SDL_CaptureMouse(SDL_FALSE);
 				//OnInputBlur();
 				break;
 			}
