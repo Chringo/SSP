@@ -220,11 +220,11 @@ bool AIHandler::WaypointApprox(int compID)
 	int next = this->m_AIComponents.at(compID)->AP_nextWaypointID;
 
 	DirectX::XMVECTOR v = DirectX::XMVectorSubtract(this->m_AIComponents.at(compID)->AP_waypoints[next]
-		,this->m_AIComponents.at(compID)->AP_waypoints[current]);
+		,this->m_AIComponents.at(compID)->AP_position);
 
 	float length = VectorLength(v);
 
-	if (length < 0.01)
+	if (length < 0.1f)
 	{	
 		this->WaypointUpdated = false;
 		return true;
