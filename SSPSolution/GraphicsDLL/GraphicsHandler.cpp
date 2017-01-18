@@ -30,9 +30,10 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sph
 
 GRAPHICSDLL_API void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
-	this->wayPoints    = wayPoints;
-	this->numWaypoints = numWaypoints;
-	this->pathColor	   = color;
+	positions[T_WAYPOINT].push_back(wayPoints);
+	colors[T_WAYPOINT].push_back(color);
+	this->numWaypoints.push_back(numWaypoints);
+	
 	return;
 }
 
@@ -70,12 +71,15 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	positions[T_SPHERE].clear();
 	colors[T_SPHERE].clear();
 
-	if (wayPoints != nullptr)
+	for (size_t i = 0; i < positions[T_WAYPOINT].size(); i++)
 	{
-		m_debugRender.Render(wayPoints, numWaypoints, pathColor);
-		wayPoints    = nullptr;
-		numWaypoints = 0;
+		m_debugRender.Render(positions[T_WAYPOINT].at(i), numWaypoints.at(i), colors[T_WAYPOINT].at(i));
 	}
+	positions[T_WAYPOINT].clear();
+	colors[T_WAYPOINT].clear();
+	numWaypoints.clear();
+	
+
 
 	planes.clear();
 	obbBoxes.clear();
