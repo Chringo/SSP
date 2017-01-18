@@ -81,7 +81,7 @@ void ResourceLibExporter::BuildRegistry()
 		item.id = sceneMaterials->at(i)->GetId();
 		m_Items.push_back(item);
 	}
-
+	
 	/*iterating over all the textures*/
 	std::unordered_map<std::string, Resources::Texture*>* sceneTextures = m_Data->GetTextures();
 	for (auto iterator = sceneTextures->begin(); iterator != sceneTextures->end(); ++iterator)
@@ -95,7 +95,25 @@ void ResourceLibExporter::BuildRegistry()
 	}
 
 	/*add skeleton here*/
+	std::vector<Resources::Skeleton*>* sceneSkeletons = m_Data->GetSkeletons();
+	for (int i = 0; i < sceneSkeletons->size(); ++i)
+	{
+		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
+		item.id = sceneSkeletons->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 	/*add animations here*/
+	std::vector<Resources::Animation*>* sceneAnimations = m_Data->GetAnimations();
+	for (int i = 0; i < sceneAnimations->size(); ++i)
+	{
+		RegistryItem item;
+		item.byteSize = 0;
+		item.startBit = 0;
+		item.id = sceneAnimations->at(i)->GetId();
+		m_Items.push_back(item);
+	}
 
 	/*Assigning the right amount of space required, just in case someone "accidentally" put
 	a file on the server in one of the folders who are meant for binary files. Like hey!
@@ -224,7 +242,8 @@ void ResourceLibExporter::HandleSceneData()
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
 
-				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf")
+				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" 
+					|| dotName != ".mat" && dotName == ".skel" || dotName != ".mat" && dotName == ".anim")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
 				}
