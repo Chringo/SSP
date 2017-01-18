@@ -211,17 +211,7 @@ void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 {
 
-	//m_BehaviourType->setCurrentIndex(m_Current_Type);
-	//QMessageBox msgBox;
-	//msgBox.setText("Switching Behaviour will delete the current behaviour");
-	//QString last = "Continue anyways?";
-	//msgBox.setInformativeText(last);
-	//msgBox.setStandardButtons(QMessageBox::Yes| QMessageBox::Cancel);
-	//msgBox.setDefaultButton(QMessageBox::Cancel);
-	//int ret = msgBox.exec();
-	//switch (ret) {
-	//case QMessageBox::Yes:
-	//{
+	
 		ResetType(this->m_Current_Type);
 		this->m_Current_Type = (BehaviourType)val;
 		m_BehaviourType->setCurrentIndex(val);
@@ -234,9 +224,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 				cont.DeletePath();
 			}
 		}
-		//break;
-	//}
-	//}
+	
 
 
 }
