@@ -67,7 +67,10 @@ int AIHandler::Update(float deltaTime)
 				//Identical to pattern 2 (Circular)
 				if (direction == 0)
 				{
-					if (WaypointApprox(i))
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AP_position,
+						this->m_AIComponents.at(i)->AP_waypoints[this->m_AIComponents.at(i)->AP_nextWaypointID],
+						1.0f))
 					{
 						currentWaypoint = this->m_AIComponents.at(i)->AP_nextWaypointID;
 						this->m_AIComponents.at(i)->AP_nextWaypointID++;
@@ -77,7 +80,10 @@ int AIHandler::Update(float deltaTime)
 				}
 				else
 				{
-					if (WaypointApprox(i))
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AP_position,
+						this->m_AIComponents.at(i)->AP_waypoints[this->m_AIComponents.at(i)->AP_nextWaypointID],
+						1.0f))
 					{
 						currentWaypoint = this->m_AIComponents.at(i)->AP_nextWaypointID;
 						this->m_AIComponents.at(i)->AP_nextWaypointID--;
@@ -201,7 +207,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	newComponent->AP_pattern = 0;
 	newComponent->AP_time = 0;
 	newComponent->AP_speed = 0;
-	newComponent->AP_direction = 0;
+	newComponent->AP_direction = -1;
 	newComponent->AP_nextWaypointID = 0;
 	newComponent->AP_latestWaypointID = 0;
 	newComponent->AP_nrOfWaypoint = 0;
@@ -214,27 +220,24 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	return newComponent;
 }
 
-bool AIHandler::WaypointApprox(int compID)
+bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance)
 {
-	int current = this->m_AIComponents.at(compID)->AP_latestWaypointID;
-	int next = this->m_AIComponents.at(compID)->AP_nextWaypointID;
+	float dx = abs(DirectX::XMVectorGetX(c2) - DirectX::XMVectorGetX(c1));
+	float dy = abs(DirectX::XMVectorGetY(c2) - DirectX::XMVectorGetY(c1));
+	float dz = abs(DirectX::XMVectorGetZ(c2) - DirectX::XMVectorGetZ(c1));
 
-	DirectX::XMVECTOR v = DirectX::XMVectorSubtract(this->m_AIComponents.at(compID)->AP_waypoints[next]
-		,this->m_AIComponents.at(compID)->AP_position);
+	if (dx > distance) return false; // too far in x direction
+	if (dy > distance) return false; // too far in y direction
+	if (dz > distance) return false; // too far in z direction
 
-	float length = VectorLength(v);
+	this->WaypointUpdated = false;
 
-	if (length < 0.1f)
-	{	
-		this->WaypointUpdated = false;
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
 int AIHandler::GetNextWaypoint(int compID, int pattern)
 {
+	//TODO Move some logic from update if needed to this function
 	int next = this->m_AIComponents.at(compID)->AP_latestWaypointID;
 	int current = this->m_AIComponents.at(compID)->AP_nextWaypointID;
 
@@ -256,10 +259,4 @@ int AIHandler::GetNextWaypoint(int compID, int pattern)
 	this->m_AIComponents.at(compID)->AP_direction;
 
 	return 0;
-}
-
-float AIHandler::VectorLength(DirectX::XMVECTOR v)
-{
-	float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(v));
-	return length;
 }
