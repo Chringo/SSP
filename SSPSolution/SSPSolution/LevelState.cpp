@@ -130,7 +130,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
 
-	StaticEntity* platform = new StaticEntity();
+	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
 	platformG->modelID = 1337;
 	platformG->active = true;
@@ -148,7 +148,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
 	platformTERMINATOR->AP_entityID = platform->GetEntityID();
-	this->m_staticEntitys.push_back(platform);
+	this->m_dynamicEntitys.push_back(platform);
 
 	this->m_director.Initialize();
 
