@@ -321,6 +321,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
+		this->m_player2.SyncComponents();
 	}
 	else
 	{
@@ -328,6 +329,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player2.SetUpDir(upDir);
 		this->m_player2.SetLookDir(playerLookDir);
 		this->m_player2.Update(dt, inputHandler);
+		this->m_player1.SyncComponents();
 	}
 	
 
