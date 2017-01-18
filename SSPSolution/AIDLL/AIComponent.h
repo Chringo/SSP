@@ -17,18 +17,18 @@ __declspec(align(16)) struct AIComponent
 	int AP_entityID = -1;
 
 	// AI variables
-	bool AP_triggered;			// Trigger handling
-	int AP_time;				// How long the component is active
+	bool AP_triggered = false;	// Trigger handling
+	int AP_time = 0;			// How long the component is active
 
-	float AP_speed;				// Movement speed
-	DirectX::XMVECTOR AP_dir;	// Normalised direction vector
+	float AP_speed = 0;			// Movement speed
+	DirectX::XMVECTOR AP_dir = DirectX::XMVECTOR();// Normalised direction vector
 
-	DirectX::XMVECTOR AP_position;// Current position
-	int AP_pattern;				// Traversing of waypoints
-	int AP_direction;			// Direction in array, might be removed due to AP_pattern's existance
-	int AP_nextWaypointID;		// Index to next waypoint 
-	int AP_latestWaypointID;	// Index to latest visited waypoint
-	int AP_nrOfWaypoint;		// Nr of waypoints used in array
+	DirectX::XMVECTOR AP_position = DirectX::XMVECTOR();// Current position
+	int AP_pattern = AI_NONE;	// Traversing of waypoints
+	int AP_direction = 0;		// Direction in array, might be removed due to AP_pattern's existance
+	int AP_nextWaypointID = 0;	// Index to next waypoint 
+	int AP_latestWaypointID = 1;// Index to latest visited waypoint
+	int AP_nrOfWaypoint = 0;	// Nr of waypoints used in array
 
 	DirectX::XMVECTOR AP_waypoints[8];
 
