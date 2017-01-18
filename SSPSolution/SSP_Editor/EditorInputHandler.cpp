@@ -130,7 +130,7 @@ void EditorInputHandler::MouseMovement(double dT)
 
 	DirectX::XMVECTOR rotationVector;
 
-	DirectX::XMVECTOR camUpVec = DirectX::XMLoadFloat4(&camUpFloat);
+	DirectX::XMVECTOR camUpVec = { 0.0f, 1.0f,0.0f,0.0f };//DirectX::XMLoadFloat4(&camUpFloat);
 	DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
 	DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
 
