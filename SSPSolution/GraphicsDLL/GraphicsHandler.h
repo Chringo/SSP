@@ -29,6 +29,7 @@ private:
 		T_AABB,
 		T_PLANE,
 		T_SPHERE,
+		T_WAYPOINT,
 		T_NUM_TYPES
 	};
 	DebugRenderer m_debugRender;
@@ -37,12 +38,10 @@ private:
 	std::vector<Plane*> planes;
 	std::vector<Sphere*> spheres;
 
+	std::vector<int> numWaypoints;
 	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
 	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
 	
-	DirectX::XMVECTOR * wayPoints = nullptr;
-	DirectX::XMVECTOR  pathColor;
-	int numWaypoints = 0;
 	
 	ID3D11DepthStencilView* dsv;
 public:
