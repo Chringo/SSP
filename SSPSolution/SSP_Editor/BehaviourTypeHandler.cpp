@@ -51,7 +51,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 		m_selection = selection;
 		//this->m_Numerics[SPEED]->setValue(0);
 		//this->m_Numerics[TIME]->setValue(0);
-		//m_uniqueID->setText(QString::number(selection->internalID));
+		m_uniqueID->setText(QString::number(selection->internalID));
 	}
 }
 
@@ -173,19 +173,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 			this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
 
 			//do stuff
-			
-			if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
-
-				//Ask The Ai handler to create a new Path Component
-				AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-				this->m_selection->aiComponent = newComponent;
-			}
-				AIController control(m_selection->aiComponent);
-				DirectX::XMVECTOR newPos = m_selection->position;
-			
-				control.AddWaypoint(newPos);
 		}
-		
 	}
 }
 
@@ -199,10 +187,6 @@ void Ui::BehaviourTypeHandler::on_Del()
 		this->m_WaypointList->takeItem(currentRow);
 		delete this->m_ListItems[(ListItems)currentRow];
 		this->m_ListItems[(ListItems)currentRow] = nullptr;
-
-		AIController control(m_selection->aiComponent);
-		control.RemoveWayPoint(currentRow);
-		
 		for (int i = currentRow; i < NUM_WAYPOINTS; i++)
 		{
 			if (currentRow == WAYPOINT8)
