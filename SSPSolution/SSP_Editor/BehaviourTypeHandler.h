@@ -41,6 +41,8 @@ namespace Ui {
 		unsigned int		m_Current_Waypoint_Amt = 0;
 		QComboBox* 			m_BehaviourType;
 		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
+		QCheckBox*			m_Path_Trigger_Box;
+		QSpinBox*			m_PATH_TRIGGER;
 		QComboBox*			m_Pattern;
 		QListWidget*		m_WaypointList;
 		QListWidgetItem*	m_ListItems[NUM_WAYPOINTS];
@@ -59,17 +61,18 @@ namespace Ui {
 		void SetSelection(Container* selection);
 		void Deselect();
 		void UpdateSelection();
+		void ResetType(BehaviourType);
 
 		public slots:
 		void on_Speed_changed(double val);
 		void on_Time_changed(double val);
+		void on_Path_Trigger_changed(int val);
+		void on_Path_Trigger_Box_changed(int val);
 		void on_Pattern_changed(int val);
 		void on_BehaviourType_changed(int val);
 
 		void on_Add();
 		void on_Del();
-		void on_Up(double val);
-		void on_Down(int state);
 	};
 }
 #endif
