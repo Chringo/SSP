@@ -7,18 +7,19 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
-struct GraphicsAnimationComponent
-{
-	int active = 0;
-	int modelID = -1;
-	int jointCount = 0;
-
-	DirectX::XMMATRIX worldMatrix;
-	DirectX::XMMATRIX finalJointTransforms[32];
-};
+//struct GraphicsAnimationComponent
+//{
+//	int active = 0;
+//	int modelID = -1;
+//	int jointCount = 0;
+//
+//	DirectX::XMMATRIX worldMatrix;
+//	DirectX::XMMATRIX finalJointTransforms[32];
+//};
 
 struct AnimationComponent
 {

@@ -575,7 +575,7 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
 	for (int j = 0; j < 32; j++)
 	{
-		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
+		this->m_animGraphicsComponents[1]->finalJointTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
 

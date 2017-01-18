@@ -10,7 +10,7 @@
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "Animation.h"
+#include "../GraphicsDLL/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
@@ -43,7 +43,7 @@ private:
 	NetworkModule m_networkModule;
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 	/*Testing for playing animation.*/
-	Animation* m_Anim;
+	AnimationHandler* m_Anim;
 	/*AI*/
 	AIHandler* m_AIHandler;
 public:
