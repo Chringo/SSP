@@ -44,6 +44,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = 0;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_100);
 			}
+
 			this->SyncComponents();
 		}
 		break;
@@ -61,6 +62,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 		}
 		break;
 	case 2:
+		break;
 	case -2:
 		break;
 	default:
@@ -88,13 +90,28 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increa
 	{
 		if (increasing)
 		{
-			this->m_rotationState = 1;
-			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+			//Check if max has been reached
+			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) >= this->m_maxRotation)
+			{
+				this->m_rotationState = 0;
+			}
+			else
+			{
+				this->m_rotationState = 1;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+			}
 		}
 		else
 		{
-			this->m_rotationState = -1;
-			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+			//Check if min has been reached
+			{
+				this->m_rotationState = 0;
+			}
+			else
+			{
+				this->m_rotationState = -1;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+			}
 		}
 	}
 	else
