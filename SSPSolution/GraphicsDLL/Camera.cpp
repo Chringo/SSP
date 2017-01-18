@@ -78,7 +78,7 @@ int Camera::Update()
 	return result;
 }
 
-GRAPHICSDLL_API int Camera::UpdateView()
+int Camera::UpdateView()
 {
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 	return 1;
