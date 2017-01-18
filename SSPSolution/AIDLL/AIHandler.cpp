@@ -208,18 +208,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	AIComponent* newComponent = nullptr;
 	newComponent = new AIComponent;
 
-	newComponent->AP_active = 0;
 	newComponent->AP_entityID = entityID;
-	newComponent->AP_position = DirectX::XMVECTOR();
-
-	newComponent->AP_triggered = false;
-	newComponent->AP_pattern = 0;
-	newComponent->AP_time = 0;
-	newComponent->AP_speed = 0;
-	newComponent->AP_direction = -1;
-	newComponent->AP_nextWaypointID = 0;
-	newComponent->AP_latestWaypointID = 0;
-	newComponent->AP_nrOfWaypoint = 0;
 
 	for (int i = 0; i < 8; i++) 
 	{
