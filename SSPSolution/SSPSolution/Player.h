@@ -7,18 +7,35 @@ class Player :
 private:
 	//Meters per second
 	float m_speed;
+	float m_throwStrength;
+
 	Entity* m_grabbed;
+	DirectX::XMVECTOR m_carryOffset;
+
+	DirectX::XMVECTOR m_lookDir;
+	DirectX::XMVECTOR m_upDir;
+	DirectX::XMVECTOR m_rightDir;
 public:
 	Player();
 	~Player();
 
-	int Initialize();
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
-	//Returns the old speed
+	//Returns the old value
+	Entity* SetGrabbed(Entity* entityPtr);
 	float SetSpeed(float speed);
+	DirectX::XMVECTOR SetLookDir(DirectX::XMVECTOR lookDir);
+	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
+	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
+
+
+	float GetSpeed();
+	DirectX::XMVECTOR GetLookDir();
+	DirectX::XMVECTOR GetUpDir();
+	DirectX::XMVECTOR GetRightDir();
 private:
 
 };

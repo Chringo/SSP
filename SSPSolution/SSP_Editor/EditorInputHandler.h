@@ -58,12 +58,10 @@ private:
 	int m_Height;
 
 	bool m_KeysHeld[Bools::NUMBOOLS];
-	
+	bool m_ableToDuplicate = true; //This is used so that the user can't mass duplicate by holding the buttons
 	QPoint m_point;
-	Level* m_currentLevel;
 
 	DirectX::XMFLOAT3 m_PreviousPos;
-	HWND m_hwnd;
 	Camera* m_Camera;
 
 	DIMOUSESTATE		 m_mouseLastState;
@@ -73,8 +71,6 @@ private:
 	void deleteModel();
 
 public:
-
-
 	void detectInput(double dT, QKeyEvent* key);
 	void SetMousePos(QPoint point) { this->m_point = point; };
 	void KeyboardMovement(double dT);

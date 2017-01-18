@@ -80,31 +80,40 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 	{
 		std::cout << "File is closed" << std::endl;
 		return Status::ST_FILE_CLOSED;
-
 	}
-	//unsigned int resourcePointer = Registry->GetPointerInFile(id);
+
+	RegistryItem* itemPtr = this->GetRegistryIndex(id);	//Get Registry info for this resource
+	if (itemPtr == nullptr)
+		return Status::ST_RES_MISSING;
+
 	std::ifstream* infile = &fileHandles[BPF_FILE];
+	infile->seekg(itemPtr->startBit); // Jump to the start of the resource data in the library
 
-	MainHeader mainHeader;
-	infile->read((char*)&mainHeader, sizeof(MainHeader));
+	mem_manager.Clear(Resources::Memory::MEM_RES);							// Clear Resource Mem
+	data = mem_manager.Store(Resources::Memory::MEM_RES, itemPtr->byteSize);// Request new mem for this resource
 
-	MeshHeader meshHeader;
-	
-	infile->read((char*)&meshHeader, sizeof(MeshHeader));
-	size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
-	Resource::RawResourceData tempRes;
-	tempRes.m_id = id;
-	tempRes.m_resType = Resources::ResourceType::RES_MESH;
+	infile->read(data, itemPtr->byteSize); //Read the whole item data
 
-	mem_manager.Clear(Resources::Memory::MEM_RES);
-	
-	data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
-
-	memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
-	memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
-
-	UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
-	infile->read(data + offset, sizetoRead);
+//MainHeader mainHeader;
+//infile->read((char*)&mainHeader, sizeof(MainHeader)); //Read main header
+//
+//MeshHeader meshHeader;
+//
+//infile->read((char*)&meshHeader, sizeof(MeshHeader)); 
+//size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
+//Resource::RawResourceData tempRes;
+//tempRes.m_id = id;
+//tempRes.m_resType = Resources::ResourceType::RES_MESH;
+//
+//mem_manager.Clear(Resources::Memory::MEM_RES);
+//
+//data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
+//
+//memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
+//memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
+//
+//UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
+//infile->read(data + offset, sizetoRead);
 
 	return Resources::Status::ST_OK;
 
@@ -192,6 +201,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
 
 	size_t totalMem = header.resAmount * sizeof(LevelData::ResourceHeader) + //Calculate file size
+		sizeof(LevelData::SpawnHeader) * 2 +
 		header.entityAmount * sizeof(LevelData::EntityHeader) +
 		header.lightAmount * sizeof(LevelData::LightHeader);
 
@@ -208,6 +218,12 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	file.read(data, resSize);						     //Read res data
 	level.resources = (LevelData::ResourceHeader*) data; //put data into level variable
 	offset += resSize;
+
+	//Spawn points
+	file.read(data + offset, sizeof(LevelData::SpawnHeader) * 2);
+	level.spawns[0] = *(LevelData::SpawnHeader*)(data + offset);
+	level.spawns[1] = *(LevelData::SpawnHeader*)(data + offset + sizeof(LevelData::SpawnHeader)); //Put the spawn data into the level struct
+	offset += sizeof(LevelData::SpawnHeader) * 2;
 
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize

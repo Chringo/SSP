@@ -30,7 +30,7 @@ EditorInputHandler::EditorInputHandler(
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->m_hwnd	    = handle;
+	//this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
 
 	this->m_PreviousPos = camera->GetCameraPos();
@@ -49,26 +49,51 @@ EditorInputHandler::~EditorInputHandler()
 
 void EditorInputHandler::KeyboardMovement(double dT)
 {
-	float speed = 2.0f * dT;
+	float speed = 4.0f * dT;
 	float translateCameraX = 0, translateCameraY = 0, translateCameraZ = 0;
-
-	if (this->m_KeysHeld[Bools::W] == true)
-		translateCameraZ += speed;
-
-	if (this->m_KeysHeld[Bools::A] == true)
-		translateCameraX -= speed;
-	if (this->m_KeysHeld[Bools::S] == true)
-		translateCameraZ -= speed;
-	if (this->m_KeysHeld[Bools::D] == true)
-		translateCameraX += speed;
-	if (this->m_KeysHeld[Bools::C] == true)
-		translateCameraY -= speed;
+	if (m_KeysHeld[Bools::SHIFT] == true)
+	{
+		if (this->m_KeysHeld[Bools::W] == true)
+			translateCameraZ += speed;
+	
+		if (this->m_KeysHeld[Bools::A] == true)
+			translateCameraX -= speed;
+		if (this->m_KeysHeld[Bools::S] == true)
+			translateCameraZ -= speed;
+		if (this->m_KeysHeld[Bools::D] == true)
+			translateCameraX += speed;
+		if (this->m_KeysHeld[Bools::C] == true)
+			translateCameraY -= speed;
+		if (this->m_KeysHeld[Bools::SPACE] == true)
+			translateCameraY -= speed;
+	
+			MouseZoom(dT);
+	}
+	else {
 	if (this->m_KeysHeld[Bools::SPACE] == true)
 		translateCameraY += speed;
+	}
 	if (this->m_KeysHeld[ALT] == true)
 		MouseMovement(dT);
-	if (this->m_KeysHeld[SHIFT] == true)
-		MouseZoom(dT);
+		
+	
+
+	//if (this->m_KeysHeld[Bools::CONTROL] == true)
+	//{
+	//	if (m_KeysHeld[Bools::D])
+	//	{
+	//		if (SelectionHandler::GetInstance()->HasSelection())
+	//		{
+	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
+	//			Container* newEntity = nullptr;
+	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+	//			if (st == Resources::Status::ST_OK)
+	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+	//		}
+	//		m_KeysHeld[Bools::D] = false;
+	//	}
+	//}
+		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
@@ -94,6 +119,7 @@ void EditorInputHandler::MouseMovement(double dT)
 	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouse.currentState);
 	float pitch = 0;
 	float yaw = 0;
+	float rotationAmount = (DirectX::XM_PI / 8) / 2;
 
 		if (m_mouse.currentState.rgbButtons[0])
 		{
@@ -114,22 +140,33 @@ void EditorInputHandler::MouseMovement(double dT)
 			}
 		}
 
-	if ((yaw || pitch))
-	{
-		float rotationAmount = DirectX::XM_PI / 8;
-	
-		DirectX::XMFLOAT4 newRotation =
-			DirectX::XMFLOAT4(
-				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				0.0f,
-				DirectX::XMScalarCos(rotationAmount / 2.0f)
-			);
-	
-		this->m_Camera->SetRotation(newRotation);
-		this->m_Camera->Update();
-	}
+	DirectX::XMFLOAT4 camUpFloat;
+	DirectX::XMFLOAT3 camPosFloat;
+	DirectX::XMFLOAT3 camTargetFloat;
+	this->m_Camera->GetCameraUp(camUpFloat);
+	camPosFloat = this->m_Camera->GetCameraPos();
+	camTargetFloat = this->m_Camera->GetLookAt();
 
+	DirectX::XMVECTOR rotationVector;
+
+	DirectX::XMVECTOR camUpVec = DirectX::XMLoadFloat4(&camUpFloat);
+	DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
+	DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
+
+	DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
+
+	DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
+
+	camRight.m128_f32[3] = rotationAmount * -yaw;
+	camUpVec.m128_f32[3] = rotationAmount * pitch;
+
+	if (pitch||yaw)
+	{
+		this->m_Camera->RotateCamera(camRight);
+		this->m_Camera->RotateCamera(camUpVec);
+	};
+
+	this->m_Camera->Update();
 }
 
 
@@ -196,7 +233,10 @@ void EditorInputHandler::UpdateMouse()
 		this->m_mouse.y = 0;
 
 	if (this->m_mouse.leftHeld)
+	{
 		SelectionHandler::GetInstance()->ProjectRay(m_mouse.x, m_mouse.y);
+		SelectionHandler::GetInstance()->MoveObject(m_KeysHeld[Bools::CONTROL]);
+	}
 }
 
 void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
@@ -247,18 +287,13 @@ void EditorInputHandler::keyReleased(QKeyEvent * evt)
 		{
 		case Qt::Key_Shift:
 			m_KeysHeld[Bools::SHIFT] = false;
-			m_KeysHeld[Bools::W]	 = false;
-			m_KeysHeld[Bools::A]	 = false;
-			m_KeysHeld[Bools::S]	 = false;
-			m_KeysHeld[Bools::D]	 = false;
-			m_KeysHeld[Bools::C]	 = false;
-			m_KeysHeld[Bools::SPACE] = false;
 			break;
 		case Qt::Key_Alt:
 			m_KeysHeld[Bools::ALT] = false;
 			break;
 		case Qt::Key_Control:
 			m_KeysHeld[Bools::CONTROL] = false;
+			m_ableToDuplicate = true;
 			break;
 		case Qt::Key_W:
 			m_KeysHeld[Bools::W] = false;
@@ -313,40 +348,39 @@ void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)
 			m_KeysHeld[Bools::CONTROL] = true;
 			break;
 		case Qt::Key_W:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
-				m_KeysHeld[Bools::W] = true;
-			}
+			m_KeysHeld[Bools::W] = true;
 			break;
 		case Qt::Key_A:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::A] = true;
-			}
 			break;
 		case Qt::Key_S:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::S] = true;
-			}
 			break;
 		case Qt::Key_D:
-			if (m_KeysHeld[Bools::SHIFT] == true)
+			if (m_ableToDuplicate)
 			{
-				m_KeysHeld[Bools::D] = true;
+				if (this->m_KeysHeld[Bools::CONTROL] == true)
+				{
+					
+						if (SelectionHandler::GetInstance()->HasSelection())
+						{
+							Container* temp = SelectionHandler::GetInstance()->GetSelected();
+							Container* newEntity = nullptr;
+							Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
+							if (st == Resources::Status::ST_OK)
+								SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
+						}
+						m_ableToDuplicate = false;
+				}
 			}
+			m_KeysHeld[Bools::D] = true;
 			break;
+			
 		case Qt::Key_C:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::C] = true;
-			}
 			break;
 		case Qt::Key_Space:
-			if (m_KeysHeld[Bools::SHIFT] == true)
-			{
 				m_KeysHeld[Bools::SPACE] = true;
-			}
 			break;
 		case Qt::Key_R:
 			CameraReset();

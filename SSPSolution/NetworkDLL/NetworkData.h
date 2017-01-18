@@ -16,7 +16,8 @@ enum PacketTypes {
 	UPDATE_ANIMATION = 5,
 	UPDATE_STATE = 6,
 	UPDATE_CAMERA = 7,
-	TEST_PACKET = 8,
+	SYNC_PHYSICS = 8,
+	TEST_PACKET = 9,
 };
 
 struct Packet
@@ -115,4 +116,20 @@ struct CameraPacket : public Packet
 	}
 };
 
+struct SyncPhysicPacket : public Packet
+{
+	unsigned int	startIndex;
+	unsigned int	nrOfDynamics;
+	bool			isHost;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(SyncPhysicPacket));
+	}
+
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(SyncPhysicPacket));
+	}
+};
 #endif

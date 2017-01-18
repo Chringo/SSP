@@ -17,16 +17,17 @@ public:
 private:
 	bool m_active = false;
 	DirectX::XMVECTOR m_colors[4];
-	Container * m_selectedContainer;
+	Container * m_selectedContainer = nullptr;
 
-	 int m_modelIndex = NONE;
-	 unsigned int m_instanceID = NULL;
-	 unsigned int m_modelID = NULL;
+	unsigned int m_instanceID = NULL;
+	unsigned int m_modelID = NULL;
 	OBB m_selectedObjectOBB;
 	DirectX::XMVECTOR m_axisOBBpos[NUM_AXIS];
 	OBB m_axisOBB[NUM_AXIS];
 	DirectX::XMVECTOR * m_axisColors[NUM_AXIS];
 	DirectX::XMVECTOR  SelectedObjectOBBColor;
+	DirectX::XMVECTOR m_obbCenterPosition;
+	DirectX::XMVECTOR m_obbLastPosition;
 	int m_selectedAxis = NONE;
 private:
 	inline void m_UpdateAxies()
@@ -45,22 +46,21 @@ private:
 public:
 	unsigned int GetInstanceID() { return m_instanceID; };
 	unsigned int GetModelID() { return m_modelID; };
-	int GetModelIndex() { return m_modelIndex; };
 	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
 	DirectX::XMVECTOR * GetAxisOBBpositons() { return m_axisOBBpos; };
 	DirectX::XMVECTOR * GetSelectedObjectOBBColor(){ return &SelectedObjectOBBColor; };
+	DirectX::XMVECTOR * GetOBBCenterPostition() { return &m_obbCenterPosition; };
 	OBB * GetAxisOBBs() { return m_axisOBB; };
 	OBB * GetSelectedObjectOBB() { return &m_selectedObjectOBB; };
 	int GetSelectedAxis() { return m_selectedAxis; };
+	void SetOBBCenterPosition(DirectX::XMVECTOR centerPosition) { this->m_obbCenterPosition = centerPosition; this->m_obbLastPosition = centerPosition; };
 
-	void UpdateOBB(const OBB &boundingBox)
+
+	void UpdateOBB()
 	{
-		m_selectedObjectOBB.ext[0] = boundingBox.ext[0];
-		m_selectedObjectOBB.ext[1] = boundingBox.ext[1];
-		m_selectedObjectOBB.ext[2] = boundingBox.ext[2];
-		m_selectedObjectOBB.ort = boundingBox.ort;
-		//m_selectedObjectOBB.pos = boundingBox.pos;
+		m_obbCenterPosition = DirectX::XMVector3TransformCoord(m_obbLastPosition, this->m_selectedContainer->component.worldMatrix);
+		m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
 
 		m_UpdateAxies();
 	};
@@ -75,13 +75,11 @@ public:
 	};
 	void Select(OBB &selectedOBB, 
 		Container * selectedContainer, 
-		int modelIndex, 
 		unsigned int instanceID, 
 		unsigned int modelID)
 	{
 		this->m_selectedObjectOBB = selectedOBB;
 		this->m_selectedContainer = selectedContainer;
-		this->m_modelIndex = modelIndex;
 		this->m_instanceID = instanceID;
 		this->m_modelID = modelID;
 
@@ -89,6 +87,7 @@ public:
 
 		setActive(true);
 	};
+
 
 	void SelectAxis(int i)
 	{
@@ -112,7 +111,6 @@ public:
 		{
 			//this->selectedObjectOBB;
 			this->m_selectedContainer = nullptr;
-			this->m_modelIndex = NONE;
 			this->m_instanceID = NULL;
 			this->m_modelID = NULL;
 

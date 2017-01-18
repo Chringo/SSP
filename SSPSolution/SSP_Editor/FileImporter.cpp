@@ -22,6 +22,8 @@ Resources::Status FileImporter::ImportFromServer()
 	struct dirent *ent;
 	QString dirPath = pathToBbfFolder + "/Models";
 	int numModels = 0;
+
+	/*importing the player model files*/
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -55,6 +57,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+
+	/*importing the rest of the model files*/
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -82,6 +86,7 @@ Resources::Status FileImporter::ImportFromServer()
 		perror("");
 	}
 
+	/*importing the mesh files*/
 	dirPath = pathToBbfFolder + "/Meshes";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
@@ -103,23 +108,55 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-	//if ((dir = opendir("//DESKTOP-BOKNO6D/server/Assets/bbf files/Textures")) != NULL) 
-	//{
-	//	/* append all the texture names from the directory */
-	//	while ((ent = readdir(dir)) != NULL) 
-	//	{
-	//		if (*ent->d_name != '.')
-	//			m_filepaths.push_back(ent->d_name);
-	//	}
-	//	closedir(dir);
-	//}
-	//else 
-	//{
-	//	/* could not open directory */
-	//	perror("");
-	//}
+
+	/*importing the skeleton files*/
+	dirPath = pathToBbfFolder + "/Skeletons";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*importing the animation*/
+	dirPath = pathToBbfFolder + "/Animations";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*Load the material files*/
 	dirPath = pathToBbfFolder + "/Materials";
-	// Load textures before Materials, So that the materials can find them.
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -162,11 +199,13 @@ void FileImporter::LoadImportedFiles()
 				handleModel(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MESH:
-				handleMesh(m_bbf_object); //also send integer for the index so we can add the qt
+				handleMesh(m_bbf_object); 
 				break;
 			case Resources::ResourceType::RES_ANIMATION:
+				handleAnimation(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_SKELETON:
+				handleSkeleton(m_bbf_object);
 				break;
 			case Resources::ResourceType::RES_MATERIAL:
 				handleMat(m_bbf_object);
@@ -322,6 +361,104 @@ void FileImporter::handleModel(char * m_bbf_object)
 	
 }
 
+void FileImporter::handleSkeleton(char * m_bbf_object)
+{
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+	SkeletonHeader* m_SkelHeader = (SkeletonHeader*)(m_bbf_object + sizeof(Resources::Resource::RawResourceData));
+	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
+
+	/*pointing to the loaded files*/
+	unsigned int* jointCount = &((SkeletonHeader*)m_bbf_object)->jointCount;
+	unsigned int* animCount = &((SkeletonHeader*)m_bbf_object)->animLayerCount;
+	m_bbf_object += sizeof(SkeletonHeader);
+	Resources::Skeleton::Joint* jointData = (Resources::Skeleton::Joint*)m_bbf_object;
+
+	Resources::Skeleton *m_Skel = new Resources::Skeleton;
+	m_Skel->Create(res_Data, jointData, jointCount);
+
+	m_bbf_object += sizeof(JointHeader) * *jointCount;
+
+	//LayerIdHeader* animIds = (LayerIdHeader*)m_bbf_object;
+	for (int i = 0; i < m_SkelHeader->animLayerCount; ++i) //check this loop
+	{
+		LayerIdHeader* animationID = (LayerIdHeader*)m_bbf_object;
+		//unsigned int animationID = (unsigned int)m_bbf_object;
+
+		m_Skel->AddAnimationID(animationID->id);
+		/*Resources::Animation *newAnimation = new Resources::Animation(&animationData);
+		m_Skel->AddAnimation(newAnimation, i);*/
+		m_bbf_object += sizeof(LayerIdHeader);
+	}
+
+	std::vector<Resources::Model*>* models = m_data->GetModels();
+	for (int i = 0; i < models->size(); ++i)
+	{
+		if (models->at(i)->GetRawModelData()->skeletonId == m_Skel->GetId())
+		{
+			models->at(i)->SetSkeleton(m_Skel);
+			break;
+		}
+	}
+
+
+	m_data->AddSkeleton(m_Skel);
+
+}
+
+void FileImporter::handleAnimation(char * m_bbf_object)
+{
+	Resources::Status res;
+	Resources::Resource::RawResourceData *res_Data = (Resources::Resource::RawResourceData*)m_bbf_object;
+
+
+	/*getting the amount of joints that are animated*/
+	m_bbf_object += sizeof(Resources::Resource::RawResourceData);
+	LayerIdHeader * jointCount = (LayerIdHeader*)m_bbf_object;
+	m_bbf_object += sizeof(LayerIdHeader);
+
+	Resources::Animation *animation = new Resources::Animation;
+
+	Resources::Animation::AnimationData animData;
+	animData.jointCount = jointCount->id;
+	animData.joints = new Resources::Animation::AnimationJoint[animData.jointCount];
+	for (int i = 0; i < jointCount->id; ++i)
+	{
+		/*getting the number of frames for the current joint*/
+		LayerIdHeader *nrKeyFrames = (LayerIdHeader*)m_bbf_object;
+		m_bbf_object += sizeof(LayerIdHeader);
+
+		Resources::Animation::AnimationJoint animatedJoint;
+		animatedJoint.keyframeCount = nrKeyFrames->id;
+		animatedJoint.keyframes = new Resources::Animation::Keyframe[animatedJoint.keyframeCount];
+		memcpy((char*)animatedJoint.keyframes, m_bbf_object, sizeof(Resources::Animation::Keyframe)*animatedJoint.keyframeCount);
+
+		animData.joints[i] = animatedJoint;
+		m_bbf_object += sizeof(Resources::Animation::Keyframe)*animatedJoint.keyframeCount;
+	}
+
+	animation->CreateFromBBF(res_Data, &animData);
+
+	std::vector<Resources::Skeleton*>* skeletons = m_data->GetSkeletons();
+	for (int i = 0; i < skeletons->size(); ++i)
+	{
+		const std::vector<unsigned int> *animIDS = skeletons->at(i)->GetAllAnimationIds();
+		for (int j = 0; j < animIDS->size(); ++j)
+		{
+			if (animIDS->at(j) == res_Data->m_id)
+			{
+				skeletons->at(i)->AddAnimation(animation, j);
+				break;
+			}
+		}
+	}
+
+	m_data->AddAnimations(animation);
+
+
+}
+
 void FileImporter::AddListItem(ListItem category, std::string name)
 {
 	QTreeWidgetItem *itm = new QTreeWidgetItem();
@@ -333,9 +470,7 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 
 bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
 {
-#ifdef _DEBUG
-		std::cout << "Importing textures from server" << std::endl;
-#endif // _DEBUG
+
 
 		Resources::Status st;
 
@@ -349,6 +484,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 		}
 
 		Resources::Texture *textures[5] = { nullptr,nullptr ,nullptr ,nullptr ,nullptr };
+		bool textureExists[5]		    = { false,	false,	false,	false,	false };
 		for (size_t i = 0; i < 5; i++)
 		{
 			Resources::Resource::RawResourceData temp;
@@ -364,6 +500,9 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 				textures[i]->SetFileName((char*)(m_bbf_object + offset), *textureNameLength[i]);
 				m_data->AddTexture(textures[i]);
 			}
+			else
+				textureExists[i] = true;
+			
 			offset += *textureNameLength[i];
 		}
 #pragma region Load Textures
@@ -382,7 +521,8 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 
 		for (size_t i = 0; i < 5; i++)
 		{
-
+			if (textureExists[i])
+				continue;
 			mbstowcs_s(&*textureNameLength[i], path[i], path_str[i].c_str(), *textureNameLength[i]);
 
 			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_Device,

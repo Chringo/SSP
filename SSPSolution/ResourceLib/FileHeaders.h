@@ -1,21 +1,16 @@
 #ifndef RESOURCELIB_FILEHEADERS_H
 #define RESOURCELIB_FILEHEADERS_H
 #include <DirectXMath.h>
-struct Vector2
-{
+struct Vector2{
 	float u, v;
 };
-struct Vector3
-{
+struct Vector3{
 	float x, y, z;
 };
-struct Vector4
-{
+struct Vector4{
 	float x, y, z, w;
 };
-
-struct MainHeader
-{
+struct MainHeader{
 	unsigned int id;
 	int resourceType;
 };
@@ -26,15 +21,15 @@ struct MeshHeader{
 	bool skeleton;
 };
 
-struct BoundingBoxHeader
-{
+struct BoundingBoxHeader{
 	Vector3 position;		 //Positionen på boundingboxen
 	float extension[3];		 //Skalären
 	Vector3 extensionDir[3]; //Orto
+	Vector3 PivotPosition;
 };
 
 struct SkeletonHeader {
-	unsigned int jointCount = 0;
+	unsigned int jointCount		= 0;
 	unsigned int animLayerCount = 0;
 };
 struct LayerIdHeader{
@@ -45,8 +40,15 @@ struct JointHeader {
 	int jointIndex;
 	int parentIndex;
 };
-struct MaterialHeader
+struct KeyFrameHeader
 {
+	float timeValue;
+	float translation[3];
+	float rotation[3];
+	float quaternion[4];
+	float scale[3];
+};
+struct MaterialHeader{
 	unsigned int textureIDs[5]{0,0,0,0,0};
 	//unsigned int textureNameLength[5]{0,0,0,0,0};
 
@@ -55,8 +57,7 @@ struct MaterialHeader
 	float m_EmissiveValue = 0.0f	;
 
 };
-struct TextureHeader
-{
+struct TextureHeader{
 	char filePath[256];
 };
 

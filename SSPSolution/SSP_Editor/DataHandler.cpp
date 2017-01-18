@@ -2,6 +2,20 @@
 
 
 
+Resources::Status DataHandler::AddAnimations(Resources::Animation * animation)
+{
+	this->loadedIds[animation->GetId()] = true;
+	this->m_animations.push_back(animation);
+	return Resources::Status::ST_OK;
+}
+
+Resources::Status DataHandler::AddSkeleton(Resources::Skeleton * skeleton)
+{
+	this->loadedIds[skeleton->GetId()] = true;
+	this->m_skeletons.push_back(skeleton);
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status DataHandler::AddModel(Resources::Model * model)
 {
 	this->loadedIds[model->GetId()] = true;
@@ -71,6 +85,16 @@ DataHandler::~DataHandler()
 		delete m_meshes.at(i);
 		m_meshes.at(i) = nullptr;
 	};
+	for (size_t i = 0; i < m_skeletons.size(); i++)
+	{
+		delete m_skeletons.at(i);
+		m_skeletons.at(i) = nullptr;
+	}
+	for (size_t i = 0; i < m_animations.size(); i++)
+	{
+		delete m_animations.at(i);
+		m_animations.at(i) = nullptr;
+	}
 
 	for (auto iterator = m_textures.begin(); iterator != m_textures.end(); ++iterator)
 	{
@@ -80,6 +104,17 @@ DataHandler::~DataHandler()
 	m_textures.clear();
 	
 	delete m_textureHandler;
+}
+
+Resources::Model * DataHandler::GetModel(unsigned int & id)
+{
+	for (size_t i = 0; i < m_models.size(); i++)
+	{
+		if (id == m_models.at(i)->GetId())
+			return m_models.at(i);
+	}
+
+	return nullptr;
 }
 
 Resources::Status DataHandler::GetTexture(std::string id, Resources::Texture *& texture)

@@ -21,6 +21,11 @@ namespace LevelData {
 		float rotation[3]	   ;
 		bool isStatic		   ;
 	};
+
+	struct SpawnHeader {
+		float position[3];
+		float rotation[3];
+	};
 	
 	struct LightHeader 
 	{
@@ -39,6 +44,7 @@ namespace LevelData {
 	};
 
 	struct Level {
+		SpawnHeader  spawns[2];
 		unsigned int numResources;
 		ResourceHeader* resources;
 

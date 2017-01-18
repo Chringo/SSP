@@ -6,15 +6,15 @@
 #include "InputHandler.h"
 #include "GameStateHandler.h"
 #include "DebugHandler.h"
+#include "Progression.h"
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
 #include "../SSPSolution/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../NetworkDLL/NetworkModule.h"
-#pragma comment (lib, "../Debug/PhysicsDLL")
+#include "../AIDLL/AIHandler.h"
 #pragma comment (lib, "../Debug/NetworkDLL")
-/* TEMP REMEMBER TO REMOVE THIS */ #include "LevelDirector.h"
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
@@ -45,6 +45,9 @@ private:
 	/*Testing for playing animation.*/
 	AnimationHandler* m_AnimationHandler;
 	/* TEMP REMEMBER TO REMOVE THIS */  FSMEnvironment::LevelDirector director;
+
+	/*AI*/
+	AIHandler* m_AIHandler;
 public:
 	System();
 	~System();
@@ -55,13 +58,15 @@ public:
 	int Run();
 	int Update(float deltaTime);
 
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
+
 private:
 	int HandleEvents();
 	int FullscreenToggle();
 
 	//temporary functions
 	void LockCameraToPlayer(float translateCameraX, float translateCameraY, float translateCameraZ);
-	void CreateDummyObjects();
 };
 
 #endif

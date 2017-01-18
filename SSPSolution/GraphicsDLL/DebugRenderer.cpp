@@ -491,7 +491,7 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 	float step = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
 	float theta = 0.0f;
 
-	for (size_t i = 0; i < NUM_POINTS[M_SPHERE]; i++)
+	for (size_t i = 0; i < (unsigned int)NUM_POINTS[M_SPHERE]; i++)
 	{
 		DirectX::XMVECTOR point = pos;
 

@@ -39,7 +39,6 @@ Resources::Skeleton::Skeleton(Resource::RawResourceData * resData, RawSkeletonDa
 
 Resources::Skeleton::~Skeleton()
 {
-
 }
 
 Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, RawSkeletonData * skelData)
@@ -48,6 +47,25 @@ Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resDat
 	m_resourceData.m_id = resData->m_id;
 	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;	
 	m_skelData = *skelData;
+
+	m_animations.reserve(MAX_ANIMATIONS);
+	for (size_t i = 0; i < MAX_ANIMATIONS; i++)
+	{
+		m_animations.push_back(nullptr);
+	}
+
+	return Resources::Status::ST_OK;
+}
+
+Resources::Status Resources::Skeleton::Create(Resource::RawResourceData * resData, Joint * jointData, unsigned int * jointCount)
+{
+	this->Destroy();
+	m_resourceData.m_id = resData->m_id;
+	this->m_resourceData.m_resType = ResourceType::RES_SKELETON;
+
+	this->m_skelData.jointCount = *jointCount;
+	this->m_skelData.joints = new Joint[this->m_skelData.jointCount];
+	memcpy(this->m_skelData.joints, jointData, (sizeof(Joint) * this->m_skelData.jointCount));
 
 	m_animations.reserve(MAX_ANIMATIONS);
 	for (size_t i = 0; i < MAX_ANIMATIONS; i++)

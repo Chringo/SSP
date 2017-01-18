@@ -5,6 +5,7 @@
 #include "TransformWidget.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "Level.h"
+#include "UiControlHandler.h"
 
 class SelectionHandler
 {
@@ -17,11 +18,11 @@ public:
 private:
 	enum DIRECTION
 	{
-		Key_Left = 0x01000012,
-		Key_Up = 0x01000013,
-		Key_Right = 0x01000014,
-		Key_Down = 0x01000015,
-		Key_0 = 0x30,
+		Key_Left	= 0x01000012,
+		Key_Up		= 0x01000013,
+		Key_Right	= 0x01000014,
+		Key_Down	= 0x01000015,
+		Key_0		= 0x30,
 	};
 	OBB m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * instancePtr);
 
@@ -39,10 +40,12 @@ public:
 	static SelectionHandler* GetInstance();
 	void Update();
 	bool NeedsUpdate();
+	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
 	bool HasSelection();
 	void SetSelection(bool selection);
+	void SetSelectedContainer(Container* selection);
 	void SetActiveAxis(int axis);
 
 	const unsigned int GetModelID();
@@ -57,7 +60,7 @@ public:
 
 	void ProjectRay(int X, int Y);
 	void RotateObject(int direction);
-	void MoveObject();
+	void MoveObject(bool noSnap);
 	bool PickTransformWidget();
 	bool PickObjectSelection();
 
