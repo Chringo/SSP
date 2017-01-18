@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_SHADERCONTROL_H
-#define GRAPHICSDLL_SHADERCONTROL_H
+#ifndef GRAPHICSDLL_SHADERS_SHADERCONTROL_H
+#define GRAPHICSDLL_SHADERS_SHADERCONTROL_H
 #include "FinalShader.h"
 #include "DeferredShader.h"
 #include "PostProcessShader.h"

@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_DeferredShader
-#define GRAPHICSDLL_DeferredShader
+#ifndef GRAPHICSDLL_SHADERS_DeferredShader_H
+#define GRAPHICSDLL_SHADERS_DeferredShader_H
 
 #include "ConstantBufferHandler.h"
 #include "Shader.h"
