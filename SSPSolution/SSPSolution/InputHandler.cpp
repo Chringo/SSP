@@ -40,7 +40,7 @@ void InputHandler::Initialize(int screenWidth, int screenHeight, SDL_Window * wi
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
-
+	SDL_CaptureMouse(SDL_TRUE);
 	SDL_WarpMouseInWindow(window, m_screenWidth/2, m_screenHeight/2);
 	
 	return;
@@ -60,8 +60,6 @@ void InputHandler::Update()
 	//If we cant, the old data will be used
 
 	this->ReadKeyboard();
-	this->ReadMouse();
-
 	this->ProcessInput();
 	return;
 }
@@ -104,19 +102,7 @@ void InputHandler::ReadKeyboard()
 	return;
 }
 
-void InputHandler::ReadMouse()
-{
-	//Copy the old data
-	this->m_oldMouseButtonState = this->m_mouseButtonState;
-	//Read the new data
-	int xPos = 0, yPos = 0;
-	SDL_GetMouseState(&xPos, &yPos);
-	this->m_mouseDX = xPos - this->m_mouseX;
-	this->m_mouseDY = yPos - this->m_mouseY;
-	this->m_mouseX = xPos;
-	this->m_mouseY = yPos;
-	return;
-}
+
 
 void InputHandler::ProcessInput()
 {
@@ -249,22 +235,22 @@ void InputHandler::ApplyMouseWheel(int x, int y)
 	return;
 }
 
-void InputHandler::mouseMovement(SDL_Window * window, float &pitch, float &yaw)
+void InputHandler::mouseMovement(SDL_Window * window)
 {
 	int tmpx, tmpy;
-	float mouseSens = 0.02;
 
 	int midx = this->m_screenWidth / 2;
 	int midy = this->m_screenHeight / 2;
 
+	
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_GetMouseState(&tmpx, &tmpy);
-	
-	yaw = mouseSens * (midx - tmpx);
-	pitch = mouseSens * (midy - tmpy);
 
+	m_mouseDX = (midx - tmpx);
+	m_mouseDY = (midy - tmpy);
 
 	SDL_WarpMouseInWindow(window, midx, midy);
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 
