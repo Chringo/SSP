@@ -24,6 +24,7 @@ public:
 	void DeletePath();
 	void SetID(int entityID);
 	void SetComponent(AIComponent* component) { this->m_component = component; };
+	void SetPattern(int pattern);
 	AIComponent* GetComponent() { return m_component; };
 
 };
