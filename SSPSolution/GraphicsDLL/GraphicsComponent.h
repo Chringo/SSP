@@ -23,16 +23,16 @@ struct GraphicsComponent
 
 };
 
-struct penis //john....
+struct GraphicsAnimationComponent
 {
 	int active = 0;
 	int modelID = -1;
-	int joints = 0;
+	int jointCount = 0;
 	DirectX::XMMATRIX worldMatrix;
-
-	DirectX::XMMATRIX finalTransforms[32];
+	DirectX::XMMATRIX finalJointTransforms[32];
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) {	_aligned_free(p); };
 };
+
 #endif

@@ -126,7 +126,7 @@ void ShaderControl::Draw(Resources::Model * model, GraphicsComponent * component
 	}
 }
 
-void ShaderControl::Draw(Resources::Model * model, penis * component) // FOR FAN
+void ShaderControl::Draw(Resources::Model * model, GraphicsAnimationComponent * component) // FOR FAN
 {
 	switch (m_activeShader)
 	{

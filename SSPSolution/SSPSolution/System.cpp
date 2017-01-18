@@ -56,7 +56,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -85,20 +85,18 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 
 	this->m_physicsHandler.Initialize();
+	//Initialize the AIHandler
+	this->m_AIHandler = new AIHandler();
+	this->m_AIHandler->Initialize(3);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, this->m_AIHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 	this->m_physicsHandler.SortComponents();
-	//Initialize the network module
-	this->m_networkModule.Initialize();
-	//Initialize the AIHandler with a specific number of AIComponents
-	this->m_AIHandler = new AIHandler();
-	this->m_AIHandler->Initialize(1);
 
 	//temporary floor for demonstration
 	PhysicsComponent* ptr = this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(0, 5, 40, 0), true);
@@ -135,6 +133,7 @@ int System::Run()
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
+		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
@@ -172,31 +171,9 @@ int System::Update(float deltaTime)
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
-	//Update the network module
-	this->m_networkModule.Update();
-
 	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
 
 	int rotateCameraY = 0;
-	std::list<CameraPacket> cList;
-
-	//Check for camera updates from the network
-	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
-
-	if (!cList.empty())
-	{
-		std::list<CameraPacket>::iterator iter;
-
-		for (iter = cList.begin(); iter != cList.end();)
-		{
-			this->m_camera->SetCameraPos((iter)->pos);
-			this->m_camera->Update();
-			iter++;	
-		}
-
-		cList.empty();	//When we have read all the packets, empty the list
-
-	}
 
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -234,6 +211,7 @@ int System::Update(float deltaTime)
 	{
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
 		this->m_camera->ApplyLocalTranslation(posTranslation);
+
 		//this->m_camera->AddToLookAt(posTranslation);
 		float rotationAmount = DirectX::XM_PI / 4;
 		rotationAmount *= deltaTime / 1000000.0f;
@@ -242,47 +220,11 @@ int System::Update(float deltaTime)
 		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&newRotation)));
 		/*if (length > 0.000000001f)*/
 			this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
-
-		//this->m_camera->Update();
-
-		//Send updates over the network
-		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
-		{
-			DirectX::XMFLOAT4 updatePos;
-			this->m_camera->GetCameraPos(updatePos);
-			this->m_networkModule.SendCameraPacket(updatePos);
-		}
-
 	}
-	this->m_camera->Update();
+	this->m_camera->Update(deltaTime);
 
 	//AI
 	this->m_AIHandler->Update(deltaTime);
-
-	//Network
-	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
-	{
-		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
-		{
-			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
-			{
-				printf("Joined client with the ip %s\n", this->m_ip);
-			}
-			else
-			{
-				printf("Failed to connect to the client %s\n", this->m_ip);
-			}
-			
-		}
-		else
-		{
-			printf("Join failed since this module is already connected to other clients\n");
-		}
-	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_K))
-	{
-		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
-	}
 
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
@@ -319,8 +261,6 @@ int System::Update(float deltaTime)
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
-	//Update the network module
-	this->m_networkModule.Update();
 	
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 	//temp input for testing chain
@@ -394,11 +334,15 @@ int System::HandleEvents()
 			}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 			{
+				this->m_inputHandler->captureMouse(SDL_TRUE);
+				//SDL_CaptureMouse(SDL_TRUE);
 				//OnInputFocus();
 				break;
 			}
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 			{
+				this->m_inputHandler->captureMouse(SDL_FALSE);
+				//SDL_CaptureMouse(SDL_FALSE);
 				//OnInputBlur();
 				break;
 			}
@@ -448,7 +392,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
-			this->m_inputHandler->mouseMovement(m_window);
+			
 			break;
 		}
 		case SDL_QUIT:

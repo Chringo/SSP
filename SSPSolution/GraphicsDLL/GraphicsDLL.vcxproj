@@ -92,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationHandler.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBufferHandler.h" />
     <ClInclude Include="DebugRenderer.h" />
@@ -107,6 +108,7 @@
     <ClInclude Include="ShaderLib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationHandler.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferHandler.cpp" />
     <ClCompile Include="DebugRenderer.cpp" />

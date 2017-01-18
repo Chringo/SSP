@@ -182,7 +182,20 @@ bool SelectionHandler::PickObjectSelection()
 					
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
 					//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
-					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, *this->m_transformWidget.GetOBBCenterPostition(), hitDistance);
+
+					DirectX::XMVECTOR OBBPosition;
+					OBBPosition.m128_f32[0] = m_modelPtr->at(i)->GetOBBData().position.x;
+					OBBPosition.m128_f32[1] = m_modelPtr->at(i)->GetOBBData().position.y;
+					OBBPosition.m128_f32[2] = m_modelPtr->at(i)->GetOBBData().position.z;
+
+					DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(OBBPosition);
+
+					tempOBBPos = tempOBBPos * InstancePtr->at(j).component.worldMatrix;
+
+					OBBPosition = tempOBBPos.r[3];
+
+					//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, *this->m_transformWidget.GetOBBCenterPostition(), hitDistance);
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, OBBPosition, hitDistance);
 					//transformWidget.setActive(result);
 					if (result && hitDistance < minHitDistance)
 					{
@@ -405,6 +418,19 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 	//	1.0f);
 	
 
+	/*DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y,
+		boundingBox.position.z });
+
+	tempPos = tempPos * instancePtr->component.worldMatrix;
+	this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);*/
+
+	/*DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y,
+		boundingBox.position.z });*/
+
+	/*tempPos = tempPos * instancePtr->component.worldMatrix;
+	this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);*/
 	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
 		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });*/
 	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
