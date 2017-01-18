@@ -230,10 +230,6 @@ int System::Update(float deltaTime)
 	{
 		rotateCameraY -= 1;
 	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_B))
-	{
-		
-	}
 	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
 	{
 		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
@@ -287,25 +283,7 @@ int System::Update(float deltaTime)
 	{
 		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
 	}
-#pragma region
-	/*Testing to play different animations here based on the input. Temp place right now*/
-	int animState = 0;
 
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_1))
-	{
-	    m_AnimationHandler->AddAnimation(AnimationStates::WALK_STATE, true, 0.5);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_2))
-	{
-		m_AnimationHandler->AddAnimation(AnimationStates::RUN_STATE, true, 0.5);
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_3))
-	{
-		m_AnimationHandler->AddAnimation(AnimationStates::THROW_STATE, true, 0.5);
-	}
-#pragma endregion Animation integration with dev test
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -336,8 +314,9 @@ int System::Update(float deltaTime)
 	}
 
 	//Update animations here. Temp place right now.
-	m_AnimationHandler->Update(deltaTime);
-	
+	//m_Anim->Update(deltaTime);
+	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	//Update the network module
@@ -355,6 +334,32 @@ int System::Update(float deltaTime)
 		dir = DirectX::XMVectorScale(dir, 500);
 	}
 	this->m_physicsHandler.Update(deltaTime);
+
+#ifdef _DEBUG
+	for (int i = 0; i < nrOfComponents; i++)
+	{
+		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
+		if (temp->PC_BVtype == BV_AABB)
+		{
+			AABB* AABB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+		}
+		if (temp->PC_BVtype == BV_OBB)
+		{
+			OBB* OBB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+		}
+		if (temp->PC_BVtype == BV_Plane)
+		{
+			Plane* planeHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+		}
+	}
+#endif // _DEBUG
+
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
