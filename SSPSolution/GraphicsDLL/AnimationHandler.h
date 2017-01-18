@@ -11,6 +11,12 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
+#ifdef GRAPHICSDLL_EXPORTS
+#define GRAPHICSDLL_API __declspec(dllexport)
+#else
+#define GRAPHICSDLL_API __declspec(dllimport)
+#endif
+
 //struct GraphicsAnimationComponent
 //{
 //	int active = 0;
@@ -76,7 +82,7 @@ class AnimationHandler
 {
 
 private:
-
+	//Variables
 	std::vector<AnimationClip> m_animationStack;
 
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
@@ -104,7 +110,7 @@ public:
 
 	void AddAnimation(int animationState, bool isLooping, float transitionTime);
 
-	void Update(float dt);
+	GRAPHICSDLL_API void Update(float dt);
 
 	void Push(int animationState, bool isLooping, float transitionTime);
 
@@ -127,6 +133,8 @@ public:
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
 	GraphicsAnimationComponent * GetGraphicsAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
+private:
+	//Functions
 };
 
 
