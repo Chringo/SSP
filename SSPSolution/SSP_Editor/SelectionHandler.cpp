@@ -231,9 +231,7 @@ bool SelectionHandler::PickObjectSelection()
 
 			gotHit = result;
 		}
-
 	}
-
 	std::vector<AIComponent>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
@@ -255,7 +253,7 @@ bool SelectionHandler::PickObjectSelection()
 			{
 				//minHitDistance = hitDistance;
 				//update widget with the intersected obb
-				//this->m_transformWidget.Select(obj, wayPoint);
+				this->m_transformWidget.Select(obj, wayPoint);
 				//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
 
 				//gotHit = result;
