@@ -87,11 +87,28 @@ public:
     QWidget *Behaviour_None;
     QFormLayout *formLayout_6;
     QWidget *Behaviour_Trigger;
-    QFormLayout *formLayout_2;
-    QLabel *TRIGGERTEXT;
+    QGridLayout *gridLayout_5;
+    QSpacerItem *verticalSpacer_4;
+    QLabel *label_3;
+    QSpinBox *spinBox;
+    QCheckBox *checkBox_2;
+    QCheckBox *checkBox;
+    QCheckBox *checkBox_3;
     QWidget *Behaviour_Door;
-    QFormLayout *formLayout_4;
+    QGridLayout *gridLayout_4;
+    QSpacerItem *verticalSpacer_3;
+    QCheckBox *CHKX;
+    QSpinBox *MinRot;
+    QCheckBox *CHKZ;
+    QCheckBox *CHKY;
+    QSpinBox *MaxRot;
+    QSpacerItem *horizontalSpacer;
+    QLabel *ROTATIONAXISTEXT;
+    QSpinBox *TriggerTagValue;
+    QCheckBox *ChkPlrActivatable;
     QLabel *DOORTEXT;
+    QLabel *label;
+    QLabel *TRIGGERTAGTEXT;
     QWidget *Behaviour_Path;
     QGridLayout *gridLayout_2;
     QLabel *TIMETEXT;
@@ -107,6 +124,7 @@ public:
     QLabel *TRIGGERTAGTEXTPATH;
     QSpinBox *TriggerPathValue;
     QCheckBox *TriggerPathCheckBox;
+    QSpacerItem *verticalSpacer_2;
     QSpacerItem *verticalSpacer;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -301,7 +319,7 @@ public:
 
         Values = new QGroupBox(centralWidget);
         Values->setObjectName(QStringLiteral("Values"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
@@ -491,25 +509,25 @@ public:
         ISSTATICTEXT = new QLabel(variousOptionsframe);
         ISSTATICTEXT->setObjectName(QStringLiteral("ISSTATICTEXT"));
 
-        formLayout->setWidget(3, QFormLayout::LabelRole, ISSTATICTEXT);
+        formLayout->setWidget(1, QFormLayout::LabelRole, ISSTATICTEXT);
 
         isStaticCheck = new QCheckBox(variousOptionsframe);
         isStaticCheck->setObjectName(QStringLiteral("isStaticCheck"));
         isStaticCheck->setLayoutDirection(Qt::LeftToRight);
         isStaticCheck->setChecked(true);
 
-        formLayout->setWidget(3, QFormLayout::FieldRole, isStaticCheck);
+        formLayout->setWidget(1, QFormLayout::FieldRole, isStaticCheck);
 
         animationBox = new QComboBox(variousOptionsframe);
         animationBox->setObjectName(QStringLiteral("animationBox"));
         animationBox->setEnabled(false);
 
-        formLayout->setWidget(4, QFormLayout::FieldRole, animationBox);
+        formLayout->setWidget(2, QFormLayout::FieldRole, animationBox);
 
         ANIMTEXT = new QLabel(variousOptionsframe);
         ANIMTEXT->setObjectName(QStringLiteral("ANIMTEXT"));
 
-        formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
+        formLayout->setWidget(2, QFormLayout::LabelRole, ANIMTEXT);
 
 
         verticalLayout_3->addWidget(variousOptionsframe);
@@ -630,26 +648,121 @@ public:
         BehaviourStackWidget->addWidget(Behaviour_None);
         Behaviour_Trigger = new QWidget();
         Behaviour_Trigger->setObjectName(QStringLiteral("Behaviour_Trigger"));
-        formLayout_2 = new QFormLayout(Behaviour_Trigger);
-        formLayout_2->setSpacing(6);
-        formLayout_2->setContentsMargins(11, 11, 11, 11);
-        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
-        TRIGGERTEXT = new QLabel(Behaviour_Trigger);
-        TRIGGERTEXT->setObjectName(QStringLiteral("TRIGGERTEXT"));
+        gridLayout_5 = new QGridLayout(Behaviour_Trigger);
+        gridLayout_5->setSpacing(6);
+        gridLayout_5->setContentsMargins(11, 11, 11, 11);
+        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        formLayout_2->setWidget(0, QFormLayout::LabelRole, TRIGGERTEXT);
+        gridLayout_5->addItem(verticalSpacer_4, 9, 2, 1, 1);
+
+        label_3 = new QLabel(Behaviour_Trigger);
+        label_3->setObjectName(QStringLiteral("label_3"));
+
+        gridLayout_5->addWidget(label_3, 1, 0, 1, 2);
+
+        spinBox = new QSpinBox(Behaviour_Trigger);
+        spinBox->setObjectName(QStringLiteral("spinBox"));
+        spinBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_5->addWidget(spinBox, 1, 2, 1, 1);
+
+        checkBox_2 = new QCheckBox(Behaviour_Trigger);
+        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setLayoutDirection(Qt::RightToLeft);
+
+        gridLayout_5->addWidget(checkBox_2, 7, 2, 1, 1);
+
+        checkBox = new QCheckBox(Behaviour_Trigger);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setLayoutDirection(Qt::RightToLeft);
+
+        gridLayout_5->addWidget(checkBox, 6, 2, 1, 1);
+
+        checkBox_3 = new QCheckBox(Behaviour_Trigger);
+        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+        checkBox_3->setLayoutDirection(Qt::RightToLeft);
+
+        gridLayout_5->addWidget(checkBox_3, 8, 2, 1, 1);
 
         BehaviourStackWidget->addWidget(Behaviour_Trigger);
         Behaviour_Door = new QWidget();
         Behaviour_Door->setObjectName(QStringLiteral("Behaviour_Door"));
-        formLayout_4 = new QFormLayout(Behaviour_Door);
-        formLayout_4->setSpacing(6);
-        formLayout_4->setContentsMargins(11, 11, 11, 11);
-        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        gridLayout_4 = new QGridLayout(Behaviour_Door);
+        gridLayout_4->setSpacing(6);
+        gridLayout_4->setContentsMargins(11, 11, 11, 11);
+        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_4->addItem(verticalSpacer_3, 8, 0, 1, 1);
+
+        CHKX = new QCheckBox(Behaviour_Door);
+        CHKX->setObjectName(QStringLiteral("CHKX"));
+        CHKX->setChecked(true);
+
+        gridLayout_4->addWidget(CHKX, 0, 2, 1, 1);
+
+        MinRot = new QSpinBox(Behaviour_Door);
+        MinRot->setObjectName(QStringLiteral("MinRot"));
+        MinRot->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        MinRot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_4->addWidget(MinRot, 4, 4, 1, 1);
+
+        CHKZ = new QCheckBox(Behaviour_Door);
+        CHKZ->setObjectName(QStringLiteral("CHKZ"));
+
+        gridLayout_4->addWidget(CHKZ, 0, 4, 1, 1);
+
+        CHKY = new QCheckBox(Behaviour_Door);
+        CHKY->setObjectName(QStringLiteral("CHKY"));
+
+        gridLayout_4->addWidget(CHKY, 0, 3, 1, 1);
+
+        MaxRot = new QSpinBox(Behaviour_Door);
+        MaxRot->setObjectName(QStringLiteral("MaxRot"));
+        MaxRot->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        MaxRot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_4->addWidget(MaxRot, 3, 4, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_4->addItem(horizontalSpacer, 0, 1, 1, 1);
+
+        ROTATIONAXISTEXT = new QLabel(Behaviour_Door);
+        ROTATIONAXISTEXT->setObjectName(QStringLiteral("ROTATIONAXISTEXT"));
+
+        gridLayout_4->addWidget(ROTATIONAXISTEXT, 0, 0, 1, 1);
+
+        TriggerTagValue = new QSpinBox(Behaviour_Door);
+        TriggerTagValue->setObjectName(QStringLiteral("TriggerTagValue"));
+        TriggerTagValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        TriggerTagValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_4->addWidget(TriggerTagValue, 6, 4, 1, 1);
+
+        ChkPlrActivatable = new QCheckBox(Behaviour_Door);
+        ChkPlrActivatable->setObjectName(QStringLiteral("ChkPlrActivatable"));
+        ChkPlrActivatable->setLayoutDirection(Qt::LeftToRight);
+
+        gridLayout_4->addWidget(ChkPlrActivatable, 7, 0, 1, 3);
+
         DOORTEXT = new QLabel(Behaviour_Door);
         DOORTEXT->setObjectName(QStringLiteral("DOORTEXT"));
 
-        formLayout_4->setWidget(0, QFormLayout::LabelRole, DOORTEXT);
+        gridLayout_4->addWidget(DOORTEXT, 3, 0, 1, 4);
+
+        label = new QLabel(Behaviour_Door);
+        label->setObjectName(QStringLiteral("label"));
+
+        gridLayout_4->addWidget(label, 4, 0, 1, 4);
+
+        TRIGGERTAGTEXT = new QLabel(Behaviour_Door);
+        TRIGGERTAGTEXT->setObjectName(QStringLiteral("TRIGGERTAGTEXT"));
+
+        gridLayout_4->addWidget(TRIGGERTAGTEXT, 6, 0, 1, 3);
 
         BehaviourStackWidget->addWidget(Behaviour_Door);
         Behaviour_Path = new QWidget();
@@ -764,6 +877,10 @@ public:
 
         verticalLayout_3->addWidget(CustomBehaviourFrame);
 
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_3->addItem(verticalSpacer_2);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_3->addItem(verticalSpacer);
@@ -773,11 +890,8 @@ public:
 
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy4);
+        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy1);
         tabWidget->setMinimumSize(QSize(200, 0));
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
@@ -894,8 +1008,18 @@ public:
          << QApplication::translate("SSP_EditorClass", "Door", 0)
          << QApplication::translate("SSP_EditorClass", "Path", 0)
         );
-        TRIGGERTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger", 0));
-        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "Door", 0));
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", 0));
+        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", 0));
+        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", 0));
+        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", 0));
+        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", 0));
+        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", 0));
+        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", 0));
+        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", 0));
+        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", 0));
+        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", 0));
+        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
         TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
         PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
