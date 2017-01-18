@@ -427,7 +427,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 		//Read the header (skip the first 4 bytes since it is virtual function information)
 		memcpy(&header, &network_data[4], sizeof(PacketTypes));
-
+#pragma region
 		switch (header)
 		{
 
@@ -438,7 +438,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->SendSyncPacket();
 
 			//DEBUG
-			//printf("Host received connection packet from client\n");
+			printf("Host received connection packet from client\n");
 
 			iter++;
 			break;
@@ -455,7 +455,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->SendPhysicSyncPacket(1,2,true);
 
 			//DEBUG
-			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
+			printf("Client received CONNECTION_ACCEPTED packet from Host\n");
 
 			iter++;
 			break;
@@ -468,7 +468,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->RemoveClient(iter->first);	// iter->first is the ID
 
 			//DEBUG
-			//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
+			printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 			iter = this->connectedClients.end();
 			break;
@@ -480,7 +480,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->RemoveClient(iter->first);
 
 			//DEBUF
-			//printf("Client recived: DISCONNECT_ACCEPTED\n");
+			printf("Client recived: DISCONNECT_ACCEPTED\n");
 
 			iter = this->connectedClients.end();
 			break;
@@ -492,7 +492,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
 
 			//DEBUG
-			//printf("Recived ENTITY_UPDATE packet\n");
+			printf("Recived ENTITY_UPDATE packet\n");
 
 			iter++;
 			break;
@@ -560,6 +560,7 @@ void NetworkModule::ReadMessagesFromClients()
 		default:
 			printf("Unkown packet type %d\n", header);
 		}
+#pragma endregion ALL_PACKETS
 	}
 
 }
