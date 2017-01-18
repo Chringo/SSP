@@ -39,7 +39,7 @@ private:
 	DirectX::XMVECTOR m_targetCameraRot;
 	DirectX::XMVECTOR m_targetCameraUp;
 	float m_distance;
-	//DirectX::XMFLOAT4 m_rotation;
+
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
@@ -52,6 +52,7 @@ public:
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update();
+	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 #pragma region

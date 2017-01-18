@@ -110,7 +110,7 @@ void EditorInputHandler::KeyboardMovement(double dT)
 	//		float(translateCameraY),
 	//		float(translateCameraZ)
 	//	);
-	//	this->m_Camera->Update();
+	//	this->m_Camera->UpdateView();
 	//}
 }
 
@@ -166,7 +166,7 @@ void EditorInputHandler::MouseMovement(double dT)
 		this->m_Camera->RotateCamera(camUpVec);
 	};
 
-	this->m_Camera->Update();
+	this->m_Camera->UpdateView();
 }
 
 
@@ -206,7 +206,7 @@ void EditorInputHandler::MouseZoom(double dT)
 			0.0f,
 			float(translateCameraZ)
 		);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 	}
 }
 
@@ -215,7 +215,7 @@ void EditorInputHandler::CameraReset()
 		this->m_Camera->Initialize(this->m_Width / this->m_Height);
 		this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
 		this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 }
 
 void EditorInputHandler::UpdateMouse()
