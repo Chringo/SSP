@@ -130,12 +130,12 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	}
 
 	
-	std::vector<AIComponent>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
+	std::vector<AIComponent*>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
 		GraphicsHptr->RenderBoundingVolume(
-			container->at(i).m_waypoints, 
-			container->at(i).m_nrOfWaypoint);
+			container->at(i)->m_waypoints, 
+			container->at(i)->m_nrOfWaypoint);
 	}
 	// TEMP TO TEST PATH
 //DirectX::XMVECTOR path[8];

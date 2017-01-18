@@ -49,6 +49,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 {
 	if (selection != nullptr)
 	{
+		Deselect(); //reset values
 		m_selection = selection;
 		if (m_selection->aiComponent != nullptr)
 		{
@@ -75,21 +76,20 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 				QString WaypointLabel = "Waypoint ";
 				WaypointLabel += QString::number(temp + 1);
 				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
-
-
 			}
 			
 		}
+		
 	}
 }
 
 void Ui::BehaviourTypeHandler::Deselect()
 {
+	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_selection = nullptr;
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
 	m_uniqueID->setText(QString::number(0));
-	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	
 }
 
@@ -132,6 +132,15 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 			}
 		}
 		//remove AI COMP
+		//if (m_selection != nullptr)
+		//{
+		//	if (m_selection->aiComponent != nullptr)
+		//	{
+		//		AIController cont(m_selection->aiComponent);
+		//		cont.DeletePath();
+		//	}
+		//}
+
 		break;
 	}
 	default:
@@ -141,6 +150,8 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 
 void Ui::BehaviourTypeHandler::on_Time_changed(double val)
 {
+	if (m_selection == nullptr)
+		return;
 	if (this->m_Current_Type == PATH)
 	{
 		int i = 0;
@@ -175,6 +186,8 @@ void Ui::BehaviourTypeHandler::on_Path_Trigger_Box_changed(int val)
 
 void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 {
+	if (m_selection == nullptr)
+		return;
 	if (this->m_Current_Type == PATH)
 	{
 		int i = 0;
@@ -189,10 +202,13 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 
 void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 {
+
 	if (this->m_Current_Type == PATH)
 	{
 		this->m_Current_Pattern = (Pattern)val;
 	}
+	if (m_selection == nullptr)
+		return;
 	if (m_selection->aiComponent != nullptr)
 	{
 		AIController cont(m_selection->aiComponent);
@@ -202,12 +218,32 @@ void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 
 void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 {
-	ResetType(this->m_Current_Type);
-	this->m_Current_Type = (BehaviourType)val;
+
+	//m_BehaviourType->setCurrentIndex(m_Current_Type);
+	//QMessageBox msgBox;
+	//msgBox.setText("Switching Behaviour will delete the current behaviour");
+	//QString last = "Continue anyways?";
+	//msgBox.setInformativeText(last);
+	//msgBox.setStandardButtons(QMessageBox::Yes| QMessageBox::Cancel);
+	//msgBox.setDefaultButton(QMessageBox::Cancel);
+	//int ret = msgBox.exec();
+	//switch (ret) {
+	//case QMessageBox::Yes:
+	//{
+		ResetType(this->m_Current_Type);
+		this->m_Current_Type = (BehaviourType)val;
+		m_BehaviourType->setCurrentIndex(val);
+		//break;
+	//}
+	//}
+
+
 }
 
 void Ui::BehaviourTypeHandler::on_Add()
 {
+	if (m_selection == nullptr)
+		return;
 	if (this->m_Current_Type == PATH)
 	{
 		int temp = this->m_WaypointList->count();
@@ -219,7 +255,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 
 			//do stuff
 			
-			if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
+			//if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
 
 				//Ask The Ai handler to create a new Path Component
 				if (m_selection->aiComponent == nullptr)
@@ -228,7 +264,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 					this->m_selection->aiComponent = newComponent;
 					newComponent->m_entityID += m_selection->internalID;
 				}
-			}
+			//}
 				AIController control(m_selection->aiComponent);
 				DirectX::XMVECTOR newPos = m_selection->position;
 			
@@ -240,6 +276,9 @@ void Ui::BehaviourTypeHandler::on_Add()
 
 void Ui::BehaviourTypeHandler::on_Del()
 {
+	if (m_selection == nullptr)
+		return;
+
 	if (this->m_Current_Type == PATH)
 	{
 		int currentRow = this->m_WaypointList->currentRow();
