@@ -37,6 +37,10 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_screenAspect = 0.0f;
 	this->m_fieldOfView = 0.0f;
 
+
+	this->m_focusPoint = nullptr;
+	this->m_focusPointOffset = { 0.0 };
+	this->m_focusVec = { 0.0 };
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -194,18 +198,18 @@ void Camera::GetCameraUp(DirectX::XMFLOAT3 & storeIn)
 	storeIn = DirectX::XMFLOAT3(this->m_cameraUp.x, this->m_cameraUp.y, this->m_cameraUp.z);
 	return;
 }
-GRAPHICSDLL_API DirectX::XMVECTOR Camera::GetCameraPivot()
+DirectX::XMVECTOR Camera::GetCameraPivot()
 {
 	return *this->m_focusPoint;
 }
-GRAPHICSDLL_API void Camera::GetCameraFrameData(cameraFrameData & storeIn)
+void Camera::GetCameraFrameData(cameraFrameData & storeIn)
 {
 	storeIn.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
 	storeIn.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
 	storeIn.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 	return;
 }
-GRAPHICSDLL_API cameraFrameData Camera::GetCameraFrameData()
+cameraFrameData Camera::GetCameraFrameData()
 {
 	cameraFrameData myData;
 	myData.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
@@ -229,7 +233,7 @@ void Camera::SetCameraPos(DirectX::XMVECTOR newCamPos)
 	return;
 }
 
-GRAPHICSDLL_API void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance)
+void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance)
 {
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
@@ -315,7 +319,7 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 	return;
 }
 
-GRAPHICSDLL_API void Camera::RotateCameraPivot(float pitch, float yaw)
+void Camera::RotateCameraPivot(float pitch, float yaw)
 {
 	static float mPitch = 0.0f;
 	static float mYaw = 0.0f;

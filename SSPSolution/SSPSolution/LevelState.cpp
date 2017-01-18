@@ -131,7 +131,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_staticEntitys.push_back(golv);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
-	m_cameraRef->SetCameraPivot(&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos, { 0.0, 3.0, 0.0, 0.0 }, 10.0f);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
+	m_cameraRef->SetCameraPivot(
+	&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+	targetOffset,
+	10.0f
+	);
 	this->m_director.Initialize();
 
 	return result;
@@ -166,7 +171,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	float yaw = inputHandler->GetMouseDelta().x;
 	float pitch = inputHandler->GetMouseDelta().y;
-	float mouseSens = 0.005;
+	float mouseSens = 0.000018f * dt;
 	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
 	
 	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
