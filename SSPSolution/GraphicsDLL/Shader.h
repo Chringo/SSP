@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_Shader
-#define GRAPHICSDLL_Shader
+#ifndef GRAPHICSDLL_SHADERS_SHADER_H
+#define GRAPHICSDLL_SHADERS_SHADER_H
 
 #include <d3dcompiler.h>
 #include <fstream>

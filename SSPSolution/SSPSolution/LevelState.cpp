@@ -130,6 +130,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	golv->Initialize(2, golvP, golvG);
 	this->m_staticEntitys.push_back(golv);
 
+	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
+	m_cameraRef->SetCameraPivot(
+	&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+	targetOffset,
+	10.0f
+	);
 	this->m_director.Initialize();
 
 	return result;
@@ -139,27 +146,120 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = 1000000 / dt;
-	//this->m_player1.Update(dt, inputHandler);
 
-	//for (size_t i = 0; i < m_entities.size(); i++)
-	//{
-	//	if (i == 0)
-	//	{
-	//		Player* ptr = (Player*)this->m_entities.at(i);
-	//		DirectX::XMVECTOR lookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
-	//		DirectX::XMFLOAT3 temp;
-	//		this->m_cameraRef->GetCameraUp(temp);
+	this->m_networkModule->Update();
 
-	//		DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
-	//		DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, lookDir);
+#pragma region
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
+	{
+		//Check for updates for enteties
+		this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();	//This removes the entity packets from the list in NetworkModule
 
-	//		ptr->SetLookDir(lookDir);
-	//		ptr->SetRightDir(rightDir);
-	//		ptr->SetUpDir(upDir);
-	//	}
+		if (this->m_entityPacketList.size() > 0)
+		{
 
-	//	this->m_entities.at(i)->Update(dt, inputHandler);
-	//}
+			// Apply each packet to the right entity
+			std::list<EntityPacket>::iterator itr;
+			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
+			{
+
+				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
+				{
+					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = itr->newPos;
+					pp->PC_rotation = itr->newRotation;
+					pp->PC_velocity = itr->newVelocity;
+				}
+				else
+				{
+					// Find the entity
+					DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
+					PhysicsComponent* pp = ent->GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = itr->newPos;
+					pp->PC_rotation = itr->newRotation;
+				}
+			}
+		}
+		this->m_entityPacketList.clear();	//Clear the list
+	}
+#pragma endregion Network_update_entities
+
+
+	float yaw = inputHandler->GetMouseDelta().x;
+	float pitch = inputHandler->GetMouseDelta().y;
+	float mouseSens = 0.000018f * dt;
+	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
+	
+	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
+	//DirectX::XMFLOAT4 camUpFloat;
+	//DirectX::XMFLOAT3 camPosFloat;
+	//DirectX::XMFLOAT3 camTargetFloat;
+	//this->m_cameraRef->GetCameraUp(camUpFloat);
+	//camPosFloat = this->m_cameraRef->GetCameraPos();
+	//camTargetFloat = this->m_cameraRef->GetLookAt();
+
+	//DirectX::XMVECTOR rotationVector;
+
+	//DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
+	//DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
+	//DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
+
+	//DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
+
+	//DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
+
+	//camRight.m128_f32[3] = rotationAmount * pitch;
+	//camUpVec.m128_f32[3] = rotationAmount * -yaw;
+
+	//this->m_cameraRef->RotateCamera(camRight);
+	//this->m_cameraRef->RotateCamera(camUpVec);
+
+	//this->m_cameraRef->Update();
+	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
+	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
+		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
+
+
+
+	DirectX::XMVECTOR playerPosG = this->m_player1.GetGraphicComponent()->worldMatrix.r[3];
+	DirectX::XMVECTOR playerPosP = this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos;
+
+
+	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
+	
+	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
+	//DirectX::XMFLOAT4 camUpFloat;
+	//DirectX::XMFLOAT3 camPosFloat;
+	//DirectX::XMFLOAT3 camTargetFloat;
+	//this->m_cameraRef->GetCameraUp(camUpFloat);
+	//camPosFloat = this->m_cameraRef->GetCameraPos();
+	//camTargetFloat = this->m_cameraRef->GetLookAt();
+
+	//DirectX::XMVECTOR rotationVector;
+
+	//DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
+	//DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
+	//DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
+
+	//DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
+
+	//DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
+
+	//camRight.m128_f32[3] = rotationAmount * pitch;
+	//camUpVec.m128_f32[3] = rotationAmount * -yaw;
+
+	//this->m_cameraRef->RotateCamera(camRight);
+	//this->m_cameraRef->RotateCamera(camUpVec);
+
+	//this->m_cameraRef->Update();
+	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
+
+
+	
 
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
@@ -175,6 +275,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1.SetLookDir(playerLookDir);
 	this->m_player1.Update(dt, inputHandler);
 
+	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
+	{
+		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+	}
+
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
@@ -185,6 +291,32 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	{
+		if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+		{
+			if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
+			{
+				printf("Joined client with the ip %s\n", this->m_ip);
+			}
+			else
+			{
+				printf("Failed to connect to the client %s\n", this->m_ip);
+			}
+
+		}
+		else
+		{
+			printf("Join failed since this module is already connected to other clients\n");
+		}
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	{
+		this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
+	}
+#pragma endregion Network_Key_events
 
 	return result;
 }
@@ -272,6 +404,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 
 	}
+
+
 
 	return 1;
 }

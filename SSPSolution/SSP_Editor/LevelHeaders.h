@@ -40,7 +40,7 @@ namespace LevelData {
 		L_ERROR_CREATING_FILE,
 		L_OK,
 		L_FILE_NOT_FOUND,
-		L_FILE_SAVE_CANCELED
+		L_FILE_SAVE_CANCELLED
 	};
 
 	struct Level {
