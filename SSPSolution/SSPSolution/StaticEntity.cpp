@@ -11,9 +11,9 @@ StaticEntity::~StaticEntity()
 {
 }
 
-int StaticEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int StaticEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
 {
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, aiComp);
 	return 0;
 }
 
