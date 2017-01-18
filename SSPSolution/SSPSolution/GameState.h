@@ -14,13 +14,14 @@ private:	//Variables
 protected:
 	GameStateHandler* m_gsh;
 	ComponentHandler* m_cHandler;
-	Camera* m_cameraRef;
-	static NetworkModule* m_networkModule;
-	char* m_ip = "192.168.1.141";	//Tobias NUC Specific local ip
+	Camera* m_cameraRef;	
+	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 
 
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 public:
+	static NetworkModule* m_networkModule;	// Is public so we can accses it from GameStateHandler for Shutdown
+
 	GameState();
 	virtual ~GameState();
 
