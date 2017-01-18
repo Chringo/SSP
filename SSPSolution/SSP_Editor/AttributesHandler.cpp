@@ -81,6 +81,7 @@ void Ui::AttributesHandler::SetSelection(Container * selection)
 		m_uniqueID->setText(QString::number(selection->internalID));
 	
 		m_isStaticBox->setChecked(m_selection->isStatic);
+		m_BehaviourHandler->SetSelection(selection);
 	
 	}
 
