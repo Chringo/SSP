@@ -143,11 +143,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
-	platformTERMINATOR->m_active = true;
+	platformTERMINATOR->AP_active = true;
 
 	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
-	platformTERMINATOR->m_entityID = platform->GetEntityID();
+	platformTERMINATOR->AP_entityID = platform->GetEntityID();
 	this->m_staticEntitys.push_back(platform);
 
 	this->m_director.Initialize();

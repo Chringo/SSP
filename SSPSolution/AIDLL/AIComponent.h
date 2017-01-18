@@ -6,24 +6,24 @@
 __declspec(align(16)) struct AIComponent
 {
 	// System variables
-	int m_active = 0;
-	int m_entityID = -1;
+	int AP_active = 0;
+	int AP_entityID = -1;
 
 	// AI variables
-	bool m_triggered;		// Trigger handling
-	int m_time;				// How long the component is active
+	bool AP_triggered;			// Trigger handling
+	int AP_time;				// How long the component is active
 
-	float m_speed;			// Movement speed
-	DirectX::XMVECTOR m_dir;// Normalised direction vector
+	float AP_speed;				// Movement speed
+	DirectX::XMVECTOR AP_dir;	// Normalised direction vector
 
-	DirectX::XMVECTOR m_position;// Current position
-	int m_pattern;			// Traversing of waypoints
-	int m_direction;		
-	int m_nextWaypointID;	// Index to next waypoint 
-	int m_latestWaypointID;	// Index to latest visited waypoint
-	int m_nrOfWaypoint;		// Nr of waypoints used in array
+	DirectX::XMVECTOR AP_position;// Current position
+	int AP_pattern;				// Traversing of waypoints
+	int AP_direction;			// Direction in array, might be removed due to AP_pattern's existance
+	int AP_nextWaypointID;		// Index to next waypoint 
+	int AP_latestWaypointID;	// Index to latest visited waypoint
+	int AP_nrOfWaypoint;		// Nr of waypoints used in array
 
-	DirectX::XMVECTOR m_waypoints[8];
+	DirectX::XMVECTOR AP_waypoints[8];
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
