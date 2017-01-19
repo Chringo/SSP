@@ -325,9 +325,6 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
-	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
-	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
-	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
 
 	m_pitch += pitch;
 	m_yaw -= yaw;
@@ -341,7 +338,6 @@ void Camera::RotateCameraPivot(float pitch, float yaw)
 	this->m_camRightvector = m_Right();
 	this->m_camDirvector = m_Dir();
 
-	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 	return;
 }
 void Camera::RotateCamera(double x, double y, double z, double angle)
