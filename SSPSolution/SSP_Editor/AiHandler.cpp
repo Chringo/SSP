@@ -9,36 +9,42 @@ AiHandler::AiHandler()
 
 AiHandler::~AiHandler()
 {
+	for (size_t i = 0; i < m_Components.size(); i++)
+	{
+		delete m_Components.at(i);
+	}
 }
 
 AIComponent * AiHandler::NewPathComponent()
 {
-	m_PathComponents.push_back(AIComponent());
-	return &m_PathComponents.back();
+	m_Components.push_back(new AIComponent());
+	m_Components.back()->m_entityID = m_Components.size() * 10;
+	return m_Components.back();
 }
 
 AIComponent * AiHandler::GetPathComponent(int EntityID)
 {
-	for (size_t i = 0; i < m_PathComponents.size(); i++)
+	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_PathComponents.at(i).m_entityID == EntityID) {
-			return &m_PathComponents.at(EntityID);
+		if (m_Components.at(i)->m_entityID == EntityID) {
+			return m_Components.at(EntityID);
 		}
 	}
 	return nullptr;
 }
 
-std::vector<AIComponent>* AiHandler::GetAllPathComponents()
+std::vector<AIComponent*>* AiHandler::GetAllPathComponents()
 {
-	return &m_PathComponents;
+	return &m_Components;
 }
 
 void AiHandler::DeletePathComponent(int EntityID)
 {
-	for (size_t i = 0; i < m_PathComponents.size(); i++)
+	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_PathComponents.at(i).m_entityID == EntityID) {
-			m_PathComponents.erase(m_PathComponents.begin() + i);
+		if (m_Components.at(i)->m_entityID == EntityID) {
+			delete m_Components.at(i);
+			m_Components.erase(m_Components.begin() + i);
 			return;
 		}
 	}
@@ -48,7 +54,7 @@ void AiHandler::DeletePathComponent(int EntityID)
 
 void AiHandler::Destroy()
 {
-	m_PathComponents.clear();
+	m_Components.clear();
 }
 
 
