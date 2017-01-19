@@ -38,8 +38,8 @@ struct UIComponent
 
 	void UpdateClicked(DirectX::XMFLOAT2 mousePos)
 	{
-		if ((mousePos.x > this->position.x - this->size.x && mousePos.x < this->position.x + this->size.x)
-			&& (mousePos.y > this->position.y - this->size.y && mousePos.y < this->position.y + this->size.y)) 
+		if ((mousePos.x > this->position.x && mousePos.x < this->position.x + this->size.x)
+			&& (mousePos.y > this->position.y && mousePos.y < this->position.y + this->size.y)) 
 		{
 			this->wasClicked = true;
 		}
@@ -49,16 +49,16 @@ struct UIComponent
 		float mouseX = mousePos.x - (GetSystemMetrics(SM_CXSCREEN) - windowSize.x) / 2;
 		float mouseY = mousePos.y - (GetSystemMetrics(SM_CYSCREEN) - windowSize.y) / 2;
 
-		if ((mouseX > this->position.x - this->size.x && mouseX < this->position.x + this->size.x) 
-			&& (mouseY > this->position.y - this->size.y && mouseY < this->position.y + this->size.y)) 
+		if ((mouseX > this->position.x && mouseX < this->position.x + this->size.x) 
+			&& (mouseY > this->position.y && mouseY < this->position.y + this->size.y)) 
 		{
 			this->wasClicked = true;
 		}
 	}
 	void UpdateHover(DirectX::XMFLOAT2 mousePos)
 	{
-		if ((mousePos.x > this->position.x - this->size.x && mousePos.x < this->position.x + this->size.x)
-			&& (mousePos.y > this->position.y - this->size.y && mousePos.y < this->position.y + this->size.y))
+		if ((mousePos.x > this->position.x && mousePos.x < this->position.x + this->size.x)
+			&& (mousePos.y > this->position.y && mousePos.y < this->position.y + this->size.y))
 		{
 			this->isHovered = true;
 		}
