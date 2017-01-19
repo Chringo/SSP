@@ -35,7 +35,8 @@ AnimationComponent * ComponentHandler::GetAnimationComponent()
 	AnimationComponent* animationComponent = nullptr;
 	if (this->m_AnimationHandler != nullptr)
 	{
-		animationComponent = this->m_AnimationHandler;
+		/*I need to figure out how to store my components, because they are not 
+		like any other components in list structure. They need to be in a kind of 2D-array fashion.*/
 	}
 	return animationComponent;
 }
