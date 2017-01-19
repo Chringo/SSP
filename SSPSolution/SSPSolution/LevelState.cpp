@@ -72,7 +72,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 0;								//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);		//Set Position
+	playerP->PC_pos = DirectX::XMVectorSet(20, 20, 20, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
@@ -328,8 +328,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
-
-	this->LockCameraToPlayer();
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);

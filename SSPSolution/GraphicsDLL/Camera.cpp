@@ -60,6 +60,7 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	
 	//Create the projection matrix
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
+
 	return result;
 }
 
@@ -67,6 +68,9 @@ int Camera::Update(float dt)
 {
 	int result = 1;
 	this->m_updatePos();
+
+	//crash fix
+	this->m_lookAt.z = 2;
 	//DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
 	//DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 
@@ -78,6 +82,7 @@ int Camera::Update(float dt)
 	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+	
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
@@ -241,6 +246,15 @@ void Camera::SetCameraPos(DirectX::XMVECTOR newCamPos)
 
 void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance)
 {
+	bool result = false;
+
+	result = DirectX::XMVector4NotEqual(targetOffset, DirectX::XMVectorSet(0, 0, 0, 0));
+	if (result == false)
+	{
+		targetOffset = { 0.0 , 1.0, 0.0 };
+	}
+	
+
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
 	this->m_focusPointOffset = targetOffset;
