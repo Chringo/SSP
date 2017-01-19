@@ -104,7 +104,13 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	this->LoadEntities((LevelData::EntityHeader*)modelData, header.entityAmount); //Load them into the level object
 
 	//AI Entities
-
+	if (header.AiComponentAmount > 0)
+	{
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
+		char* aiData = new char[aiSize];					    //Allocate for ai data
+		file.read(aiData, aiSize);							//Write all aiComponents					
+		delete aiData;
+	}
 
 	file.close();
 	delete modelData; //Cleanup
@@ -298,4 +304,9 @@ LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataP
 	}
 
 	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * dataPtr, size_t numComponents)
+{
+	return LevelData::LevelStatus();
 }

@@ -38,6 +38,7 @@ private:
 
 #pragma region Load Functions
 	LevelData::LevelStatus LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities);
+	LevelData::LevelStatus LoadAiComponents(LevelData::AiHeader* dataPtr, size_t numComponents);
 #pragma endregion
  };
 
