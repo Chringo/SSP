@@ -164,7 +164,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
-	platformTERMINATOR->AC_active = true;
 	platformTERMINATOR->AC_triggered = true;
 	platformTERMINATOR->AC_speed = 0.15f;
 	platformTERMINATOR->AC_position = platformP->PC_pos;
@@ -194,7 +193,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
 	AIComponent* platA = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
-	platA->AC_active = true;
 	platA->AC_triggered = true;
 	platA->AC_speed = 0.08f;
 	platA->AC_position = platP->PC_pos;
