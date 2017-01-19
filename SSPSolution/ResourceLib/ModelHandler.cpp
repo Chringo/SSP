@@ -263,7 +263,8 @@ Resources::Model * Resources::ModelHandler::GetEmptyContainer()
 	if (m_emptyContainers.size() < 1)
 	{
 		m_containers.push_back(Model());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		Model* ptr = &m_containers.at(m_containers.size() - 1);
+		m_emptyContainers.push_back(ptr);
 	}
 	return m_emptyContainers.front();
 }
