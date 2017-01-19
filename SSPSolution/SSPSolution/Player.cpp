@@ -77,7 +77,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Check if the player should update its physics component
 		//if (this->m_pComp->PC_entityID == 0)
 		//{
-			if (forwards != 0 || sideways != 0)
+		if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
 				//Get the rotation around the Y-axis, also called the Yaw axis
@@ -95,6 +95,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 
 			}
+
 		//}
 		if (this->m_gComp != nullptr)
 		{
@@ -117,6 +118,16 @@ Entity* Player::SetGrabbed(Entity * entityPtr)
 {
 	Entity* oldValue = this->m_grabbed;
 	this->m_grabbed = entityPtr;
+	
+	if (this->m_grabbed != nullptr)
+	{
+		this->m_grabbed->SetGrabbed(this);	//Set the new entity to grabbed by this entity
+	}
+	if (oldValue != nullptr)
+	{
+		oldValue->SetGrabbed(nullptr);	//Set the old entity to NOT grabbed
+	}
+
 	return oldValue;
 }
 
