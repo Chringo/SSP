@@ -244,6 +244,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 
 bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance)
 {
+	//Approximation if position of the platform is the same as the nextWaypoint to see if it reached its goal.
 	float dx = abs(DirectX::XMVectorGetX(c2) - DirectX::XMVectorGetX(c1));
 	float dy = abs(DirectX::XMVectorGetY(c2) - DirectX::XMVectorGetY(c1));
 	float dz = abs(DirectX::XMVectorGetZ(c2) - DirectX::XMVectorGetZ(c1));
