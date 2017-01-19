@@ -5,7 +5,7 @@
 Resources::ResourceHandler::ResourceHandler()
 {
 
-	this->m_modelHandler = new ModelHandler(20);
+	this->m_modelHandler = new ModelHandler(50);
 	
 }
 
@@ -13,7 +13,7 @@ Resources::ResourceHandler::ResourceHandler(ID3D11Device * device, ID3D11DeviceC
 {
 	this->m_device = device;
 	this->m_context = context;
-	this->m_modelHandler = new ModelHandler(20);
+	this->m_modelHandler = new ModelHandler(50);
 	m_modelHandler->SetDevice(device);
 }
 

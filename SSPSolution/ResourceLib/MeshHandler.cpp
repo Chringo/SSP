@@ -214,7 +214,8 @@ Resources::Mesh * Resources::MeshHandler::GetEmptyContainer()
 	if (m_emptyContainers.size() < 1)
 	{
 		m_containers.push_back(Mesh());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		Mesh* ptr = &m_containers.at(m_containers.size()-1);
+		m_emptyContainers.push_back(ptr);
 	}
 	return m_emptyContainers.front();
 }
