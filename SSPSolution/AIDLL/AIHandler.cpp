@@ -54,7 +54,7 @@ int AIHandler::Update(float deltaTime)
 			int time = this->m_AIComponents.at(i)->AC_time;
 			int direction = this->m_AIComponents.at(i)->AC_direction;
 
-			if (pattern == 1)
+			if (pattern == AI_ONEWAY)
 			{
 				if (currentWaypoint == 0 || currentWaypoint == nrOfWaypoint)
 				{
@@ -64,13 +64,13 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AC_direction = 0;
 				}
 			}
-			else if (pattern == 3)
+			else if (pattern == AI_ROUNDTRIP)
 			{
 				//TODO Round-trip pattern
 			}
 			else
 			{
-				//Identical to pattern 2 (Circular)
+				//Circular
 				if (direction == 0)
 				{
 					if (WaypointApprox(
@@ -239,9 +239,9 @@ int AIHandler::GetNextWaypoint(int compID, int pattern)
 	int next = this->m_AIComponents.at(compID)->AC_latestWaypointID;
 	int current = this->m_AIComponents.at(compID)->AC_nextWaypointID;
 
-	if (pattern == 1)
+	if (pattern == AI_ONEWAY)
 	{
-		//TODO Linear pattern next waypoint logic
+		//TODO ONEWAY pattern next waypoint logic
 	}
 	else
 	{

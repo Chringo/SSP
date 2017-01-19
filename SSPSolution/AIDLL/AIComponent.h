@@ -4,9 +4,9 @@
 #include <DirectXMath.h>
 enum Pattern : int
 {
-	AI_LINEAR = 1,
+	AI_ONEWAY = 1,
 	AI_CIRCULAR,
-	AI_ROUNTRIP,
+	AI_ROUNDTRIP,
 	AI_RANDOM,
 	AI_NONE = -1
 };
