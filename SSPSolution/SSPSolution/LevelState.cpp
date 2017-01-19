@@ -437,6 +437,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 {
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
+	rot.m128_f32[3] = 0.0f;	//Set w to 0
+	pos.m128_f32[3] = 0.0f;	//Set w to 0
+
 	DirectX::XMMATRIX translate;
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
