@@ -9,6 +9,7 @@ GlobalIDHandler::GlobalIDHandler()
 
 GlobalIDHandler::~GlobalIDHandler()
 {
+
 }
 
 GlobalIDHandler * GlobalIDHandler::GetInstance()
@@ -22,6 +23,40 @@ const unsigned int GlobalIDHandler::GetNewId()
 	currentID += 1;
 	ids.push_back(currentID);
 	return currentID;
+}
+
+const unsigned int GlobalIDHandler::AddExistingID(unsigned int id)
+{
+	bool IdExists = false;
+	unsigned int toReturn = id;
+	if (id == 0 || id == 1) //make sure it does not contain the player ids
+		IdExists = true;
+	else
+	{
+		for (size_t i = 0; i < ids.size(); i++) //check if the id exists
+		{
+			if (ids.at(i) == id) // if found
+			{
+				IdExists = true;
+				break;
+			}
+		}
+	}
+
+	if (currentID < id)
+	{
+		currentID = id;
+	}
+
+	if (IdExists) //if it exists generate a new one
+	{
+		toReturn = this->GetNewId();
+	}
+	else {
+		ids.push_back(currentID);
+	}
+
+	return toReturn;
 }
 
 void GlobalIDHandler::ResetIDs()

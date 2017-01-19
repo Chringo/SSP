@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_GlobalIDHandler_H
 #define SSPEDITOR_GlobalIDHandler_H
 #include <vector>
+#include <unordered_map>
 
 /* Author: Martin Clementson
 	This is a simple class with the sole purpose of handling the unique ids in the level.
@@ -16,6 +17,7 @@ public:
 	~GlobalIDHandler();
 	static GlobalIDHandler* GetInstance();
 	const unsigned int GetNewId();
+	const unsigned int AddExistingID(unsigned int id); //Used when loading file. If the id exists, it generates a new id. (This fixes old level files)
 	void ResetIDs();
 
 };
