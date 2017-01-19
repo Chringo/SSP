@@ -83,6 +83,26 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[2] = 1.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player1.Initialize(0, playerP, playerG);
+
+	//Player 2
+	this->m_player2 = Player();
+	playerG = m_cHandler->GetGraphicsComponent();
+	playerG->modelID = 1337;
+	playerG->active = true;
+	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
+	playerP = m_cHandler->GetPhysicsComponent();
+	playerP->PC_entityID = 3;								//Set Entity ID
+															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	playerP->PC_is_Static = false;							//Set IsStatic
+	playerP->PC_active = true;								//Set Active
+	playerP->PC_mass = 5;
+	playerP->PC_BVtype = BV_AABB;
+	playerP->PC_AABB.ext[0] = 1.5;
+	playerP->PC_AABB.ext[1] = 1.5;
+	playerP->PC_AABB.ext[2] = 1.5;
+	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	this->m_player2.Initialize(3, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
@@ -172,11 +192,25 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
-	m_cameraRef->SetCameraPivot(
-	&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
-	targetOffset,
-	10.0f
-	);
+	
+	if (this->m_networkModule->IsHost())
+	{
+		m_cameraRef->SetCameraPivot(
+		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+		targetOffset,
+		10.0f
+		);
+	}
+	else // Player 2
+	{
+		m_cameraRef->SetCameraPivot(
+			&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
+			targetOffset,
+			10.0f
+		);
+	}
+
+	
 	this->m_director.Initialize();
 
 	return result;
@@ -206,6 +240,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
 				{
 					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = itr->newPos;
+					pp->PC_rotation = itr->newRotation;
+					pp->PC_velocity = itr->newVelocity;
+				}
+				else if (itr->entityID == -2)
+				{
+					PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 
 					// Update the component
 					pp->PC_pos = itr->newPos;
@@ -310,15 +353,35 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
 	DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, playerLookDir);
 
-	this->m_player1.SetRightDir(rightDir);
-	this->m_player1.SetUpDir(upDir);
-	this->m_player1.SetLookDir(playerLookDir);
-	this->m_player1.Update(dt, inputHandler);
+
+
+	if (this->m_networkModule->IsHost())
+	{	
+		this->m_player1.SetRightDir(rightDir);
+		this->m_player1.SetUpDir(upDir);
+		this->m_player1.SetLookDir(playerLookDir);
+		this->m_player1.Update(dt, inputHandler);
+		this->m_player2.SyncComponents();
+	}
+	else
+	{
+		this->m_player2.SetRightDir(rightDir);
+		this->m_player2.SetUpDir(upDir);
+		this->m_player2.SetLookDir(playerLookDir);
+		this->m_player2.Update(dt, inputHandler);
+		this->m_player1.SyncComponents();
+	}
+	
 
 	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
 	{
 		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+	}
+	else if( (this->m_networkModule->IsHost() == false) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )
+	{
+		PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+		this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 	}
 
 	//update all dynamic (moving) entities
@@ -340,6 +403,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
 			{
 				printf("Joined client with the ip %s\n", this->m_ip);
+
+				//TEMP SULOTION
+				//Move the camera to player 2 since we joined a game 
+				DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
+				m_cameraRef->SetCameraPivot(
+					&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
+					targetOffset,
+					10.0f
+				);
 			}
 			else
 			{
