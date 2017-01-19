@@ -6,6 +6,10 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
+#include "stdafx.h"
+#include <DXGI1_3.h>
+#include <DXGI1_4.h>
+
 class Direct3DHandler
 {
 private:

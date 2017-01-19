@@ -145,8 +145,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	IDXGIAdapter* firstAdapter = nullptr;
 	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
 
-	//IDXGIAdapter3* dxgiAdapter3 = nullptr;
-	//IDXGIAdapter3
+	IDXGIAdapter3* dxgiAdapter3 = nullptr;
 	return 0;
 }
 
