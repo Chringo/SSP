@@ -3,6 +3,7 @@
 
 //#include "ComponentStructs.h"
 #include "../GraphicsDLL/GraphicsHandler.h"
+#include "../GraphicsDLL/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
 #include "../AIDLL/AIHandler.h"
 
@@ -10,6 +11,7 @@ class ComponentHandler
 {
 private:
 	GraphicsHandler* m_graphicsHandler;
+	AnimationHandler* m_AnimationHandler;
 	PhysicsHandler* m_physicsHandler;
 	AIHandler* m_aiHandler;
 public:
@@ -17,9 +19,10 @@ public:
 	~ComponentHandler();
 
 	//Returns 0 if the graphicsHandler or physicshandler is a nullptr
-	int Initialize(GraphicsHandler* graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler);
+	int Initialize(GraphicsHandler* graphicsHandler, AnimationHandler* animationHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler);
 
 	GraphicsComponent* GetGraphicsComponent();
+	AnimationComponent* GetAnimationComponent();
 	PhysicsComponent* GetPhysicsComponent();
 	AIComponent* GetAIComponent();
 	void UpdateGraphicsComponents();
