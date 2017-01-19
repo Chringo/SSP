@@ -3,10 +3,6 @@
 #include "../physicsDLL/PhysicsHandler.h"
 #include "Shader.h"
 
-#include "stdafx.h"
-#include <DXGI1_3.h>
-#include <DXGI1_4.h>
-
 
 
 class DebugRenderer

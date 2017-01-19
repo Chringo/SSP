@@ -146,6 +146,20 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
 
 	IDXGIAdapter3* dxgiAdapter3 = nullptr;
+	
+	if (SUCCEEDED(firstAdapter->QueryInterface(__uuidof(IDXGIAdapter3), (void**)&dxgiAdapter3)))
+	{
+		DXGI_QUERY_VIDEO_MEMORY_INFO info;
+		if (SUCCEEDED(dxgiAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
+		{
+			int memoryUsage = info.CurrentUsage / 1024 / 1024; //MiB
+
+			char msg[100];
+			sprintf_s(msg, "%d", memoryUsage);
+			printf("GPU MiB: ",memoryUsage);
+		}
+	}
+	
 	return 0;
 }
 
