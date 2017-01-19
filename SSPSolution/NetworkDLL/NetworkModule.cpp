@@ -94,6 +94,7 @@ int NetworkModule::Initialize()
 	this->GetMyIp();					// Set my_ip to local ip-address
 	this->time_start = std::clock();	// Start the network system clock
 	
+	this->isHost = true;
 	printf("Network module Initialized\n");
 
 	return 1;
@@ -234,6 +235,7 @@ int NetworkModule::Join(char* ip)
 		printf("client %d has been connected to the this client\n", this->client_id);
 		this->client_id++;
 
+		this->isHost = false;	//If you joined another client, you are not host
 		return 1;
 	}
 
@@ -269,7 +271,7 @@ void NetworkModule::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -281,7 +283,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLO
 	packet.entityID = entityID;
 	packet.newPos = newPos;
 	packet.newRotation = newRotation;
-	packet.newRotationVelocity = newRotationVelocity;
+	//packet.newRotationVelocity = newRotationVelocity;
 	packet.newVelocity = newVelocity;
 
 	packet.serialize(packet_data);
@@ -335,7 +337,7 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-NETWORKDLL_API void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
 {
 	const unsigned int packet_size = sizeof(SyncPhysicPacket);
 	char packet_data[packet_size];
@@ -427,7 +429,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 		//Read the header (skip the first 4 bytes since it is virtual function information)
 		memcpy(&header, &network_data[4], sizeof(PacketTypes));
-
+#pragma region
 		switch (header)
 		{
 
@@ -435,8 +437,6 @@ void NetworkModule::ReadMessagesFromClients()
 	
 			p.deserialize(network_data);	// Read the binary data into the object
 			
-			this->SendSyncPacket();
-
 			//DEBUG
 			//printf("Host received connection packet from client\n");
 
@@ -450,9 +450,6 @@ void NetworkModule::ReadMessagesFromClients()
 			// Sync clock (Still not used)
 			this->time_current = (int)syP.timestamp;
 			this->time_start = syP.time_start;
-			
-			this->SendFlagPacket(TEST_PACKET);
-			this->SendPhysicSyncPacket(1,2,true);
 
 			//DEBUG
 			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
@@ -478,11 +475,13 @@ void NetworkModule::ReadMessagesFromClients()
 			p.deserialize(network_data);	// Read the binary data into the object
 			
 			this->RemoveClient(iter->first);
-
+			
 			//DEBUF
 			//printf("Client recived: DISCONNECT_ACCEPTED\n");
-
+			
 			iter = this->connectedClients.end();
+			this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
+			
 			break;
 
 		case UPDATE_ENTITY:
@@ -540,8 +539,7 @@ void NetworkModule::ReadMessagesFromClients()
 			this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
 
 			//DEBUG
-			printf("Recived SYNC_PHYSICS packet\n");
-			this->SendPhysicSyncPacket(2,1,false);
+			//printf("Recived SYNC_PHYSICS packet\n");
 
 			iter++;
 			break;
@@ -560,6 +558,7 @@ void NetworkModule::ReadMessagesFromClients()
 		default:
 			printf("Unkown packet type %d\n", header);
 		}
+#pragma endregion ALL_PACKETS
 	}
 
 }
@@ -750,7 +749,7 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 	return result;
 }
 
-NETWORKDLL_API std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
+std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 {
 	std::list<SyncPhysicPacket> result;
 	std::list<SyncPhysicPacket>::iterator iter;
@@ -775,4 +774,9 @@ NETWORKDLL_API std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysic
 int NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
+}
+
+bool NetworkModule::IsHost()
+{
+	return  this->isHost;
 }

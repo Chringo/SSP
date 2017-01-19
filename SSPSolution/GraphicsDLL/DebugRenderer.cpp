@@ -15,6 +15,9 @@ DebugRenderer::DebugRenderer()
 	NUM_POINTS[M_SPHERE]  = 24;
 	NUM_INDICES[M_SPHERE] = 24;
 
+	NUM_POINTS[M_PATH]  = 8;
+	NUM_INDICES[M_PATH] = 14;
+
 
 	m_indices[M_CUBE] = new UINT[NUM_INDICES[M_CUBE]]
 	{
@@ -53,6 +56,19 @@ DebugRenderer::DebugRenderer()
 		20,21,
 		22,23
 	};
+
+
+	m_indices[M_PATH] = new UINT[NUM_INDICES[M_PATH]]
+	{
+		0,1,
+		1,2,
+		2,3,
+		3,4,
+		4,5,
+		5,6,
+		6,7,
+	};
+	
 }
 
 
@@ -279,6 +295,41 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 
 	m_deviceContext->DrawIndexed(NUM_INDICES[M_SPHERE], 0, 0);
 
+}
+
+void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+
+	for (size_t i = 0; i < numWaypoints; i++)
+	{
+		AABB pointBox;
+		pointBox.ext[0] = 0.2;
+		pointBox.ext[1] = 0.2;
+		pointBox.ext[2] = 0.2;
+		DirectX::XMVECTOR boxColor = { 0.5f,0.0f,0.5f };
+		this->Render(wayPoints[i], pointBox, boxColor);
+
+	}
+	if (numWaypoints > 1)
+	{
+		GenerateLinelist(wayPoints, numWaypoints, color);
+	
+		int indicesToRender = 0;
+	
+		if (numWaypoints < 8)
+			indicesToRender = (numWaypoints * 2) - 1;
+		else
+			indicesToRender = (numWaypoints * 2) - 2;
+	
+	
+		UINT32 offset		= 0;
+		UINT32 m_vertexSize = sizeof(Point);
+		m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PATH], &m_vertexSize, &offset);
+		m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PATH], DXGI_FORMAT_R32_UINT, 0);
+	
+		m_deviceContext->DrawIndexed(indicesToRender, 0, 0);
+	}
+	 
 }
 
 void DebugRenderer::SetActive()
@@ -526,6 +577,23 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 	m_deviceContext->Unmap(m_PointBuffer[M_SPHERE], 0);
 
 	return m_PointBuffer[M_SPHERE];
+}
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
+{
+	for (int i = 0; i < numWaypoints; i++) //For each waypoint
+	{
+		m_points[M_PATH][i] = Point(wayPoints[i].m128_f32, color.m128_f32); //create the point
+	}
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	HRESULT hr = m_deviceContext->Map(m_PointBuffer[M_PATH], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource); // map to buffer
+	Point* tempData = (Point*)mappedResource.pData;
+	memcpy(tempData, (void*)m_points[M_PATH], sizeof(Point) * numWaypoints);
+	m_deviceContext->Unmap(m_PointBuffer[M_PATH], 0);
+
+	return m_PointBuffer[M_PATH];
+
 }
 	/*
 		 _________________________

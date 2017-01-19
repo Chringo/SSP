@@ -1674,6 +1674,7 @@ void PhysicsHandler::SortComponents()
 	int a = this->m_physicsComponents.size();
 }
 
+#ifdef _DEBUG
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
 	src = &(this->m_physicsComponents.at(index)->PC_OBB);

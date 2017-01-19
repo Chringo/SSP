@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_FinalShader
-#define GRAPHICSDLL_FinalShader
+#ifndef GRAPHICSDLL_SHADERS_FinalShader
+#define GRAPHICSDLL_SHADERS_FinalShader
 
 #include "Shader.h"
 #include "ScreenQuad.h"

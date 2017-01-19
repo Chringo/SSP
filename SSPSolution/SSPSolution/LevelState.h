@@ -21,6 +21,7 @@ private:
 
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	std::vector<StaticEntity*>	m_staticEntitys;
+	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -31,6 +32,9 @@ public:
 	int CreateLevel(LevelData::Level* data);
 
 	void LockCameraToPlayer();
+
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 private:
 };
 
