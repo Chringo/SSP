@@ -161,6 +161,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformP->PC_AABB.ext[0] = 5;
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
+	platformP->PC_elasticity = 0;
+	platformP->PC_friction = 1.0f;
 	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
@@ -190,6 +192,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platP->PC_AABB.ext[0] = 5;
 	platP->PC_AABB.ext[1] = 0.1f;
 	platP->PC_AABB.ext[2] = 5;
+	platP->PC_elasticity = 0;
+	platP->PC_friction = 1.0f;
 	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
 	AIComponent* platA = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
@@ -201,7 +205,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platA->AC_waypoints[0] = platP->PC_pos;
 	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
 	/*platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
-	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 7, 40, 0);*/
+	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);*/
 #pragma endregion
 	plat->Initialize(5, platP, platG, platA);
 	platP->PC_entityID = plat->GetEntityID();
