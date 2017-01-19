@@ -157,38 +157,58 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
 	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
 	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
-	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	platformP->PC_is_Static = true;
 	platformP->PC_AABB.ext[0] = 5;
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
+	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
 	platformTERMINATOR->AC_active = true;
-	// entityID resolved in initialise down below
-
 	platformTERMINATOR->AC_triggered = true;
-	platformTERMINATOR->AC_time = 0;
-
 	platformTERMINATOR->AC_speed = 0.15f;
-	// AC_dir resolved in update loop
-
 	platformTERMINATOR->AC_position = platformP->PC_pos;
-	platformTERMINATOR->AC_pattern = 2;// Circular
-	platformTERMINATOR->AC_direction = 0;
-	platformTERMINATOR->AC_latestWaypointID = 0;
-	platformTERMINATOR->AC_nextWaypointID = 1;
+	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
 	platformTERMINATOR->AC_nrOfWaypoint = 4;
 	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
 	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
 	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
 	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
-
-	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
+	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
 	platformTERMINATOR->AC_entityID = platform->GetEntityID();
 	this->m_dynamicEntitys.push_back(platform);
+
+	DynamicEntity* plat = new DynamicEntity();
+	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
+	platG->modelID = 1337;
+	platG->active = true;
+	resHandler->GetModel(platG->modelID, platG->modelPtr);
+	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
+	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
+	platP->PC_is_Static = true;
+	platP->PC_AABB.ext[0] = 5;
+	platP->PC_AABB.ext[1] = 0.1f;
+	platP->PC_AABB.ext[2] = 5;
+	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
+	AIComponent* platA = m_cHandler->GetAIComponent();
+#pragma region AIComp variables
+	platA->AC_active = true;
+	platA->AC_triggered = true;
+	platA->AC_speed = 0.08f;
+	platA->AC_position = platP->PC_pos;
+	platA->AC_pattern = AI_CIRCULAR;
+	platA->AC_nrOfWaypoint = 4;
+	platA->AC_waypoints[0] = platP->PC_pos;
+	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
+	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 40, 0);
+	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 7, 40, 0);
+#pragma endregion
+	plat->Initialize(5, platP, platG, platA);
+	platP->PC_entityID = plat->GetEntityID();
+	platA->AC_entityID = plat->GetEntityID();
+	this->m_dynamicEntitys.push_back(plat);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
