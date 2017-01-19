@@ -187,7 +187,7 @@ int Direct3DHandler::InitializeGridRasterizer()
 int Direct3DHandler::PresentScene()
 {
 	this->m_swapChain->Present(0, 0);
-
+#ifdef _DEBUG
 	DXGI_QUERY_VIDEO_MEMORY_INFO info;
 	if (SUCCEEDED(dxgiAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
 	{
@@ -196,6 +196,7 @@ int Direct3DHandler::PresentScene()
 		char msg[100];
 		sprintf_s(msg, "%d", memoryUsage);
 		printf("GPU MiB: %d", memoryUsage);
+#endif
 	}
 
 	return 0;
