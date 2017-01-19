@@ -18,7 +18,6 @@ AiHandler::~AiHandler()
 AIComponent * AiHandler::NewPathComponent()
 {
 	m_Components.push_back(new AIComponent());
-	m_Components.back()->AC_entityID = m_Components.size() * 10;
 	return m_Components.back();
 }
 

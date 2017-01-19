@@ -23,8 +23,13 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 		m_materialHandler->SetDevice(device);
 		m_skeletonHandler->SetDevice(device);
 	}
-
-
+	ResourceContainer* temp;
+	unsigned int one = 2759249725;
+	unsigned int two = 3255160373;
+	FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
+	LoadModel(one, temp);
+	LoadModel(two, temp);
+	FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 	
 }
 
@@ -258,7 +263,8 @@ Resources::Model * Resources::ModelHandler::GetEmptyContainer()
 	if (m_emptyContainers.size() < 1)
 	{
 		m_containers.push_back(Model());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		Model* ptr = &m_containers.at(m_containers.size() - 1);
+		m_emptyContainers.push_back(ptr);
 	}
 	return m_emptyContainers.front();
 }

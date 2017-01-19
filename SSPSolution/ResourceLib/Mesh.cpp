@@ -23,11 +23,23 @@ Resources::Mesh::Mesh(Resource::RawResourceData resData)
 
 Resources::Mesh::Mesh() : Resource()
 {
+	m_vertBuffer	 = nullptr;
+	m_AnimVertBuffer = nullptr;
+	m_indexBuffer	 = nullptr;
 
 	m_resourceData.m_resType = ResourceType::RES_MESH;
 
 }
 
+Resources::Mesh::Mesh(const Mesh & obj)
+{
+	this->m_resourceData	= obj.m_resourceData;
+	this->m_meshData		= obj.m_meshData;
+	this->m_vertBuffer		= obj.m_vertBuffer;
+	this->m_AnimVertBuffer  = obj.m_AnimVertBuffer ;
+	this->m_indexBuffer		= obj.m_indexBuffer	   ;
+	this->m_boundingBox		= obj.m_boundingBox	   ;
+}
 Resources::Status Resources::Mesh::Create(Resource::RawResourceData * resData, ID3D11Device* dev , RawMeshData * meshData, bool keepRawData)
 {
 	this->Destroy();

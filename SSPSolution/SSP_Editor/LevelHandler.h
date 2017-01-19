@@ -33,10 +33,12 @@ private:
 	LevelData::LevelStatus GetEntityData(char* dataPtr);
 	LevelData::LevelStatus GetResourceData(char* dataPtr);
 	LevelData::LevelStatus GetSpawnData(char* dataPtr);
+	LevelData::LevelStatus GetAiData(char* dataPtr);
 #pragma endregion
 
 #pragma region Load Functions
 	LevelData::LevelStatus LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities);
+	LevelData::LevelStatus LoadAiComponents(LevelData::AiHeader* dataPtr, size_t numComponents);
 #pragma endregion
  };
 
