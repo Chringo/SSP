@@ -168,6 +168,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GlobalIDHandler.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelHandler.cpp" />
     <ClCompile Include="D3DRenderWidget.cpp" />
@@ -297,6 +298,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />
+    <ClInclude Include="GlobalIDHandler.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelHandler.h" />

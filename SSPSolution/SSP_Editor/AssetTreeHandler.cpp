@@ -75,7 +75,7 @@ void Ui::AssetTreeHandler::on_treeView_doubleClicked() {
 	DirectX::XMVECTOR rot = {
 		0.0f,0.0f,0.0f
 	};
-	LevelHandler::GetInstance()->GetCurrentLevel()->AddModelEntity(test->at(modelIndex)->GetId(), 0, pos, rot);
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddModelEntity(test->at(modelIndex)->GetId(), pos, rot);
 
 	//QFileInfo fileInfo = this->m_model->fileInfo(index);
 	//QString filePath = fileInfo.filePath();
