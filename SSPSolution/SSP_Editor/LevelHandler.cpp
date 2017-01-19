@@ -33,7 +33,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	file.write(data, sizeof(LevelData::MainLevelHeader));					 //Write the main header first
 
 	//Resource data
-	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;    //size of resource data
 	char* resData  = new char[resSize];										 //Allocate for resource data
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
@@ -158,9 +158,10 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 {
 	LevelData::MainLevelHeader header;
 	
-	header.resAmount	= m_currentLevel.GetUniqueModels()->size();
-	header.entityAmount = m_currentLevel.GetNumEntities();
-	header.lightAmount  = m_currentLevel.GetNumLights();
+	header.resAmount	     = m_currentLevel.GetUniqueModels()->size();
+	header.entityAmount      = m_currentLevel.GetNumEntities();
+	header.lightAmount       = m_currentLevel.GetNumLights();
+	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
 	return header;
 }
 
@@ -182,6 +183,7 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.position[0] = entityContainer->at(i).position.m128_f32[0];
 			entity.position[1] = entityContainer->at(i).position.m128_f32[1];	//Convert from Vector to float3
 			entity.position[2] = entityContainer->at(i).position.m128_f32[2];
+			
 
 			entity.rotation[0] = entityContainer->at(i).rotation.m128_f32[0];
 			entity.rotation[1] = entityContainer->at(i).rotation.m128_f32[1];	//Convert from Vector to float3
@@ -238,9 +240,10 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
+	GlobalIDHandler::GetInstance()->ResetIDs();
 	for (size_t i = 0; i < numEntities; i++)
 	{
-		m_currentLevel.AddModelEntity(dataPtr[i].modelID,
+		m_currentLevel.AddModelEntityFromLevelFile(dataPtr[i].modelID,
 			dataPtr[i].EntityID,
 			DirectX::XMVectorSet(dataPtr[i].position[0], dataPtr[i].position[1], dataPtr[i].position[2], 0.0),
 			DirectX::XMVectorSet(dataPtr[i].rotation[0], dataPtr[i].rotation[1], dataPtr[i].rotation[2], 0.0));

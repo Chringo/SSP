@@ -1,11 +1,20 @@
 #pragma once
 
 namespace LevelData {
+
+
+	struct OLDMainLevelHeader //This is used to convert levels from earlier versions of the editor
+	{
+		unsigned int resAmount;
+		unsigned int entityAmount;
+		unsigned int lightAmount;
+	};
 	struct MainLevelHeader
 	{
 		unsigned int resAmount;
 		unsigned int entityAmount;
 		unsigned int lightAmount;
+		unsigned int AiComponentAmount;
 	};
 	
 	struct ResourceHeader {
