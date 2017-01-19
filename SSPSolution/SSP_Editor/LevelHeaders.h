@@ -6,6 +6,7 @@ namespace LevelData {
 		unsigned int resAmount;
 		unsigned int entityAmount;
 		unsigned int lightAmount;
+		unsigned int AiComponentAmount;
 	};
 	
 	struct ResourceHeader {
