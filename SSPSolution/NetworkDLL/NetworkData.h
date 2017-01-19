@@ -55,9 +55,9 @@ struct SyncPacket: public Packet
 struct EntityPacket: public Packet
 {											
 	unsigned int		entityID;					
-	DirectX::XMVECTOR	newPos;				
-	DirectX::XMVECTOR	newVelocity;
-	DirectX::XMVECTOR	newRotation;
+	DirectX::XMFLOAT3	newPos;				
+	DirectX::XMFLOAT3	newVelocity;
+	DirectX::XMFLOAT3	newRotation;
 	//DirectX::XMVECTOR	newRotationVelocity;
 
 	void serialize(char * data)
