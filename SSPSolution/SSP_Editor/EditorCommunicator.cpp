@@ -114,7 +114,7 @@ Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int 
 
 Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return m_currentLevel->AddModelEntity(modelID, instanceID, position, rotation);
+	return m_currentLevel->AddModelEntity(modelID, position, rotation);
 }
 
 Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
