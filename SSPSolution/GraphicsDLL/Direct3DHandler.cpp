@@ -142,6 +142,16 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
 
+	IDXGIAdapter* firstAdapter = nullptr;
+	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
+
+	dxgiAdapter3 = nullptr;
+	
+	if (SUCCEEDED(firstAdapter->QueryInterface(__uuidof(IDXGIAdapter3), (void**)&dxgiAdapter3)))
+	{
+		//failed creating adapter3
+	}
+	
 	return 0;
 }
 
@@ -177,6 +187,17 @@ int Direct3DHandler::InitializeGridRasterizer()
 int Direct3DHandler::PresentScene()
 {
 	this->m_swapChain->Present(0, 0);
+#ifdef _DEBUG
+	DXGI_QUERY_VIDEO_MEMORY_INFO info;
+	if (SUCCEEDED(dxgiAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
+	{
+		int memoryUsage = info.CurrentUsage / 1024 / 1024; //MiB
+
+		char msg[100];
+		sprintf_s(msg, "%d", memoryUsage);
+		printf("GPU MiB: %d", memoryUsage);
+#endif
+	}
 
 	return 0;
 }

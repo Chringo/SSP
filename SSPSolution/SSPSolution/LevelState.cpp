@@ -131,24 +131,24 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
 
-	StaticEntity* golv = new StaticEntity();
-	GraphicsComponent* golvG = m_cHandler->GetGraphicsComponent();
-	golvG->modelID = 1337;
-	golvG->active = false;
-	resHandler->GetModel(golvG->modelID, golvG->modelPtr);
-	PhysicsComponent* golvP = m_cHandler->GetPhysicsComponent();
-	golvP->PC_entityID = 1;								//Set Entity ID
-	golvP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
-	golvP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
-	golvP->PC_is_Static = true;							//Set IsStatic
-	golvP->PC_active = true;								//Set Active
-	golvP->PC_BVtype = BV_Plane;
-	golvP->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
-	golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
-	golvP->PC_friction = 0.9;
-	golvG->worldMatrix = DirectX::XMMatrixIdentity();
-	golv->Initialize(2, golvP, golvG);
-	this->m_staticEntitys.push_back(golv);
+	//StaticEntity* golv = new StaticEntity();
+	//GraphicsComponent* golvG = m_cHandler->GetGraphicsComponent();
+	//golvG->modelID = 1337;
+	//golvG->active = false;
+	//resHandler->GetModel(golvG->modelID, golvG->modelPtr);
+	//PhysicsComponent* golvP = m_cHandler->GetPhysicsComponent();
+	//golvP->PC_entityID = 1;								//Set Entity ID
+	//golvP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	//golvP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	//golvP->PC_is_Static = true;							//Set IsStatic
+	//golvP->PC_active = true;								//Set Active
+	//golvP->PC_BVtype = BV_Plane;
+	//golvP->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
+	//golvP->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//golvP->PC_friction = 0.9;
+	//golvG->worldMatrix = DirectX::XMMatrixIdentity();
+	//golv->Initialize(2, golvP, golvG);
+	//this->m_staticEntitys.push_back(golv);
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
