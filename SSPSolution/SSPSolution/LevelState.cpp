@@ -420,11 +420,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 		//get information from file
-		t_pc->PC_BVtype = BV_OBB;
+		t_pc->PC_BVtype = BV_AABB;
 
-		//t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
-		//t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
-		//t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
+		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
+		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
+		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
 
 		t_pc->PC_friction = 1.0f;
 #ifdef _DEBUG
