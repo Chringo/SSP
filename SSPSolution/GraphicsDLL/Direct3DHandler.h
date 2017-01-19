@@ -25,6 +25,8 @@ private:
 
 	ID3D11Texture2D* m_depthStencilBuffer;
 
+	IDXGIAdapter3* dxgiAdapter3;	//for VRAM check
+
 public:
 	Direct3DHandler();
 	~Direct3DHandler();
