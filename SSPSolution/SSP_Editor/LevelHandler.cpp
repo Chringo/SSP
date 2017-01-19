@@ -182,6 +182,7 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.position[0] = entityContainer->at(i).position.m128_f32[0];
 			entity.position[1] = entityContainer->at(i).position.m128_f32[1];	//Convert from Vector to float3
 			entity.position[2] = entityContainer->at(i).position.m128_f32[2];
+			
 
 			entity.rotation[0] = entityContainer->at(i).rotation.m128_f32[0];
 			entity.rotation[1] = entityContainer->at(i).rotation.m128_f32[1];	//Convert from Vector to float3
