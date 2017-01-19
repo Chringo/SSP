@@ -2,6 +2,9 @@
 #define GRAPHICSDLL_DEBUGRENDERER
 #include "../physicsDLL/PhysicsHandler.h"
 #include "Shader.h"
+
+
+
 class DebugRenderer
 {
 

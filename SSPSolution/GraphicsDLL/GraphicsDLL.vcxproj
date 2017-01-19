@@ -22,7 +22,7 @@
     <ProjectGuid>{59269BE3-152C-4D71-BF1A-B4B0312ADBB2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GraphicsDLL</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -183,6 +183,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderControl.h" />
     <ClInclude Include="ShaderLib.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHandler.cpp" />
