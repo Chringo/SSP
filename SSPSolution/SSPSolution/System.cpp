@@ -172,56 +172,21 @@ int System::Update(float deltaTime)
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
-	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
-
-	int rotateCameraY = 0;
-
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
-	{
-		translateCameraZ++;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
-	{
-		translateCameraZ--;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
-	{
-		translateCameraY++;
-		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
-		{
-			translateCameraY *= -1;
-		}
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
-	{
-		translateCameraX++;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_A))
-	{
-		translateCameraX--;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
-	{
-		rotateCameraY += 1;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
-	{
-		rotateCameraY -= 1;
-	}
-	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
-	{
-		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
-		this->m_camera->ApplyLocalTranslation(posTranslation);
-
-		//this->m_camera->AddToLookAt(posTranslation);
-		float rotationAmount = DirectX::XM_PI / 4;
-		rotationAmount *= deltaTime / 1000000.0f;
-		//DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
-		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, float(rotateCameraY), 0.0f, 0.0f);
-		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&newRotation)));
-		/*if (length > 0.000000001f)*/
-			this->m_camera->RotateCamera(newRotation.x, newRotation.y, newRotation.z, rotationAmount);
-	}
+	{	}
+	//CAM
 	this->m_camera->Update(deltaTime);
 
 	//AI

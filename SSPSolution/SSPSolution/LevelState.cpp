@@ -272,87 +272,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_update_entities
 
-
 	float yaw = inputHandler->GetMouseDelta().x;
 	float pitch = inputHandler->GetMouseDelta().y;
 	float mouseSens = 0.000018f * dt;
-	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
-	
-	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
-	//DirectX::XMFLOAT4 camUpFloat;
-	//DirectX::XMFLOAT3 camPosFloat;
-	//DirectX::XMFLOAT3 camTargetFloat;
-	//this->m_cameraRef->GetCameraUp(camUpFloat);
-	//camPosFloat = this->m_cameraRef->GetCameraPos();
-	//camTargetFloat = this->m_cameraRef->GetLookAt();
 
-	//DirectX::XMVECTOR rotationVector;
-
-	//DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
-	//DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
-	//DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
-
-	//DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
-
-	//DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
-
-	//camRight.m128_f32[3] = rotationAmount * pitch;
-	//camUpVec.m128_f32[3] = rotationAmount * -yaw;
-
-	//this->m_cameraRef->RotateCamera(camRight);
-	//this->m_cameraRef->RotateCamera(camUpVec);
-
-	//this->m_cameraRef->Update();
-	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
 	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
-
-
-
-	DirectX::XMVECTOR playerPosG = this->m_player1.GetGraphicComponent()->worldMatrix.r[3];
-	DirectX::XMVECTOR playerPosP = this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos;
-
-
-	//float rotationAmount = (DirectX::XM_PI / 8) / 2 * mouseSens;
-	
-	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
-	//DirectX::XMFLOAT4 camUpFloat;
-	//DirectX::XMFLOAT3 camPosFloat;
-	//DirectX::XMFLOAT3 camTargetFloat;
-	//this->m_cameraRef->GetCameraUp(camUpFloat);
-	//camPosFloat = this->m_cameraRef->GetCameraPos();
-	//camTargetFloat = this->m_cameraRef->GetLookAt();
-
-	//DirectX::XMVECTOR rotationVector;
-
-	//DirectX::XMVECTOR camUpVec = { 0.0,1.0,0.0 }; //DirectX::XMLoadFloat4(&camUpFloat);
-	//DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
-	//DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
-
-	//DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
-
-	//DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
-
-	//camRight.m128_f32[3] = rotationAmount * pitch;
-	//camUpVec.m128_f32[3] = rotationAmount * -yaw;
-
-	//this->m_cameraRef->RotateCamera(camRight);
-	//this->m_cameraRef->RotateCamera(camUpVec);
-
-	//this->m_cameraRef->Update();
-	//*THIS I COMMENTED OUTS || FIRST PERSON CAMREA ROTATION*//
-
 
 	
 
 	//update player for throw functionallity
-	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
+	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize( DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
+	playerLookDir.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
 	DirectX::XMFLOAT3 temp;
 
 	this->m_cameraRef->GetCameraUp(temp);
 	
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
-	DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, playerLookDir);
+	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
 
 
 
