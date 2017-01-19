@@ -1694,3 +1694,6 @@ void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
 {
 	src = &(this->m_physicsComponents.at(index)->PC_Sphere);
 }
+
+#endif 
+
