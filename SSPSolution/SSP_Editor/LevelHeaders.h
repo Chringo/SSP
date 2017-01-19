@@ -71,5 +71,8 @@ namespace LevelData {
 		unsigned int numLights;
 		LightHeader* lights;
 
+		unsigned int numAI;
+		AiHeader* aiComponents;
+
 	};
 }

@@ -108,7 +108,9 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	{
 		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
-		file.read(aiData, aiSize);							//Write all aiComponents					
+		file.read(aiData, aiSize);							//read all aiComponents	
+		
+		//TODO: LOAD INTO LEVEL
 		delete aiData;
 	}
 
@@ -276,17 +278,10 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
 				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
 		}
+		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
+		offset += sizeof(LevelData::AiHeader);
 	}
 
-
-	for (size_t i = 0; i < this->m_currentLevel.GetUniqueModels()->size(); i++)
-	{
-		LevelData::ResourceHeader res;
-		res.id = this->m_currentLevel.GetUniqueModels()->at(i);
-		res.resourceType = Resources::ResourceType::RES_MODEL;
-		memcpy(dataPtr + offset, (char*)&res, sizeof(LevelData::ResourceHeader));
-		offset += sizeof(LevelData::ResourceHeader);
-	}
 
 	return LevelData::LevelStatus::L_OK;
 }
