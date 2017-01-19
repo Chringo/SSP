@@ -851,7 +851,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.005f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
@@ -939,9 +939,9 @@ void PhysicsHandler::Update(float deltaTime)
 			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, dt));
 			DirectX::XMFLOAT3 temp;
 			DirectX::XMStoreFloat3(&temp, current->PC_pos);
-			if (temp.y < -7)
+			if (temp.y < -20)
 			{
-				current->PC_pos = DirectX::XMVectorSet(temp.x, 2, temp.z, 0);
+				current->PC_pos = DirectX::XMVectorSet(temp.x, -5, temp.z, 0);
 				current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			}
 		}
