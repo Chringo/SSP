@@ -240,6 +240,7 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
+	GlobalIDHandler::GetInstance()->ResetIDs();
 	for (size_t i = 0; i < numEntities; i++)
 	{
 		m_currentLevel.AddModelEntityFromLevelFile(dataPtr[i].modelID,
