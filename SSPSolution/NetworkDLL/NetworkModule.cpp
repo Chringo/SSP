@@ -281,10 +281,11 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
-	packet.newPos = newPos;
-	packet.newRotation = newRotation;
+	DirectX::XMStoreFloat3(&packet.newPos, newPos);
+	DirectX::XMStoreFloat3(&packet.newRotation, newRotation);
+	DirectX::XMStoreFloat3(&packet.newVelocity, newVelocity);
 	//packet.newRotationVelocity = newRotationVelocity;
-	packet.newVelocity = newVelocity;
+
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
