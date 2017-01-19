@@ -242,18 +242,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 
 					// Update the component
-					pp->PC_pos = itr->newPos;
-					pp->PC_rotation = itr->newRotation;
-					pp->PC_velocity = itr->newVelocity;
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
 				else if (itr->entityID == -2)
 				{
 					PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 
 					// Update the component
-					pp->PC_pos = itr->newPos;
-					pp->PC_rotation = itr->newRotation;
-					pp->PC_velocity = itr->newVelocity;
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
 				else
 				{
@@ -262,8 +262,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					PhysicsComponent* pp = ent->GetPhysicsComponent();
 
 					// Update the component
-					pp->PC_pos = itr->newPos;
-					pp->PC_rotation = itr->newRotation;
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
 			}
 		}
@@ -437,6 +438,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 {
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
+	rot.m128_f32[3] = 0.0f;	//Set w to 0
+	pos.m128_f32[3] = 0.0f;	//Set w to 0
+
 	DirectX::XMMATRIX translate;
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
