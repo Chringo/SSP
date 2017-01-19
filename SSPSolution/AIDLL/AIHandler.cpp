@@ -53,9 +53,37 @@ int AIHandler::Update(float deltaTime)
 			int pattern = this->m_AIComponents.at(i)->AC_pattern;
 			int time = this->m_AIComponents.at(i)->AC_time;
 			int direction = this->m_AIComponents.at(i)->AC_direction;
+			int x = this->m_AIComponents.at(i)->AC_nextWaypointID;
 
 			if (pattern == AI_ONEWAY)
 			{
+				//default direction
+				if (direction == 0)
+				{
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AC_position,
+						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+						1.0f))
+					{
+						this->m_AIComponents.at(i)->AC_nextWaypointID++;
+						this->m_AIComponents.at(i)->AC_direction = 1;
+					}
+				}
+				else
+				{
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AC_position,
+						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+						1.0f))
+					{
+						this->m_AIComponents.at(i)->AC_nextWaypointID--;
+						this->m_AIComponents.at(i)->AC_direction = 0;
+					}
+				}
+			}
+			else if (pattern == AI_ROUNDTRIP)
+			{
+				//TODO Round-trip pattern
 				if (currentWaypoint == 0 || currentWaypoint == nrOfWaypoint)
 				{
 					if (direction == 0)
@@ -63,10 +91,6 @@ int AIHandler::Update(float deltaTime)
 					else
 						this->m_AIComponents.at(i)->AC_direction = 0;
 				}
-			}
-			else if (pattern == AI_ROUNDTRIP)
-			{
-				//TODO Round-trip pattern
 			}
 			else
 			{
