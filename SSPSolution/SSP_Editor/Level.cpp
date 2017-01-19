@@ -125,7 +125,7 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
 	containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
 	newComponent.component.worldMatrix = containerMatrix;
-	newComponent.internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	newComponent.internalID = GlobalIDHandler::GetInstance()->AddExistingID(instanceID);
 	newComponent.isDirty = true;
 
 	if (got == m_ModelMap.end()) { // if does not exists in memory
