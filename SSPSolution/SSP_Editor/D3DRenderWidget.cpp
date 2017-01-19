@@ -71,7 +71,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 						if (SelectionHandler::GetInstance()->HasSelection())
 						{
-
 							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 							SelectionHandler::GetInstance()->Update();
 						}
@@ -136,8 +135,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	for (size_t i = 0; i < container->size(); i++)
 	{
 		GraphicsHptr->RenderBoundingVolume(
-			container->at(i)->m_waypoints, 
-			container->at(i)->m_nrOfWaypoint);
+			container->at(i)->AC_waypoints, 
+			container->at(i)->AC_nrOfWaypoint);
 	}
 	// TEMP TO TEST PATH
 //DirectX::XMVECTOR path[8];
