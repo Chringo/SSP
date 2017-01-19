@@ -18,7 +18,7 @@ struct AnimationComponent
 {
 	int active = 0;
 	int animationState = 0;
-	int previousState = 0;
+	//int previousState = 0;
 	float startFrame = 0.f;
 	float endFrame = 0.f;
 	float localTime = 0.f;
@@ -99,6 +99,8 @@ public:
 
 	GRAPHICSDLL_API void Update(float dt);
 
+	GRAPHICSDLL_API void AddAnimationFromIndex(int graphicsAnimIndex, AnimationComponent* animationComponent);
+
 	GRAPHICSDLL_API void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
 	GRAPHICSDLL_API AnimationDataContainer GetAnimationDataFromIndex(int index);
 	GRAPHICSDLL_API void SetAnimationData(AnimationDataContainer animationData);
@@ -112,7 +114,7 @@ public:
 private:
 	//Functions only used in class.
 
-	void Push(int animationState, bool isLooping, float transitionTime);
+	void Push(AnimationComponent* animationComponent);
 
 	void Pop();
 

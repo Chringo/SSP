@@ -108,7 +108,6 @@ int System::Initialize()
 
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
 
-
 	this->m_AnimationHandler = new AnimationHandler();
 
 	return result;

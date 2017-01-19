@@ -68,7 +68,7 @@ void AnimationHandler::Update(float dt)
 				else
 				{
 					/*Push the IDLE state to the stack.*/
-					Push(PLAYER_IDLE, true, 0.5);
+					//Push(PLAYER_IDLE, true, 0.5);
 					m_BlendState = SMOOTH_TRANSITION;
 					break;
 				}
@@ -101,6 +101,17 @@ void AnimationHandler::Update(float dt)
 			break;
 		}
 	}
+}
+
+void AnimationHandler::AddAnimationFromIndex(int graphicsAnimIndex, AnimationComponent* animationComponent)
+{
+	m_AnimationComponentStack[graphicsAnimIndex]->active = animationComponent->active;
+	m_AnimationComponentStack[graphicsAnimIndex]->animationState = animationComponent->animationState;
+	m_AnimationComponentStack[graphicsAnimIndex]->localTime = 0;
+	m_AnimationComponentStack[graphicsAnimIndex]->isLooping = animationComponent->isLooping;
+	m_AnimationComponentStack[graphicsAnimIndex]->startFrame = GetStartFrame(animationComponent->animationState);
+	m_AnimationComponentStack[graphicsAnimIndex]->endFrame = GetEndFrame(animationComponent->animationState);
+
 }
 
 void AnimationHandler::SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index)
@@ -486,39 +497,8 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 	}
 }
 
-void AnimationHandler::Push(int animationState, bool isLooping, float transitionTime)
+void AnimationHandler::Push(AnimationComponent* animationComponent)
 {
-	AnimationComponent* animationComponent;
-
-	animationComponent->animationState = animationState;
-
-	/*First time pushing to the stack, the stack should be empty, thus previous state is none.*/
-	if (m_AnimationComponentStack.empty())
-		animationComponent->previousState = -1;
-
-	else
-		animationComponent->previousState = m_AnimationComponentStack.front()->animationState;
-
-	/*The animations are the same, no transition will be made.*/
-	if (animationComponent->previousState == -1 || animationComponent->previousState == animationComponent->animationState)
-	{
-		m_BlendState = BlendingStates::NO_TRANSITION;
-	}
-
-
-	/*The animations are different, smooth transition will be made.*/
-	else
-	{
-		m_TransitionDuration = transitionTime;
-		m_BlendState = BlendingStates::SMOOTH_TRANSITION;
-	}
-		
-	animationComponent->startFrame = GetStartFrame(animationState);
-	animationComponent->endFrame = GetEndFrame(animationState);
-	animationComponent->isLooping = isLooping;
-	animationComponent->localTime = 0;
-	animationComponent->active = true;
-
 	m_AnimationComponentStack.push_back(animationComponent);
 }
 
