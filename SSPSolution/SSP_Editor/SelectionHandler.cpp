@@ -262,10 +262,10 @@ bool SelectionHandler::PickObjectSelection()
 		obj.ext[1] = 0.2f;
 		obj.ext[2] = 0.2f;
 
-		for (size_t j = 0; j < wayPoint->m_nrOfWaypoint; j++)
+		for (size_t j = 0; j < wayPoint->AC_nrOfWaypoint; j++)
 		{
 			bool result = false;
-			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->m_waypoints[j], hitDistance);
+			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->AC_waypoints[j], hitDistance);
 			//transformWidget.setActive(result);
 			if (result && hitDistance < minHitDistance)
 			{

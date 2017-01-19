@@ -54,11 +54,11 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 		if (m_selection->aiComponent != nullptr)
 		{
 			
-			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->m_speed);
-			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->m_time);
+			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->AC_speed);
+			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->AC_time);
 
-			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->m_triggered);
-			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->m_triggered);
+			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->AC_triggered);
+			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->AC_triggered);
 			
 			for (int i = 0; i < NUM_WAYPOINTS; i++)
 			{
@@ -70,7 +70,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 				}
 			}
 
-			for (size_t i = 0; i < m_selection->aiComponent->m_nrOfWaypoint; i++)
+			for (size_t i = 0; i < m_selection->aiComponent->AC_nrOfWaypoint; i++)
 			{
 				int temp = this->m_WaypointList->count();
 				QString WaypointLabel = "Waypoint ";
@@ -251,7 +251,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 				{
 					AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
 					this->m_selection->aiComponent = newComponent;
-					newComponent->m_entityID += m_selection->internalID;
+					newComponent->AC_entityID += m_selection->internalID;
 				}
 			//}
 				AIController control(m_selection->aiComponent);

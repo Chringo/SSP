@@ -21,7 +21,7 @@ int Entity::SyncComponents()
 		{
 			// Assuming m_pComp->PC_is_Static is true
 			// Works for now since we're only handling platforms
-			this->m_pComp->PC_pos = this->m_aiComp->AP_position;
+			this->m_pComp->PC_pos = this->m_aiComp->AC_position;
 		}
 		if (this->m_gComp != nullptr)
 		{
