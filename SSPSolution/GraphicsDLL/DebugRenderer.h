@@ -4,7 +4,7 @@
 #include "Shader.h"
 
 #include "stdafx.h"
-#include <dxgi1_3.h>
+#include <d3d11_3.h>
 
 
 
