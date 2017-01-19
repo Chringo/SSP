@@ -144,30 +144,30 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformP->PC_AABB.ext[2] = 5;
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
-	platformTERMINATOR->AP_active = true;
+	platformTERMINATOR->AC_active = true;
 	// entityID resolved in initialise down below
 
-	platformTERMINATOR->AP_triggered = true;
-	platformTERMINATOR->AP_time = 0;
+	platformTERMINATOR->AC_triggered = true;
+	platformTERMINATOR->AC_time = 0;
 
-	platformTERMINATOR->AP_speed = 0.15f;
-	// AP_dir resolved in update loop
+	platformTERMINATOR->AC_speed = 0.15f;
+	// AC_dir resolved in update loop
 
-	platformTERMINATOR->AP_position = platformP->PC_pos;
-	platformTERMINATOR->AP_pattern = 2;// Circular
-	platformTERMINATOR->AP_direction = 0;
-	platformTERMINATOR->AP_latestWaypointID = 0;
-	platformTERMINATOR->AP_nextWaypointID = 1;
-	platformTERMINATOR->AP_nrOfWaypoint = 4;
-	platformTERMINATOR->AP_waypoints[0] = platformP->PC_pos;
-	platformTERMINATOR->AP_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
-	platformTERMINATOR->AP_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
-	platformTERMINATOR->AP_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
+	platformTERMINATOR->AC_position = platformP->PC_pos;
+	platformTERMINATOR->AC_pattern = 2;// Circular
+	platformTERMINATOR->AC_direction = 0;
+	platformTERMINATOR->AC_latestWaypointID = 0;
+	platformTERMINATOR->AC_nextWaypointID = 1;
+	platformTERMINATOR->AC_nrOfWaypoint = 4;
+	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
+	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
+	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
+	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
 
 	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
-	platformTERMINATOR->AP_entityID = platform->GetEntityID();
+	platformTERMINATOR->AC_entityID = platform->GetEntityID();
 	this->m_dynamicEntitys.push_back(platform);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
