@@ -40,12 +40,29 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 int MenuState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
+
+	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
+
 	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
 	{
-		DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 		{
 			this->m_uiComps[i]->UpdateClicked(mousePos);
+		}
+	}
+
+	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+	{
+		this->m_uiComps[i]->UpdateHover(mousePos);
+		if (this->m_uiComps[i]->isHovered)
+		{
+			this->m_uiComps[i]->scale = 1.25f;
+			this->m_textComps[i]->scale = DirectX::XMFLOAT2(1.25f, 1.25f);
+		}
+		else
+		{
+			this->m_uiComps[i]->scale = 1.f;
+			this->m_textComps[i]->scale = DirectX::XMFLOAT2(1.f, 1.f);
 		}
 	}
 

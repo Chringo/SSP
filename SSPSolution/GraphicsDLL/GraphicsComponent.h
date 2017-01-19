@@ -29,6 +29,7 @@ struct UIComponent
 	int active = 0;
 	int spriteID = -1;
 	bool wasClicked = false;
+	bool isHovered = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
 	float scale = 1.f;
@@ -52,6 +53,18 @@ struct UIComponent
 			&& (mouseY > this->position.y - this->size.y && mouseY < this->position.y + this->size.y)) 
 		{
 			this->wasClicked = true;
+		}
+	}
+	void UpdateHover(DirectX::XMFLOAT2 mousePos)
+	{
+		if ((mousePos.x > this->position.x - this->size.x && mousePos.x < this->position.x + this->size.x)
+			&& (mousePos.y > this->position.y - this->size.y && mousePos.y < this->position.y + this->size.y))
+		{
+			this->isHovered = true;
+		}
+		else
+		{
+			this->isHovered = false;
 		}
 	}
 	bool CheckClicked()
