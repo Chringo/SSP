@@ -23,8 +23,13 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 		m_materialHandler->SetDevice(device);
 		m_skeletonHandler->SetDevice(device);
 	}
-
-
+	ResourceContainer* temp;
+	unsigned int one = 2759249725;
+	unsigned int two = 3255160373;
+	FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
+	LoadModel(one, temp);
+	LoadModel(two, temp);
+	FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 	
 }
 
