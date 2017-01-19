@@ -29,6 +29,15 @@ GraphicsComponent * ComponentHandler::GetGraphicsComponent()
 	}
 	return graphicsComponent;
 }
+GraphicsAnimationComponent * ComponentHandler::GetGraphicsAnimationComponent()
+{
+	GraphicsAnimationComponent * graphicsAnimComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsAnimComponent = this->m_graphicsHandler->GetNextAvailableAnimationComponent();
+	}
+	return graphicsAnimComponent;
+}
 
 PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 {
@@ -53,6 +62,11 @@ void ComponentHandler::UpdateGraphicsComponents()
 	this->m_graphicsHandler->UpdateComponentList();
 }
 
+void ComponentHandler::UpdateGraphicsAnimationComponents()
+{
+	this->m_graphicsHandler->UpdateAnimComponentList();
+}
+
 void ComponentHandler::UpdateAIComponents()
 {
 
@@ -61,6 +75,12 @@ void ComponentHandler::UpdateAIComponents()
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
+	return;
+}
+
+void ComponentHandler::SetGraphicsAnimationComponentListSize(int gCompSize)
+{
+	this->m_graphicsHandler->SetAnimComponentArraySize(gCompSize);
 	return;
 }
 

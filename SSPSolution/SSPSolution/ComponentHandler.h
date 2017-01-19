@@ -20,12 +20,14 @@ public:
 	int Initialize(GraphicsHandler* graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler);
 
 	GraphicsComponent* GetGraphicsComponent();
+	GraphicsAnimationComponent * GetGraphicsAnimationComponent();
 	PhysicsComponent* GetPhysicsComponent();
 	AIComponent* GetAIComponent();
 	void UpdateGraphicsComponents();
+	void UpdateGraphicsAnimationComponents();
 	void UpdateAIComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
-
+	void SetGraphicsAnimationComponentListSize(int gCompSize);
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;
 };
