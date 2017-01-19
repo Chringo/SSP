@@ -67,6 +67,7 @@ int AIHandler::Update(float deltaTime)
 					{
 						this->m_AIComponents.at(i)->AC_nextWaypointID++;
 						this->m_AIComponents.at(i)->AC_direction = 1;
+						//this->m_AIComponents.at(i)->AC_triggered = false;
 					}
 				}
 				else
@@ -78,6 +79,7 @@ int AIHandler::Update(float deltaTime)
 					{
 						this->m_AIComponents.at(i)->AC_nextWaypointID--;
 						this->m_AIComponents.at(i)->AC_direction = 0;
+						//this->m_AIComponents.at(i)->AC_triggered = false;
 					}
 				}
 			}
