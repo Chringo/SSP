@@ -37,12 +37,9 @@ private:
 	//DirectX::XMVECTOR m_targetCameraPos;
 	//DirectX::XMVECTOR m_targetCameraRot;
 	//DirectX::XMVECTOR m_targetCameraUp;
-	DirectX::XMVECTOR m_rightvector;
+	DirectX::XMVECTOR m_camRightvector;
 	DirectX::XMVECTOR m_camDirvector;
 	float m_distance;
-
-	//DO SHARED YAWPITCH
-
 	float m_yaw;
 	float m_pitch;
 	//The values for the projection matrix

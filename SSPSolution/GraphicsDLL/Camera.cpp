@@ -41,7 +41,7 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_pitch = 0.0f;
 	this->m_focusPoint = nullptr;
 	this->m_focusPointOffset = { 0.0 };
-	this->m_rightvector = { 0.0 };
+	this->m_camRightvector = { 0.0 };
 	this->m_camDirvector = { 0.0 };
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
@@ -250,7 +250,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	camPosVec.m128_f32[2] += distance;
 
 	this->m_camDirvector = m_Dir();
-	this->m_rightvector = m_Right();
+	this->m_camRightvector = m_Right();
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 
 	return;
@@ -338,7 +338,7 @@ void Camera::RotateCameraPivot(float pitch, float yaw)
 	else if (m_pitch < -1.48352986f)
 		m_pitch = -1.48352986f;
 	
-	this->m_rightvector = m_Right();
+	this->m_camRightvector = m_Right();
 	this->m_camDirvector = m_Dir();
 
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
@@ -431,7 +431,7 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 }
 DirectX::XMVECTOR Camera::GetRight()
 {
-	return m_rightvector;
+	return m_camRightvector;
 }
 DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
 {
