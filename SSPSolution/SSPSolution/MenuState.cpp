@@ -51,10 +51,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 	if (this->m_uiComps[0]->CheckClicked())
 	{
-		
+		//Start game was clicked
 	}
 	else if (this->m_uiComps[1]->CheckClicked())
 	{
+		//Quit game was clicked
 		result = 0;
 	}
 
