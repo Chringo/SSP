@@ -215,7 +215,7 @@ bool SelectionHandler::PickObjectSelection()
 
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
-						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
+						this->m_transformWidget.Select(obj, &InstancePtr->at(j), InstancePtr->at(j).internalID, m_modelPtr->at(i)->GetId());
 						Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(&InstancePtr->at(j));
 
 						gotHit = result;

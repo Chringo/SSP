@@ -89,7 +89,7 @@ void Ui::BehaviourTypeHandler::Deselect()
 	m_selection = nullptr;
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
-	m_uniqueID->setText(QString::number(0));
+	
 	
 }
 
@@ -251,7 +251,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 				{
 					AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
 					this->m_selection->aiComponent = newComponent;
-					newComponent->AC_entityID += m_selection->internalID;
+					newComponent->AC_entityID = m_selection->internalID;
 				}
 			//}
 				AIController control(m_selection->aiComponent);
@@ -278,8 +278,13 @@ void Ui::BehaviourTypeHandler::on_Del()
 		this->m_ListItems[(ListItems)currentRow] = nullptr;
 
 		AIController control(m_selection->aiComponent);
-		control.RemoveWayPoint(currentRow);
-		
+		control.RemoveWayPoint(currentRow);		//Remove the waypoint
+
+		if (this->m_WaypointList->count() <= 0) //if There is no waypoints, remove the ai component
+		{
+			LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->DeletePathComponent(m_selection->aiComponent->AC_entityID);
+			m_selection->aiComponent = nullptr;
+		}
 		for (int i = currentRow; i < NUM_WAYPOINTS; i++)
 		{
 			if (currentRow == WAYPOINT8)

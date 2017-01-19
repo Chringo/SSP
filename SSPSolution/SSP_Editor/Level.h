@@ -5,6 +5,7 @@
 #include "../../ResourceLib/Enumerations.h"
 #include "DataHandler.h"
 #include "AiHandler.h"
+#include "GlobalIDHandler.h"
 //#include "UiControlHandler.h"
 #define PLAYER1 2215164276 
 #define PLAYER2 3255160373
@@ -34,7 +35,8 @@ public:
 	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
 
 	Resources::Status GetModelEntity(unsigned int modelID, unsigned int instanceID, Container& container);
-	Resources::Status AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status AddModelEntity(unsigned int modelID,  DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status AddModelEntityFromLevelFile(unsigned int modelID, unsigned int instanceID,DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 
