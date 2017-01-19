@@ -142,6 +142,10 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
 
+	IDXGIAdapter* firstAdapter = nullptr;
+	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
+
+	//IDXGIAdapter3* dxgiAdapter3 = NULL;
 	return 0;
 }
 
