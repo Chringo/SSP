@@ -41,7 +41,7 @@ public:
 	//Direction between waypoints for logic
 	AIDLL_API void SetDirection(int compID, int direction);
 	//Used as a index and to know where you are moving from	
-	AIDLL_API void SetCurrentWaypoint(int compID, int currentWaypoint);
+	AIDLL_API void SetLatestWaypoint(int compID, int currentWaypoint);
 	//Set the pattern for the entity. (Linear = 1, Circular = 2, Random = 3)
 	AIDLL_API void SetPattern(int compID, int pattern);
 	//Set waypoints, nrOfWaypoints++
@@ -59,7 +59,7 @@ public:
 
 private:
 	// Internal Variables
-	bool WaypointUpdated; //Update the XMVECTOR AP_dir for the component this frame 
+	bool WaypointUpdated; //Update the XMVECTOR AC_dir for the component this frame 
 
 	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
