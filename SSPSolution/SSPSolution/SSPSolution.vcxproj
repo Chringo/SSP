@@ -136,7 +136,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)SDL-SSP\lib\x86;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;AIDLL.lib;GraphicsDLL.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;GraphicsDLL.lib;AIDLL.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,8 +162,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ComponentHandler.cpp" />
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="AnimationStorer.cpp" />
     <ClCompile Include="DebugHandler.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -184,9 +182,7 @@
     <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
     <ClInclude Include="ComponentHandler.h" />
-    <ClInclude Include="AnimationStorer.h" />
     <ClInclude Include="ComponentStructs.h" />
     <ClInclude Include="DebugHandler.h" />
     <ClInclude Include="DynamicEntity.h" />

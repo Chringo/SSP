@@ -2,24 +2,35 @@
 #define AIDLL_AI_AICOMPONENT_H
 
 #include <DirectXMath.h>
-
+enum Pattern : int
+{
+	AI_LINEAR = 1,
+	AI_CIRCULAR,
+	AI_ROUNTRIP,
+	AI_RANDOM,
+	AI_NONE = -1
+};
 __declspec(align(16)) struct AIComponent
 {
 	// System variables
-	int m_active = 0;
-	int m_entityID = -1;
-	DirectX::XMVECTOR m_position;
+	int AC_active = 0;
+	int AC_entityID = -1;
 
 	// AI variables
-	bool m_triggered;
-	int m_pattern;
-	int m_time;
-	int m_speed;
-	int m_direction;
-	int m_currentWaypoint;
-	int m_nrOfWaypoint;
+	bool AC_triggered = false;	// Trigger handling
+	int AC_time = 0;			// How long the component is active
 
-	DirectX::XMVECTOR m_waypoints[8];
+	float AC_speed = 0;			// Movement speed
+	DirectX::XMVECTOR AC_dir = DirectX::XMVECTOR();// Normalised direction vector
+
+	DirectX::XMVECTOR AC_position = DirectX::XMVECTOR();// Current position
+	int AC_pattern = AI_NONE;	// Traversing of waypoints
+	int AC_direction = 0;		// Direction in array, might be removed due to AC_pattern's existance
+	int AC_nextWaypointID = 0;	// Index to next waypoint 
+	int AC_latestWaypointID = 1;// Index to latest visited waypoint
+	int AC_nrOfWaypoint = 0;	// Nr of waypoints used in array
+
+	DirectX::XMVECTOR AC_waypoints[8];
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

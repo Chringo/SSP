@@ -48,7 +48,8 @@ private:
 public:
 	GRAPHICSDLL_API Camera();
 	GRAPHICSDLL_API virtual ~Camera();
-
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
 	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.

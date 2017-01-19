@@ -19,7 +19,7 @@ void SelectionHandler::Initialize(Camera * camera,
 	this->m_Height = winHeight;
 	this->m_currentLevel = currentLevel;
 	this->m_modelPtr = modelPtr;
-
+	this->m_attributesHandler = Ui::UiControlHandler::GetInstance()->GetAttributesHandler();
 	this->m_ray.direction = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_ray.origin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
@@ -64,6 +64,8 @@ bool SelectionHandler::HasSelection()
 void SelectionHandler::SetSelection(bool selection)
 {
 	this->m_transformWidget.setActive(selection);
+	if (selection == false)
+		m_attributesHandler->Deselect();
 }
 
 void SelectionHandler::SetSelectedContainer(Container * selection)
@@ -71,8 +73,7 @@ void SelectionHandler::SetSelectedContainer(Container * selection)
 	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
 	
 	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
-	Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(selection);
-
+	m_attributesHandler->SetSelection(selection);
 	//m_transformWidget.Select()
 }
 
@@ -157,6 +158,7 @@ bool SelectionHandler::PickObjectSelection()
 	float minHitDistance = FLT_MAX;
 
 
+
 	//checks if we picked on a model by iterating
 	std::unordered_map<unsigned int, std::vector<Container>>* m_Map = m_currentLevel->GetModelEntities();
 	if (!m_Map->empty())
@@ -180,20 +182,37 @@ bool SelectionHandler::PickObjectSelection()
 					
 					/*PICKING HERE NEEDS DISTANCE CHECK*/
 					//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, InstancePtr->at(j).position, hitDistance);
-					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, *this->m_transformWidget.GetOBBCenterPostition(), hitDistance);
+
+					DirectX::XMVECTOR OBBPosition;
+					OBBPosition.m128_f32[0] = m_modelPtr->at(i)->GetOBBData().position.x;
+					OBBPosition.m128_f32[1] = m_modelPtr->at(i)->GetOBBData().position.y;
+					OBBPosition.m128_f32[2] = m_modelPtr->at(i)->GetOBBData().position.z;
+
+					DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(OBBPosition);
+
+					tempOBBPos = tempOBBPos * InstancePtr->at(j).component.worldMatrix;
+
+					//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, *this->m_transformWidget.GetOBBCenterPostition(), hitDistance);
+					result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, tempOBBPos.r[3], hitDistance);
 					//transformWidget.setActive(result);
 					if (result && hitDistance < minHitDistance)
 					{
-						DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
-							m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
-							m_modelPtr->at(i)->GetOBBData().position.z });
+						if (HasSelection())
+						{
+							if (this->m_transformWidget.GetModelID() != InstancePtr->at(j).component.modelID)
+							{
+								this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
+									m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
+									m_modelPtr->at(i)->GetOBBData().position.z });
+							}
+						}
+						else
+						{
+							this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
+								m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
+								m_modelPtr->at(i)->GetOBBData().position.z });
+						}
 
-						tempPos = tempPos * InstancePtr->at(j).component.worldMatrix;
-						this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);
-
-						/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{
-							m_modelPtr->at(i)->GetOBBData().position.x, m_modelPtr->at(i)->GetOBBData().position.y,
-							m_modelPtr->at(i)->GetOBBData().position.z }, InstancePtr->at(j).position));*/
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
 						this->m_transformWidget.Select(obj, &InstancePtr->at(j), j, m_modelPtr->at(i)->GetId());
@@ -229,6 +248,34 @@ bool SelectionHandler::PickObjectSelection()
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(spawn);
 
 			gotHit = result;
+		}
+	}
+	std::vector<AIComponent*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < container->size(); i++)
+	{
+		AIComponent* wayPoint = container->at(i);
+		OBB obj;
+		obj.ort.r[0] = { 1.0f,0.0f,0.0f };
+		obj.ort.r[1] = { 0.0f,1.0f,0.0f };
+		obj.ort.r[2] = { 0.0f,0.0f,1.0f };
+		obj.ext[0] = 0.2f;
+		obj.ext[1] = 0.2f;
+		obj.ext[2] = 0.2f;
+
+		for (size_t j = 0; j < wayPoint->AC_nrOfWaypoint; j++)
+		{
+			bool result = false;
+			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->AC_waypoints[j], hitDistance);
+			//transformWidget.setActive(result);
+			if (result && hitDistance < minHitDistance)
+			{
+				//minHitDistance = hitDistance;
+				//update widget with the intersected obb
+				this->m_transformWidget.Select(obj, wayPoint);
+				//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
+
+				//gotHit = result;
+			}
 		}
 
 	}
@@ -282,8 +329,8 @@ void SelectionHandler::MoveObject(bool noSnap)
 			instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] =
 				DirectX::XMVectorAdd(instance->position, Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
 			
-			this->m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] =
-				DirectX::XMVectorAdd(*m_transformWidget.GetOBBCenterPostition(), Diff).m128_f32[m_transformWidget.GetSelectedAxis()];
+			/*this->m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] =
+				DirectX::XMVectorAdd(*m_transformWidget.GetOBBCenterPostition(), Diff).m128_f32[m_transformWidget.GetSelectedAxis()];*/
 		}
 		else//snap
 		{
@@ -292,12 +339,12 @@ void SelectionHandler::MoveObject(bool noSnap)
 			if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] > 1.0)
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
-				m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;
+				/*m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] += 1.0f;*/
 			}
 			else if (Diff.m128_f32[m_transformWidget.GetSelectedAxis()] < -1.0)
 			{
 				instance->position.m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
-				m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;
+				/*m_transformWidget.GetOBBCenterPostition()->m128_f32[m_transformWidget.GetSelectedAxis()] -= 1.0f;*/
 			}
 		}
 
@@ -375,6 +422,19 @@ OBB SelectionHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox, Container * 
 	//	1.0f);
 	
 
+	/*DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y,
+		boundingBox.position.z });
+
+	tempPos = tempPos * instancePtr->component.worldMatrix;
+	this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);*/
+
+	/*DirectX::XMMATRIX tempPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{
+		boundingBox.position.x, boundingBox.position.y,
+		boundingBox.position.z });*/
+
+	/*tempPos = tempPos * instancePtr->component.worldMatrix;
+	this->m_transformWidget.SetOBBCenterPosition(tempPos.r[3]);*/
 	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVECTOR{
 		boundingBox.position.x, boundingBox.position.y, boundingBox.position.z });*/
 	/*this->m_transformWidget.SetOBBCenterPosition(DirectX::XMVectorAdd(DirectX::XMVECTOR{

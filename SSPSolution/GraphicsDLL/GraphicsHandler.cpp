@@ -524,7 +524,7 @@ int GraphicsHandler::UpdateComponentList()
 
 void GraphicsHandler::SetTempAnimComponent(void * component)
 {
-	m_animGraphicsComponents[0] = (penis*)component;
+	m_animGraphicsComponents[0] = (GraphicsAnimationComponent*)component;
 }
 
 GraphicsComponent * GraphicsHandler::getComponent(int index)
@@ -565,17 +565,17 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	this->m_nrOfGraphicsComponents++;
 
 	
-	this->m_animGraphicsComponents = new penis*[2];
+	this->m_animGraphicsComponents = new GraphicsAnimationComponent*[2];
 	for (int i = 0; i < 2; i++) {
 		this->m_animGraphicsComponents[i] = nullptr;
 	}
 
-	this->m_animGraphicsComponents[1] = new penis;
+	this->m_animGraphicsComponents[1] = new GraphicsAnimationComponent;
 
 	this->m_animGraphicsComponents[1]->worldMatrix = DirectX::XMMatrixIdentity();
 	for (int j = 0; j < 32; j++)
 	{
-		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
+		this->m_animGraphicsComponents[1]->finalJointTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
 

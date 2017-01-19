@@ -310,9 +310,12 @@ void EditorInputHandler::ViewPortChanged(float height, float width)
 
 void EditorInputHandler::deleteModel()
 {
-	LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
-		(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
-	SelectionHandler::GetInstance()->SetSelection(false);
+	if (SelectionHandler::GetInstance()->HasSelection())
+	{
+		LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
+			(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
+		SelectionHandler::GetInstance()->SetSelection(false);
+	}
 }
 
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)

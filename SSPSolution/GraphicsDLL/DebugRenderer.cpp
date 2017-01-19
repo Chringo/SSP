@@ -300,23 +300,35 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
 
-	GenerateLinelist(wayPoints, numWaypoints, color);
+	for (size_t i = 0; i < numWaypoints; i++)
+	{
+		AABB pointBox;
+		pointBox.ext[0] = 0.2;
+		pointBox.ext[1] = 0.2;
+		pointBox.ext[2] = 0.2;
+		DirectX::XMVECTOR boxColor = { 0.5f,0.0f,0.5f };
+		this->Render(wayPoints[i], pointBox, boxColor);
 
-
-	int indicesToRender = 0;
-
-	if (numWaypoints < 8)
-		indicesToRender = (numWaypoints * 2) - 1;
-	else
-		indicesToRender = (numWaypoints * 2) - 2;
-
-
-	UINT32 offset		= 0;
-	UINT32 m_vertexSize = sizeof(Point);
-	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PATH], &m_vertexSize, &offset);
-	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PATH], DXGI_FORMAT_R32_UINT, 0);
-
-	m_deviceContext->DrawIndexed(indicesToRender, 0, 0);
+	}
+	if (numWaypoints > 1)
+	{
+		GenerateLinelist(wayPoints, numWaypoints, color);
+	
+		int indicesToRender = 0;
+	
+		if (numWaypoints < 8)
+			indicesToRender = (numWaypoints * 2) - 1;
+		else
+			indicesToRender = (numWaypoints * 2) - 2;
+	
+	
+		UINT32 offset		= 0;
+		UINT32 m_vertexSize = sizeof(Point);
+		m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PATH], &m_vertexSize, &offset);
+		m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PATH], DXGI_FORMAT_R32_UINT, 0);
+	
+		m_deviceContext->DrawIndexed(indicesToRender, 0, 0);
+	}
 	 
 }
 
@@ -568,17 +580,9 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 }
 ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
-	AABB pointBox;
-	pointBox.ext[0] = 0.2;
-	pointBox.ext[1] = 0.2;
-	pointBox.ext[2] = 0.2;
-	DirectX::XMVECTOR boxColor = { 0.5f,0.0f,0.5f };
 	for (int i = 0; i < numWaypoints; i++) //For each waypoint
 	{
 		m_points[M_PATH][i] = Point(wayPoints[i].m128_f32, color.m128_f32); //create the point
-	
-		this->Render(wayPoints[i], pointBox, boxColor);
-
 	}
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
