@@ -259,14 +259,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 
 	//update player for throw functionallity
-	DirectX::XMVECTOR playerLookDir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos()));
+	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize( DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
 	playerLookDir.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
 	DirectX::XMFLOAT3 temp;
 
 	this->m_cameraRef->GetCameraUp(temp);
 	
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
-	DirectX::XMVECTOR rightDir = DirectX::XMVector3Cross(upDir, playerLookDir);
+	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
 
 	this->m_player1.SetRightDir(rightDir);
 	this->m_player1.SetUpDir(upDir);

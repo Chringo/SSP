@@ -34,12 +34,17 @@ private:
 
 	DirectX::XMVECTOR * m_focusPoint;
 	DirectX::XMVECTOR m_focusPointOffset;
-	DirectX::XMVECTOR m_focusVec;
-	DirectX::XMVECTOR m_targetCameraPos;
-	DirectX::XMVECTOR m_targetCameraRot;
-	DirectX::XMVECTOR m_targetCameraUp;
+	//DirectX::XMVECTOR m_targetCameraPos;
+	//DirectX::XMVECTOR m_targetCameraRot;
+	//DirectX::XMVECTOR m_targetCameraUp;
+	DirectX::XMVECTOR m_rightvector;
+	DirectX::XMVECTOR m_camDirvector;
 	float m_distance;
 
+	//DO SHARED YAWPITCH
+
+	float m_yaw;
+	float m_pitch;
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
@@ -106,7 +111,7 @@ public:
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	GRAPHICSDLL_API void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 
-	
+	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters
 private:
 	DirectX::XMVECTOR conjugate(DirectX::XMVECTOR quat);

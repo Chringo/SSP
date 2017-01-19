@@ -37,10 +37,12 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_screenAspect = 0.0f;
 	this->m_fieldOfView = 0.0f;
 
-
+	this->m_yaw = 0.0f;
+	this->m_pitch = 0.0f;
 	this->m_focusPoint = nullptr;
 	this->m_focusPointOffset = { 0.0 };
-	this->m_focusVec = { 0.0 };
+	this->m_rightvector = { 0.0 };
+	this->m_camDirvector = { 0.0 };
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -247,11 +249,9 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusPointOffset);
 	camPosVec.m128_f32[2] += distance;
 
-	m_focusVec = DirectX::XMVectorSubtract(camPosVec, DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset));
-
+	this->m_camDirvector = m_Dir();
+	this->m_rightvector = m_Right();
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-
-	
 
 	return;
 }
@@ -325,38 +325,25 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
-	static float mPitch = 0.0f;
-	static float mYaw = 0.0f;
-	
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
+	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
 
-	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
-	m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
+	m_pitch += pitch;
+	m_yaw -= yaw;
 
-	DirectX::XMVECTOR camDir = this->m_Dir();
-	DirectX::XMVECTOR rightVec = this->m_Right();
-
-	mPitch += pitch;
-	mYaw -= yaw;
-
-	float x = m_distance * cos(mPitch) * sin(mYaw);
-	float y = m_distance * sin(mPitch);
-	float z = m_distance * cos(mPitch) * cos(mYaw);
-
-	//x = distance * cos(pitch) * sin(yaw);
-	//y = distance * sin(pitch);
-	//z = distance * cos(pitch) * cos(yaw);
-
-	m_focusVec = DirectX::XMVector4Normalize(DirectX::XMVectorAdd(m_focusVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f)));
-	m_focusVec = DirectX::XMVectorScale(m_focusVec, m_distance);
-
-	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusVec);
+	//1.48352986 is ~85 degrees in radians
+	if (m_pitch > 1.48352986f)
+		m_pitch = 1.48352986f;
+	else if (m_pitch < -1.48352986f)
+		m_pitch = -1.48352986f;
 	
+	this->m_rightvector = m_Right();
+	this->m_camDirvector = m_Dir();
+
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 	return;
 }
-
 void Camera::RotateCamera(double x, double y, double z, double angle)
 {
 	//Define the vectors we will use
@@ -385,19 +372,16 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	DirectX::XMStoreFloat4(&this->m_cameraUp, result);
 	return;
 }
-
 void Camera::RotateCamera(DirectX::XMFLOAT4 rotation)
 {
 	this->RotateCamera(rotation.x, rotation.y, rotation.z, rotation.w);
 	return;
 }
-
 void Camera::RotateCamera(DirectX::XMVECTOR rotation)
 {
 	this->RotateCamera(DirectX::XMVectorGetX(rotation), DirectX::XMVectorGetY(rotation), DirectX::XMVectorGetZ(rotation), DirectX::XMVectorGetW(rotation));
 	return;
 }
-
 void Camera::SetLocalTranslation(float x, float y, float z)
 {
 	//Define the three vectors that make up the cameras rotated coordinate system
@@ -420,7 +404,6 @@ void Camera::SetLocalTranslation(float x, float y, float z)
 	this->m_lookAt.y = translation.y + DirectX::XMVectorGetY(forwards);
 	this->m_lookAt.z = translation.z + DirectX::XMVectorGetZ(forwards);
 }
-
 void Camera::ApplyLocalTranslation(float x, float y, float z)
 {
 	//Define the three vectors that make up the cameras rotated coordinate system
@@ -446,7 +429,10 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
-
+DirectX::XMVECTOR Camera::GetRight()
+{
+	return m_rightvector;
+}
 DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
 {
 	DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -475,32 +461,22 @@ DirectX::XMVECTOR Camera::m_Dir()
 }
 DirectX::XMVECTOR Camera::m_Right()
 {
-	return DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_Dir(), DirectX::XMLoadFloat4(&m_cameraUp)));
+	return DirectX::XMVector4Normalize(DirectX::XMVector3Cross(DirectX::XMLoadFloat4(&m_cameraUp), this->m_Dir()));
 }
 void Camera::m_updatePos()
 {
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
-	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
+	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
+	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
+	
+	float x = m_distance * cos(m_pitch) * sin(m_yaw);
+	float y = m_distance * sin(m_pitch);
+	float z = m_distance * cos(m_pitch) * cos(m_yaw);
+
+	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
-
-	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
-	m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
-
-	DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(finalFocus, oldTarget);
-
-	m_focusVec = DirectX::XMVectorAdd(m_focusVec, difference);
-	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusVec);
-
-
-	
-	
-	//DirectX::XMVECTOR difference = DirectX::XMVectorSubtract(finalFocus, oldTarget);
-
-
-	//camPosVec = DirectX::XMVectorAdd(camPosVec, difference);
-
-
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 }
 #pragma endregion setters
