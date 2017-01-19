@@ -59,7 +59,7 @@ public:
 
 private:
 	// Internal Variables
-	bool WaypointUpdated; //Update the XMVECTOR AP_dir for the component this frame 
+	bool WaypointUpdated; //Update the XMVECTOR AC_dir for the component this frame 
 
 	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);

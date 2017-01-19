@@ -13,24 +13,24 @@ enum Pattern : int
 __declspec(align(16)) struct AIComponent
 {
 	// System variables
-	int AP_active = 0;
-	int AP_entityID = -1;
+	int AC_active = 0;
+	int AC_entityID = -1;
 
 	// AI variables
-	bool AP_triggered = false;	// Trigger handling
-	int AP_time = 0;			// How long the component is active
+	bool AC_triggered = false;	// Trigger handling
+	int AC_time = 0;			// How long the component is active
 
-	float AP_speed = 0;			// Movement speed
-	DirectX::XMVECTOR AP_dir = DirectX::XMVECTOR();// Normalised direction vector
+	float AC_speed = 0;			// Movement speed
+	DirectX::XMVECTOR AC_dir = DirectX::XMVECTOR();// Normalised direction vector
 
-	DirectX::XMVECTOR AP_position = DirectX::XMVECTOR();// Current position
-	int AP_pattern = AI_NONE;	// Traversing of waypoints
-	int AP_direction = 0;		// Direction in array, might be removed due to AP_pattern's existance
-	int AP_nextWaypointID = 0;	// Index to next waypoint 
-	int AP_latestWaypointID = 1;// Index to latest visited waypoint
-	int AP_nrOfWaypoint = 0;	// Nr of waypoints used in array
+	DirectX::XMVECTOR AC_position = DirectX::XMVECTOR();// Current position
+	int AC_pattern = AI_NONE;	// Traversing of waypoints
+	int AC_direction = 0;		// Direction in array, might be removed due to AC_pattern's existance
+	int AC_nextWaypointID = 0;	// Index to next waypoint 
+	int AC_latestWaypointID = 1;// Index to latest visited waypoint
+	int AC_nrOfWaypoint = 0;	// Nr of waypoints used in array
 
-	DirectX::XMVECTOR AP_waypoints[8];
+	DirectX::XMVECTOR AC_waypoints[8];
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
