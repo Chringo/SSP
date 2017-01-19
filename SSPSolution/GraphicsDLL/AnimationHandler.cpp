@@ -39,21 +39,6 @@ AnimationHandler::~AnimationHandler()
 	//delete m_graphicsAnimationComponent;
 }
 
-//void AnimationHandler::AddAnimation(int animationState, bool isLooping, float transitionTime)
-//{
-//	if (m_AnimationComponents.front()->animationState == animationState)
-//	{
-//		/*Don't do anything. Animation already exists and plays.*/
-//	}
-//
-//	else
-//	{
-//		/*Animation is new. Add it to the stack.*/
-//		Push(animationState, isLooping, transitionTime);
-//	}
-//
-//}
-
 void AnimationHandler::Update(float dt)
 {
 	/*Convert the delta-time to be in seconds unit format.*/
@@ -66,18 +51,18 @@ void AnimationHandler::Update(float dt)
 		/*If only one animation is playing, there should be no transition.*/
 		case (BlendingStates::NO_TRANSITION):
 		{
-			if (!m_AnimationComponents.empty())
+			if (!m_AnimationComponentStack.empty())
 			{
-				m_AnimationComponents.front()->localTime += seconds;
+				m_AnimationComponentStack.front()->localTime += seconds;
 			}
 
 			/*If the animation reaches the last frame, either reset animation or switch to idle state.*/
-			if (m_AnimationComponents.front()->localTime >= m_AnimationComponents.front()->endFrame)
+			if (m_AnimationComponentStack.front()->localTime >= m_AnimationComponentStack.front()->endFrame)
 			{
 				/*Animation is looping. Reset the time of the animation.*/
-				if (m_AnimationComponents.front()->isLooping == true)
+				if (m_AnimationComponentStack.front()->isLooping == true)
 				{
-					m_AnimationComponents.front()->localTime = 0;
+					m_AnimationComponentStack.front()->localTime = 0;
 				}
 
 				else
@@ -90,7 +75,7 @@ void AnimationHandler::Update(float dt)
 			}
 
 			/*Interpolate the keyframes of this animation.*/
-			InterpolateKeys(m_AnimationComponents.front(), m_AnimationComponents.front()->localTime);
+			InterpolateKeys(m_AnimationComponentStack.front(), m_AnimationComponentStack.front()->localTime);
 				
 			break;
 		}
@@ -171,14 +156,19 @@ void AnimationHandler::SetAnimationData(AnimationDataContainer animationData)
 	this->m_AnimationData = animationData;
 }
 
-int AnimationHandler::GetAnimationComponentCount()
+int AnimationHandler::GetAnimationComponentCount(int graphicsAnimationIndex)
 {
-	return m_AnimationComponents.size();
+	return m_AnimationComponentList[graphicsAnimationIndex].size();
 }
 
-AnimationComponent * AnimationHandler::GetAnimationComponentFromIndex(int index)
+std::vector<AnimationComponent*> AnimationHandler::GetAnimationComponentsFromIndex(int graphicsAnimationIndex)
 {
-	return m_AnimationComponents[index];
+	return m_AnimationComponentList[graphicsAnimationIndex];
+}
+
+void AnimationHandler::SetAnimationComponents(std::vector<AnimationComponent*> animationComponents)
+{
+	this->m_AnimationComponentStack = animationComponents;
 }
 
 void AnimationHandler::InterpolateKeys(AnimationComponent* animationComponent, float currentTime)
@@ -440,24 +430,24 @@ void AnimationHandler::Blend(float secondsElapsed)
 
 		blendKeysPerAnimation.resize(2);
 
-		for (int animClipIndex = 0; animClipIndex < m_AnimationComponents.size(); animClipIndex++)
+		for (int animClipIndex = 0; animClipIndex < m_AnimationComponentStack.size(); animClipIndex++)
 		{
-			if (m_AnimationComponents[animClipIndex]->localTime <= GetStartFrame(animClipIndex))
+			if (m_AnimationComponentStack[animClipIndex]->localTime <= GetStartFrame(animClipIndex))
 			{
-				m_AnimationComponents[animClipIndex]->localTime = GetStartFrame(animClipIndex);
+				m_AnimationComponentStack[animClipIndex]->localTime = GetStartFrame(animClipIndex);
 			}
 
-			else if (m_AnimationComponents[animClipIndex]->localTime >= GetEndFrame(animClipIndex))
+			else if (m_AnimationComponentStack[animClipIndex]->localTime >= GetEndFrame(animClipIndex))
 			{
-				m_AnimationComponents[animClipIndex]->localTime = GetEndFrame(animClipIndex);
+				m_AnimationComponentStack[animClipIndex]->localTime = GetEndFrame(animClipIndex);
 			}
 
-			else if (m_AnimationComponents[animClipIndex]->localTime > GetStartFrame(animClipIndex) && m_AnimationComponents[animClipIndex]->localTime < GetEndFrame(animClipIndex))
+			else if (m_AnimationComponentStack[animClipIndex]->localTime > GetStartFrame(animClipIndex) && m_AnimationComponentStack[animClipIndex]->localTime < GetEndFrame(animClipIndex))
 			{
-				m_AnimationComponents[animClipIndex]->localTime += secondsElapsed;
+				m_AnimationComponentStack[animClipIndex]->localTime += secondsElapsed;
 			}
 
-			ExtractBlendingKeys(blendKeysPerAnimation, m_AnimationComponents[animClipIndex], m_AnimationComponents[animClipIndex]->localTime, animClipIndex);
+			ExtractBlendingKeys(blendKeysPerAnimation, m_AnimationComponentStack[animClipIndex], m_AnimationComponentStack[animClipIndex]->localTime, animClipIndex);
 		}
 
 		/*Calculate the blend time with the delta-time.*/
@@ -503,15 +493,11 @@ void AnimationHandler::Push(int animationState, bool isLooping, float transition
 	animationComponent->animationState = animationState;
 
 	/*First time pushing to the stack, the stack should be empty, thus previous state is none.*/
-	if (m_AnimationComponents.empty())
+	if (m_AnimationComponentStack.empty())
 		animationComponent->previousState = -1;
 
 	else
-	{
-		animationComponent->previousState = m_AnimationComponents.front()->animationState;
-		
-		//Pop(); // Comment out when writing blend code. 
-	}
+		animationComponent->previousState = m_AnimationComponentStack.front()->animationState;
 
 	/*The animations are the same, no transition will be made.*/
 	if (animationComponent->previousState == -1 || animationComponent->previousState == animationComponent->animationState)
@@ -531,18 +517,19 @@ void AnimationHandler::Push(int animationState, bool isLooping, float transition
 	animationComponent->endFrame = GetEndFrame(animationState);
 	animationComponent->isLooping = isLooping;
 	animationComponent->localTime = 0;
+	animationComponent->active = true;
 
-	m_AnimationComponents.push_back(animationComponent);
+	m_AnimationComponentStack.push_back(animationComponent);
 }
 
 void AnimationHandler::Pop()
 {
 	/*Function swaps the two elements in the vector and removes the last element in vector.*/
-	if (!m_AnimationComponents.empty())
+	if (!m_AnimationComponentStack.empty())
 	{
-		std::swap(m_AnimationComponents.front(), m_AnimationComponents.back());
-		m_AnimationComponents.pop_back();
-		m_AnimationComponents.shrink_to_fit();
+		std::swap(m_AnimationComponentStack.front(), m_AnimationComponentStack.back());
+		m_AnimationComponentStack.pop_back();
+		m_AnimationComponentStack.shrink_to_fit();
 	}
 }
 

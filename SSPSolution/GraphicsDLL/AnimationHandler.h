@@ -69,8 +69,13 @@ class AnimationHandler
 {
 
 private:
-	//Variables
-	std::vector<AnimationComponent*> m_AnimationComponents;
+	//Variables used only in class.
+
+	/*2D-array, which have a index for each Graphics Animation Component with their separate updating Animation Component lists.*/
+	std::vector<std::vector<AnimationComponent*>> m_AnimationComponentList; 
+
+	/*Used to set the current Graphics Animation Component separate animation stack.*/
+	std::vector<AnimationComponent*> m_AnimationComponentStack;
 
 	/*This is a temporary place for this I think?*/
 	GraphicsAnimationComponent * m_graphicsAnimationComponent;
@@ -87,24 +92,25 @@ private:
 	AnimationDataContainer m_AnimationData;
 
 public: 
+	//Functions used outside the class.
 
-	AnimationHandler();
-	~AnimationHandler();
+	GRAPHICSDLL_API AnimationHandler();
+	GRAPHICSDLL_API ~AnimationHandler();
 
 	GRAPHICSDLL_API void Update(float dt);
 
-	void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
-	AnimationDataContainer GetAnimationDataFromIndex(int index);
-	void SetAnimationData(AnimationDataContainer animationData);
+	GRAPHICSDLL_API void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
+	GRAPHICSDLL_API AnimationDataContainer GetAnimationDataFromIndex(int index);
+	GRAPHICSDLL_API void SetAnimationData(AnimationDataContainer animationData);
 
-	int GetAnimationComponentCount();
-	AnimationComponent* GetAnimationComponentFromIndex(int index);
+	GRAPHICSDLL_API int GetAnimationComponentCount(int graphicsAnimationIndex);
+	GRAPHICSDLL_API std::vector<AnimationComponent*> GetAnimationComponentsFromIndex(int graphicsAnimationIndex);
+	GRAPHICSDLL_API void SetAnimationComponents(std::vector<AnimationComponent*> animationComponents);
 
 	//GraphicsAnimationComponent * GetGraphicsAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
 
 private:
-	//Functions
-	/*void AddAnimation(int animationState, bool isLooping, float transitionTime);*/
+	//Functions only used in class.
 
 	void Push(int animationState, bool isLooping, float transitionTime);
 
