@@ -1,5 +1,5 @@
 #include "MenuState.h"
-
+#include "GameStateHandler.h"
 
 
 MenuState::MenuState()
@@ -22,12 +22,16 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 	int result = 0;
 	result = GameState::InitializeBase(gsh, cHandler);
 
+	this->cHandlerPtr = cHandler;
+
 	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 	{
 		this->m_uiComps[i] = cHandler->GetUIComponent();
+		this->m_uiComps[i]->active = 1;
 		this->m_uiComps[i]->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 100.f));
 		this->m_uiComps[i]->size = DirectX::XMFLOAT2(100.f, 75.f);
 		this->m_textComps[i] = cHandler->GetTextComponent();
+		this->m_textComps[i]->active = 1;
 		this->m_textComps[i]->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 100.f));
 	}
 
@@ -69,6 +73,32 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_uiComps[0]->CheckClicked())
 	{
 		//Start game was clicked
+
+		//Create, Initialize and push a LevelSelectState
+		LevelSelectState* levelSelect = new LevelSelectState();
+		result = levelSelect->Initialize(this->m_gsh, this->cHandlerPtr);
+
+		//If the initialization was successful
+		if (result > 0)
+		{
+			//Push it to the gamestate stack/vector
+			this->m_gsh->PushStateToStack(levelSelect);
+			
+			
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+		}
+		else
+		{
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
+		}
+
+		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+		{
+			this->m_uiComps[i]->active = 0;
+			this->m_textComps[i]->active = 0;
+		}
 	}
 	else if (this->m_uiComps[1]->CheckClicked())
 	{

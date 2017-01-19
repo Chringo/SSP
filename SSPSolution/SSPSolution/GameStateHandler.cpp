@@ -37,26 +37,43 @@ int GameStateHandler::ShutDown()
 int GameStateHandler::Initialize(ComponentHandler * cHandler)
 {
 	int result = 0;
-	
-	//Create, Initialize and push a LevelSelectState
-	LevelSelectState* levelSelect = new LevelSelectState();
-	result = levelSelect->Initialize(this, cHandler);
 
-	//If the initialization was successful
+	MenuState* menuState = new MenuState();
+	result = menuState->Initialize(this, cHandler);
+
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->m_stateStack.push_back(levelSelect);
-		
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+		this->m_stateStack.push_back(menuState);	
 	}
 	else
 	{
 		//Delete it
-		delete levelSelect;
-		levelSelect = nullptr;
+		delete menuState;
+		menuState = nullptr;
 	}
+	
 	return result;
+
+	////Create, Initialize and push a LevelSelectState
+	//LevelSelectState* levelSelect = new LevelSelectState();
+	//result = levelSelect->Initialize(this, cHandler);
+
+	////If the initialization was successful
+	//if (result > 0)
+	//{
+	//	//Push it to the gamestate stack/vector
+	//	this->m_stateStack.push_back(levelSelect);
+	//	
+	//	levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+	//}
+	//else
+	//{
+	//	//Delete it
+	//	delete levelSelect;
+	//	levelSelect = nullptr;
+	//}
+	//return result;
 
 
 	////Create, Initialize and push a LevelState
@@ -84,7 +101,7 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 	//Update the active state
 	if (this->m_stateStack.size())
 	{
-		this->m_stateStack.back()->Update(dt, inputHandler);
+		result = this->m_stateStack.back()->Update(dt, inputHandler);
 	}
 	//Delete the states
 	while (this->m_statesToRemove.size())
@@ -96,4 +113,13 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 		this->m_statesToRemove.pop_back();
 	}
 	return result;
+}
+
+int GameStateHandler::PushStateToStack(GameState * state)
+{
+	int result = 1;
+
+	this->m_stateStack.push_back(state);
+
+	return 1;
 }

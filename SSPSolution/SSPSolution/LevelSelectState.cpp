@@ -46,7 +46,7 @@ int LevelSelectState::Initialize(GameStateHandler * gsh, ComponentHandler* cHand
 int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 {
 	this->currentLevel->Update(dt, inputHandler);
-	return 0;
+	return 1;
 }
 
 int LevelSelectState::LoadLevel(std::string path)
