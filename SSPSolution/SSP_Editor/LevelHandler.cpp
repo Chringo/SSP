@@ -47,12 +47,22 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
 	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
-	file.write(modelData, modelSize);						//Write all modelEntities
+	file.write(modelData, modelSize);						//Write all modelEntities														
+    
+    //AI Entities
+	if (header.AiComponentAmount > 0)
+	{
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
+		char* aiData = new char[aiSize];					    //Allocate for ai data
+		GetAiData(aiData);								        //Get ai data	
+		file.write(aiData, aiSize);						//Write all aiComponents					
+		delete aiData;
+	}
 
 	file.close();
-
+	//Cleanup
 	delete resData;
-	delete modelData;//Cleanup
+	delete modelData;
 
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
@@ -92,6 +102,8 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	char* modelData = new char[modelSize];										  //allocate for the entities
 	file.read(modelData, modelSize);											  //Bulk read all the entity data
 	this->LoadEntities((LevelData::EntityHeader*)modelData, header.entityAmount); //Load them into the level object
+
+	//AI Entities
 
 
 	file.close();
@@ -235,6 +247,41 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 
 
 	}
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
+	{
+		LevelData::AiHeader ai;
+		ai.entityID		 = aiData->at(i)->AC_entityID;
+		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
+		ai.pattern		 = aiData->at(i)->AC_pattern;
+		ai.speed		 = aiData->at(i)->AC_speed;
+		ai.time			 = aiData->at(i)->AC_time;
+		memset(ai.wayPoints, 0, sizeof(float) * 24);
+
+		for (size_t j = 0; j < ai.nrOfWaypoints; j++)
+		{
+				ai.wayPoints[j][0] = aiData->at(i)->AC_waypoints[j].m128_f32[0];
+				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
+				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
+		}
+	}
+
+
+	for (size_t i = 0; i < this->m_currentLevel.GetUniqueModels()->size(); i++)
+	{
+		LevelData::ResourceHeader res;
+		res.id = this->m_currentLevel.GetUniqueModels()->at(i);
+		res.resourceType = Resources::ResourceType::RES_MODEL;
+		memcpy(dataPtr + offset, (char*)&res, sizeof(LevelData::ResourceHeader));
+		offset += sizeof(LevelData::ResourceHeader);
+	}
+
 	return LevelData::LevelStatus::L_OK;
 }
 
