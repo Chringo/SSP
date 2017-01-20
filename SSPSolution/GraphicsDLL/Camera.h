@@ -78,6 +78,7 @@ public:
 
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
+	GRAPHICSDLL_API DirectX::XMVECTOR GetDirection();
 
 #pragma endregion getters
 #pragma region
@@ -109,6 +110,7 @@ public:
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	GRAPHICSDLL_API void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 	GRAPHICSDLL_API void SetDistance(float newDistance);
+	
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters

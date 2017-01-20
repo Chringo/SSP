@@ -223,6 +223,11 @@ cameraFrameData Camera::GetCameraFrameData()
 	myData.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 	return  myData;
 }
+
+DirectX::XMVECTOR Camera::GetDirection()
+{
+	return this->m_camDirvector;
+}
 #pragma endregion getters
 #pragma region
 

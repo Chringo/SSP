@@ -98,9 +98,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_AABB;
-	playerP->PC_AABB.ext[0] = 1.5;
-	playerP->PC_AABB.ext[1] = 1.5;
-	playerP->PC_AABB.ext[2] = 1.5;
+	playerP->PC_AABB.ext[0] = 0.5;
+	playerP->PC_AABB.ext[1] = 0.5;
+	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(3, playerP, playerG);
 	
@@ -118,10 +118,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_AABB;
-	ballP->PC_AABB.ext[0] = 1.5;
-	ballP->PC_AABB.ext[1] = 1.5;
-	ballP->PC_AABB.ext[2] = 1.5;
-	ballP->PC_mass = 10;
+	ballP->PC_AABB.ext[0] = 0.5;
+	ballP->PC_AABB.ext[1] = 0.5;
+	ballP->PC_AABB.ext[2] = 0.5;
+	ballP->PC_mass = 1;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(1, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -314,7 +314,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
 	{
 		this->m_player1.SetAiming(true);
-		this->m_cameraRef->SetDistance(3);
+		this->m_cameraRef->SetDistance(2);
 	}
 
 	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
@@ -323,9 +323,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cameraRef->SetDistance(10);
 	}
 
-	if (this->m_player1.GetIsAming()) 
+	if (this->m_player1.GetIsAming()) //Might actualy already be set to this
 	{
-		this->m_player1.SetLookDir(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()));
+		this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
 	}
 
 	//update all dynamic (moving) entities
