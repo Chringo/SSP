@@ -71,11 +71,25 @@ AIComponent * Entity::SetAIComponent(AIComponent * aiComp)
 	return tempReturn;
 }
 
-bool Entity::SetGrabbed(int isGrabbed)
+bool Entity::SetGrabbed(Entity* isGrabbedBy)
 {
-	bool lastValue = this->m_isGrabbed;
-	this->m_isGrabbed = isGrabbed;
+	bool lastValue = this->m_isGrabbed;;
+	this->m_isGrabbedBy = isGrabbedBy;
+	
+	if (this->m_isGrabbedBy != nullptr)
+	{
+		this->m_isGrabbed = true;
+	}
+	else {
+		this->m_isGrabbed = false;
+	}
+	
 	return lastValue;
+}
+
+bool Entity::IsGrabbed()
+{
+	return this->m_isGrabbed;
 }
 
 int Entity::SetEntityID(int entityID)
@@ -119,5 +133,6 @@ int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsCompon
 	this->m_pComp = pComp;
 	this->m_gComp = gComp;
 	this->m_aiComp = aiComp;
+	this->m_isGrabbedBy = nullptr;
 	return result;
 }

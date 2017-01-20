@@ -272,8 +272,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
 	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
 
-
-
 	if (this->m_networkModule->IsHost())
 	{	
 		this->m_player1.SetRightDir(rightDir);
@@ -303,12 +301,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 	}
 
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+	{
+		this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+	{
+		this->m_player1.SetGrabbed(nullptr);
+	}
+
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
-
+	
+	for (int i = 0; i < this->m_staticEntitys.size(); i++)
+	{
+		this->m_staticEntitys.at(i)->Update(dt, inputHandler);
+	}
 	//this->LockCameraToPlayer();
 
 	// Reactionary level director acts
