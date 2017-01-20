@@ -534,6 +534,7 @@ public:
 
         CustomBehaviourFrame = new QFrame(Values);
         CustomBehaviourFrame->setObjectName(QStringLiteral("CustomBehaviourFrame"));
+        CustomBehaviourFrame->setEnabled(true);
         QPalette palette;
         QBrush brush(QColor(255, 255, 255, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -788,6 +789,7 @@ public:
 
         PatternDropDown = new QComboBox(Behaviour_Path);
         PatternDropDown->setObjectName(QStringLiteral("PatternDropDown"));
+        PatternDropDown->setEnabled(true);
         PatternDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
         gridLayout_2->addWidget(PatternDropDown, 2, 1, 1, 2);
