@@ -310,6 +310,20 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetGrabbed(nullptr);
 	}
 
+	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(true);
+		this->m_cameraRef->SetDistance(3);
+	}
+
+	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(false);
+		this->m_cameraRef->SetDistance(10);
+	}
+
+
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{

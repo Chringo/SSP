@@ -6,6 +6,7 @@ Player::Player()
 {
 	this->m_speed = 5.0f;
 	this->m_grabbed = nullptr;
+	this->m_isAiming = false;
 }
 
 
@@ -170,6 +171,11 @@ DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 	return oldValue;
 }
 
+void Player::SetAiming(bool isAming)
+{
+	this->m_isAiming = isAming;
+}
+
 float Player::GetSpeed()
 {
 	return this->m_speed;
@@ -188,4 +194,9 @@ DirectX::XMVECTOR Player::GetUpDir()
 DirectX::XMVECTOR Player::GetRightDir()
 {
 	return this->m_rightDir;
+}
+
+bool Player::GetIsAming()
+{
+	return this->m_isAiming;
 }

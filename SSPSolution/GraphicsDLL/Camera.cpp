@@ -425,6 +425,12 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
+
+void Camera::SetDistance(float newDistance)
+{
+	this->m_distance = newDistance;
+}
+
 DirectX::XMVECTOR Camera::GetRight()
 {
 	return m_camRightvector;
