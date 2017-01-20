@@ -200,12 +200,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platA->AC_triggered = true;
 	platA->AC_speed = 0.15f;
 	platA->AC_position = platP->PC_pos;
-	platA->AC_pattern = AI_ONEWAY;
-	platA->AC_nrOfWaypoint = 2;
+	platA->AC_pattern = AI_ROUNDTRIP;
+	platA->AC_nrOfWaypoint = 4;
 	platA->AC_waypoints[0] = platP->PC_pos;
 	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
-	/*platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
-	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);*/
+	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
+	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
 #pragma endregion
 	plat->Initialize(5, platP, platG, platA);
 	platP->PC_entityID = plat->GetEntityID();

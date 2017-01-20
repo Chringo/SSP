@@ -50,7 +50,7 @@ int AIHandler::Update(float deltaTime)
 			// AIComponent logic/behavior, movement of e.g. platforms
 			if (this->m_AIComponents.at(i)->AC_pattern == AI_ONEWAY)
 			{
-				//default direction
+				//One-way pattern
 				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
 					if (WaypointApprox(
@@ -58,9 +58,12 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
 						1.0f, i))
 					{
+						//snap into place
+						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
 						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
-						this->m_AIComponents.at(i)->AC_nextWaypointID--;
+						this->m_AIComponents.at(i)->AC_nextWaypointID++;
 						this->m_AIComponents.at(i)->AC_direction = 1;
+						//the platform stops when arriving at its destination
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
 					else if (x)
@@ -73,9 +76,12 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
 						1.0f, i))
 					{
+						//snap into place
+						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
 						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
-						this->m_AIComponents.at(i)->AC_nextWaypointID++;
+						this->m_AIComponents.at(i)->AC_nextWaypointID--;
 						this->m_AIComponents.at(i)->AC_direction = 0;
+						//the platform stops when arriving at its destination
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
 					else if (x)
@@ -84,19 +90,55 @@ int AIHandler::Update(float deltaTime)
 			}
 			else if (this->m_AIComponents.at(i)->AC_pattern == AI_ROUNDTRIP)
 			{
-				//TODO Round-trip pattern
-				if (this->m_AIComponents.at(i)->AC_latestWaypointID == 0 ||
-					this->m_AIComponents.at(i)->AC_latestWaypointID == this->m_AIComponents.at(i)->AC_nrOfWaypoint)
+				//Round-trip pattern
+				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
-					if (this->m_AIComponents.at(i)->AC_direction == 0)
-						this->m_AIComponents.at(i)->AC_direction = 1;
-					else
-						this->m_AIComponents.at(i)->AC_direction = 0;
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AC_position,
+						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+						1.0f, i))
+					{
+						//snap into place
+						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
+						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
+						this->m_AIComponents.at(i)->AC_nextWaypointID++;
+
+						//the platform stops when arriving at its starting location.
+						if (this->m_AIComponents.at(i)->AC_latestWaypointID >= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
+						{
+							this->m_AIComponents.at(i)->AC_nextWaypointID--;
+							this->m_AIComponents.at(i)->AC_direction = 1;
+						}
+					}
+					else if (x)
+						UpdatePosition(i);
+				}
+				else
+				{
+					if (WaypointApprox(
+						this->m_AIComponents.at(i)->AC_position,
+						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+						1.0f, i))
+					{
+						//snap into place
+						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
+						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
+						this->m_AIComponents.at(i)->AC_nextWaypointID--;
+
+						if (this->m_AIComponents.at(i)->AC_latestWaypointID <= 0)
+						{
+							//the platform stops when arriving at its destination
+							this->m_AIComponents.at(i)->AC_direction = 0;
+							this->m_AIComponents.at(i)->AC_triggered = false;
+						}
+					}
+					else if (x)
+						UpdatePosition(i);
 				}
 			}
 			else
 			{
-				//Circular
+				//Circular pattern
 				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
 					if (WaypointApprox(
@@ -122,7 +164,7 @@ int AIHandler::Update(float deltaTime)
 					{
 						//snap into place
 						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
-
+						//next waypoint
 						this->m_AIComponents.at(i)->AC_nextWaypointID--;
 
 						if (this->m_AIComponents.at(i)->AC_nextWaypointID <= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
