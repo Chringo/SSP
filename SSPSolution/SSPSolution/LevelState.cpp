@@ -389,13 +389,16 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
+
 		resHandler->GetModel(currEntity->modelID, modelPtr);
+
+		
 		
 		if (modelPtr->GetSkeleton() != nullptr)
 		{
 			t_gc = m_cHandler->GetGraphicsAnimationComponent();
 			((GraphicsAnimationComponent*)t_gc)->jointCount = modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-			for (int i = 0; i < ((GraphicsAnimationComponent*)t_gc)->jointCount; i++)
+			for (int i = 0; i < 32; i++)
 			{
 				((GraphicsAnimationComponent*)t_gc)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 			}

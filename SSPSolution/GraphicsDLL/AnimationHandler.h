@@ -88,13 +88,16 @@ private:
 	float m_TransitionDuration;
 	float m_TransitionTimeLeft;
 
+	int * m_nrOfGraphicsAnimationComponents;
+	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
+
 	std::vector<AnimationDataContainer> m_AnimationDataContainer;
 	AnimationDataContainer m_AnimationData;
 
 public: 
 	//Functions used outside the class.
-
 	GRAPHICSDLL_API AnimationHandler();
+	GRAPHICSDLL_API AnimationHandler(GraphicsAnimationComponent** graphicAnimComponents, int* noActiveComponents);
 	GRAPHICSDLL_API ~AnimationHandler();
 
 	GRAPHICSDLL_API void Update(float dt);

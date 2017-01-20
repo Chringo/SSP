@@ -34,6 +34,23 @@ AnimationHandler::AnimationHandler()
 	m_TransitionTimeLeft = 0;
 }
 
+AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents)
+{
+	/*Initialize all Graphics Animation Components arrays with joint matrices for each skeleton.*/
+	this->m_animGraphicsComponents = graphicAnimComponents;
+	this->m_nrOfGraphicsAnimationComponents = noActiveComponents;
+
+	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
+	{
+		int jointCount = this->m_animGraphicsComponents[i]->jointCount;
+		
+		for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+		{
+			this->m_animGraphicsComponents[i]->finalJointTransforms[jointIndex] = DirectX::XMMatrixIdentity();
+		}
+	}
+}
+
 AnimationHandler::~AnimationHandler()
 {
 	//delete m_graphicsAnimationComponent;

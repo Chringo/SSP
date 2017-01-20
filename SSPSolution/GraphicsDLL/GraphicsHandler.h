@@ -110,6 +110,9 @@ public:
 	GRAPHICSDLL_API int clearEditor();
 	GRAPHICSDLL_API void Shutdown();
 
+	GRAPHICSDLL_API GraphicsAnimationComponent** GetGraphicsAnimationComponents() { return m_animGraphicsComponents; };
+	GRAPHICSDLL_API int * GetAmountOfGraphicAnimationComponents() { return &m_nrOfGraphicsAnimationComponents; };
+
 	//TEMP STUFF
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);

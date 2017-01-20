@@ -343,7 +343,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
 		this->m_graphicsComponents[i] = new GraphicsComponent();
+	}
 
+	this->m_animGraphicsComponents = new GraphicsAnimationComponent*[this->m_maxGraphicsAnimationComponents];
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++) {
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
 	}
 
 
@@ -409,12 +414,10 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(this->m_animGraphicsComponents[i]->modelID, modelPtr);
-		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+		Resources::ResourceHandler::GetInstance()->GetModel(2759249725, modelPtr);
+		m_shaderControl->Draw(modelPtr, m_animGraphicsComponents[i]);
 	}
 	
-
-
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
@@ -567,16 +570,19 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 
-
-
-		if (m_animGraphicsComponents != nullptr) {
-			delete this->m_animGraphicsComponents[1];
-			delete[] this->m_animGraphicsComponents;
+		for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++)
+		{
+			if (this->m_animGraphicsComponents[i] != nullptr)
+			{
+				delete this->m_animGraphicsComponents[i];
+				this->m_animGraphicsComponents[i] = nullptr;
+			}
 		}
 	}
 #endif // _DEBUG
 
 	
+	delete[] this->m_animGraphicsComponents;
 	delete[] this->m_graphicsComponents;
 #ifdef _DEBUG
 	m_debugRender.Release();
