@@ -414,6 +414,30 @@ bool PhysicsHandler::ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsCompo
 	return true;
 }
 
+bool PhysicsHandler::OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsComponent * objAABB, float dt)
+{
+	//this function just convertes the AABB in current and makes a temporary OBB that is the same size 
+	//and then does OBBVSOBB intersection test.
+	//IMPORTANT the second PhysicsComponent has to be the AABB
+	bool result = false;
+
+	PhysicsComponent OBBconverted;
+	OBBconverted.PC_BVtype = BV_OBB;
+	OBBconverted.PC_is_Static = objAABB->PC_is_Static;
+	OBBconverted.PC_pos = objAABB->PC_pos;
+	OBBconverted.PC_velocity = objAABB->PC_velocity;
+	OBBconverted.PC_OBB.ort = DirectX::XMMatrixIdentity();
+	OBBconverted.PC_OBB.ext[0] = objAABB->PC_AABB.ext[0];
+	OBBconverted.PC_OBB.ext[1] = objAABB->PC_AABB.ext[1];
+	OBBconverted.PC_OBB.ext[2] = objAABB->PC_AABB.ext[2];
+	OBBconverted.PC_elasticity = objAABB->PC_elasticity;
+	OBBconverted.PC_friction = objAABB->PC_friction;
+
+	result = this->ObbObbIntersectionTest(objOBB, &OBBconverted, dt);
+
+	return result;
+}
+
 void PhysicsHandler::ObbObbCollitionCorrection(PhysicsComponent * obj1, PhysicsComponent * obj2, float dt)
 {
 	DirectX::XMVECTOR collitionPoint;
@@ -1534,7 +1558,8 @@ void PhysicsHandler::Update(float deltaTime)
 				toCompare = this->m_physicsComponents.at(j);
 				if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 				{
-					
+					//toCompare has to be AABB or bad peaople will take you in the night
+					this->OBBAABBIntersectionTest(current, toCompare, dt);
 				}
 
 				if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
