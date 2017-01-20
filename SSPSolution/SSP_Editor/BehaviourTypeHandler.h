@@ -13,9 +13,11 @@ namespace Ui {
 		PATH
 	};
 	enum Pattern {
-		CIRCULAR = 0,
-		ONE_WAY,
-		ROUND_TRIP
+		AI_LINEAR = 1,
+		AI_CIRCULAR,
+		AI_ROUNTRIP,
+		AI_RANDOM,
+		AI_NONE = -1
 	};
 	enum Numerics {
 		SPEED = 0,

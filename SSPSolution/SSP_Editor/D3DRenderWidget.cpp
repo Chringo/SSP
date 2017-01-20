@@ -80,7 +80,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
-				}
+ 				}
 			}
 		}
 	}

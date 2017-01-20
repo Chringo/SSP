@@ -49,6 +49,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		sideways--;
 	}
+
+	if (this->m_grabbed != nullptr)
+	{
+		this->m_grabbed->GetPhysicsComponent()->PC_pos = this->GetPhysicsComponent()->PC_pos;
+	}
+
+
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
 		//assumes grabbed is ALWAYS the ball
@@ -77,7 +84,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Check if the player should update its physics component
 		//if (this->m_pComp->PC_entityID == 0)
 		//{
-			if (forwards != 0 || sideways != 0)
+		if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
 				//Get the rotation around the Y-axis, also called the Yaw axis
@@ -95,6 +102,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 
 			}
+
 		//}
 		if (this->m_gComp != nullptr)
 		{
@@ -115,9 +123,23 @@ int Player::React(int entityID, EVENT reactEvent)
 
 Entity* Player::SetGrabbed(Entity * entityPtr)
 {
-	Entity* oldValue = this->m_grabbed;
-	this->m_grabbed = entityPtr;
-	return oldValue;
+	Entity* oldValue = nullptr;
+	
+	if (entityPtr != this->m_grabbed)	//Cant be the same entity that we are currently holding
+	{
+		oldValue = this->m_grabbed;
+		this->m_grabbed = entityPtr;
+
+		if (this->m_grabbed != nullptr)	//If we grab something that is not a nullptr
+		{
+			this->m_grabbed->SetGrabbed(this);	//Set the new entity to be grabbed by this entity	
+		}
+		if (oldValue != nullptr)	//If we drop something
+		{
+			oldValue->SetGrabbed(nullptr);	//Set the old entity to NOT grabbed
+		}
+	}
+	return oldValue;	//Returns nullptr if nothing is droped for the new entity
 }
 
 float Player::SetSpeed(float speed)

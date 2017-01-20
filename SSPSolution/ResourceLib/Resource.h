@@ -49,11 +49,22 @@ namespace Resources
 		int refCount = 0; // when this hits 0 unload from memory
 		Resource* resource;
 
-		ResourceContainer() {};
+		ResourceContainer() {}
 		ResourceContainer(Resource* res, int ref = 1)
 		{
 			refCount = ref;
 			resource = res;
+		}
+		ResourceContainer(const ResourceContainer &obj)
+		{
+			refCount = obj.refCount;
+			resource = obj.resource;
+		}
+		ResourceContainer& ResourceContainer::operator=(ResourceContainer arg)
+		{
+			refCount = arg.refCount;
+			resource = arg.resource;
+			return *this;
 		}
 	};
 
