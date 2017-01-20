@@ -9,13 +9,13 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, AnimationHandler* animationHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
-	if (graphicsHandler == nullptr || animationHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -37,17 +37,6 @@ GraphicsAnimationComponent * ComponentHandler::GetGraphicsAnimationComponent()
 		graphicsAnimComponent = this->m_graphicsHandler->GetNextAvailableAnimationComponent();
 	}
 	return graphicsAnimComponent;
-}
-
-AnimationComponent * ComponentHandler::GetAnimationComponent()
-{
-	AnimationComponent* animationComponent = nullptr;
-	if (this->m_AnimationHandler != nullptr)
-	{
-		/*I need to figure out how to store my components, because they are not 
-		like any other components in list structure. They need to be in a kind of 2D-array fashion.*/
-	}
-	return animationComponent;
 }
 
 PhysicsComponent * ComponentHandler::GetPhysicsComponent()
