@@ -107,6 +107,7 @@ void InputHandler::ReadKeyboard()
 {
 	//Copy the old data
 	this->m_oldKeyboardState = this->m_keyboardState;
+	this->m_oldMouseButtonState = this->m_mouseButtonState;
 	return;
 }
 

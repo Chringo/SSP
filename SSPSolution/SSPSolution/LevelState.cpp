@@ -98,33 +98,33 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_AABB;
-	playerP->PC_AABB.ext[0] = 1.5;
-	playerP->PC_AABB.ext[1] = 1.5;
-	playerP->PC_AABB.ext[2] = 1.5;
+	playerP->PC_AABB.ext[0] = 0.5;
+	playerP->PC_AABB.ext[1] = 0.5;
+	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(3, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
-	//DynamicEntity* ball = new DynamicEntity();
-	//GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
-	//ballG->modelID = 1337;
-	//ballG->active = true;
-	//resHandler->GetModel(ballG->modelID, ballG->modelPtr);
-	//PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	//ballP->PC_entityID = 1;								//Set Entity ID
-	//ballP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);		//Set Position
-	//ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
-	//ballP->PC_is_Static = false;							//Set IsStatic
-	//ballP->PC_active = true;								//Set Active
-	//ballP->PC_BVtype = BV_AABB;
-	//ballP->PC_AABB.ext[0] = 1.5;
-	//ballP->PC_AABB.ext[1] = 1.5;
-	//ballP->PC_AABB.ext[2] = 1.5;
-	//ballP->PC_mass = 10;
-	//ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	//ball->Initialize(1, ballP, ballG);
-	//this->m_dynamicEntitys.push_back(ball);
+	DynamicEntity* ball = new DynamicEntity();
+	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
+	ballG->modelID = 1337;
+	ballG->active = true;
+	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
+	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 1;									//Set Entity ID
+	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_AABB;
+	ballP->PC_AABB.ext[0] = 0.5;
+	ballP->PC_AABB.ext[1] = 0.5;
+	ballP->PC_AABB.ext[2] = 0.5;
+	ballP->PC_mass = 1;
+	ballG->worldMatrix = DirectX::XMMatrixIdentity();
+	ball->Initialize(1, ballP, ballG);
+	this->m_dynamicEntitys.push_back(ball);
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
@@ -264,7 +264,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize( DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
-	playerLookDir.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
 	DirectX::XMFLOAT3 temp;
 
 	this->m_cameraRef->GetCameraUp(temp);
@@ -308,6 +307,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 	{
 		this->m_player1.SetGrabbed(nullptr);
+	}
+
+	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(true);
+		this->m_cameraRef->SetDistance(2);
+	}
+
+	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(false);
+		this->m_cameraRef->SetDistance(10);
+	}
+
+	if (this->m_player1.GetIsAming()) //Might actualy already be set to this
+	{
+		this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
 	}
 
 	//update all dynamic (moving) entities

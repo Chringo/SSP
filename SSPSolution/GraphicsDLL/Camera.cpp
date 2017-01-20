@@ -231,6 +231,11 @@ cameraFrameData Camera::GetCameraFrameData()
 	myData.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 	return  myData;
 }
+
+DirectX::XMVECTOR Camera::GetDirection()
+{
+	return this->m_camDirvector;
+}
 #pragma endregion getters
 #pragma region
 
@@ -442,6 +447,12 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
+
+void Camera::SetDistance(float newDistance)
+{
+	this->m_distance = newDistance;
+}
+
 DirectX::XMVECTOR Camera::GetRight()
 {
 	return m_camRightvector;
