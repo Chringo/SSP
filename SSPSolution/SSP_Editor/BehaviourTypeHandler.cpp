@@ -59,7 +59,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 
 			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->AC_triggered);
 			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->AC_triggered);
-			
+			this->m_Pattern->setCurrentIndex(selection->aiComponent->AC_pattern);
 			for (int i = 0; i < NUM_WAYPOINTS; i++)
 			{
 				if (this->m_ListItems[(ListItems)i] != nullptr)
