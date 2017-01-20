@@ -323,6 +323,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cameraRef->SetDistance(10);
 	}
 
+	if (this->m_player1.GetIsAming()) 
+	{
+		this->m_player1.SetLookDir(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()));
+	}
 
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
