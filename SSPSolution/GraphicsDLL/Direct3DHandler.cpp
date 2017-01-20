@@ -142,6 +142,10 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
 
+	/*
+	Uncumment this to find vram
+
+
 #ifdef _DEBUG
 	IDXGIAdapter* firstAdapter = nullptr;
 	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
@@ -152,6 +156,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		//failed creating adapter3
 	}
 #endif
+*/
 
 	return 0;
 }
@@ -188,6 +193,10 @@ int Direct3DHandler::InitializeGridRasterizer()
 int Direct3DHandler::PresentScene()
 {
 	this->m_swapChain->Present(0, 0);
+
+	/*
+	Uncomment this to find out vram
+
 #ifdef _DEBUG
 	DXGI_QUERY_VIDEO_MEMORY_INFO info;
 	if (SUCCEEDED(dxgiAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
@@ -200,6 +209,7 @@ int Direct3DHandler::PresentScene()
 	}
 #endif
 
+*/
 	return 0;
 }
 
