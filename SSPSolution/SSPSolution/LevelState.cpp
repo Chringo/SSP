@@ -398,7 +398,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			t_gc = m_cHandler->GetGraphicsAnimationComponent();
 			((GraphicsAnimationComponent*)t_gc)->jointCount = modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-			for (int i = 0; i < 32; i++)
+			for (int i = 0; i < modelPtr->GetSkeleton()->GetSkeletonData()->jointCount; i++)
 			{
 				((GraphicsAnimationComponent*)t_gc)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 			}

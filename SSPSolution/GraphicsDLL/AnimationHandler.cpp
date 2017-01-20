@@ -40,7 +40,7 @@ AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComp
 	this->m_animGraphicsComponents = graphicAnimComponents;
 	this->m_nrOfGraphicsAnimationComponents = noActiveComponents;
 
-	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
+	/*for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
 	{
 		int jointCount = this->m_animGraphicsComponents[i]->jointCount;
 		
@@ -48,7 +48,7 @@ AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComp
 		{
 			this->m_animGraphicsComponents[i]->finalJointTransforms[jointIndex] = DirectX::XMMatrixIdentity();
 		}
-	}
+	}*/
 }
 
 AnimationHandler::~AnimationHandler()

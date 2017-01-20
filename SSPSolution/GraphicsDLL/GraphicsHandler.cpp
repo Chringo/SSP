@@ -414,7 +414,7 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(2759249725, modelPtr);
+		Resources::ResourceHandler::GetInstance()->GetModel(m_animGraphicsComponents[i]->modelID, modelPtr);
 		m_shaderControl->Draw(modelPtr, m_animGraphicsComponents[i]);
 	}
 	
