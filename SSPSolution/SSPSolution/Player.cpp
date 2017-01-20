@@ -116,19 +116,23 @@ int Player::React(int entityID, EVENT reactEvent)
 
 Entity* Player::SetGrabbed(Entity * entityPtr)
 {
-	Entity* oldValue = this->m_grabbed;
-	this->m_grabbed = entityPtr;
+	Entity* oldValue = nullptr;
 	
-	if (this->m_grabbed != nullptr)
+	if (entityPtr != this->m_grabbed)	//Cant be the same entity that we are currently holding
 	{
-		this->m_grabbed->SetGrabbed(this);	//Set the new entity to grabbed by this entity
-	}
-	if (oldValue != nullptr)
-	{
-		oldValue->SetGrabbed(nullptr);	//Set the old entity to NOT grabbed
-	}
+		oldValue = this->m_grabbed;
+		this->m_grabbed = entityPtr;
 
-	return oldValue;
+		if (this->m_grabbed != nullptr)	//If we grab something that is not a nullptr
+		{
+			this->m_grabbed->SetGrabbed(this);	//Set the new entity to be grabbed by this entity
+		}
+		if (oldValue != nullptr)	//If we drop something
+		{
+			oldValue->SetGrabbed(nullptr);	//Set the old entity to NOT grabbed
+		}
+	}
+	return oldValue;	//Returns nullptr if nothing is droped for the new entity
 }
 
 float Player::SetSpeed(float speed)
