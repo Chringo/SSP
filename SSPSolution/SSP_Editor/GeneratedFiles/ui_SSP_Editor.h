@@ -972,7 +972,7 @@ public:
         QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setHidden(bool)));
         QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setHidden(bool)));
 
-        BehaviourStackWidget->setCurrentIndex(0);
+        BehaviourStackWidget->setCurrentIndex(3);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1025,9 +1025,10 @@ public:
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "One Way", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Random", Q_NULLPTR)
         );
         SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
         AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
