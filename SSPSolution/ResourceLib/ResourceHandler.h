@@ -4,27 +4,37 @@
 #include "ModelHandler.h"
 #include "FileLoader.h"
 
+#include "../SSP_Editor/LevelHeaders.h"
+
 namespace Resources
 {
 
 	class DLL_OPERATION ResourceHandler
 	{
-		
 
 	private:
-		
+		struct LevelResources {
+			unsigned int *ids = nullptr;
+			unsigned int numResources;
+			LevelResources() {};
+			~LevelResources(){
+				delete ids; 
+				ids = nullptr;
+				numResources = 0;
+			}
+		};
 		ModelHandler* m_modelHandler   = nullptr;
-
 		ID3D11Device* m_device		   = nullptr;
 		ID3D11DeviceContext* m_context = nullptr;
 
-		unsigned int loadedLevel = 0;
+		LevelResources* m_CurrentLevel = nullptr;
 		ResourceHandler();
 		ResourceHandler(ID3D11Device* device, ID3D11DeviceContext* context);
 	public:
 		virtual ~ResourceHandler();
 
 		Resources::Status LoadLevel(unsigned int id);
+		Resources::Status LoadLevel(LevelData::ResourceHeader* levelResources, unsigned int numResources); 
 
 		static ResourceHandler* GetInstance();
 		/* Set */
@@ -38,8 +48,8 @@ namespace Resources
 		Resources::Status  GetModel(unsigned int id, Model*& modelPtr) const;
 
 
-		Resources::Status UnloadLevel(unsigned int& id); //this will be private later (public for tests)
 	private:
+		Resources::Status UnloadLevel(LevelResources* levelRes); //this will be private later (public for tests)
 	};
 }
 

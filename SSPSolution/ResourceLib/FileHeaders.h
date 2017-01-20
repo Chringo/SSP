@@ -1,26 +1,20 @@
 #ifndef RESOURCELIB_FILEHEADERS_H
 #define RESOURCELIB_FILEHEADERS_H
 #include <DirectXMath.h>
-struct Vector2
-{
+struct Vector2{
 	float u, v;
 };
-struct Vector3
-{
+struct Vector3{
 	float x, y, z;
 };
-struct Vector4
-{
+struct Vector4{
 	float x, y, z, w;
 };
 
-struct MainHeader
-{
+struct MainHeader{
 	unsigned int id;
 	int resourceType;
 };
-
-
 
 struct MeshHeader{
 	unsigned int numVerts    = 0;
@@ -28,10 +22,9 @@ struct MeshHeader{
 	bool skeleton;
 };
 
-struct BoundingBoxHeader
-{
-	Vector3 position; //positionen på boundingboxen
-	float extension[3]; //skalären
+struct BoundingBoxHeader{
+	Vector3 position;		 //Positionen på boundingboxen
+	float extension[3];		 //Skalären
 	Vector3 extensionDir[3]; //Orto
 };
 
@@ -47,18 +40,25 @@ struct JointHeader {
 	int jointIndex;
 	int parentIndex;
 };
-struct MaterialHeader
-{
+struct MaterialHeader{
 	unsigned int textureIDs[5]{0,0,0,0,0};
+	//unsigned int textureNameLength[5]{0,0,0,0,0};
 
 	float m_Metallic	  = 0.0f	;
 	float m_Roughness	  = 0.0f	;
 	float m_EmissiveValue = 0.0f	;
 
 };
-
-struct TextureHeader
-{
+struct TextureHeader{
 	char filePath[256];
+};
+
+struct RegistryHeader {
+	unsigned int numIds;
+};
+struct RegistryItem {
+	unsigned int id;		// Resource id
+	unsigned int startBit;  // Place in BPF file
+	unsigned int byteSize;  // How many bytes to memcpy.
 };
 #endif

@@ -1,6 +1,7 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #include "GameState.h"
+#include "LevelSelectState.h"
 #include <vector>
 class GameStateHandler
 {
@@ -10,6 +11,10 @@ private:
 public:
 	GameStateHandler();
 	~GameStateHandler();
+
+	int ShutDown();
+
+	int Initialize(ComponentHandler* cHandler, Camera* cameraRef);
 
 	int Update(float dt, InputHandler* inputHandler);
 private:

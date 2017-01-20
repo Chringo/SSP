@@ -47,6 +47,7 @@ namespace Resources
 		void SetDevice(ID3D11Device* device);
 	private:
 		bool CreatePlaceHolder();
+		Model* GetEmptyContainer();
 	};
 
 }

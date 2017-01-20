@@ -12,8 +12,8 @@ DebugRenderer::DebugRenderer()
 	NUM_POINTS[M_PLANE]   = 4;
 	NUM_INDICES[M_PLANE]  = 6;
 
-	NUM_POINTS[M_SPHERE]  = 3;
-	NUM_INDICES[M_SPHERE] = 3;
+	NUM_POINTS[M_SPHERE]  = 24;
+	NUM_INDICES[M_SPHERE] = 24;
 
 
 	m_indices[M_CUBE] = new UINT[NUM_INDICES[M_CUBE]]
@@ -38,7 +38,21 @@ DebugRenderer::DebugRenderer()
 		2,1,3
 		
 	};
-	m_indices[M_SPHERE] = new UINT[NUM_INDICES[M_SPHERE]];
+	m_indices[M_SPHERE] = new UINT[NUM_INDICES[M_SPHERE]]
+	{
+		0,1,
+		2,3,
+		4,5,
+		6,7,
+		8,9,
+		10,11,
+		12,13,
+		14,15,
+		16,17,
+		18,19,
+		20,21,
+		22,23
+	};
 }
 
 
@@ -222,13 +236,48 @@ void DebugRenderer::Render(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR c
 void DebugRenderer::Render(DirectX::XMVECTOR & pos, Plane & plane, DirectX::XMVECTOR color)
 {
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ID3D11Buffer* buf = GenerateLinelist(pos, plane,color);
+	ID3D11Buffer* buf = GenerateLinelist(pos, plane, color);
 	UINT32 offset = 0;
 	UINT32 m_vertexSize = sizeof(Point);
 	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_PLANE], &m_vertexSize, &offset);
 	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_PLANE], DXGI_FORMAT_R32_UINT, 0);
 	
 	m_deviceContext->DrawIndexed(NUM_INDICES[M_PLANE], 0, 0);
+}
+
+
+void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XMVECTOR color)
+{
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+
+	ID3D11Buffer* buf;
+	UINT32 offset = 0;
+	UINT32 m_vertexSize = sizeof(Point);
+
+	//ring 1
+
+	buf = GenerateLinelist(pos, sphere, color, 1);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_SPHERE], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_SPHERE], DXGI_FORMAT_R32_UINT, 0);
+
+	m_deviceContext->DrawIndexed(NUM_INDICES[M_SPHERE], 0, 0);
+
+	//ring 2
+
+	buf = GenerateLinelist(pos, sphere, color, 2);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_SPHERE], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_SPHERE], DXGI_FORMAT_R32_UINT, 0);
+
+	m_deviceContext->DrawIndexed(NUM_INDICES[M_SPHERE], 0, 0);
+
+	//ring 3
+	
+	buf = GenerateLinelist(pos, sphere, color, 3);
+	m_deviceContext->IASetVertexBuffers(0, 1, &m_PointBuffer[M_SPHERE], &m_vertexSize, &offset);
+	m_deviceContext->IASetIndexBuffer(this->m_IndexBuffer[M_SPHERE], DXGI_FORMAT_R32_UINT, 0);
+
+	m_deviceContext->DrawIndexed(NUM_INDICES[M_SPHERE], 0, 0);
 
 }
 
@@ -253,7 +302,7 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR& pos,AABB & box
 	DirectX::XMVECTOR zDir ;
 
 	DirectX::XMVECTOR zDirInv;
-	xDir = DirectX::XMVectorScale(normXDir, 2);// box.ext[0]);
+	xDir = DirectX::XMVectorScale(normXDir, box.ext[0]);
 	yDir = DirectX::XMVectorScale(normYDir, box.ext[1]);
 	zDir = DirectX::XMVectorScale(normZDir, box.ext[2]);
 
@@ -433,6 +482,50 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 	m_deviceContext->Unmap(m_PointBuffer[M_PLANE], 0);
 
 	return m_PointBuffer[M_PLANE];
+}
+ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere & box, DirectX::XMVECTOR color, int ringIndex)
+{
+	box.radius;
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
+
+	float step = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
+	float theta = 0.0f;
+
+	for (size_t i = 0; i < (unsigned int)NUM_POINTS[M_SPHERE]; i++)
+	{
+		DirectX::XMVECTOR point = pos;
+
+		if (ringIndex == 1)
+		{
+			point.m128_f32[0] += box.radius * DirectX::XMScalarCos(theta);
+			point.m128_f32[1] += box.radius * DirectX::XMScalarSin(theta);
+		}
+		else if (ringIndex == 2)
+		{
+			point.m128_f32[2] += box.radius * DirectX::XMScalarCos(theta);
+			point.m128_f32[0] += box.radius * DirectX::XMScalarSin(theta);
+		}
+		else if (ringIndex == 3)
+		{
+			point.m128_f32[1] += box.radius * DirectX::XMScalarCos(theta);
+			point.m128_f32[2] += box.radius * DirectX::XMScalarSin(theta);
+		}
+
+		point = DirectX::XMVector3TransformCoord(point, worldMatrix);
+		m_points[M_SPHERE][i] = Point(point.m128_f32, color.m128_f32);
+
+		theta += step;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	HRESULT hr = m_deviceContext->Map(m_PointBuffer[M_SPHERE], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	Point* tempData = (Point*)mappedResource.pData;
+	memcpy(tempData, (void*)m_points[M_SPHERE], sizeof(Point) * NUM_POINTS[M_SPHERE]);
+	m_deviceContext->Unmap(m_PointBuffer[M_SPHERE], 0);
+
+	return m_PointBuffer[M_SPHERE];
 }
 	/*
 		 _________________________

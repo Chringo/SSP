@@ -1,8 +1,6 @@
 #include "GraphicsHandler.h"
 
 #ifdef _DEBUG
-
-
 void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 	obbBoxes.push_back(&box);
@@ -22,6 +20,12 @@ void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Plane & plan
 	planes.push_back(&plane);
 	positions[T_PLANE].push_back(&pos);
 	colors[T_PLANE].push_back(color);
+}
+void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XMVECTOR color)
+{
+	spheres.push_back(&sphere);
+	positions[T_SPHERE].push_back(&pos);
+	colors[T_SPHERE].push_back(color);
 }
 
 void GraphicsHandler::RenderBoundingBoxes(bool noClip)
@@ -51,10 +55,18 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	}
 	positions[T_PLANE].clear();
 	colors[T_PLANE].clear();
+	for (size_t i = 0; i < spheres.size(); i++)
+	{
+		m_debugRender.Render(*positions[T_SPHERE].at(i), *spheres.at(i), colors[T_SPHERE].at(i));
+	}
+	positions[T_SPHERE].clear();
+	colors[T_SPHERE].clear();
+
 
 	planes.clear();
 	obbBoxes.clear();
 	aabbBoxes.clear();
+	spheres.clear();
 
 }
 #endif // _DEBUG
@@ -71,7 +83,7 @@ int GraphicsHandler::IncreaseArraySize()
 		}
 		else
 		{
-			newArray[i] = nullptr;
+			newArray[i] = new GraphicsComponent();
 		}
 	}
 	delete[] this->m_graphicsComponents;
@@ -195,8 +207,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->editorMode = editorMode;
 	if (!editorMode)
 	{
-		Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
-		this->m_CreateTempsTestComponents();
+		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
+		//this->m_CreateTempsTestComponents();
+	}
+	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
+	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent();
+
 	}
 
 
@@ -212,6 +230,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	 obbBoxes.reserve(20);
 	 aabbBoxes.reserve(20);
 	 planes.reserve(20);
+	 spheres.reserve(20);
 	 dsv = m_shaderControl->GetBackBufferDSV();
 	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 #endif // _DEBUG
@@ -228,34 +247,35 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 	return tempCam;
 }
 
-int GraphicsHandler::Render()
+int GraphicsHandler::Render(float deltaTime)
 {
 	m_shaderControl->ClearFrame();
+	static float elapsedTime = 0.0f;
+	elapsedTime += deltaTime / 1000000;
+
 
 	/*TEMP CBUFFER STUFF*/
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
+	frame.cTimer = elapsedTime;
 	/********************/
 
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	for (int i = 1; i < 3; i++) //FOR EACH NORMAL GEOMETRY
+	Resources::Model* modelPtr = nullptr;
+	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
-		//RenderGrid(m_modelsPtr[0], this->m_graphicsComponents[i]);
-		m_shaderControl->Draw(m_modelsPtr[0], this->m_graphicsComponents[i]);
+		if (this->m_graphicsComponents[i]->active == false)
+			continue;
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
+		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
-	//for (int i = 0; i < 0; i++) //FOR EACH "OTHER TYPE OF GEOMETRY" ETC...
-	//{
-	//}
-	//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	//m_shaderControl->Draw(m_modelsPtr[1], this->m_animGraphicsComponents[0]);
-	//this->RenderGrid(m_modelsPtr[1], this->m_graphicsComponents[0]);
 
-	//RenderGrid(m_modelsPtr[1], )
+	
 
 
 	m_shaderControl->DrawFinal();
@@ -289,7 +309,7 @@ int GraphicsHandler::Render()
 
 int GraphicsHandler::InitializeGrid()
 {
-	//Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[0]);
+
 	m_d3dHandler->InitializeGridRasterizer();
 
 	this->m_shaderControl->InitializeWireframe(this->m_d3dHandler->GetDevice());
@@ -299,12 +319,12 @@ int GraphicsHandler::InitializeGrid()
 int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* component) //will render the grid from said variables every frame, there will be a updategrid function for this instead later
 {
 
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 	
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Wireframe);
@@ -319,11 +339,11 @@ int GraphicsHandler::RenderGrid(Resources::Model* model, GraphicsComponent* comp
 int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent* component)
 {
 
-	ConstantBufferHandler::ConstantBuffer::camera::cbData cam;
-	this->m_camera->GetCameraPos(cam.cPos);
-	this->m_camera->GetViewMatrix(cam.cView);
-	cam.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
-	ConstantBufferHandler::GetInstance()->camera.UpdateBuffer(&cam);
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	this->m_camera->GetCameraPos(frame.cPos);
+	this->m_camera->GetViewMatrix(frame.cView);
+	frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
+	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
@@ -392,14 +412,6 @@ void GraphicsHandler::Shutdown()
 	{
 		this->m_windowHandle = nullptr;
 	}
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++)
-	{
-		if (this->m_graphicsComponents[i] != nullptr)
-		{
-			delete this->m_graphicsComponents[i];
-			this->m_graphicsComponents[i] = nullptr;
-		}
-	}
 
 	//for (int i = 1; i < 2; i++)
 	//{
@@ -408,10 +420,21 @@ void GraphicsHandler::Shutdown()
 	//}
 	if (!editorMode)
 	{
+		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
+		{
+			if (this->m_graphicsComponents[i] != nullptr)
+			{
+				delete this->m_graphicsComponents[i];
+				this->m_graphicsComponents[i] = nullptr;
+			}
+		}
+
 	
+	
+		if (m_animGraphicsComponents != nullptr) {
 		delete this->m_animGraphicsComponents[1];
-		delete[] this->m_modelsPtr;
 		delete[] this->m_animGraphicsComponents;
+		}
 	}
 	
 	delete[] this->m_graphicsComponents;
@@ -488,23 +511,25 @@ GraphicsComponent * GraphicsHandler::getComponent(int index)
 
 void GraphicsHandler::m_CreateTempsTestComponents()
 {
-	this->m_modelsPtr = new Resources::Model*[2];
+	
 
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
-		this->m_graphicsComponents[i] = nullptr;
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_graphicsComponents[i] = new GraphicsComponent();
+
 	}
 
 	DirectX::XMMATRIX tempWorld = DirectX::XMMatrixIdentity();
 
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
 	tempWorld = DirectX::XMMatrixTranslation(1.f, 0.f, 6.f);
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -512,7 +537,7 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixRotationZ(.3f));
 	tempWorld = DirectX::XMMatrixMultiply(tempWorld, DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f));
 	//DirectX::XMStoreFloat4x4(&worldMatrix, tempWorld);
-	this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
+	//this->m_graphicsComponents[this->m_nrOfGraphicsComponents] = new GraphicsComponent;
 	this->m_graphicsComponents[this->m_nrOfGraphicsComponents]->worldMatrix = tempWorld;
 	this->m_nrOfGraphicsComponents++;
 
@@ -530,9 +555,6 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 		this->m_animGraphicsComponents[1]->finalTransforms[j] = DirectX::XMMatrixIdentity();
 	}
 	
-	/*TEMP MODELS*/
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(13337), m_modelsPtr[0]);
-	Resources::ResourceHandler::GetInstance()->GetModel(UINT(1337), m_modelsPtr[1]);
-	
+
 
 }

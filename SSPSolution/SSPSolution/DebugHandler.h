@@ -31,7 +31,7 @@ private:
 			LARGE_INTEGER elapsedTime;
 			elapsedTime.QuadPart = this->endTime.QuadPart - this->startTime.QuadPart;
 			elapsedTime.QuadPart *= 1000000;
-			return elapsedTime.QuadPart / frequency.QuadPart;
+			return (unsigned int)(elapsedTime.QuadPart / frequency.QuadPart);
 		}
 	};
 

@@ -49,16 +49,16 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 	if (this->m_states.size() == 0)
 		return SUCCESS;
 	// Return if there are no current state or default state
-	if (!(this->m_currentState))
+	if ( !(this->m_currentState) )
 		this->m_currentState = this->m_defaultState;
-	if(!(this->m_currentState))
+	if ( !(this->m_currentState) )
 		return SUCCESS;
 	
 	int oldStateID = this->m_currentState->stateID;
 	this->m_goalID = this->m_currentState->CheckTransitions();
-	if (this->m_goalID != oldStateID)
+	if ( this->m_goalID != oldStateID )
 	{
-		if (this->ChangeState(this->m_goalID))
+		if ( this->ChangeState(this->m_goalID) )
 		{
 			this->m_currentState->Exit();
 			this->m_currentState = this->m_goalState;
@@ -92,7 +92,7 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;
 	// Query list of states to see if the state exists
-	for (int i = 0; i < m_states.size(); i++)
+	for (unsigned int i = 0; i < m_states.size(); i++)
 	{
 		if (m_states[i].stateID == newState)
 		{
@@ -105,6 +105,10 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 }
 
 #pragma region temp
+void FSMEnvironment::State::Initialize()
+{
+
+}
 int FSMEnvironment::State::CheckTransitions()
 {
 

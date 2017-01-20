@@ -18,8 +18,9 @@ Resources::Status DataHandler::AddMesh(Resources::Mesh * mesh)
 
 Resources::Status DataHandler::AddMaterial(Resources::Material * material)
 {
+	m_materials.push_back(material);
 	this->loadedIds[material->GetId()] = true;
-	return Resources::Status();
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status DataHandler::AddTexture(Resources::Texture * texture)
@@ -79,6 +80,17 @@ DataHandler::~DataHandler()
 	m_textures.clear();
 	
 	delete m_textureHandler;
+}
+
+Resources::Model * DataHandler::GetModel(unsigned int & id)
+{
+	for (size_t i = 0; i < m_models.size(); i++)
+	{
+		if (id == m_models.at(i)->GetId())
+			return m_models.at(i);
+	}
+
+	return nullptr;
 }
 
 Resources::Status DataHandler::GetTexture(std::string id, Resources::Texture *& texture)

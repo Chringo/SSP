@@ -39,6 +39,7 @@ namespace Resources
 
 	private:
 		Resources::Status LoadPlaceHolderMesh();
+		Mesh* GetEmptyContainer();
 	};
 }
 

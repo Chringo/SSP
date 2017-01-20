@@ -4,7 +4,7 @@
 
 namespace Resources {
 
-	class DLL_OPERATION Texture :
+	class Texture :
 		public Resource
 	{
 	private:
@@ -13,18 +13,19 @@ namespace Resources {
 		ID3D11Resource* textureResource			= nullptr;
 
 	public:
-		Texture();
-		virtual ~Texture();
-		Texture(Resource::RawResourceData resData);
+		DLL_OPERATION Texture();
+		DLL_OPERATION virtual ~Texture();
+		DLL_OPERATION Texture(Resource::RawResourceData resData);
 
-		Resources::Status Create(Resource::RawResourceData* resData);
-		Resources::Status Destroy(); 
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData);
+		DLL_OPERATION Resources::Status Destroy(); 
 
-		Resources::Status SetTexture(ID3D11ShaderResourceView* view, ID3D11Resource* texture);
-		ID3D11ShaderResourceView* GetResourceView() { return textureView; };
-		ID3D11Resource* GetTextureResource() { return textureResource; };
-		char* GetFileName() { return m_fileName; };
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
+		DLL_OPERATION void SetFileName(char * fileName, unsigned int nameLength) { memcpy((char*)&m_fileName, fileName, nameLength); }
+		DLL_OPERATION Resources::Status SetTexture(ID3D11ShaderResourceView* view, ID3D11Resource* texture);
+		DLL_OPERATION ID3D11ShaderResourceView* GetResourceView() { return textureView; };
+		DLL_OPERATION ID3D11Resource* GetTextureResource() { return textureResource; };
+		DLL_OPERATION char* GetFileName() { return m_fileName; };
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 	};
 }
 #endif

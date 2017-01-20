@@ -3,7 +3,10 @@
 #include <unordered_map>
 #include "Header.h"
 #include "../../ResourceLib/Enumerations.h"
-
+#include "DataHandler.h"
+//#include "UiControlHandler.h"
+#define PLAYER1 2215164276 
+#define PLAYER2 3255160373
 /*
 	Author: Martin Clementson
 	
@@ -17,7 +20,7 @@ class Level
 private:
 	std::string levelName = "untitled_level";
 	std::vector<unsigned int> m_uniqueModels;							 //Every unique model used by the level
-	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of models in the level
+	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; //Every instance of modelEntities in the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
 public:
 	Level();
@@ -31,7 +34,7 @@ public:
 	Resources::Status AddModelEntity(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
-	
+	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
 
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);

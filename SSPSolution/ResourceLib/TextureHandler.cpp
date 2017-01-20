@@ -22,10 +22,10 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 	this->m_textures.reserve(textureAmount);
 	this->m_containers.reserve(textureAmount);
-	this->m_containers.insert(m_containers.begin(), textureAmount, Texture());
 	for (size_t i = 0; i < textureAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_containers.push_back(new Texture());
+		m_emptyContainers.at(i) = m_containers.at(i);
 	}
 
 	if (device != nullptr) {
@@ -36,6 +36,10 @@ Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * d
 
 Resources::TextureHandler::~TextureHandler()
 {
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		delete m_containers.at(i);
+	}
 	delete[] placeHolder;
 	placeHolder = nullptr;
 }
@@ -83,23 +87,24 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 #ifdef _DEBUG
 		std::cout << "Wrong resource type. Wanted Texture, got type: " << resData->m_id << std::endl;
 #endif // _DEBUG
-
 		return ST_WRONG_RESTYPE;
 	}
 
-	Texture* newTexture = m_emptyContainers.front(); //Get an empty container
+	Texture* newTexture = GetEmptyContainer(); //Get an empty container
 	st = newTexture->Create(resData);
 	 if (st != ST_OK)
 		 return st;
 	
 	TextureHeader* texData = (TextureHeader*)(data + sizeof(Resource::RawResourceData));
-
-	 size_t length = strlen(texData->filePath);
-	 wchar_t path[256];
-	 mbstowcs_s(&length, path, texData->filePath, length);
-
-	 ID3D11ShaderResourceView* textureView	=nullptr;
-	 ID3D11Resource*			textureResource		=nullptr;
+	
+	std::string fullpath = TEXTURE_PATH;
+	fullpath.append(texData->filePath);		//append the file name to the directory
+	size_t length = strlen(fullpath.c_str());
+	wchar_t path[256];
+	mbstowcs_s(&length, path, fullpath.c_str(), length);
+	
+	ID3D11ShaderResourceView* textureView	=nullptr;
+	ID3D11Resource*			textureResource		=nullptr;
 	HRESULT hr = DirectX::CreateDDSTextureFromFile(m_device,
 		 path,
 		 &textureResource,
@@ -110,7 +115,7 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 	{
 		newTexture->Destroy();
 #ifdef _DEBUG
-		std::cout << "Could not open texture file : " << path << std::endl;
+		std::cout << "Could not open texture file : " << fullpath << std::endl;
 #endif // _DEBUG
 		return Status::ST_ERROR_OPENING_FILE;
 	}
@@ -123,16 +128,11 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 		return st;
 	}
 
-     /*T E M P*/
-	Resource::RawResourceData temp;
-	temp.m_resType = RES_TEXTURE;
-	temp.m_id = 7869;
-	newTexture->Create(&temp);   //Initialize it with data
-	/***************/
+
 
 	m_textures[newTexture->GetId()] = ResourceContainer(newTexture, 1); //put it into the map
+	texturePtr = &m_textures[newTexture->GetId()];
 	m_emptyContainers.pop_front();
-
 
 
 		return Resources::Status::ST_OK;
@@ -163,6 +163,8 @@ Resources::Status Resources::TextureHandler::UnloadTexture(const unsigned int & 
 	}
 	return Resources::Status::ST_OK;
 }
+
+
 
 Resources::Texture * Resources::TextureHandler::GetPlaceHolderTextures()
 {
@@ -281,6 +283,20 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 #pragma endregion
 
 	return true;
+}
+
+Resources::Texture * Resources::TextureHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		Texture* newTex = new Texture();
+		m_containers.push_back(newTex);
+	
+		//m_emptyContainers.push_back(m_containers.end()._Ptr);
+		m_emptyContainers.push_back(m_containers.back());
+	}
+	return m_emptyContainers.front();
+
 }
 
 void Resources::TextureHandler::SetDevice(ID3D11Device * device)
