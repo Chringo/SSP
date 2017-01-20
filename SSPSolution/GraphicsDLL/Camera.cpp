@@ -70,7 +70,7 @@ int Camera::Update(float dt)
 	this->m_updatePos();
 
 	//crash fix
-	this->m_lookAt.z = 2;
+	//this->m_lookAt.z = 2;
 	//DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
 	//DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 
@@ -82,7 +82,10 @@ int Camera::Update(float dt)
 	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-	
+	if (DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
+	{
+		this->m_lookAt.z += 1;
+	}
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);

@@ -1261,8 +1261,8 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_mass = 1.0f;
 	newObject->PC_gravityInfluence = 1.0f;
 	newObject->PC_Sphere.radius = 1.0f;
-	newObject->PC_friction = 1.0f;
-	newObject->PC_elasticity = 1.0f;
+	newObject->PC_friction = 0.5f;
+	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
 
 	this->CreateDefaultBB(pos, newObject);
