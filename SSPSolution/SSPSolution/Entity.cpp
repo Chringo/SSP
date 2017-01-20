@@ -76,7 +76,6 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 	bool lastValue = this->m_isGrabbed;;
 	this->m_isGrabbedBy = isGrabbedBy;
 	
-
 	if (this->m_isGrabbedBy != nullptr)
 	{
 		this->m_isGrabbed = true;

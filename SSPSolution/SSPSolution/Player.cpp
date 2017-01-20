@@ -49,6 +49,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		sideways--;
 	}
+
+	if (this->m_grabbed != nullptr)
+	{
+		this->m_grabbed->GetPhysicsComponent()->PC_pos = this->GetPhysicsComponent()->PC_pos;
+	}
+
+
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
 		//assumes grabbed is ALWAYS the ball
@@ -125,7 +132,7 @@ Entity* Player::SetGrabbed(Entity * entityPtr)
 
 		if (this->m_grabbed != nullptr)	//If we grab something that is not a nullptr
 		{
-			this->m_grabbed->SetGrabbed(this);	//Set the new entity to be grabbed by this entity
+			this->m_grabbed->SetGrabbed(this);	//Set the new entity to be grabbed by this entity	
 		}
 		if (oldValue != nullptr)	//If we drop something
 		{

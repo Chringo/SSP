@@ -20,11 +20,6 @@ int DynamicEntity::Update(float dT, InputHandler * inputHandler)
 	int result = 1;
 
 	//Copy the world matrix into the graphics component for rendering purposes
-	
-	if (this->IsGrabbed())
-	{
-		this->GetPhysicsComponent()->PC_pos = this->m_isGrabbedBy->GetPhysicsComponent()->PC_pos;
-	}
 
 	this->SyncComponents();
 
