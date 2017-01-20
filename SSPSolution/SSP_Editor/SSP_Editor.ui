@@ -569,6 +569,9 @@ border: black;</string>
        </item>
        <item>
         <widget class="QFrame" name="CustomBehaviourFrame">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="palette">
           <palette>
            <active>
@@ -1209,7 +1212,7 @@ border: black;</string>
              <string notr="true">background-color: rgb(74, 74, 74);</string>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="Behaviour_None">
              <layout class="QFormLayout" name="formLayout_6"/>
@@ -1425,9 +1428,17 @@ border: black;</string>
               </item>
               <item row="2" column="1" colspan="2">
                <widget class="QComboBox" name="PatternDropDown">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">background-color: rgb(48, 48, 48);</string>
                 </property>
+                <item>
+                 <property name="text">
+                  <string>Linear</string>
+                 </property>
+                </item>
                 <item>
                  <property name="text">
                   <string>Circular</string>
@@ -1435,12 +1446,12 @@ border: black;</string>
                 </item>
                 <item>
                  <property name="text">
-                  <string>One Way</string>
+                  <string>Round Trip</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Round Trip</string>
+                  <string>Random</string>
                  </property>
                 </item>
                </widget>
