@@ -50,6 +50,23 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 	return &m_LightMap;
 }
 
+Container * Level::GetInstanceEntity(unsigned int entityID)
+{
+	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
+	{
+		std::vector<Container> * cont = &iterator->second;
+		for (size_t i = 0; i < cont->size(); i++)
+		{
+			if (cont->at(i).internalID = entityID)
+			{
+				return &cont->at(i);
+			}
+		}
+	}
+	
+	return nullptr;
+}
+
 Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int instanceID, Container & container)
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);

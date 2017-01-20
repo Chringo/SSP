@@ -111,6 +111,8 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		file.read(aiData, aiSize);							//read all aiComponents	
 		
 		//TODO: LOAD INTO LEVEL
+		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
+		
 		delete aiData;
 	}
 
@@ -303,5 +305,32 @@ LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataP
 
 LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * dataPtr, size_t numComponents)
 {
-	return LevelData::LevelStatus();
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		
+			AIComponent* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
+			newComponent->AC_entityID	  = dataPtr[i].entityID;
+			newComponent->AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
+			newComponent->AC_speed		  = dataPtr[i].speed;
+			newComponent->AC_pattern	  = dataPtr[i].pattern;
+			newComponent->AC_time		  = dataPtr[i].time;
+			for (size_t k = 0; k < newComponent->AC_nrOfWaypoint; k++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					newComponent->AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
+				}
+			}
+			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->AC_entityID);
+			if (cont == nullptr) {
+				std::cout << "The entity that has the AIcomponent with id :" << newComponent->AC_entityID << "does not exist" << std::endl;
+				return LevelData::LevelStatus::L_FILE_NOT_FOUND;
+			}
+			else {
+				cont->aiComponent = newComponent;
+			}
+
+	}
+
+	return LevelData::LevelStatus::L_OK;
 }
