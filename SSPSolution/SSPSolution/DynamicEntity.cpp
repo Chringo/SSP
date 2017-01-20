@@ -20,6 +20,7 @@ int DynamicEntity::Update(float dT, InputHandler * inputHandler)
 	int result = 1;
 
 	//Copy the world matrix into the graphics component for rendering purposes
+
 	this->SyncComponents();
 
 	return result;
