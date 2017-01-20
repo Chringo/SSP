@@ -6,9 +6,11 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
-#include "stdafx.h"
-#include <DXGI1_3.h>
-#include <DXGI1_4.h>
+
+//include this to find out VRAM
+//#include "stdafx.h"
+//#include <DXGI1_3.h>
+//#include <DXGI1_4.h>
 
 class Direct3DHandler
 {
@@ -24,10 +26,14 @@ private:
 	ID3D11RasterizerState*	  m_rasterizerStateWireFrame;
 
 	ID3D11Texture2D* m_depthStencilBuffer;
+	/*
+	remove comment here to find vram
+	
 
 #ifdef _DEBUG
 	IDXGIAdapter3* dxgiAdapter3;	//for VRAM check
 #endif
+	*/
 
 
 
