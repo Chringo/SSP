@@ -387,12 +387,28 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
-
-		//Create GraphicsComponent
-		GraphicsComponent* t_gc = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* t_gc;
+		Resources::Model * modelPtr;
+		resHandler->GetModel(currEntity->modelID, modelPtr);
+		
+		if (modelPtr->GetSkeleton() != nullptr)
+		{
+			t_gc = m_cHandler->GetGraphicsAnimationComponent();
+			((GraphicsAnimationComponent*)t_gc)->jointCount = modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+			for (int i = 0; i < ((GraphicsAnimationComponent*)t_gc)->jointCount; i++)
+			{
+				((GraphicsAnimationComponent*)t_gc)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+			}
+		}
+		else
+		{
+			t_gc = m_cHandler->GetGraphicsComponent();
+		}
 		t_gc->modelID			= currEntity->modelID;
 		t_gc->active			= true;
-		resHandler->GetModel(t_gc->modelID, t_gc->modelPtr); //Get and apply a pointer to the model
+		t_gc->modelPtr			= modelPtr; //Get and apply a pointer to the model
+		//Create GraphicsComponent
+		
 		//Create world matrix from data
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
@@ -405,7 +421,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate,translate);
-
+		
 		//Create Physics component
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
 		t_pc->PC_entityID	   = currEntity->EntityID;		//Set Entity ID
@@ -413,7 +429,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_rotation	   = rot;						//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
-
+		
 
 
 
