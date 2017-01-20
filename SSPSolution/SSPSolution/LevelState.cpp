@@ -426,6 +426,21 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
 		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
 
+		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
+			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
+
+		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+
+		/*DirectX::XMMATRIX tempRot = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
+			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] });
+		tempRot = tempRot*rotate;
+
+		t_pc->PC_AABB.ext[0] = abs(tempRot.r[3].m128_f32[0]);
+		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
+		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
+
 		t_pc->PC_friction = 1.0f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
@@ -434,6 +449,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		t_pc->PC_OBB = m_ConvertOBB( modelPtr->GetOBBData()); //Convert and insert OBB data
 	
+		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
+
+
+
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->SetGraphicsComponent(t_gc);
