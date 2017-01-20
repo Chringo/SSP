@@ -16,7 +16,6 @@ int AIHandler::Shutdown()
 
 int AIHandler::Initialize(int max)
 {
-	this->WaypointUpdated = false;
 	this->m_nrOfAIComponents = 0;
 
 	if (max <= 0)
@@ -57,10 +56,10 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents.at(i)->AC_position,
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
-						1.0f))
+						1.0f, i))
 					{
 						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
-						this->m_AIComponents.at(i)->AC_nextWaypointID++;
+						this->m_AIComponents.at(i)->AC_nextWaypointID--;
 						this->m_AIComponents.at(i)->AC_direction = 1;
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
@@ -72,10 +71,10 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents.at(i)->AC_position,
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
-						1.0f))
+						1.0f, i))
 					{
 						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
-						this->m_AIComponents.at(i)->AC_nextWaypointID--;
+						this->m_AIComponents.at(i)->AC_nextWaypointID++;
 						this->m_AIComponents.at(i)->AC_direction = 0;
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
@@ -103,7 +102,7 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents.at(i)->AC_position,
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
-						1.0f))
+						1.0f, i))
 					{
 						//snap into place
 						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
@@ -119,7 +118,7 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents.at(i)->AC_position,
 						this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
-						1.0f))
+						1.0f, i))
 					{
 						//snap into place
 						this->m_AIComponents.at(i)->AC_position = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
@@ -223,6 +222,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	newComponent = new AIComponent;
 
 	newComponent->AC_entityID = entityID;
+	//newComponent->AC_nextWaypointID = 1;
 
 	for (int i = 0; i < 8; i++) 
 	{
@@ -232,7 +232,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	return newComponent;
 }
 
-bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance)
+bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i)
 {
 	//Approximation if position of the platform is the same as the nextWaypoint to see if it reached its goal.
 	float dx = abs(DirectX::XMVectorGetX(c2) - DirectX::XMVectorGetX(c1));
@@ -243,7 +243,7 @@ bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float
 	if (dy > distance) return false; // too far in y direction
 	if (dz > distance) return false; // too far in z direction
 
-	this->WaypointUpdated = false;
+	this->m_AIComponents.at(i)->AC_WaypointUpdated = false;
 
 	return true;
 }
@@ -261,12 +261,12 @@ bool AIHandler::VectorEqual(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 
 void AIHandler::UpdatePosition(int i)
 {
-	if (this->WaypointUpdated == false)
+	if (this->m_AIComponents.at(i)->AC_WaypointUpdated == false)
 	{
 		this->m_AIComponents.at(i)->AC_dir = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(
 			this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
 			this->m_AIComponents.at(i)->AC_position));
-		this->WaypointUpdated = true;
+		this->m_AIComponents.at(i)->AC_WaypointUpdated = true;
 	}
 
 	DirectX::XMVECTOR v = DirectX::XMVECTOR();

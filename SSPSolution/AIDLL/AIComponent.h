@@ -19,16 +19,17 @@ __declspec(align(16)) struct AIComponent
 	// AI variables
 	bool AC_triggered = false;	// Trigger handling
 	int AC_time = 0;			// How long the component is active
-
+	bool AC_WaypointUpdated = false;	//If false it will update the XMVECTOR AC_dir for the component this frame in the update function.
 	float AC_speed = 0;			// Movement speed
 	DirectX::XMVECTOR AC_dir = DirectX::XMVECTOR();// Normalised direction vector
 
 	DirectX::XMVECTOR AC_position = DirectX::XMVECTOR();// Current position
 	int AC_pattern = AI_NONE;	// Traversing of waypoints
 	int AC_direction = 0;		// Direction in array, might be removed due to AC_pattern's existance
-	int AC_nextWaypointID = 0;	// Index to next waypoint 
-	int AC_latestWaypointID = 1;// Index to latest visited waypoint
+	int AC_nextWaypointID = 1;	// Index to next waypoint 
+	int AC_latestWaypointID = 0;// Index to latest visited waypoint
 	int AC_nrOfWaypoint = 0;	// Nr of waypoints used in array
+	
 
 	DirectX::XMVECTOR AC_waypoints[8];
 

@@ -198,7 +198,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	AIComponent* platA = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
 	platA->AC_triggered = true;
-	platA->AC_speed = 0.08f;
+	platA->AC_speed = 0.15f;
 	platA->AC_position = platP->PC_pos;
 	platA->AC_pattern = AI_ONEWAY;
 	platA->AC_nrOfWaypoint = 2;
