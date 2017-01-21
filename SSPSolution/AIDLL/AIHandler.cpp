@@ -51,6 +51,8 @@ int AIHandler::Update(float deltaTime)
 			if (this->m_AIComponents.at(i)->AC_pattern == AI_ONEWAY)
 			{
 				//One-way pattern
+				//default direction 0 assumed in description.
+				/*This pattern will move the platform from 0 to AC_nrOfWaypoint then stop*/
 				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
 					if (WaypointApprox(
@@ -91,6 +93,8 @@ int AIHandler::Update(float deltaTime)
 			else if (this->m_AIComponents.at(i)->AC_pattern == AI_ROUNDTRIP)
 			{
 				//Round-trip pattern
+				//default direction 0 assumed in description.
+				/*This pattern will move the platform from 0 to AC_numberOfWaypoint, back to 0 and then stop*/
 				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
 					if (WaypointApprox(
@@ -104,7 +108,7 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AC_nextWaypointID++;
 
 						//the platform stops when arriving at its starting location.
-						if (this->m_AIComponents.at(i)->AC_latestWaypointID >= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
+						if (this->m_AIComponents.at(i)->AC_nextWaypointID >= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
 						{
 							this->m_AIComponents.at(i)->AC_nextWaypointID--;
 							this->m_AIComponents.at(i)->AC_direction = 1;
@@ -125,10 +129,12 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents.at(i)->AC_latestWaypointID = this->m_AIComponents.at(i)->AC_nextWaypointID;
 						this->m_AIComponents.at(i)->AC_nextWaypointID--;
 
-						if (this->m_AIComponents.at(i)->AC_latestWaypointID <= 0)
+						if (this->m_AIComponents.at(i)->AC_nextWaypointID < 0)
 						{
-							//the platform stops when arriving at its destination
+							//the platform ready to be triggered again
 							this->m_AIComponents.at(i)->AC_direction = 0;
+							this->m_AIComponents.at(i)->AC_nextWaypointID = 0;
+							//platform stops when returning to start position
 							this->m_AIComponents.at(i)->AC_triggered = false;
 						}
 					}
@@ -139,6 +145,8 @@ int AIHandler::Update(float deltaTime)
 			else
 			{
 				//Circular pattern
+				//default direction 0 assumed in description.
+				/*This pattern will move the platform from 0 to AC_nrOfWaypoints then go to 0*/
 				if (this->m_AIComponents.at(i)->AC_direction == 0)
 				{
 					if (WaypointApprox(
