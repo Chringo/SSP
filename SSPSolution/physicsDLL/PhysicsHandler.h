@@ -47,7 +47,7 @@ struct Plane
 };
 #pragma endregion
 
-__declspec(align(16)) struct PhysicsComponent
+struct PhysicsComponent
 {
 	DirectX::XMVECTOR PC_pos;
 	DirectX::XMVECTOR PC_velocity;
@@ -59,7 +59,7 @@ __declspec(align(16)) struct PhysicsComponent
 	int PC_entityID;
 	float PC_mass;
 	bool PC_is_Static;
-	bool PC_coolides;
+	bool PC_collides;
 	float PC_friction;
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
@@ -96,14 +96,22 @@ private:
 	bool IntersectAABB();
 
 	//intersection tests
-	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB);
-	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB);
-	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB);
-	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2);
+	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB, float dt);
+	bool OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsComponent * objAABB, float dt);
+	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB, float dt);
+	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB, float dt);
+	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2, float dt);
 	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane, float dt);
-	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane);
-	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane);
+	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane, float dt);
+	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
+
+	//collitionCorrection
+	void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
+	void ObbObbCollitionCorrection(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
+	DirectX::XMVECTOR FindCollitionPoint(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
+
+	bool IsPointInBox(DirectX::XMVECTOR point, OBB* &src, DirectX::XMVECTOR BoxPos);
 
 	void CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent* obj2, DirectX::XMVECTOR normal, float dt);
 
@@ -166,6 +174,7 @@ public:
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentAABB(AABB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentPlane(Plane*& src, int index);
+	PHYSICSDLL_API void GetPhysicsComponentSphere(Sphere*&src, int index);
 #endif
 };
 

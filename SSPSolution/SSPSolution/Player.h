@@ -8,6 +8,7 @@ private:
 	//Meters per second
 	float m_speed;
 	float m_throwStrength;
+	bool m_isAiming;
 
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
@@ -30,12 +31,14 @@ public:
 	DirectX::XMVECTOR SetLookDir(DirectX::XMVECTOR lookDir);
 	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
+	void SetAiming(bool isAming);
 
 
 	float GetSpeed();
 	DirectX::XMVECTOR GetLookDir();
 	DirectX::XMVECTOR GetUpDir();
 	DirectX::XMVECTOR GetRightDir();
+	bool GetIsAming();
 private:
 
 };
