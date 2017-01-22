@@ -66,8 +66,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	// creating the player
 	this->m_player1 = Player();
-	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
-	playerG->modelID = 1337;
+	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
+	playerG->modelID = 2759249725;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -82,6 +82,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	/*TEMP ANIM STUFF*/
+	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	{
+		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+	}
+
 	this->m_player1.Initialize(0, playerP, playerG);
 
 	//Player 2
