@@ -172,14 +172,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_dynamicEntitys.push_back(platform);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
-	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 3.0, 0.0, 0.0);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 1.4, 0.0, 0.0);
 	
 	if (this->m_networkModule->IsHost())
 	{
 		m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
 		targetOffset,
-		10.0f
+		1.3f
 		);
 	}
 	else // Player 2
@@ -187,7 +187,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		m_cameraRef->SetCameraPivot(
 			&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
 			targetOffset,
-			10.0f
+			1.3f
 		);
 	}
 

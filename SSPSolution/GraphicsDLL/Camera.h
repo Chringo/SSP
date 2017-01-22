@@ -1,6 +1,7 @@
 #ifndef GRAPHICSDLL_CAMERA_H
 #define GRAPHICSDLL_CAMERA_H
 #include <DirectXMath.h>
+#include "../physicsDLL/PhysicsHandler.h"
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -40,18 +41,22 @@ private:
 	DirectX::XMVECTOR m_camRightvector;
 	DirectX::XMVECTOR m_camDirvector;
 	float m_distance;
+	float m_maxDistance;
 	float m_yaw;
 	float m_pitch;
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
+
+	Sphere m_collisionSphere;
+	
 public:
 	GRAPHICSDLL_API Camera();
 	GRAPHICSDLL_API virtual ~Camera();
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
-	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update(float dt);
@@ -75,6 +80,7 @@ public:
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT4& storeIn);
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT3& storeIn);
 	GRAPHICSDLL_API DirectX::XMVECTOR GetCameraPivot();
+	GRAPHICSDLL_API float GetCameraDistance();
 
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
@@ -110,7 +116,10 @@ public:
 	//Calls the ApplyLocalTranslation(float x, float y, float z) with the values in translation
 	GRAPHICSDLL_API void ApplyLocalTranslation(DirectX::XMFLOAT3 translation);
 	GRAPHICSDLL_API void SetDistance(float newDistance);
-	
+	GRAPHICSDLL_API void DecreaseDistance(float amount);
+	GRAPHICSDLL_API void IncreaseDistance(float amount);
+
+	GRAPHICSDLL_API Sphere GetCollisionSphere(DirectX::XMVECTOR & pos);
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters
