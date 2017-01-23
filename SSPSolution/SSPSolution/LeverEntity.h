@@ -6,7 +6,7 @@ class LeverEntity :
 {
 private:
 	//Variables
-	int m_isActive;
+	bool m_isActive;
 	float m_range;
 public:
 	LeverEntity();

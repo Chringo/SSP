@@ -41,8 +41,6 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 	{
 		this->m_isActive = !this->m_isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
-		
 	}
-
 	return 0;
 }
