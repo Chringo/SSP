@@ -57,7 +57,7 @@ Container * Level::GetInstanceEntity(unsigned int entityID)
 		std::vector<Container> * cont = &iterator->second;
 		for (size_t i = 0; i < cont->size(); i++)
 		{
-			if (cont->at(i).internalID = entityID)
+			if (cont->at(i).internalID == entityID)
 			{
 				return &cont->at(i);
 			}
