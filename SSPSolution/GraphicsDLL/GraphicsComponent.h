@@ -25,7 +25,6 @@ struct GraphicsComponent
 
 struct GraphicsAnimationComponent : GraphicsComponent
 {
-	Resources::Model* modelPtr;
 	int jointCount = 0;
 	DirectX::XMMATRIX finalJointTransforms[32];
 

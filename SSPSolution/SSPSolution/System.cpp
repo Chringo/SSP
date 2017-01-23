@@ -57,7 +57,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
