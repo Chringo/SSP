@@ -29,6 +29,9 @@ public:
 
 	//Returns 1 if synchronization was needed, -1 if physicscomponent was missing, -2 if graphicscomponent was missing, -3 if both components were missing.
 	int SyncComponents();
+	int AddObserver(Observer* observer, int entityID);
+
+
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 	bool SetGrabbed(int isGrabbed);

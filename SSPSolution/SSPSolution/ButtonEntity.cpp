@@ -33,13 +33,6 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	return result;
 }
 
-int ButtonEntity::AddObserver(Observer * observer, int entityID)
-{
-	this->m_subject.AddObserver(observer, entityID);
-
-	return 0;
-}
-
 int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 {
 	if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < this->m_range

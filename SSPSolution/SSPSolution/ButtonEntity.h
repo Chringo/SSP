@@ -17,7 +17,6 @@ public:
 
 	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
 
-	int AddObserver(Observer* observer, int entityID);
 	//For now we check only if the player is close enough
 	int CheckPressed(DirectX::XMFLOAT3 playerPos);
 
