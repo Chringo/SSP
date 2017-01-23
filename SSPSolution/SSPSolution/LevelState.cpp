@@ -282,8 +282,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
 
-	
-
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize( DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
 	DirectX::XMFLOAT3 temp;
@@ -340,13 +338,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
 		{	
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-
 			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
 				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				this->m_networkModule->SendEntityUpdatePacket(2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 			}
+
+			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+
+			
 
 			
 		}
