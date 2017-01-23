@@ -5,14 +5,39 @@
 #include "LevelHeaders.h"
 struct Container
 {
-	unsigned int internalID;
-	DirectX::XMVECTOR position; // Total värde. 
-	DirectX::XMVECTOR rotation; // Total värde. 
+	unsigned int	  internalID;
+	DirectX::XMVECTOR position;		// Total värde. 
+	DirectX::XMVECTOR rotation;		// Total värde. 
 	GraphicsComponent component;
-	AIComponent* aiComponent = nullptr;
-	bool isDirty  = false;
-	bool isStatic = true;
-};
+	AIComponent*	  aiComponent = nullptr;
+	bool			  isDirty      = false;
+	bool			  isStatic     = true;
+	Container() {}
+	Container(const Container &obj) {  // copy constructor
+	
+		this->internalID	= obj.internalID	;
+		this->position		= obj.position		;
+		this->rotation		= obj.rotation		;
+		this->component		= obj.component		;
+		this->aiComponent	= obj.aiComponent	;
+		this->isDirty		= obj.isDirty		;
+		this->isStatic		= obj.isStatic		;
+	}
+	Container& operator=(Container const& obj)
+	{
+	
+		this->internalID  = obj.internalID;
+		this->position	  = obj.position;
+		this->rotation	  = obj.rotation;
+		this->component   = obj.component;
+		this->aiComponent = obj.aiComponent;
+		this->isDirty	  = obj.isDirty;
+		this->isStatic	  = obj.isStatic;
+
+		return *this;
+	}
+
+	};
 
 struct AiContainer 
 {
