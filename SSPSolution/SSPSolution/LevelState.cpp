@@ -219,7 +219,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
 				counter++;
-				printf("%d", counter);
+				printf("%d\n %d\n", counter, itr->packet_ID);
 				if ((int)itr->entityID == 0)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
 				{
 					pp = this->m_player1.GetPhysicsComponent();
