@@ -123,7 +123,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[2] = 0.5;
 	ballP->PC_mass = 1;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	ball->Initialize(1, ballP, ballG);
+	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
 	//Entity* ptr = (Entity*)ball;
