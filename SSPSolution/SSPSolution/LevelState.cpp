@@ -259,7 +259,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			(*i)->CheckPressed(playerPos);
 		}
-		bool increasing = inputHandler->IsKeyPressed(SDL_SCANCODE_LSHIFT);
+		bool increasing = !inputHandler->IsKeyPressed(SDL_SCANCODE_LSHIFT);
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
 			DirectX::XMFLOAT3 playerPos;
