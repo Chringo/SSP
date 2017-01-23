@@ -8,14 +8,19 @@ CheckpointHandler::~CheckpointHandler()
 {
 }
 
-LevelData::CheckpointHeader * CheckpointHandler::GetCheckpoint(int entityID)
+CheckpointContainer * CheckpointHandler::GetCheckpoint(int entityID)
 {
-	for each (LevelData::CheckpointHeader* checkpoint in this->m_checkpoints)
+	for each (CheckpointContainer* checkpoint in this->m_checkpoints)
 	{
-		if (checkpoint->entityID == entityID)
+		if (checkpoint->checkpointHeader.entityID == entityID)
 			return checkpoint;
 	}
 
 	return nullptr;
+}
+
+void CheckpointHandler::removeCheckpoint(int index)
+{
+
 }
 

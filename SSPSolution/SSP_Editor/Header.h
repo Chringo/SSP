@@ -57,6 +57,7 @@ struct AiContainer
 
 struct CheckpointContainer
 {
+	unsigned int internalID;
 	OBB obb;
 	DirectX::XMVECTOR position;
 	DirectX::XMVECTOR rotation;
@@ -66,6 +67,7 @@ struct CheckpointContainer
 	LevelData::CheckpointHeader checkpointHeader;
 	CheckpointContainer()
 	{
+		internalID = UINT_MAX;
 		position = { 0.0,0.0,0.0 };
 		rotation = { 0.0,0.0,0.0 };
 		scale = { 1.0, 1.0, 1.0 };
@@ -73,8 +75,15 @@ struct CheckpointContainer
 		obb.ort.r[0] = { 1.0f,0.0f,0.0f };
 		obb.ort.r[1] = { 0.0f,1.0f,0.0f };
 		obb.ort.r[2] = { 0.0f,0.0f,1.0f };
-		obb.ext[0] = 0.2f;
-		obb.ext[1] = 0.2f;
-		obb.ext[2] = 0.2f;
+		obb.ext[0] = 0.5f;
+		obb.ext[1] = 0.5f;
+		obb.ext[2] = 0.5f;
 	}
+};
+
+struct SelectionLists
+{
+	std::vector<Resources::Model*>* modelPtr;
+	std::vector<CheckpointContainer*>* checkpointPtr;
+	//std::vector<Lights*>* lightsPtr;
 };

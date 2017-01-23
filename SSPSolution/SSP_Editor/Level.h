@@ -6,6 +6,7 @@
 #include "DataHandler.h"
 #include "AiHandler.h"
 #include "GlobalIDHandler.h"
+#include "Checkpointhandler.h"
 //#include "UiControlHandler.h"
 #define PLAYER1 2215164276 
 #define PLAYER2 3255160373
@@ -22,6 +23,7 @@ class Level
 private:
 	Container m_SpawnPoints[2];
 	AiHandler m_LevelAi; //Handler for the AI in the level
+	CheckpointHandler m_checkpointHandler;
 	std::string levelName = "untitled_level";
 	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
@@ -33,12 +35,14 @@ public:
 	std::vector<unsigned int>* GetUniqueModels() { return &this->m_uniqueModels; };
 	std::unordered_map<unsigned int, std::vector<Container>> * GetModelEntities();
 	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
+	std::vector<CheckpointContainer*>* GetCheckpoints();
 	Container* GetInstanceEntity(unsigned int entityID);
 	Resources::Status GetModelEntity(unsigned int modelID, unsigned int instanceID, Container& container);
 	Resources::Status AddModelEntity(unsigned int modelID,  DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status AddModelEntityFromLevelFile(unsigned int modelID, unsigned int instanceID,DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
+	Resources::Status UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale);
 
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);

@@ -68,7 +68,8 @@ namespace LevelData {
 		unsigned int entityID; 
 		unsigned int checkpointNumber = 0;
 		float position[3];
-		OBB obb;
+		float ext[3];
+		float ort[16];
 	};
 
 	enum LevelStatus {

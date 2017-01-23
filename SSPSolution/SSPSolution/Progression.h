@@ -8,12 +8,6 @@
 /* Assuming that the puzzele will be reloaded with a 
 predefined state so we dont have to store entity 
 states and positions. */
-__declspec(align(16)) struct Checkpoint
-{
-	unsigned int ID = 0;
-	DirectX::XMVECTOR position;
-	OBB Checkpointobb;
-};
 
 class Progression
 {

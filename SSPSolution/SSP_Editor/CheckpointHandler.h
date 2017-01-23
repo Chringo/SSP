@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_CHECKPOINTHANDLER_CHECKPOINTHANDLER_H
 #define SSPEDITOR_CHECKPOINTHANDLER_CHECKPOINTHANDLER_H
 #include "LevelHeaders.h"
+#include "Header.h"
 #include <vector>
 
 /*
@@ -14,14 +15,14 @@ this will be cleared when a new level is created.
 class CheckpointHandler
 {
 private:
-	std::vector<LevelData::CheckpointHeader*> m_checkpoints;
+	std::vector<CheckpointContainer*> m_checkpoints;
 public:
 	CheckpointHandler();
 	~CheckpointHandler();
 	
-	LevelData::CheckpointHeader* GetCheckpoint(int entityID);
-	std::vector<LevelData::CheckpointHeader*> GetAllCheckpoints() { return this->m_checkpoints; };
-
+	CheckpointContainer* GetCheckpoint(int entityID);
+	std::vector<CheckpointContainer*> GetAllCheckpoints() { return this->m_checkpoints; };
+	void removeCheckpoint(int index);
 
 };
 

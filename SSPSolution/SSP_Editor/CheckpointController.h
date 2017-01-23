@@ -1,6 +1,6 @@
 #ifndef SSPEDITOR_CHECKPOINTCONTROLLER_CHECKPOINTCONTROLLER_H
 #define SSPEDITOR_CHECKPOINTCONTROLLER_CHECKPOINTCONTROLLER_H
-#include "LevelHeaders.h"
+#include "Header.h"
 #include "../physicsDLL/PhysicsHandler.h"
 /*
 	Used to controll the checkpoints
@@ -11,19 +11,19 @@
 class CheckpointController
 {
 private:
-	LevelData::CheckpointHeader * m_checkpoint;
+	CheckpointContainer * m_checkpoint;
 	CheckpointController();
 public:
-	CheckpointController(LevelData::CheckpointHeader * checkpoint);
+	CheckpointController(CheckpointContainer * checkpoint);
 	~CheckpointController();
 
-	void RemoveCheckpoint(int entityID);
-	void SetComponent(LevelData::CheckpointHeader * checkpoint) { this->m_checkpoint = checkpoint; };
+	void SetComponent(CheckpointContainer * checkpoint) { this->m_checkpoint = checkpoint; };
 	void SetID(int entityID);
 	void SetCheckpointNumber(int number);
-	void SetOBB(OBB obb);
+	void SetExt(float ext[3]);
+	void SetOrt(float ort[16]);
 	void SetPosition(float x, float y, float z);
-	LevelData::CheckpointHeader * GetCheckpoint() { return this->m_checkpoint; };
+	CheckpointContainer * GetCheckpoint() { return this->m_checkpoint; };
 
 };
 
