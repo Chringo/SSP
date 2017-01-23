@@ -419,7 +419,7 @@ void NetworkModule::ReadMessagesFromClients()
 		
 		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
-		int data_read = 0;	//Skip first 4 bytes
+		int data_read = 0;
 		printf("\n\n\n\n\n %d \n",data_length);
 		printf("\n\n\n\n\n\n\n %d, %d \n", sizeof(AnimationPacket), sizeof(EntityPacket));
 		// If there was data
@@ -467,11 +467,12 @@ void NetworkModule::ReadMessagesFromClients()
 
 				this->SendFlagPacket(DISCONNECT_ACCEPTED);
 				this->RemoveClient(iter->first);	// iter->first is the ID
-				data_read += sizeof(Packet);
+				
 				//DEBUG
 				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 				iter = this->connectedClients.end();
+				data_read = data_length;
 				break;
 
 			case DISCONNECT_ACCEPTED:
@@ -479,11 +480,11 @@ void NetworkModule::ReadMessagesFromClients()
 				p.deserialize(network_data);	// Read the binary data into the object
 
 				this->RemoveClient(iter->first);
-				data_read += sizeof(Packet);
 				//DEBUF
 				//printf("Client recived: DISCONNECT_ACCEPTED\n");
 
 				iter = this->connectedClients.end();
+				data_read = data_length;
 				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
 
 				break;

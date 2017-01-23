@@ -102,7 +102,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player2.Initialize(3, playerP, playerG);
+	this->m_player2.Initialize(1, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
