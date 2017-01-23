@@ -23,7 +23,7 @@ public:
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
 
-	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increasing);
+	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increasing);
 
 	float SetMinRotation(float amount);
 	float SetMaxRotation(float amount);

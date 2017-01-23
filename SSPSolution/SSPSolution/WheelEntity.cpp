@@ -112,46 +112,53 @@ int WheelEntity::React(int entityID, EVENT reactEvent)
 	return 0;
 }
 
-int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increasing)
+int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increasing)
 {
 	int result = 0;
 	DirectX::XMFLOAT3 myPos;
 	DirectX::XMStoreFloat3(&myPos, this->m_pComp->PC_pos);
-	
-	if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < this->m_range
-		&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < this->m_range
-		&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
+	int b = 0;
+	if (increasing == 0)
 	{
-		if (increasing)
+		this->m_rotationState = 0;
+	}
+	else
+	{
+		if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < this->m_range
+			&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < this->m_range
+			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
 		{
-			//Check if max has been reached
-			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) >= this->m_maxRotation)
+			if (increasing == 1)
 			{
-				this->m_rotationState = 0;
+				//Check if max has been reached
+				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) >= this->m_maxRotation)
+				{
+					this->m_rotationState = 0;
+				}
+				else
+				{
+					this->m_rotationState = 1;
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+				}
 			}
-			else
+			else if (increasing == -1)
 			{
-				this->m_rotationState = 1;
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+				//Check if min has been reached
+				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
+				{
+					this->m_rotationState = 0;
+				}
+				else
+				{
+					this->m_rotationState = -1;
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+				}
 			}
 		}
 		else
 		{
-			//Check if min has been reached
-			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
-			{
-				this->m_rotationState = 0;
-			}
-			else
-			{
-				this->m_rotationState = -1;
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
-			}
+			this->m_rotationState = 0;
 		}
-	}
-	else
-	{
-		this->m_rotationState = 0;
 	}
 	return result;
 }

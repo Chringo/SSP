@@ -259,7 +259,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			(*i)->CheckPressed(playerPos);
 		}
-		bool increasing = !inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT);
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+	{
+
+		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
 			DirectX::XMFLOAT3 playerPos;
@@ -267,9 +271,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
-		
 	}
-
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	{
+		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+		{
+			DirectX::XMFLOAT3 playerPos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			(*i)->CheckPlayerInteraction(playerPos, 0);
+		}
+	}
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
