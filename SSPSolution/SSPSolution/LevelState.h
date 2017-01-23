@@ -39,8 +39,6 @@ public:
 	int Update(float dt, InputHandler * inputHandler);
 	int CreateLevel(LevelData::Level* data);
 
-	void LockCameraToPlayer();
-
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:
