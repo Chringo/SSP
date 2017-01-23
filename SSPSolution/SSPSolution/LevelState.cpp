@@ -289,27 +289,19 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
 	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
-
-	if (this->m_networkModule->IsHost())
-	{	
-		this->m_player1.SetRightDir(rightDir);
-		this->m_player1.SetUpDir(upDir);
-		this->m_player1.SetLookDir(playerLookDir);
-		this->m_player1.Update(dt, inputHandler);
-		this->m_player2.SyncComponents();
-	}
-	else
-	{
-		this->m_player2.SetRightDir(rightDir);
-		this->m_player2.SetUpDir(upDir);
-		this->m_player2.SetLookDir(playerLookDir);
-		this->m_player2.Update(dt, inputHandler);
-		this->m_player1.SyncComponents();
-	}
 	
 #pragma region
 	if(this->m_networkModule->IsHost() == true)
 	{ 
+		//Camera
+		this->m_player1.SetRightDir(rightDir);
+		this->m_player1.SetUpDir(upDir);
+		this->m_player1.SetLookDir(playerLookDir);
+		this->m_player1.Update(dt, inputHandler);
+
+		//Sync other half of the components
+		this->m_player2.SyncComponents();
+
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
@@ -356,6 +348,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if (this->m_networkModule->IsHost() == false)
 	{
+		this->m_player2.SetRightDir(rightDir);
+		this->m_player2.SetUpDir(upDir);
+		this->m_player2.SetLookDir(playerLookDir);
+		this->m_player2.Update(dt, inputHandler);
+
+		//Other half of the components
+		this->m_player1.SyncComponents();
+		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		{
+			this->m_dynamicEntitys.at(i)->SyncComponents();
+		}
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
