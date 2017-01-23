@@ -33,7 +33,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	file.write(data, sizeof(LevelData::MainLevelHeader));					 //Write the main header first
 
 	//Resource data
-	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
+	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;    //size of resource data
 	char* resData  = new char[resSize];										 //Allocate for resource data
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
@@ -47,12 +47,22 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
 	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
-	file.write(modelData, modelSize);						//Write all modelEntities
+	file.write(modelData, modelSize);						//Write all modelEntities														
+    
+    //AI Entities
+	if (header.AiComponentAmount > 0)
+	{
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
+		char* aiData = new char[aiSize];					    //Allocate for ai data
+		GetAiData(aiData);								        //Get ai data	
+		file.write(aiData, aiSize);						//Write all aiComponents					
+		delete aiData;
+	}
 
 	file.close();
-
+	//Cleanup
 	delete resData;
-	delete modelData;//Cleanup
+	delete modelData;
 
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
@@ -93,6 +103,18 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	file.read(modelData, modelSize);											  //Bulk read all the entity data
 	this->LoadEntities((LevelData::EntityHeader*)modelData, header.entityAmount); //Load them into the level object
 
+	//AI Entities
+	if (header.AiComponentAmount > 0)
+	{
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
+		char* aiData = new char[aiSize];					    //Allocate for ai data
+		file.read(aiData, aiSize);							//read all aiComponents	
+		
+		//TODO: LOAD INTO LEVEL
+		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
+		
+		delete aiData;
+	}
 
 	file.close();
 	delete modelData; //Cleanup
@@ -158,9 +180,10 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 {
 	LevelData::MainLevelHeader header;
 	
-	header.resAmount	= m_currentLevel.GetUniqueModels()->size();
-	header.entityAmount = m_currentLevel.GetNumEntities();
-	header.lightAmount  = m_currentLevel.GetNumLights();
+	header.resAmount	     = m_currentLevel.GetUniqueModels()->size();
+	header.entityAmount      = m_currentLevel.GetNumEntities();
+	header.lightAmount       = m_currentLevel.GetNumLights();
+	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
 	return header;
 }
 
@@ -189,6 +212,10 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.rotation[2] = entityContainer->at(i).rotation.m128_f32[2];
 
 			entity.isStatic	   = entityContainer->at(i).isStatic;
+			if (entityContainer->at(i).aiComponent != nullptr)
+				entity.hasAi = true;
+			else
+				entity.hasAi = false;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
 			offset += sizeof(LevelData::EntityHeader);
 
@@ -237,14 +264,75 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
+	{
+		LevelData::AiHeader ai;
+		ai.entityID		 = aiData->at(i)->AC_entityID;
+		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
+		ai.pattern		 = aiData->at(i)->AC_pattern;
+		ai.speed		 = aiData->at(i)->AC_speed;
+		ai.time			 = aiData->at(i)->AC_time;
+		memset(ai.wayPoints, 0, sizeof(float) * 24);
+
+		for (size_t j = 0; j < ai.nrOfWaypoints; j++)
+		{
+				ai.wayPoints[j][0] = aiData->at(i)->AC_waypoints[j].m128_f32[0];
+				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
+				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
+		}
+		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
+		offset += sizeof(LevelData::AiHeader);
+	}
+
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
+	GlobalIDHandler::GetInstance()->ResetIDs();
 	for (size_t i = 0; i < numEntities; i++)
 	{
-		m_currentLevel.AddModelEntity(dataPtr[i].modelID,
+		m_currentLevel.AddModelEntityFromLevelFile(dataPtr[i].modelID,
 			dataPtr[i].EntityID,
 			DirectX::XMVectorSet(dataPtr[i].position[0], dataPtr[i].position[1], dataPtr[i].position[2], 0.0),
 			DirectX::XMVectorSet(dataPtr[i].rotation[0], dataPtr[i].rotation[1], dataPtr[i].rotation[2], 0.0));
+
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		
+			AIComponent* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
+			newComponent->AC_entityID	  = dataPtr[i].entityID;
+			newComponent->AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
+			newComponent->AC_speed		  = dataPtr[i].speed;
+			newComponent->AC_pattern	  = dataPtr[i].pattern;
+			newComponent->AC_time		  = dataPtr[i].time;
+			for (size_t k = 0; k < newComponent->AC_nrOfWaypoint; k++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					newComponent->AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
+				}
+			}
+			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->AC_entityID);
+			if (cont == nullptr) {
+				std::cout << "The entity that has the AIcomponent with id :" << newComponent->AC_entityID << "does not exist" << std::endl;
+				return LevelData::LevelStatus::L_FILE_NOT_FOUND;
+			}
+			else {
+				cont->aiComponent = newComponent;
+			}
 
 	}
 

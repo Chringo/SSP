@@ -53,13 +53,14 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 		m_selection = selection;
 		if (m_selection->aiComponent != nullptr)
 		{
-			
+ 			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
+ 			m_Current_Type = PATH; //Update current type
 			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->AC_speed);
 			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->AC_time);
 
 			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->AC_triggered);
 			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->AC_triggered);
-			
+			this->m_Pattern->setCurrentIndex(selection->aiComponent->AC_pattern - 1);
 			for (int i = 0; i < NUM_WAYPOINTS; i++)
 			{
 				if (this->m_ListItems[(ListItems)i] != nullptr)
@@ -79,17 +80,22 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 			}
 			
 		}
+		else
+		{
+			m_BehaviourType->setCurrentIndex(NONE); //Close the window
+			m_Current_Type = NONE; //Update current type
+		}
 		
 	}
 }
 
 void Ui::BehaviourTypeHandler::Deselect()
 {
-	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_selection = nullptr;
+	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
-	m_uniqueID->setText(QString::number(0));
+	
 	
 }
 
@@ -195,16 +201,16 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 {
 
-	if (this->m_Current_Type == PATH)
+ 	if (this->m_Current_Type == PATH)
 	{
-		this->m_Current_Pattern = (Pattern)val;
+		this->m_Current_Pattern = (Pattern)(val + 1);
 	}
 	if (m_selection == nullptr)
 		return;
 	if (m_selection->aiComponent != nullptr)
 	{
 		AIController cont(m_selection->aiComponent);
-		cont.SetPattern(val);
+		cont.SetPattern(val + 1);
 	}
 }
 
@@ -218,7 +224,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 		//remove AI COMP
 		if (m_selection != nullptr)
 		{
-			if (m_selection->aiComponent != nullptr)
+			if (m_selection->aiComponent != nullptr && val != PATH)
 			{
 				AIController cont(m_selection->aiComponent);
 				cont.DeletePath();
@@ -251,7 +257,7 @@ void Ui::BehaviourTypeHandler::on_Add()
 				{
 					AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
 					this->m_selection->aiComponent = newComponent;
-					newComponent->AC_entityID += m_selection->internalID;
+					newComponent->AC_entityID = m_selection->internalID;
 				}
 			//}
 				AIController control(m_selection->aiComponent);
@@ -278,8 +284,13 @@ void Ui::BehaviourTypeHandler::on_Del()
 		this->m_ListItems[(ListItems)currentRow] = nullptr;
 
 		AIController control(m_selection->aiComponent);
-		control.RemoveWayPoint(currentRow);
-		
+		control.RemoveWayPoint(currentRow);		//Remove the waypoint
+
+		if (this->m_WaypointList->count() <= 0) //if There is no waypoints, remove the ai component
+		{
+			LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->DeletePathComponent(m_selection->aiComponent->AC_entityID);
+			m_selection->aiComponent = nullptr;
+		}
 		for (int i = currentRow; i < NUM_WAYPOINTS; i++)
 		{
 			if (currentRow == WAYPOINT8)

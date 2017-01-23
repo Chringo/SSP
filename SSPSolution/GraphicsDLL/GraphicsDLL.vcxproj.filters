@@ -84,6 +84,12 @@
     <ClInclude Include="AnimationHandler.h">
       <Filter>Header Files\Animations</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsHandler.cpp">

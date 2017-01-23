@@ -16,6 +16,7 @@ private:
 protected:
 	int m_entityID;
 	bool m_isGrabbed;
+	Entity* m_isGrabbedBy;
 	Subject m_subject;
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
@@ -34,7 +35,8 @@ public:
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 	AIComponent* SetAIComponent(AIComponent* aiComp);
-	bool SetGrabbed(int isGrabbed);
+	bool SetGrabbed(Entity* isGrabbedBy);
+	bool IsGrabbed();
 	int SetEntityID(int entityID);
 
 	PhysicsComponent* GetPhysicsComponent();
