@@ -53,13 +53,14 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 		m_selection = selection;
 		if (m_selection->aiComponent != nullptr)
 		{
-			
+ 			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
+ 			m_Current_Type = PATH; //Update current type
 			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->AC_speed);
 			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->AC_time);
 
 			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->AC_triggered);
 			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->AC_triggered);
-			this->m_Pattern->setCurrentIndex(selection->aiComponent->AC_pattern);
+			this->m_Pattern->setCurrentIndex(selection->aiComponent->AC_pattern - 1);
 			for (int i = 0; i < NUM_WAYPOINTS; i++)
 			{
 				if (this->m_ListItems[(ListItems)i] != nullptr)
@@ -78,6 +79,11 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
 			}
 			
+		}
+		else
+		{
+			m_BehaviourType->setCurrentIndex(NONE); //Close the window
+			m_Current_Type = NONE; //Update current type
 		}
 		
 	}
@@ -218,7 +224,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 		//remove AI COMP
 		if (m_selection != nullptr)
 		{
-			if (m_selection->aiComponent != nullptr)
+			if (m_selection->aiComponent != nullptr && val != PATH)
 			{
 				AIController cont(m_selection->aiComponent);
 				cont.DeletePath();

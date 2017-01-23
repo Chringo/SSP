@@ -974,7 +974,7 @@ public:
         QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setHidden(bool)));
         QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setHidden(bool)));
 
-        BehaviourStackWidget->setCurrentIndex(3);
+        BehaviourStackWidget->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
 
 
