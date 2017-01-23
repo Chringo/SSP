@@ -49,9 +49,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			else {
 				//Check if the rotation increase has exceeded a 10% increment
 				//Rotation increase
-				float rotationAmountNew = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
 				int percentIncOld = (int)(rotationAmount * 10.0f);
-				int percentIncNew = (int)(rotationAmountNew * 10.0f);
+				rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+				int percentIncNew = (int)(rotationAmount * 10.0f);
 
 				//Now we have calculated the amount of 10percent incrementation of the rotation we have and can check if it has changed
 				if (percentIncNew != percentIncOld)
@@ -80,9 +80,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			{
 				//Check if the rotation increase has exceeded a 10% increment
 				//Rotation decrease
-				float rotationAmountNew = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
 				int percentIncOld = (int)(rotationAmount * 10.0f);
-				int percentIncNew = (int)(rotationAmountNew * 10.0f);
+				rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+				int percentIncNew = (int)(rotationAmount * 10.0f);
 
 				//Now we have calculated the amount of 10percent incrementation of the rotation we have and can check if it has changed
 				if (percentIncNew != percentIncOld)
