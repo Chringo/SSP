@@ -35,12 +35,6 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
-	//float dt = 0;
-	////if (deltaTime < 0.000001f)
-	////	dt = 0.00001f;
-	////else
-	////	dt = (deltaTime * 0.00001f);
-	//dt = 1000000 / deltaTime;
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		bool x = this->m_AIComponents.at(i)->AC_triggered;
