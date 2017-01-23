@@ -31,7 +31,7 @@ Resources::Status Communicator::Initialize(
 	this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
 	this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
 	this->m_Camera->UpdateProjection();
-	this->m_Camera->Update();
+	this->m_Camera->UpdateView();
 
 	if (!isPreview)
 	{
@@ -114,12 +114,17 @@ Resources::Status Communicator::GetComponent(unsigned int modelID, unsigned int 
 
 Resources::Status Communicator::AddModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
-	return m_currentLevel->AddModelEntity(modelID, instanceID, position, rotation);
+	return m_currentLevel->AddModelEntity(modelID, position, rotation);
 }
 
 Resources::Status Communicator::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
 {
 	return m_currentLevel->UpdateModel(modelID, instanceID, position, rotation);
+}
+
+Resources::Status Communicator::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation)
+{
+	return m_currentLevel->UpdateSpawnPoint( instanceID, position, rotation);
 }
 
 Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int instanceID)
@@ -131,7 +136,7 @@ void Communicator::ViewPortChanged(float height, float width)
 {
 	if (height != 0) {
 		this->m_Camera->UpdateProjection(width / height);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 		this->m_EditorInputHandler->ViewPortChanged(height, width);
 	}
 }

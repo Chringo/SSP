@@ -189,6 +189,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
 
 	size_t totalMem = header.resAmount * sizeof(LevelData::ResourceHeader) + //Calculate file size
+		sizeof(LevelData::SpawnHeader) * 2 +
 		header.entityAmount * sizeof(LevelData::EntityHeader) +
 		header.lightAmount * sizeof(LevelData::LightHeader);
 
@@ -205,6 +206,12 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	file.read(data, resSize);						     //Read res data
 	level.resources = (LevelData::ResourceHeader*) data; //put data into level variable
 	offset += resSize;
+
+	//Spawn points
+	file.read(data + offset, sizeof(LevelData::SpawnHeader) * 2);
+	level.spawns[0] = *(LevelData::SpawnHeader*)(data + offset);
+	level.spawns[1] = *(LevelData::SpawnHeader*)(data + offset + sizeof(LevelData::SpawnHeader)); //Put the spawn data into the level struct
+	offset += sizeof(LevelData::SpawnHeader) * 2;
 
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize

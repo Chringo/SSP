@@ -10,7 +10,6 @@ struct Vector3{
 struct Vector4{
 	float x, y, z, w;
 };
-
 struct MainHeader{
 	unsigned int id;
 	int resourceType;
@@ -26,10 +25,11 @@ struct BoundingBoxHeader{
 	Vector3 position;		 //Positionen på boundingboxen
 	float extension[3];		 //Skalären
 	Vector3 extensionDir[3]; //Orto
+	Vector3 PivotPosition;
 };
 
 struct SkeletonHeader {
-	unsigned int jointCount = 0;
+	unsigned int jointCount		= 0;
 	unsigned int animLayerCount = 0;
 };
 struct LayerIdHeader{
@@ -39,6 +39,14 @@ struct JointHeader {
 	float invbindPose[16];
 	int jointIndex;
 	int parentIndex;
+};
+struct KeyFrameHeader
+{
+	float timeValue;
+	float translation[3];
+	float rotation[3];
+	float quaternion[4];
+	float scale[3];
 };
 struct MaterialHeader{
 	unsigned int textureIDs[5]{0,0,0,0,0};
