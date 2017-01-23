@@ -138,38 +138,60 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
 	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
 	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
-	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	platformP->PC_is_Static = true;
 	platformP->PC_AABB.ext[0] = 5;
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
+	platformP->PC_elasticity = 0;
+	platformP->PC_friction = 1.0f;
+	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
-	platformTERMINATOR->AC_active = true;
-	// entityID resolved in initialise down below
-
 	platformTERMINATOR->AC_triggered = true;
-	platformTERMINATOR->AC_time = 0;
-
 	platformTERMINATOR->AC_speed = 0.15f;
-	// AC_dir resolved in update loop
-
 	platformTERMINATOR->AC_position = platformP->PC_pos;
-	platformTERMINATOR->AC_pattern = 2;// Circular
-	platformTERMINATOR->AC_direction = 0;
-	platformTERMINATOR->AC_latestWaypointID = 0;
-	platformTERMINATOR->AC_nextWaypointID = 1;
+	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
 	platformTERMINATOR->AC_nrOfWaypoint = 4;
 	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
 	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
 	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
 	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
-
-	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
+	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
 	platformTERMINATOR->AC_entityID = platform->GetEntityID();
 	this->m_dynamicEntitys.push_back(platform);
+
+	DynamicEntity* plat = new DynamicEntity();
+	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
+	platG->modelID = 1337;
+	platG->active = true;
+	resHandler->GetModel(platG->modelID, platG->modelPtr);
+	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
+	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
+	platP->PC_is_Static = true;
+	platP->PC_AABB.ext[0] = 5;
+	platP->PC_AABB.ext[1] = 0.1f;
+	platP->PC_AABB.ext[2] = 5;
+	platP->PC_elasticity = 0;
+	platP->PC_friction = 1.0f;
+	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
+	AIComponent* platA = m_cHandler->GetAIComponent();
+#pragma region AIComp variables
+	platA->AC_triggered = true;
+	platA->AC_speed = 0.15f;
+	platA->AC_position = platP->PC_pos;
+	platA->AC_pattern = AI_ROUNDTRIP;
+	platA->AC_nrOfWaypoint = 4;
+	platA->AC_waypoints[0] = platP->PC_pos;
+	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
+	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
+	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
+#pragma endregion
+	plat->Initialize(5, platP, platG, platA);
+	platP->PC_entityID = plat->GetEntityID();
+	platA->AC_entityID = plat->GetEntityID();
+	this->m_dynamicEntitys.push_back(plat);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 1.4, 0.0, 0.0);
@@ -408,7 +430,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[2],
 		0);
 
-
+	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 
@@ -441,8 +463,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_rotation	   = rot;						//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
-
-
 
 
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
@@ -479,12 +499,26 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 
+#pragma region AIComp check
+		// Correct check but does not work with current testinglevel
+		//if(currEntity->hasAi)
+		//	t_pc->PC_is_Static = false;
+		// Temporary check to work with both new and old testinglevels
+		for (size_t q = 0; q < data->numAI; q++)
+		{
+			if (currEntity->EntityID == data->aiComponents[q].entityID)
+			{
+				t_pc->PC_is_Static = false;
+			}
+		}
+#pragma endregion
 
 
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->SetGraphicsComponent(t_gc);
 			tse->SetPhysicsComponent(t_pc);
+			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc);
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
@@ -492,12 +526,39 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			DynamicEntity* tde = new DynamicEntity();
 			tde->SetGraphicsComponent(t_gc);
 			tde->SetPhysicsComponent(t_pc);
+			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc);
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
-			
+			aiEntities.push_back(tde);// Push entity to initialize AIComp later
 		}
 
 	}
-
+	for (size_t A = 0; A < aiEntities.size(); A++)
+	{
+		for (size_t B = 0; B < data->numAI; B++)
+		{
+			if (data->aiComponents[B].entityID == aiEntities[A]->GetEntityID())
+			{
+				aiEntities[A]->GetPhysicsComponent()->PC_is_Static = true;
+				AIComponent* temp = m_cHandler->GetAIComponent();
+				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
+				temp->AC_entityID = data->aiComponents[A].entityID;
+				temp->AC_time = data->aiComponents[A].time;
+				temp->AC_speed = data->aiComponents[A].speed;
+				temp->AC_pattern = data->aiComponents[A].pattern;
+				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
+				for (size_t x = 0; x < temp->AC_nrOfWaypoint; x++)
+				{
+					temp->AC_waypoints[x] = {
+						data->aiComponents[A].wayPoints[x][0],
+						data->aiComponents[A].wayPoints[x][1],
+						data->aiComponents[A].wayPoints[x][2]
+					};
+				}
+				temp->AC_position = temp->AC_waypoints[0];
+				aiEntities[A]->SetAIComponent(temp);
+			}
+		}
+	}
 
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
