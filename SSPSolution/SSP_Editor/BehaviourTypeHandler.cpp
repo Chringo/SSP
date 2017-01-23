@@ -91,8 +91,8 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 
 void Ui::BehaviourTypeHandler::Deselect()
 {
-	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_selection = nullptr;
+	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
 	
@@ -201,16 +201,16 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 {
 
-	if (this->m_Current_Type == PATH)
+ 	if (this->m_Current_Type == PATH)
 	{
-		this->m_Current_Pattern = (Pattern)val;
+		this->m_Current_Pattern = (Pattern)(val + 1);
 	}
 	if (m_selection == nullptr)
 		return;
 	if (m_selection->aiComponent != nullptr)
 	{
 		AIController cont(m_selection->aiComponent);
-		cont.SetPattern(val);
+		cont.SetPattern(val + 1);
 	}
 }
 
