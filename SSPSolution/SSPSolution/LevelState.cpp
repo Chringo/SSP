@@ -215,12 +215,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			// Apply each packet to the right entity
 			std::list<EntityPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
 
 				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
 				{
-					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+					pp = this->m_player1.GetPhysicsComponent();
 
 					// Update the component
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
@@ -229,7 +230,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else if (itr->entityID == -2)
 				{
-					PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+					pp = this->m_player2.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+				}
+				else if (itr->packet_ID == 2)
+				{
+					pp = (*this->m_dynamicEntitys.at(0)).GetPhysicsComponent();
 
 					// Update the component
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
@@ -245,7 +255,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
 						{
 							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
-							PhysicsComponent* pp = ent->GetPhysicsComponent();
+							pp = ent->GetPhysicsComponent();
 
 							// Update the component
 							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
