@@ -430,7 +430,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[2],
 		0);
 
-
+	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 
@@ -488,7 +488,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[0] = abs(tempRot.r[3].m128_f32[0]);
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
-	std::vector<DynamicEntity*> aiEntities;
+
 		t_pc->PC_friction = 1.0f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
@@ -499,6 +499,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 
+#pragma region AIComp check
+		// Correct check but does not work with current testinglevel
+		//if(currEntity->hasAi)
+		//	t_pc->PC_is_Static = false;
+		// Temporary check to work with both new and old testinglevels
 		for (size_t q = 0; q < data->numAI; q++)
 		{
 			if (currEntity->EntityID == data->aiComponents[q].entityID)
@@ -506,6 +511,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				t_pc->PC_is_Static = false;
 			}
 		}
+#pragma endregion
 
 
 		if (t_pc->PC_is_Static) {
