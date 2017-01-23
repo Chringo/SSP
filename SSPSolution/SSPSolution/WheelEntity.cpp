@@ -138,7 +138,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increa
 		else
 		{
 			//Check if min has been reached
-			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_maxRotation)
+			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
 			{
 				this->m_rotationState = 0;
 			}
