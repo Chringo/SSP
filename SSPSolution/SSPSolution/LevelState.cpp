@@ -239,13 +239,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				else
 				{
 					// Find the entity
-					DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
-					PhysicsComponent* pp = ent->GetPhysicsComponent();
+					std::vector<DynamicEntity*>::iterator Ditr;
+					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
 
-					// Update the component
-					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
+						{
+							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
+							PhysicsComponent* pp = ent->GetPhysicsComponent();
+
+							// Update the component
+							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+							pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						}
+
+					}
+					
 				}
 			}
 		}
@@ -291,12 +300,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if(this->m_networkModule->IsHost() == true)
 	{ 
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
-		{
-			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-		}
-
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
@@ -324,17 +327,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
 		}
 
+		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER1
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
+		{
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+
+			for (int i = 0; i <this->m_dynamicEntitys.size; i++)	//Change start and end with physics packet
+			{
+				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			}
+		}
+
 	}
 #pragma endregion Host/Player1 Specifics
 
 #pragma region
 	if (this->m_networkModule->IsHost() == false)
 	{
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
-		{
-			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-		}
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
@@ -361,6 +372,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_player2.GetIsAming())
 		{
 			this->m_player2.SetLookDir(this->m_cameraRef->GetDirection());
+		}
+
+		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
+		{
+			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+			this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 		}
 
 	}
