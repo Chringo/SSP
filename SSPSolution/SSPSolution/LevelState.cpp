@@ -294,7 +294,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
 		{
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 		}
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
@@ -333,7 +333,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 		}
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
