@@ -6,6 +6,7 @@ Player::Player()
 {
 	this->m_speed = 5.0f;
 	this->m_grabbed = nullptr;
+	this->m_isAiming = false;
 }
 
 
@@ -22,6 +23,8 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
+	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
+
 	return result;
 }
 
@@ -52,7 +55,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 	if (this->m_grabbed != nullptr)
 	{
-		this->m_grabbed->GetPhysicsComponent()->PC_pos = this->GetPhysicsComponent()->PC_pos;
+		this->m_grabbed->GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
 	}
 
 
@@ -61,8 +64,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
+			
 			float strength = 1.5f;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1.5f, 0, 0)), strength);
+			this->SetGrabbed(nullptr);	//Release the entity
 		}
 
 	}
@@ -71,8 +76,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
+			
 			float strength = 1.5f;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
+			this->SetGrabbed(nullptr);	//Relsease the entity
 		}
 
 	}
@@ -95,6 +102,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				float forwardsVel = 0.0f, sidewaysVel = 0.0f;
 				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
 				velocity = DirectX::XMVectorScale(this->m_lookDir, m_speed * forwards);
+				velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
 				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
 				//Rotate the velocity vector
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
@@ -170,6 +178,11 @@ DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 	return oldValue;
 }
 
+void Player::SetAiming(bool isAming)
+{
+	this->m_isAiming = isAming;
+}
+
 float Player::GetSpeed()
 {
 	return this->m_speed;
@@ -188,4 +201,9 @@ DirectX::XMVECTOR Player::GetUpDir()
 DirectX::XMVECTOR Player::GetRightDir()
 {
 	return this->m_rightDir;
+}
+
+bool Player::GetIsAming()
+{
+	return this->m_isAiming;
 }

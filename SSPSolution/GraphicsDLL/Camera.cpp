@@ -81,11 +81,13 @@ int Camera::Update(float dt)
 
 	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
 
+
+
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-	if (DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
-	{
-		this->m_lookAt.z += 1;
-	}
+	//if (!DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
+	//{
+	//	this->m_lookAt.y += 1;
+	//}
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
@@ -216,6 +218,10 @@ DirectX::XMVECTOR Camera::GetCameraPivot()
 {
 	return *this->m_focusPoint;
 }
+GRAPHICSDLL_API float Camera::GetCameraDistance()
+{
+	return this->m_distance;
+}
 void Camera::GetCameraFrameData(cameraFrameData & storeIn)
 {
 	storeIn.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
@@ -230,6 +236,11 @@ cameraFrameData Camera::GetCameraFrameData()
 	myData.pProjection = DirectX::XMLoadFloat4x4(&this->m_projectionMatrix);
 	myData.pPos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 	return  myData;
+}
+
+DirectX::XMVECTOR Camera::GetDirection()
+{
+	return this->m_camDirvector;
 }
 #pragma endregion getters
 #pragma region
@@ -251,24 +262,20 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 {
 	bool result = false;
 
-	result = DirectX::XMVector4NotEqual(targetOffset, DirectX::XMVectorSet(0, 0, 0, 0));
-	if (result == false)
-	{
-		targetOffset = { 0.0 , 1.0, 0.0 };
-	}
 	
 
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
 	this->m_focusPointOffset = targetOffset;
 	
-	DirectX::XMVECTOR camPosVec = *lockTarget;
-	camPosVec = DirectX::XMVectorAdd(camPosVec, m_focusPointOffset);
-	camPosVec.m128_f32[2] += distance;
+	m_pitch = DirectX::XMConvertToRadians( -45.0);
+	m_yaw = DirectX::XMConvertToRadians(-45.0);
 
 	this->m_camDirvector = m_Dir();
 	this->m_camRightvector = m_Right();
-	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+
+	m_updatePos();
 
 	return;
 }
@@ -442,6 +449,32 @@ void Camera::ApplyLocalTranslation(DirectX::XMFLOAT3 translation)
 {
 	this->ApplyLocalTranslation(translation.x, translation.y, translation.z);
 }
+
+void Camera::SetDistance(float newDistance)
+{
+	this->m_distance = newDistance;
+}
+
+void Camera::DecreaseDistance(float amount)
+{
+	this->m_distance -= amount;
+
+	
+}
+
+GRAPHICSDLL_API void Camera::IncreaseDistance(float amount)
+{
+	this->m_distance += amount;
+
+
+}
+Sphere Camera::GetCollisionSphere(DirectX::XMVECTOR & pos)
+{
+	pos = DirectX::XMLoadFloat3(&this->GetCameraPos());
+
+	return m_collisionSphere;
+}
+
 DirectX::XMVECTOR Camera::GetRight()
 {
 	return m_camRightvector;
