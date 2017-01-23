@@ -219,7 +219,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
 
-				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
+				if ((int)itr->entityID == 0)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
 				{
 					pp = this->m_player1.GetPhysicsComponent();
 
@@ -230,7 +230,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 					//printf("Player1");
 				}
-				else if (itr->entityID == -2)
+				else if ((int)itr->entityID == 1)
 				{
 					pp = this->m_player2.GetPhysicsComponent();
 
@@ -343,12 +343,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
 		{	
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
 			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
 				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket((unsigned int)2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 			}
 
 			
@@ -403,7 +403,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 		}
 
 	}
