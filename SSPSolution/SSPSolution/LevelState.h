@@ -22,6 +22,8 @@ private:
 	DirectX::XMVECTOR m_player1_Spawn;
 	DirectX::XMVECTOR m_player2_Spawn;
 
+	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
+
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	//Entities where no data needs to be moved between the components
 	std::vector<StaticEntity*>	m_staticEntitys;
@@ -29,7 +31,6 @@ private:
 	std::vector<DoorEntity*> m_doorEntities;
 	std::vector<ButtonEntity*> m_buttonEntities;
 	std::vector<WheelEntity*> m_wheelEntities;
-	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
 public:
 	LevelState();
 	virtual ~LevelState();
