@@ -153,7 +153,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
 	door1G->modelID = 1337;
 	door1G->active = true;
-	door1G->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	door1G->worldMatrix = DirectX::XMMatrixIdentity();		
 	resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 	PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
 	door1P->PC_entityID = 666;								//Set Entity ID
@@ -172,7 +172,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
 	button1G->modelID = 1337;
 	button1G->active = true;
-	button1G->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	button1G->worldMatrix = DirectX::XMMatrixIdentity();		
 	resHandler->GetModel(button1G->modelID, button1G->modelPtr);
 	PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
 	button1P->PC_entityID = 616;									//Set Entity ID
