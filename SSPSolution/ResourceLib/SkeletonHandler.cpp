@@ -53,13 +53,9 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	if (st != ST_OK)
 		return st;
 	
-	if (m_emptyContainers.size() < 1)
-	{
-		m_containers.push_back(Skeleton());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
-	}
+	
 		
-	Skeleton* newSkeleton = m_emptyContainers.front(); //Get an empty container
+	Skeleton* newSkeleton = GetEmptyContainer(); //Get an empty container
 	Resource::RawResourceData resData;
 	Skeleton::RawSkeletonData skelData;
 
@@ -168,4 +164,17 @@ Resources::SkeletonHandler::~SkeletonHandler()
 		delete m_containers.at(i);
 	}
 	delete m_animHandler;
+}
+
+Resources::Skeleton * Resources::SkeletonHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(new std::vector<Skeleton>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
+	}
+	return m_emptyContainers.front();
 }
