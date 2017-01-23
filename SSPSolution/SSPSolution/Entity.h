@@ -6,6 +6,7 @@
 //Subject includes this for the events
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
+#include "../AIDLL/AIHandler.h"
 #include "ComponentHandler.h"
 class Entity :
 	public Observer
@@ -15,9 +16,11 @@ private:
 protected:
 	int m_entityID;
 	bool m_isGrabbed;
+	Entity* m_isGrabbedBy;
 	Subject m_subject;
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
+	AIComponent* m_aiComp;
 
 public:
 	Entity();
@@ -34,11 +37,15 @@ public:
 
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
-	bool SetGrabbed(int isGrabbed);
+	AIComponent* SetAIComponent(AIComponent* aiComp);
+	bool SetGrabbed(Entity* isGrabbedBy);
+	bool IsGrabbed();
 	int SetEntityID(int entityID);
 
 	PhysicsComponent* GetPhysicsComponent();
 	GraphicsComponent* GetGraphicComponent();
+	AIComponent* GetAIComponent();
+
 	bool GetGrabbed();
 	int GetEntityID();
 private:
@@ -46,7 +53,7 @@ private:
 protected:
 	void UnsafeSyncComponents();
 	//Returns 1 for correct and 0 for incorrect initialization.
-	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
+	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp = nullptr);
 
 };
 

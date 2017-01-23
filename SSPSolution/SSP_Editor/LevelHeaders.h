@@ -1,11 +1,20 @@
 #pragma once
 
 namespace LevelData {
+
+
+	struct OLDMainLevelHeader //This is used to convert levels from earlier versions of the editor
+	{
+		unsigned int resAmount;
+		unsigned int entityAmount;
+		unsigned int lightAmount;
+	};
 	struct MainLevelHeader
 	{
 		unsigned int resAmount;
 		unsigned int entityAmount;
 		unsigned int lightAmount;
+		unsigned int AiComponentAmount;
 	};
 	
 	struct ResourceHeader {
@@ -21,6 +30,11 @@ namespace LevelData {
 		float rotation[3]	   ;
 		bool isStatic		   ;
 	};
+
+	struct SpawnHeader {
+		float position[3];
+		float rotation[3];
+	};
 	
 	struct LightHeader 
 	{
@@ -30,15 +44,24 @@ namespace LevelData {
 	};
 	//different lights will be added later
 
-	enum LevelStatus {
+	struct AiHeader{
+		unsigned int entityID = -1;
+		int time			  = 0;
+		float speed			  = 0;
+		int pattern			  = 0;
+		int nrOfWaypoints     = 0;
+		float wayPoints[8][3];
+	};
 
+	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,
 		L_FILE_NOT_FOUND,
-		L_FILE_SAVE_CANCELED
+		L_FILE_SAVE_CANCELLED
 	};
 
 	struct Level {
+		SpawnHeader  spawns[2];
 		unsigned int numResources;
 		ResourceHeader* resources;
 

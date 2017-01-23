@@ -29,19 +29,20 @@ namespace Resources
 	private:
 		AnimationData m_anim;
 	public:
-		Animation();
-		Animation(Resource::RawResourceData* resData);
-		Animation(Resource::RawResourceData* resData, AnimationData* anim);
-		virtual ~Animation();
+		DLL_OPERATION Animation();
+		DLL_OPERATION Animation(Resource::RawResourceData* resData);
+		DLL_OPERATION Animation(Resource::RawResourceData* resData, AnimationData* anim);
+		DLL_OPERATION virtual ~Animation();
 
-		Resources::Status Create(Resource::RawResourceData* resData, AnimationData* animData);
-		Resources::Status Destroy(); // Deincrement references to connected data, free container
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, AnimationData* animData);
+		DLL_OPERATION Resources::Status CreateFromBBF(Resource::RawResourceData* resData, AnimationData* animData);
+		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data, free container
 
-		const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };
-		const AnimationJoint* GetJoint(int& index)	{ return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
-		const AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
+		DLL_OPERATION const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };
+		DLL_OPERATION const AnimationJoint* GetJoint(int& index)	{ return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
+		DLL_OPERATION const AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
 
-		virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
+		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 
 	private:
 		void SetAnimationData(AnimationData* anim);

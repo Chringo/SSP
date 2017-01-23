@@ -9,12 +9,13 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr)
+	this->m_aiHandler = aiHandler;
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -37,9 +38,24 @@ PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 	return newComponent;
 }
 
+AIComponent * ComponentHandler::GetAIComponent()
+{
+	AIComponent* newComp = nullptr;
+	if (this->m_aiHandler != nullptr)
+	{
+		newComp = this->m_aiHandler->GetNextAvailableComponents();
+	}
+	return newComp;
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
+}
+
+void ComponentHandler::UpdateAIComponents()
+{
+
 }
 
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)

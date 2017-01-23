@@ -30,6 +30,7 @@ private:
 public:
 	SelectionHandler();
 	~SelectionHandler();
+	Ui::AttributesHandler* m_attributesHandler;
 
 	void Initialize(Camera * camera,
 		int winWidth,
@@ -40,6 +41,7 @@ public:
 	static SelectionHandler* GetInstance();
 	void Update();
 	bool NeedsUpdate();
+	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
 	bool HasSelection();
