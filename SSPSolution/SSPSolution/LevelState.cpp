@@ -298,7 +298,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
-
+		//update all dynamic (moving) entities
+		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		{
+			this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
 
@@ -396,13 +400,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	}
 #pragma endregion Client/Player2 Specifics
-
-
-	//update all dynamic (moving) entities
-	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
-	{
-		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
-	}
 
 	for (int i = 0; i < this->m_staticEntitys.size(); i++)
 	{
