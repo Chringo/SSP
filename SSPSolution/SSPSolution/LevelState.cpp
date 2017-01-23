@@ -225,15 +225,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 	PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
 	door1P->PC_entityID = 666;								//Set Entity ID
-	door1P->PC_pos = DirectX::XMVectorSet(0, 1, 5, 0);		//Set Position
-	door1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	door1P->PC_pos = DirectX::XMVectorSet(-10.0f, -10.0f, -7.0f, 0.0f);		//Set Position
+	door1P->PC_rotation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);		//Set Rotation
 	door1P->PC_is_Static = true;							//Set IsStatic
 	door1P->PC_active = true;								//Set Active
-	door1P->PC_mass = 5;
+	door1P->PC_mass = 5.0f;
 	door1P->PC_BVtype = BV_AABB;
-	door1P->PC_AABB.ext[0] = 1.5;
-	door1P->PC_AABB.ext[1] = 1.5;
-	door1P->PC_AABB.ext[2] = 1.5;
+	door1P->PC_AABB.ext[0] = 0.5f;
+	door1P->PC_AABB.ext[1] = 0.5f;
+	door1P->PC_AABB.ext[2] = 0.5f;
 	door1->Initialize(666, door1P, door1G, 0.0f, DirectX::XM_PI / 2.1f, 1.0f);
 
 	//BUTTON
@@ -244,15 +244,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(wheel1G->modelID, wheel1G->modelPtr);
 	PhysicsComponent* wheel1P = m_cHandler->GetPhysicsComponent();
 	wheel1P->PC_entityID = 616;									//Set Entity ID
-	wheel1P->PC_pos = DirectX::XMVectorSet(0, 2, 8, 0);		//Set Position
+	wheel1P->PC_pos = DirectX::XMVectorSet(-12.0f, -10.0f, -7.0f, 0.0f);		//Set Position
 	wheel1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	wheel1P->PC_is_Static = true;								//Set IsStatic
 	wheel1P->PC_active = true;									//Set Active
 	wheel1P->PC_mass = 5;
 	wheel1P->PC_BVtype = BV_AABB;
-	wheel1P->PC_AABB.ext[0] = 1.5;
-	wheel1P->PC_AABB.ext[1] = 1.5;
-	wheel1P->PC_AABB.ext[2] = 1.5;
+	wheel1P->PC_AABB.ext[0] = 0.5f;
+	wheel1P->PC_AABB.ext[1] = 0.5f;
+	wheel1P->PC_AABB.ext[2] = 0.5f;
 	wheel1->Initialize(616, wheel1P, wheel1G);
 	wheel1->AddObserver(door1, door1->GetEntityID());
 	this->m_wheelEntities.push_back(wheel1);
@@ -266,7 +266,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
-	//this->m_player1.Update(dt, inputHandler);
 
 	this->m_networkModule->Update();
 
