@@ -24,7 +24,7 @@ Level::Level()
 		
 		
 	//AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
-	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });						   //TEMP
+	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });				       //TEMP
 	//cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
 	//cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
 	//cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
