@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <iostream>
+#include "AnimationStateEnums.h"
 #include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
@@ -14,11 +15,12 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+const int MAXIMUM_ALLOCATION = 5;
+
 struct AnimationComponent
 {
 	int active = 0;
 	int animationState = 0;
-	//int previousState = 0;
 	float startFrame = 0.f;
 	float endFrame = 0.f;
 	float localTime = 0.f;
@@ -43,14 +45,6 @@ struct AnimationDataContainer
 	std::vector<const Resources::Animation::AnimationJoint*> animations;
 };
 
-enum AnimationStates
-{
-	PLAYER_IDLE		=	0, 
-	PLAYER_WALK		=	1,
-	PLAYER_RUN		=	2, 
-	PLAYER_THROW	=	3
-};
-
 enum BlendingStates
 {
 	NO_TRANSITION		=	0,
@@ -72,13 +66,16 @@ private:
 	//Variables used only in class.
 
 	/*2D-array, which have a index for each Graphics Animation Component with their separate updating Animation Component lists.*/
-	std::vector<std::vector<AnimationComponent*>> m_AnimationComponentList; 
+	AnimationComponent** m_AnimationComponents = nullptr;
 
-	/*Used to set the current Graphics Animation Component separate animation stack.*/
-	std::vector<AnimationComponent*> m_AnimationComponentStack;
+	int m_nrOfAnimationComponents;
+	int m_maxAnimationComponents;
 
-	/*This is a temporary place for this I think?*/
-	GraphicsAnimationComponent * m_graphicsAnimationComponent;
+	//Helper functions to handle allocation of double pointer array.
+	int IncreaseArraySize();
+	int IncreaseArraySize(int increaseTo);
+	int DecreaseArraySize();
+	int DecreaseArraySize(int decreaseTo);
 
 	BlendingStates m_BlendState;
 
@@ -94,6 +91,9 @@ private:
 	std::vector<AnimationDataContainer> m_AnimationDataContainer;
 	AnimationDataContainer m_AnimationData;
 
+	/*Used to set the current Graphics Animation Component separate animation stack.*/
+	std::vector<AnimationComponent*> m_AnimationComponentStack;
+
 public: 
 	//Functions used outside the class.
 	GRAPHICSDLL_API AnimationHandler();
@@ -102,17 +102,14 @@ public:
 
 	GRAPHICSDLL_API void Update(float dt);
 
-	GRAPHICSDLL_API void AddAnimationFromIndex(int graphicsAnimIndex, AnimationComponent* animationComponent);
-
 	GRAPHICSDLL_API void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
 	GRAPHICSDLL_API AnimationDataContainer GetAnimationDataFromIndex(int index);
 	GRAPHICSDLL_API void SetAnimationData(AnimationDataContainer animationData);
 
-	GRAPHICSDLL_API int GetAnimationComponentCount(int graphicsAnimationIndex);
-	GRAPHICSDLL_API std::vector<AnimationComponent*> GetAnimationComponentsFromIndex(int graphicsAnimationIndex);
-	GRAPHICSDLL_API void SetAnimationComponents(std::vector<AnimationComponent*> animationComponents);
+	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
+	GRAPHICSDLL_API	AnimationComponent* GetNextAvailableComponent();
 
-	//GraphicsAnimationComponent * GetGraphicsAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
+	GRAPHICSDLL_API void Shutdown();
 
 private:
 	//Functions only used in class.

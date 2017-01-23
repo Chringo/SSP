@@ -9,13 +9,14 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
+	this->m_aHandler = aHandler;
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -55,6 +56,18 @@ AIComponent * ComponentHandler::GetAIComponent()
 		newComp = this->m_aiHandler->GetNextAvailableComponents();
 	}
 	return newComp;
+}
+
+AnimationComponent * ComponentHandler::GetAnimationComponent()
+{
+	AnimationComponent* animationComponent = nullptr;
+
+	if (this->m_aHandler != nullptr)
+	{
+		animationComponent = this->m_aHandler->GetNextAvailableComponent();
+	}
+
+	return animationComponent;
 }
 
 void ComponentHandler::UpdateGraphicsComponents()

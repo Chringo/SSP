@@ -15,15 +15,16 @@ Player::~Player()
 }
 
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
 	int result = 0;
 
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, aComp);
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
+	this->m_PlayerState = AnimationStates::PLAYER_IDLE;
 
 	return result;
 }
@@ -36,8 +37,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 
+	//AnimationStates currentState;
+
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
+		//currentState = AnimationStates::PLAYER_WALK;
+
 		forwards++;
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
@@ -52,6 +57,18 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		sideways--;
 	}
+
+	//if (IsStateChanged(currentState))
+	//{
+	//	//Get the animationComponent from this player.
+
+
+	//	//Push the new animation to the players own stack for current animations playing.
+	//	//player_mAnimStack.push(animationComponent);
+	//}
+
+	/*Call the update for the animation handler here*/
+	//m_AnimationHandler->Update(dt);
 
 	if (this->m_grabbed != nullptr)
 	{
@@ -181,6 +198,18 @@ DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 void Player::SetAiming(bool isAming)
 {
 	this->m_isAiming = isAming;
+}
+
+bool Player::IsStateChanged(AnimationStates currentState)
+{
+	/*If the current state is */
+	if (currentState == m_PlayerState)
+		return false;
+
+	else
+	{
+		m_PlayerState = currentState; 
+	}
 }
 
 float Player::GetSpeed()

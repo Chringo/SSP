@@ -170,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationHandler.h" />
+    <ClInclude Include="AnimationStateEnums.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBufferHandler.h" />
     <ClInclude Include="DebugRenderer.h" />

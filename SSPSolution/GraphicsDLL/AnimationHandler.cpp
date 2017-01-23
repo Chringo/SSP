@@ -1,37 +1,124 @@
 #include "AnimationHandler.h"
 
+int AnimationHandler::IncreaseArraySize()
+{
+	AnimationComponent** newArray = new AnimationComponent*[this->m_maxAnimationComponents + MAXIMUM_ALLOCATION];
+
+	for (int i = 0; i < this->m_maxAnimationComponents + MAXIMUM_ALLOCATION; i++)
+	{
+		if (i < this->m_nrOfAnimationComponents)
+		{
+			newArray[i] = this->m_AnimationComponents[i];
+		}
+		
+		else
+		{
+			newArray[i] = new AnimationComponent();
+		}
+	}
+	delete[] this->m_AnimationComponents;
+	this->m_AnimationComponents = newArray;
+	this->m_maxAnimationComponents += MAXIMUM_ALLOCATION;
+
+	return 1;
+}
+
+int AnimationHandler::IncreaseArraySize(int increaseTo)
+{
+	AnimationComponent** newArray = new AnimationComponent*[increaseTo];
+
+	for (int i = 0; i < increaseTo; i++)
+	{
+		if (i < this->m_nrOfAnimationComponents)
+		{
+			newArray[i] = this->m_AnimationComponents[i];
+		}
+
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+	delete[] this->m_AnimationComponents;
+	this->m_AnimationComponents = newArray;
+	this->m_maxAnimationComponents = increaseTo;
+
+	return 1;
+}
+
+int AnimationHandler::DecreaseArraySize()
+{
+	this->m_maxAnimationComponents -= MAXIMUM_ALLOCATION;
+	AnimationComponent** newArray = new AnimationComponent*[this->m_maxAnimationComponents];
+
+	for (int i = 0; i < this->m_maxAnimationComponents; i++)
+	{
+		if (i < this->m_nrOfAnimationComponents)
+		{
+			newArray[i] = this->m_AnimationComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = this->m_maxAnimationComponents; i < this->m_maxAnimationComponents + MAXIMUM_ALLOCATION; i++)
+	{
+		if (this->m_AnimationComponents[i])
+		{
+			delete this->m_AnimationComponents[i];
+		}
+	}
+
+	delete[] this->m_AnimationComponents;
+	this->m_AnimationComponents = newArray;
+
+	return 1;
+}
+
+int AnimationHandler::DecreaseArraySize(int decreaseTo)
+{
+	AnimationComponent** newArray = new AnimationComponent*[decreaseTo];
+
+	for (int i = 0; i < decreaseTo; i++)
+	{
+		if (i < this->m_nrOfAnimationComponents)
+		{
+			newArray[i] = this->m_AnimationComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = decreaseTo; i < this->m_maxAnimationComponents; i++)
+	{
+		if (this->m_AnimationComponents[i])
+		{
+			delete this->m_AnimationComponents[i];
+		}
+	}
+
+	delete[] this->m_AnimationComponents;
+	this->m_AnimationComponents = newArray;
+	this->m_maxAnimationComponents = decreaseTo;
+
+	return 1;
+}
+
 AnimationHandler::AnimationHandler()
 {
-	/*No good practice but will work for now. Need to get the model ID from GraphicsAnimationComponent or AnimationComponent.*/
-	//Resources::Model* model = GetAnimatedModel(1337);
+	this->m_BlendState = NO_TRANSITION;
+	this->m_TransitionComplete = false;
+	this->m_globalTimeElapsed = 0;
+	this->m_TransitionDuration = 0;
+	this->m_TransitionTimeLeft = 0;
 
-	/*Skeleton that is contained in the specified model.*/
-	//Resources::Skeleton* skeleton = GetSkeleton(model);
-
-	/*Gets all animations and saves them in a container to use for playing and blending animations.*/
-	//GetAnimations(skeleton);
-
-	//this->m_globalTimeElapsed = 0.0f;
-	//this->m_graphicsAnimationComponent = new GraphicsAnimationComponent;
-	//this->m_graphicsAnimationComponent->jointCount = 19;
-
-	//this->m_graphicsAnimationComponent->worldMatrix = DirectX::XMMatrixTranslation(0, 4, 10);
-	//for (int i = 0; i < 32; i++)
-	//{
-		//m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	//}
-
-	//m_TransitionTimeLeft = 0;
-	//m_TransitionDuration = 0;
-	
-	/*Initialize the stack with a default "IDLE" animation.*/
-	//Push(0, true, 0); 
-
-	m_BlendState = NO_TRANSITION;
-	m_TransitionComplete = false;
-	m_globalTimeElapsed = 0;
-	m_TransitionDuration = 0;
-	m_TransitionTimeLeft = 0;
+	this->m_animGraphicsComponents = nullptr;
+	this->m_nrOfAnimationComponents = 0;
+	this->m_maxAnimationComponents = 5;
 }
 
 AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents)
@@ -39,16 +126,11 @@ AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComp
 	/*Initialize all Graphics Animation Components arrays with joint matrices for each skeleton.*/
 	this->m_animGraphicsComponents = graphicAnimComponents;
 	this->m_nrOfGraphicsAnimationComponents = noActiveComponents;
+	
+	//for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
+	//{
 
-	/*for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
-	{
-		int jointCount = this->m_animGraphicsComponents[i]->jointCount;
-		
-		for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
-		{
-			this->m_animGraphicsComponents[i]->finalJointTransforms[jointIndex] = DirectX::XMMatrixIdentity();
-		}
-	}*/
+	//}
 }
 
 AnimationHandler::~AnimationHandler()
@@ -120,17 +202,6 @@ void AnimationHandler::Update(float dt)
 	}
 }
 
-void AnimationHandler::AddAnimationFromIndex(int graphicsAnimIndex, AnimationComponent* animationComponent)
-{
-	m_AnimationComponentStack[graphicsAnimIndex]->active = animationComponent->active;
-	m_AnimationComponentStack[graphicsAnimIndex]->animationState = animationComponent->animationState;
-	m_AnimationComponentStack[graphicsAnimIndex]->localTime = 0;
-	m_AnimationComponentStack[graphicsAnimIndex]->isLooping = animationComponent->isLooping;
-	m_AnimationComponentStack[graphicsAnimIndex]->startFrame = GetStartFrame(animationComponent->animationState);
-	m_AnimationComponentStack[graphicsAnimIndex]->endFrame = GetEndFrame(animationComponent->animationState);
-
-}
-
 void AnimationHandler::SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index)
 {
 	Resources::Model* model;
@@ -184,19 +255,50 @@ void AnimationHandler::SetAnimationData(AnimationDataContainer animationData)
 	this->m_AnimationData = animationData;
 }
 
-int AnimationHandler::GetAnimationComponentCount(int graphicsAnimationIndex)
+int AnimationHandler::SetComponentArraySize(int newSize)
 {
-	return m_AnimationComponentList[graphicsAnimationIndex].size();
+	if (this->m_nrOfAnimationComponents < newSize)
+	{
+		this->IncreaseArraySize(newSize);
+	}
+
+	else if (this->m_maxAnimationComponents > newSize)
+	{
+		this->DecreaseArraySize(newSize);
+	}
+
+	return 0;
 }
 
-std::vector<AnimationComponent*> AnimationHandler::GetAnimationComponentsFromIndex(int graphicsAnimationIndex)
+AnimationComponent * AnimationHandler::GetNextAvailableComponent()
 {
-	return m_AnimationComponentList[graphicsAnimationIndex];
+	if (this->m_nrOfAnimationComponents < this->m_maxAnimationComponents)
+	{
+		this->m_nrOfAnimationComponents++;
+		return this->m_AnimationComponents[this->m_nrOfAnimationComponents - 1];
+	}
+
+	else
+	{
+		this->IncreaseArraySize();
+		return this->GetNextAvailableComponent();
+	}
+
+	return nullptr;
 }
 
-void AnimationHandler::SetAnimationComponents(std::vector<AnimationComponent*> animationComponents)
+void AnimationHandler::Shutdown()
 {
-	this->m_AnimationComponentStack = animationComponents;
+	for (int i = 0; i < m_nrOfAnimationComponents; i++)
+	{
+		if (this->m_AnimationComponents[i] != nullptr)
+		{
+			delete this->m_AnimationComponents[i];
+			this->m_AnimationComponents[i] = nullptr;
+		}
+	}
+
+	delete[]this->m_AnimationComponents;
 }
 
 void AnimationHandler::InterpolateKeys(AnimationComponent* animationComponent, float currentTime)
@@ -510,7 +612,7 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		DirectX::XMMATRIX inverseBindPose = m_AnimationData.skeleton[i].inverseBindPose;
 		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransform[i]);
 
-		m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixMultiply(inverseBindPose, toRoot);
+		//m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixMultiply(inverseBindPose, toRoot);
 	}
 }
 

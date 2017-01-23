@@ -89,7 +89,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 
-	this->m_player1.Initialize(0, playerP, playerG);
+	this->m_player1.Initialize(0, playerP, playerG, nullptr);
 
 	//Player 2
 	this->m_player2 = Player();
@@ -109,7 +109,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player2.Initialize(3, playerP, playerG);
+	this->m_player2.Initialize(3, playerP, playerG, nullptr);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
@@ -173,7 +173,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
 
-	platform->Initialize(3, platformP, platformG, platformTERMINATOR);
+	platform->Initialize(3, platformP, platformG, nullptr, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
 	platformTERMINATOR->AC_entityID = platform->GetEntityID();
 	this->m_dynamicEntitys.push_back(platform);
@@ -427,8 +427,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
-		
-		
 		if (modelPtr->GetSkeleton() != nullptr)
 		{
 			t_gc = m_cHandler->GetGraphicsAnimationComponent();
@@ -436,6 +434,28 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			for (int i = 0; i < modelPtr->GetSkeleton()->GetSkeletonData()->jointCount; i++)
 			{
 				((GraphicsAnimationComponent*)t_gc)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+			}
+
+			if (modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+			{
+				int numAnimations = modelPtr->GetSkeleton()->GetNumAnimations();
+
+				for (int animIndex = 0; animIndex < numAnimations; animIndex++)
+				{
+					Resources::Animation* animation = modelPtr->GetSkeleton()->GetAnimation(animIndex);
+
+					AnimationComponent* t_anim = m_cHandler->GetAnimationComponent();
+
+					t_anim->active = false;
+					t_anim->animationState = animIndex;
+					t_anim->isLooping = false;
+					t_anim->localTime = 0;
+
+					int jointIndex = 0;
+					t_anim->startFrame = animation->GetJoint(jointIndex)->keyframes[0].timeValue;
+					int keyCount = animation->GetJoint(jointIndex)->keyframeCount;
+					t_anim->endFrame = animation->GetJoint(jointIndex)->keyframes[keyCount - 1].timeValue;
+				}
 			}
 		}
 		else
@@ -511,6 +531,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			StaticEntity* tse = new StaticEntity();
 			tse->SetGraphicsComponent(t_gc);
 			tse->SetPhysicsComponent(t_pc);
+
+			/*if (modelPtr->GetSkeleton() != nullptr)
+				tse->SetAnimationComponents(nullptr);
+			else
+				tse->SetAnimationComponents(nullptr);*/
+
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
@@ -518,9 +544,16 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			DynamicEntity* tde = new DynamicEntity();
 			tde->SetGraphicsComponent(t_gc);
 			tde->SetPhysicsComponent(t_pc);
+
+			/*if (modelPtr->GetSkeleton() != nullptr)
+				tde->SetAnimationComponents(t_AnimsArray);
+			else
+				tde->SetAnimationComponents(nullptr);*/
+
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 			
 		}
+
 
 	}
 
