@@ -22,6 +22,20 @@ struct Container
 		this->isDirty		= obj.isDirty		;
 		this->isStatic		= obj.isStatic		;
 	}
+	Container& operator=(Container const& obj)
+	{
+	
+		this->internalID  = obj.internalID;
+		this->position	  = obj.position;
+		this->rotation	  = obj.rotation;
+		this->component   = obj.component;
+		this->aiComponent = obj.aiComponent;
+		this->isDirty	  = obj.isDirty;
+		this->isStatic	  = obj.isStatic;
+
+		return *this;
+	}
+
 	};
 
 struct AiContainer 
