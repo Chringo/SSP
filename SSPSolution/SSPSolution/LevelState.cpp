@@ -321,7 +321,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	float yaw = inputHandler->GetMouseDelta().x;
 	float pitch = inputHandler->GetMouseDelta().y;
-	float mouseSens = 0.000018f * dt;
 
 	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
