@@ -288,44 +288,84 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SyncComponents();
 	}
 	
+#pragma region
+	if(this->m_networkModule->IsHost() == true)
+	{ 
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
+		{
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+		}
 
-	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
-	{
-		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-	}
-	else if( (this->m_networkModule->IsHost() == false) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )
-	{
-		PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-		this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-	}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		{
+			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		{
+			this->m_player1.SetGrabbed(nullptr);
+		}
 
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
-	{
-		this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
-	{
-		this->m_player1.SetGrabbed(nullptr);
-	}
+		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetAiming(true);
+			this->m_cameraRef->SetDistance(2);
+		}
 
-	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
-	{
-		this->m_player1.SetAiming(true);
-		this->m_cameraRef->SetDistance(2);
-	}
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetAiming(false);
+			this->m_cameraRef->SetDistance(10);
+		}
 
-	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
-	{
-		this->m_player1.SetAiming(false);
-		this->m_cameraRef->SetDistance(10);
-	}
+		if (this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
+		}
 
-	if (this->m_player1.GetIsAming()) //Might actualy already be set to this
-	{
-		this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
 	}
+#pragma endregion Host/Player1 Specifics
+
+#pragma region
+	if (this->m_networkModule->IsHost() == false)
+	{
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
+		{
+			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+		}
+
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		{
+			this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		{
+			this->m_player2.SetGrabbed(nullptr);
+		}
+
+		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetAiming(true);
+			this->m_cameraRef->SetDistance(2);
+		}
+
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetAiming(false);
+			this->m_cameraRef->SetDistance(10);
+		}
+
+		if (this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetLookDir(this->m_cameraRef->GetDirection());
+		}
+
+	}
+#pragma endregion Client/Player2 Specifics
+
 
 	//update all dynamic (moving) entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
