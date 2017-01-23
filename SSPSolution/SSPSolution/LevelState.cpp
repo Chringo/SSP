@@ -498,6 +498,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	}
 
+
+	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
+	m_player1.GetGraphicComponent()->modelID = 2759249725;
+	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
+	
 	return 1;
 }
 

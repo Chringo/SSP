@@ -50,6 +50,23 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 	return &m_LightMap;
 }
 
+Container * Level::GetInstanceEntity(unsigned int entityID)
+{
+	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
+	{
+		std::vector<Container> * cont = &iterator->second;
+		for (size_t i = 0; i < cont->size(); i++)
+		{
+			if (cont->at(i).internalID == entityID)
+			{
+				return &cont->at(i);
+			}
+		}
+	}
+	
+	return nullptr;
+}
+
 Resources::Status Level::GetModelEntity(unsigned int modelID, unsigned int instanceID, Container & container)
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
@@ -210,8 +227,8 @@ Resources::Status Level::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVE
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
-	//if (modelID == PLAYER1 || modelID == PLAYER2)
-	//	return Resources::Status::ST_OK;
+	if (modelID == PLAYER1 || modelID == PLAYER2)
+		return Resources::Status::ST_OK;
 
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -225,7 +242,11 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
 			if (instanceID == modelPtr->at(i).internalID)
-				modelPtr->erase(modelPtr->begin() + i);
+			{
+				if (modelPtr->at(i).aiComponent != nullptr)
+					this->m_LevelAi.DeletePathComponent(instanceID);
+					modelPtr->erase(modelPtr->begin() + i);
+			}
 		}
 		return Resources::Status::ST_OK;
 	}
