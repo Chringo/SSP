@@ -56,18 +56,17 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 int DoorEntity::React(int entityID, EVENT reactEvent)
 {
-	if (reactEvent == EVENT::BUTTON_PRESSED)
+	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
+	//this->m_isOpened = reactEvent == EVENT::BUTTON_ACTIVE;
+	if (reactEvent == EVENT::BUTTON_ACTIVE)
 	{
-		if (!this->m_isOpened)
-		{
-			this->m_isOpened = true;
-			this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-		} 
-		else
-		{
-			this->m_isOpened = false;
-			this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-		}
+		this->m_isOpened = true;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
+	}
+	else if(reactEvent == EVENT::BUTTON_DEACTIVE)
+	{
+		this->m_isOpened = false;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
 	}
 	else if (reactEvent == EVENT::WHEEL_0)
 	{
