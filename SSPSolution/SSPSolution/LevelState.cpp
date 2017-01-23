@@ -269,6 +269,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
+
+	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
+	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+
 	//Doors require updates to change opening state
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
