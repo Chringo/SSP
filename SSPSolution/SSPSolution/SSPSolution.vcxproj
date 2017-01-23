@@ -103,6 +103,7 @@
     <ClCompile Include="LevelDirector.cpp" />
     <ClCompile Include="LevelSelectState.cpp" />
     <ClCompile Include="LevelState.cpp" />
+    <ClCompile Include="LeverEntity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Observer.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="LevelDirector.h" />
     <ClInclude Include="LevelSelectState.h" />
     <ClInclude Include="LevelState.h" />
+    <ClInclude Include="LeverEntity.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Player.h" />
