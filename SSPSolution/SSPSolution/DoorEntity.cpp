@@ -69,6 +69,14 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 			this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
 		}
 	}
+	else if (reactEvent == EVENT::WHEEL_0)
+	{
+		this->m_isOpened = false;
+	}
+	else if (reactEvent == EVENT::WHEEL_100)
+	{
+		this->m_isOpened = true;
+	}
 
 	return 0;
 }
