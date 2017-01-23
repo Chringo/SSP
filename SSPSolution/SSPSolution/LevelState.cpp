@@ -333,7 +333,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
-			for (int i = 0; i <this->m_dynamicEntitys.size; i++)	//Change start and end with physics packet
+			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
 				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
