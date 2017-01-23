@@ -441,7 +441,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case CONNECTION_REQUEST:
 
-				p.deserialize(network_data);	// Read the binary data into the object
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 				data_read += sizeof(Packet);
 				//DEBUG
 				//printf("Host received connection packet from client\n");
@@ -450,7 +450,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case CONNECTION_ACCEPTED:
 
-				syP.deserialize(network_data);	// Read the binary data into the object
+				syP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				// Sync clock (Still not used)
 				this->time_current = (int)syP.timestamp;
@@ -463,7 +463,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case DISCONNECT_REQUEST:
 
-				p.deserialize(network_data);	// Read the binary data into the object
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->SendFlagPacket(DISCONNECT_ACCEPTED);
 				this->RemoveClient(iter->first);	// iter->first is the ID
@@ -477,7 +477,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case DISCONNECT_ACCEPTED:
 
-				p.deserialize(network_data);	// Read the binary data into the object
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->RemoveClient(iter->first);
 				//DEBUF
@@ -491,7 +491,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case UPDATE_ENTITY:
 
-				eP.deserialize(network_data);	// Read the binary data into the object
+				eP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
 				data_read += sizeof(EntityPacket);
@@ -502,7 +502,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case UPDATE_ANIMATION:
 
-				aP.deserialize(network_data);	// Read the binary data into the object
+				aP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
 				data_read += sizeof(AnimationPacket);
@@ -513,7 +513,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case UPDATE_STATE:
 
-				sP.deserialize(network_data);	// Read the binary data into the object
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
 				data_read += sizeof(StatePacket);
@@ -524,7 +524,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case UPDATE_CAMERA:
 
-				cP.deserialize(network_data);	// Read the binary data into the object
+				cP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
 				data_read += sizeof(CameraPacket);
@@ -535,7 +535,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case SYNC_PHYSICS:
 
-				sPP.deserialize(network_data);	// Read the binary data into the object
+				sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
 				data_read += sizeof(SyncPhysicPacket);
@@ -546,7 +546,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case TEST_PACKET:
 
-				p.deserialize(network_data);	// Read the binary data into the object
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 				data_read += sizeof(Packet);
 				// DEBUG
 				//printf("Recived TEST_PACKET packet\n");
