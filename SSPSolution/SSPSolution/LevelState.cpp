@@ -228,7 +228,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
-					printf("Player1");
+					//printf("Player1");
 				}
 				else if (itr->entityID == -2)
 				{
@@ -254,10 +254,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					// Find the entity
 					std::vector<DynamicEntity*>::iterator Ditr;
+					printf("Fuck");
 					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
 
 						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
 						{
+							printf("YAYYYYYY");
 							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
 							pp = ent->GetPhysicsComponent();
 
@@ -339,7 +341,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER1
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
-		{
+		{	
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
@@ -348,6 +350,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
 				this->m_networkModule->SendEntityUpdatePacket((unsigned int)2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 			}
+
+			
 		}
 
 	}
