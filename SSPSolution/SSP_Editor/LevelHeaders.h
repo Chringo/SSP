@@ -22,14 +22,14 @@ namespace LevelData {
 		int resourceType;
 	};
 
-	//struct EntityHeader
-	//{
-	//	unsigned int modelID;
-	//	unsigned int EntityID;
-	//	float position[3];
-	//	float rotation[3];
-	//	bool isStatic;
-	//};
+	struct OldEntityHeader
+	{
+		unsigned int modelID;
+		unsigned int EntityID;
+		float position[3];
+		float rotation[3];
+		bool isStatic;
+	};
 	
 	struct EntityHeader
 	{
