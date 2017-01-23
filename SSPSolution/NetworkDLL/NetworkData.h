@@ -54,7 +54,7 @@ struct SyncPacket: public Packet
 
 struct EntityPacket: public Packet
 {											
-	int		entityID;					
+	unsigned int		entityID;					
 	DirectX::XMFLOAT3	newPos;				
 	DirectX::XMFLOAT3	newVelocity;
 	DirectX::XMFLOAT3	newRotation;

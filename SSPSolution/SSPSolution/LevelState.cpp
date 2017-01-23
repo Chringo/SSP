@@ -227,6 +227,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
+					printf("Player1");
 				}
 				else if (itr->entityID == -2)
 				{
@@ -236,6 +238,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					printf("Player2");
 				}
 				else if (itr->packet_ID == 2)
 				{
@@ -245,6 +248,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					printf("Ball");
 				}
 				else
 				{
