@@ -65,6 +65,12 @@ int LevelState::ShutDown()
 		this->m_buttonEntities[i] = nullptr;
 	}
 	this->m_buttonEntities.clear();
+	for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
+	{
+		delete this->m_wheelEntities[i];
+		this->m_wheelEntities[i] = nullptr;
+	}
+	this->m_wheelEntities.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 	

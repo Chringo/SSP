@@ -9,6 +9,7 @@
 #include "LevelDirector.h"
 #include "DoorEntity.h"
 #include "ButtonEntity.h"
+#include "WheelEntity.h"
 
 class LevelState :
 	public GameState
@@ -22,6 +23,7 @@ private:
 	//Puzzle entities
 	std::vector<DoorEntity*> m_doorEntities;
 	std::vector<ButtonEntity*> m_buttonEntities;
+	std::vector<WheelEntity*> m_wheelEntities;
 public:
 	LevelState();
 	virtual ~LevelState();
