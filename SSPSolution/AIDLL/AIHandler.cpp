@@ -135,7 +135,7 @@ int AIHandler::Update(float deltaTime)
 							this->m_AIComponents.at(i)->AC_direction = 0;
 							this->m_AIComponents.at(i)->AC_nextWaypointID = 0;
 							//platform stops when returning to start position
-							this->m_AIComponents.at(i)->AC_triggered = false;
+							//this->m_AIComponents.at(i)->AC_triggered = false;
 						}
 					}
 					else if (x)
