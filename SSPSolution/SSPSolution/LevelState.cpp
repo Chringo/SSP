@@ -212,13 +212,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_entityPacketList.size() > 0)
 		{
-
+			
 			// Apply each packet to the right entity
 			std::list<EntityPacket>::iterator itr;
 			PhysicsComponent* pp = nullptr;
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
-
+				counter++;
+				printf("%d", counter);
 				if ((int)itr->entityID == 0)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
 				{
 					pp = this->m_player1.GetPhysicsComponent();
@@ -238,7 +239,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-					printf("Player2");
 				}
 				else if (itr->packet_ID == 2)
 				{
@@ -248,18 +248,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-					printf("Ball");
 				}
 				else
 				{
 					// Find the entity
 					std::vector<DynamicEntity*>::iterator Ditr;
-					printf("Fuck");
 					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
 
 						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
 						{
-							printf("YAYYYYYY");
 							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
 							pp = ent->GetPhysicsComponent();
 
