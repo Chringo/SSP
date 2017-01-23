@@ -465,8 +465,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_active		   = true;						//Set Active
 
 
-
-
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 		//get information from file
@@ -490,7 +488,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[0] = abs(tempRot.r[3].m128_f32[0]);
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
-
+	std::vector<DynamicEntity*> aiEntities;
 		t_pc->PC_friction = 1.0f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
@@ -501,6 +499,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 
+		for (size_t q = 0; q < data->numAI; q++)
+		{
+			if (currEntity->EntityID == data->aiComponents[q].entityID)
+			{
+				t_pc->PC_is_Static = false;
+			}
+		}
 
 
 		if (t_pc->PC_is_Static) {
@@ -517,11 +522,37 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			tde->SetPhysicsComponent(t_pc);
 			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc);
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
-			
+			aiEntities.push_back(tde);// Push entity to initialize AIComp later
 		}
 
 	}
-
+	for (size_t A = 0; A < aiEntities.size(); A++)
+	{
+		for (size_t B = 0; B < data->numAI; B++)
+		{
+			if (data->aiComponents[B].entityID == aiEntities[A]->GetEntityID())
+			{
+				aiEntities[A]->GetPhysicsComponent()->PC_is_Static = true;
+				AIComponent* temp = m_cHandler->GetAIComponent();
+				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
+				temp->AC_entityID = data->aiComponents[A].entityID;
+				temp->AC_time = data->aiComponents[A].time;
+				temp->AC_speed = data->aiComponents[A].speed;
+				temp->AC_pattern = data->aiComponents[A].pattern;
+				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
+				for (size_t x = 0; x < temp->AC_nrOfWaypoint; x++)
+				{
+					temp->AC_waypoints[x] = {
+						data->aiComponents[A].wayPoints[x][0],
+						data->aiComponents[A].wayPoints[x][1],
+						data->aiComponents[A].wayPoints[x][2]
+					};
+				}
+				temp->AC_position = temp->AC_waypoints[0];
+				aiEntities[A]->SetAIComponent(temp);
+			}
+		}
+	}
 
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
