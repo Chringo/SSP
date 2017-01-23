@@ -12,11 +12,13 @@ Resources::SkeletonHandler::SkeletonHandler(size_t skelAmount, ID3D11Device * de
 	this->m_emptyContainers.resize(skelAmount);
 
 	this->m_skeletons.reserve(skelAmount);
-	this->m_containers.reserve(skelAmount);
-	this->m_containers.insert(m_containers.begin(), skelAmount, Skeleton());
+	
+	this->m_containers.push_back(new std::vector<Skeleton>);
+
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), skelAmount, Skeleton());
 	for (size_t i = 0; i < skelAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 
 	this->m_animHandler = new AnimationHandler(skelAmount);
@@ -161,5 +163,9 @@ Resources::Status Resources::SkeletonHandler::UnloadSkeleton(const unsigned int 
 
 Resources::SkeletonHandler::~SkeletonHandler()
 {
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		delete m_containers.at(i);
+	}
 	delete m_animHandler;
 }

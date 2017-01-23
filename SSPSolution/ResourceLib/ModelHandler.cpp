@@ -7,11 +7,13 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 	this->m_emptyContainers.resize(modelAmount);
 	
 	this->m_models.reserve(modelAmount);
-	this->m_containers.reserve(modelAmount);
-	this->m_containers.insert(m_containers.begin(), modelAmount, Model());
+
+	this->m_containers.push_back(new std::vector<Model>);
+	
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), modelAmount, Model());
 	for (size_t i = 0; i < modelAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 	
 	this->m_meshHandler		=  new MeshHandler(modelAmount);
@@ -225,6 +227,10 @@ Resources::ModelHandler::~ModelHandler()
 	delete m_materialHandler;
 	delete m_skeletonHandler;
 	delete placeHolderModel;
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		delete m_containers.at(i);
+	}
 }
 
 void Resources::ModelHandler::SetDevice(ID3D11Device * device)
@@ -262,9 +268,11 @@ Resources::Model * Resources::ModelHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)
 	{
-		m_containers.push_back(Model());
-		Model* ptr = &m_containers.at(m_containers.size() - 1);
-		m_emptyContainers.push_back(ptr);
+		m_containers.push_back(new std::vector<Model>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
 	}
 	return m_emptyContainers.front();
 }

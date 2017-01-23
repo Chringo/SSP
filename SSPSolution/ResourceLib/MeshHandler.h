@@ -21,7 +21,7 @@ namespace Resources
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_meshes;
 		std::deque<Mesh*> m_emptyContainers;
-		std::vector<Mesh> m_containers;
+		std::vector<std::vector<Mesh>*> m_containers;
 		ID3D11Device* m_device = nullptr;
 
 		Mesh* m_placeHolder = nullptr;
