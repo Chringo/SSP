@@ -53,6 +53,14 @@ namespace LevelData {
 		float wayPoints[8][3];
 	};
 
+	struct CheckpointHeader
+	{
+		unsigned int entityID; 
+		unsigned int checkpointNumber = 0;
+		float position[3];
+		OBB obb;
+	};
+
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,
