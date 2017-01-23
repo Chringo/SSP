@@ -507,6 +507,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			StaticEntity* tse = new StaticEntity();
 			tse->SetGraphicsComponent(t_gc);
 			tse->SetPhysicsComponent(t_pc);
+			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc);
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
@@ -514,6 +515,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			DynamicEntity* tde = new DynamicEntity();
 			tde->SetGraphicsComponent(t_gc);
 			tde->SetPhysicsComponent(t_pc);
+			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc);
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 			
 		}
