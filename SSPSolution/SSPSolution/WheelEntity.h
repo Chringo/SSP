@@ -24,6 +24,17 @@ public:
 	int React(int entityID, EVENT reactEvent);
 
 	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increasing);
+
+	float SetMinRotation(float amount);
+	float SetMaxRotation(float amount);
+	float SetRotateTime(float time);
+	float SetInteractionDistance(float distance);
+	
+	float GetMinRotation();
+	float GetMaxRotation();
+	float GetRotateTime();
+	float GetInteractionDistance();
+
 private:
 	//Functions
 };

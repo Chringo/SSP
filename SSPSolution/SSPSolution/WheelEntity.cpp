@@ -155,3 +155,51 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, bool increa
 	}
 	return result;
 }
+
+float WheelEntity::SetMinRotation(float amount)
+{
+	float oldValue = this->m_minRotation;
+	this->m_minRotation = amount;
+	return oldValue;
+}
+
+float WheelEntity::SetMaxRotation(float amount)
+{
+	float oldValue = this->m_maxRotation;
+	this->m_maxRotation = amount;
+	return oldValue;
+}
+
+float WheelEntity::SetRotateTime(float time)
+{
+	float oldValue = this->m_rotateTime;
+	this->m_rotateTime = time;
+	return oldValue;
+}
+
+float WheelEntity::SetInteractionDistance(float distance)
+{
+	float oldValue = this->m_range;
+	this->m_range = distance;
+	return oldValue;
+}
+
+float WheelEntity::GetMinRotation()
+{
+	return this->m_minRotation;
+}
+
+float WheelEntity::GetMaxRotation()
+{
+	return this->m_maxRotation;
+}
+
+float WheelEntity::GetRotateTime()
+{
+	return this->m_rotateTime;
+}
+
+float WheelEntity::GetInteractionDistance()
+{
+	return this->m_range;
+}
