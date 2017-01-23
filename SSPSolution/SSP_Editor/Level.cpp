@@ -227,8 +227,8 @@ Resources::Status Level::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVE
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
-	//if (modelID == PLAYER1 || modelID == PLAYER2)
-	//	return Resources::Status::ST_OK;
+	if (modelID == PLAYER1 || modelID == PLAYER2)
+		return Resources::Status::ST_OK;
 
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
@@ -242,7 +242,11 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
 			if (instanceID == modelPtr->at(i).internalID)
-				modelPtr->erase(modelPtr->begin() + i);
+			{
+				if (modelPtr->at(i).aiComponent != nullptr)
+					this->m_LevelAi.DeletePathComponent(instanceID);
+					modelPtr->erase(modelPtr->begin() + i);
+			}
 		}
 		return Resources::Status::ST_OK;
 	}
