@@ -447,7 +447,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	}
 	//Lock the camera to the player
-	this->LockCameraToPlayer();
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
