@@ -124,7 +124,7 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 				possibleCollitionZ = (fabs(vecToObj[2]) <= PC_toCheck->PC_AABB.ext[2] + PC_ptr->PC_AABB.ext[2]);
 				if (possibleCollitionZ == true)
 				{
-					DirectX::XMVECTOR normal;
+					DirectX::XMVECTOR normal = DirectX::XMVectorSet(0, 0, 0, 0);
 					// apply OOB check for more precisition
 					result = true;
 					if (

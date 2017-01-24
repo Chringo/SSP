@@ -4,6 +4,7 @@
 
 LevelSelectState::LevelSelectState()
 {
+	currentLevel = nullptr;
 }
 
 

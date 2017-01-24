@@ -51,7 +51,9 @@ void SSP_Editor::closeEvent(QCloseEvent * event)
 {
 	if (LevelHandler::GetInstance()->GetCurrentLevel()->isEmpty() == false)
 	{
-		PromptSaveLevel();
+		if (!PromptSaveLevel())
+			event->ignore();
+	
 	}
 }
 void SSP_Editor::resizeEvent(QResizeEvent * event)
