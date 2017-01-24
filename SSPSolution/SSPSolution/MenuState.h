@@ -8,11 +8,13 @@ class MenuState :
 {
 private:
 	struct MenuButton {
+		bool m_hovered;
 		UIComponent* m_uiComp;
 		TextComponent* m_textComp;
 
 		void SetHovered(bool hovered)
 		{
+			m_hovered = hovered;
 			if (hovered)
 			{
 				m_uiComp->scale = 1.25f;
@@ -39,6 +41,7 @@ private:
 		}
 	};
 	const static int m_NR_OF_MENU_ITEMS = 2;
+	int markedItem;
 	MenuButton m_menuButtons[m_NR_OF_MENU_ITEMS];
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;

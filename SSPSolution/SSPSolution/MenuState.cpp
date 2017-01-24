@@ -45,6 +45,8 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuButtons[0].m_textComp->text = L"Start Game";
 	this->m_menuButtons[1].m_textComp->text = L"Quit Game";
 
+	this->markedItem = 0;
+	this->m_menuButtons[this->markedItem].SetHovered(true);
 
 	return result;
 }
@@ -55,6 +57,20 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 
+	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+	{
+		this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
+		if (this->m_menuButtons[i].m_uiComp->isHovered)
+		{
+			this->m_menuButtons[i].SetHovered(true);
+			this->markedItem = i;
+		}
+		else if(i != this->markedItem)
+		{
+			this->m_menuButtons[i].SetHovered(false);
+		}
+	}
+
 	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
 	{
 		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
@@ -62,17 +78,26 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
 		}
 	}
-
-	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
 	{
-		this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
-		if (this->m_menuButtons[i].m_uiComp->isHovered)
+		this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+	{
+		if (this->markedItem < this->m_NR_OF_MENU_ITEMS - 1)
 		{
-			this->m_menuButtons[i].SetHovered(true);
+			this->m_menuButtons[this->markedItem].SetHovered(false);
+			this->markedItem++;
+			this->m_menuButtons[this->markedItem].SetHovered(true);
 		}
-		else
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+	{
+		if (this->markedItem > 0)
 		{
-			this->m_menuButtons[i].SetHovered(false);
+			this->m_menuButtons[this->markedItem].SetHovered(false);
+			this->markedItem--;
+			this->m_menuButtons[this->markedItem].SetHovered(true);
 		}
 	}
 
