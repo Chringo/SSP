@@ -1,6 +1,5 @@
 #include "Level.h"
 #include "AIController.h"
-#include "CheckpointController.h"
 
 Level::Level()
 {

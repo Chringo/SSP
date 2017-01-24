@@ -12,7 +12,7 @@ CheckpointContainer * CheckpointHandler::GetCheckpoint(int entityID)
 {
 	for each (CheckpointContainer* checkpoint in this->m_checkpoints)
 	{
-		if (checkpoint->checkpointHeader.entityID == entityID)
+		if (checkpoint->internalID == entityID)
 			return checkpoint;
 	}
 

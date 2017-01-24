@@ -139,9 +139,6 @@
     <ClCompile Include="GlobalIDHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CheckpointController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CheckpointHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,9 +219,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GlobalIDHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckpointController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CheckpointHandler.h">

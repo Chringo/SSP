@@ -5,14 +5,6 @@
 struct TransformWidget
 {
 public:
-	enum SelectionTypes
-	{
-		MODEL,
-		CHECKPOINT,
-		LIGHT,
-
-		NUM_TYPES
-	};
 	enum AXIS
 	{
 		NONE = -1,
@@ -23,12 +15,10 @@ public:
 		NUM_AXIS
 	};
 private:
-	SelectionTypes type;
 	bool m_active = false;
 	DirectX::XMVECTOR m_colors[4];
 	Container * m_selectedContainer = nullptr;
 	AIComponent* m_aiContainer = nullptr;
-	CheckpointContainer* m_checkpointContainer = nullptr;
 
 	unsigned int m_instanceID = NULL;
 	unsigned int m_modelID = NULL;
@@ -45,21 +35,9 @@ private:
 	{
 		for (int i = 0; i < NUM_AXIS; i++)
 		{
-			switch (type)
-			{
-			case TransformWidget::MODEL:
-				m_axisOBBpos[i] = m_selectedContainer->position;
-				break;
-			case TransformWidget::CHECKPOINT:
-				m_axisOBBpos[i] = m_checkpointContainer->position;
-				break;
-			case TransformWidget::LIGHT:
-				break;
-			case TransformWidget::NUM_TYPES:
-				break;
-			default:
-				break;
-			}
+
+			m_axisOBBpos[i] = m_selectedContainer->position;
+
 			
 			//relative to origin
 			m_axisOBBpos[i].m128_f32[i] += 1.f;
@@ -72,8 +50,7 @@ private:
 public:
 	unsigned int GetInstanceID() { return m_instanceID; };
 	unsigned int GetModelID() { return m_modelID; };
-	Container * GetContainer() { assert(type == MODEL); return m_selectedContainer; };
-	CheckpointContainer * GetCheckpoint() { assert(type == CHECKPOINT); return m_checkpointContainer; }
+	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
 	DirectX::XMVECTOR * GetAxisOBBpositons() { return m_axisOBBpos; };
 	DirectX::XMVECTOR * GetSelectedObjectOBBColor(){ return &SelectedObjectOBBColor; };
@@ -81,14 +58,19 @@ public:
 	OBB * GetAxisOBBs() { return m_axisOBB; };
 	OBB * GetSelectedObjectOBB() { return &m_selectedObjectOBB; };
 	int GetSelectedAxis() { return m_selectedAxis; };
-	SelectionTypes GetSelectionType() { return type; };
 	void SetOBBCenterPosition(DirectX::XMVECTOR centerPosition) { this->m_obbCenterPosition = centerPosition; this->m_obbLastPosition = centerPosition; };
 
 
 	void UpdateOBB()
 	{
-		m_obbCenterPosition = DirectX::XMVector3TransformCoord(m_obbLastPosition, this->m_selectedContainer->component.worldMatrix);
-		m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
+		if (this->m_selectedContainer->type == CHECKPOINT)
+		{
+			m_obbCenterPosition = this->m_selectedContainer->position;
+		}
+		else {
+			m_obbCenterPosition = DirectX::XMVector3TransformCoord(m_obbLastPosition, this->m_selectedContainer->component.worldMatrix);
+			m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
+		}
 
 		m_UpdateAxies();
 	};
@@ -112,25 +94,24 @@ public:
 		this->m_modelID = modelID;
 
 
-		type = MODEL;
 		m_UpdateAxies();
 		setActive(true);
 	};
 
-	void Select(OBB &selectedOBB, CheckpointContainer *selectedCheckpoint)
+	void Select(OBB &selectedOBB,
+		CheckpointContainer * selectedContainer)
 	{
 		this->m_selectedObjectOBB = selectedOBB;
-		this->m_selectedContainer = nullptr;
-		this->m_instanceID = UINT_MAX;
+		this->m_selectedContainer = selectedContainer;
+		this->m_instanceID = selectedContainer->internalID;
 		this->m_modelID = UINT_MAX;
 
-		this->m_checkpointContainer = selectedCheckpoint;
+		m_obbCenterPosition = selectedContainer->position;
 
-
-		this->type = CHECKPOINT;
 		m_UpdateAxies();
 		setActive(true);
 	};
+
 
 	void Select(OBB &selectedOBB,
 		AIComponent * AiContainer)
