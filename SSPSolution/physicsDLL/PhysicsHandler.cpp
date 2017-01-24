@@ -1257,14 +1257,15 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		//float perpendicularForce = perpendicularImpuls / dt;
 		//this->ApplyForceToComponent(obj1, DirectX::XMVectorScale(pPerpendicular, perpendicularForce), dt);
 
-		//frictionConstant = 10;
+
 		float frictionForce = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorScale(DirectX::XMVectorScale(pParallel, parallelForce), frictionConstant)));
 		float maxFriction = fabs(DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorScale(this->m_gravity, frictionConstant))));
 		if (frictionForce > maxFriction)
 		{
 			frictionForce = maxFriction;
 		}
-		DirectX::XMVECTOR frictionFORCE = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorScale(pPerpendicular, -1)), frictionForce);
+		DirectX::XMVECTOR frictionFORCE = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, -1), frictionForce);
+		//frictionFORCE = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorScale(pPerpendicular, -1)), frictionForce);
 
 		this->ApplyForceToComponent(obj1, DirectX::XMVectorScale(pParallel, parallelForce), dt);
 		this->ApplyForceToComponent(obj1, frictionFORCE, dt);
@@ -1313,20 +1314,13 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		pParallelForce2 = DirectX::XMVectorScale(pParallelForce2, 1 / dt);
 
 		float frictionConstant = (obj1->PC_friction + obj2->PC_friction);
-		float maxFriction = fabs(DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorScale(this->m_gravity, frictionConstant))));
 
-		float frictionForceMagnitude = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorScale(pParallelForce1, frictionConstant)));
-		if (frictionForceMagnitude > maxFriction)
-		{
-			//frictionForceMagnitude = maxFriction;
-		}
-		//frictionForceMagnitude = 0.3;
 
-		DirectX::XMVECTOR frictionForce1 = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorScale(pPerpendicular1, -1)), frictionForceMagnitude);
-		frictionForce1 = DirectX::XMVectorAdd(frictionForce1, DirectX::XMVectorScale(DirectX::XMVector3Normalize(pPerpendicular2), frictionForceMagnitude));
+		DirectX::XMVECTOR frictionForce1 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular1, -1), frictionConstant);
+		frictionForce1 = DirectX::XMVectorAdd(frictionForce1, DirectX::XMVectorScale(pPerpendicular2, frictionConstant));
 
-		DirectX::XMVECTOR frictionForce2 = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorScale(pPerpendicular2, -1)), frictionForceMagnitude);
-		frictionForce2 = DirectX::XMVectorAdd(frictionForce2, DirectX::XMVectorScale(DirectX::XMVector3Normalize(pPerpendicular1), frictionForceMagnitude));
+		DirectX::XMVECTOR frictionForce2 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular2, -1), frictionConstant);
+		frictionForce2 = DirectX::XMVectorAdd(frictionForce2, DirectX::XMVectorScale(pPerpendicular1, frictionConstant));
 
 		this->ApplyForceToComponent(obj1, pParallelForce1, dt);
 		this->ApplyForceToComponent(obj1, frictionForce1, dt);
@@ -1334,22 +1328,6 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		this->ApplyForceToComponent(obj2, pParallelForce2, dt);
 		this->ApplyForceToComponent(obj2, frictionForce2, dt);
 
-		//v1_new[0] += DirectX::XMVectorGetX(pPerpendicular1);
-		//v1_new[1] += DirectX::XMVectorGetY(pPerpendicular1);
-		//v1_new[2] += DirectX::XMVectorGetZ(pPerpendicular1);
-
-		//v2_new[0] += DirectX::XMVectorGetX(pPerpendicular2);
-		//v2_new[1] += DirectX::XMVectorGetY(pPerpendicular2);
-		//v2_new[2] += DirectX::XMVectorGetZ(pPerpendicular2);
-
-		//if (!obj1->PC_is_Static)
-		//{
-		//	obj1->PC_velocity = DirectX::XMVectorSet(v1_new[0], v1_new[1], v1_new[2], 0);
-		//}
-		//if (!obj2->PC_is_Static)
-		//{
-		//	obj2->PC_velocity = DirectX::XMVectorSet(v2_new[0], v2_new[1], v2_new[2], 0);
-		//}
 	}
 
 
@@ -1522,7 +1500,6 @@ bool PhysicsHandler::Initialize()
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
 	this->m_isHost = true;
-
 
 
 	return true;

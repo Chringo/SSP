@@ -89,6 +89,7 @@ private:
 
 	DirectX::XMVECTOR m_gravity;
 
+
 	unsigned int	m_startIndex;		// At what index to start to check colision
 	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
 	bool			m_isHost;			// isHost is to check if this client should check collision between dynamic entities
