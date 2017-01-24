@@ -53,6 +53,15 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		this->m_menuButtons[i].m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (newI * 150.f));
 	}
 
+	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
+	this->m_ipTextBox.m_uiComp->active = 0;
+	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(150.f, 200.f + (150.f));
+	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
+	this->m_ipTextBox.m_textComp->active = 0;
+	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (150.f));
+	this->m_ipTextBox.m_textComp->text = L"Enter ip...";
+
 	this->m_menuButtons[0].m_textComp->text = L"Start Game";
 	this->m_menuButtons[2].m_textComp->text = L"Quit Game";
 	this->m_menuButtons[1].m_textComp->text = L"Options";
