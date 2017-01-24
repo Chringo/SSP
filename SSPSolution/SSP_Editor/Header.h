@@ -30,7 +30,9 @@ struct Container
 	bool			  isStatic     = true;
 
 	ContainerType type;
-	Container() {}
+	Container() {
+		type = MODEL;
+	};
 	Container(const Container &obj) {  // copy constructor
 	
 		this->internalID	= obj.internalID	;
@@ -40,6 +42,7 @@ struct Container
 		this->aiComponent	= obj.aiComponent	;
 		this->isDirty		= obj.isDirty		;
 		this->isStatic		= obj.isStatic		;
+		this->type = MODEL;
 	}
 	Container& operator=(Container const& obj)
 	{
@@ -51,7 +54,7 @@ struct Container
 		this->aiComponent = obj.aiComponent;
 		this->isDirty	  = obj.isDirty;
 		this->isStatic	  = obj.isStatic;
-
+		this->type = MODEL;
 		return *this;
 	}
 
@@ -59,24 +62,38 @@ struct Container
 
 struct Button : Container
 {
+	Button()
+	{
+		this->type = BUTTON;
+	}
 	float interactionDistance;
 	float resetTime; // Seconds
 };
 
 struct Lever : Container
 {
+	Lever() {
+		this->type = LEVER;
+	}
 	float interactionDistance;
 };
 struct Wheel : Container
 {
+	Wheel()
+	{
+		this->type = WHEEL;
+	}
 	float interactionDistance;
 	float minRotation;
 	float maxRotation;
 	float rotateTime;
 };
-
 struct Door : Container
 {
+	Door()
+	{
+		this->type = DOOR;
+	}
 	float rotateTime;
 	unsigned int triggerEntityId;
 };
