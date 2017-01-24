@@ -40,20 +40,10 @@ struct Container
 
 	};
 
-struct AiContainer 
+struct Button : Container
 {
-	OBB obb;
-	
-	AIComponent aiComponent;
-	AiContainer()
-	{
-		obb.ort.r[0] = { 1.0f,0.0f,0.0f};
-		obb.ort.r[1] = { 0.0f,1.0f,0.0f };
-		obb.ort.r[2] = { 0.0f,0.0f,1.0f };
-		obb.ext[0] = 0.2f;
-		obb.ext[1] = 0.2f;
-		obb.ext[2] = 0.2f;
-	}
+	float interactionDistance;
+	float resetTime; // Seconds
 };
 
 struct CheckpointContainer
