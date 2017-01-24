@@ -112,6 +112,8 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 		DirectX::XMVECTOR correction = DirectX::XMVectorAdd(obj1->PC_pos, obj2->PC_pos);
 		correction = DirectX::XMVector4Normalize(correction);
 
+		float yCorrection = 0;
+
 
 		possibleCollitionX = (fabs(vecToObj[0]) <= PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]);
 		if (possibleCollitionX == true)
@@ -125,6 +127,11 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 				if (possibleCollitionZ == true)
 				{
 					DirectX::XMVECTOR normal;
+					float xProcent = fabs(xOverlap / x_total_ext);
+					float yProcent = fabs(yOverlap / y_total_ext);
+					float zProcent = fabs(zOverlap / z_total_ext);
+
+
 					// apply OOB check for more precisition
 					result = true;
 					if (
@@ -142,7 +149,15 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 							distanceToMove *= -1;
 							normal = DirectX::XMVectorSet(-1, 0, 0, 0);
 						}
-						obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, 0, 0, 0));
+
+						if (xProcent > 0.9)
+						{
+							yCorrection = 0.1;
+							distanceToMove = 0;
+							normal = DirectX::XMVectorSet(0, 1, 0, 0);
+						}
+
+						obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
 					}
 
 					if (
@@ -159,6 +174,7 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 							distanceToMove *= -1;
 							normal = DirectX::XMVectorSet(0, -1, 0, 0);
 						}
+
 						obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, distanceToMove, 0, 0));
 					}
 
@@ -176,7 +192,14 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 							distanceToMove *= -1;
 							normal = DirectX::XMVectorSet(0, 0, -1, 0);
 						}
-						obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, 0, distanceToMove, 0));
+						if(zProcent < 0.9)
+						{
+							yCorrection = 0.1;
+							distanceToMove = 0;
+							normal = DirectX::XMVectorSet(0, 1, 0, 0);
+						}
+						
+						obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
 					}
 					//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, correction);
 

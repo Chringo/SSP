@@ -126,10 +126,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(1, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
-	//Entity* ptr = (Entity*)ball;
-	//this->m_player1.SetGrabbed(ball);
+	Entity* ptr = (Entity*)ball;
+	this->m_player1.SetGrabbed(ball);
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(0, 1, 3, 0.5);
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
@@ -489,7 +489,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
 
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.95f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
