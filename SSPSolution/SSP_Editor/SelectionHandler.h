@@ -44,6 +44,8 @@ public:
 	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
+	CheckpointContainer * GetSelectedCheckpoint() {	return this->m_transformWidget.GetCheckpoint();	};
+	TransformWidget::SelectionTypes GetSelectionType(){ return this->m_transformWidget.GetSelectionType(); };
 	bool HasSelection();
 	void SetSelection(bool selection);
 	void SetSelectedContainer(Container* selection);
@@ -68,6 +70,7 @@ public:
 private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::vector<Resources::Model*>* m_modelPtr;
+	std::vector<CheckpointContainer*>* m_checkpointPtr;
 
 	bool m_IsDirty = true;
 	PickRay m_ray;

@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <string>
+#include <DirectXMath.h>
 
 /* Assuming that the puzzele will be reloaded with a 
 predefined state so we dont have to store entity 

@@ -111,8 +111,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (SelectionHandler::GetInstance()->NeedsUpdate())
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
 
-		DirectX::XMVECTOR* hejsan = SelectionHandler::GetInstance()->GetOBBCenterPosition();
-
 		GraphicsHptr->RenderBoundingVolume(
 			//SelectionHandler::GetInstance()->GetSelected()->position,
 			*SelectionHandler::GetInstance()->GetOBBCenterPosition(),
@@ -151,6 +149,17 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 //path[7] = { 0.0f,0.0f,0.0f };
 //GraphicsHptr->RenderBoundingVolume(path, 8);
 //
+
+	/*TEMP TO TEST CHECKPOINTS*/
+	CheckpointContainer tcheck;
+	
+	tcheck.position = { 0.0 };
+	tcheck.obb.ort = DirectX::XMMatrixIdentity();
+	tcheck.obb.ext[0] = 1.0;
+	tcheck.obb.ext[1] = 2.0;
+	tcheck.obb.ext[2] = 1.0;
+	GraphicsHptr->RenderBoundingVolume(tcheck.position,tcheck.obb, { 0.5, 0.5,0.0 });
+
 	GraphicsHptr->renderFinalEditor();
 	this->update();
 	

@@ -1,6 +1,6 @@
 #include "Level.h"
 #include "AIController.h"
-
+#include "CheckpointController.h"
 
 Level::Level()
 {
@@ -24,7 +24,7 @@ Level::Level()
 		
 		
 	//AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
-	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });						   //TEMP
+	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });				       //TEMP
 	//cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
 	//cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
 	//cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
@@ -48,6 +48,11 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 {
 	return &m_LightMap;
+}
+
+std::vector<CheckpointContainer*>* Level::GetCheckpoints()
+{
+	return m_checkpointHandler.GetAllCheckpoints();
 }
 
 Container * Level::GetInstanceEntity(unsigned int entityID)
@@ -224,6 +229,32 @@ Resources::Status Level::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVE
 
 	return Resources::Status::ST_OK;
 }
+
+Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale)
+{
+	CheckpointContainer * container = m_checkpointHandler.GetCheckpoint(instanceID);
+	DirectX::XMMATRIX checkOrt = DirectX::XMMatrixIdentity();
+
+	DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+	DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+	DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+	rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+	checkOrt = DirectX::XMMatrixMultiply(checkOrt, rotationMatrix);
+	checkOrt = DirectX::XMMatrixMultiply(checkOrt, DirectX::XMMatrixTranslationFromVector(position));
+
+	container->obb.ext[0] = scale.m128_f32[0];
+	container->obb.ext[1] = scale.m128_f32[1];
+	container->obb.ext[2] = scale.m128_f32[2];
+
+	container->obb.ort = checkOrt;
+
+	return Resources::Status::ST_OK;
+}
+
+
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
