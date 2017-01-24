@@ -13,13 +13,14 @@ Ui::BehaviourTypeHandler::BehaviourTypeHandler(const Ui::SSP_EditorClass * ui)
 void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 {
 	this->m_Numerics[SPEED] = ui->SpeedValue;
-	this->m_Numerics[TIME] = ui->TimeValue;
-	this->m_PATH_TRIGGER = ui->TriggerPathValue;
+	this->m_Numerics[TIME]  = ui->TimeValue;
+	this->m_PATH_TRIGGER    = ui->TriggerPathValue;
 	connect(ui->SpeedValue, SIGNAL(valueChanged(double)), this, SLOT(on_Speed_changed(double)));
 	connect(ui->TimeValue, SIGNAL(valueChanged(double)), this, SLOT(on_Time_changed(double)));
 	connect(ui->TriggerPathValue, SIGNAL(valueChanged(int)), this, SLOT(on_Path_Trigger_changed(int)));
 
 	this->m_BehaviourType = ui->BehaviourDropDown;
+	m_BehaviourType->setEnabled(false);
 	this->m_Pattern = ui->PatternDropDown;
 	connect(ui->BehaviourDropDown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_BehaviourType_changed(int)));
 	connect(ui->PatternDropDown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_Pattern_changed(int)));
@@ -39,6 +40,7 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 		this->m_ListItems[(ListItems)i] = nullptr;
 	}
 
+	
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -50,6 +52,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 	if (selection != nullptr)
 	{
 		Deselect(); //reset values
+		m_BehaviourType->setEnabled(true);
 		m_selection = selection;
 		if (m_selection->aiComponent != nullptr)
 		{
@@ -95,6 +98,7 @@ void Ui::BehaviourTypeHandler::Deselect()
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
+	m_BehaviourType->setEnabled(false);
 	
 	
 }
