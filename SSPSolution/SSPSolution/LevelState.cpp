@@ -322,9 +322,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
 		//update all dynamic (moving) entities
+		Entity* ent = nullptr;
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
-			this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+			ent = this->m_dynamicEntitys.at(i);
+			if (!ent->IsGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
+			{
+				ent->Update(dt, inputHandler);
+			}
+			else
+			{
+				ent->SyncComponents();
+			}
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
@@ -438,7 +447,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player2.SetUpDir(upDir);
 		this->m_player2.SetLookDir(playerLookDir);
 		this->m_player2.Update(dt, inputHandler);
-
+		
 		//Other half of the components
 		this->m_player1.SyncComponents();
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
@@ -464,7 +473,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_grabPacketList.size() > 0)
 		{
 			std::list<GrabPacket>::iterator itr;
-			PhysicsComponent* pp = nullptr;
 			Entity* ep = nullptr;
 
 			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
@@ -491,6 +499,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.SetGrabbed(nullptr);
 				}
 			}
+
+			this->m_grabPacketList.clear();
 		}
 
 #pragma endregion GrabPacket
@@ -517,7 +527,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			
+			if (this->m_player2.GetGrabbed() != nullptr)	//If player2 has grabbed something
+			{
+				pp = this->m_player2.GetGrabbed()->GetPhysicsComponent();
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
+				
+			}
+		
 		}
 
 	}

@@ -207,3 +207,8 @@ bool Player::GetIsAming()
 {
 	return this->m_isAiming;
 }
+
+Entity * Player::GetGrabbed()
+{
+	return this->m_grabbed;
+}
