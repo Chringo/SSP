@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SSP_Editor.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -139,7 +139,8 @@ public:
     QSpinBox *CheckPointValue;
     QSpacerItem *verticalSpacer;
     QSpacerItem *horizontalSpacer_2;
-    QPushButton *pushButton_2;
+    QPushButton *CheckPointADD;
+    QLabel *label_4;
     QWidget *RenderWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
@@ -947,11 +948,16 @@ public:
 
         gridLayout_6->addItem(horizontalSpacer_2, 0, 1, 1, 1);
 
-        pushButton_2 = new QPushButton(CheckPoint);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-        pushButton_2->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+        CheckPointADD = new QPushButton(CheckPoint);
+        CheckPointADD->setObjectName(QStringLiteral("CheckPointADD"));
+        CheckPointADD->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
 
-        gridLayout_6->addWidget(pushButton_2, 1, 0, 1, 1);
+        gridLayout_6->addWidget(CheckPointADD, 1, 0, 1, 1);
+
+        label_4 = new QLabel(CheckPoint);
+        label_4->setObjectName(QStringLiteral("label_4"));
+
+        gridLayout_6->addWidget(label_4, 2, 1, 1, 1);
 
         CustomBehaviourTabWidget->addTab(CheckPoint, QString());
 
@@ -1002,7 +1008,7 @@ public:
         retranslateUi(SSP_EditorClass);
 
         tabWidget->setCurrentIndex(0);
-        CustomBehaviourTabWidget->setCurrentIndex(1);
+        CustomBehaviourTabWidget->setCurrentIndex(0);
         BehaviourStackWidget->setCurrentIndex(0);
 
 
@@ -1011,73 +1017,74 @@ public:
 
     void retranslateUi(QMainWindow *SSP_EditorClass)
     {
-        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", 0));
-        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", 0));
-        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", 0));
-        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
-        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
+        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", Q_NULLPTR));
+        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", Q_NULLPTR));
+        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
+        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
+        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
-        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", 0));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
-        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
-        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", 0));
-        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", 0));
-        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", 0));
-        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
-        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", 0));
-        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", 0));
-        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
+        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
+        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
+        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
+        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
+        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
+        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
         isStaticCheck->setText(QString());
         animationBox->clear();
         animationBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
         );
-        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
-        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", 0));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
+        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", Q_NULLPTR));
         BehaviourDropDown->clear();
         BehaviourDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", 0)
-         << QApplication::translate("SSP_EditorClass", "Trigger", 0)
-         << QApplication::translate("SSP_EditorClass", "Door", 0)
-         << QApplication::translate("SSP_EditorClass", "Path", 0)
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Door", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
         );
-        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
-        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", 0));
-        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", 0));
-        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", 0));
-        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", 0));
-        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", 0));
-        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", 0));
-        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", 0));
-        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", 0));
-        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", 0));
-        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", 0));
-        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
-        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
-        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
-        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", Q_NULLPTR));
+        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", Q_NULLPTR));
+        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", Q_NULLPTR));
+        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", Q_NULLPTR));
+        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", Q_NULLPTR));
+        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", Q_NULLPTR));
+        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", Q_NULLPTR));
+        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", Q_NULLPTR));
+        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", Q_NULLPTR));
+        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", Q_NULLPTR));
+        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", Q_NULLPTR));
+        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", Q_NULLPTR));
+        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "Linear", 0)
-         << QApplication::translate("SSP_EditorClass", "Circular", 0)
-         << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
-         << QApplication::translate("SSP_EditorClass", "Random", 0)
+         << QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Random", Q_NULLPTR)
         );
-        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
-        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
-        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
-        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
-        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", 0));
-        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", 0));
-        checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", 0));
-        pushButton_2->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", 0));
-        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", 0));
-        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
+        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
+        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", Q_NULLPTR));
+        checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", Q_NULLPTR));
+        CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", Q_NULLPTR));
+        label_4->setText(QApplication::translate("SSP_EditorClass", "Empty Space", Q_NULLPTR));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", Q_NULLPTR));
+        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
 };
