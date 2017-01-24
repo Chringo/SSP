@@ -151,14 +151,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 //
 
 	/*TEMP TO TEST CHECKPOINTS*/
-	CheckpointContainer tcheck;
-	
-	tcheck.position = { 0.0 };
-	tcheck.obb.ort = DirectX::XMMatrixIdentity();
-	tcheck.obb.ext[0] = 1.0;
-	tcheck.obb.ext[1] = 2.0;
-	tcheck.obb.ext[2] = 1.0;
-	GraphicsHptr->RenderBoundingVolume(tcheck.position,tcheck.obb, { 0.5, 0.5,0.0 });
+	for each(CheckpointContainer * checkpoint in *m_Communicator->GetCurrentLevel()->GetCheckpoints())
+		GraphicsHptr->RenderBoundingVolume(checkpoint->position, checkpoint->obb, { 0.5, 0.5,0.0 });
+
 
 	GraphicsHptr->renderFinalEditor();
 	this->update();
