@@ -23,6 +23,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			//Reset the button
 			this->m_elapsedResetTime = this->m_resetTime;
 			this->m_isActive = false;
+			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
 		}
 	}
 
