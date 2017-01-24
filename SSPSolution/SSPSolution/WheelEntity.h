@@ -17,8 +17,8 @@ private:
 public:
 	WheelEntity();
 	~WheelEntity();
-
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = DirectX::XM_PI / 2, float rotateTime = 1.0f);
+	//Max and Min rotation are all described as 1.0f = 1 = 1 entire turn of the wheel
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = 1.0f, float rotateTime = 1.0f);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);

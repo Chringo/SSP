@@ -17,8 +17,8 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->InitializeBase(entityID, pComp, gComp);
 	int result = 0;
 	this->m_rotationState = 0;
-	this->m_minRotation = minRotation;
-	this->m_maxRotation = maxRotation;
+	this->m_minRotation = minRotation * DirectX::XM_PI * 2;
+	this->m_maxRotation = maxRotation * DirectX::XM_PI * 2;
 	this->m_rotateTime = rotateTime;
 	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
 	this->m_range = interactionDistance;
