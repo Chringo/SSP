@@ -40,8 +40,15 @@ private:
 			}
 		}
 	};
-	const static int m_NR_OF_MENU_ITEMS = 2;
-	int markedItem;
+	struct TextBox {
+
+	};
+
+	const static int m_NR_OF_MAIN_MENU_ITEMS = 3;
+	const static int m_NR_OF_OPTIONS_MENU_ITEMS = 2;
+	const static int m_NR_OF_MENU_ITEMS = m_NR_OF_MAIN_MENU_ITEMS + m_NR_OF_OPTIONS_MENU_ITEMS;
+	unsigned int menuState; //0: Main menu, 1:Options Menu
+	unsigned int markedItem;
 	MenuButton m_menuButtons[m_NR_OF_MENU_ITEMS];
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;

@@ -31,7 +31,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
-	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+	for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 	{
 		this->m_menuButtons[i].m_uiComp = cHandler->GetUIComponent();
 		this->m_menuButtons[i].m_uiComp->active = 1;
@@ -41,9 +41,24 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		this->m_menuButtons[i].m_textComp->active = 1;
 		this->m_menuButtons[i].m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
 	}
+	for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_MENU_ITEMS; i++)
+	{
+		int newI = i - m_NR_OF_MAIN_MENU_ITEMS;
+		this->m_menuButtons[i].m_uiComp = cHandler->GetUIComponent();
+		this->m_menuButtons[i].m_uiComp->active = 0;
+		this->m_menuButtons[i].m_uiComp->position = DirectX::XMFLOAT2(100.f, 200.f + (newI * 150.f));
+		this->m_menuButtons[i].m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		this->m_menuButtons[i].m_textComp = cHandler->GetTextComponent();
+		this->m_menuButtons[i].m_textComp->active = 0;
+		this->m_menuButtons[i].m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (newI * 150.f));
+	}
 
 	this->m_menuButtons[0].m_textComp->text = L"Start Game";
-	this->m_menuButtons[1].m_textComp->text = L"Quit Game";
+	this->m_menuButtons[2].m_textComp->text = L"Quit Game";
+	this->m_menuButtons[1].m_textComp->text = L"Options";
+
+	this->m_menuButtons[3].m_textComp->text = L"Toggle Fullscreen";
+	this->m_menuButtons[4].m_textComp->text = L"Go Back";
 
 	this->markedItem = 0;
 	this->m_menuButtons[this->markedItem].SetHovered(true);
@@ -57,84 +72,178 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 
-	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+	switch (this->menuState)
 	{
-		this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
-		if (this->m_menuButtons[i].m_uiComp->isHovered)
+	case 0: //Main menu
+		for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 		{
-			this->m_menuButtons[i].SetHovered(true);
-			this->markedItem = i;
+			this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
+			if (this->m_menuButtons[i].m_uiComp->isHovered)
+			{
+				this->m_menuButtons[i].SetHovered(true);
+				this->markedItem = i;
+			}
+			else if (i != this->markedItem)
+			{
+				this->m_menuButtons[i].SetHovered(false);
+			}
 		}
-		else if(i != this->markedItem)
-		{
-			this->m_menuButtons[i].SetHovered(false);
-		}
-	}
 
-	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
-	{
-		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
 		{
-			this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
+			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
+			}
 		}
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
-	{
-		this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
-	{
-		if (this->markedItem < this->m_NR_OF_MENU_ITEMS - 1)
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
 		{
+			this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		{
+			if (this->markedItem < this->m_NR_OF_MAIN_MENU_ITEMS - 1)
+			{
+				this->m_menuButtons[this->markedItem].SetHovered(false);
+				this->markedItem++;
+				this->m_menuButtons[this->markedItem].SetHovered(true);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		{
+			if (this->markedItem > 0)
+			{
+				this->m_menuButtons[this->markedItem].SetHovered(false);
+				this->markedItem--;
+				this->m_menuButtons[this->markedItem].SetHovered(true);
+			}
+		}
+
+		if (this->m_menuButtons[0].m_uiComp->CheckClicked())
+		{
+			//Start game was clicked
+
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				this->m_gsh->PushStateToStack(levelSelect);
+
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+			}
+			else
+			{
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+
+			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].SetActive(false);
+			}
+		}
+		else if (this->m_menuButtons[1].m_uiComp->CheckClicked())
+		{
+			//Options was clicked
 			this->m_menuButtons[this->markedItem].SetHovered(false);
-			this->markedItem++;
+			this->markedItem = this->m_NR_OF_MAIN_MENU_ITEMS;
 			this->m_menuButtons[this->markedItem].SetHovered(true);
+			this->menuState = 1;
+			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].SetActive(false);
+			}
+			for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].SetActive(true);
+			}
 		}
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
-	{
-		if (this->markedItem > 0)
+		else if (this->m_menuButtons[2].m_uiComp->CheckClicked())
 		{
+			//Quit game was clicked
+			result = 0;
+		}
+		break;
+
+	case 1: //Options Menu
+		for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_OPTIONS_MENU_ITEMS; i++)
+		{
+			this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
+			if (this->m_menuButtons[i].m_uiComp->isHovered)
+			{
+				this->m_menuButtons[i].SetHovered(true);
+				this->markedItem = i;
+			}
+			else if (i != this->markedItem)
+			{
+				this->m_menuButtons[i].SetHovered(false);
+			}
+		}
+
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		{
+			for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_OPTIONS_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
+		{
+			this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		{
+			if (this->markedItem < this->m_NR_OF_MENU_ITEMS - 1)
+			{
+				this->m_menuButtons[this->markedItem].SetHovered(false);
+				this->markedItem++;
+				this->m_menuButtons[this->markedItem].SetHovered(true);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		{
+			if (this->markedItem > this->m_NR_OF_MAIN_MENU_ITEMS)
+			{
+				this->m_menuButtons[this->markedItem].SetHovered(false);
+				this->markedItem--;
+				this->m_menuButtons[this->markedItem].SetHovered(true);
+			}
+		}
+
+		if (this->m_menuButtons[3].m_uiComp->CheckClicked())
+		{
+			//Toggle fullscreen was clicked
+			//Cheating by telling the system the user pressed F
+			inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
+		}
+		else if (this->m_menuButtons[4].m_uiComp->CheckClicked())
+		{
+			//Return to main menu was clicked
 			this->m_menuButtons[this->markedItem].SetHovered(false);
-			this->markedItem--;
+			this->markedItem = 0;
 			this->m_menuButtons[this->markedItem].SetHovered(true);
+			this->menuState = 0;
+			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].SetActive(true);
+			}
+			for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_MENU_ITEMS; i++)
+			{
+				this->m_menuButtons[i].SetActive(false);
+			}
 		}
+
+		break;
+	default:
+		break;
 	}
-
-	if (this->m_menuButtons[0].m_uiComp->CheckClicked())
-	{
-		//Start game was clicked
-
-		//Create, Initialize and push a LevelSelectState
-		LevelSelectState* levelSelect = new LevelSelectState();
-		result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-
-		//If the initialization was successful
-		if (result > 0)
-		{
-			//Push it to the gamestate stack/vector
-			this->m_gsh->PushStateToStack(levelSelect);
-			
-			
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
-		}
-		else
-		{
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
-		}
-
-		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
-		{
-			this->m_menuButtons[i].SetActive(false);
-		}
-	}
-	else if (this->m_menuButtons[1].m_uiComp->CheckClicked())
-	{
-		//Quit game was clicked
-		result = 0;
-	}
+	
 
 	return result;
 }
