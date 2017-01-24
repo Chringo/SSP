@@ -156,6 +156,8 @@ int AIHandler::Update(float deltaTime)
 						if (this->m_AIComponents.at(i)->AC_nextWaypointID >= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
 							this->m_AIComponents.at(i)->AC_nextWaypointID = 0;
 					}
+					else if (x)
+						UpdatePosition(i);
 				}
 				else
 				{
@@ -172,8 +174,9 @@ int AIHandler::Update(float deltaTime)
 						if (this->m_AIComponents.at(i)->AC_nextWaypointID <= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
 							this->m_AIComponents.at(i)->AC_nextWaypointID = this->m_AIComponents.at(i)->AC_nrOfWaypoint;
 					}
+					else if (x)
+						UpdatePosition(i);
 				}
-				UpdatePosition(i);
 				//UpdateMe(i, deltaTime);
 			}
 		}
