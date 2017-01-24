@@ -332,10 +332,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), 0);
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
 			this->m_player1.SetGrabbed(nullptr);
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 		}
 
 		//Check for grabb requests
