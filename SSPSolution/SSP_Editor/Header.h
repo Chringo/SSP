@@ -98,7 +98,39 @@ struct Door : Container
 	unsigned int numTriggers = 0;
 	unsigned int triggerEntityIds[10];
 
-	void Add
+	void AddTrigger(unsigned int entityId)
+	{
+		for (size_t i = 0; i < numTriggers; i++)
+		{
+			if (numTriggers == entityId)
+				return;
+		}
+		if (numTriggers < 10) {
+			this->triggerEntityIds[numTriggers] = entityId;
+			numTriggers += 1;
+		}
+	}
+	void DeleteTrigger(unsigned int entityId)
+	{
+		int index = 0;
+		bool triggerExist = false;
+		for (size_t i = 0; i < numTriggers; i++) //find the index of the trigger to be deleted
+		{
+			if (triggerEntityIds[i] == entityId) {
+				index = i;
+				triggerExist = true;
+				break;
+			}
+		}
+		if (!triggerExist) // if the trigger does not exist
+			return;
+
+		for (size_t j = index; j < numTriggers - 1; j++) //move the data to the left in the array
+		{
+			triggerEntityIds[j] = triggerEntityIds[j + 1];
+		}
+		numTriggers -= 1;
+	}
 };
 struct CheckpointContainer : Container
 {
