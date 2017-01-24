@@ -813,7 +813,7 @@ std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
 
 	for (iter = this->packet_Buffer_Grabbed.begin(); iter != this->packet_Buffer_Grabbed.end();)
 	{
-		if (iter->packet_type == UPDATE_CAMERA)
+		if (iter->packet_type == UPDATE_GRAB)
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Grabbed.erase(iter);	//Returns the next element after the errased element
