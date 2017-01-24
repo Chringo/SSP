@@ -44,10 +44,10 @@ namespace Ui {
 		Pattern				m_Current_Pattern;
 		unsigned int		m_Current_Waypoint_Amt = 0;
 		QComboBox* 			m_BehaviourType;
-		QComboBox*			m_Pattern;
 		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
 		QCheckBox*			m_Path_Trigger_Box;
 		QSpinBox*			m_PATH_TRIGGER;
+		QComboBox*			m_Pattern;
 		QListWidget*		m_WaypointList;
 		QListWidgetItem*	m_ListItems[NUM_WAYPOINTS];
 		QPushButton*		m_Add;
