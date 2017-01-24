@@ -432,7 +432,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	std::vector<DynamicEntity*> aiEntities;
 
-	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
