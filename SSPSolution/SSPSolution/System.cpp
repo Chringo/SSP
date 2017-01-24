@@ -30,12 +30,10 @@ int System::Shutdown()
 	this->m_AIHandler->Shutdown();
 	delete this->m_AIHandler;
 	this->m_AIHandler = nullptr;
-	DebugHandler::instance().Shutdown();
-
-	/*Need a shutdown for this here.*/
+	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
-	this->m_AnimationHandler = nullptr;
-
+	DebugHandler::instance().Shutdown();
+	
 	return result;
 }
 
@@ -216,10 +214,8 @@ int System::Update(float deltaTime)
 		}
 	}
 
-	//Update animations here. Temp place right now.
-	//m_Anim->Update(deltaTime);
-	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
-
+	this->m_AnimationHandler->Update(deltaTime);
+	
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	

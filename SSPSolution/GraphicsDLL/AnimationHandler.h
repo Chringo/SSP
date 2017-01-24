@@ -15,21 +15,25 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-const int MAXIMUM_ALLOCATION = 5;
+#define ANIMSTATE_MAX_COUNT 8
 
-struct AnimationComponent
+
+struct AnimStateData
 {
-	int active = 0;
+	/*Animation state information.*/
 	int animationState = 0;
 	float startFrame = 0.f;
 	float endFrame = 0.f;
 	float localTime = 0.f;
 	bool isLooping = false;
-	
-	/*Consider to use them here for each animation?*/
-	//float transitionDuration;
-	//float tranisitionTimeLeft;
-	//BlendingStates blendingStates;
+};
+struct AnimationComponent
+{
+	/*System variables.*/
+	int active = 0;
+
+	/*Animation array data.*/
+	AnimStateData Anim_StateData[ANIMSTATE_MAX_COUNT];
 };
 
 struct Skeleton
@@ -65,17 +69,11 @@ class AnimationHandler
 private:
 	//Variables used only in class.
 
+	int m_nrOfAnimComps;
+	int m_maxAnimComps;
+
 	/*2D-array, which have a index for each Graphics Animation Component with their separate updating Animation Component lists.*/
-	AnimationComponent** m_AnimationComponents = nullptr;
-
-	int m_nrOfAnimationComponents;
-	int m_maxAnimationComponents;
-
-	//Helper functions to handle allocation of double pointer array.
-	int IncreaseArraySize();
-	int IncreaseArraySize(int increaseTo);
-	int DecreaseArraySize();
-	int DecreaseArraySize(int decreaseTo);
+	std::vector<AnimationComponent*> m_AnimComponentList;
 
 	BlendingStates m_BlendState;
 
@@ -88,11 +86,14 @@ private:
 	int * m_nrOfGraphicsAnimationComponents;
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 
-	std::vector<AnimationDataContainer> m_AnimationDataContainer;
-	AnimationDataContainer m_AnimationData;
+	/*This is the data that is stored per model that have a skeleton and keyframe animations.
+	Examples include: both the two players and animatible props like levers and doors.*/
+	std::vector<AnimationDataContainer> m_AnimationData;
+
+	SkelAnimModels m_skelAnimModel;
 
 	/*Used to set the current Graphics Animation Component separate animation stack.*/
-	std::vector<AnimationComponent*> m_AnimationComponentStack;
+	std::vector<AnimStateData> m_AnimationComponentStack;
 
 public: 
 	//Functions used outside the class.
@@ -103,18 +104,16 @@ public:
 	GRAPHICSDLL_API void Update(float dt);
 
 	GRAPHICSDLL_API void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
-	GRAPHICSDLL_API AnimationDataContainer GetAnimationDataFromIndex(int index);
-	GRAPHICSDLL_API void SetAnimationData(AnimationDataContainer animationData);
 
-	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
-	GRAPHICSDLL_API	AnimationComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API AnimationComponent* CreateAnimationComponent();
+	GRAPHICSDLL_API AnimationComponent* GetNextAvailableComponent();
 
-	GRAPHICSDLL_API void Shutdown();
+	GRAPHICSDLL_API void ShutDown();
 
 private:
 	//Functions only used in class.
 
-	void Push(AnimationComponent* animationComponent);
+	void Push(AnimStateData animState);
 
 	void Pop();
 
@@ -124,11 +123,11 @@ private:
 
 	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
 
-	void InterpolateKeys(AnimationComponent* animationComponent, float globalTimeElapsed);
+	void InterpolateKeys(AnimStateData animState, float globalTimeElapsed);
 
 	void Blend(float secondsElapsed);
 
-	void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimationComponent* animationComponent, float globalTimeElapsed, int animIndex);
+	void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animStateData, float globalTimeElapsed, int animIndex);
 
 	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 };

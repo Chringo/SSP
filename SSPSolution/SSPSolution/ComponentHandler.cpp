@@ -60,14 +60,12 @@ AIComponent * ComponentHandler::GetAIComponent()
 
 AnimationComponent * ComponentHandler::GetAnimationComponent()
 {
-	AnimationComponent* animationComponent = nullptr;
-
+	AnimationComponent* animComp = nullptr;
 	if (this->m_aHandler != nullptr)
 	{
-		animationComponent = this->m_aHandler->GetNextAvailableComponent();
+		animComp = this->m_aHandler->GetNextAvailableComponent();
 	}
-
-	return animationComponent;
+	return animComp;
 }
 
 void ComponentHandler::UpdateGraphicsComponents()

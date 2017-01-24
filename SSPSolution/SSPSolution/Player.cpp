@@ -26,6 +26,8 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
 	this->m_PlayerState = AnimationStates::PLAYER_IDLE;
 
+	this->m_currentAnimStates.push_back(m_aComp->Anim_StateData[m_PlayerState]);
+
 	return result;
 }
 
@@ -202,12 +204,13 @@ void Player::SetAiming(bool isAming)
 
 bool Player::IsStateChanged(AnimationStates currentState)
 {
-	/*If the current state is */
+	/*If the current state is the same as previous, no new state. */
 	if (currentState == m_PlayerState)
 		return false;
 
 	else
 	{
+		/*If the current state is not the same as previous, assign new state.*/
 		m_PlayerState = currentState; 
 	}
 }

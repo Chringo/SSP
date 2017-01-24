@@ -71,7 +71,7 @@ AIComponent * Entity::SetAIComponent(AIComponent * aiComp)
 	return tempReturn;
 }
 
-AnimationComponent * Entity::SetAnimationComponents(AnimationComponent * aComp)
+AnimationComponent * Entity::SetAnimationComponent(AnimationComponent * aComp)
 {
 	AnimationComponent* tempReturn = this->m_aComp;
 	this->m_aComp = aComp;

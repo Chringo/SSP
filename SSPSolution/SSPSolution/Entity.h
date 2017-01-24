@@ -36,7 +36,7 @@ public:
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 	AIComponent* SetAIComponent(AIComponent* aiComp);
-	AnimationComponent* SetAnimationComponents(AnimationComponent* aComp);
+	AnimationComponent* SetAnimationComponent(AnimationComponent* aComp);
 	bool SetGrabbed(Entity* isGrabbedBy);
 	bool IsGrabbed();
 	int SetEntityID(int entityID);

@@ -1,124 +1,8 @@
 #include "AnimationHandler.h"
 
-int AnimationHandler::IncreaseArraySize()
-{
-	AnimationComponent** newArray = new AnimationComponent*[this->m_maxAnimationComponents + MAXIMUM_ALLOCATION];
-
-	for (int i = 0; i < this->m_maxAnimationComponents + MAXIMUM_ALLOCATION; i++)
-	{
-		if (i < this->m_nrOfAnimationComponents)
-		{
-			newArray[i] = this->m_AnimationComponents[i];
-		}
-		
-		else
-		{
-			newArray[i] = new AnimationComponent();
-		}
-	}
-	delete[] this->m_AnimationComponents;
-	this->m_AnimationComponents = newArray;
-	this->m_maxAnimationComponents += MAXIMUM_ALLOCATION;
-
-	return 1;
-}
-
-int AnimationHandler::IncreaseArraySize(int increaseTo)
-{
-	AnimationComponent** newArray = new AnimationComponent*[increaseTo];
-
-	for (int i = 0; i < increaseTo; i++)
-	{
-		if (i < this->m_nrOfAnimationComponents)
-		{
-			newArray[i] = this->m_AnimationComponents[i];
-		}
-
-		else
-		{
-			newArray[i] = nullptr;
-		}
-	}
-	delete[] this->m_AnimationComponents;
-	this->m_AnimationComponents = newArray;
-	this->m_maxAnimationComponents = increaseTo;
-
-	return 1;
-}
-
-int AnimationHandler::DecreaseArraySize()
-{
-	this->m_maxAnimationComponents -= MAXIMUM_ALLOCATION;
-	AnimationComponent** newArray = new AnimationComponent*[this->m_maxAnimationComponents];
-
-	for (int i = 0; i < this->m_maxAnimationComponents; i++)
-	{
-		if (i < this->m_nrOfAnimationComponents)
-		{
-			newArray[i] = this->m_AnimationComponents[i];
-		}
-		else
-		{
-			newArray[i] = nullptr;
-		}
-	}
-
-	for (int i = this->m_maxAnimationComponents; i < this->m_maxAnimationComponents + MAXIMUM_ALLOCATION; i++)
-	{
-		if (this->m_AnimationComponents[i])
-		{
-			delete this->m_AnimationComponents[i];
-		}
-	}
-
-	delete[] this->m_AnimationComponents;
-	this->m_AnimationComponents = newArray;
-
-	return 1;
-}
-
-int AnimationHandler::DecreaseArraySize(int decreaseTo)
-{
-	AnimationComponent** newArray = new AnimationComponent*[decreaseTo];
-
-	for (int i = 0; i < decreaseTo; i++)
-	{
-		if (i < this->m_nrOfAnimationComponents)
-		{
-			newArray[i] = this->m_AnimationComponents[i];
-		}
-		else
-		{
-			newArray[i] = nullptr;
-		}
-	}
-
-	for (int i = decreaseTo; i < this->m_maxAnimationComponents; i++)
-	{
-		if (this->m_AnimationComponents[i])
-		{
-			delete this->m_AnimationComponents[i];
-		}
-	}
-
-	delete[] this->m_AnimationComponents;
-	this->m_AnimationComponents = newArray;
-	this->m_maxAnimationComponents = decreaseTo;
-
-	return 1;
-}
-
 AnimationHandler::AnimationHandler()
 {
-	this->m_BlendState = NO_TRANSITION;
-	this->m_TransitionComplete = false;
-	this->m_globalTimeElapsed = 0;
-	this->m_TransitionDuration = 0;
-	this->m_TransitionTimeLeft = 0;
-
-	this->m_animGraphicsComponents = nullptr;
-	this->m_nrOfAnimationComponents = 0;
-	this->m_maxAnimationComponents = 5;
+	
 }
 
 AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents)
@@ -126,11 +10,20 @@ AnimationHandler::AnimationHandler(GraphicsAnimationComponent ** graphicAnimComp
 	/*Initialize all Graphics Animation Components arrays with joint matrices for each skeleton.*/
 	this->m_animGraphicsComponents = graphicAnimComponents;
 	this->m_nrOfGraphicsAnimationComponents = noActiveComponents;
-	
-	//for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents[i]; i++)
-	//{
 
-	//}
+	this->m_BlendState = NO_TRANSITION;
+	this->m_TransitionComplete = false;
+	this->m_globalTimeElapsed = 0;
+	this->m_TransitionDuration = 0;
+	this->m_TransitionTimeLeft = 0;
+
+	this->m_nrOfAnimComps = 0;
+	this->m_maxAnimComps = 16;
+
+	for (int i = 0; i < this->m_maxAnimComps; i++)
+	{
+		this->m_AnimComponentList.push_back(CreateAnimationComponent());
+	}
 }
 
 AnimationHandler::~AnimationHandler()
@@ -141,7 +34,7 @@ AnimationHandler::~AnimationHandler()
 void AnimationHandler::Update(float dt)
 {
 	/*Convert the delta-time to be in seconds unit format.*/
-	float seconds = dt / 1000000;
+	float seconds = dt / 1000000.f;
 
 	m_globalTimeElapsed += seconds;
 
@@ -152,16 +45,20 @@ void AnimationHandler::Update(float dt)
 		{
 			if (!m_AnimationComponentStack.empty())
 			{
-				m_AnimationComponentStack.front()->localTime += seconds;
+				m_AnimationComponentStack.front().localTime += seconds;
 			}
 
+			/*No animation is in the stack for the current playing entity.*/
+			else
+				return;
+
 			/*If the animation reaches the last frame, either reset animation or switch to idle state.*/
-			if (m_AnimationComponentStack.front()->localTime >= m_AnimationComponentStack.front()->endFrame)
+			if (m_AnimationComponentStack.front().localTime >= m_AnimationComponentStack.front().endFrame)
 			{
 				/*Animation is looping. Reset the time of the animation.*/
-				if (m_AnimationComponentStack.front()->isLooping == true)
+				if (m_AnimationComponentStack.front().isLooping == true)
 				{
-					m_AnimationComponentStack.front()->localTime = 0;
+					m_AnimationComponentStack.front().localTime = 0;
 				}
 
 				else
@@ -174,7 +71,7 @@ void AnimationHandler::Update(float dt)
 			}
 
 			/*Interpolate the keyframes of this animation.*/
-			InterpolateKeys(m_AnimationComponentStack.front(), m_AnimationComponentStack.front()->localTime);
+			InterpolateKeys(m_AnimationComponentStack.front(), m_AnimationComponentStack.front().localTime);
 				
 			break;
 		}
@@ -217,7 +114,7 @@ void AnimationHandler::SetAnimationDataContainer(GraphicsAnimationComponent* gra
 
 	Resources::Skeleton::Joint* jointList = skeleton->GetSkeletonData()->joints;
 
-	m_AnimationDataContainer[index].skeleton.resize(skeleton->GetSkeletonData()->jointCount);
+	m_AnimationData[m_skelAnimModel].skeleton.resize(skeleton->GetSkeletonData()->jointCount);
 
 	for (int jointIndex = 0; jointIndex < skeleton->GetSkeletonData()->jointCount; jointIndex++)
 	{
@@ -228,10 +125,10 @@ void AnimationHandler::SetAnimationDataContainer(GraphicsAnimationComponent* gra
 		skel.parentIndex = jointList[jointIndex].parentIndex;
 		skel.inverseBindPose = matrix;
 
-		m_AnimationDataContainer[index].skeleton[jointIndex] = skel;
+		m_AnimationData[m_skelAnimModel].skeleton[jointIndex] = skel;
 	}
 
-	m_AnimationDataContainer[index].animations.resize(skeleton->GetNumAnimations());
+	m_AnimationData[m_skelAnimModel].animations.resize(skeleton->GetNumAnimations());
 
 	for (int animIndex = 0; animIndex < skeleton->GetNumAnimations(); animIndex++)
 	{
@@ -241,86 +138,73 @@ void AnimationHandler::SetAnimationDataContainer(GraphicsAnimationComponent* gra
 			return;
 
 		else
-			m_AnimationDataContainer[index].animations[animIndex] = animation->GetAllJoints();
+			m_AnimationData[m_skelAnimModel].animations[animIndex] = animation->GetAllJoints();
 	}
 }
 
-AnimationDataContainer AnimationHandler::GetAnimationDataFromIndex(int index)
+AnimationComponent* AnimationHandler::CreateAnimationComponent()
 {
-	return m_AnimationDataContainer[index];
-}
+	AnimationComponent* animComp = new AnimationComponent; 
+	animComp->active = 0;
 
-void AnimationHandler::SetAnimationData(AnimationDataContainer animationData)
-{
-	this->m_AnimationData = animationData;
-}
-
-int AnimationHandler::SetComponentArraySize(int newSize)
-{
-	if (this->m_nrOfAnimationComponents < newSize)
+	for (int i = 0; i < ANIMSTATE_MAX_COUNT; i++)
 	{
-		this->IncreaseArraySize(newSize);
+		animComp->Anim_StateData[i].animationState = 0;
+		animComp->Anim_StateData[i].startFrame = 0;
+		animComp->Anim_StateData[i].endFrame = 0;
+		animComp->Anim_StateData[i].isLooping = true;
+		animComp->Anim_StateData[i].localTime = 0;
 	}
 
-	else if (this->m_maxAnimationComponents > newSize)
-	{
-		this->DecreaseArraySize(newSize);
-	}
-
-	return 0;
+	return animComp;
 }
 
 AnimationComponent * AnimationHandler::GetNextAvailableComponent()
 {
-	if (this->m_nrOfAnimationComponents < this->m_maxAnimationComponents)
+	if (this->m_nrOfAnimComps == this->m_maxAnimComps)
 	{
-		this->m_nrOfAnimationComponents++;
-		return this->m_AnimationComponents[this->m_nrOfAnimationComponents - 1];
-	}
+		int previousMax = this->m_maxAnimComps;
+		this->m_maxAnimComps += this->m_maxAnimComps;
 
-	else
-	{
-		this->IncreaseArraySize();
-		return this->GetNextAvailableComponent();
-	}
-
-	return nullptr;
-}
-
-void AnimationHandler::Shutdown()
-{
-	for (int i = 0; i < m_nrOfAnimationComponents; i++)
-	{
-		if (this->m_AnimationComponents[i] != nullptr)
+		for (int i = previousMax; i < m_maxAnimComps; i++)
 		{
-			delete this->m_AnimationComponents[i];
-			this->m_AnimationComponents[i] = nullptr;
+			this->m_AnimComponentList.push_back(CreateAnimationComponent());
 		}
 	}
-
-	delete[]this->m_AnimationComponents;
+	this->m_nrOfAnimComps++;
+	return this->m_AnimComponentList[this->m_nrOfAnimComps - 1];
 }
 
-void AnimationHandler::InterpolateKeys(AnimationComponent* animationComponent, float currentTime)
+void AnimationHandler::ShutDown()
+{
+	int size = m_AnimComponentList.size();
+	for (int i = 0; i < size; i++)
+	{
+		delete this->m_AnimComponentList[i];
+	}
+
+	m_AnimComponentList.clear();
+}
+
+void AnimationHandler::InterpolateKeys(AnimStateData animState, float currentTime)
 {
 	std::vector<DirectX::XMFLOAT4X4> localTransforms;
 
-	int jointSize = m_AnimationDataContainer.size();
-
+	int jointSize = m_AnimationData[m_skelAnimModel].skeleton.size();
 	localTransforms.resize(jointSize);
 
-	int animationState = animationComponent->animationState;
+	int animationState = animState.animationState;
 
-	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimationData.animations[animationState];
+	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimationData[m_skelAnimModel].animations[animationState];
 
 	for (unsigned int jointIndex = 0; jointIndex < jointSize; jointIndex++)
 	{
 		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
 
 		/*The current time is the first keyframe.*/
-		if (currentTime <= animationComponent->startFrame)
+		if (currentTime <= animState.startFrame)
 		{
-			int startFrame = (int)animationComponent->startFrame;
+			int startFrame = (int)animState.startFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
@@ -339,7 +223,7 @@ void AnimationHandler::InterpolateKeys(AnimationComponent* animationComponent, f
 			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is the last keyframe.*/
-		else if (currentTime >= animationComponent->endFrame)
+		else if (currentTime >= animState.endFrame)
 		{
 			int endFrame = animatedJoint.keyframeCount - 1;
 
@@ -412,22 +296,22 @@ void AnimationHandler::InterpolateKeys(AnimationComponent* animationComponent, f
 	CalculateFinalTransform(localTransforms);
 }
 
-void AnimationHandler::ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimationComponent* animationComponent, float currentTime, int animIndex)
+void AnimationHandler::ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animState, float currentTime, int animIndex)
 {
-	int animationState = animationComponent->animationState;
+	int animationState = animState.animationState;
 
-	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimationData.animations[animationState];
+	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimationData[m_skelAnimModel].animations[animationState];
 
-	for (unsigned int jointIndex = 0; jointIndex < m_AnimationData.skeleton.size(); jointIndex++)
+	for (unsigned int jointIndex = 0; jointIndex < m_AnimationData[m_skelAnimModel].skeleton.size(); jointIndex++)
 	{
 		BlendKeyframe blendKey;
 
 		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
 
 		/*The current time is the first keyframe.*/
-		if (currentTime <= animationComponent->startFrame)
+		if (currentTime <= animState.startFrame)
 		{
-			int startFrame = (int)animationComponent->startFrame;
+			int startFrame = (int)animState.startFrame;
 
 			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
 			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
@@ -441,7 +325,7 @@ void AnimationHandler::ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe
 		}
 
 		/*The current time is the last keyframe.*/
-		else if (currentTime >= animationComponent->endFrame)
+		else if (currentTime >= animState.endFrame)
 		{
 			int endFrame = animatedJoint.keyframeCount - 1;
 
@@ -502,7 +386,7 @@ void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKe
 {
 	std::vector<DirectX::XMFLOAT4X4> localTransforms;
 
-	int jointSize = m_AnimationData.skeleton.size();
+	int jointSize = m_AnimationData[m_skelAnimModel].skeleton.size();
 
 	localTransforms.resize(jointSize);
 
@@ -517,9 +401,6 @@ void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKe
 		DirectX::XMVECTOR quatAnim1 = blendKeysPerAnimation[0][jointIndex].quat;
 		DirectX::XMVECTOR quatAnim2 = blendKeysPerAnimation[1][jointIndex].quat;
 
-		/*To make the blending work, it only seems that the blend factor of the new animation is required to make this work.*/
-		//float weightA = 1.0f - (transitionTime / m_TransitionDuration);
-		//float weightB = transitionTime / m_TransitionDuration;
 		float blendFactor = transitionTime / m_TransitionDuration;
 
 		std::cout << "Transition Blend Factor: " << blendFactor << std::endl;
@@ -562,22 +443,22 @@ void AnimationHandler::Blend(float secondsElapsed)
 
 		for (int animClipIndex = 0; animClipIndex < m_AnimationComponentStack.size(); animClipIndex++)
 		{
-			if (m_AnimationComponentStack[animClipIndex]->localTime <= GetStartFrame(animClipIndex))
+			if (m_AnimationComponentStack[animClipIndex].localTime <= GetStartFrame(animClipIndex))
 			{
-				m_AnimationComponentStack[animClipIndex]->localTime = GetStartFrame(animClipIndex);
+				m_AnimationComponentStack[animClipIndex].localTime = GetStartFrame(animClipIndex);
 			}
 
-			else if (m_AnimationComponentStack[animClipIndex]->localTime >= GetEndFrame(animClipIndex))
+			else if (m_AnimationComponentStack[animClipIndex].localTime >= GetEndFrame(animClipIndex))
 			{
-				m_AnimationComponentStack[animClipIndex]->localTime = GetEndFrame(animClipIndex);
+				m_AnimationComponentStack[animClipIndex].localTime = GetEndFrame(animClipIndex);
 			}
 
-			else if (m_AnimationComponentStack[animClipIndex]->localTime > GetStartFrame(animClipIndex) && m_AnimationComponentStack[animClipIndex]->localTime < GetEndFrame(animClipIndex))
+			else if (m_AnimationComponentStack[animClipIndex].localTime > GetStartFrame(animClipIndex) && m_AnimationComponentStack[animClipIndex].localTime < GetEndFrame(animClipIndex))
 			{
-				m_AnimationComponentStack[animClipIndex]->localTime += secondsElapsed;
+				m_AnimationComponentStack[animClipIndex].localTime += secondsElapsed;
 			}
 
-			ExtractBlendingKeys(blendKeysPerAnimation, m_AnimationComponentStack[animClipIndex], m_AnimationComponentStack[animClipIndex]->localTime, animClipIndex);
+			ExtractBlendingKeys(blendKeysPerAnimation, m_AnimationComponentStack[animClipIndex], m_AnimationComponentStack[animClipIndex].localTime, animClipIndex);
 		}
 
 		/*Calculate the blend time with the delta-time.*/
@@ -588,15 +469,15 @@ void AnimationHandler::Blend(float secondsElapsed)
 
 void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localTransforms)
 {
-	std::vector<DirectX::XMFLOAT4X4> toRootTransform(m_AnimationData.skeleton.size());
+	std::vector<DirectX::XMFLOAT4X4> toRootTransform(m_AnimationData[m_skelAnimModel].skeleton.size());
 
 	DirectX::XMMATRIX childLocal = DirectX::XMLoadFloat4x4(&localTransforms[0]);
 
 	DirectX::XMStoreFloat4x4(&toRootTransform[0], childLocal);
 
-	for (int i = 1; i < m_AnimationData.skeleton.size(); i++)
+	for (int i = 1; i < m_AnimationData[m_skelAnimModel].skeleton.size(); i++)
 	{
-		int parentIndex = m_AnimationData.skeleton[i].parentIndex;
+		int parentIndex = m_AnimationData[m_skelAnimModel].skeleton[i].parentIndex;
 
 		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&localTransforms[i]);
 
@@ -607,18 +488,18 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		DirectX::XMStoreFloat4x4(&toRootTransform[i], toRoot);
 	}
 
-	for (int i = 0; i <  m_AnimationData.skeleton.size(); i++)
+	for (int i = 0; i <  m_AnimationData[m_skelAnimModel].skeleton.size(); i++)
 	{
-		DirectX::XMMATRIX inverseBindPose = m_AnimationData.skeleton[i].inverseBindPose;
+		DirectX::XMMATRIX inverseBindPose = m_AnimationData[m_skelAnimModel].skeleton[i].inverseBindPose;
 		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransform[i]);
 
 		//m_graphicsAnimationComponent->finalJointTransforms[i] = DirectX::XMMatrixMultiply(inverseBindPose, toRoot);
 	}
 }
 
-void AnimationHandler::Push(AnimationComponent* animationComponent)
+void AnimationHandler::Push(AnimStateData animState)
 {
-	m_AnimationComponentStack.push_back(animationComponent);
+	m_AnimationComponentStack.push_back(animState);
 }
 
 void AnimationHandler::Pop()
@@ -634,13 +515,13 @@ void AnimationHandler::Pop()
 
 float AnimationHandler::GetStartFrame(int animationState)
 {
-	float startFrame = m_AnimationData.animations[animationState]->keyframes->timeValue;
+	float startFrame = m_AnimationData[m_skelAnimModel].animations[animationState]->keyframes->timeValue;
 	return startFrame;
 }
 
 float AnimationHandler::GetEndFrame(int animationState)
 {
-	int keyframeCount = m_AnimationData.animations[animationState]->keyframeCount;
-	float endFrame = m_AnimationData.animations[animationState]->keyframes[keyframeCount - 1].timeValue;
+	int keyframeCount = m_AnimationData[m_skelAnimModel].animations[animationState]->keyframeCount;
+	float endFrame = m_AnimationData[m_skelAnimModel].animations[animationState]->keyframes[keyframeCount - 1].timeValue;
 	return endFrame;
 }

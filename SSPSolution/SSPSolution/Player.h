@@ -13,7 +13,7 @@ private:
 	bool m_isAiming;
 
 	AnimationStates m_PlayerState;
-	std::vector<AnimationComponent*> m_AnimationComponentStack;
+	std::vector<AnimStateData> m_currentAnimStates;
 
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;

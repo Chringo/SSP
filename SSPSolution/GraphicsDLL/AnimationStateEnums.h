@@ -7,7 +7,7 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-GRAPHICSDLL_API enum AnimationStates
+GRAPHICSDLL_API enum AnimationStates : int
 {
 	ANIMATION_ERROR = -1,
 	PLAYER_IDLE = 0,
@@ -17,6 +17,14 @@ GRAPHICSDLL_API enum AnimationStates
 	PLAYER_JUMP,
 	LEVEL_DEACTIVATED = 0,
 	LEVEL_ACTIVATED
+};
+
+GRAPHICSDLL_API enum SkelAnimModels : unsigned int
+{
+	PLAYER_STUDLEY = 0,
+	PLAYER_ABBINGTON, 
+	PROP_LEVER = 0,
+	PROP_DOOR
 };
 
 #endif
