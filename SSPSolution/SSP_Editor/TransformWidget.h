@@ -111,9 +111,9 @@ public:
 		this->m_instanceID = instanceID;
 		this->m_modelID = modelID;
 
-		m_UpdateAxies();
 
 		type = MODEL;
+		m_UpdateAxies();
 		setActive(true);
 	};
 
@@ -126,9 +126,9 @@ public:
 
 		this->m_checkpointContainer = selectedCheckpoint;
 
-		m_UpdateAxies();
 
-		type = CHECKPOINT;
+		this->type = CHECKPOINT;
+		m_UpdateAxies();
 		setActive(true);
 	};
 

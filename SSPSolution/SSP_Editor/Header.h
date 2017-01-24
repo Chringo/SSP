@@ -3,6 +3,22 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../AIDLL/AIComponent.h"
 #include "LevelHeaders.h"
+
+enum ContainerType
+{
+	MODEL,
+	CHECKPOINT,
+	BUTTON,
+	LEVER,
+	WHEEL,
+	LIGHT,
+	AIWAYPOINT,
+	DOOR,
+	MAGNET,
+	PRESSUREPLATE,
+
+	NUM_TYPES
+};
 struct Container
 {
 	unsigned int	  internalID;
@@ -13,6 +29,7 @@ struct Container
 	bool			  isDirty      = false;
 	bool			  isStatic     = true;
 
+	ContainerType type;
 	Container() {}
 	Container(const Container &obj) {  // copy constructor
 	
@@ -46,7 +63,7 @@ struct Button : Container
 	float resetTime; // Seconds
 };
 
-struct CheckpointContainer
+struct CheckpointContainer : Container
 {
 	unsigned int internalID;
 	OBB obb;
