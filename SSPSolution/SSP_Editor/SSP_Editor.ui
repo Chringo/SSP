@@ -844,7 +844,7 @@ border: black;</string>
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="Behaviour" native="true">
+         <widget class="QWidget" name="Behaviour">
           <attribute name="title">
            <string>Behaviour</string>
           </attribute>
@@ -868,7 +868,7 @@ border: black;</string>
              </item>
              <item>
               <property name="text">
-               <string>Trigger</string>
+               <string>Button</string>
               </property>
              </item>
              <item>
@@ -881,9 +881,24 @@ border: black;</string>
                <string>Path</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>Lever</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Wheel</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Pressure plate</string>
+              </property>
+             </item>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QStackedWidget" name="BehaviourStackWidget">
              <property name="enabled">
               <bool>true</bool>
@@ -1312,9 +1327,9 @@ border: black;</string>
              <widget class="QWidget" name="Behaviour_None">
               <layout class="QFormLayout" name="formLayout_6"/>
              </widget>
-             <widget class="QWidget" name="Behaviour_Trigger">
+             <widget class="QWidget" name="Behaviour_Button">
               <layout class="QGridLayout" name="gridLayout_5">
-               <item row="9" column="2">
+               <item row="6" column="2">
                 <spacer name="verticalSpacer_4">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -1328,14 +1343,14 @@ border: black;</string>
                 </spacer>
                </item>
                <item row="1" column="0" colspan="2">
-                <widget class="QLabel" name="label_3">
+                <widget class="QLabel" name="tag_label">
                  <property name="text">
-                  <string>Trigger Tag</string>
+                  <string> Tag</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="2">
-                <widget class="QSpinBox" name="spinBox">
+                <widget class="QSpinBox" name="button_tagBox">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
@@ -1344,33 +1359,20 @@ border: black;</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="2">
-                <widget class="QCheckBox" name="checkBox_2">
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
+               <item row="2" column="0" rowspan="2" colspan="2">
+                <widget class="QLabel" name="tag_label_2">
                  <property name="text">
-                  <string>Pressure Trigger</string>
+                  <string>Distance of interaction</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="2">
-                <widget class="QCheckBox" name="checkBox">
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
+               <item row="2" column="2" rowspan="2">
+                <widget class="QSpinBox" name="button_dist_box">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
-                 <property name="text">
-                  <string>Radial Trigger</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="2">
-                <widget class="QCheckBox" name="checkBox_3">
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
-                 <property name="text">
-                  <string>Lever Trigger</string>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                 </widget>
                </item>
@@ -1378,121 +1380,251 @@ border: black;</string>
              </widget>
              <widget class="QWidget" name="Behaviour_Door">
               <layout class="QGridLayout" name="gridLayout_4">
-               <item row="8" column="0">
-                <spacer name="verticalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+               <item row="12" column="0" colspan="4">
+                <widget class="QListWidget" name="TriggerListWidget">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="sizeHint" stdset="0">
+                 <property name="maximumSize">
                   <size>
-                   <width>20</width>
-                   <height>40</height>
+                   <width>16777215</width>
+                   <height>16777215</height>
                   </size>
                  </property>
-                </spacer>
-               </item>
-               <item row="0" column="2">
-                <widget class="QCheckBox" name="CHKX">
-                 <property name="text">
-                  <string>X</string>
+                 <property name="palette">
+                  <palette>
+                   <active>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Text">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="ButtonText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Base">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </active>
+                   <inactive>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Text">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="ButtonText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Base">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </inactive>
+                   <disabled>
+                    <colorrole role="WindowText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Button">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Text">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="ButtonText">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>255</red>
+                       <green>255</green>
+                       <blue>255</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Base">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                     <brush brushstyle="SolidPattern">
+                      <color alpha="255">
+                       <red>48</red>
+                       <green>48</green>
+                       <blue>48</blue>
+                      </color>
+                     </brush>
+                    </colorrole>
+                   </disabled>
+                  </palette>
                  </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="4">
-                <widget class="QSpinBox" name="MinRot">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
                 </widget>
                </item>
-               <item row="0" column="4">
-                <widget class="QCheckBox" name="CHKZ">
-                 <property name="text">
-                  <string>Z</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <widget class="QCheckBox" name="CHKY">
-                 <property name="text">
-                  <string>Y</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="4">
-                <widget class="QSpinBox" name="MaxRot">
+               <item row="5" column="1" colspan="3">
+                <widget class="QComboBox" name="availableTriggers">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="ROTATIONAXISTEXT">
-                 <property name="text">
-                  <string>Rotation Axis</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="4">
-                <widget class="QSpinBox" name="TriggerTagValue">
+               <item row="6" column="1">
+                <widget class="QFrame" name="addDel_Frame">
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                  <string notr="true"/>
                  </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
                  </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QPushButton" name="AddTriggerButton">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(129, 129, 129);</string>
+                    </property>
+                    <property name="text">
+                     <string>ADD</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="DeleteTriggerButton">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(129, 129, 129);</string>
+                    </property>
+                    <property name="text">
+                     <string>DEL</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
-               <item row="7" column="0" colspan="3">
-                <widget class="QCheckBox" name="ChkPlrActivatable">
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="text">
-                  <string>Player Activatable</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="4">
-                <widget class="QLabel" name="DOORTEXT">
-                 <property name="text">
-                  <string>(Degrees) Max Rotation</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0" colspan="4">
+               <item row="5" column="0">
                 <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>(Degrees) Min Rotation</string>
+                 <property name="styleSheet">
+                  <string notr="true"/>
                  </property>
-                </widget>
-               </item>
-               <item row="6" column="0" colspan="3">
-                <widget class="QLabel" name="TRIGGERTAGTEXT">
                  <property name="text">
-                  <string>Trigger Tag</string>
+                  <string>Scene Triggers : </string>
                  </property>
                 </widget>
                </item>
@@ -1977,5 +2109,22 @@ border: black;</string>
  <resources>
   <include location="SSP_Editor.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>BehaviourDropDown</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>BehaviourStackWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1039</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1039</x>
+     <y>531</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -6,16 +6,16 @@
 
 enum ContainerType
 {
-	MODEL,
-	CHECKPOINT,
+	MODEL = 0,
 	BUTTON,
 	LEVER,
 	WHEEL,
-	LIGHT,
-	AIWAYPOINT,
 	DOOR,
 	MAGNET,
 	PRESSUREPLATE,
+	LIGHT,
+	AIWAYPOINT,
+	CHECKPOINT,
 
 	NUM_TYPES
 };
@@ -95,7 +95,10 @@ struct Door : Container
 		this->type = DOOR;
 	}
 	float rotateTime;
-	unsigned int triggerEntityId;
+	unsigned int numTriggers = 0;
+	unsigned int triggerEntityIds[10];
+
+	void Add
 };
 struct CheckpointContainer : Container
 {
