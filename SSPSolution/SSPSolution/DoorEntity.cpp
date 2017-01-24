@@ -58,6 +58,7 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 {
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//this->m_isOpened = reactEvent == EVENT::BUTTON_ACTIVE;
+
 	if (reactEvent == EVENT::BUTTON_ACTIVE)
 	{
 		this->m_isOpened = true;
@@ -71,18 +72,22 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	else if (reactEvent == EVENT::WHEEL_100)
 	{
 		this->m_isOpened = true;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
 	}
 	else if (reactEvent == EVENT::WHEEL_0)
 	{
 		this->m_isOpened = false;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
 	}
 	else if (reactEvent == EVENT::LEVER_ACTIVE)
 	{
 		this->m_isOpened = true;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
 	}
 	else if (reactEvent == EVENT::LEVER_DEACTIVE)
 	{
 		this->m_isOpened = false;
+		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
 	}
 
 	return 0;
