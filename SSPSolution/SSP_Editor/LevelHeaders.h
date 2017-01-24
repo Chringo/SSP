@@ -21,6 +21,15 @@ namespace LevelData {
 		unsigned int id;
 		int resourceType;
 	};
+
+	struct OldEntityHeader
+	{
+		unsigned int modelID;
+		unsigned int EntityID;
+		float position[3];
+		float rotation[3];
+		bool isStatic;
+	};
 	
 	struct EntityHeader
 	{
@@ -29,6 +38,7 @@ namespace LevelData {
 		float position[3]	   ;
 		float rotation[3]	   ;
 		bool isStatic		   ;
+		bool hasAi = false;
 	};
 
 	struct SpawnHeader {
@@ -70,6 +80,9 @@ namespace LevelData {
 
 		unsigned int numLights;
 		LightHeader* lights;
+
+		unsigned int numAI;
+		AiHeader* aiComponents;
 
 	};
 }

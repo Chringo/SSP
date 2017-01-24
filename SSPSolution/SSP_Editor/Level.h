@@ -33,7 +33,7 @@ public:
 	std::vector<unsigned int>* GetUniqueModels() { return &this->m_uniqueModels; };
 	std::unordered_map<unsigned int, std::vector<Container>> * GetModelEntities();
 	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
-
+	Container* GetInstanceEntity(unsigned int entityID);
 	Resources::Status GetModelEntity(unsigned int modelID, unsigned int instanceID, Container& container);
 	Resources::Status AddModelEntity(unsigned int modelID,  DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status AddModelEntityFromLevelFile(unsigned int modelID, unsigned int instanceID,DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);

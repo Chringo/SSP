@@ -534,6 +534,7 @@ public:
 
         CustomBehaviourFrame = new QFrame(Values);
         CustomBehaviourFrame->setObjectName(QStringLiteral("CustomBehaviourFrame"));
+        CustomBehaviourFrame->setEnabled(true);
         QPalette palette;
         QBrush brush(QColor(255, 255, 255, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -788,6 +789,7 @@ public:
 
         PatternDropDown = new QComboBox(Behaviour_Path);
         PatternDropDown->setObjectName(QStringLiteral("PatternDropDown"));
+        PatternDropDown->setEnabled(true);
         PatternDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
         gridLayout_2->addWidget(PatternDropDown, 2, 1, 1, 2);
@@ -1025,9 +1027,10 @@ public:
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "One Way", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Random", Q_NULLPTR)
         );
         SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
         AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
