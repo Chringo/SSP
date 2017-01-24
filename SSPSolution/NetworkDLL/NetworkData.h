@@ -120,7 +120,7 @@ struct CameraPacket : public Packet
 struct GrabPacket : public Packet
 {
 	unsigned int entityID;
-	unsigned int GrabbedID;
+	unsigned int grabbedID;
 
 	void serialize(char * data)
 	{
