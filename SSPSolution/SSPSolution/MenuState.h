@@ -12,6 +12,7 @@ private:
 	TextComponent* m_textComps[m_NR_OF_MENU_ITEMS];
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
+	DirectX::XMVECTOR m_lockTarget;
 public:
 	MenuState();
 	~MenuState();

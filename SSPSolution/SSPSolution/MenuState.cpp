@@ -25,6 +25,11 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
+	
+	this->m_lockTarget = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	float distance = 4.0f;
+	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
 	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 	{
