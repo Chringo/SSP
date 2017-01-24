@@ -26,7 +26,7 @@ namespace Resources
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_models;
 		std::deque<Model*> m_emptyContainers;
-		std::vector<Model> m_containers;
+		std::vector<std::vector<Model>*> m_containers;
 
 		MeshHandler*		m_meshHandler;
 		MaterialHandler*	m_materialHandler;
