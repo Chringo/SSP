@@ -623,8 +623,9 @@ void NetworkModule::SendToAll(char * packets, int totalSize)
 		if (iSendResult == SOCKET_ERROR)
 		{
 			printf("send failed with error: %d\n", WSAGetLastError());
-			this->RemoveClient(iter->first);
 			closesocket(currentSocket);
+			this->RemoveClient(iter->first);
+			iter = this->connectedClients.end();
 		}
 		else	//If the message was sent, incresse the packet ID
 		{
