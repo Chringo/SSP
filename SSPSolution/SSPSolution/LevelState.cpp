@@ -489,6 +489,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 			this->m_networkModule->SendEntityUpdatePacket(1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 		}
+	}
+	
+#pragma endregion Client/Player2 Specifics
 
 	//update all dynamic entities
 	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
@@ -539,8 +542,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
-#pragma endregion Client/Player2 Specifics
-
 	//Doors require updates to change opening state
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
