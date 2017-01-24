@@ -26,6 +26,7 @@ public:
 	DoorEntity();
 	virtual ~DoorEntity();
 	
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float rotateTime = 1.0f, float minRotation = 0.0f, float maxRotation = DirectX::XM_PI / 2.0f);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
