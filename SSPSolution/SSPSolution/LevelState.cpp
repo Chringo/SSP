@@ -128,18 +128,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_dynamicEntitys.push_back(ball);
 
 
-	PhysicsComponent* ptr = m_cHandler->GetPhysicsHandler()->CreatePhysicsComponent(DirectX::XMVectorSet(-10, -8, -8, 0), false);
-	ptr->PC_velocity = DirectX::XMVectorSet(0.05f, 0, 0.0f, 0);
-	ptr->PC_friction = 1.0f;
-	ptr->PC_elasticity = 1.0f;
-	ptr->PC_BVtype = BV_AABB;
-	ptr->PC_AABB.ext[0] = 2;
-	ptr->PC_AABB.ext[1] = 1;
-	ptr->PC_AABB.ext[2] = 2;
-	ptr->PC_steadfast = true;
-	ptr->PC_gravityInfluence = 0;
-
-
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
@@ -446,8 +434,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	std::vector<DynamicEntity*> aiEntities;
 
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(5, 20, -15, 0));
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(2, 5, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
