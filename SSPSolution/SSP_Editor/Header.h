@@ -62,7 +62,7 @@ struct Container
 
 struct Button : Container
 {
-	Button()
+	Button() : Container()
 	{
 		this->type = BUTTON;
 	}
@@ -72,14 +72,14 @@ struct Button : Container
 
 struct Lever : Container
 {
-	Lever() {
+	Lever() : Container() {
 		this->type = LEVER;
 	}
 	float interactionDistance;
 };
 struct Wheel : Container
 {
-	Wheel()
+	Wheel() : Container()
 	{
 		this->type = WHEEL;
 	}
@@ -90,7 +90,7 @@ struct Wheel : Container
 };
 struct Door : Container
 {
-	Door()
+	Door() : Container()
 	{
 		this->type = DOOR;
 	}
