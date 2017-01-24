@@ -42,7 +42,7 @@ void SelectionHandler::Initialize(Camera * camera,
 	testcheckbox2->obb.ort = DirectX::XMMatrixIdentity();
 	testcheckbox2->position = { 1.0 };
 	testcheckbox2->scale = { 1.0, 1.0, 1.0 };
-	testcheckbox2->internalID = 1;
+	testcheckbox2->internalID = 2;
 	testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
 
 	currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);

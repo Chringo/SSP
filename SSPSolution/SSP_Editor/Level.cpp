@@ -161,13 +161,23 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	}
 }
 
+Resources::Status Level::AddCheckpointEntity()
+{
+	CheckpointContainer * container = new CheckpointContainer();
+	container->checkpointNumber = 0;
+	
+	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
 
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
-
+		
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
@@ -263,7 +273,13 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
-
+		for (size_t i = 0; i < m_checkpointHandler.GetAllCheckpoints()->size(); i++)
+		{
+			if (m_checkpointHandler.GetAllCheckpoints()->at(i)->internalID == instanceID)
+			{
+				m_checkpointHandler.GetAllCheckpoints()->erase(m_checkpointHandler.GetAllCheckpoints()->begin() + i);
+			}
+		}
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
