@@ -338,6 +338,59 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetGrabbed(nullptr);
 		}
 
+		//Check for grabb requests
+#pragma region
+		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_grabPacketList.size() > 0)
+		{
+			std::list<GrabPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
+			Entity* ep = nullptr;
+
+			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+			{
+				//Check if we want to grab or drop			
+				if (itr->grabbedID >= 0)	//Grab, negativ value is for drop
+				{
+					//Find the entity we want to grab
+					for (int i = 0; i < this->m_dynamicEntitys.size(); i++) 
+					{		
+						ep = this->m_dynamicEntitys.at(i);				
+						if (ep->GetEntityID() == itr->grabbedID)
+						{
+							//Check if the entity is already grabbed
+							if (!ep->IsGrabbed())
+							{
+								//If it is player2 who want to grab
+								if (itr->entityID == this->m_player2.GetEntityID())
+								{
+									this->m_player2.SetGrabbed(ep);
+									//Send the update
+									this->m_networkModule->SendGrabPacket(itr->entityID,itr->grabbedID);
+								}
+
+							}
+							i = this->m_dynamicEntitys.size();
+							break;
+						}
+					}
+				}
+				else //Drop
+				{
+					//If it is player2 who want to drop
+					if (itr->entityID == this->m_player2.GetEntityID())
+					{
+						this->m_player2.SetGrabbed(nullptr);
+						this->m_networkModule->SendGrabPacket(itr->entityID, itr->grabbedID);
+					}
+				}
+				
+			}
+		}
+		this->m_grabPacketList.clear();
+#pragma endregion GrabPacket
+
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
 		{
@@ -393,12 +446,46 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
+			//this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
+			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), 0);	//Send a request to pick up dynamic entity 0 (ball)
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
-			this->m_player2.SetGrabbed(nullptr);
+			//this->m_player2.SetGrabbed(nullptr);
+			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);	//Send a request to drop the grabed entity (-1 is for drop)
 		}
+
+#pragma region
+
+		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();
+
+		if (this->m_grabPacketList.size() > 0)
+		{
+			std::list<GrabPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
+			Entity* ep = nullptr;
+
+			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+			{
+				//We know that we can grab the entity recived since it was accepted by the host
+				if (itr->grabbedID >= 0) //Grab
+				{
+					//Find the entity to grab
+					for (int i =0 ; i < this->m_dynamicEntitys.size(); i++) 
+					{
+						ep = this->m_dynamicEntitys.at(i);
+						this->m_player2.SetGrabbed(ep);
+					}
+
+				}
+				else //Drop
+				{
+					this->m_player2.SetGrabbed(nullptr);
+				}
+			}
+		}
+
+#pragma endregion GrabPacket
 
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
