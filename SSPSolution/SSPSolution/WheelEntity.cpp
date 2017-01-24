@@ -17,6 +17,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	int result = this->InitializeBase(entityID, pComp, gComp);
 	//Load default values
 	this->m_rotationState = 0;
+	this->m_isMin = true;
 	//Load modifiable settings
 	this->m_range = interactionDistance;
 
@@ -40,18 +41,19 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	{
 	case 0:
 		//Check if the wheel can reset
-		if (this->m_resets)
+		if (this->m_resets && !this->m_isMin)
 		{
 			//Increase the reset timer
 			this->m_resetCountdown -= dT;
 			//Check if it is time to reset the wheel
-			if (this->m_timeUntilReset < 0)
+			if (this->m_resetCountdown < 0)
 			{
 				this->m_rotationState = -2;
 			}
 		}
 		break;
 	case 1:
+		this->m_isMin = false;
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
 		{
 			//Rotation in percentage = rotationAMount / maxRotation
@@ -100,12 +102,14 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	case -1:
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
 		{
+			this->m_isMin = false;
 			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_rotatePerSec * dT));
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
 				this->m_rotationState = 0;
+				this->m_isMin = true;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_0);
 			}
 			else
@@ -144,7 +148,51 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 		break;
 	case -2:
 		//Start resetting
+		//Check if we have reached the min value
+		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
+		{
+			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_resetRotatePerSec * dT));
+			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
+			{
+				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
+				this->m_rotationState = 0;
+				this->m_isMin = true;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_0);
+			}
+			else
+			{
+				//Check if the rotation increase has exceeded a 10% increment
+				//Rotation decrease
+				int percentIncOld = (int)(rotationAmount * 10.0f);
+				rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / this->m_maxRotation;
+				int percentIncNew = (int)(rotationAmount * 10.0f);
 
+				//Now we have calculated the amount of 10% incrementation of the rotation we have and can check if it has changed
+				if (percentIncNew != percentIncOld)
+				{
+					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+					//In the very rare occurrencee that the percent increase is equal or above 20% we need to send several notifications
+					int percentIncDiff = abs(percentIncNew - percentIncOld);
+					if (percentIncDiff > 1)
+					{
+						//Converter determines if percentInc has increased or not so we can correct the event notification
+						int converter = -1;
+						if (percentIncNew > percentIncOld)
+							converter = 1;
+						//Remember that the last event has already been sent
+						for (int incIter = 1; incIter < percentIncDiff; ++incIter)
+						{
+							//EVENT::WHEEL_0 + percentIncOld to get the start value
+							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
+						}
+					}
+				}
+			}
+			this->SyncComponents();
+		}
 		break;
 	default:
 		break;
@@ -168,6 +216,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 	if (increasing == 0)
 	{
 		this->m_rotationState = 0;
+		this->m_resetCountdown = this->m_timeUntilReset;
 	}
 	else
 	{
