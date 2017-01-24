@@ -253,7 +253,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	button1P->PC_AABB.ext[0] = 0.5f;
 	button1P->PC_AABB.ext[1] = 0.5f;
 	button1P->PC_AABB.ext[2] = 0.5f;
-	button1->Initialize(616, button1P, button1G);
+	button1->Initialize(616, button1P, button1G, 2.0f);
 	button1->AddObserver(door1, door1->GetEntityID());
 	this->m_buttonEntities.push_back(button1);
 
