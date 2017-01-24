@@ -8,16 +8,17 @@
 
 enum PacketTypes {
 
-	CONNECTION_REQUEST = 0,
-	CONNECTION_ACCEPTED = 1,
-	DISCONNECT_REQUEST = 2,
-	DISCONNECT_ACCEPTED = 3,
-	UPDATE_ENTITY = 4,
-	UPDATE_ANIMATION = 5,
-	UPDATE_STATE = 6,
-	UPDATE_CAMERA = 7,
-	SYNC_PHYSICS = 8,
-	TEST_PACKET = 9,
+	CONNECTION_REQUEST,
+	CONNECTION_ACCEPTED,
+	DISCONNECT_REQUEST,
+	DISCONNECT_ACCEPTED,
+	UPDATE_ENTITY,
+	UPDATE_ANIMATION,
+	UPDATE_STATE,
+	UPDATE_CAMERA,
+	UPDATE_GRAB,
+	SYNC_PHYSICS,
+	TEST_PACKET,
 };
 
 struct Packet
@@ -113,6 +114,22 @@ struct CameraPacket : public Packet
 	void deserialize(char * data)
 	{
 		memcpy(this, data, sizeof(CameraPacket));
+	}
+};
+
+struct GrabPacket : public Packet
+{
+	unsigned int entityID;
+	unsigned int GrabbedID;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(GrabPacket));
+	}
+
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(GrabPacket));
 	}
 };
 
