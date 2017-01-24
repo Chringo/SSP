@@ -22,6 +22,7 @@ private:
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	std::vector<StaticEntity*>	m_staticEntitys;
 	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
+	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 public:
 	LevelState();
 	virtual ~LevelState();

@@ -76,7 +76,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			
+
 			float strength = 1.5f;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Relsease the entity
@@ -206,4 +206,9 @@ DirectX::XMVECTOR Player::GetRightDir()
 bool Player::GetIsAming()
 {
 	return this->m_isAiming;
+}
+
+Entity * Player::GetGrabbed()
+{
+	return this->m_grabbed;
 }
