@@ -69,9 +69,9 @@ namespace LevelData {
 		unsigned int checkpointNumber = 0;
 		float position[3];
 		float ext[3];
-		float ort[16];
+		float ort[9];
 	};
-
+	
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,
