@@ -131,7 +131,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player2.Initialize(3, playerP, playerG);
+	this->m_player2.Initialize(3, playerP, playerG, playerAnim1);
 															/*TEMP ANIM STUFF*/
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
@@ -216,7 +216,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
 	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
-	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
+	platform->Initialize(4, platformP, platformG, nullptr, platformTERMINATOR);
 	platform->Initialize(3, platformP, platformG, nullptr, platformTERMINATOR);
 	platformP->PC_entityID = platform->GetEntityID();
 	platformTERMINATOR->AC_entityID = platform->GetEntityID();
@@ -248,7 +248,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
 	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
 #pragma endregion
-	plat->Initialize(5, platP, platG, platA);
+	plat->Initialize(5, platP, platG, nullptr, platA);
 	platP->PC_entityID = plat->GetEntityID();
 	platA->AC_entityID = plat->GetEntityID();
 	this->m_dynamicEntitys.push_back(plat);

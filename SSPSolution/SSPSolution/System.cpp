@@ -96,7 +96,7 @@ int System::Initialize()
 	this->m_AnimationHandler = new AnimationHandler(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
 
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, this->m_AIHandler, this->m_AnimationHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 
