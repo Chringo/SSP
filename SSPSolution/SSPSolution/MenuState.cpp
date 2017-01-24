@@ -60,7 +60,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
-	this->m_ipTextBox.m_textComp->text = L"Enter ip...";
+	this->m_ipTextBox.m_textComp->text = L"Enter IP...";
 
 	this->m_menuButtons[0].m_textComp->text = L"Start Game";
 	this->m_menuButtons[2].m_textComp->text = L"Quit Game";
@@ -277,9 +277,13 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_ipTextBox.m_focused)
 		{
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_BACKSPACE))
+			{
+				this->m_ipTextBox.RemoveChar();
+			}
 			if (inputHandler->IsKeyPressed(SDL_SCANCODE_1))
 			{
-				this->m_ipTextBox.m_textComp->text += L"1";
+				this->m_ipTextBox.AddChar(L"1");
 			}
 		}
 

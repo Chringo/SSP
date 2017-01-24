@@ -44,6 +44,7 @@ private:
 		UIComponent* m_uiComp;
 		TextComponent* m_textComp;
 		bool m_focused;
+		bool firstChar = true;
 
 		void SetActive(bool active)
 		{
@@ -71,6 +72,27 @@ private:
 			{
 				m_uiComp->scale = 1.f;
 				m_focused = false;
+			}
+		}
+		void AddChar(std::wstring character)
+		{
+			if (firstChar)
+			{
+				m_textComp->text.clear();
+				this->firstChar = false;
+			}
+			m_textComp->text.append(character);
+		}
+		void RemoveChar()
+		{
+			if (!m_textComp->text.empty())
+			{
+				m_textComp->text.pop_back();
+				if (m_textComp->text.empty())
+				{
+					this->firstChar = true;
+					m_textComp->text = L"Enter IP...";
+				}
 			}
 		}
 	};
