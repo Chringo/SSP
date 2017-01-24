@@ -1,10 +1,20 @@
 #ifndef SSPAPPLICATION_GAMESTATES_STARTSTATE_H
 #define SSPAPPLICATION_GAMESTATES_STARTSTATE_H
 #include "GameState.h"
+#include "MenuState.h"
+#include "../GraphicsDLL/GraphicsComponent.h"
+
 class StartState :
 	public GameState
 {
 private:
+	TextComponent* m_greetingTextComp;
+	TextComponent* m_spaceTextComp;
+
+	ComponentHandler* m_cHandlerPtr;
+	Camera* m_cameraRef;
+
+	DirectX::XMVECTOR m_lockTarget;
 public:
 	StartState();
 	virtual ~StartState();

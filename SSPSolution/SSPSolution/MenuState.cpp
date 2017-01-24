@@ -26,6 +26,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
 	
+	//Workaround for camera trying to access nullptr
 	this->m_lockTarget = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	float distance = 4.0f;

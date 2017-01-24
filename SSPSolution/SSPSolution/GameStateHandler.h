@@ -1,7 +1,7 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #include "GameState.h"
-#include "MenuState.h"
+#include "StartState.h"
 #include <vector>
 class GameStateHandler
 {

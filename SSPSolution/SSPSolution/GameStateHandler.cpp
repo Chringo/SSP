@@ -45,21 +45,19 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 {
 	int result = 0;
 	
-	
-
-	MenuState* menuState = new MenuState();
-	result = menuState->Initialize(this, cHandler, cameraRef);
+	StartState* startState = new StartState();
+	result = startState->Initialize(this, cHandler, cameraRef);
 
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->m_stateStack.push_back(menuState);	
+		this->m_stateStack.push_back(startState);
 	}
 	else
 	{
 		//Delete it
-		delete menuState;
-		menuState = nullptr;
+		delete startState;
+		startState = nullptr;
 	}
 	
 	return result;
