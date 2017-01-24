@@ -204,7 +204,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->m_ipTextBox.m_uiComp->UpdateClicked(mousePos);
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
 		{
 			if (!this->m_ipTextBox.m_focused)
 			{
@@ -281,9 +281,49 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_ipTextBox.RemoveChar();
 			}
-			if (inputHandler->IsKeyPressed(SDL_SCANCODE_1))
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_1) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_1))
 			{
 				this->m_ipTextBox.AddChar(L"1");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_2) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_2))
+			{
+				this->m_ipTextBox.AddChar(L"2");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_3) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_3))
+			{
+				this->m_ipTextBox.AddChar(L"3");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_4) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_4))
+			{
+				this->m_ipTextBox.AddChar(L"4");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_5) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+			{
+				this->m_ipTextBox.AddChar(L"5");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_6) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_6))
+			{
+				this->m_ipTextBox.AddChar(L"6");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_7) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_7))
+			{
+				this->m_ipTextBox.AddChar(L"7");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_8) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_8))
+			{
+				this->m_ipTextBox.AddChar(L"8");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_9) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_9))
+			{
+				this->m_ipTextBox.AddChar(L"9");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_0) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_0))
+			{
+				this->m_ipTextBox.AddChar(L"0");
+			}
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_PERIOD))
+			{
+				this->m_ipTextBox.AddChar(L".");
 			}
 		}
 

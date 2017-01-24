@@ -85,7 +85,7 @@ private:
 		}
 		void RemoveChar()
 		{
-			if (!m_textComp->text.empty())
+			if (!m_textComp->text.empty() && !this->firstChar)
 			{
 				m_textComp->text.pop_back();
 				if (m_textComp->text.empty())
