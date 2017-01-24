@@ -190,6 +190,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_menuButtons[i].SetHovered(true);
 				this->m_markedItem = i;
+				this->m_ipTextBox.SetFocused(false);
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -274,6 +275,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_menuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
+		}
+		else if (this->m_ipTextBox.m_uiComp->CheckClicked())
+		{
+			//IP text box was clicked
+			this->m_ipTextBox.SetFocused(true);
 		}
 
 		if (this->m_ipTextBox.m_focused)
