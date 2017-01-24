@@ -626,6 +626,7 @@ void NetworkModule::SendToAll(char * packets, int totalSize)
 			closesocket(currentSocket);
 			this->RemoveClient(iter->first);
 			iter = this->connectedClients.end();
+			break;
 		}
 		else	//If the message was sent, incresse the packet ID
 		{
