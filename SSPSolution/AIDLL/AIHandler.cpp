@@ -37,8 +37,6 @@ int AIHandler::Update(float deltaTime)
 {
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
-		bool x = this->m_AIComponents.at(i)->AC_triggered;
-
 		if (this->m_AIComponents.at(i)->AC_active)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
@@ -62,7 +60,7 @@ int AIHandler::Update(float deltaTime)
 						//the platform stops when arriving at its destination
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
 				else
@@ -80,7 +78,7 @@ int AIHandler::Update(float deltaTime)
 						//the platform stops when arriving at its destination
 						this->m_AIComponents.at(i)->AC_triggered = false;
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
 			}
@@ -108,7 +106,7 @@ int AIHandler::Update(float deltaTime)
 							this->m_AIComponents.at(i)->AC_direction = 1;
 						}
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
 				else
@@ -132,7 +130,7 @@ int AIHandler::Update(float deltaTime)
 							//this->m_AIComponents.at(i)->AC_triggered = false;
 						}
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
 			}
@@ -156,7 +154,7 @@ int AIHandler::Update(float deltaTime)
 						if (this->m_AIComponents.at(i)->AC_nextWaypointID >= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
 							this->m_AIComponents.at(i)->AC_nextWaypointID = 0;
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
 				else
@@ -174,10 +172,9 @@ int AIHandler::Update(float deltaTime)
 						if (this->m_AIComponents.at(i)->AC_nextWaypointID <= this->m_AIComponents.at(i)->AC_nrOfWaypoint)
 							this->m_AIComponents.at(i)->AC_nextWaypointID = this->m_AIComponents.at(i)->AC_nrOfWaypoint;
 					}
-					else if (x)
+					else
 						UpdatePosition(i);
 				}
-				//UpdateMe(i, deltaTime);
 			}
 		}
 	}
@@ -304,17 +301,22 @@ bool AIHandler::VectorEqual(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 
 	float sqrt = dx*dx + dy*dy + dz*dz;
 
-	return sqrt < 0.0001f;
+	return sqrt < 0.1f;
 }
 
 void AIHandler::UpdatePosition(int i)
 {
-	if (this->m_AIComponents.at(i)->AC_WaypointUpdated == false)
+	//When the platform has reached its destination, the WaypointUpdate is not updated (false). Then the platform is given a new Waypoint.
+	if (this->m_AIComponents.at(i)->AC_WaypointUpdated == false && this->m_AIComponents.at(i)->AC_triggered)
 	{
 		this->m_AIComponents.at(i)->AC_dir = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(
 			this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
 			this->m_AIComponents.at(i)->AC_position));
 		this->m_AIComponents.at(i)->AC_WaypointUpdated = true;
+	}
+	else if (this->m_AIComponents.at(i)->AC_WaypointUpdated == false && !this->m_AIComponents.at(i)->AC_triggered)
+	{
+		return;
 	}
 
 	DirectX::XMVECTOR v = DirectX::XMVECTOR();
