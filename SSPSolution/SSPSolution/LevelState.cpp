@@ -64,6 +64,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
+
 	// creating the player
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
@@ -96,7 +97,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
-	playerP->PC_mass = 5;
+	playerP->PC_mass = 1;
 	playerP->PC_BVtype = BV_AABB;
 	playerP->PC_AABB.ext[0] = 0.5;
 	playerP->PC_AABB.ext[1] = 0.5;
@@ -121,15 +122,25 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[0] = 0.5;
 	ballP->PC_AABB.ext[1] = 0.5;
 	ballP->PC_AABB.ext[2] = 0.5;
-	ballP->PC_mass = 1;
+	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
+
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 10, 0.5);
+
+	StaticEntity* roof = new StaticEntity;
+	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	roofP->PC_is_Static = true;
+	roofP->PC_BVtype = BV_Plane;
+	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	roofP->PC_elasticity = 0;
+	roofP->PC_friction = 1.0f;
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
@@ -731,7 +742,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
 
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.95f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
