@@ -108,10 +108,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 				//Add the velocity to our physicsComponent
 
-				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_pComp->PC_velocity)) < 0.3f)
-				{
-					this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
-				}
+				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
 				else
 				{
 					int i = 0;
