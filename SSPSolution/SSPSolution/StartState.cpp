@@ -31,11 +31,11 @@ int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, 
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
-	this->m_greetingTextComp = cHandler->GetTextComponent();
-	this->m_greetingTextComp->active = 1;
-	this->m_greetingTextComp->position = DirectX::XMFLOAT2(100.f, 250.f);
-	this->m_greetingTextComp->scale = DirectX::XMFLOAT2(1.5f, 1.5f);
-	this->m_greetingTextComp->text = L"Earl Grave's Prison of Puzzles";
+	this->m_gamelogoUIComp = cHandler->GetUIComponent();
+	this->m_gamelogoUIComp->active = 1;
+	this->m_gamelogoUIComp->spriteID = 2;
+	this->m_gamelogoUIComp->position = DirectX::XMFLOAT2(115.f, 0.f);
+	this->m_gamelogoUIComp->size = DirectX::XMFLOAT2(800.f, 400.f);
 
 	this->m_spaceTextComp = cHandler->GetTextComponent();
 	this->m_spaceTextComp->active = 1;
@@ -58,7 +58,7 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Push it to the gamestate stack/vector
 			this->m_gsh->PushStateToStack(menuState);
-			this->m_greetingTextComp->active = 0;
+			this->m_gamelogoUIComp->active = 0;
 			this->m_spaceTextComp->active = 0;
 		}
 		else

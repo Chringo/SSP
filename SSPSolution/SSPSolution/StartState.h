@@ -8,7 +8,7 @@ class StartState :
 	public GameState
 {
 private:
-	TextComponent* m_greetingTextComp;
+	UIComponent* m_gamelogoUIComp;
 	TextComponent* m_spaceTextComp;
 
 	ComponentHandler* m_cHandlerPtr;

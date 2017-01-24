@@ -19,7 +19,8 @@ private:
 	unsigned int m_maxTextComponents;
 	DirectX::SpriteBatch* m_spriteBatch;
 	DirectX::SpriteFont* m_spriteFont;
-	ID3D11ShaderResourceView* m_texture;
+	ID3D11ShaderResourceView* m_texture1;
+	ID3D11ShaderResourceView* m_texture2;
 
 public:
 	UIHandler();
