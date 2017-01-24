@@ -476,7 +476,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					for (int i =0 ; i < this->m_dynamicEntitys.size(); i++) 
 					{
 						ep = this->m_dynamicEntitys.at(i);
-						this->m_player2.SetGrabbed(ep);
+
+						if (ep->GetEntityID() == itr->grabbedID)
+						{
+							this->m_player2.SetGrabbed(ep);
+							break;
+						}
+						
 					}
 
 				}
