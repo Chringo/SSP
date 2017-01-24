@@ -61,7 +61,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuButtons[4].m_textComp->text = L"Go Back";
 
 	this->markedItem = 0;
-	this->m_menuButtons[this->markedItem].SetHovered(true);
+	this->m_menuButtons[0].SetHovered(true);
 
 	return result;
 }
@@ -153,7 +153,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			//Options was clicked
 			this->m_menuButtons[this->markedItem].SetHovered(false);
 			this->markedItem = this->m_NR_OF_MAIN_MENU_ITEMS;
-			this->m_menuButtons[this->markedItem].SetHovered(true);
+			this->m_menuButtons[this->m_NR_OF_MAIN_MENU_ITEMS].SetHovered(true);
 			this->menuState = 1;
 			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 			{
@@ -228,7 +228,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			inputHandler->SetKeyState(SDL_SCANCODE_F, false); //Temporary cheat
 			this->m_menuButtons[this->markedItem].SetHovered(false);
 			this->markedItem = 0;
-			this->m_menuButtons[this->markedItem].SetHovered(true);
+			this->m_menuButtons[0].SetHovered(true);
 			this->menuState = 0;
 			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 			{
