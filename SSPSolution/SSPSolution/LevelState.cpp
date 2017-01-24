@@ -513,13 +513,27 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							this->m_player2.SetGrabbed(ep);
 							break;
 						}
+						else
+						{
+							this->m_player1.SetGrabbed(ep);
+							break;
+						}
 						
 					}
 
 				}
 				else //Drop
 				{
-					this->m_player2.SetGrabbed(nullptr);
+
+					if (itr->entityID == this->m_player2.GetEntityID())
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
+					
 				}
 			}
 
