@@ -220,7 +220,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				counter++;
 				printf("%d\n %d\n", counter, itr->packet_ID);
-				if ((int)itr->entityID == 0)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
+				if ((int)itr->entityID == 0)
 				{
 					pp = this->m_player1.GetPhysicsComponent();
 
@@ -240,7 +240,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if (itr->packet_ID == 2)
+				else if ((int)itr->packet_ID == 2)
 				{
 					pp = (*this->m_dynamicEntitys.at(0)).GetPhysicsComponent();
 
