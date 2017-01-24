@@ -41,7 +41,23 @@ private:
 		}
 	};
 	struct TextBox {
+		UIComponent* m_uiComp;
+		TextComponent* m_textComp;
+		bool m_focused;
 
+		void SetActive(bool active)
+		{
+			if (active)
+			{
+				m_uiComp->active = 1;
+				m_textComp->active = 1;
+			}
+			else
+			{
+				m_uiComp->active = 0;
+				m_textComp->active = 0;
+			}
+		}
 	};
 
 	const static int m_NR_OF_MAIN_MENU_ITEMS = 3;
