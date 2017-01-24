@@ -19,7 +19,7 @@ namespace Resources
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_animations;
 		std::deque <Animation*> m_emptyContainers;
-		std::vector<Animation>  m_containers;
+		std::vector<std::vector<Animation>*>  m_containers;
 		AnimationHandler();
 	public:
 		AnimationHandler(size_t animAmount);
@@ -28,6 +28,8 @@ namespace Resources
 		Resources::Status GetAnimation   (const unsigned int& id, ResourceContainer *& animPtr);
 		Resources::Status LoadAnimation  (const unsigned int& id, ResourceContainer *& animPtr);
 		Resources::Status UnloadAnimation(const unsigned int& id);
+	private:
+		Resources::Animation* GetEmptyContainer();
 	};
 }
 

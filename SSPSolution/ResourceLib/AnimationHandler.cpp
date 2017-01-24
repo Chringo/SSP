@@ -11,16 +11,22 @@ Resources::AnimationHandler::AnimationHandler(size_t animAmount)
 {
 	this->m_emptyContainers.resize(animAmount);
 	this->m_animations.reserve(animAmount);
-	this->m_containers.reserve(animAmount);
-	this->m_containers.insert(m_containers.begin(), animAmount, Animation());
+
+	this->m_containers.push_back(new std::vector<Animation>);
+
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), animAmount, Animation());
 	for (size_t i = 0; i < animAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 }
 
 Resources::AnimationHandler::~AnimationHandler()
 {
+	for each (std::vector<Animation>* container in m_containers)
+	{
+		delete container;
+	}
 }
 
 Resources::Status Resources::AnimationHandler::GetAnimation(const unsigned int & id, ResourceContainer *& animPtr)
@@ -47,12 +53,8 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 	if (st != ST_OK)
 		return st;
 
-	if (m_emptyContainers.size() < 1)
-	{
-		m_containers.push_back(Animation());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
-	}
-	Animation* newAnim = m_emptyContainers.front(); //Get an empty container
+	
+	Animation* newAnim = GetEmptyContainer(); //Get an empty container
 	Resource ::RawResourceData resData;
 	Animation::AnimationData animData;
 
@@ -117,4 +119,17 @@ Resources::Status Resources::AnimationHandler::UnloadAnimation(const unsigned in
 		return st;
 	}
 	return Resources::Status::ST_OK;
+}
+
+Resources::Animation * Resources::AnimationHandler::GetEmptyContainer()
+{
+	if (m_emptyContainers.size() < 1)
+	{
+		m_containers.push_back(new std::vector<Animation>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
+	}
+	return m_emptyContainers.front();
 }

@@ -54,6 +54,7 @@ AIComponent * ComponentHandler::GetAIComponent()
 	if (this->m_aiHandler != nullptr)
 	{
 		newComp = this->m_aiHandler->GetNextAvailableComponents();
+		newComp->AC_active = 1;
 	}
 	return newComp;
 }

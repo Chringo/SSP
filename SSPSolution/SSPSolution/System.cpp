@@ -27,9 +27,9 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
-	this->m_AIHandler->Shutdown();
-	delete this->m_AIHandler;
-	this->m_AIHandler = nullptr;
+	this->m_AIHandler.Shutdown();
+	//delete this->m_AIHandler;
+	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 	DebugHandler::instance().Shutdown();
@@ -85,8 +85,8 @@ int System::Initialize()
 
 	this->m_physicsHandler.Initialize();
 	//Initialize the AIHandler
-	this->m_AIHandler = new AIHandler();
-	this->m_AIHandler->Initialize(3);
+	this->m_AIHandler = AIHandler();
+	this->m_AIHandler.Initialize(4);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
@@ -99,6 +99,8 @@ int System::Initialize()
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, this->m_AIHandler, this->m_AnimationHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
+
+
 	this->m_physicsHandler.SortComponents();
 
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
@@ -183,7 +185,7 @@ int System::Update(float deltaTime)
 	this->m_camera->Update(deltaTime);
 
 	//AI
-	this->m_AIHandler->Update(deltaTime);
+	this->m_AIHandler.Update(deltaTime);
 
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))

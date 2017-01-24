@@ -58,13 +58,12 @@ public:
 	void operator delete(void* p) { _aligned_free(p); };
 
 private:
-	// Internal Variables
-	bool WaypointUpdated; //Update the XMVECTOR AC_dir for the component this frame 
 
 	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
-	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance);
-	int GetNextWaypoint(int compID, int pattern);
+	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
+	bool VectorEqual(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+	void UpdatePosition(int i);
 
 };
 #endif
