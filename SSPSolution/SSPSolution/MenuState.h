@@ -91,7 +91,6 @@ private:
 				if (m_textComp->text.empty())
 				{
 					this->firstChar = true;
-					m_textComp->text = L"Enter IP...";
 				}
 			}
 		}

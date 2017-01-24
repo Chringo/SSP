@@ -287,6 +287,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (inputHandler->IsKeyPressed(SDL_SCANCODE_BACKSPACE))
 			{
 				this->m_ipTextBox.RemoveChar();
+				if (this->m_ipTextBox.firstChar)
+				{
+					this->m_ipTextBox.m_textComp->text = L"Enter IP...";
+				}
 			}
 			if (inputHandler->IsKeyPressed(SDL_SCANCODE_1) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_1))
 			{
