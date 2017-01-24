@@ -326,13 +326,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
-			if (!ent->IsGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
+			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
-				ent->Update(dt, inputHandler);
+				ent->SyncComponents();
 			}
 			else
 			{
-				ent->SyncComponents();
+				ent->Update(dt, inputHandler);
 			}
 		}
 		//Sync other half of the components
@@ -428,10 +428,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
+			Entity* ent = nullptr;
 			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
-				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				ent = this->m_dynamicEntitys.at(i);
+				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
+				{
+					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				}
 			}
 
 			
@@ -450,10 +455,21 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		
 		//Other half of the components
 		this->m_player1.SyncComponents();
+
+		Entity* ent = nullptr;
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
-			this->m_dynamicEntitys.at(i)->SyncComponents();
+			ent = this->m_dynamicEntitys.at(i);
+			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
+			{
+				ent->Update(dt, inputHandler);
+			}
+			else
+			{
+				ent->SyncComponents();
+			}
 		}
+
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
@@ -532,8 +548,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_player2.GetGrabbed() != nullptr)	//If player2 has grabbed something
 			{
 				pp = this->m_player2.GetGrabbed()->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
-				
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);				
 			}
 		
 		}
