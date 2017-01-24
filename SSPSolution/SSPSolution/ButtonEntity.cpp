@@ -56,6 +56,7 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
 	{
 		this->m_isActive = !this->m_isActive;
+		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 	}
 
