@@ -33,17 +33,17 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 	{
-		this->m_uiComps[i] = cHandler->GetUIComponent();
-		this->m_uiComps[i]->active = 1;
-		this->m_uiComps[i]->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-		this->m_uiComps[i]->size = DirectX::XMFLOAT2(400.f, 100.f);
-		this->m_textComps[i] = cHandler->GetTextComponent();
-		this->m_textComps[i]->active = 1;
-		this->m_textComps[i]->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		this->m_menuButtons[i].m_uiComp = cHandler->GetUIComponent();
+		this->m_menuButtons[i].m_uiComp->active = 1;
+		this->m_menuButtons[i].m_uiComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		this->m_menuButtons[i].m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		this->m_menuButtons[i].m_textComp = cHandler->GetTextComponent();
+		this->m_menuButtons[i].m_textComp->active = 1;
+		this->m_menuButtons[i].m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
 	}
 
-	this->m_textComps[0]->text = L"Start Game";
-	this->m_textComps[1]->text = L"Quit Game";
+	this->m_menuButtons[0].m_textComp->text = L"Start Game";
+	this->m_menuButtons[1].m_textComp->text = L"Quit Game";
 
 
 	return result;
@@ -59,26 +59,24 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	{
 		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 		{
-			this->m_uiComps[i]->UpdateClicked(mousePos);
+			this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
 		}
 	}
 
 	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 	{
-		this->m_uiComps[i]->UpdateHover(mousePos);
-		if (this->m_uiComps[i]->isHovered)
+		this->m_menuButtons[i].m_uiComp->UpdateHover(mousePos);
+		if (this->m_menuButtons[i].m_uiComp->isHovered)
 		{
-			this->m_uiComps[i]->scale = 1.25f;
-			this->m_textComps[i]->scale = DirectX::XMFLOAT2(1.25f, 1.25f);
+			this->m_menuButtons[i].SetHovered(true);
 		}
 		else
 		{
-			this->m_uiComps[i]->scale = 1.f;
-			this->m_textComps[i]->scale = DirectX::XMFLOAT2(1.f, 1.f);
+			this->m_menuButtons[i].SetHovered(false);
 		}
 	}
 
-	if (this->m_uiComps[0]->CheckClicked())
+	if (this->m_menuButtons[0].m_uiComp->CheckClicked())
 	{
 		//Start game was clicked
 
@@ -104,11 +102,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 		for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 		{
-			this->m_uiComps[i]->active = 0;
-			this->m_textComps[i]->active = 0;
+			this->m_menuButtons[i].SetActive(false);
 		}
 	}
-	else if (this->m_uiComps[1]->CheckClicked())
+	else if (this->m_menuButtons[1].m_uiComp->CheckClicked())
 	{
 		//Quit game was clicked
 		result = 0;
