@@ -8,9 +8,12 @@
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
-		TRIGGER,
+		BUTTON,
 		DOOR,
-		PATH
+		PATH,
+		LEVER,
+		WHEEL,
+		PRESSURE_PLATE
 	};
 	enum Pattern {
 		AI_LINEAR = 1,

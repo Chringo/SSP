@@ -110,7 +110,7 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 	{
 	case Ui::NONE:
 		break;
-	case Ui::TRIGGER:
+	case Ui::BUTTON:
 	{
 		//reset
 		break;

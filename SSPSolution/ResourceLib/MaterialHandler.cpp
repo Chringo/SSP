@@ -11,14 +11,15 @@ Resources::MaterialHandler::MaterialHandler(size_t materialAmount, ID3D11Device*
 	this->m_emptyContainers.resize(materialAmount);
 
 	this->m_materials.reserve(materialAmount);
-	this->m_containers.reserve(materialAmount);
-	this->m_containers.insert(m_containers.begin(), materialAmount, Material());
+	this->m_containers.push_back(new std::vector<Material>);
+	this->m_containers.at(0)->reserve(materialAmount);
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), materialAmount, Material());
 	for (size_t i = 0; i < materialAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 
-	m_textureHandler = new TextureHandler(20);
+	m_textureHandler = new TextureHandler(materialAmount);
 	if (device != nullptr) {
 		this->m_device = device;
 		m_textureHandler->SetDevice(device);
@@ -31,6 +32,10 @@ Resources::MaterialHandler::~MaterialHandler()
 {
 	delete m_placeholder;
 	delete m_textureHandler;
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		delete m_containers.at(i);
+	}
 }
 
 Resources::Status Resources::MaterialHandler::GetMaterial(const unsigned int & id, ResourceContainer *& materialPtr)
@@ -187,8 +192,11 @@ Resources::Material * Resources::MaterialHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)
 	{
-		m_containers.push_back(Material());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		m_containers.push_back(new std::vector<Material>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
 	}
 	return m_emptyContainers.front();
 

@@ -6,16 +6,17 @@
 
 enum ContainerType
 {
-	MODEL,
-	CHECKPOINT,
+	MODEL = 0,
 	BUTTON,
 	LEVER,
 	WHEEL,
-	LIGHT,
-	AIWAYPOINT,
 	DOOR,
 	MAGNET,
 	PRESSUREPLATE,
+	NUM_PUZZLE_ELEMENTS,
+	LIGHT,
+	AIWAYPOINT,
+	CHECKPOINT,
 
 	NUM_TYPES
 };
@@ -30,7 +31,9 @@ struct Container
 	bool			  isStatic     = true;
 
 	ContainerType type;
-	Container() {}
+	Container() {
+		type = MODEL;
+	};
 	Container(const Container &obj) {  // copy constructor
 	
 		this->internalID	= obj.internalID	;
@@ -40,6 +43,7 @@ struct Container
 		this->aiComponent	= obj.aiComponent	;
 		this->isDirty		= obj.isDirty		;
 		this->isStatic		= obj.isStatic		;
+		this->type = MODEL;
 	}
 	Container& operator=(Container const& obj)
 	{
@@ -51,28 +55,91 @@ struct Container
 		this->aiComponent = obj.aiComponent;
 		this->isDirty	  = obj.isDirty;
 		this->isStatic	  = obj.isStatic;
-
+		this->type = MODEL;
 		return *this;
 	}
 
 	};
 
-struct AiContainer 
+struct Button : Container
 {
-	OBB obb;
-	
-	AIComponent aiComponent;
-	AiContainer()
+	Button() : Container()
 	{
-		obb.ort.r[0] = { 1.0f,0.0f,0.0f};
-		obb.ort.r[1] = { 0.0f,1.0f,0.0f };
-		obb.ort.r[2] = { 0.0f,0.0f,1.0f };
-		obb.ext[0] = 0.2f;
-		obb.ext[1] = 0.2f;
-		obb.ext[2] = 0.2f;
+		this->type = BUTTON;
 	}
+	Button(const Container &obj) : Container(obj)
+	{
+		this->type = BUTTON;
+	}
+	float interactionDistance;
+	float resetTime; // Seconds
 };
 
+struct Lever : Container
+{
+	Lever() : Container() {
+		this->type = LEVER;
+	}
+	float interactionDistance;
+};
+struct Wheel : Container
+{
+	Wheel() : Container()
+	{
+		this->type = WHEEL;
+	}
+	float interactionDistance;
+	float minRotation;
+	float maxRotation;
+	float rotateTime;
+
+	float timeToReset;	  //Sekunder
+	float resetTime;	  //Sekunder
+};
+struct Door : Container
+{
+	Door() : Container()
+	{
+		this->type = DOOR;
+	}
+	float rotateTime;
+	unsigned int numTriggers = 0;
+	unsigned int triggerEntityIds[10];
+
+	void AddTrigger(unsigned int entityId)
+	{
+		for (size_t i = 0; i < numTriggers; i++)
+		{
+			if (numTriggers == entityId)
+				return;
+		}
+		if (numTriggers < 10) {
+			this->triggerEntityIds[numTriggers] = entityId;
+			numTriggers += 1;
+		}
+	}
+	void DeleteTrigger(unsigned int entityId)
+	{
+		int index = 0;
+		bool triggerExist = false;
+		for (size_t i = 0; i < numTriggers; i++) //find the index of the trigger to be deleted
+		{
+			if (triggerEntityIds[i] == entityId) {
+				index = i;
+				triggerExist = true;
+				break;
+			}
+		}
+		if (!triggerExist) // if the trigger does not exist
+			return;
+
+		for (size_t j = index; j < numTriggers - 1; j++) //move the data to the left in the array
+		{
+			triggerEntityIds[j] = triggerEntityIds[j + 1];
+		}
+		numTriggers -= 1;
+	}
+};
 struct CheckpointContainer : Container
 {
 	unsigned int internalID;
