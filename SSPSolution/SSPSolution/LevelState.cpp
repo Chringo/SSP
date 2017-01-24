@@ -142,6 +142,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	roofP->PC_elasticity = 0;
 	roofP->PC_friction = 1.0f;
 
+	this->m_staticEntitys.push_back(roof);
+
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
 	platformG->modelID = 1337;

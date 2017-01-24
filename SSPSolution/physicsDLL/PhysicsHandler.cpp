@@ -112,7 +112,10 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 		DirectX::XMVECTOR correction = DirectX::XMVectorAdd(obj1->PC_pos, obj2->PC_pos);
 		correction = DirectX::XMVector4Normalize(correction);
 
+		float procentMargin = 0.995;
+
 		float yCorrection = 0;
+		float correctionMargin = 0.4;
 
 
 		possibleCollitionX = (fabs(vecToObj[0]) <= PC_toCheck->PC_AABB.ext[0] + PC_ptr->PC_AABB.ext[0]);
@@ -151,9 +154,9 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						if (!obj1->PC_steadfast)
 						{
-							if (xProcent > 0.9)
+							if (xProcent > procentMargin)
 							{
-								yCorrection = 0.1;
+								yCorrection = correctionMargin;
 								distanceToMove = 0;
 								normal = DirectX::XMVectorSet(0, 1, 0, 0);
 							}
@@ -163,9 +166,9 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
 						{
-							if (xProcent > 0.9)
+							if (xProcent > procentMargin)
 							{
-								yCorrection = 0.1;
+								yCorrection = correctionMargin;
 								distanceToMove = 0;
 								normal = DirectX::XMVectorSet(0, 1, 0, 0);
 							}
@@ -215,9 +218,9 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						if (!obj1->PC_steadfast)
 						{
-							if (zProcent < 0.9)
+							if (zProcent < procentMargin)
 							{
-								yCorrection = 0.1;
+								yCorrection = correctionMargin;
 								distanceToMove = 0;
 								normal = DirectX::XMVectorSet(0, 1, 0, 0);
 							}
@@ -226,9 +229,9 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
 						{
-							if (zProcent < 0.9)
+							if (zProcent < procentMargin)
 							{
-								yCorrection = 0.1;
+								yCorrection = correctionMargin;
 								distanceToMove = 0;
 								normal = DirectX::XMVectorSet(0, 1, 0, 0);
 							}
@@ -1532,7 +1535,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.005f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.008f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
