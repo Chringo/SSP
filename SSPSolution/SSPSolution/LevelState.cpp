@@ -340,8 +340,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
-			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), 2);	//Send the grabbing ID and the grabbed ID
+			Entity* ent = this->m_dynamicEntitys.at(0);
+			if (!ent->IsGrabbed())
+			{
+				this->m_player1.SetGrabbed(ent);
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
@@ -473,8 +477,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			//this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
-			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), 2);	//Send a request to pick up dynamic entity with ID 2 (ball)
+			Entity* ent = this->m_dynamicEntitys.at(0);
+			if (!ent->IsGrabbed())
+			{
+				this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
