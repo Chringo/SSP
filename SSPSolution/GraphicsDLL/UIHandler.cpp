@@ -12,7 +12,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 {
 	this->m_maxUIComponents = 10;
 	this->m_nrOfUIComponents = 0;
-	for (int i = 0; i < this->m_maxUIComponents; i++)
+	for (unsigned int i = 0; i < this->m_maxUIComponents; i++)
 	{
 		UIComponent* newUIComp = new UIComponent;
 		this->m_UIComponents.push_back(newUIComp);
@@ -20,7 +20,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 	this->m_maxTextComponents = 10;
 	this->m_nrOfTextComponents = 0;
-	for (int i = 0; i < this->m_maxTextComponents; i++)
+	for (unsigned int i = 0; i < this->m_maxTextComponents; i++)
 	{
 		TextComponent* newTextComp = new TextComponent;
 		this->m_textComponents.push_back(newTextComp);
@@ -37,7 +37,7 @@ void UIHandler::DrawUI()
 	UIComponent* tempUIComp = nullptr;
 	TextComponent* tempTextComp = nullptr;
 	this->m_spriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_BackToFront);
-	for (int i = 0; i < this->m_nrOfUIComponents; i++)
+	for (unsigned int i = 0; i < this->m_nrOfUIComponents; i++)
 	{
 		tempUIComp = this->m_UIComponents.at(i);
 		if (tempUIComp->active) 
@@ -52,7 +52,7 @@ void UIHandler::DrawUI()
 			}
 		}
 	}
-	for (int i = 0; i < this->m_nrOfTextComponents; i++)
+	for (unsigned int i = 0; i < this->m_nrOfTextComponents; i++)
 	{
 		tempTextComp = this->m_textComponents.at(i);
 		if (tempTextComp->active)
@@ -65,11 +65,11 @@ void UIHandler::DrawUI()
 
 void UIHandler::Shutdown()
 {
-	for (int i = 0; i < this->m_maxUIComponents; i++)
+	for (unsigned int i = 0; i < this->m_maxUIComponents; i++)
 	{
 		delete this->m_UIComponents.at(i);
 	}
-	for (int i = 0; i < this->m_maxTextComponents; i++)
+	for (unsigned int i = 0; i < this->m_maxTextComponents; i++)
 	{
 		delete this->m_textComponents.at(i);
 	}
