@@ -17,8 +17,8 @@ private:
 	float m_resetTime;
 	float m_resetRotatePerSec;
 	float m_timeUntilReset;
-	float m_elapsedTimeUntilReset;
-	// -2:minRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation | 2:maxRotation
+	float m_resetCountdown;
+	// -2:resetRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation
 	int m_rotationState;
 public:
 	WheelEntity();

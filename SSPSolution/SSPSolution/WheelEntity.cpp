@@ -28,8 +28,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->m_resets = resets;
 	this->m_resetTime = resetTime;
 	this->m_resetRotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_resetTime;
-	this->m_timeUntilReset = timeUntilReset;
-	this->m_elapsedTimeUntilReset = 0.0f;
+	this->m_timeUntilReset = this->m_resetCountdown = timeUntilReset;
 
 	this->SyncComponents();
 	return result;
@@ -40,6 +39,17 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	switch (this->m_rotationState)
 	{
 	case 0:
+		//Check if the wheel can reset
+		if (this->m_resets)
+		{
+			//Increase the reset timer
+			this->m_resetCountdown -= dT;
+			//Check if it is time to reset the wheel
+			if (this->m_timeUntilReset < 0)
+			{
+				this->m_rotationState = -2;
+			}
+		}
 		break;
 	case 1:
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
@@ -132,9 +142,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			this->SyncComponents();
 		}
 		break;
-	case 2:
-		break;
 	case -2:
+		//Start resetting
+
 		break;
 	default:
 		break;
@@ -171,6 +181,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) >= this->m_maxRotation)
 				{
 					this->m_rotationState = 0;
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 				else
 				{
@@ -184,6 +195,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
 				{
 					this->m_rotationState = 0;
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 				else
 				{
@@ -195,6 +207,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 		else
 		{
 			this->m_rotationState = 0;
+			this->m_resetCountdown = this->m_timeUntilReset;
 		}
 	}
 	return result;
