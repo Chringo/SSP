@@ -60,7 +60,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuButtons[3].m_textComp->text = L"Toggle Fullscreen";
 	this->m_menuButtons[4].m_textComp->text = L"Go Back";
 
-	this->markedItem = 0;
+	this->m_markedItem = 0;
 	this->m_menuButtons[0].SetHovered(true);
 
 	return result;
@@ -72,7 +72,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 
-	switch (this->menuState)
+	switch (this->m_menuState)
 	{
 	case 0: //Main menu
 		for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
@@ -81,9 +81,9 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_menuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_menuButtons[i].SetHovered(true);
-				this->markedItem = i;
+				this->m_markedItem = i;
 			}
-			else if (i != this->markedItem)
+			else if (i != this->m_markedItem)
 			{
 				this->m_menuButtons[i].SetHovered(false);
 			}
@@ -98,24 +98,24 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
 		{
-			this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
+			this->m_menuButtons[m_markedItem].m_uiComp->wasClicked = true;
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
 		{
-			if (this->markedItem < this->m_NR_OF_MAIN_MENU_ITEMS - 1)
+			if (this->m_markedItem < this->m_NR_OF_MAIN_MENU_ITEMS - 1)
 			{
-				this->m_menuButtons[this->markedItem].SetHovered(false);
-				this->markedItem++;
-				this->m_menuButtons[this->markedItem].SetHovered(true);
+				this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem++;
+				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
 		{
-			if (this->markedItem > 0)
+			if (this->m_markedItem > 0)
 			{
-				this->m_menuButtons[this->markedItem].SetHovered(false);
-				this->markedItem--;
-				this->m_menuButtons[this->markedItem].SetHovered(true);
+				this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem--;
+				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
 
@@ -151,10 +151,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_menuButtons[1].m_uiComp->CheckClicked())
 		{
 			//Options was clicked
-			this->m_menuButtons[this->markedItem].SetHovered(false);
-			this->markedItem = this->m_NR_OF_MAIN_MENU_ITEMS;
+			this->m_menuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = this->m_NR_OF_MAIN_MENU_ITEMS;
 			this->m_menuButtons[this->m_NR_OF_MAIN_MENU_ITEMS].SetHovered(true);
-			this->menuState = 1;
+			this->m_menuState = 1;
 			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 			{
 				this->m_menuButtons[i].SetActive(false);
@@ -178,9 +178,9 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_menuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_menuButtons[i].SetHovered(true);
-				this->markedItem = i;
+				this->m_markedItem = i;
 			}
-			else if (i != this->markedItem)
+			else if (i != this->m_markedItem)
 			{
 				this->m_menuButtons[i].SetHovered(false);
 			}
@@ -195,24 +195,24 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
 		{
-			this->m_menuButtons[markedItem].m_uiComp->wasClicked = true;
+			this->m_menuButtons[m_markedItem].m_uiComp->wasClicked = true;
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
 		{
-			if (this->markedItem < this->m_NR_OF_MENU_ITEMS - 1)
+			if (this->m_markedItem < this->m_NR_OF_MENU_ITEMS - 1)
 			{
-				this->m_menuButtons[this->markedItem].SetHovered(false);
-				this->markedItem++;
-				this->m_menuButtons[this->markedItem].SetHovered(true);
+				this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem++;
+				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
 		{
-			if (this->markedItem > this->m_NR_OF_MAIN_MENU_ITEMS)
+			if (this->m_markedItem > this->m_NR_OF_MAIN_MENU_ITEMS)
 			{
-				this->m_menuButtons[this->markedItem].SetHovered(false);
-				this->markedItem--;
-				this->m_menuButtons[this->markedItem].SetHovered(true);
+				this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem--;
+				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
 
@@ -226,10 +226,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Return to main menu was clicked
 			inputHandler->SetKeyState(SDL_SCANCODE_F, false); //Temporary cheat
-			this->m_menuButtons[this->markedItem].SetHovered(false);
-			this->markedItem = 0;
+			this->m_menuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = 0;
 			this->m_menuButtons[0].SetHovered(true);
-			this->menuState = 0;
+			this->m_menuState = 0;
 			for (size_t i = 0; i < m_NR_OF_MAIN_MENU_ITEMS; i++)
 			{
 				this->m_menuButtons[i].SetActive(true);
