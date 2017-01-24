@@ -419,7 +419,9 @@ void NetworkModule::ReadMessagesFromClients()
 		
 		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
-		
+		int data_read = 0;
+		printf("\n\n\n\n\n %d \n",data_length);
+		printf("\n\n\n\n\n\n\n %d, %d \n", sizeof(AnimationPacket), sizeof(EntityPacket));
 		// If there was data
 		if (data_length <= 0)
 		{
@@ -427,140 +429,144 @@ void NetworkModule::ReadMessagesFromClients()
 			iter++;
 			continue;
 		}
-
-		//Read the header (skip the first 4 bytes since it is virtual function information)
-		memcpy(&header, &network_data[4], sizeof(PacketTypes));
-#pragma region
-		switch (header)
+		while( data_read != data_length)
 		{
+			//Read the header (skip the first 4 bytes since it is virtual function information)
+			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
 
-		case CONNECTION_REQUEST:
-	
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			//DEBUG
-			//printf("Host received connection packet from client\n");
-
-			iter++;
-			break;
-
-		case CONNECTION_ACCEPTED:
-	
-			syP.deserialize(network_data);	// Read the binary data into the object
-			
-			// Sync clock (Still not used)
-			this->time_current = (int)syP.timestamp;
-			this->time_start = syP.time_start;
-
-			//DEBUG
-			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
-
-			iter++;
-			break;
-
-		case DISCONNECT_REQUEST:
-					
-			p.deserialize(network_data);	// Read the binary data into the object
-
-			this->SendFlagPacket(DISCONNECT_ACCEPTED);
-			this->RemoveClient(iter->first);	// iter->first is the ID
-
-			//DEBUG
-			//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
-
-			iter = this->connectedClients.end();
-			break;
-
-		case DISCONNECT_ACCEPTED:
-			
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			this->RemoveClient(iter->first);
-			
-			//DEBUF
-			//printf("Client recived: DISCONNECT_ACCEPTED\n");
-			
-			iter = this->connectedClients.end();
-			this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
-			
-			break;
-
-		case UPDATE_ENTITY:
-
-			eP.deserialize(network_data);	// Read the binary data into the object
-			
-			this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
-
-			//DEBUG
-			//printf("Recived ENTITY_UPDATE packet\n");
-
-			iter++;
-			break;
-
-		case UPDATE_ANIMATION:
-
-			aP.deserialize(network_data);	// Read the binary data into the object
-
-			this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
-
-			//DEBUG
-			//printf("Recived ANIMATION_UPDATE packet\n");
-
-			iter++;
-			break;
-
-		case UPDATE_STATE:
-
-			sP.deserialize(network_data);	// Read the binary data into the object
-			
-			this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
-			
-			//DEBUG
-			//printf("Recived STATE_UPDATE packet\n");
-
-			iter++;
-			break;
+#pragma region
 		
-		case UPDATE_CAMERA:
+			switch (header)
+			{
 
-			cP.deserialize(network_data);	// Read the binary data into the object
+			case CONNECTION_REQUEST:
 
-			this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
-			
-			//DEBUG
-			//printf("Recived CAMERA_UPDATE packet\n");
-			
-			iter++;
-			break;
-		
-		case SYNC_PHYSICS:
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				data_read += sizeof(Packet);
+				//DEBUG
+				//printf("Host received connection packet from client\n");
 
-			sPP.deserialize(network_data);	// Read the binary data into the object
+				break;
 
-			this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
+			case CONNECTION_ACCEPTED:
 
-			//DEBUG
-			//printf("Recived SYNC_PHYSICS packet\n");
+				syP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-			iter++;
-			break;
+				// Sync clock (Still not used)
+				this->time_current = (int)syP.timestamp;
+				this->time_start = syP.time_start;
+				data_read += sizeof(SyncPacket);
+				//DEBUG
+				//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
 
-		case TEST_PACKET:
+				break;
 
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			// DEBUG
-			//printf("Recived TEST_PACKET packet\n");
-			//printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
+			case DISCONNECT_REQUEST:
 
-			iter++;
-			break;
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-		default:
-			printf("Unkown packet type %d\n", header);
-		}
+				this->SendFlagPacket(DISCONNECT_ACCEPTED);
+				closesocket(iter->second);
+				this->RemoveClient(iter->first);	// iter->first is the ID
+				
+				//DEBUG
+				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
+
+				iter = this->connectedClients.end();
+				data_read = data_length;
+				break;
+
+			case DISCONNECT_ACCEPTED:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				closesocket(iter->second);
+				this->RemoveClient(iter->first);
+				//DEBUF
+				//printf("Client recived: DISCONNECT_ACCEPTED\n");
+
+				iter = this->connectedClients.end();
+				data_read = data_length;
+				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
+
+				break;
+
+			case UPDATE_ENTITY:
+
+				eP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
+				data_read += sizeof(EntityPacket);
+				//DEBUG
+				//printf("Recived ENTITY_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_ANIMATION:
+
+				aP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
+				data_read += sizeof(AnimationPacket);
+				//DEBUG
+				//printf("Recived ANIMATION_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_STATE:
+
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
+				data_read += sizeof(StatePacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_CAMERA:
+
+				cP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
+				data_read += sizeof(CameraPacket);
+				//DEBUG
+				//printf("Recived CAMERA_UPDATE packet\n");
+
+				break;
+
+			case SYNC_PHYSICS:
+
+				sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
+				data_read += sizeof(SyncPhysicPacket);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
+			case TEST_PACKET:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				data_read += sizeof(Packet);
+				// DEBUG
+				//printf("Recived TEST_PACKET packet\n");
+				//printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
+
+				break;
+
+			default:
+				printf("Unkown packet type %d\n", header);
+				data_read = data_length;	//Break
+			}
 #pragma endregion ALL_PACKETS
-	}
+		}
+
+		if (iter != this->connectedClients.end()) {
+			iter++;
+		}
+		
+}
 
 }
 
@@ -623,6 +629,9 @@ void NetworkModule::SendToAll(char * packets, int totalSize)
 		{
 			printf("send failed with error: %d\n", WSAGetLastError());
 			closesocket(currentSocket);
+			this->RemoveClient(iter->first);
+			iter = this->connectedClients.end();
+			break;
 		}
 		else	//If the message was sent, incresse the packet ID
 		{

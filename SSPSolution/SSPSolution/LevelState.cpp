@@ -64,6 +64,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
+
 	// creating the player
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
@@ -91,18 +92,18 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 3;								//Set Entity ID
+	playerP->PC_entityID = 1;								//Set Entity ID
 															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
-	playerP->PC_mass = 5;
+	playerP->PC_mass = 1;
 	playerP->PC_BVtype = BV_AABB;
 	playerP->PC_AABB.ext[0] = 0.5;
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player2.Initialize(3, playerP, playerG);
+	this->m_player2.Initialize(1, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
@@ -112,7 +113,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 1;									//Set Entity ID
+	ballP->PC_entityID = 2;									//Set Entity ID
 	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -121,15 +122,25 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[0] = 0.5;
 	ballP->PC_AABB.ext[1] = 0.5;
 	ballP->PC_AABB.ext[2] = 0.5;
-	ballP->PC_mass = 1;
+	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	ball->Initialize(1, ballP, ballG);
+	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
-	Entity* ptr = (Entity*)ball;
-	this->m_player1.SetGrabbed(ball);
 
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(0, 1, 3, 0.5);
+	//Entity* ptr = (Entity*)ball;
+	//this->m_player1.SetGrabbed(ball);
+
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 10, 0.5);
+
+	StaticEntity* roof = new StaticEntity;
+	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	roofP->PC_is_Static = true;
+	roofP->PC_BVtype = BV_Plane;
+	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	roofP->PC_elasticity = 0;
+	roofP->PC_friction = 1.0f;
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
@@ -234,24 +245,37 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_entityPacketList.size() > 0)
 		{
-
+			
 			// Apply each packet to the right entity
 			std::list<EntityPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
-
-				if (itr->entityID == -1)	//TEMP HARDCODED PLAYER1 TO SEND ID -1, REMOVE WHEN PLAYER IS IN A LIST
+				counter++;
+				printf("%d\n %d\n", counter, itr->packet_ID);
+				if ((int)itr->entityID == 0)
 				{
-					PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+					pp = this->m_player1.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
+					//printf("Player1");
+				}
+				else if ((int)itr->entityID == 1)
+				{
+					pp = this->m_player2.GetPhysicsComponent();
 
 					// Update the component
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if (itr->entityID == -2)
+				else if ((int)itr->entityID == 2)
 				{
-					PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+					pp = (*this->m_dynamicEntitys.at(0)).GetPhysicsComponent();
 
 					// Update the component
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
@@ -261,13 +285,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				else
 				{
 					// Find the entity
-					DynamicEntity* ent = this->m_dynamicEntitys.at(itr->entityID);	// The entity identified by the ID sent from the other client
-					PhysicsComponent* pp = ent->GetPhysicsComponent();
+					std::vector<DynamicEntity*>::iterator Ditr;
+					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
 
-					// Update the component
-					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
+						{
+							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
+							pp = ent->GetPhysicsComponent();
+
+							// Update the component
+							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+							pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						}
+
+					}
+					
 				}
 			}
 		}
@@ -282,8 +315,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
 
-	
-
 	//update player for throw functionallity
 	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize( DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
 	DirectX::XMFLOAT3 temp;
@@ -292,68 +323,121 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
 	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
-
-	if (this->m_networkModule->IsHost())
-	{	
+	
+#pragma region
+	if(this->m_networkModule->IsHost() == true)
+	{ 
+		//Camera
 		this->m_player1.SetRightDir(rightDir);
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
+		//update all dynamic (moving) entities
+		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		{
+			this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+		}
+		//Sync other half of the components
 		this->m_player2.SyncComponents();
+
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		{
+			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		{
+			this->m_player1.SetGrabbed(nullptr);
+		}
+
+		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetAiming(true);
+			this->m_cameraRef->SetDistance(2);
+		}
+
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetAiming(false);
+			this->m_cameraRef->SetDistance(10);
+		}
+
+		if (this->m_player1.GetIsAming())
+		{
+			this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
+		}
+
+		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER1
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is host and there is connected clients
+		{	
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			
+
+			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+
+			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			{
+				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			}
+
+			
+		}
+
 	}
-	else
+#pragma endregion Host/Player1 Specifics
+
+#pragma region
+	if (this->m_networkModule->IsHost() == false)
 	{
 		this->m_player2.SetRightDir(rightDir);
 		this->m_player2.SetUpDir(upDir);
 		this->m_player2.SetLookDir(playerLookDir);
 		this->m_player2.Update(dt, inputHandler);
+
+		//Other half of the components
 		this->m_player1.SyncComponents();
-	}
-	
+		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		{
+			this->m_dynamicEntitys.at(i)->SyncComponents();
+		}
 
-	if ( (this->m_networkModule->IsHost() == true) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )	//Player is host and there is connected clients
-	{
-		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-		this->m_networkModule->SendEntityUpdatePacket(-1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-	}
-	else if( (this->m_networkModule->IsHost() == false) && (this->m_networkModule->GetNrOfConnectedClients() != 0) )
-	{
-		PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-		this->m_networkModule->SendEntityUpdatePacket(-2, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-	}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		{
+			this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		{
+			this->m_player2.SetGrabbed(nullptr);
+		}
 
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
-	{
-		this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
-	{
-		this->m_player1.SetGrabbed(nullptr);
-	}
+		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetAiming(true);
+			this->m_cameraRef->SetDistance(2);
+		}
 
-	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
-	{
-		this->m_player1.SetAiming(true);
-		this->m_cameraRef->SetDistance(0.5);
-	}
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetAiming(false);
+			this->m_cameraRef->SetDistance(10);
+		}
 
-	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
-	{
-		this->m_player1.SetAiming(false);
-		this->m_cameraRef->SetDistance(1.3);
-	}
+		if (this->m_player2.GetIsAming())
+		{
+			this->m_player2.SetLookDir(this->m_cameraRef->GetDirection());
+		}
 
-	if (this->m_player1.GetIsAming()) //Might actualy already be set to this
-	{
-		this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
-	}
+		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
+		{
+			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+			this->m_networkModule->SendEntityUpdatePacket(1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+		}
 
-	//update all dynamic (moving) entities
-	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
-	{
-		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
+#pragma endregion Client/Player2 Specifics
 
 	for (int i = 0; i < this->m_staticEntitys.size(); i++)
 	{
