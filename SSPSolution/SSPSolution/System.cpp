@@ -236,7 +236,10 @@ int System::Update(float deltaTime)
 		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
 		dir = DirectX::XMVectorScale(dir, 500);
 	}
+	DebugHandler::instance().StartTimer("Physics");
+
 	this->m_physicsHandler.Update(deltaTime);
+	DebugHandler::instance().EndTimer();
 
 #ifdef _DEBUG
 	for (int i = 0; i < nrOfComponents; i++)
