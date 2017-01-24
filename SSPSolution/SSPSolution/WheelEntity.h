@@ -1,6 +1,6 @@
 #ifndef SSPAPPLICATION_ENTITIES_WHEELENTITY_H
 #define SSPAPPLICATION_ENTITIES_WHEELENTITY_H
-
+#include <math.h>
 #include "Entity.h"
 class WheelEntity :
 	public Entity
@@ -12,6 +12,10 @@ private:
 	float m_rotateTime;
 	float m_rotatePerSec;
 	float m_range;
+
+	bool m_resets;
+	float m_resetTime;
+
 	// -2:minRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation | 2:maxRotation
 	int m_rotationState;
 public:
