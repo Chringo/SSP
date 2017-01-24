@@ -266,7 +266,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(button1G->modelID, button1G->modelPtr);
 	PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
 	button1P->PC_entityID = 616;									//Set Entity ID
-	button1P->PC_pos = DirectX::XMVectorSet(-12.0f, -10.0f, -7.0f, 0.0f);		//Set Position
+	button1P->PC_pos = DirectX::XMVectorSet(-8.0f, -10.0f, -7.0f, 0.0f);		//Set Position
 	button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	button1P->PC_is_Static = true;								//Set IsStatic
 	button1P->PC_active = true;									//Set Active
