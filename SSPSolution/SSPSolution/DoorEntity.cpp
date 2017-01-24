@@ -9,15 +9,15 @@ DoorEntity::~DoorEntity()
 {
 }
 
-int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float minRotation, float maxRotation, float rotateTime)
+int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float rotateTime, float minRotation, float maxRotation)
 {
 	this->InitializeBase(entityID, pComp, gComp);
 
 	this->m_isOpened = false;
+	this->m_rotateTime = rotateTime;
 	this->m_minRotation = minRotation;
 	this->m_maxRotation = maxRotation;
-	this->m_rotateTime = rotateTime;
-	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
+	this->m_rotatePerSec = this->m_maxRotation / this->m_rotateTime;
 	this->SyncComponents();
 
 	return 0;
@@ -68,13 +68,21 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 		this->m_isOpened = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
 	}
+	else if (reactEvent == EVENT::WHEEL_100)
+	{
+		this->m_isOpened = true;
+	}
 	else if (reactEvent == EVENT::WHEEL_0)
 	{
 		this->m_isOpened = false;
 	}
-	else if (reactEvent == EVENT::WHEEL_100)
+	else if (reactEvent == EVENT::LEVER_ACTIVE)
 	{
 		this->m_isOpened = true;
+	}
+	else if (reactEvent == EVENT::LEVER_DEACTIVE)
+	{
+		this->m_isOpened = false;
 	}
 
 	return 0;

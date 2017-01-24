@@ -256,7 +256,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	door1P->PC_AABB.ext[0] = 0.5f;
 	door1P->PC_AABB.ext[1] = 0.5f;
 	door1P->PC_AABB.ext[2] = 0.5f;
-	door1->Initialize(666, door1P, door1G, 0.0f, DirectX::XM_PI / 2.1f, 1.0f);
+	door1->Initialize(666, door1P, door1G, 0.0f);
 
 	//BUTTON
 	GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
