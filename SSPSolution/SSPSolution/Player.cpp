@@ -63,10 +63,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//if (IsStateChanged(currentState))
 	//{
 	//	//Get the animationComponent from this player.
-
+	//	AnimStateData animComp = m_aComp->Anim_StateData[currentState];
 
 	//	//Push the new animation to the players own stack for current animations playing.
-	//	//player_mAnimStack.push(animationComponent);
+	//	m_currentAnimStates.push_back(animComp);
 	//}
 
 	/*Call the update for the animation handler here*/
