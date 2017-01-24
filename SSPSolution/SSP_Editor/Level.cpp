@@ -22,22 +22,14 @@ Level::Level()
 		m_SpawnPoints[1].component.modelID     = PLAYER2;
 		m_SpawnPoints[1].component.modelPtr	    = DataHandler::GetInstance()->GetModel(m_SpawnPoints[1].component.modelID);
 		
-		
-	//AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
-	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });				       //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 3.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 1.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 0.0f,-5.0f,0.0f });
+	
 	
 }
 
 
 Level::~Level()
 {
+	this->Destroy();
 }
 
 std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntities()
@@ -366,6 +358,13 @@ void Level::Destroy()
 	m_LevelAi.Destroy();
 	GlobalIDHandler::GetInstance()->ResetIDs();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
+	for each (std::vector<Container*> elementContainer in m_pussleElements){ //Remove all puzzle elements
+		for (size_t i = 0; i < elementContainer.size(); i++)
+		{
+			delete elementContainer.at(i);
+		}
+		elementContainer.clear();
+	}
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)

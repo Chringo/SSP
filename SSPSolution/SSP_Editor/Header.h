@@ -87,6 +87,9 @@ struct Wheel : Container
 	float minRotation;
 	float maxRotation;
 	float rotateTime;
+
+	float timeToReset;	  //Sekunder
+	float resetTime;	  //Sekunder
 };
 struct Door : Container
 {
