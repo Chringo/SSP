@@ -56,6 +56,7 @@ private:
 			{
 				m_uiComp->active = 0;
 				m_textComp->active = 0;
+				m_focused = false;
 			}
 		}
 	};

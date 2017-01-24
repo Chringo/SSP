@@ -55,7 +55,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
 	this->m_ipTextBox.m_uiComp->active = 0;
-	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(150.f, 200.f + (150.f));
+	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
@@ -172,6 +172,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_menuButtons[i].SetActive(true);
 			}
+			this->m_ipTextBox.SetActive(true);
 		}
 		else if (this->m_menuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -201,25 +202,45 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_menuButtons[i].m_uiComp->UpdateClicked(mousePos);
 			}
+			this->m_ipTextBox.m_uiComp->UpdateClicked(mousePos);
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
 		{
-			this->m_menuButtons[m_markedItem].m_uiComp->wasClicked = true;
+			if (!this->m_ipTextBox.m_focused)
+			{
+				this->m_menuButtons[m_markedItem].m_uiComp->wasClicked = true;
+			}
+			else 
+			{
+				this->m_ipTextBox.m_focused = false;
+				this->m_markedItem--;
+				this->m_menuButtons[this->m_markedItem].SetHovered(true);
+			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
 		{
-			if (this->m_markedItem < this->m_NR_OF_MENU_ITEMS - 1)
+			if (this->m_markedItem < this->m_NR_OF_MENU_ITEMS)
 			{
 				this->m_menuButtons[this->m_markedItem].SetHovered(false);
 				this->m_markedItem++;
-				this->m_menuButtons[this->m_markedItem].SetHovered(true);
+				if (this->m_markedItem != this->m_NR_OF_MENU_ITEMS)
+				{
+					this->m_menuButtons[this->m_markedItem].SetHovered(true);
+				}
+				else
+				{
+					this->m_ipTextBox.m_focused = true;
+				}
 			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
 		{
 			if (this->m_markedItem > this->m_NR_OF_MAIN_MENU_ITEMS)
 			{
-				this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				if (this->m_markedItem < this->m_NR_OF_MENU_ITEMS)
+				{
+					this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				}
 				this->m_markedItem--;
 				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
@@ -246,6 +267,15 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			for (size_t i = m_NR_OF_MAIN_MENU_ITEMS; i < m_NR_OF_MENU_ITEMS; i++)
 			{
 				this->m_menuButtons[i].SetActive(false);
+			}
+			this->m_ipTextBox.SetActive(false);
+		}
+
+		if (this->m_ipTextBox.m_focused)
+		{
+			if (inputHandler->IsKeyPressed(SDL_SCANCODE_1))
+			{
+				this->m_ipTextBox.m_textComp->text += L"1";
 			}
 		}
 
