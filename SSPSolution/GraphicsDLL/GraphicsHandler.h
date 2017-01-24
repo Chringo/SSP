@@ -30,6 +30,7 @@ private:
 		T_AABB,
 		T_PLANE,
 		T_SPHERE,
+		T_WAYPOINT,
 		T_NUM_TYPES
 	};
 	DebugRenderer m_debugRender;
@@ -38,8 +39,10 @@ private:
 	std::vector<Plane*> planes;
 	std::vector<Sphere*> spheres;
 
+	std::vector<int> numWaypoints;
 	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
 	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
+	
 	
 	ID3D11DepthStencilView* dsv;
 public:
@@ -47,6 +50,7 @@ public:
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 private:
 	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
@@ -62,7 +66,7 @@ private:
 	bool postProcessing = false;
 	
 
-	penis** m_animGraphicsComponents = nullptr;
+	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;

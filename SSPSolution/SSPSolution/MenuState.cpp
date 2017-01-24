@@ -17,12 +17,14 @@ int MenuState::ShutDown()
 	return result;
 }
 
-int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
+int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler);
 
-	this->cHandlerPtr = cHandler;
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+
+	this->m_cHandlerPtr = cHandler;
+	this->m_cameraRef = cameraRef;
 
 	for (size_t i = 0; i < m_NR_OF_MENU_ITEMS; i++)
 	{
@@ -37,6 +39,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler)
 
 	this->m_textComps[0]->text = L"Start Game";
 	this->m_textComps[1]->text = L"Quit Game";
+
 
 	return result;
 }
@@ -76,7 +79,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 		//Create, Initialize and push a LevelSelectState
 		LevelSelectState* levelSelect = new LevelSelectState();
-		result = levelSelect->Initialize(this->m_gsh, this->cHandlerPtr);
+		result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
 
 		//If the initialization was successful
 		if (result > 0)

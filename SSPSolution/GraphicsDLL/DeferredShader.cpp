@@ -553,10 +553,10 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	return 0;
 }
 
-int DeferredShader::Draw(Resources::Model * model, penis * component)
+int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * component)
 {
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
-	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalTransforms);
+	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalJointTransforms);
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetAnimVerticesBuffer();
 	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();

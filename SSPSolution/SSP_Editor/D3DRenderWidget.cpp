@@ -1,4 +1,4 @@
-#include "RenderWidget.h"
+#include "D3DRenderWidget.h"
 
 D3DRenderWidget::~D3DRenderWidget()
 {
@@ -12,9 +12,19 @@ D3DRenderWidget::~D3DRenderWidget()
 
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
+	GraphicsHandler*	GraphicsHptr = nullptr;
+	EditorInputHandler*	EditorInputHptr = nullptr;
+	bool isPreview = false;
+
+	//get the desired values from EditorCommunicator
+	GraphicsHptr    = this->m_Communicator->GetGraphicsHandler();
+	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	isPreview		= this->m_Communicator->GetIsPreview();
+
 	QPoint local = this->mapFromGlobal(QCursor::pos());
-	this->m_Communicator->m_EditorInputHandler->SetMousePos(local);
-	this->m_Communicator->m_GraphicsHandler->clearEditor();
+	EditorInputHptr->SetMousePos(local);
+	GraphicsHptr->clearEditor();
+
 	this->m_frameCount++;
 	if (getTime() > 1.0f)
 	{
@@ -23,12 +33,17 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		startTimer();
 	}
 	this->m_frameTime = getFrameTime();
+
+	static OBB* axisOBBs;
+	static DirectX::XMVECTOR* axisOBBpositions;
+	static OBB* selectedObjectOBB;
+	static DirectX::XMVECTOR ** axisColors;
+	static DirectX::XMVECTOR * OBBColor;
 	
-	if (!this->m_Communicator->m_IsPreview)
+	if (!isPreview)
 	{
-		this->m_Communicator->m_EditorInputHandler->KeyboardMovement(this->m_frameTime);
-		this->m_Communicator->m_EditorInputHandler->UpdateMouse();
-		SelectionHandler::GetInstance()->MoveObject();
+		EditorInputHptr->KeyboardMovement(this->m_frameTime);
+		EditorInputHptr->UpdateMouse();
 		//this->m_Communicator->m_EditorInputHandler->MoveObject();
 		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
@@ -54,41 +69,60 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					if (InstancePtr->at(j).isDirty)
 					{
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						if (SelectionHandler::GetInstance()->HasSelection())
+						{
+							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+							SelectionHandler::GetInstance()->Update();
+						}
 					}
 
-					this->m_Communicator->m_GraphicsHandler->RenderFromEditor(
+					GraphicsHptr->RenderFromEditor(
 						modelPtr->at(i),
 						&InstancePtr->at(j).component
 					);
-				}
+ 				}
 			}
 		}
+	}
+	
+	for (size_t i = 0; i < 2; i++)
+	{
+		Container* spawn =  m_Communicator->GetCurrentLevel()->GetSpawnPoint(i);
+		this->m_Communicator->GetGraphicsHandler()->RenderFromEditor(
+			spawn->component.modelPtr,
+			&spawn->component);
+
+		if (spawn->isDirty)
+		{
+			this->m_Communicator->UpdateSpawnPoint(i, spawn->position, spawn->rotation);
+			if (SelectionHandler::GetInstance()->HasSelection())
+			{
+
+				SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+				SelectionHandler::GetInstance()->Update();
+			}
+		}
+
 	}
 
 
 	if (SelectionHandler::GetInstance()->HasSelection())
 	{
-		static OBB* axisOBBs;
-		static DirectX::XMVECTOR* axisOBBpositions;
-		static OBB* selectedObjectOBB;
-		static DirectX::XMVECTOR ** axisColors;
-		static DirectX::XMVECTOR * OBBColor;
-
 		if (SelectionHandler::GetInstance()->NeedsUpdate())
-		{
-			SelectionHandler::GetInstance()->Update();
 			SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
-		}
 
-		this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
-			SelectionHandler::GetInstance()->GetSelected()->position,
+		DirectX::XMVECTOR* hejsan = SelectionHandler::GetInstance()->GetOBBCenterPosition();
+
+		GraphicsHptr->RenderBoundingVolume(
+			//SelectionHandler::GetInstance()->GetSelected()->position,
+			*SelectionHandler::GetInstance()->GetOBBCenterPosition(),
 			*selectedObjectOBB,
 			*OBBColor
 		);
 
 		for (int i = 0; i < TransformWidget::NUM_AXIS; i++)
 		{
-			this->m_Communicator->m_GraphicsHandler->RenderBoundingVolume(
+			GraphicsHptr->RenderBoundingVolume(
 				axisOBBpositions[i],
 				axisOBBs[i],
 				*axisColors[i]
@@ -96,8 +130,28 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		}
 	}
 
-
-	this->m_Communicator->m_GraphicsHandler->renderFinalEditor();
+	
+	std::vector<AIComponent*>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
+	for (size_t i = 0; i < container->size(); i++)
+	{
+		GraphicsHptr->RenderBoundingVolume(
+			container->at(i)->AC_waypoints, 
+			container->at(i)->AC_nrOfWaypoint);
+	}
+	// TEMP TO TEST PATH
+//DirectX::XMVECTOR path[8];
+//
+//path[0] = { 1.0f,0.0f,0.0f };
+//path[1] = { 5.0f,0.0f,0.0f };
+//path[2] = { 5.0f,5.0f,0.0f };
+//path[3] = { 5.0f,5.0f,5.0f };
+//path[4] = { 5.0f,0.0f,5.0f };
+//path[5] = { 3.0f,0.0f,5.0f };
+//path[6] = { 1.0f,5.0f,5.0f };
+//path[7] = { 0.0f,0.0f,0.0f };
+//GraphicsHptr->RenderBoundingVolume(path, 8);
+//
+	GraphicsHptr->renderFinalEditor();
 	this->update();
 	
 	//std::cout << "FPS: " << this->m_fps << std::endl;
@@ -120,24 +174,39 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
 {
-	this->m_Communicator->m_EditorInputHandler->detectInput(this->m_frameTime, evt);
-
+	EditorInputHandler*	EditorInputHptr = nullptr;
 	
+	//get the desired values from EditorCommunicator
+	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	EditorInputHptr->detectInput(this->m_frameTime, evt);
 }
 
 void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 {
-	this->m_Communicator->m_EditorInputHandler->keyReleased(evt);
+	EditorInputHandler*	EditorInputHptr = nullptr;
+
+	//get the desired values from EditorCommunicator
+	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	//EditorInputHptr->detectInput(this->m_frameTime, evt);
+	EditorInputHptr->keyReleased(evt);
 }
 
 void D3DRenderWidget::mousePressEvent(QMouseEvent * evt)
 {
-	this->m_Communicator->m_EditorInputHandler->mouseButtonDown(evt);
+	EditorInputHandler*	EditorInputHptr = nullptr;
+
+	//get the desired values from EditorCommunicator
+	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	EditorInputHptr->mouseButtonDown(evt);
 }
 
 void D3DRenderWidget::mouseReleaseEvent(QMouseEvent * evt)
 {
-	this->m_Communicator->m_EditorInputHandler->mouseButtonRelease(evt);
+	EditorInputHandler*	EditorInputHptr = nullptr;
+
+	//get the desired values from EditorCommunicator
+	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	EditorInputHptr->mouseButtonRelease(evt);
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
@@ -179,7 +248,6 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	setAttribute(Qt::WA_DontShowOnScreen, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
 	setAttribute(Qt::WA_NativeWindow, true);
-
 	Initialize(parent, false, fileImporter);
 	setFocusPolicy(Qt::StrongFocus);
 }

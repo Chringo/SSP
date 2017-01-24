@@ -11,11 +11,14 @@ Resources::MeshHandler::MeshHandler(size_t meshAmount, ID3D11Device* device)
 {
 	this->m_emptyContainers.resize(meshAmount);
 	this->m_meshes.reserve(meshAmount);
-	this->m_containers.reserve(meshAmount);
-	this->m_containers.insert(m_containers.begin(), meshAmount, Mesh());
+
+
+	this->m_containers.push_back(new std::vector<Mesh>);
+	this->m_containers.at(0)->reserve(meshAmount);
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), meshAmount, Mesh());
 	for (size_t i = 0; i < meshAmount; i++)
 	{
-		m_emptyContainers.at(i) = &m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 
 	if (device != nullptr) {
@@ -28,6 +31,10 @@ Resources::MeshHandler::MeshHandler(size_t meshAmount, ID3D11Device* device)
 Resources::MeshHandler::~MeshHandler()
 {
 	delete m_placeHolder;
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		delete m_containers.at(i);
+	}
 }
 
 Resources::Mesh * Resources::MeshHandler::GetPlaceHolderMesh()
@@ -213,8 +220,11 @@ Resources::Mesh * Resources::MeshHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)
 	{
-		m_containers.push_back(Mesh());
-		m_emptyContainers.push_back(m_containers.end()._Ptr);
+		m_containers.push_back(new std::vector<Mesh>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
 	}
 	return m_emptyContainers.front();
 }

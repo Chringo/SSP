@@ -27,6 +27,7 @@ namespace Resources
 		DLL_OPERATION Model(Resource::RawResourceData resData);
 		DLL_OPERATION Model();
 		DLL_OPERATION virtual ~Model();
+		DLL_OPERATION Model(const Model &obj);  // copy constructor
 		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, RawModelData* = nullptr,bool keepRawData = false);
 		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data
 		DLL_OPERATION RawModelData* GetRawModelData() { return this->m_rawData; }

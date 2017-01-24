@@ -24,22 +24,31 @@ int GameStateHandler::ShutDown()
 	//Delete the states that should have been popped
 	while (this->m_statesToRemove.size())
 	{
+		
 		GameState* temp;
 		temp = this->m_statesToRemove.back();
 		delete temp;
 		temp = nullptr;
 		this->m_statesToRemove.pop_back();
 	}
+
+	//Shutdown the NetworkModule that is shared with all GameStates
+	GameState::m_networkModule->Shutdown();
+	delete GameState::m_networkModule;
+	GameState::m_networkModule = nullptr;
+
 	return 1;
 }
 
 
-int GameStateHandler::Initialize(ComponentHandler * cHandler)
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 {
 	int result = 0;
+	
+	
 
 	MenuState* menuState = new MenuState();
-	result = menuState->Initialize(this, cHandler);
+	result = menuState->Initialize(this, cHandler, cameraRef);
 
 	if (result > 0)
 	{

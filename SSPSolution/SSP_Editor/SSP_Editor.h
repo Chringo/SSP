@@ -6,7 +6,7 @@
 #include <qfilesystemmodel.h>
 #include <qinputdialog.h>
 #include <QKeyEvent>
-#include "RenderWidget.h"
+#include "D3DRenderWidget.h"
 #include "FileImporter.h"
 #include <qfiledialog.h>
 #include <LevelHandler.h>

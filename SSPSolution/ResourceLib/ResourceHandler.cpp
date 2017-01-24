@@ -5,7 +5,7 @@
 Resources::ResourceHandler::ResourceHandler()
 {
 
-	this->m_modelHandler = new ModelHandler(20);
+	this->m_modelHandler = new ModelHandler(50);
 	
 }
 
@@ -13,7 +13,7 @@ Resources::ResourceHandler::ResourceHandler(ID3D11Device * device, ID3D11DeviceC
 {
 	this->m_device = device;
 	this->m_context = context;
-	this->m_modelHandler = new ModelHandler(20);
+	this->m_modelHandler = new ModelHandler(50);
 	m_modelHandler->SetDevice(device);
 }
 
@@ -140,8 +140,8 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 			if (modelSt != ST_OK) {
 
 				std::cout << "Model not found in BPF, ID: " << id << std::endl;
-#endif // _DEBUG
 			}
+#endif // _DEBUG
 			break;
 		}
 		case Resources::Status::ST_OK:

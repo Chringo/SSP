@@ -54,6 +54,7 @@ namespace Resources
 		DLL_OPERATION Mesh(Resource::RawResourceData resData, RawMeshData meshData, ID3D11Device* dev = nullptr,bool keepRawData = false);
 		DLL_OPERATION Mesh(Resource::RawResourceData resData);
 		DLL_OPERATION Mesh();
+		DLL_OPERATION Mesh(const Mesh &obj);  // copy constructor
 
 		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, ID3D11Device* dev = nullptr,RawMeshData* = nullptr, bool keepRawData = false);
 		DLL_OPERATION Resources::Status Destroy();

@@ -1,9 +1,12 @@
 #include "GameState.h"
 #include "GameStateHandler.h"
 
+NetworkModule* GameState::m_networkModule = nullptr;
 
 GameState::GameState()
 {
+
+
 }
 
 
@@ -11,20 +14,28 @@ GameState::~GameState()
 {
 }
 
-int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler* cHandler)
+int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
 {
 	int result = 0;
-	if (gsh == nullptr || cHandler == nullptr)
+	if (gsh == nullptr || cHandler == nullptr || cameraRef == nullptr)
 	{
 		this->m_gsh = nullptr;
 		this->m_cHandler = nullptr;
+		this->m_cameraRef = nullptr;
 		result = 0;
 	}
 	else
 	{
 		this->m_gsh = gsh;
 		this->m_cHandler = cHandler;
+		this->m_cameraRef = cameraRef;
 		result = 1;
+	}
+
+	if (this->m_networkModule == nullptr)	//If it isnt already initiated
+	{
+		this->m_networkModule = new NetworkModule();
+		this->m_networkModule->Initialize();
 	}
 	return result;
 }

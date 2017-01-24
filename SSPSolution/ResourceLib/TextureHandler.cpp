@@ -18,14 +18,15 @@ Resources::TextureHandler::TextureHandler()
 
 Resources::TextureHandler::TextureHandler(size_t textureAmount, ID3D11Device * device)
 {
-	this->m_emptyContainers.resize(textureAmount);
+	this->m_emptyContainers.resize(5);
 
-	this->m_textures.reserve(textureAmount);
-	this->m_containers.reserve(textureAmount);
-	for (size_t i = 0; i < textureAmount; i++)
+	this->m_textures.reserve(5);
+	this->m_containers.push_back(new std::vector<Texture>);
+	this->m_containers.at(0)->insert(m_containers.at(0)->begin(), 5, Texture());
+	this->m_containers.reserve(5);
+	for (size_t i = 0; i < 5; i++)
 	{
-		m_containers.push_back(new Texture());
-		m_emptyContainers.at(i) = m_containers.at(i);
+		m_emptyContainers.at(i) = &m_containers.at(0)->at(i);
 	}
 
 	if (device != nullptr) {
@@ -289,14 +290,13 @@ Resources::Texture * Resources::TextureHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)
 	{
-		Texture* newTex = new Texture();
-		m_containers.push_back(newTex);
-	
-		//m_emptyContainers.push_back(m_containers.end()._Ptr);
-		m_emptyContainers.push_back(m_containers.back());
+		m_containers.push_back(new std::vector<Texture>(20));
+		for (size_t i = 0; i < 20; i++)
+		{
+			m_emptyContainers.push_back(&m_containers.at(m_containers.size() - 1)->at(i));
+		}
 	}
 	return m_emptyContainers.front();
-
 }
 
 void Resources::TextureHandler::SetDevice(ID3D11Device * device)

@@ -27,14 +27,15 @@ int System::Shutdown()
 	delete this->m_inputHandler;
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
+	this->m_AIHandler.Shutdown();
+	//delete this->m_AIHandler;
+	//this->m_AIHandler = nullptr;
 	DebugHandler::instance().Shutdown();
 
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
 	return result;
-	
-
 }
 
 int System::Initialize()
@@ -55,7 +56,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -84,17 +85,20 @@ int System::Initialize()
 	//Initialize the PhysicsHandler
 
 	this->m_physicsHandler.Initialize();
-	this->CreateDummyObjects();
+	//Initialize the AIHandler
+	this->m_AIHandler = AIHandler();
+	this->m_AIHandler.Initialize(4);
 
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
-	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
 	//Initialize the GameStateHandler
-	this->m_gsh.Initialize(&this->m_componentHandler);
-	//Initialize the network module
-	this->m_networkModule.Initialize();
+	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
+	this->m_physicsHandler.SortComponents();
+
+
 
 	//this->m_Anim = new Animation();
 
@@ -124,6 +128,7 @@ int System::Run()
 		this->m_inputHandler->Update();
 		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
+		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
@@ -161,163 +166,80 @@ int System::Update(float deltaTime)
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
-	//Update the network module
-	this->m_networkModule.Update();
-
-	PhysicsComponent* tempPlayer = nullptr;
-	tempPlayer = this->m_physicsHandler.getDynamicComponentAt(1);
-	DirectX::XMFLOAT3 playerPos;
-	DirectX::XMFLOAT3 cameraPos = this->m_camera->GetCameraPos();
-	DirectX::XMStoreFloat3(&playerPos, tempPlayer->PC_pos);
-	int translateCameraX = 0,translateCameraY = 0, translateCameraZ = 0;
-
-	//translateCameraX = playerPos.x - cameraPos.x;
-	//translateCameraY = playerPos.y - cameraPos.y;
-	//translateCameraZ = playerPos.z - cameraPos.z;
-	//tempPlayer->PC_pos = DirectX::XMLoadFloat3(&cameraPos);
-
-	int rotateCameraY = 0;
-	std::list<CameraPacket> cList;
-
-	//Check for camera updates from the network
-	cList = this->m_networkModule.PacketBuffer_GetCameraPackets();
-
-	if (!cList.empty())
-	{
-		std::list<CameraPacket>::iterator iter;
-
-		for (iter = cList.begin(); iter != cList.end();)
-		{
-			this->m_camera->SetCameraPos((iter)->pos);
-			this->m_camera->Update();
-			iter++;	
-		}
-
-		cList.empty();	//When we have read all the packets, empty the list
-
-	}
-
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
-	{
-		translateCameraZ++;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
-	{
-		translateCameraZ--;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
-	{
-		translateCameraY++;
-		if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
-		{
-			translateCameraY *= -1;
-		}
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
-	{
-		translateCameraX++;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_A))
-	{
-		translateCameraX--;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
-	{
-		rotateCameraY += 3;
-	}
+	{	}
 	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
-	{
-		rotateCameraY -= 3;
-	}
-	if (translateCameraY || translateCameraX || translateCameraZ || rotateCameraY)
-	{
-		DirectX::XMFLOAT3 posTranslation = DirectX::XMFLOAT3(float(translateCameraX) * (deltaTime / 1000000.0f), float(translateCameraY) * (deltaTime / 1000000.0f), float(translateCameraZ) * (deltaTime / 1000000.0f));
-		this->m_camera->ApplyLocalTranslation(posTranslation);
-		//this->m_camera->AddToLookAt(posTranslation);
-		float rotationAmount = DirectX::XM_PI / 6;
-		rotationAmount *= deltaTime / 1000000.0f;
-		DirectX::XMFLOAT4 newRotation = DirectX::XMFLOAT4(0.0f, rotateCameraY * DirectX::XMScalarSin(rotationAmount / 2.0f), 0.0f, DirectX::XMScalarCos(rotationAmount / 2.0f));
-		this->m_camera->SetRotation(newRotation);
-		//this->m_camera->Update();
+	{	}
+	//CAM
+	this->m_camera->Update(deltaTime);
 
-		//Send updates over the network
-		if (this->m_networkModule.GetNrOfConnectedClients() != 0)
-		{
-			DirectX::XMFLOAT4 updatePos;
-			this->m_camera->GetCameraPos(updatePos);
-			this->m_networkModule.SendCameraPacket(updatePos);
-		}
+	//AI
+	this->m_AIHandler.Update(deltaTime);
 
-	}
-	this->m_camera->Update();
-	//Network
-	if(this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	//Save progress
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
-		if (this->m_networkModule.GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+		bool result = Progression::instance().WriteToFile("Save1");
+
+		if (result == false)
 		{
-			if (this->m_networkModule.Join(this->m_ip))				//If we succsefully connected
-			{
-				printf("Joined client with the ip %s\n", this->m_ip);
-			}
-			else
-			{
-				printf("Failed to connect to the client %s\n", this->m_ip);
-			}
-			
+			printf("Error with saving to file\n");
 		}
 		else
 		{
-			printf("Join failed since this module is already connected to other clients\n");
+			printf("Saved to file\n");
 		}
 	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	//Load
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
 	{
-		this->m_networkModule.SendFlagPacket(DISCONNECT_REQUEST);
+		bool result = Progression::instance().ReadFromFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with loading from file\n");
+		}
+		else
+		{
+			printf("Loaded from file\n");
+		}
 	}
+
 	//Update animations here. Temp place right now.
 	//m_Anim->Update(deltaTime);
 	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
-	//Update the network module
-	this->m_networkModule.Update();
+	
+	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 
-#pragma region tempAI
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_L))
-	{
-		this->director.Initialize();
-		this->director.Update(0);
-	}
-#pragma endregion
-
-	int nrOfComponents = this->m_physicsHandler.getNrOfComponents();
 	//temp input for testing chain
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponentAt(0);
+		PhysicsComponent* ballPtr = this->m_physicsHandler.GetDynamicComponentAt(0);
 		DirectX::XMVECTOR dir;
 		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
 		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
 		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
 		dir = DirectX::XMVectorScale(dir, 500);
-
-
-		this->m_physicsHandler.ApplyForceToComponent(ballPtr, dir, 1.0);
-		//ballPtr->PC_velocity = DirectX::XMVectorSet(3, 2, 0, 0);
-		//ballPtr->PC_velocity = DirectX::XMVectorSet(1, 1.5, 0, 0);
 	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_I))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.getDynamicComponentAt(0);
-		ballPtr->PC_velocity = DirectX::XMVectorSet(-3, 2, 0, 0);
-	}
-
 	this->m_physicsHandler.Update(deltaTime);
 
+#ifdef _DEBUG
 	for (int i = 0; i < nrOfComponents; i++)
 	{
-		PhysicsComponent* temp = this->m_physicsHandler.getDynamicComponentAt(i);
+		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
 		if (temp->PC_BVtype == BV_AABB)
 		{
 			AABB* AABB_holder = nullptr;
@@ -336,10 +258,21 @@ int System::Update(float deltaTime)
 			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
 			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
 		}
+		if (temp->PC_BVtype == BV_Sphere)
+		{
+			Sphere* sphereHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+			AABB test;
+			test.ext[0] = sphereHolder->radius;
+			test.ext[1] = sphereHolder->radius;
+			test.ext[2] = sphereHolder->radius;
+			AABB* ptr = &test;
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+		}
 	}
+#endif // _DEBUG
 
-	//locks camera to the player
-	//this->LockCameraToPlayer((float)translateCameraX, (float)translateCameraY, (float)translateCameraZ);
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
@@ -374,11 +307,15 @@ int System::HandleEvents()
 			}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 			{
+				this->m_inputHandler->captureMouse(SDL_TRUE);
+				//SDL_CaptureMouse(SDL_TRUE);
 				//OnInputFocus();
 				break;
 			}
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 			{
+				this->m_inputHandler->captureMouse(SDL_FALSE);
+				//SDL_CaptureMouse(SDL_FALSE);
 				//OnInputBlur();
 				break;
 			}
@@ -428,6 +365,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
+			
 			break;
 		}
 		case SDL_QUIT:
@@ -488,7 +426,7 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
 	
-	player = this->m_physicsHandler.getDynamicComponentAt(1);
+	player = this->m_physicsHandler.GetDynamicComponentAt(0);
 
 	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
 	camPos = DirectX::XMVectorAdd(camPos, DirectX::XMVectorSet(0, 3, 0, 0));
@@ -500,52 +438,4 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 	this->m_physicsHandler.ApplyForceToComponent(player, DirectX::XMVectorSet(translateCameraX, translateCameraY, translateCameraZ, 0), 1.0f);
 }
 
-void System::CreateDummyObjects()
-{
-	//create random content
-	PhysicsComponent* ptr = nullptr;
-	DirectX::XMVECTOR tempPos;
-	
 
-	//ball
-	tempPos = DirectX::XMVectorSet(0, 1.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 200.f;
-	ptr->PC_AABB.ext[0] = 0.3f;
-	ptr->PC_AABB.ext[1] = 0.3f;
-	ptr->PC_AABB.ext[2] = 0.3f;
-	//AABB by default
-
-	//playår
-	tempPos = DirectX::XMVectorSet(10.0, 1.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, false);
-	ptr->PC_mass = 70.f;
-	ptr->PC_AABB.ext[0] = 0.5f;
-	ptr->PC_AABB.ext[1] = 0.5f;
-	ptr->PC_AABB.ext[2] = 0.5f;
-	//chain linku
-	this->m_physicsHandler.CreateChainLink(0, 1, 10, 0.2f);
-
-
-	//the gölv
-	tempPos = DirectX::XMVectorSet(0.0f, 0.0f, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
-	ptr->PC_BVtype = BoundingVolumeType::BV_Plane;
-	ptr->PC_Plane.PC_normal = DirectX::XMVectorSet(0, 1, 0, 0);
-
-	ptr->PC_friction = 0.2f;
-	ptr->PC_elasticity = 0.5f;
-
-
-	//the plätförm
-	tempPos = DirectX::XMVectorSet(40.0, 5.0, 60, 0);
-	ptr = this->m_physicsHandler.CreatePhysicsComponent(tempPos, true);
-	ptr->PC_AABB.ext[0] = 20.f;
-	ptr->PC_AABB.ext[1] = 3.0f;
-	ptr->PC_AABB.ext[2] = 200.f;
-
-	ptr->PC_friction = 0.2f;
-	ptr->PC_elasticity = 0.5f;
-
-
-}

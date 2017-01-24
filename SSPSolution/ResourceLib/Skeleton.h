@@ -25,7 +25,7 @@ namespace Resources
 				delete this->joints;
 				jointCount = other.jointCount;
 				this->joints = new Joint[jointCount];
-				memcpy(joints, other.joints, sizeof(Joint) * jointCount);
+				memcpy(joints, other.joints, (sizeof(Joint) * jointCount));
 				return *this;
 			}
 			~RawSkeletonData()
@@ -43,20 +43,22 @@ namespace Resources
 		std::vector<Animation*>    m_animations;
 		std::vector<unsigned int>  m_animationIds;
 	public:
-		Skeleton();
-		Skeleton(Resource::RawResourceData* resData);
-		Skeleton(Resource::RawResourceData* resData,RawSkeletonData* skelData);
-		virtual ~Skeleton();
+		DLL_OPERATION Skeleton();
+		DLL_OPERATION Skeleton(Resource::RawResourceData* resData);
+		DLL_OPERATION Skeleton(Resource::RawResourceData* resData,RawSkeletonData* skelData);
+		DLL_OPERATION virtual ~Skeleton();
 
-		Resources::Status Create(Resource::RawResourceData* resData, RawSkeletonData* skelData);
-		Resources::Status Destroy(); // Deincrement references to connected data, free container
-		Resources::Status AddAnimation(Animation* anim, int index);
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, RawSkeletonData* skelData);
+		DLL_OPERATION Resources::Status Create(Resource::RawResourceData* resData, Joint* jointData, unsigned int * jointCount);
+		DLL_OPERATION Resources::Status Destroy(); // Deincrement references to connected data, free container
+		DLL_OPERATION Resources::Status AddAnimation(Animation* anim, int index);
 		
-		const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
-		const RawSkeletonData*			  GetSkeletonData()			const { return &m_skelData;		 };
-		const Animation*				  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
-		const std::vector<unsigned int> * GetAllAnimationIds()		const { return &m_animationIds; };
-		virtual std::shared_ptr<char>	  GetDataAsBinary(size_t* size, bool* result = nullptr);
+		DLL_OPERATION const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
+		DLL_OPERATION const RawSkeletonData*			  GetSkeletonData()			const { return &m_skelData;		 };
+		DLL_OPERATION Animation*						  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
+		DLL_OPERATION const std::vector<unsigned int> *	  GetAllAnimationIds()		const { return &m_animationIds; };
+		DLL_OPERATION virtual std::shared_ptr<char>		  GetDataAsBinary(size_t* size, bool* result = nullptr);
+		DLL_OPERATION void								  AddAnimationID(unsigned int m_animationID) { this->m_animationIds.push_back(m_animationID); };
 
 	};
 }

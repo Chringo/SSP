@@ -32,14 +32,16 @@ private:
 	int m_screenHeight;
 	int m_mouseWheelX;
 	int m_mouseWheelY;
+	SDL_bool m_mouseCaptured;
 
 public:
 	InputHandler();
 	~InputHandler();
-	void Initialize(int screenWidth, int screenHeight);
+	void Initialize(int screenWidth, int screenHeight, SDL_Window * window);
 	void Shutdown();
 	void Update();
 
+	int captureMouse(SDL_bool boolean);
 	void SetMouseState(int button, bool state);
 	void SetKeyState(int key, bool state);
 	//Use SDL_SCANCODE_[key] where [key] is the key examined
@@ -61,6 +63,7 @@ public:
 	void SetMousePos(int x, int y);
 	void SetMouseWheel(int x, int y);
 	void ApplyMouseWheel(int x, int y);
+	void mouseMovement(SDL_Window * window);
 
 	DirectX::XMFLOAT2 GetMousePos();
 	DirectX::XMFLOAT2 GetMouseDelta();
@@ -68,7 +71,6 @@ public:
 
 private:
 	void ReadKeyboard();
-	void ReadMouse();
 	void ProcessInput();
 
 };
