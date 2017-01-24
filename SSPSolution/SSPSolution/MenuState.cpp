@@ -59,7 +59,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
-	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(125.f, 220.f + (150.f));
+	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
 	this->m_ipTextBox.m_textComp->text = L"Enter ip...";
 
 	this->m_menuButtons[0].m_textComp->text = L"Start Game";
@@ -212,7 +212,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			else 
 			{
-				this->m_ipTextBox.m_focused = false;
+				this->m_ipTextBox.SetFocused(false);
 				this->m_markedItem--;
 				this->m_menuButtons[this->m_markedItem].SetHovered(true);
 			}
@@ -229,7 +229,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				}
 				else
 				{
-					this->m_ipTextBox.m_focused = true;
+					this->m_ipTextBox.SetFocused(true);
 				}
 			}
 		}
@@ -240,6 +240,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				if (this->m_markedItem < this->m_NR_OF_MENU_ITEMS)
 				{
 					this->m_menuButtons[this->m_markedItem].SetHovered(false);
+				}
+				else
+				{
+					this->m_ipTextBox.SetFocused(false);
 				}
 				this->m_markedItem--;
 				this->m_menuButtons[this->m_markedItem].SetHovered(true);

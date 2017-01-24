@@ -54,8 +54,22 @@ private:
 			}
 			else
 			{
+				m_uiComp->scale = 1.f;
 				m_uiComp->active = 0;
 				m_textComp->active = 0;
+				m_focused = false;
+			}
+		}
+		void SetFocused(bool focused)
+		{
+			if (focused)
+			{
+				m_uiComp->scale = 1.25f;
+				m_focused = true;
+			}
+			else
+			{
+				m_uiComp->scale = 1.f;
 				m_focused = false;
 			}
 		}
