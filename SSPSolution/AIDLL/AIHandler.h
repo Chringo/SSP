@@ -64,6 +64,7 @@ private:
 	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
 	bool VectorEqual(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
 	void UpdatePosition(int i);
+	void UpdateMe(int i, float deltaTime);
 
 };
 #endif

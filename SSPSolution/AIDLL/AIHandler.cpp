@@ -23,7 +23,7 @@ int AIHandler::Initialize(int max)
 		// Don't allow negative or zero initiated components
 		max = 2;
 	}
-	
+
 	this->m_maxOfAIComponents = max;
 
 	for (int i = 0; i < this->m_maxOfAIComponents; i++)
@@ -174,6 +174,7 @@ int AIHandler::Update(float deltaTime)
 					}
 				}
 				UpdatePosition(i);
+				//UpdateMe(i, deltaTime);
 			}
 		}
 	}
@@ -268,7 +269,7 @@ AIComponent* AIHandler::CreateAIComponent(int entityID)
 	newComponent->AC_entityID = entityID;
 	//newComponent->AC_nextWaypointID = 1;
 
-	for (int i = 0; i < 8; i++) 
+	for (int i = 0; i < 8; i++)
 	{
 		newComponent->AC_waypoints[i] = DirectX::XMVECTOR();
 	}
@@ -321,4 +322,61 @@ void AIHandler::UpdatePosition(int i)
 	//}
 
 	this->m_AIComponents.at(i)->AC_position = DirectX::XMVectorAdd(v, this->m_AIComponents.at(i)->AC_position);
+}
+
+//void AIHandler::UpdateMe(int i, float deltaTime)
+//{
+//	if (this->m_AIComponents.at(i)->AC_WaypointUpdated == false)
+//	{
+//		this->m_AIComponents.at(i)->AC_dir = DirectX::XMVectorSubtract(
+//			this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+//			this->m_AIComponents.at(i)->AC_position);
+//		this->m_AIComponents.at(i)->AC_WaypointUpdated = true;
+//	}
+//
+//	DirectX::XMVECTOR a = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
+//	DirectX::XMVECTOR b = this->m_AIComponents.at(i)->AC_position;
+//
+//	float distCovered = deltaTime * this->m_AIComponents.at(i)->AC_speed;
+//
+//	float dx = abs(DirectX::XMVectorGetX(b) - DirectX::XMVectorGetX(a));
+//	float dy = abs(DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a));
+//	float dz = abs(DirectX::XMVectorGetZ(b) - DirectX::XMVectorGetZ(a));
+//
+//	float sqrt = dx*dx + dy*dy + dz*dz; // magnitude/length
+//
+//	float fracJourney = distCovered / sqrt;
+//
+//	this->m_AIComponents.at(i)->AC_position = Vector3.Lerp(startMarker.position, endMarker.position, fracJourney);
+//
+//	/*DirectX::XMVECTOR v = DirectX::XMVECTOR();
+//	this->m_AIComponents.at(i)->AC_position = DirectX::XMVectorAdd(v, this->m_AIComponents.at(i)->AC_position);*/
+//}
+
+void AIHandler::UpdateMe(int i, float deltaTime)
+{
+	float sqrt = 0.0f;
+	DirectX::XMVECTOR a = this->m_AIComponents.at(i)->AC_position;
+	DirectX::XMVECTOR b = this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID];
+
+	/*this->m_AIComponents.at(i)->AC_dir = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(
+		this->m_AIComponents.at(i)->AC_waypoints[this->m_AIComponents.at(i)->AC_nextWaypointID],
+		this->m_AIComponents.at(i)->AC_position));*/
+	this->m_AIComponents.at(i)->AC_WaypointUpdated = true;
+
+	float dx = abs(DirectX::XMVectorGetX(b) - DirectX::XMVectorGetX(a));
+	float dy = abs(DirectX::XMVectorGetY(b) - DirectX::XMVectorGetY(a));
+	float dz = abs(DirectX::XMVectorGetZ(b) - DirectX::XMVectorGetZ(a));
+
+	sqrt = dx*dx + dy*dy + dz*dz; // magnitude/length
+
+	this->m_AIComponents.at(i)->AC_length = sqrt;
+
+	float distCovered = 1.0f * this->m_AIComponents.at(i)->AC_speed;
+
+	float fracJourney = distCovered / sqrt;
+
+	//DirectX::XMVECTOR test = DirectX::XMVectorLerp(a, b, fracJourney);
+	this->m_AIComponents.at(i)->AC_position = DirectX::XMVectorLerp(a, b, fracJourney);
+	//this->m_AIComponents.at(i)->AC_position = DirectX::XMVectorAdd(DirectX::XMVectorLerp(a, b, fracJourney), this->m_AIComponents.at(i)->AC_position);
 }
