@@ -12,19 +12,26 @@ WheelEntity::~WheelEntity()
 {
 }
 
-int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime)
+int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
 {
-	this->InitializeBase(entityID, pComp, gComp);
-	int result = 0;
+	int result = this->InitializeBase(entityID, pComp, gComp);
+	//Load default values
 	this->m_rotationState = 0;
+	//Load modifiable settings
+	this->m_range = interactionDistance;
+
 	this->m_minRotation = minRotation * DirectX::XM_PI * 2;
 	this->m_maxRotation = maxRotation * DirectX::XM_PI * 2;
 	this->m_rotateTime = rotateTime;
 	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
-	this->m_range = interactionDistance;
+	
+	this->m_resets = resets;
+	this->m_resetTime = resetTime;
+	this->m_resetRotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_resetTime;
+	this->m_timeUntilReset = timeUntilReset;
+	this->m_elapsedTimeUntilReset = 0.0f;
 
 	this->SyncComponents();
-
 	return result;
 }
 

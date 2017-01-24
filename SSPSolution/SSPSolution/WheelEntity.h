@@ -15,14 +15,16 @@ private:
 
 	bool m_resets;
 	float m_resetTime;
-
+	float m_resetRotatePerSec;
+	float m_timeUntilReset;
+	float m_elapsedTimeUntilReset;
 	// -2:minRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation | 2:maxRotation
 	int m_rotationState;
 public:
 	WheelEntity();
 	~WheelEntity();
 	//Max and Min rotation are all described as 1.0f = 1 = 1 entire turn of the wheel
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = 1.0f, float rotateTime = 1.0f);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = 1.0f, float rotateTime = 1.0f, bool resets = false, float resetTime = 1.0f, float timeUntilReset = 0.0f);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
