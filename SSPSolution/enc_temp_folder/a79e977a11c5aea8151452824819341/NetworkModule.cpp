@@ -561,11 +561,7 @@ void NetworkModule::ReadMessagesFromClients()
 			}
 #pragma endregion ALL_PACKETS
 		}
-
-		if (iter != this->connectedClients.end) {
-			iter++;
-		}
-		
+		iter++;
 }
 
 }
