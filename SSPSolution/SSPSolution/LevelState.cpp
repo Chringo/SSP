@@ -474,6 +474,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
+		bool hasSomethingGrabbed = false;
+		if (this->m_player2.GetGrabbed() != nullptr)
+		{
+			hasSomethingGrabbed = true;
+		}
+		else
+		{
+			hasSomethingGrabbed = false;
+		}
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
@@ -563,6 +572,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
+
+			if (this->m_player2.GetGrabbed() == nullptr && hasSomethingGrabbed == true)	//If we had soemthing but not any longer
+			{
+				this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+			}
+
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 			
