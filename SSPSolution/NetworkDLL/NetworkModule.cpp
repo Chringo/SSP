@@ -466,6 +466,7 @@ void NetworkModule::ReadMessagesFromClients()
 				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				this->SendFlagPacket(DISCONNECT_ACCEPTED);
+				closesocket(iter->second);
 				this->RemoveClient(iter->first);	// iter->first is the ID
 				
 				//DEBUG
@@ -478,7 +479,7 @@ void NetworkModule::ReadMessagesFromClients()
 			case DISCONNECT_ACCEPTED:
 
 				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
-
+				closesocket(iter->second);
 				this->RemoveClient(iter->first);
 				//DEBUF
 				//printf("Client recived: DISCONNECT_ACCEPTED\n");
