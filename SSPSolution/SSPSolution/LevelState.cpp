@@ -84,6 +84,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
+
 	// creating the player
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
@@ -145,6 +146,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
+
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);

@@ -96,6 +96,8 @@ int System::Initialize()
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
+
+
 	this->m_physicsHandler.SortComponents();
 
 
