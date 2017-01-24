@@ -139,8 +139,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	platformG->active = true;
 	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
 	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
-	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
-	platformP->PC_is_Static = true;
+	platformP->PC_pos = DirectX::XMVectorSet(-3, -3, -40, 0);
+	platformP->PC_is_Static = false;
+	platformP->PC_steadfast = true;
 	platformP->PC_AABB.ext[0] = 5;
 	platformP->PC_AABB.ext[1] = 0.1f;
 	platformP->PC_AABB.ext[2] = 5;
@@ -150,12 +151,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
 #pragma region AIComp variables
 	platformTERMINATOR->AC_triggered = true;
-	platformTERMINATOR->AC_speed = 0.15f;
+	platformTERMINATOR->AC_speed = 0.25f;
 	platformTERMINATOR->AC_position = platformP->PC_pos;
 	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
 	platformTERMINATOR->AC_nrOfWaypoint = 4;
 	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
-	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
+	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, -3, 0, 0);
 	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
 	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
 #pragma endregion
@@ -171,7 +172,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(platG->modelID, platG->modelPtr);
 	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
 	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
-	platP->PC_is_Static = true;
+	platP->PC_is_Static = false;
+	platP->PC_steadfast = true;
 	platP->PC_AABB.ext[0] = 5;
 	platP->PC_AABB.ext[1] = 0.1f;
 	platP->PC_AABB.ext[2] = 5;
@@ -630,13 +632,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			if (data->aiComponents[B].entityID == aiEntities[A]->GetEntityID())
 			{
-				aiEntities[A]->GetPhysicsComponent()->PC_is_Static = true;
+				aiEntities[A]->GetPhysicsComponent()->PC_steadfast = true;
+				//aiEntities[A]->GetPhysicsComponent()->PC_is_Static = true;
 				AIComponent* temp = m_cHandler->GetAIComponent();
 				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
 				temp->AC_entityID = data->aiComponents[A].entityID;
 				temp->AC_time = data->aiComponents[A].time;
 				temp->AC_speed = data->aiComponents[A].speed;
-				temp->AC_pattern = data->aiComponents[A].pattern;
+				temp->AC_pattern = AI_CIRCULAR;//data->aiComponents[A].pattern;
 				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
 				for (size_t x = 0; x < temp->AC_nrOfWaypoint; x++)
 				{
@@ -651,7 +654,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			}
 		}
 	}
-
+	
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
