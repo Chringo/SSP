@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SSP_Editor.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.1
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -50,7 +50,15 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QWidget *RenderWidget;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QVBoxLayout *verticalLayout;
+    QTreeWidget *assetTree;
+    QWidget *tab_2;
+    QVBoxLayout *verticalLayout_2;
+    QTreeWidget *scene_tree;
+    QPushButton *pushButton;
+    QLabel *label_2;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -59,6 +67,10 @@ public:
     QLineEdit *lineEdit;
     QFrame *transformFrame;
     QGridLayout *gridLayout_3;
+    QDoubleSpinBox *xValue_scale;
+    QDoubleSpinBox *zValue_scale;
+    QDoubleSpinBox *yValue_rot;
+    QDoubleSpinBox *zValue_rot;
     QLabel *rotationlabel;
     QLabel *scalelabel;
     QDoubleSpinBox *xValue_translate;
@@ -67,10 +79,6 @@ public:
     QLabel *translateLabel;
     QDoubleSpinBox *yValue_scale;
     QDoubleSpinBox *xValue_rot;
-    QDoubleSpinBox *xValue_scale;
-    QDoubleSpinBox *zValue_scale;
-    QDoubleSpinBox *yValue_rot;
-    QDoubleSpinBox *zValue_rot;
     QFrame *variousOptionsframe;
     QFormLayout *formLayout;
     QLabel *UIDTEXT;
@@ -79,7 +87,8 @@ public:
     QCheckBox *isStaticCheck;
     QComboBox *animationBox;
     QLabel *ANIMTEXT;
-    QFrame *CustomBehaviourFrame;
+    QTabWidget *CustomBehaviourTabWidget;
+    QWidget *Behaviour;
     QFormLayout *formLayout_3;
     QLabel *BEHAVIOURTEXT;
     QComboBox *BehaviourDropDown;
@@ -124,17 +133,14 @@ public:
     QLabel *TRIGGERTAGTEXTPATH;
     QSpinBox *TriggerPathValue;
     QCheckBox *TriggerPathCheckBox;
-    QSpacerItem *verticalSpacer_2;
+    QWidget *CheckPoint;
+    QGridLayout *gridLayout_6;
+    QLabel *checkpointTXT;
+    QSpinBox *CheckPointValue;
     QSpacerItem *verticalSpacer;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QVBoxLayout *verticalLayout;
-    QTreeWidget *assetTree;
-    QWidget *tab_2;
-    QVBoxLayout *verticalLayout_2;
-    QTreeWidget *scene_tree;
-    QPushButton *pushButton;
-    QLabel *label_2;
+    QSpacerItem *horizontalSpacer_2;
+    QPushButton *pushButton_2;
+    QWidget *RenderWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -144,7 +150,7 @@ public:
     {
         if (SSP_EditorClass->objectName().isEmpty())
             SSP_EditorClass->setObjectName(QStringLiteral("SSP_EditorClass"));
-        SSP_EditorClass->resize(1171, 703);
+        SSP_EditorClass->resize(1171, 736);
         SSP_EditorClass->setAutoFillBackground(false);
         SSP_EditorClass->setStyleSheet(QLatin1String("\n"
 "QMainWindow,QMessageBox{\n"
@@ -301,29 +307,67 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        RenderWidget = new QWidget(centralWidget);
-        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
-        RenderWidget->setSizePolicy(sizePolicy);
-        RenderWidget->setMinimumSize(QSize(1, 1));
-        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
-        RenderWidget->setMouseTracking(true);
-        RenderWidget->setFocusPolicy(Qt::StrongFocus);
-        RenderWidget->setAcceptDrops(true);
-        RenderWidget->setAutoFillBackground(false);
+        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy);
+        tabWidget->setMinimumSize(QSize(200, 0));
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        verticalLayout = new QVBoxLayout(tab);
+        verticalLayout->setSpacing(0);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        assetTree = new QTreeWidget(tab);
+        assetTree->setObjectName(QStringLiteral("assetTree"));
+        assetTree->setLayoutDirection(Qt::LeftToRight);
+        assetTree->setTextElideMode(Qt::ElideNone);
+        assetTree->setSortingEnabled(true);
+        assetTree->setHeaderHidden(true);
+        assetTree->header()->setCascadingSectionResizes(false);
 
-        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+        verticalLayout->addWidget(assetTree);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        verticalLayout_2 = new QVBoxLayout(tab_2);
+        verticalLayout_2->setSpacing(0);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        scene_tree = new QTreeWidget(tab_2);
+        scene_tree->setObjectName(QStringLiteral("scene_tree"));
+        scene_tree->setLayoutDirection(Qt::LeftToRight);
+        scene_tree->setTextElideMode(Qt::ElideNone);
+        scene_tree->setSortingEnabled(true);
+        scene_tree->setHeaderHidden(true);
+        scene_tree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout_2->addWidget(scene_tree);
+
+        tabWidget->addTab(tab_2, QString());
+
+        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
+
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
+
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
 
         Values = new QGroupBox(centralWidget);
         Values->setObjectName(QStringLiteral("Values"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
-        Values->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
+        Values->setSizePolicy(sizePolicy);
         Values->setMinimumSize(QSize(250, 571));
         Values->setMaximumSize(QSize(250, 16777215));
         Values->setAutoFillBackground(false);
@@ -364,6 +408,49 @@ public:
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        xValue_scale = new QDoubleSpinBox(transformFrame);
+        xValue_scale->setObjectName(QStringLiteral("xValue_scale"));
+        xValue_scale->setMinimumSize(QSize(0, 0));
+        xValue_scale->setWrapping(true);
+        xValue_scale->setFrame(true);
+        xValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        xValue_scale->setDecimals(4);
+        xValue_scale->setMinimum(-10000);
+        xValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(xValue_scale, 5, 1, 1, 1);
+
+        zValue_scale = new QDoubleSpinBox(transformFrame);
+        zValue_scale->setObjectName(QStringLiteral("zValue_scale"));
+        zValue_scale->setMinimumSize(QSize(0, 0));
+        zValue_scale->setWrapping(true);
+        zValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        zValue_scale->setDecimals(4);
+        zValue_scale->setMinimum(-10000);
+        zValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(zValue_scale, 5, 3, 1, 1);
+
+        yValue_rot = new QDoubleSpinBox(transformFrame);
+        yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
+        yValue_rot->setWrapping(true);
+        yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_rot->setDecimals(4);
+        yValue_rot->setMinimum(-10000);
+        yValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
+
+        zValue_rot = new QDoubleSpinBox(transformFrame);
+        zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
+        zValue_rot->setWrapping(true);
+        zValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        zValue_rot->setDecimals(4);
+        zValue_rot->setMinimum(-10000);
+        zValue_rot->setMaximum(10000);
+
+        gridLayout_3->addWidget(zValue_rot, 4, 3, 1, 1);
+
         rotationlabel = new QLabel(transformFrame);
         rotationlabel->setObjectName(QStringLiteral("rotationlabel"));
 
@@ -423,11 +510,11 @@ public:
 
         xValue_rot = new QDoubleSpinBox(transformFrame);
         xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
-        xValue_rot->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
+        xValue_rot->setSizePolicy(sizePolicy1);
         xValue_rot->setWrapping(true);
         xValue_rot->setFrame(true);
         xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -437,59 +524,16 @@ public:
 
         gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
 
-        xValue_scale = new QDoubleSpinBox(transformFrame);
-        xValue_scale->setObjectName(QStringLiteral("xValue_scale"));
-        xValue_scale->setMinimumSize(QSize(0, 0));
-        xValue_scale->setWrapping(true);
-        xValue_scale->setFrame(true);
-        xValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        xValue_scale->setDecimals(4);
-        xValue_scale->setMinimum(-10000);
-        xValue_scale->setMaximum(10000);
-
-        gridLayout_3->addWidget(xValue_scale, 5, 1, 1, 1);
-
-        zValue_scale = new QDoubleSpinBox(transformFrame);
-        zValue_scale->setObjectName(QStringLiteral("zValue_scale"));
-        zValue_scale->setMinimumSize(QSize(0, 0));
-        zValue_scale->setWrapping(true);
-        zValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        zValue_scale->setDecimals(4);
-        zValue_scale->setMinimum(-10000);
-        zValue_scale->setMaximum(10000);
-
-        gridLayout_3->addWidget(zValue_scale, 5, 3, 1, 1);
-
-        yValue_rot = new QDoubleSpinBox(transformFrame);
-        yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
-        yValue_rot->setWrapping(true);
-        yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_rot->setDecimals(4);
-        yValue_rot->setMinimum(-10000);
-        yValue_rot->setMaximum(10000);
-
-        gridLayout_3->addWidget(yValue_rot, 4, 2, 1, 1);
-
-        zValue_rot = new QDoubleSpinBox(transformFrame);
-        zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
-        zValue_rot->setWrapping(true);
-        zValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        zValue_rot->setDecimals(4);
-        zValue_rot->setMinimum(-10000);
-        zValue_rot->setMaximum(10000);
-
-        gridLayout_3->addWidget(zValue_rot, 4, 3, 1, 1);
-
 
         verticalLayout_3->addWidget(transformFrame);
 
         variousOptionsframe = new QFrame(Values);
         variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
-        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
-        variousOptionsframe->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
+        variousOptionsframe->setSizePolicy(sizePolicy2);
         variousOptionsframe->setFrameShape(QFrame::StyledPanel);
         variousOptionsframe->setFrameShadow(QFrame::Raised);
         formLayout = new QFormLayout(variousOptionsframe);
@@ -532,9 +576,9 @@ public:
 
         verticalLayout_3->addWidget(variousOptionsframe);
 
-        CustomBehaviourFrame = new QFrame(Values);
-        CustomBehaviourFrame->setObjectName(QStringLiteral("CustomBehaviourFrame"));
-        CustomBehaviourFrame->setEnabled(true);
+        CustomBehaviourTabWidget = new QTabWidget(Values);
+        CustomBehaviourTabWidget->setObjectName(QStringLiteral("CustomBehaviourTabWidget"));
+        CustomBehaviourTabWidget->setEnabled(true);
         QPalette palette;
         QBrush brush(QColor(255, 255, 255, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -558,26 +602,26 @@ public:
         palette.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
         palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
         palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
-        CustomBehaviourFrame->setPalette(palette);
-        CustomBehaviourFrame->setStyleSheet(QStringLiteral("background-color: rgb(74, 74, 74);"));
-        CustomBehaviourFrame->setFrameShape(QFrame::StyledPanel);
-        CustomBehaviourFrame->setFrameShadow(QFrame::Raised);
-        formLayout_3 = new QFormLayout(CustomBehaviourFrame);
+        CustomBehaviourTabWidget->setPalette(palette);
+        CustomBehaviourTabWidget->setStyleSheet(QStringLiteral("background-color: rgb(74, 74, 74);"));
+        Behaviour = new QWidget();
+        Behaviour->setObjectName(QStringLiteral("Behaviour"));
+        formLayout_3 = new QFormLayout(Behaviour);
         formLayout_3->setSpacing(6);
         formLayout_3->setContentsMargins(11, 11, 11, 11);
         formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
-        BEHAVIOURTEXT = new QLabel(CustomBehaviourFrame);
+        BEHAVIOURTEXT = new QLabel(Behaviour);
         BEHAVIOURTEXT->setObjectName(QStringLiteral("BEHAVIOURTEXT"));
 
         formLayout_3->setWidget(1, QFormLayout::FieldRole, BEHAVIOURTEXT);
 
-        BehaviourDropDown = new QComboBox(CustomBehaviourFrame);
+        BehaviourDropDown = new QComboBox(Behaviour);
         BehaviourDropDown->setObjectName(QStringLiteral("BehaviourDropDown"));
         BehaviourDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
         formLayout_3->setWidget(2, QFormLayout::FieldRole, BehaviourDropDown);
 
-        BehaviourStackWidget = new QStackedWidget(CustomBehaviourFrame);
+        BehaviourStackWidget = new QStackedWidget(Behaviour);
         BehaviourStackWidget->setObjectName(QStringLiteral("BehaviourStackWidget"));
         BehaviourStackWidget->setEnabled(true);
         QPalette palette1;
@@ -876,73 +920,61 @@ public:
 
         formLayout_3->setWidget(4, QFormLayout::FieldRole, BehaviourStackWidget);
 
+        CustomBehaviourTabWidget->addTab(Behaviour, QString());
+        CheckPoint = new QWidget();
+        CheckPoint->setObjectName(QStringLiteral("CheckPoint"));
+        gridLayout_6 = new QGridLayout(CheckPoint);
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setContentsMargins(11, 11, 11, 11);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        checkpointTXT = new QLabel(CheckPoint);
+        checkpointTXT->setObjectName(QStringLiteral("checkpointTXT"));
 
-        verticalLayout_3->addWidget(CustomBehaviourFrame);
+        gridLayout_6->addWidget(checkpointTXT, 0, 0, 1, 1);
 
-        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        CheckPointValue = new QSpinBox(CheckPoint);
+        CheckPointValue->setObjectName(QStringLiteral("CheckPointValue"));
+        CheckPointValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        CheckPointValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
-        verticalLayout_3->addItem(verticalSpacer_2);
+        gridLayout_6->addWidget(CheckPointValue, 0, 2, 1, 1);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout_3->addItem(verticalSpacer);
+        gridLayout_6->addItem(verticalSpacer, 2, 2, 1, 1);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_6->addItem(horizontalSpacer_2, 0, 1, 1, 1);
+
+        pushButton_2 = new QPushButton(CheckPoint);
+        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
+        pushButton_2->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_6->addWidget(pushButton_2, 1, 0, 1, 1);
+
+        CustomBehaviourTabWidget->addTab(CheckPoint, QString());
+
+        verticalLayout_3->addWidget(CustomBehaviourTabWidget);
 
 
         gridLayout->addWidget(Values, 2, 3, 3, 1);
 
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy1);
-        tabWidget->setMinimumSize(QSize(200, 0));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        verticalLayout = new QVBoxLayout(tab);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        assetTree = new QTreeWidget(tab);
-        assetTree->setObjectName(QStringLiteral("assetTree"));
-        assetTree->setLayoutDirection(Qt::LeftToRight);
-        assetTree->setTextElideMode(Qt::ElideNone);
-        assetTree->setSortingEnabled(true);
-        assetTree->setHeaderHidden(true);
-        assetTree->header()->setCascadingSectionResizes(false);
+        RenderWidget = new QWidget(centralWidget);
+        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
+        RenderWidget->setSizePolicy(sizePolicy3);
+        RenderWidget->setMinimumSize(QSize(1, 1));
+        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
+        RenderWidget->setMouseTracking(true);
+        RenderWidget->setFocusPolicy(Qt::StrongFocus);
+        RenderWidget->setAcceptDrops(true);
+        RenderWidget->setAutoFillBackground(false);
 
-        verticalLayout->addWidget(assetTree);
-
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
-        verticalLayout_2 = new QVBoxLayout(tab_2);
-        verticalLayout_2->setSpacing(0);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        scene_tree = new QTreeWidget(tab_2);
-        scene_tree->setObjectName(QStringLiteral("scene_tree"));
-        scene_tree->setLayoutDirection(Qt::LeftToRight);
-        scene_tree->setTextElideMode(Qt::ElideNone);
-        scene_tree->setSortingEnabled(true);
-        scene_tree->setHeaderHidden(true);
-        scene_tree->header()->setCascadingSectionResizes(false);
-
-        verticalLayout_2->addWidget(scene_tree);
-
-        tabWidget->addTab(tab_2, QString());
-
-        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
-
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
+        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
 
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
@@ -968,14 +1000,10 @@ public:
         menuEditor->addAction(actionBuild_BPF);
 
         retranslateUi(SSP_EditorClass);
-        QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
-        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setDisabled(bool)));
-        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setDisabled(bool)));
-        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TRIGGERTAGTEXTPATH, SLOT(setHidden(bool)));
-        QObject::connect(TriggerPathCheckBox, SIGNAL(toggled(bool)), TriggerPathValue, SLOT(setHidden(bool)));
 
-        BehaviourStackWidget->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
+        CustomBehaviourTabWidget->setCurrentIndex(1);
+        BehaviourStackWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -983,69 +1011,73 @@ public:
 
     void retranslateUi(QMainWindow *SSP_EditorClass)
     {
-        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", Q_NULLPTR));
-        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", Q_NULLPTR));
-        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
-        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
-        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
-        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
-        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
-        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
-        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
-        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
-        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
-        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
-        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
+        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", 0));
+        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", 0));
+        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", 0));
+        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
+        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
+        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
+        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", 0));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
+        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", 0));
+        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", 0));
+        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", 0));
+        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
+        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", 0));
+        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", 0));
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
         isStaticCheck->setText(QString());
         animationBox->clear();
         animationBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
         );
-        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
-        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", Q_NULLPTR));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
+        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", 0));
         BehaviourDropDown->clear();
         BehaviourDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Door", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "Trigger", 0)
+         << QApplication::translate("SSP_EditorClass", "Door", 0)
+         << QApplication::translate("SSP_EditorClass", "Path", 0)
         );
-        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
-        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", Q_NULLPTR));
-        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", Q_NULLPTR));
-        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", Q_NULLPTR));
-        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", Q_NULLPTR));
-        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", Q_NULLPTR));
-        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", Q_NULLPTR));
-        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", Q_NULLPTR));
-        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", Q_NULLPTR));
-        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", Q_NULLPTR));
-        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", Q_NULLPTR));
-        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
-        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", Q_NULLPTR));
-        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", Q_NULLPTR));
-        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        checkBox_2->setText(QApplication::translate("SSP_EditorClass", "Pressure Trigger", 0));
+        checkBox->setText(QApplication::translate("SSP_EditorClass", "Radial Trigger", 0));
+        checkBox_3->setText(QApplication::translate("SSP_EditorClass", "Lever Trigger", 0));
+        CHKX->setText(QApplication::translate("SSP_EditorClass", "X", 0));
+        CHKZ->setText(QApplication::translate("SSP_EditorClass", "Z", 0));
+        CHKY->setText(QApplication::translate("SSP_EditorClass", "Y", 0));
+        ROTATIONAXISTEXT->setText(QApplication::translate("SSP_EditorClass", "Rotation Axis", 0));
+        ChkPlrActivatable->setText(QApplication::translate("SSP_EditorClass", "Player Activatable", 0));
+        DOORTEXT->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Max Rotation", 0));
+        label->setText(QApplication::translate("SSP_EditorClass", "(Degrees) Min Rotation", 0));
+        TRIGGERTAGTEXT->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
+        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
+        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Random", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Linear", 0)
+         << QApplication::translate("SSP_EditorClass", "Circular", 0)
+         << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
+         << QApplication::translate("SSP_EditorClass", "Random", 0)
         );
-        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
-        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
-        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
-        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
-        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
-        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
-        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
+        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", 0));
+        checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", 0));
+        pushButton_2->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", 0));
+        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
     } // retranslateUi
 
 };
