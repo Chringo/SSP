@@ -316,6 +316,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if(this->m_networkModule->IsHost() == true)
 	{ 
+		Entity* wasGrabbed = this->m_player1.GetGrabbed();
+
 		//Camera
 		this->m_player1.SetRightDir(rightDir);
 		this->m_player1.SetUpDir(upDir);
@@ -323,6 +325,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.Update(dt, inputHandler);
 		//update all dynamic (moving) entities
 		Entity* ent = nullptr;
+
+		if (wasGrabbed != this->m_player1.GetGrabbed())
+		{
+			wasGrabbed->SyncComponents();
+
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+		}
+
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
@@ -451,7 +461,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 #pragma region
 	if (this->m_networkModule->IsHost() == false)
-	{
+	{	
+		Entity* wasGrabbed = this->m_player2.GetGrabbed();
+
 		this->m_player2.SetRightDir(rightDir);
 		this->m_player2.SetUpDir(upDir);
 		this->m_player2.SetLookDir(playerLookDir);
@@ -461,6 +473,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SyncComponents();
 
 		Entity* ent = nullptr;
+
+		if (wasGrabbed != this->m_player2.GetGrabbed())
+		{
+			wasGrabbed->SyncComponents();
+			
+			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+		}
+
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
@@ -473,17 +493,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				ent->SyncComponents();
 			}
 		}
-
-		bool hasSomethingGrabbed = false;
-		if (this->m_player2.GetGrabbed() != nullptr)
-		{
-			hasSomethingGrabbed = true;
-		}
-		else
-		{
-			hasSomethingGrabbed = false;
-		}
-
+		
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 			Entity* ent = this->m_dynamicEntitys.at(0);
@@ -573,17 +583,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
 
-			if (this->m_player2.GetGrabbed() == nullptr && hasSomethingGrabbed == true)	//If we had soemthing but not any longer
-			{
-				this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
-			}
-
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 			
-			if (this->m_player2.GetGrabbed() != nullptr)	//If player2 has grabbed something
+			if (wasGrabbed != nullptr)	//If player2 has grabbed something
 			{
-				pp = this->m_player2.GetGrabbed()->GetPhysicsComponent();
+				pp = wasGrabbed->GetPhysicsComponent();
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);				
 			}
 		
