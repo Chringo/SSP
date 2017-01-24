@@ -60,6 +60,7 @@ struct PhysicsComponent
 	float PC_mass;
 	bool PC_is_Static;
 	bool PC_collides;
+	bool PC_steadfast;
 	float PC_friction;
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
