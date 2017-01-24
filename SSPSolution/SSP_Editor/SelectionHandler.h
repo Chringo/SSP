@@ -44,6 +44,8 @@ public:
 	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
+	CheckpointContainer * GetSelectedCheckpoint() {	return this->m_transformWidget.GetCheckpoint();	};
+	TransformWidget::SelectionTypes GetSelectionType(){ return this->m_transformWidget.GetSelectionType(); };
 	bool HasSelection();
 	void SetSelection(bool selection);
 	void SetSelectedContainer(Container* selection);

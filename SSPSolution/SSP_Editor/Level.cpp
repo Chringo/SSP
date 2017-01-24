@@ -52,7 +52,7 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 
 std::vector<CheckpointContainer*>* Level::GetCheckpoints()
 {
-	return &m_checkpointHandler.GetAllCheckpoints();
+	return m_checkpointHandler.GetAllCheckpoints();
 }
 
 Container * Level::GetInstanceEntity(unsigned int entityID)

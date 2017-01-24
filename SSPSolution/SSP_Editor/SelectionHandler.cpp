@@ -47,8 +47,10 @@ void SelectionHandler::Initialize(Camera * camera,
 	//testcheckbox2->internalID = 1;
 	//testcheckbox2->checkpointHeader = h2;
 
-	//this->m_checkpointPtr->push_back(testcheckbox);
-	//this->m_checkpointPtr->push_back(testcheckbox2);
+	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
+	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
+	//currentLevel->GetCheckpoints()->push_back(testcheckbox);
+	//currentLevel->GetCheckpoints()->push_back(testcheckbox2);
 }
 
 void SelectionHandler::updateWindowSize(int winHeight, int winWidth)
@@ -258,22 +260,21 @@ bool SelectionHandler::PickObjectSelection()
 	}
 
 	//check the checkpoints
-	//for each (CheckpointContainer* container in *m_checkpointPtr)
-	//{
+	for each (CheckpointContainer* container in *m_checkpointPtr)
+	{
 
-	//	bool result = false;
-	//	result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, container->obb, container->position, hitDistance);
-	//	//transformWidget.setActive(result);
-	//	if (result && hitDistance < minHitDistance)
-	//	{
-	//		minHitDistance = hitDistance;
-	//		//update widget with the intersected obb
-	//		//this->m_transformWidget.Select(container->obb, container->internalID); //OVERLOAD AND HANLDE THIS
-	//		//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(container); //OVERLOAD AND HANLDE THIS
+		bool result = false;
+		result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, container->obb, container->position, hitDistance);
+		if (result && hitDistance < minHitDistance)
+		{
+			minHitDistance = hitDistance;
+			//update widget with the intersected obb
+			this->m_transformWidget.Select(container->obb, container); //OVERLOAD AND HANLDE THIS
+			//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(container); //OVERLOAD AND HANLDE THIS
 
-	//		gotHit = result;
-	//	}
-	//}
+			gotHit = result;
+		}
+	}
 	
 
 	//check the spawnPoints

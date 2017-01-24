@@ -12,6 +12,7 @@ struct Container
 	AIComponent*	  aiComponent = nullptr;
 	bool			  isDirty      = false;
 	bool			  isStatic     = true;
+
 	Container() {}
 	Container(const Container &obj) {  // copy constructor
 	

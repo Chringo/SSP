@@ -5,6 +5,14 @@
 struct TransformWidget
 {
 public:
+	enum SelectionTypes
+	{
+		MODEL,
+		CHECKPOINT,
+		LIGHT,
+
+		NUM_TYPES
+	};
 	enum AXIS
 	{
 		NONE = -1,
@@ -15,10 +23,12 @@ public:
 		NUM_AXIS
 	};
 private:
+	SelectionTypes type;
 	bool m_active = false;
 	DirectX::XMVECTOR m_colors[4];
 	Container * m_selectedContainer = nullptr;
 	AIComponent* m_aiContainer = nullptr;
+	CheckpointContainer* m_checkpointContainer = nullptr;
 
 	unsigned int m_instanceID = NULL;
 	unsigned int m_modelID = NULL;
@@ -35,7 +45,22 @@ private:
 	{
 		for (int i = 0; i < NUM_AXIS; i++)
 		{
-			m_axisOBBpos[i] = m_selectedContainer->position;
+			switch (type)
+			{
+			case TransformWidget::MODEL:
+				m_axisOBBpos[i] = m_selectedContainer->position;
+				break;
+			case TransformWidget::CHECKPOINT:
+				m_axisOBBpos[i] = m_checkpointContainer->position;
+				break;
+			case TransformWidget::LIGHT:
+				break;
+			case TransformWidget::NUM_TYPES:
+				break;
+			default:
+				break;
+			}
+			
 			//relative to origin
 			m_axisOBBpos[i].m128_f32[i] += 1.f;
 
@@ -47,7 +72,8 @@ private:
 public:
 	unsigned int GetInstanceID() { return m_instanceID; };
 	unsigned int GetModelID() { return m_modelID; };
-	Container * GetContainer() { return m_selectedContainer; };
+	Container * GetContainer() { assert(type == MODEL); return m_selectedContainer; };
+	CheckpointContainer * GetCheckpoint() { assert(type == CHECKPOINT); return m_checkpointContainer; }
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
 	DirectX::XMVECTOR * GetAxisOBBpositons() { return m_axisOBBpos; };
 	DirectX::XMVECTOR * GetSelectedObjectOBBColor(){ return &SelectedObjectOBBColor; };
@@ -55,6 +81,7 @@ public:
 	OBB * GetAxisOBBs() { return m_axisOBB; };
 	OBB * GetSelectedObjectOBB() { return &m_selectedObjectOBB; };
 	int GetSelectedAxis() { return m_selectedAxis; };
+	SelectionTypes GetSelectionType() { return type; };
 	void SetOBBCenterPosition(DirectX::XMVECTOR centerPosition) { this->m_obbCenterPosition = centerPosition; this->m_obbLastPosition = centerPosition; };
 
 
@@ -86,6 +113,22 @@ public:
 
 		m_UpdateAxies();
 
+		type = MODEL;
+		setActive(true);
+	};
+
+	void Select(OBB &selectedOBB, CheckpointContainer *selectedCheckpoint)
+	{
+		this->m_selectedObjectOBB = selectedOBB;
+		this->m_selectedContainer = nullptr;
+		this->m_instanceID = UINT_MAX;
+		this->m_modelID = UINT_MAX;
+
+		this->m_checkpointContainer = selectedCheckpoint;
+
+		m_UpdateAxies();
+
+		type = CHECKPOINT;
 		setActive(true);
 	};
 

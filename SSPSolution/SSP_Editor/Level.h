@@ -58,6 +58,7 @@ public:
 	unsigned int GetNumLights();
 	Container* GetSpawnPoint(int index);
 	AiHandler* GetAiHandler() { return &m_LevelAi; };
+	CheckpointHandler* GetCheckpointHandler() { return &this->m_checkpointHandler; };
 	
 	const std::string* GetName() { return &levelName; };
 	void SetName(std::string& newName) { this->levelName = newName; };

@@ -21,7 +21,7 @@ public:
 	~CheckpointHandler();
 	
 	CheckpointContainer* GetCheckpoint(int entityID);
-	std::vector<CheckpointContainer*> GetAllCheckpoints() { return this->m_checkpoints; };
+	std::vector<CheckpointContainer*>* GetAllCheckpoints() { return &this->m_checkpoints; };
 	void removeCheckpoint(int index);
 
 };
