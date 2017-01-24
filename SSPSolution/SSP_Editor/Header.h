@@ -13,6 +13,7 @@ enum ContainerType
 	DOOR,
 	MAGNET,
 	PRESSUREPLATE,
+	NUM_PUZZLE_ELEMENTS,
 	LIGHT,
 	AIWAYPOINT,
 	CHECKPOINT,
@@ -63,6 +64,10 @@ struct Container
 struct Button : Container
 {
 	Button() : Container()
+	{
+		this->type = BUTTON;
+	}
+	Button(const Container &obj) : Container(obj)
 	{
 		this->type = BUTTON;
 	}
