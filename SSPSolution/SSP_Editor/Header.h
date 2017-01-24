@@ -63,6 +63,23 @@ struct Button : Container
 	float resetTime; // Seconds
 };
 
+struct Lever : Container
+{
+	float interactionDistance;
+};
+struct Wheel : Container
+{
+	float interactionDistance;
+	float minRotation;
+	float maxRotation;
+	float rotateTime;
+};
+
+struct Door : Container
+{
+	float rotateTime;
+	unsigned int triggerEntityId;
+};
 struct CheckpointContainer : Container
 {
 	unsigned int internalID;
