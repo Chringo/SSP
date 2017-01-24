@@ -225,6 +225,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_menuButtons[4].m_uiComp->CheckClicked())
 		{
 			//Return to main menu was clicked
+			inputHandler->SetKeyState(SDL_SCANCODE_F, false); //Temporary cheat
 			this->m_menuButtons[this->markedItem].SetHovered(false);
 			this->markedItem = 0;
 			this->m_menuButtons[this->markedItem].SetHovered(true);
