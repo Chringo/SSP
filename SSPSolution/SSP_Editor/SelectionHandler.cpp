@@ -94,7 +94,7 @@ void SelectionHandler::SetSelection(bool selection)
 		m_attributesHandler->Deselect();
 }
 
-void SelectionHandler::SetSelectedContainer(Container * selection)
+void SelectionHandler::SetSelectedContainer(Container *& selection)
 {
 	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
 	
@@ -274,6 +274,31 @@ bool SelectionHandler::PickObjectSelection()
 
 			gotHit = result;
 		}
+	}
+
+	//check the puzzle elements
+	for (size_t i = 0; i < ContainerType::NUM_PUZZLE_ELEMENTS; i++)
+	{
+		const std::vector<Container*>* cont = m_currentLevel->GetPuzzleElements(ContainerType(i));
+		for (size_t j = 0; j < cont->size(); j++)
+		{
+			OBB obj = m_ConvertOBB(cont->at(j)->component.modelPtr->GetOBBData(), cont->at(j));
+			bool result = false;
+			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, cont->at(j)->position, hitDistance);
+			if (result && hitDistance < minHitDistance)
+			{
+				minHitDistance = hitDistance;
+				//update widget with the intersected obb
+				Container* ptr = (Container*)cont->at(j);
+				
+				this->m_transformWidget.Select(obj, ptr, i, cont->at(j)->component.modelPtr->GetId());
+				Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(ptr);
+
+				gotHit = result;
+			}
+			
+		}
+
 	}
 	
 

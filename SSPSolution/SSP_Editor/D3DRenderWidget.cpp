@@ -47,7 +47,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		//this->m_Communicator->m_EditorInputHandler->MoveObject();
 		//this->m_Communicator->m_EditorInputHandler->MousePicking();
 	}
-	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
+ 	std::unordered_map<unsigned int, std::vector<Container>> *m_ModelMap = m_Communicator->GetCurrentLevel()->GetModelEntities();
 	if (!m_ModelMap->empty())
 	{
 	Resources::Status st;
@@ -68,7 +68,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				{
 					if (InstancePtr->at(j).isDirty)
 					{
-						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), j, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), InstancePtr->at(j).internalID, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 						if (SelectionHandler::GetInstance()->HasSelection())
 						{
 							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
@@ -84,7 +84,31 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 			}
 		}
 	}
+	for (size_t i = 0; i < ContainerType::NUM_PUZZLE_ELEMENTS; i++)
+	{
+		const std::vector<Container*>* cont = m_Communicator->GetCurrentLevel()->GetPuzzleElements(ContainerType(i));
+		for (size_t j = 0; j < cont->size(); j++)
+		{
+		
+			GraphicsHptr->RenderFromEditor(
+				cont->at(j)->component.modelPtr,
+				&cont->at(j)->component);
 
+			if (cont->at(j)->isDirty)
+			{
+				this->m_Communicator->UpdateModel(cont->at(j)->component.modelID, cont->at(j)->internalID, cont->at(j)->position, cont->at(j)->rotation);
+				Container* ptr = cont->at(j);
+				SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
+				if (SelectionHandler::GetInstance()->HasSelection())
+				{
+					SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+					SelectionHandler::GetInstance()->Update();
+				}
+			}
+
+		}
+
+	}
 	for (size_t i = 0; i < 2; i++)
 	{
 		Container* spawn =  m_Communicator->GetCurrentLevel()->GetSpawnPoint(i);

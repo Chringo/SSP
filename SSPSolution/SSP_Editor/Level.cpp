@@ -24,7 +24,7 @@ Level::Level()
 		
 		for (size_t i = 0; i < NUM_PUZZLE_ELEMENTS; i++)
 		{
-			this->m_pussleElements.push_back(std::vector<Container*>());
+			this->m_puzzleElements.push_back(std::vector<Container*>());
 		}
 	
 }
@@ -171,7 +171,7 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 
 		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			if (i == instanceID)
+			if (modelPtr->at(i).internalID == instanceID)
 			{
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
@@ -194,6 +194,36 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 			}
 
 		}
+			for (size_t i = 0; i < m_puzzleElements.size(); i++)
+			{
+				for each (Container* container in m_puzzleElements.at(i)) {
+					if (container->internalID == instanceID)
+					{
+						container->position = position;
+						container->rotation = rotation;
+						DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+						DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+						DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+						DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+						//Create the rotation matrix
+						DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+						rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+						container->component.worldMatrix = containerMatrix;
+						container->isDirty = false;
+						return Resources::Status::ST_OK;
+
+					}
+
+				}
+
+			}
+
 		return Resources::Status::ST_RES_MISSING;
 	}
 }
@@ -361,7 +391,7 @@ void Level::Destroy()
 	m_LevelAi.Destroy();
 	GlobalIDHandler::GetInstance()->ResetIDs();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
-	for each (std::vector<Container*> elementContainer in m_pussleElements){ //Remove all puzzle elements
+	for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
 		for (size_t i = 0; i < elementContainer.size(); i++)
 		{
 			delete elementContainer.at(i);
@@ -386,7 +416,7 @@ const std::vector<Container*>* Level::GetPuzzleElements(ContainerType type)
 	if (type >= ContainerType::NUM_PUZZLE_ELEMENTS)
 		return nullptr;
 	
-	return &this->m_pussleElements.at(type);
+	return &this->m_puzzleElements.at(type);
 }
 
 Button * Level::ConvertToButton(Container*& obj)
@@ -403,7 +433,7 @@ Button * Level::ConvertToButton(Container*& obj)
 
 		Button* newButton = new Button(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
-		this->m_pussleElements.at(BUTTON).push_back(newButton); // add to button array
+		this->m_puzzleElements.at(BUTTON).push_back(newButton); // add to button array
 		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
 		newButton->resetTime = 1337; //TEMP! REMOVE
 		return newButton; //Return new button
@@ -427,7 +457,7 @@ Door * Level::ConvertToDoor(Container *& object)
 
 		Door* newDoor = new Door(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
-		this->m_pussleElements.at(DOOR).push_back(newDoor); // add to button array
+		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to button array
 		object = newDoor; //set the object to the new button as well. In case the programmer tries to use the object afterwards. This avoids crashes
 		return newDoor; //Return new button
 	}
@@ -448,17 +478,17 @@ Container * Level::ConvertToContainer(Container *& object)
 	//put it into the corresponding array
 	//Remove from the puzzle array it came from
 
-	for (size_t i = 0; i < m_pussleElements.at(type).size(); i++)
+	for (size_t i = 0; i < m_puzzleElements.at(type).size(); i++)
 	{
-		if (m_pussleElements.at(type).at(i)->internalID == object->internalID) // puzzleElement Found
+		if (m_puzzleElements.at(type).at(i)->internalID == object->internalID) // puzzleElement Found
 		{
-			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(m_pussleElements.at(type).at(i)->component.modelID); //find the vector that holds this type of model
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(m_puzzleElements.at(type).at(i)->component.modelID); //find the vector that holds this type of model
 			std::vector<Container>* modelPtr;
 
-			Container newComponent((Container)*m_pussleElements.at(type).at(i));		// Create new container component
+			Container newComponent((Container)*m_puzzleElements.at(type).at(i));		// Create new container component
 			modelPtr = &got->second;													// The vector that holds the the corresponding model
 			modelPtr->push_back(newComponent);											// Push back the newly created container
-			m_pussleElements.at(type).erase(m_pussleElements.at(type).begin() + i);	    // Erase the puzzle element
+			m_puzzleElements.at(type).erase(m_puzzleElements.at(type).begin() + i);	    // Erase the puzzle element
 			object = &modelPtr->back();
 			return &modelPtr->back(); //Return the model
 		}

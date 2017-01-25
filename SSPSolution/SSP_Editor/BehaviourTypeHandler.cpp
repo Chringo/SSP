@@ -246,6 +246,8 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					}
 					
 					float time = ((Button*)m_selection)->resetTime;
+					m_selection->isDirty = true;
+					
 					int hej = 123432145;
 					break;
 				}
