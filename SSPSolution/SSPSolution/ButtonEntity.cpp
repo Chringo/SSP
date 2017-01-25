@@ -40,7 +40,7 @@ int ButtonEntity::React(int entityID, EVENT reactEvent)
 int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
 {
 	int result = 0;
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, nullptr);
 	this->m_isActive = false;
 	this->m_range = interactionDistance;
 	this->m_resetTime = resetTime;

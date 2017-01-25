@@ -467,6 +467,7 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMMATRIX> lo
 		DirectX::XMMATRIX toRoot = toRootTransform[i];
 
 		m_animGraphicsComponents[0]->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, toRoot);
+		m_animGraphicsComponents[0]->finalJointTransforms[i] = toRoot;
 	}
 }
 

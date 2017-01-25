@@ -11,7 +11,7 @@ DoorEntity::~DoorEntity()
 
 int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float rotateTime, float minRotation, float maxRotation)
 {
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, nullptr);
 
 	this->m_isOpened = false;
 	this->m_rotateTime = rotateTime;
