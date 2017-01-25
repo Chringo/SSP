@@ -2268,6 +2268,53 @@ void PhysicsHandler::SortComponents()
 	int a = this->m_physicsComponents.size();
 }
 
+PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * component, int minDistance)
+{
+	PhysicsComponent* pp = nullptr;
+	PhysicsComponent* closest = nullptr;
+	float distance = 0;
+	float closestDistance = 0;
+	DirectX::XMVECTOR vec;
+
+	for(int i = 0; i < this->m_numberOfDynamics; i++)	//We know the dynamics are in the front of the array
+	{
+		pp = this->m_physicsComponents.at(i);
+
+		if (pp != component)	//Check so we sont find our own component we compare to
+		{
+			
+			//Calc the distance
+			vec = DirectX::XMVectorSubtract(pp->PC_pos, component->PC_pos);
+			distance = DirectX::XMVectorGetX( DirectX::XMVector3Length(vec) );
+
+			if (distance <= minDistance)	// Check its close enoughe 
+			{
+
+				if (closest != nullptr)		// If we already found a component
+				{
+
+					if (distance < closestDistance)	//The new one is closer
+					{
+						closest = pp;
+						closestDistance = distance;
+					}
+
+				}
+				else
+				{
+					closest = pp;
+					closestDistance = distance;
+				}
+				
+			}
+
+		}
+
+	}
+
+	return closest;
+}
+
 #ifdef _DEBUG
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
