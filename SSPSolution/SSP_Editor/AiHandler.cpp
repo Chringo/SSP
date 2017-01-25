@@ -18,7 +18,7 @@ AiHandler::~AiHandler()
 AIComponent * AiHandler::NewPathComponent()
 {
 	m_Components.push_back(new AIComponent());
-	m_Components.back()->AC_pattern = Pattern::AI_LINEAR;
+	m_Components.back()->AC_pattern = Pattern::AI_ONEWAY;
 	return m_Components.back();
 }
 
