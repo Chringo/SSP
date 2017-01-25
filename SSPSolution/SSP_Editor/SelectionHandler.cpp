@@ -25,28 +25,28 @@ void SelectionHandler::Initialize(Camera * camera,
 	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_checkpointPtr = currentLevel->GetCheckpoints();
 
-	CheckpointContainer * testcheckbox = new CheckpointContainer;
-	testcheckbox->obb.ext[0] = 1.0;
-	testcheckbox->obb.ext[1] = 1.0;
-	testcheckbox->obb.ext[2] = 1.0;
-	testcheckbox->obb.ort = DirectX::XMMatrixIdentity();
-	testcheckbox->position = { 0.0 };
-	testcheckbox->scale = { 1.0, 1.0, 1.0 };
-	testcheckbox->internalID = 1;
-	testcheckbox->component.worldMatrix = DirectX::XMMatrixIdentity();
+	//CheckpointContainer * testcheckbox = new CheckpointContainer;
+	//testcheckbox->obb.ext[0] = 1.0;
+	//testcheckbox->obb.ext[1] = 1.0;
+	//testcheckbox->obb.ext[2] = 1.0;
+	//testcheckbox->obb.ort = DirectX::XMMatrixIdentity();
+	//testcheckbox->position = { 0.0 };
+	//testcheckbox->scale = { 1.0, 1.0, 1.0 };
+	//testcheckbox->internalID = 1;
+	//testcheckbox->component.worldMatrix = DirectX::XMMatrixIdentity();
 
-	CheckpointContainer * testcheckbox2 = new CheckpointContainer;
-	testcheckbox2->obb.ext[0] = 1.0;
-	testcheckbox2->obb.ext[1] = 1.0;
-	testcheckbox2->obb.ext[2] = 1.0;
-	testcheckbox2->obb.ort = DirectX::XMMatrixIdentity();
-	testcheckbox2->position = { 1.0 };
-	testcheckbox2->scale = { 1.0, 1.0, 1.0 };
-	testcheckbox2->internalID = 1;
-	testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
+	//CheckpointContainer * testcheckbox2 = new CheckpointContainer;
+	//testcheckbox2->obb.ext[0] = 1.0;
+	//testcheckbox2->obb.ext[1] = 1.0;
+	//testcheckbox2->obb.ext[2] = 1.0;
+	//testcheckbox2->obb.ort = DirectX::XMMatrixIdentity();
+	//testcheckbox2->position = { 1.0 };
+	//testcheckbox2->scale = { 1.0, 1.0, 1.0 };
+	//testcheckbox2->internalID = 2;
+	//testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
 
-	currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
-	currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
+	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
+	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
 	//currentLevel->GetCheckpoints()->push_back(testcheckbox);
 	//currentLevel->GetCheckpoints()->push_back(testcheckbox2);
 }

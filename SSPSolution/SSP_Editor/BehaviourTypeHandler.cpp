@@ -43,6 +43,10 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_button_distance = ui->button_dist_box;
 	m_button_timer    = ui->button_timer_box;
 	connect(ui->button_dist_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_distance_Changed(double)));
+	this->m_AddCheckpoint = ui->CheckPointADD;
+	connect(ui->CheckPointADD, SIGNAL(clicked()), this, SLOT(on_CheckpointAdd()));
+	this->m_CheckpointValue = ui->CheckPointValue;
+	connect(ui->CheckPointValue, SIGNAL(valueChanged(int)), this, SLOT(on_CheckpointIndex_changed(int)));
 	connect(ui->button_timer_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_timer_Changed(double)));
 }
 
@@ -98,6 +102,9 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for path
 			m_Current_Type = BUTTON; //Update current type
 			break;
+		case ContainerType::CHECKPOINT:
+		this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
+		break;
 
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -114,9 +121,8 @@ void Ui::BehaviourTypeHandler::Deselect()
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_BehaviourType->setCurrentIndex(NONE); //Close the window
 	m_Current_Type = NONE; //Update current type
-	
-	
-	
+ 	
+	this->m_CheckpointValue->setValue(0);
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -303,6 +309,21 @@ void Ui::BehaviourTypeHandler::on_button_timer_Changed(double val)
 {
 	assert(m_selection->type == ContainerType::BUTTON);
 	((Button*)m_selection)->resetTime = (float)val;
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointAdd()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddCheckpointEntity();
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointIndex_changed(int val)
+{
+	if (m_selection == nullptr || m_selection->type != CHECKPOINT)
+		return;
+	else 
+	{
+		((CheckpointContainer*)m_selection)->checkpointNumber = val;
+	}
 }
 
 void Ui::BehaviourTypeHandler::on_Add()

@@ -60,6 +60,7 @@ struct PhysicsComponent
 	float PC_mass;
 	bool PC_is_Static;
 	bool PC_collides;
+	bool PC_steadfast;
 	float PC_friction;
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
@@ -87,6 +88,7 @@ private:
 	int m_nrOfStaticObjects;
 
 	DirectX::XMVECTOR m_gravity;
+
 
 	unsigned int	m_startIndex;		// At what index to start to check colision
 	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
@@ -169,6 +171,7 @@ public:
 	PHYSICSDLL_API bool checkCollition();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
+	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

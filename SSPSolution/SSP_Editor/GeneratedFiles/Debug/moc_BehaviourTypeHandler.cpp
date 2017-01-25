@@ -88,6 +88,8 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void, QMetaType::Double,    3,
     QMetaType::Void, QMetaType::Double,    3,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod

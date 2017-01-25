@@ -6,6 +6,10 @@ CheckpointHandler::CheckpointHandler()
 
 CheckpointHandler::~CheckpointHandler()
 {
+	for each (CheckpointContainer* container in m_checkpoints)
+	{
+		delete container;
+	}
 }
 
 CheckpointContainer * CheckpointHandler::GetCheckpoint(int entityID)
@@ -19,8 +23,5 @@ CheckpointContainer * CheckpointHandler::GetCheckpoint(int entityID)
 	return nullptr;
 }
 
-void CheckpointHandler::removeCheckpoint(int index)
-{
 
-}
 
