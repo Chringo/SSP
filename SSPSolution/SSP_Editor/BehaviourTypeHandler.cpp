@@ -60,7 +60,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 	{
 		Deselect(); //reset values
 		m_selection = selection;
-		if (m_selection->internalID == 0 || m_selection->internalID == 1) { // if any of the spawnpoints are selected
+		if (m_selection->internalID == 0 || m_selection->internalID == 1 || m_selection->type == ContainerType::CHECKPOINT) { // if any of the spawnpoints are selected
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
 			m_BehaviourType->setEnabled(false);
@@ -105,6 +105,8 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 		case ContainerType::CHECKPOINT:
 		this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
 		break;
+		
+		
 
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -121,7 +123,6 @@ void Ui::BehaviourTypeHandler::Deselect()
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_BehaviourType->setCurrentIndex(NONE); //Close the window
 	m_Current_Type = NONE; //Update current type
- 	
 	this->m_CheckpointValue->setValue(0);
 }
 

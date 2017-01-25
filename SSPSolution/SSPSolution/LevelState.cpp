@@ -71,8 +71,15 @@ int LevelState::ShutDown()
 		this->m_wheelEntities[i] = nullptr;
 	}
 	this->m_wheelEntities.clear();
+
+	for each (Checkpoint* cp in this->m_checkpoints)
+	{
+		delete cp;
+	}
+	this->m_checkpoints.clear();
 	// Clear level director
 	this->m_director.Shutdown();
+	
 	
 	return result;
 }
@@ -996,6 +1003,17 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				aiEntities[A]->SetAIComponent(temp);
 			}
 		}
+	}
+
+	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
+	for (int i = 0; i < data->numCheckpoints; i++)
+	{
+		CB->index = data->checkpoints[i].entityID;
+		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float)*3);
+		CB->obb.ort = static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort);
+		memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
+		
+		m_checkpoints.push_back(CB);
 	}
 
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
