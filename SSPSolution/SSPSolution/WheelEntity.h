@@ -12,6 +12,7 @@ private:
 	float m_rotateTime;
 	float m_rotatePerSec;
 	float m_range;
+	const float FLOAT_FIX = 1.0f - 0.00001f;
 
 	bool m_resets;
 	bool m_isMin;
