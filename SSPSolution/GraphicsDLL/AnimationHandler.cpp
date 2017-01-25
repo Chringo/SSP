@@ -252,7 +252,6 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 
 					DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(lerpScale);
 					DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpQuat);
-				
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
@@ -467,7 +466,6 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMMATRIX> lo
 		DirectX::XMMATRIX toRoot = toRootTransform[i];
 
 		m_animGraphicsComponents[0]->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, toRoot);
-		m_animGraphicsComponents[0]->finalJointTransforms[i] = toRoot;
 	}
 }
 
