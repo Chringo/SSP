@@ -34,6 +34,7 @@ private:
 	LevelData::LevelStatus GetResourceData(char* dataPtr);
 	LevelData::LevelStatus GetSpawnData(char* dataPtr);
 	LevelData::LevelStatus GetAiData(char* dataPtr);
+	LevelData::LevelStatus GetCheckpointData(char* dataPtr);
 #pragma endregion
 
 #pragma region Load Functions

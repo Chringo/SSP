@@ -384,6 +384,11 @@ void Level::Destroy()
 		}
 		elementContainer.clear();
 	}
+	for each (CheckpointContainer* container in *this->GetCheckpoints())
+	{
+		delete container;
+	}
+	this->GetCheckpoints()->clear();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)

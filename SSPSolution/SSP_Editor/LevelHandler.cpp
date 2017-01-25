@@ -59,6 +59,15 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		delete aiData;
 	}
 
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		char* checkpointData = new char[checkpointSize];
+		this->GetCheckpointData(checkpointData);
+		file.write(checkpointData, checkpointSize);
+		delete checkpointData;
+	}
+
 	file.close();
 	//Cleanup
 	delete resData;
@@ -84,8 +93,8 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	file.open(path, std::fstream::in | std::fstream::binary);			
 
 
-	LevelData::MainLevelHeader header;
-	file.read((char*)&header, sizeof(LevelData::MainLevelHeader));				 //Read file header
+	LevelData::OLDMainLevelHeader header;
+	file.read((char*)&header, sizeof(LevelData::OLDMainLevelHeader));				 //Read file header
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
@@ -184,6 +193,7 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 	header.entityAmount      = m_currentLevel.GetNumEntities();
 	header.lightAmount       = m_currentLevel.GetNumLights();
 	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
+	header.checkpointAmount = (unsigned int)m_currentLevel.GetCheckpoints()->size();
 	return header;
 }
 
@@ -288,6 +298,20 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 		offset += sizeof(LevelData::AiHeader);
 	}
 
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetCheckpointData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	LevelData::CheckpointHeader * cph;
+	for (int i = 0; i < m_currentLevel.GetCheckpoints()->size(); i++)
+	{
+		cph = m_currentLevel.GetCheckpoints()->at(i)->GetDataPtr();
+		memcpy(dataPtr + offset, (char*)cph, sizeof(LevelData::CheckpointHeader));
+		offset += sizeof(LevelData::CheckpointHeader);
+	}
 
 	return LevelData::LevelStatus::L_OK;
 }

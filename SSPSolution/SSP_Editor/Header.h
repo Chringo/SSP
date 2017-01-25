@@ -190,17 +190,21 @@ public:
 		this->isDirty = false;
 	}
 
-	LevelData::CheckpointHeader GetData()
+	LevelData::CheckpointHeader * GetDataPtr()
 	{
 		this->checkpointHeader.entityID = this->internalID;
 		this->checkpointHeader.checkpointNumber = this->checkpointNumber;
 
 		memcpy(this->checkpointHeader.ext, this->obb.ext, sizeof(float) * 3);
-		memcpy(&this->checkpointHeader.ort[0], this->obb.ort.r[0].m128_f32, sizeof(float) * 3);
-		memcpy(&this->checkpointHeader.ort[3], this->obb.ort.r[1].m128_f32, sizeof(float) * 3);
-		memcpy(&this->checkpointHeader.ort[6], this->obb.ort.r[2].m128_f32, sizeof(float) * 3);
+		memcpy(this->checkpointHeader.ort, &this->obb.ort, sizeof(float) * 16);
 
-		return this->checkpointHeader;
+
+		for (int i = 0; i < 16; i++)
+		{
+			printf("%f, \n", this->checkpointHeader.ort[i]);
+		}
+
+		return &this->checkpointHeader;
 	}
 
 };
