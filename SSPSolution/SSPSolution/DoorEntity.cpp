@@ -61,14 +61,42 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//this->m_isOpened = reactEvent == EVENT::BUTTON_ACTIVE;
 	int i = 0;
-	for each (ElementState element in this->m_subjectStates)
+	for (std::vector<ElementState>::iterator element = this->m_subjectStates.begin(); element != this->m_subjectStates.end(); element++)
+	{
+		if ((element->entityID == entityID))
+		{
+			if (EVENT::WHEEL_100 == reactEvent)
+			{
+				int b = 27;
+			}
+			if (EVENT::BUTTON_ACTIVE == reactEvent)
+			{
+				int b = 27;
+			}
+			element->desiredStateReached = element->desiredState == reactEvent;
+		}
+		i += element->desiredStateReached;
+		if (i == 2)
+			int b = 36;
+	}
+	/*for each (ElementState element in this->m_subjectStates)
 	{
 		if ((element.entityID == entityID))
 		{
+			if (EVENT::WHEEL_100 == reactEvent)
+			{
+				int b = 27;
+			}
+			if (EVENT::BUTTON_ACTIVE == reactEvent)
+			{
+				int b = 27;
+			}
 			element.desiredStateReached = element.desiredState == reactEvent;
 		}
 		i += element.desiredStateReached;
-	}
+		if (i == 2)
+			int b = 36;
+	}*/
 	this->m_isOpened = i == this->m_subjectStates.size();
 
 /*	if (reactEvent == EVENT::BUTTON_ACTIVE)

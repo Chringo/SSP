@@ -4,15 +4,16 @@
 #include "Entity.h"
 #include <vector>
 
+struct ElementState {
+	int entityID;
+	EVENT desiredState;
+	bool desiredStateReached;
+};
+
 class DoorEntity :
 	public Entity
 {
 private:
-	struct ElementState {
-		int entityID;
-		EVENT desiredState;
-		bool desiredStateReached;
-	};
 
 	std::vector<ElementState> m_subjectStates;
 	

@@ -237,7 +237,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					this->m_rotationState = 1;
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+					//this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
 				}
 			}
 			else if (increasing == -1)
@@ -251,7 +251,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					this->m_rotationState = -1;
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					//this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 				}
 			}
 		}

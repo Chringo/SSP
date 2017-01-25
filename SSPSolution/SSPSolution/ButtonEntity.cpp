@@ -26,7 +26,6 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
 		}
 	}
-
 	return result;
 }
 
