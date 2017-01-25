@@ -624,7 +624,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 
-			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
 			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
 
 			if (epp != nullptr)	//If a component was found
