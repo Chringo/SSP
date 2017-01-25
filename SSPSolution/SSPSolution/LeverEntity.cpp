@@ -20,6 +20,12 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 int LeverEntity::React(int entityID, EVENT reactEvent)
 {
 	int result = 0;
+	//If a lever receives a LEVER::ACTIVATED event, deactivate this lever
+	if (reactEvent == EVENT::LEVER_ACTIVE)
+	{
+		this->m_isActive = EVENT::LEVER_DEACTIVE;
+		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
+	}
 	return result;
 }
 
