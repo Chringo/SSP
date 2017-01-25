@@ -66,6 +66,11 @@ public:
 	void SetName(std::string& newName) { this->levelName = newName; };
 	void Destroy(); //Clears the whole level, This is used when a new scene is loaded
 	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
+
+	Button* ConvertToButton(unsigned int entityId);
+	Container* ConvertToContainer(unsigned int entityId, ContainerType type);
+
+	
 };
 
 #endif
