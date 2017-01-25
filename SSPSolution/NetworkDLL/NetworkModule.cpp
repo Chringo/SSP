@@ -355,6 +355,22 @@ void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int n
 	this->SendToAll(packet_data, packet_size);
 }
 
+void NetworkModule::SendGrabPacket(unsigned int entityID, unsigned int grabbedID)
+{
+	const unsigned int packet_size = sizeof(GrabPacket);
+	char packet_data[packet_size];
+
+	GrabPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_GRAB;
+	packet.entityID = entityID;
+	packet.grabbedID = grabbedID;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
@@ -409,6 +425,7 @@ void NetworkModule::ReadMessagesFromClients()
 	AnimationPacket aP;
 	StatePacket sP;
 	CameraPacket cP;
+	GrabPacket gP;
 	SyncPhysicPacket sPP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
@@ -531,6 +548,14 @@ void NetworkModule::ReadMessagesFromClients()
 				data_read += sizeof(CameraPacket);
 				//DEBUG
 				//printf("Recived CAMERA_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_GRAB:
+				gP.deserialize(&network_data[data_read]);
+
+				this->packet_Buffer_Grabbed.push_back(gP);
+				data_read += sizeof(GrabPacket);
 
 				break;
 
@@ -770,6 +795,28 @@ std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Physic.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
+{
+	std::list<GrabPacket> result;
+	std::list<GrabPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Grabbed.begin(); iter != this->packet_Buffer_Grabbed.end();)
+	{
+		if (iter->packet_type == UPDATE_GRAB)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Grabbed.erase(iter);	//Returns the next element after the errased element
 		}
 		else
 		{

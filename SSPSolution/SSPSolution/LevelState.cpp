@@ -117,7 +117,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
-	playerP->PC_mass = 5;
+	playerP->PC_mass = 1;
 	playerP->PC_BVtype = BV_AABB;
 	playerP->PC_AABB.ext[0] = 0.5;
 	playerP->PC_AABB.ext[1] = 0.5;
@@ -142,7 +142,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[0] = 0.5;
 	ballP->PC_AABB.ext[1] = 0.5;
 	ballP->PC_AABB.ext[2] = 0.5;
-	ballP->PC_mass = 1;
+	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -151,7 +151,18 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(1, 0, 10, 2);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 10, 0.5);
+
+	StaticEntity* roof = new StaticEntity;
+	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	roofP->PC_is_Static = true;
+	roofP->PC_BVtype = BV_Plane;
+	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	roofP->PC_elasticity = 0;
+	roofP->PC_friction = 1.0f;
+
+	this->m_staticEntitys.push_back(roof);
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
@@ -383,27 +394,105 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if(this->m_networkModule->IsHost() == true)
 	{ 
+		Entity* wasGrabbed = this->m_player1.GetGrabbed();
+
 		//Camera
 		this->m_player1.SetRightDir(rightDir);
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
 		//update all dynamic (moving) entities
+		Entity* ent = nullptr;
+
+		if (wasGrabbed != this->m_player1.GetGrabbed())
+		{
+			wasGrabbed->SyncComponents();
+
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+		}
+
 		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
-			this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+			ent = this->m_dynamicEntitys.at(i);
+			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
+			{
+				ent->SyncComponents();
+			}
+			else
+			{
+				ent->Update(dt, inputHandler);
+			}
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			this->m_player1.SetGrabbed(this->m_dynamicEntitys.at(0));
+			Entity* ent = this->m_dynamicEntitys.at(0);
+			if (!ent->IsGrabbed())
+			{
+				this->m_player1.SetGrabbed(ent);
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
 			this->m_player1.SetGrabbed(nullptr);
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 		}
+
+		//Check for grabb requests
+#pragma region
+		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_grabPacketList.size() > 0)
+		{
+			std::list<GrabPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
+			Entity* ep = nullptr;
+
+			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+			{
+				//Check if we want to grab or drop			
+				if (itr->grabbedID >= 0)	//Grab, negativ value is for drop
+				{
+					//Find the entity we want to grab
+					for (int i = 0; i < this->m_dynamicEntitys.size(); i++) 
+					{		
+						ep = this->m_dynamicEntitys.at(i);				
+						if (ep->GetEntityID() == itr->grabbedID)
+						{
+							//Check if the entity is already grabbed
+							if (!ep->IsGrabbed())
+							{
+								//If it is player2 who want to grab
+								if (itr->entityID == this->m_player2.GetEntityID())
+								{
+									this->m_player2.SetGrabbed(ep);
+									//Send the update
+									this->m_networkModule->SendGrabPacket(itr->entityID,itr->grabbedID);
+								}
+
+							}
+							i = this->m_dynamicEntitys.size();
+							break;
+						}
+					}
+				}
+				else //Drop
+				{
+					//If it is player2 who want to drop
+					if (itr->entityID == this->m_player2.GetEntityID())
+					{
+						this->m_player2.SetGrabbed(nullptr);
+						this->m_networkModule->SendGrabPacket(itr->entityID, itr->grabbedID);
+					}
+				}
+				
+			}
+		}
+		this->m_grabPacketList.clear();
+#pragma endregion GrabPacket
 
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
@@ -431,10 +520,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
+			Entity* ent = nullptr;
 			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
-				pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				ent = this->m_dynamicEntitys.at(i);
+				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
+				{
+					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+				}
 			}
 
 			
@@ -445,27 +539,105 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 #pragma region
 	if (this->m_networkModule->IsHost() == false)
-	{
+	{	
+		Entity* wasGrabbed = this->m_player2.GetGrabbed();
+
 		this->m_player2.SetRightDir(rightDir);
 		this->m_player2.SetUpDir(upDir);
 		this->m_player2.SetLookDir(playerLookDir);
 		this->m_player2.Update(dt, inputHandler);
-
+		
 		//Other half of the components
 		this->m_player1.SyncComponents();
-		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+
+		Entity* ent = nullptr;
+
+		if (wasGrabbed != this->m_player2.GetGrabbed())
 		{
-			this->m_dynamicEntitys.at(i)->SyncComponents();
+			wasGrabbed->SyncComponents();
+			
+			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
 		}
 
+		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		{
+			ent = this->m_dynamicEntitys.at(i);
+			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
+			{
+				ent->Update(dt, inputHandler);
+			}
+			else
+			{
+				ent->SyncComponents();
+			}
+		}
+		
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			this->m_player2.SetGrabbed(this->m_dynamicEntitys.at(0));
+			Entity* ent = this->m_dynamicEntitys.at(0);
+			if (!ent->IsGrabbed())
+			{
+				this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
-			this->m_player2.SetGrabbed(nullptr);
+			//this->m_player2.SetGrabbed(nullptr);
+			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);	//Send a request to drop the grabed entity (-1 is for drop)
 		}
+
+#pragma region
+
+		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();
+
+		if (this->m_grabPacketList.size() > 0)
+		{
+			std::list<GrabPacket>::iterator itr;
+			Entity* ep = nullptr;
+
+			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+			{
+				//We know that we can grab the entity recived since it was accepted by the host
+				if (itr->grabbedID >= 0) //Grab
+				{
+					//Find the entity to grab
+					for (int i =0 ; i < this->m_dynamicEntitys.size(); i++) 
+					{
+						ep = this->m_dynamicEntitys.at(i);
+
+						if (ep->GetEntityID() == itr->grabbedID)
+						{
+							this->m_player2.SetGrabbed(ep);
+							break;
+						}
+						else
+						{
+							this->m_player1.SetGrabbed(ep);
+							break;
+						}
+						
+					}
+
+				}
+				else //Drop
+				{
+
+					if (itr->entityID == this->m_player2.GetEntityID())
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
+					
+				}
+			}
+
+			this->m_grabPacketList.clear();
+		}
+
+#pragma endregion GrabPacket
 
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
@@ -488,8 +660,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
 		{
+
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(1, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			
+			if (wasGrabbed != nullptr)	//If player2 has grabbed something
+			{
+				pp = wasGrabbed->GetPhysicsComponent();
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);				
+			}
+		
 		}
 	}
 	
@@ -683,7 +863,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
 
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.95f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
