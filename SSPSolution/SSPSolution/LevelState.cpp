@@ -684,11 +684,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							this->m_player2.SetGrabbed(ep);
 							break;
 						}
-						else
-						{
-							this->m_player1.SetGrabbed(ep);
-							break;
-						}
 						
 					}
 
