@@ -4,7 +4,7 @@
 #include <vector>
 
 struct DoorSyncState {
-
+	bool m_isOpened;
 };
 
 struct ElementState {
