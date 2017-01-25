@@ -76,8 +76,6 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				if (percentIncNew != percentIncOld)
 				{
 					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
-					//The event to notify with is the WHEEL_0 event + the increment.
-					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 					//In the very rare occurrencee that the percent increase is equal or above 20% we need to send several notifications
 					int percentIncDiff = abs(percentIncNew - percentIncOld);
 					if ( percentIncDiff > 1)
@@ -93,6 +91,8 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
 						}
 					}
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 				}
 			}
 
@@ -124,8 +124,6 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				if (percentIncNew != percentIncOld)
 				{
 					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
-					//The event to notify with is the WHEEL_0 event + the increment.
-					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 					//In the very rare occurrencee that the percent increase is equal or above 20% we need to send several notifications
 
 					int percentIncDiff = abs(percentIncNew - percentIncOld);
@@ -142,6 +140,8 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
 						}
 					}
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 				}
 			}
 			this->SyncComponents();
@@ -173,8 +173,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				if (percentIncNew != percentIncOld)
 				{
 					//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
-					//The event to notify with is the WHEEL_0 event + the increment.
-					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+
 					//In the very rare occurrencee that the percent increase is equal or above 20% we need to send several notifications
 					int percentIncDiff = abs(percentIncNew - percentIncOld);
 					if (percentIncDiff > 1)
@@ -190,6 +189,8 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
 						}
 					}
+					//The event to notify with is the WHEEL_0 event + the increment.
+					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 				}
 			}
 			this->SyncComponents();
