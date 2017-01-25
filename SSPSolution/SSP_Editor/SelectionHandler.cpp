@@ -241,8 +241,9 @@ bool SelectionHandler::PickObjectSelection()
 
 						minHitDistance = hitDistance;
 						//update widget with the intersected obb
-						this->m_transformWidget.Select(obj, &InstancePtr->at(j), InstancePtr->at(j).internalID, m_modelPtr->at(i)->GetId());
-						Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(&InstancePtr->at(j));
+						Container* cont = &InstancePtr->at(j);
+						this->m_transformWidget.Select(obj, cont, InstancePtr->at(j).internalID, m_modelPtr->at(i)->GetId());
+						Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
 
 						gotHit = result;
 					}
@@ -268,7 +269,8 @@ bool SelectionHandler::PickObjectSelection()
 			minHitDistance = hitDistance;
 			//update widget with the intersected obb
 			this->m_transformWidget.Select(container->obb, container); //OVERLOAD AND HANLDE THIS
-			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(container);
+			Container* cont = (Container*)container;
+			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
 
 			gotHit = result;
 		}

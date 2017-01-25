@@ -405,6 +405,7 @@ Button * Level::ConvertToButton(Container*& obj)
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
 		this->m_pussleElements.at(BUTTON).push_back(newButton); // add to button array
 		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		newButton->resetTime = 1337; //TEMP! REMOVE
 		return newButton; //Return new button
 
 	}

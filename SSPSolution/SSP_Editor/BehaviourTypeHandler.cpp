@@ -45,7 +45,7 @@ Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
 {
 }
 
-void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
+void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
@@ -236,12 +236,17 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 				{
 				case BehaviourType::BUTTON: 
 				{
-					if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::BUTTON) //if the selection is not a container or button, 
-					{		
-						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection->internalID, m_selection->type); // convert to container
-						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(cont); //convert from container to button
-						m_selection = newButton;
+					if (m_selection->type == ContainerType::MODEL) {
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button	
 					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::BUTTON) //if the selection is not a container or button, 
+					{		
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button	
+					}
+					
+					float time = ((Button*)m_selection)->resetTime;
+					int hej = 123432145;
 					break;
 				}
 				}

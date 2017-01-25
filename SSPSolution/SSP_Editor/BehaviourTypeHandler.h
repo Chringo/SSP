@@ -65,7 +65,7 @@ namespace Ui {
 		BehaviourTypeHandler(const Ui::SSP_EditorClass* ui);
 		void Initialize(const Ui::SSP_EditorClass* ui);
 		~BehaviourTypeHandler();
-		void SetSelection(Container* selection);
+		void SetSelection(Container*& selection);
 		void Deselect();
 		void UpdateSelection();
 		void ResetType(BehaviourType);
