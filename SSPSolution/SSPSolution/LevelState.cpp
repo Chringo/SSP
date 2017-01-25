@@ -99,9 +99,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_AABB;
-	playerP->PC_AABB.ext[0] = 0.5;
-	playerP->PC_AABB.ext[1] = 0.5;
-	playerP->PC_AABB.ext[2] = 0.5;
+	playerP->PC_OBB.ext[0] = 0.5f;
+	playerP->PC_OBB.ext[1] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_AABB.ext[0] = 0.5f;
+	playerP->PC_AABB.ext[1] = 0.5f;
+	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player1.Initialize(0, playerP, playerG);
 
@@ -119,9 +122,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 1;
 	playerP->PC_BVtype = BV_AABB;
-	playerP->PC_AABB.ext[0] = 0.5;
-	playerP->PC_AABB.ext[1] = 0.5;
-	playerP->PC_AABB.ext[2] = 0.5;
+	playerP->PC_OBB.ext[0] = 0.5f;
+	playerP->PC_OBB.ext[1] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_AABB.ext[0] = 0.5f;
+	playerP->PC_AABB.ext[1] = 0.5f;
+	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(1, playerP, playerG);
 	
@@ -281,10 +287,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	wheel1P->PC_entityID = 616;									//Set Entity ID
 	wheel1P->PC_pos = DirectX::XMVectorSet(-8.0f, -10.0f, -19.0f, 0.0f);		//Set Position
 	wheel1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	wheel1P->PC_is_Static = true;								//Set IsStatic
+	wheel1P->PC_is_Static = false;								//Set IsStatic
 	wheel1P->PC_active = true;									//Set Active
+	wheel1P->PC_gravityInfluence = 1.0f;
 	wheel1P->PC_mass = 5;
 	wheel1P->PC_BVtype = BV_AABB;
+	wheel1P->PC_OBB.ext[0] = 0.5f;
+	wheel1P->PC_OBB.ext[1] = 0.5f;
+	wheel1P->PC_OBB.ext[2] = 0.5f;
 	wheel1P->PC_AABB.ext[0] = 0.5f;
 	wheel1P->PC_AABB.ext[1] = 0.5f;
 	wheel1P->PC_AABB.ext[2] = 0.5f;
@@ -803,7 +813,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 10, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
