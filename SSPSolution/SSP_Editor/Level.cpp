@@ -381,10 +381,18 @@ void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
 	m_SpawnPoints[index].isDirty = true;
 }
 
-Button * Level::ConvertToButton(unsigned int entityId)
+const std::vector<Container*>* Level::GetPuzzleElements(ContainerType type)
+{
+	if (type >= ContainerType::NUM_PUZZLE_ELEMENTS)
+		return nullptr;
+	
+	return &this->m_pussleElements.at(type);
+}
+
+Button * Level::ConvertToButton(Container*& obj)
 {
 
-	Container* entity = this->GetInstanceEntity(entityId);
+	Container* entity = this->GetInstanceEntity(obj->internalID);
 
 	if (entity != nullptr)
 	{
@@ -396,38 +404,67 @@ Button * Level::ConvertToButton(unsigned int entityId)
 		Button* newButton = new Button(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
 		this->m_pussleElements.at(BUTTON).push_back(newButton); // add to button array
+		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newButton; //Return new button
+
 	}
+
 	return nullptr;
 }
 
-Container * Level::ConvertToContainer(unsigned int entityId, ContainerType type)
+Door * Level::ConvertToDoor(Container *& object)
 {
-	if (type >= ContainerType::NUM_PUZZLE_ELEMENTS)
-		return nullptr;
 
-	for (size_t i = 0; i < m_pussleElements.at(type).size(); i++)
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
 	{
-		if (m_pussleElements.at(type).at(i)->internalID == entityId) // puzzleElement Found
-		{
-			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(m_pussleElements.at(type).at(i)->component.modelID); //find the vector that holds this type of model
-			std::vector<Container>* modelPtr;
+		// Create a new door,
+		// transfer the entity information
+		// Remove the old container
+		// put the door into the door vector
 
-			Container newComponent((Container)*m_pussleElements.at(type).at(i));
-		
-
-					modelPtr = &got->second;
-					modelPtr->push_back(newComponent);
-					return &modelPtr->back();
-				
-			
-		}
-
+		Door* newDoor = new Door(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_pussleElements.at(DOOR).push_back(newDoor); // add to button array
+		object = newDoor; //set the object to the new button as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		return newDoor; //Return new button
 	}
 
+	return nullptr;
+}
+
+
+
+Container * Level::ConvertToContainer(Container *& object)
+{
+	if (object->type >= ContainerType::NUM_PUZZLE_ELEMENTS)
+		return nullptr;
+
+	ContainerType type = object->type;
 	//Create new container.
 	//fill it with data.
 	//put it into the corresponding array
 	//Remove from the puzzle array it came from
+
+	for (size_t i = 0; i < m_pussleElements.at(type).size(); i++)
+	{
+		if (m_pussleElements.at(type).at(i)->internalID == object->internalID) // puzzleElement Found
+		{
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(m_pussleElements.at(type).at(i)->component.modelID); //find the vector that holds this type of model
+			std::vector<Container>* modelPtr;
+
+			Container newComponent((Container)*m_pussleElements.at(type).at(i));		// Create new container component
+			modelPtr = &got->second;													// The vector that holds the the corresponding model
+			modelPtr->push_back(newComponent);											// Push back the newly created container
+			m_pussleElements.at(type).erase(m_pussleElements.at(type).begin() + i);	    // Erase the puzzle element
+			object = &modelPtr->back();
+			return &modelPtr->back(); //Return the model
+		}
+
+	}
+
+	
 
 
 	return nullptr;

@@ -67,8 +67,10 @@ public:
 	void Destroy(); //Clears the whole level, This is used when a new scene is loaded
 	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
 
-	Button* ConvertToButton(unsigned int entityId);
-	Container* ConvertToContainer(unsigned int entityId, ContainerType type);
+	const std::vector<Container*>* GetPuzzleElements(ContainerType type);
+	Button*    ConvertToButton(Container*& object);
+	Door*      ConvertToDoor  (Container*& object);
+	Container* ConvertToContainer(Container*& object); //polymorphism 
 
 	
 };

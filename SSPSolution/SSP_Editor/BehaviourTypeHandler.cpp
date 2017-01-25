@@ -228,8 +228,27 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 			{
 				AIController cont(m_selection->aiComponent);
 				cont.DeletePath();
+				return;
+			}
+		
+			else {
+				switch (val)
+				{
+				case BehaviourType::BUTTON: 
+				{
+					if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::BUTTON) //if the selection is not a container or button, 
+					{		
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection->internalID, m_selection->type); // convert to container
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(cont); //convert from container to button
+						m_selection = newButton;
+					}
+					break;
+				}
+				}
+
 			}
 		}
+		
 	
 
 
