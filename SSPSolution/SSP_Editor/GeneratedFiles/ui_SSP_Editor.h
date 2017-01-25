@@ -99,9 +99,11 @@ public:
     QGridLayout *gridLayout_5;
     QSpacerItem *verticalSpacer_4;
     QLabel *tag_label;
-    QSpinBox *button_tagBox;
     QLabel *tag_label_2;
-    QSpinBox *button_dist_box;
+    QSpinBox *button_tagBox;
+    QDoubleSpinBox *button_dist_box;
+    QLabel *tag_label_3;
+    QDoubleSpinBox *button_timer_box;
     QWidget *Behaviour_Door;
     QGridLayout *gridLayout_4;
     QListWidget *TriggerListWidget;
@@ -611,6 +613,7 @@ public:
 
         BehaviourDropDown = new QComboBox(Behaviour);
         BehaviourDropDown->setObjectName(QStringLiteral("BehaviourDropDown"));
+        BehaviourDropDown->setEnabled(false);
         BehaviourDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
         formLayout_3->setWidget(2, QFormLayout::FieldRole, BehaviourDropDown);
@@ -693,31 +696,44 @@ public:
         gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
         verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout_5->addItem(verticalSpacer_4, 6, 2, 1, 1);
+        gridLayout_5->addItem(verticalSpacer_4, 7, 2, 1, 1);
 
         tag_label = new QLabel(Behaviour_Button);
         tag_label->setObjectName(QStringLiteral("tag_label"));
 
         gridLayout_5->addWidget(tag_label, 1, 0, 1, 2);
 
-        button_tagBox = new QSpinBox(Behaviour_Button);
-        button_tagBox->setObjectName(QStringLiteral("button_tagBox"));
-        button_tagBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        button_tagBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-
-        gridLayout_5->addWidget(button_tagBox, 1, 2, 1, 1);
-
         tag_label_2 = new QLabel(Behaviour_Button);
         tag_label_2->setObjectName(QStringLiteral("tag_label_2"));
 
         gridLayout_5->addWidget(tag_label_2, 2, 0, 2, 2);
 
-        button_dist_box = new QSpinBox(Behaviour_Button);
+        button_tagBox = new QSpinBox(Behaviour_Button);
+        button_tagBox->setObjectName(QStringLiteral("button_tagBox"));
+        button_tagBox->setStyleSheet(QStringLiteral(""));
+        button_tagBox->setReadOnly(true);
+        button_tagBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_5->addWidget(button_tagBox, 1, 2, 1, 1);
+
+        button_dist_box = new QDoubleSpinBox(Behaviour_Button);
         button_dist_box->setObjectName(QStringLiteral("button_dist_box"));
         button_dist_box->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
         button_dist_box->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
         gridLayout_5->addWidget(button_dist_box, 2, 2, 2, 1);
+
+        tag_label_3 = new QLabel(Behaviour_Button);
+        tag_label_3->setObjectName(QStringLiteral("tag_label_3"));
+
+        gridLayout_5->addWidget(tag_label_3, 4, 0, 1, 1);
+
+        button_timer_box = new QDoubleSpinBox(Behaviour_Button);
+        button_timer_box->setObjectName(QStringLiteral("button_timer_box"));
+        button_timer_box->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        button_timer_box->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_5->addWidget(button_timer_box, 4, 2, 1, 1);
 
         BehaviourStackWidget->addWidget(Behaviour_Button);
         Behaviour_Door = new QWidget();
@@ -1039,6 +1055,7 @@ public:
         );
         tag_label->setText(QApplication::translate("SSP_EditorClass", " Tag", Q_NULLPTR));
         tag_label_2->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction", Q_NULLPTR));
+        tag_label_3->setText(QApplication::translate("SSP_EditorClass", "Reset timer (Seconds)", Q_NULLPTR));
         availableTriggers->clear();
         availableTriggers->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
