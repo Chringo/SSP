@@ -93,8 +93,8 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	file.open(path, std::fstream::in | std::fstream::binary);			
 
 
-	LevelData::OLDMainLevelHeader header;
-	file.read((char*)&header, sizeof(LevelData::OLDMainLevelHeader));				 //Read file header
+	LevelData::MainLevelHeader header;
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader));				 //Read file header
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
@@ -123,6 +123,15 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
 		
 		delete aiData;
+	}
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		char* checkpointData = new char[checkpointSize];
+		file.read(checkpointData, checkpointSize);
+
+		LoadCheckpointComponents((LevelData::CheckpointHeader*)checkpointData, header.checkpointAmount);
+		delete checkpointData;
 	}
 
 	file.close();
@@ -358,6 +367,22 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 				cont->aiComponent = newComponent;
 			}
 
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::CheckpointHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		CheckpointContainer * checkpoint = new CheckpointContainer(dataPtr[i]);
+
+		if (checkpoint->position.m128_f32[0] < -9999)
+			checkpoint->position = { 0.0,0.0,0.0 };
+
+		checkpoint->Update();
+		m_currentLevel.GetCheckpoints()->push_back(checkpoint);
 	}
 
 	return LevelData::LevelStatus::L_OK;

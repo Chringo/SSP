@@ -194,17 +194,34 @@ public:
 	{
 		this->checkpointHeader.entityID = this->internalID;
 		this->checkpointHeader.checkpointNumber = this->checkpointNumber;
-
+		this->checkpointHeader.position[0] = this->position.m128_f32[0];
+		this->checkpointHeader.position[1] = this->position.m128_f32[1];
+		this->checkpointHeader.position[2] = this->position.m128_f32[2];
 		memcpy(this->checkpointHeader.ext, this->obb.ext, sizeof(float) * 3);
 		memcpy(this->checkpointHeader.ort, &this->obb.ort, sizeof(float) * 16);
 
 
-		for (int i = 0; i < 16; i++)
-		{
-			printf("%f, \n", this->checkpointHeader.ort[i]);
-		}
-
 		return &this->checkpointHeader;
+	}
+
+	CheckpointContainer(LevelData::CheckpointHeader data)
+	{
+		this->internalID = data.entityID;
+		this->type = CHECKPOINT;
+		this->checkpointNumber = data.checkpointNumber;
+		memcpy(&this->obb.ext[0], data.ext, sizeof(float) * 3);
+		memcpy(&this->obb.ort, data.ort, sizeof(float) * 16);
+
+		float rotX = atan2(this->obb.ort.r[2].m128_f32[1], this->obb.ort.r[2].m128_f32[2]);
+		float rotY = atan2(-this->obb.ort.r[2].m128_f32[0], sqrt(pow(this->obb.ort.r[2].m128_f32[1], 2) + pow(this->obb.ort.r[2].m128_f32[2], 2)));
+		float rotZ = atan2(this->obb.ort.r[1].m128_f32[0], this->obb.ort.r[0].m128_f32[0]);
+
+		this->rotation = { rotX, rotY, rotZ };
+		this->position = { data.position[0], data.position[1],data.position[2] };
+		this->scale = { this->obb.ext[0], this->obb.ext[1], this->obb.ext[2] };
+
+		this->Update();
+
 	}
 
 };
