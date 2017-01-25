@@ -188,6 +188,8 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+	this->m_physicsHandler.Update(deltaTime);
+
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -235,7 +237,6 @@ int System::Update(float deltaTime)
 		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
 		dir = DirectX::XMVectorScale(dir, 500);
 	}
-	this->m_physicsHandler.Update(deltaTime);
 
 #ifdef _DEBUG
 	for (int i = 0; i < nrOfComponents; i++)
