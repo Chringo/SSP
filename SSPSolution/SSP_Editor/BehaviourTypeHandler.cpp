@@ -80,11 +80,18 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			}
 			
 		}
-		else
-		{
+		switch (m_selection->type) {
+
+		case ContainerType::BUTTON:
+			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for path
+			m_Current_Type = BUTTON; //Update current type
+			break;
+
+		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
 		}
+	
 		
 	}
 }
@@ -93,8 +100,9 @@ void Ui::BehaviourTypeHandler::Deselect()
 {
 	m_selection = nullptr;
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
-	this->m_Numerics[SPEED]->setValue(0);
-	this->m_Numerics[TIME]->setValue(0);
+	m_BehaviourType->setCurrentIndex(NONE); //Close the window
+	m_Current_Type = NONE; //Update current type
+	
 	
 	
 }
@@ -237,16 +245,18 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 				case BehaviourType::BUTTON: 
 				{
 					if (m_selection->type == ContainerType::MODEL) {
-						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button	
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button
+						m_selection->isDirty = true;
 					}
 					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::BUTTON) //if the selection is not a container or button, 
 					{		
 						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
-						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button	
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button
+						m_selection->isDirty = true;
 					}
 					
 					float time = ((Button*)m_selection)->resetTime;
-					m_selection->isDirty = true;
+					
 					
 					int hej = 123432145;
 					break;
