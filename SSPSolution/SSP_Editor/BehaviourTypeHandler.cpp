@@ -254,6 +254,14 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 			else {
 				switch (val)
 				{
+				case BehaviourType::NONE: //if none, convert back to normal container
+
+					if (m_selection->type != ContainerType::MODEL)
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						m_selection->isDirty = true;
+					}
+					break;
 				case BehaviourType::BUTTON: 
 				{
 					if (m_selection->type == ContainerType::MODEL) {
@@ -267,7 +275,6 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 						m_selection->isDirty = true;
 					}
 					
-		
 					m_button_tagBox->setValue((int)m_selection->internalID);
 					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
 

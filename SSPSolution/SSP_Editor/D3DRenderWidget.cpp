@@ -69,6 +69,9 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 					if (InstancePtr->at(j).isDirty)
 					{
 						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), InstancePtr->at(j).internalID, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+						
+						Container* ptr = &InstancePtr->at(j);
+						SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
 						if (SelectionHandler::GetInstance()->HasSelection())
 						{
 							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
