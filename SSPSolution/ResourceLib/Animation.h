@@ -16,6 +16,15 @@ namespace Resources
 			float quaternion[4] {0.0f,0.0f,0.0f };
 			float scale[3]		{0.0f,0.0f,0.0f };
 		};
+
+		struct AnimationState
+		{
+			/*Animation state information.*/
+			float startTime = 0.f;
+			float endTime = 0.f;
+			bool isLooping = false;
+		};
+
 		struct AnimationJoint 
 		{
 			unsigned int keyframeCount	= 0;
@@ -28,6 +37,7 @@ namespace Resources
 		};
 	private:
 		AnimationData m_anim;
+		AnimationState m_StateData;
 	public:
 		DLL_OPERATION Animation();
 		DLL_OPERATION Animation(Resource::RawResourceData* resData);
@@ -41,6 +51,7 @@ namespace Resources
 		DLL_OPERATION const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };
 		DLL_OPERATION const AnimationJoint* GetJoint(int& index)	{ return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
 		DLL_OPERATION const AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
+		DLL_OPERATION AnimationState* GetAnimationStateData() { return &m_StateData; };
 
 		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 

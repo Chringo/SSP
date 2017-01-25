@@ -93,7 +93,8 @@ int System::Initialize()
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
 
 	//Initialize the animation handler. 
-	this->m_AnimationHandler = new AnimationHandler(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
+	this->m_AnimationHandler = new AnimationHandler();
+	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
 
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);

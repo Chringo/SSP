@@ -83,32 +83,27 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5;
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	
 	/*TEMP ANIM STUFF*/
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+	
+	AnimationComponent* playerAnim1 = nullptr;
+	playerAnim1 = m_cHandler->GetAnimationComponent();
+	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
+	playerAnim1->active = 1;
 	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
 	{
 		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 	}
 
-	AnimationComponent* playerAnim1 = nullptr;
-
 	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
 	{
-		playerAnim1 = m_cHandler->GetAnimationComponent();
-
 		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-		for (int i = 0; i < numAnimations; i++)
-		{
-			Resources::Animation* animation = playerG->modelPtr->GetSkeleton()->GetAnimation(i);
-			int jointIndex = 0;
-			const Resources::Animation::AnimationJoint* animationJoint = animation->GetJoint(jointIndex);
-			playerAnim1->Anim_StateData[i].startFrame = animationJoint->keyframes[0].timeValue;
-			int keyCount = animationJoint->keyframeCount;
-			playerAnim1->Anim_StateData[i].endFrame = animationJoint->keyframes[keyCount - 1].timeValue;
-			playerAnim1->Anim_StateData[i].localTime = 0;
-			playerAnim1->Anim_StateData[i].isLooping = true;
-			playerAnim1->Anim_StateData[i].animationState = i;
-		}
+
+		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+		playerAnim1->source_State->isLooping = true; // TEMP TEST
 	}
 
 	this->m_player1.Initialize(0, playerP, playerG, playerAnim1);
@@ -143,21 +138,21 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
 	{
-		playerAnim2 = m_cHandler->GetAnimationComponent();
+		//playerAnim2 = m_cHandler->GetAnimationComponent();
 
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-		for (int i = 0; i < numAnimations; i++)
-		{
-			Resources::Animation* animation = playerG->modelPtr->GetSkeleton()->GetAnimation(i);
-			int jointIndex = 0;
-			const Resources::Animation::AnimationJoint* animationJoint = animation->GetJoint(jointIndex);
-			playerAnim2->Anim_StateData[i].startFrame = animationJoint->keyframes[0].timeValue;
-			int keyCount = animationJoint->keyframeCount;
-			playerAnim2->Anim_StateData[i].endFrame = animationJoint->keyframes[keyCount - 1].timeValue;
-			playerAnim2->Anim_StateData[i].localTime = 0;
-			playerAnim2->Anim_StateData[i].isLooping = true;
-			playerAnim2->Anim_StateData[i].animationState = i;
-		}
+		//int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		//for (int i = 0; i < numAnimations; i++)
+		//{
+		//	Resources::Animation* animation = playerG->modelPtr->GetSkeleton()->GetAnimation(i);
+		//	int jointIndex = 0;
+		//	const Resources::Animation::AnimationJoint* animationJoint = animation->GetJoint(jointIndex);
+		//	playerAnim2->Anim_StateData[i].startFrame = animationJoint->keyframes[0].timeValue;
+		//	int keyCount = animationJoint->keyframeCount;
+		//	playerAnim2->Anim_StateData[i].endFrame = animationJoint->keyframes[keyCount - 1].timeValue;
+		//	playerAnim2->Anim_StateData[i].localTime = 0;
+		//	playerAnim2->Anim_StateData[i].isLooping = true;
+		//	playerAnim2->Anim_StateData[i].animationState = i;
+		//}
 	}
 
 	this->m_player2.Initialize(3, playerP, playerG, playerAnim2);
@@ -586,7 +581,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				((GraphicsAnimationComponent*)t_gc)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
 			}
 
-			if (modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+			/*if (modelPtr->GetSkeleton()->GetNumAnimations() > 0)
 			{
 				t_anim = m_cHandler->GetAnimationComponent();
 
@@ -602,7 +597,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 					t_anim->Anim_StateData[i].localTime = 0;
 					t_anim->Anim_StateData[i].isLooping = true;
 				}
-			}
+			}*/
 		}
 		else
 		{

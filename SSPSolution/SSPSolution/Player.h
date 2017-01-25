@@ -3,6 +3,7 @@
 
 #include "..\GraphicsDLL\AnimationStateEnums.h"
 #include "Entity.h"
+
 class Player :
 	public Entity
 {
@@ -11,9 +12,6 @@ private:
 	float m_speed;
 	float m_throwStrength;
 	bool m_isAiming;
-
-	AnimationStates m_PlayerState;
-	std::vector<AnimStateData> m_currentAnimStates;
 
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
@@ -37,8 +35,6 @@ public:
 	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
 	void SetAiming(bool isAming);
-
-	bool IsStateChanged(AnimationStates currentState);
 
 	float GetSpeed();
 	DirectX::XMVECTOR GetLookDir();

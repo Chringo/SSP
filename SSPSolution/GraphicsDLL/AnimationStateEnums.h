@@ -21,12 +21,11 @@ GRAPHICSDLL_API enum AnimationStates : int
 	DOOR_CLOSING 
 };
 
-GRAPHICSDLL_API enum SkelAnimModels : unsigned int
+enum Blending
 {
-	PLAYER_STUDLEY = 0,
-	PLAYER_ABBINGTON, 
-	PROP_LEVER = 0,
-	PROP_DOOR
+	NO_TRANSITION = 0,
+	SMOOTH_TRANSITION = 1
+	//FROZEN_TRANSITION	=	2
 };
 
 #endif

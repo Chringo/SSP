@@ -15,45 +15,22 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-#define ANIMSTATE_MAX_COUNT 8
-
-
-struct AnimStateData
-{
-	/*Animation state information.*/
-	int animationState = 0;
-	float startFrame = 0.f;
-	float endFrame = 0.f;
-	float localTime = 0.f;
-	bool isLooping = false;
-};
 struct AnimationComponent
 {
 	/*System variables.*/
 	int active = 0;
 
-	/*Animation array data.*/
-	AnimStateData Anim_StateData[ANIMSTATE_MAX_COUNT];
-};
+	/*Used to play one or two animations, for blending.*/
+	Resources::Animation::AnimationState* source_State; // Always available
+	Resources::Animation::AnimationState* target_State;
+	/*The source and target local times.*/
+	float source_Time = 0.f;
+	float target_Time = 0.f;
 
-struct Skeleton
-{
-	DirectX::XMMATRIX inverseBindPose;
-	int parentIndex;
-	int jointIndex;
-};
+	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
-struct AnimationDataContainer
-{
-	std::vector<Skeleton> skeleton;
-	std::vector<const Resources::Animation::AnimationJoint*> animations;
-};
-
-enum BlendingStates
-{
-	NO_TRANSITION		=	0,
-	SMOOTH_TRANSITION	=	1,
-	FROZEN_TRANSITION	=	2
+	Resources::Skeleton* skeleton = nullptr;
+	std::vector<Resources::Animation*>* animation_States = nullptr;
 };
 
 struct BlendKeyframe
@@ -65,21 +42,19 @@ struct BlendKeyframe
 
 class AnimationHandler
 {
-
 private:
 	//Variables used only in class.
-
 	int m_nrOfAnimComps;
 	int m_maxAnimComps;
 
-	/*2D-array, which have a index for each Graphics Animation Component with their separate updating Animation Component lists.*/
+	/*List with animations components*/
 	std::vector<AnimationComponent*> m_AnimComponentList;
 
-	BlendingStates m_BlendState;
+	//std::vector<AnimStateData> animStateList;
+
+	//AnimStateData Anim_StateData[ANIMSTATE_MAX_COUNT];
 
 	bool m_TransitionComplete;
-	
-	float m_globalTimeElapsed;
 	float m_TransitionDuration;
 	float m_TransitionTimeLeft;
 
@@ -88,48 +63,30 @@ private:
 
 	/*This is the data that is stored per model that have a skeleton and keyframe animations.
 	Examples include: both the two players and animatible props like levers and doors.*/
-	std::vector<AnimationDataContainer> m_AnimationData;
-
-	SkelAnimModels m_skelAnimModel;
-
-	/*Used to set the current Graphics Animation Component separate animation stack.*/
-	std::vector<AnimStateData> m_AnimationComponentStack;
+	//std::vector<AnimationDataContainer> m_AnimationData;
 
 public: 
 	//Functions used outside the class.
 	GRAPHICSDLL_API AnimationHandler();
-	GRAPHICSDLL_API AnimationHandler(GraphicsAnimationComponent** graphicAnimComponents, int* noActiveComponents);
 	GRAPHICSDLL_API ~AnimationHandler();
-
+	GRAPHICSDLL_API void ShutDown();
+	GRAPHICSDLL_API void Initialize(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents);
 	GRAPHICSDLL_API void Update(float dt);
-
-	GRAPHICSDLL_API void SetAnimationDataContainer(GraphicsAnimationComponent* graphAnimationComponent, int index);
 
 	GRAPHICSDLL_API AnimationComponent* CreateAnimationComponent();
 	GRAPHICSDLL_API AnimationComponent* GetNextAvailableComponent();
 
-	GRAPHICSDLL_API void ShutDown();
-
+	GRAPHICSDLL_API void UpdateAnimationComponents(float dt);
+	
 private:
 	//Functions only used in class.
-
-	void Push(AnimStateData animState);
-
-	void Pop();
-
-	float GetStartFrame(int animationState);
-
-	float GetEndFrame(int animationState);
-
-	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
-
-	void InterpolateKeys(AnimStateData animState, float globalTimeElapsed);
-
-	void Blend(float secondsElapsed);
-
-	void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animStateData, float globalTimeElapsed, int animIndex);
-
-	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+	//void Push(AnimStateData animState);
+	//void Pop();
+	void CalculateFinalTransform(std::vector<DirectX::XMMATRIX> localMatrices);
+	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
+	//void Blend(float secondsElapsed);
+	//void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animStateData, float globalTimeElapsed, int animIndex);
+	//void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 };
 
 #endif
