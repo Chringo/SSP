@@ -39,6 +39,8 @@ public:
 	DirectX::XMVECTOR GetUpDir();
 	DirectX::XMVECTOR GetRightDir();
 	bool GetIsAming();
+	Entity* GetGrabbed();
+
 private:
 
 };
