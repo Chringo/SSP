@@ -135,6 +135,8 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 					float yProcent = fabs(yOverlap / y_total_ext);
 					float zProcent = fabs(zOverlap / z_total_ext);
 
+					float highLimit = 0.1;
+					float diff = 0;
 
 					// apply OOB check for more precisition
 					result = true;
@@ -155,27 +157,38 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						if (!obj1->PC_steadfast)
 						{
-							//if (xProcent > procentMargin)
-							//{
-							//	yCorrection = (1.0f - yProcent) * y_total_ext;
-							//	//distanceToMove = 0;
-							//	normal = DirectX::XMVectorSet(0, 1, 0, 0);
-							//}
 
-							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
-							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, 0, 0, 0));
+							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, 0, 0, 0)); // old
+
+							float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
+							float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
+							diff = fabs(obj1YMin - obj2YMax);
+
+							if (diff < highLimit)
+							{
+								normal = DirectX::XMVectorSet(0, 1, 0, 0);
+								yCorrection = diff;
+								distanceToMove = 0;
+							}
+
+							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
 						}
 						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
 						{
-							//if (xProcent > procentMargin)
-							//{
-							//	yCorrection = (1.0f - yProcent) * y_total_ext;
-							//	//distanceToMove = 0;
-							//	normal = DirectX::XMVectorSet(0, 1, 0, 0);
-							//}
 
-							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
-							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(-distanceToMove, 0, 0, 0));
+							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(-distanceToMove, 0, 0, 0)); // old
+
+							float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
+							float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
+							diff = fabs(obj2YMin - obj1YMax);
+
+							if (diff < highLimit)
+							{
+								yCorrection = diff;
+								distanceToMove = 0;
+							}
+
+							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
 						}
 					}
 
@@ -219,27 +232,43 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 						}
 						if (!obj1->PC_steadfast)
 						{
-							//if (zProcent > procentMargin)
-							//{
-							//	yCorrection = (1.0f - yProcent) * y_total_ext;
-							//	//distanceToMove = 0;
-							//	normal = DirectX::XMVectorSet(0, 1, 0, 0);
-							//}
 
-							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
-							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, 0, distanceToMove, 0));
+
+							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, 0, distanceToMove, 0)); // old
+
+							float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
+							float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
+
+							diff = fabs(obj1YMin - obj2YMax);
+
+							if (diff < highLimit)
+							{
+								yCorrection = diff;
+								distanceToMove = 0;
+								normal = DirectX::XMVectorSet(0, 1, 0, 0);
+							}
+
+							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
+
 						}
 						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
 						{
-							//if (zProcent > procentMargin)
-							//{
-							//	yCorrection = (1.0f - yProcent) * y_total_ext;
-							//	//distanceToMove = 0;
-							//	normal = DirectX::XMVectorSet(0, 1, 0, 0);
-							//}
 
-							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, yCorrection, -distanceToMove, 0));
-							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, 0, -distanceToMove, 0));
+							
+							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, 0, -distanceToMove, 0)); // old
+
+							float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
+							float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
+
+							diff = fabs(obj2YMin - obj1YMax);
+
+							if (diff < highLimit)
+							{
+								yCorrection = diff;
+								distanceToMove = 0;
+							}
+
+							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
 						}
 					}
 					//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, correction);
@@ -1537,7 +1566,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.009f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.008f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
@@ -1598,12 +1627,12 @@ void PhysicsHandler::Update(float deltaTime)
 
 		int loopsNeeded = 1;
 		float speed = DirectX::XMVectorGetX(DirectX::XMVector3Length(current->PC_velocity));
-		float speedLimit = 0.5f; // speed limit that detemines when a component needs more checks to ensure it doesn't go through walls
+		float speedLimit = 0.3f; // speed limit that detemines when a component needs more checks to ensure it doesn't go through walls
 		if (speed > speedLimit)
 		{
 			//if speed is to great increase number of loops to insure 
 			//hit detection/correction is done correctly
-			loopsNeeded = 10;
+			loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
 		}
 		for (int i = 0; i < loopsNeeded; i++)
 		{

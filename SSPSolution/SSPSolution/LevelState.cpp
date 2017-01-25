@@ -133,16 +133,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 10, 0.5);
 
-	StaticEntity* roof = new StaticEntity;
-	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
-	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
-	roofP->PC_is_Static = true;
-	roofP->PC_BVtype = BV_Plane;
-	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
-	roofP->PC_elasticity = 0;
-	roofP->PC_friction = 1.0f;
+	//StaticEntity* roof = new StaticEntity;
+	//PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	//roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	//roofP->PC_is_Static = true;
+	//roofP->PC_BVtype = BV_Plane;
+	//roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	//roofP->PC_elasticity = 0;
+	//roofP->PC_friction = 1.0f;
 
-	this->m_staticEntitys.push_back(roof);
+	//this->m_staticEntitys.push_back(roof);
 
 	DynamicEntity* platform = new DynamicEntity();
 	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
@@ -688,6 +688,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 10, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{

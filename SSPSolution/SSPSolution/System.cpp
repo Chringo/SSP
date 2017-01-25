@@ -97,6 +97,7 @@ int System::Initialize()
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 
+	/*this->m_physicsHandler.CreatePhysicsComponent(DirectX::XMVectorSet(-10, -1.49, -5, 0), true);*/
 
 	this->m_physicsHandler.SortComponents();
 
