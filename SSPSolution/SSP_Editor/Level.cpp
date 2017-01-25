@@ -161,7 +161,7 @@ Resources::Status Level::AddCheckpointEntity()
 {
 	CheckpointContainer * container = new CheckpointContainer();
 	container->checkpointNumber = 0;
-	
+	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
 
 	return Resources::Status::ST_OK;

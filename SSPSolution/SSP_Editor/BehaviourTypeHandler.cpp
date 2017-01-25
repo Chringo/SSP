@@ -39,6 +39,10 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 		this->m_ListItems[(ListItems)i] = nullptr;
 	}
 
+	this->m_AddCheckpoint = ui->CheckPointADD;
+	connect(ui->CheckPointADD, SIGNAL(clicked()), this, SLOT(on_CheckpointAdd()));
+	this->m_CheckpointValue = ui->CheckPointValue;
+	connect(ui->CheckPointValue, SIGNAL(valueChanged(int)), this, SLOT(on_CheckpointIndex_changed(int)));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -80,6 +84,10 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 			}
 			
 		}
+		else if(m_selection->type == CHECKPOINT)
+		{
+			this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
+		}
 		else
 		{
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -95,8 +103,7 @@ void Ui::BehaviourTypeHandler::Deselect()
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	this->m_Numerics[SPEED]->setValue(0);
 	this->m_Numerics[TIME]->setValue(0);
-	
-	
+	this->m_CheckpointValue->setValue(0);
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -233,6 +240,21 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 	
 
 
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointAdd()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddCheckpointEntity();
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointIndex_changed(int val)
+{
+	if (m_selection == nullptr || m_selection->type != CHECKPOINT)
+		return;
+	else 
+	{
+		((CheckpointContainer*)m_selection)->checkpointNumber = val;
+	}
 }
 
 void Ui::BehaviourTypeHandler::on_Add()
