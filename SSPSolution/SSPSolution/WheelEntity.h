@@ -2,6 +2,11 @@
 #define SSPAPPLICATION_ENTITIES_WHEELENTITY_H
 #include <math.h>
 #include "Entity.h"
+
+struct WheelSyncState{
+
+};
+
 class WheelEntity :
 	public Entity
 {

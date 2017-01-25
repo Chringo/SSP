@@ -1,8 +1,11 @@
 #ifndef SSPAPPLICATION_ENTITIES_DOORENTITY_H
 #define SSPAPPLICATION_ENTITIES_DOORENTITY_H
-
 #include "Entity.h"
 #include <vector>
+
+struct DoorSyncState {
+
+};
 
 struct ElementState {
 	int entityID;

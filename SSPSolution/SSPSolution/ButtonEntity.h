@@ -1,6 +1,11 @@
 #ifndef SSPAPPLICATION_ENTITIES_BUTTONENTITY_H
 #define SSPAPPLICATION_ENTITIES_BUTTONENTITY_H
 #include "Entity.h"
+
+struct ButtonSyncState {
+
+};
+
 class ButtonEntity :
 	public Entity
 {

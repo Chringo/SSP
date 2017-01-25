@@ -1,6 +1,11 @@
 #ifndef SSPAPPLICATION_ENTITIES_LEVERENTITY_H
 #define SSPAPPLICATION_ENTITIES_LEVERENTITY_H
 #include "Entity.h"
+
+struct LeverSyncState {
+
+};
+
 class LeverEntity :
 	public Entity
 {
