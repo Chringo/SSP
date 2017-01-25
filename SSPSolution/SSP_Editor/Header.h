@@ -71,8 +71,8 @@ struct Button : Container
 	{
 		this->type = BUTTON;
 	}
-	float interactionDistance;
-	float resetTime; // Seconds
+	float interactionDistance = 1.0f;
+	float resetTime = 0.0f; // Seconds
 };
 
 struct Lever : Container

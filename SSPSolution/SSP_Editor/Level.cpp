@@ -302,10 +302,24 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 				if (modelPtr->at(i).aiComponent != nullptr)
 					this->m_LevelAi.DeletePathComponent(instanceID);
 					modelPtr->erase(modelPtr->begin() + i);
+					return Resources::Status::ST_OK;
 			}
 		}
-		return Resources::Status::ST_OK;
+		for (size_t i = 0; i < m_puzzleElements.size(); i++)
+		{
+			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
+			{
+				if (m_puzzleElements.at(i).at(j)->internalID == instanceID)
+				{
+					m_puzzleElements.at(i).erase(m_puzzleElements.at(i).begin() + j);
+					return Resources::Status::ST_OK;
+				}
+
+			}
+		}
+		
 	}
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
@@ -435,7 +449,6 @@ Button * Level::ConvertToButton(Container*& obj)
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
 		this->m_puzzleElements.at(BUTTON).push_back(newButton); // add to button array
 		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
-		newButton->resetTime = 1337; //TEMP! REMOVE
 		return newButton; //Return new button
 
 	}

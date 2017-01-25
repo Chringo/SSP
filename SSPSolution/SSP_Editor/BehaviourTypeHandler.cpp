@@ -39,6 +39,11 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 		this->m_ListItems[(ListItems)i] = nullptr;
 	}
 
+	m_button_tagBox   = ui->button_tagBox;
+	m_button_distance = ui->button_dist_box;
+	m_button_timer    = ui->button_timer_box;
+	connect(ui->button_dist_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_distance_Changed(double)));
+	connect(ui->button_timer_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_timer_Changed(double)));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -51,6 +56,13 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 	{
 		Deselect(); //reset values
 		m_selection = selection;
+		if (m_selection->internalID == 0 || m_selection->internalID == 1) { // if any of the spawnpoints are selected
+			m_BehaviourType->setCurrentIndex(NONE); //Close the window
+			m_Current_Type = NONE; //Update current type
+			m_BehaviourType->setEnabled(false);
+			return;
+		}
+		m_BehaviourType->setEnabled(true);
 		if (m_selection->aiComponent != nullptr)
 		{
  			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
@@ -255,10 +267,10 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 						m_selection->isDirty = true;
 					}
 					
-					float time = ((Button*)m_selection)->resetTime;
-					
-					
-					int hej = 123432145;
+		
+					m_button_tagBox->setValue((int)m_selection->internalID);
+					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
+
 					break;
 				}
 				}
@@ -269,6 +281,21 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 	
 
 
+}
+
+void Ui::BehaviourTypeHandler::on_button_distance_Changed(double val)
+{
+
+	assert(m_selection->type == ContainerType::BUTTON);
+	((Button*)m_selection)->interactionDistance = (float)val;
+
+
+}
+
+void Ui::BehaviourTypeHandler::on_button_timer_Changed(double val)
+{
+	assert(m_selection->type == ContainerType::BUTTON);
+	((Button*)m_selection)->resetTime = (float)val;
 }
 
 void Ui::BehaviourTypeHandler::on_Add()

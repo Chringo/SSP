@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Ui__BehaviourTypeHandler_t {
-    QByteArrayData data[11];
-    char stringdata0[173];
+    QByteArrayData data[13];
+    char stringdata0[224];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,15 +38,18 @@ QT_MOC_LITERAL(5, 63, 23), // "on_Path_Trigger_changed"
 QT_MOC_LITERAL(6, 87, 27), // "on_Path_Trigger_Box_changed"
 QT_MOC_LITERAL(7, 115, 18), // "on_Pattern_changed"
 QT_MOC_LITERAL(8, 134, 24), // "on_BehaviourType_changed"
-QT_MOC_LITERAL(9, 159, 6), // "on_Add"
-QT_MOC_LITERAL(10, 166, 6) // "on_Del"
+QT_MOC_LITERAL(9, 159, 26), // "on_button_distance_Changed"
+QT_MOC_LITERAL(10, 186, 23), // "on_button_timer_Changed"
+QT_MOC_LITERAL(11, 210, 6), // "on_Add"
+QT_MOC_LITERAL(12, 217, 6) // "on_Del"
 
     },
     "Ui::BehaviourTypeHandler\0on_Speed_changed\0"
     "\0val\0on_Time_changed\0on_Path_Trigger_changed\0"
     "on_Path_Trigger_Box_changed\0"
     "on_Pattern_changed\0on_BehaviourType_changed\0"
-    "on_Add\0on_Del"
+    "on_button_distance_Changed\0"
+    "on_button_timer_Changed\0on_Add\0on_Del"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,7 +59,7 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -64,14 +67,16 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   54,    2, 0x0a /* Public */,
-       4,    1,   57,    2, 0x0a /* Public */,
-       5,    1,   60,    2, 0x0a /* Public */,
-       6,    1,   63,    2, 0x0a /* Public */,
-       7,    1,   66,    2, 0x0a /* Public */,
-       8,    1,   69,    2, 0x0a /* Public */,
-       9,    0,   72,    2, 0x0a /* Public */,
-      10,    0,   73,    2, 0x0a /* Public */,
+       1,    1,   64,    2, 0x0a /* Public */,
+       4,    1,   67,    2, 0x0a /* Public */,
+       5,    1,   70,    2, 0x0a /* Public */,
+       6,    1,   73,    2, 0x0a /* Public */,
+       7,    1,   76,    2, 0x0a /* Public */,
+       8,    1,   79,    2, 0x0a /* Public */,
+       9,    1,   82,    2, 0x0a /* Public */,
+      10,    1,   85,    2, 0x0a /* Public */,
+      11,    0,   88,    2, 0x0a /* Public */,
+      12,    0,   89,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Double,    3,
@@ -80,6 +85,8 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Double,    3,
+    QMetaType::Void, QMetaType::Double,    3,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -98,8 +105,10 @@ void Ui::BehaviourTypeHandler::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 3: _t->on_Path_Trigger_Box_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 4: _t->on_Pattern_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 5: _t->on_BehaviourType_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 6: _t->on_Add(); break;
-        case 7: _t->on_Del(); break;
+        case 6: _t->on_button_distance_Changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 7: _t->on_button_timer_Changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 8: _t->on_Add(); break;
+        case 9: _t->on_Del(); break;
         default: ;
         }
     }
@@ -130,13 +139,13 @@ int Ui::BehaviourTypeHandler::qt_metacall(QMetaObject::Call _c, int _id, void **
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 10)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }
