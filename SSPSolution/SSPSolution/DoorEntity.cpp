@@ -65,70 +65,12 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	{
 		if ((element->entityID == entityID))
 		{
-			if (EVENT::WHEEL_100 == reactEvent)
-			{
-				int b = 27;
-			}
-			if (EVENT::BUTTON_ACTIVE == reactEvent)
-			{
-				int b = 27;
-			}
 			element->desiredStateReached = element->desiredState == reactEvent;
 		}
 		i += element->desiredStateReached;
-		if (i == 2)
-			int b = 36;
 	}
-	/*for each (ElementState element in this->m_subjectStates)
-	{
-		if ((element.entityID == entityID))
-		{
-			if (EVENT::WHEEL_100 == reactEvent)
-			{
-				int b = 27;
-			}
-			if (EVENT::BUTTON_ACTIVE == reactEvent)
-			{
-				int b = 27;
-			}
-			element.desiredStateReached = element.desiredState == reactEvent;
-		}
-		i += element.desiredStateReached;
-		if (i == 2)
-			int b = 36;
-	}*/
+	
 	this->m_isOpened = i == this->m_subjectStates.size();
-
-/*	if (reactEvent == EVENT::BUTTON_ACTIVE)
-	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-	}
-	else if(reactEvent == EVENT::BUTTON_DEACTIVE)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}
-	else if (reactEvent == EVENT::WHEEL_100)
-	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-	}
-	else if (reactEvent == EVENT::WHEEL_0)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}
-	else if (reactEvent == EVENT::LEVER_ACTIVE)
-	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-	}
-	else if (reactEvent == EVENT::LEVER_DEACTIVE)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}*/
 
 	return 0;
 }
