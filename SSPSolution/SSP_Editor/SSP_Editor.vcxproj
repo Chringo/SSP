@@ -139,6 +139,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ClCompile Include="AssetTreeHandler.cpp" />
     <ClCompile Include="AttributesHandler.cpp" />
     <ClCompile Include="BehaviourTypeHandler.cpp" />
+    <ClCompile Include="CheckpointHandler.cpp" />
     <ClCompile Include="DataHandler.cpp" />
     <ClCompile Include="EditorCommunicator.cpp" />
     <ClCompile Include="EditorInputHandler.cpp" />
@@ -295,6 +296,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     </CustomBuild>
     <ClInclude Include="AIController.h" />
     <ClInclude Include="AiHandler.h" />
+    <ClInclude Include="CheckpointHandler.h" />
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />

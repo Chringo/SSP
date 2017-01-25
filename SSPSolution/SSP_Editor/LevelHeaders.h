@@ -3,11 +3,14 @@
 namespace LevelData {
 
 
-	struct OLDMainLevelHeader //This is used to convert levels from earlier versions of the editor
+	//This is used to convert levels from earlier versions of the editor
+
+	struct OLDMainLevelHeader
 	{
 		unsigned int resAmount;
 		unsigned int entityAmount;
 		unsigned int lightAmount;
+		unsigned int AiComponentAmount;
 	};
 	struct MainLevelHeader
 	{
@@ -15,6 +18,7 @@ namespace LevelData {
 		unsigned int entityAmount;
 		unsigned int lightAmount;
 		unsigned int AiComponentAmount;
+		unsigned int checkpointAmount;
 	};
 	
 	struct ResourceHeader {
@@ -63,6 +67,15 @@ namespace LevelData {
 		float wayPoints[8][3];
 	};
 
+	struct CheckpointHeader
+	{
+		unsigned int entityID; 
+		unsigned int checkpointNumber = 0;
+		float position[3];
+		float ext[3];
+		float ort[16];
+	};
+	
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,

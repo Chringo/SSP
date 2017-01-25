@@ -59,6 +59,15 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		delete aiData;
 	}
 
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		char* checkpointData = new char[checkpointSize];
+		this->GetCheckpointData(checkpointData);
+		file.write(checkpointData, checkpointSize);
+		delete checkpointData;
+	}
+
 	file.close();
 	//Cleanup
 	delete resData;
@@ -114,6 +123,15 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
 		
 		delete aiData;
+	}
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		char* checkpointData = new char[checkpointSize];
+		file.read(checkpointData, checkpointSize);
+
+		LoadCheckpointComponents((LevelData::CheckpointHeader*)checkpointData, header.checkpointAmount);
+		delete checkpointData;
 	}
 
 	file.close();
@@ -184,6 +202,7 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 	header.entityAmount      = m_currentLevel.GetNumEntities();
 	header.lightAmount       = m_currentLevel.GetNumLights();
 	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
+	header.checkpointAmount = (unsigned int)m_currentLevel.GetCheckpoints()->size();
 	return header;
 }
 
@@ -292,6 +311,20 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetCheckpointData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	LevelData::CheckpointHeader * cph;
+	for (int i = 0; i < m_currentLevel.GetCheckpoints()->size(); i++)
+	{
+		cph = m_currentLevel.GetCheckpoints()->at(i)->GetDataPtr();
+		memcpy(dataPtr + offset, (char*)cph, sizeof(LevelData::CheckpointHeader));
+		offset += sizeof(LevelData::CheckpointHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -334,6 +367,22 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 				cont->aiComponent = newComponent;
 			}
 
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::CheckpointHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		CheckpointContainer * checkpoint = new CheckpointContainer(dataPtr[i]);
+
+		if (checkpoint->position.m128_f32[0] < -9999)
+			checkpoint->position = { 0.0,0.0,0.0 };
+
+		checkpoint->Update();
+		m_currentLevel.GetCheckpoints()->push_back(checkpoint);
 	}
 
 	return LevelData::LevelStatus::L_OK;
