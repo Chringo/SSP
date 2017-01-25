@@ -31,6 +31,8 @@ public:
 	void UpdateAIComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
 	void SetGraphicsAnimationComponentListSize(int gCompSize);
+	PhysicsComponent* GetClosestPhysicsComponent(PhysicsComponent* component, int minDistance);
+
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;
 };

@@ -96,6 +96,11 @@ void ComponentHandler::SetGraphicsAnimationComponentListSize(int gCompSize)
 	return;
 }
 
+PhysicsComponent * ComponentHandler::GetClosestPhysicsComponent(PhysicsComponent * component, int minDistance)
+{
+	return this->m_physicsHandler->GetClosestComponent(component, minDistance);
+}
+
 PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
 {
 	return this->m_physicsHandler;

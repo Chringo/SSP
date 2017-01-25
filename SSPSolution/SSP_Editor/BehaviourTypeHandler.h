@@ -8,9 +8,12 @@
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
-		TRIGGER,
+		BUTTON,
 		DOOR,
-		PATH
+		PATH,
+		LEVER,
+		WHEEL,
+		PRESSURE_PLATE
 	};
 	enum Pattern {
 		AI_LINEAR = 1,
@@ -54,6 +57,8 @@ namespace Ui {
 		QPushButton*		m_Del;
 		QPushButton*		m_Up;
 		QPushButton*		m_Down;
+		QPushButton*		m_AddCheckpoint;
+		QSpinBox*			m_CheckpointValue;
 
 		QLabel*			m_uniqueID;
 		Container*		m_selection = nullptr;
@@ -74,6 +79,8 @@ namespace Ui {
 		void on_Path_Trigger_Box_changed(int val);
 		void on_Pattern_changed(int val);
 		void on_BehaviourType_changed(int val);
+		void on_CheckpointAdd();
+		void on_CheckpointIndex_changed(int val);
 
 		void on_Add();
 		void on_Del();
