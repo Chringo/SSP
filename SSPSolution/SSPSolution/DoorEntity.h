@@ -4,7 +4,8 @@
 #include <vector>
 
 struct DoorSyncState {
-	bool m_isOpened;
+	int entityID;
+	bool isOpened;
 };
 
 struct ElementState {
@@ -25,7 +26,8 @@ private:
 	float m_maxRotation;
 	float m_rotateTime;
 	float m_rotatePerSec;
-
+	
+	bool m_needSync;
 public:
 	DoorEntity();
 	virtual ~DoorEntity();

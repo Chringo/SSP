@@ -3,7 +3,8 @@
 #include "Entity.h"
 
 struct ButtonSyncState {
-
+	int entityID;
+	bool isActive;
 };
 
 class ButtonEntity :
@@ -15,6 +16,8 @@ private:
 	float m_range;
 	float m_resetTime;
 	float m_elapsedResetTime;
+
+	bool m_needSync;
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();
