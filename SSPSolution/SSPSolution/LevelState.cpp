@@ -1010,7 +1010,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		CB->index = data->checkpoints[i].entityID;
 		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float)*3);
-		CB->obb.ort = static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort);
+		memcpy(&CB->obb.ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float)*16);
 		memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
 		
 		m_checkpoints.push_back(CB);
