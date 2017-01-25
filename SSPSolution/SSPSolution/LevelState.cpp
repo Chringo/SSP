@@ -728,10 +728,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
-		if ((*i)->GetIsOpened())
-		{
-			printf("America Fuck yea!");
-		}
 	}
 	//Lock the camera to the player
 
