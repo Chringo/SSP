@@ -106,7 +106,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player2.Initialize(1, playerP, playerG);
 	
 	//this->m_dynamicEntitys.push_back();
-	//creating the ball
+	
+	//Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
 	ballG->modelID = 1337;
@@ -127,6 +128,26 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
+	//Ball2
+	DynamicEntity* ball2 = new DynamicEntity();
+	ballG = m_cHandler->GetGraphicsComponent();
+	ballG->modelID = 1337;
+	ballG->active = true;
+	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
+	ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = DirectX::XMVectorSet(-3, 0, -10, 0);		//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_AABB;
+	ballP->PC_AABB.ext[0] = 0.5;
+	ballP->PC_AABB.ext[1] = 0.5;
+	ballP->PC_AABB.ext[2] = 0.5;
+	ballP->PC_mass = 2;
+	ballG->worldMatrix = DirectX::XMMatrixIdentity();
+	ball2->Initialize(3, ballP, ballG);
+	this->m_dynamicEntitys.push_back(ball2);
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
