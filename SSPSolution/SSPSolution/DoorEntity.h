@@ -8,13 +8,13 @@ class DoorEntity :
 	public Entity
 {
 private:
-	/*struct ElementState {
+	struct ElementState {
 		int entityID;
 		EVENT desiredState;
 		bool desiredStateReached;
 	};
 
-	std::vector<ElementState> m_elementStates;*/
+	std::vector<ElementState> m_elementStates;
 	
 	bool m_isOpened;
 	float m_minRotation;
