@@ -23,7 +23,7 @@ int LeverEntity::React(int entityID, EVENT reactEvent)
 	//If a lever receives a LEVER::ACTIVATED event, deactivate this lever
 	if (reactEvent == EVENT::LEVER_ACTIVE)
 	{
-		this->m_isActive = EVENT::LEVER_DEACTIVE;
+		this->m_isActive = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
 	}
 	return result;
