@@ -96,6 +96,8 @@ namespace LevelData {
 
 		unsigned int numAI;
 		AiHeader* aiComponents;
-
+		
+		unsigned int numCheckpoints;
+		CheckpointHeader* checkpoints;
 	};
 }
