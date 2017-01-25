@@ -2273,14 +2273,14 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 	PhysicsComponent* pp = nullptr;
 	PhysicsComponent* closest = nullptr;
 	float distance = 0;
-	float closestDistance = 0;
+	float closestDistance = 999999999;	//Gotta be big
 	DirectX::XMVECTOR vec;
 
 	for(int i = 0; i < this->m_numberOfDynamics; i++)	//We know the dynamics are in the front of the array
 	{
 		pp = this->m_physicsComponents.at(i);
 
-		if (pp != component)	//Check so we sont find our own component we compare to
+		if (pp->PC_entityID != 0 && pp->PC_entityID != 1)	//Check so we sont find our own component we compare to
 		{
 			
 			//Calc the distance

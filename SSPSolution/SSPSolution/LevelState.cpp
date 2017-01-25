@@ -115,14 +115,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 2;									//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(-6, 0, -10, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_AABB;
-	ballP->PC_AABB.ext[0] = 0.5;
-	ballP->PC_AABB.ext[1] = 0.5;
-	ballP->PC_AABB.ext[2] = 0.5;
+	ballP->PC_AABB.ext[0] = 0.25;
+	ballP->PC_AABB.ext[1] = 0.25;
+	ballP->PC_AABB.ext[2] = 0.25;
 	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(2, ballP, ballG);
@@ -384,12 +384,30 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			Entity* ent = this->m_dynamicEntitys.at(0);
-			if (!ent->IsGrabbed())
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
+
+			if (epp != nullptr)	//If a component was found
 			{
-				this->m_player1.SetGrabbed(ent);
-				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+				Entity* ent = nullptr;
+				for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+				{
+
+					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
+					{
+						ent = this->m_dynamicEntitys.at(i);
+						break;
+					}
+
+				}
+
+				if (!ent->IsGrabbed())
+				{
+					this->m_player1.SetGrabbed(ent);
+					this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+				}
 			}
+
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
 		{
@@ -530,10 +548,28 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			Entity* ent = this->m_dynamicEntitys.at(0);
-			if (!ent->IsGrabbed())
+
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
+
+			if (epp != nullptr)	//If a component was found
 			{
-				this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+				Entity* ent = nullptr;
+				for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+				{
+
+					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
+					{
+						ent = this->m_dynamicEntitys.at(i);
+						break;
+					}
+
+				}
+
+				if (!ent->IsGrabbed())
+				{
+					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+				}
 			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
