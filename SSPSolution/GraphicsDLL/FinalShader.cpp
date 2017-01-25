@@ -47,7 +47,7 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 #endif // _DEBUG
 	if (FAILED(hResult))
 	{
-		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
 

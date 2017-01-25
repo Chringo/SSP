@@ -78,7 +78,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 #endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
-		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, gsFilename);
 		return 1;
 	}
 #ifdef _DEBUG
@@ -88,7 +88,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 #endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
-		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
 
