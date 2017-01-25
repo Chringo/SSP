@@ -10,13 +10,16 @@ private:
 	float m_minRotation;
 	float m_maxRotation;
 	float m_rotateTime;
+	//Precalculate to help performance
 	float m_rotatePerSec;
 	float m_range;
+	//Precalculate to help performance
 	const float FLOAT_FIX = 1.0f - 0.00001f;
 
 	bool m_resets;
 	bool m_isMin;
 	float m_resetTime;
+	//Precalculate to help performance
 	float m_resetRotatePerSec;
 	float m_timeUntilReset;
 	float m_resetCountdown;
