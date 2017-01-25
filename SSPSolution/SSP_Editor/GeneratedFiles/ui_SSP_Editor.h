@@ -613,6 +613,7 @@ public:
 
         BehaviourDropDown = new QComboBox(Behaviour);
         BehaviourDropDown->setObjectName(QStringLiteral("BehaviourDropDown"));
+        BehaviourDropDown->setEnabled(false);
         BehaviourDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
         formLayout_3->setWidget(2, QFormLayout::FieldRole, BehaviourDropDown);
