@@ -151,7 +151,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 10, 0.5);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 5, 0.5);
 
 	StaticEntity* roof = new StaticEntity;
 	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
@@ -803,6 +803,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 10, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{

@@ -97,7 +97,6 @@ int System::Initialize()
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 
-
 	this->m_physicsHandler.SortComponents();
 
 
