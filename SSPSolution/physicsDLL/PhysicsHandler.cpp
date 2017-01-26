@@ -2057,6 +2057,8 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		next->PC_AABB.ext[2] = 0.1f;
 		next->PC_gravityInfluence = 1.0f;
 
+		next->PC_friction = 0;
+
 		link.CL_previous = previous;
 		link.CL_next = next;
 		this->m_links.push_back(link);
