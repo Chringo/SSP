@@ -112,10 +112,10 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 		DirectX::XMVECTOR correction = DirectX::XMVectorAdd(obj1->PC_pos, obj2->PC_pos);
 		correction = DirectX::XMVector4Normalize(correction);
 
-		float procentMargin = 0.997;
+		float procentMargin = 0.997f;
 
-		float yCorrection = 0;
-		float correctionMargin = 0.4;
+		float yCorrection = 0.0f;
+		float correctionMargin = 0.4f;
 
 		bool noCollision = false;
 
@@ -130,13 +130,13 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 				possibleCollitionZ = (fabs(vecToObj[2]) <= PC_toCheck->PC_AABB.ext[2] + PC_ptr->PC_AABB.ext[2]);
 				if (possibleCollitionZ == true)
 				{
-					DirectX::XMVECTOR normal = DirectX::XMVectorSet(0, 0, 0, 0);
+					DirectX::XMVECTOR normal = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 					float xProcent = fabs(xOverlap / x_total_ext);
 					float yProcent = fabs(yOverlap / y_total_ext);
 					float zProcent = fabs(zOverlap / z_total_ext);
 
-					float highLimit = 0.1;
-					float diff = 0;
+					float highLimit = 0.1f;
+					float diff = 0.0f;
 
 					// apply OOB check for more precisition
 					result = true;
@@ -1760,12 +1760,12 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->m_numberOfDynamics = this->m_dynamicComponents.size();
 		// Do dynamic vs dynamic checks
-		for (int i = 0; i < this->m_numberOfDynamics; i++)	// 
+		for (unsigned int i = 0; i < this->m_numberOfDynamics; i++)	// 
 		{
 			PhysicsComponent* current = this->m_dynamicComponents.at(i);
 			if (current->PC_collides)
 			{
-				for (int j = i + 1; j < this->m_numberOfDynamics; j++)
+				for (unsigned int j = i + 1; j < this->m_numberOfDynamics; j++)
 				{
 					PhysicsComponent* toCompare = this->m_dynamicComponents.at(j);
 					if (toCompare->PC_collides)
@@ -1808,7 +1808,7 @@ void PhysicsHandler::Update(float deltaTime)
 
 	// DYNAMIC VS STATIC
 	this->m_numberOfDynamics = this->m_dynamicComponents.size();
-	for (int i = this->m_startIndex; i < this->m_numberOfDynamics; i++)	// 
+	for (unsigned int i = this->m_startIndex; i < this->m_numberOfDynamics; i++)	// 
 	{
 		PhysicsComponent* current = this->m_dynamicComponents.at(i);
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -2173,7 +2173,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		
 		next->PC_BVtype = BV_Sphere;
 		next->PC_collides = false;
-		next->PC_Sphere.radius = 0.35;
+		next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
 
 		next->PC_AABB.ext[0] = 0.25f;
@@ -2598,11 +2598,11 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 {
 	PhysicsComponent* pp = nullptr;
 	PhysicsComponent* closest = nullptr;
-	float distance = 0;
-	float closestDistance = 999999999;	//Gotta be big
+	float distance = 0.0f;
+	float closestDistance = 999999999.0f;	//Gotta be big
 	DirectX::XMVECTOR vec;
 
-	for(int i = 0; i < this->m_dynamicComponents.size(); i++)	//We know the dynamics are in the front of the array
+	for(size_t i = 0; i < this->m_dynamicComponents.size(); i++)	//We know the dynamics are in the front of the array
 	{
 		pp = this->m_dynamicComponents.at(i);
 
