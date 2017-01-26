@@ -640,8 +640,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
 				temp->AC_entityID = data->aiComponents[A].entityID;
 				temp->AC_time = data->aiComponents[A].time;
-				temp->AC_speed = 0.07f;// data->aiComponents[A].speed;
-				temp->AC_pattern = AI_CIRCULAR;//data->aiComponents[A].pattern;
+				temp->AC_speed = data->aiComponents[A].speed;
+				temp->AC_pattern = data->aiComponents[A].pattern;
 				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
 				for (size_t x = 0; x < temp->AC_nrOfWaypoint; x++)
 				{
