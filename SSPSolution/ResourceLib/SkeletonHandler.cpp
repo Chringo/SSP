@@ -84,20 +84,17 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	newSkeleton->AddAnimation
 	*/
 	ResourceContainer* animPtr;
-	
-	//m_animHandler->LoadAnimation(UINT(213), animPtr);
-	//newSkeleton->AddAnimation((Animation*)animPtr->resource, 0);
 
 	int animsloaded = 0;
 	for (size_t i = 0; i < *animCount; i++)
 	{
 		ResourceContainer* animPtr;
-		const unsigned int* id = &((LayerIdHeader*)data)->id;
-		m_animHandler->LoadAnimation(*id, animPtr);
-		st = m_animHandler->GetAnimation(*id, animPtr);
+		const unsigned int id = ((LayerIdHeader*)data)->id;
+		m_animHandler->LoadAnimation(id, animPtr);
+		st = m_animHandler->GetAnimation(id, animPtr);
 		switch (st) {
 			case Status::ST_RES_MISSING: { //if it doesent exist
-				Status mSt = m_animHandler->LoadAnimation(*id, animPtr); //load the animation
+				Status mSt = m_animHandler->LoadAnimation(id, animPtr); //load the animation
 				if (st != ST_OK) {
 					continue;
 				}
