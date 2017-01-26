@@ -94,7 +94,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;								//Set Entity ID
 															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(-5, -1, -7, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 1;
@@ -104,7 +104,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[2] = 0.5;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(1, playerP, playerG);
-	
+
+
 	//this->m_dynamicEntitys.push_back();
 	//creating the ball
 	DynamicEntity* ball = new DynamicEntity();
@@ -114,7 +115,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 2;									//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(10, 5, 0, 0);		//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(-5, -1, -9, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
@@ -127,84 +128,110 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(2, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 
+	//this is cuck dont hate on him just because he is a cuck
+	//DynamicEntity* cuck = new DynamicEntity();
+	//GraphicsComponent* cuckG = m_cHandler->GetGraphicsComponent();
+	//cuckG->modelID = 1337;
+	//cuckG->active = true;
+	//resHandler->GetModel(cuckG->modelID, cuckG->modelPtr);
+	//PhysicsComponent* cuckP = m_cHandler->GetPhysicsComponent();
+	//cuckP->PC_entityID = 0;								//Set Entity ID
+	//cuckP->PC_pos = DirectX::XMVectorSet(-9, 20, -19, 0);		//Set Position
+	//cuckP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	//cuckP->PC_is_Static = true;							//Set IsStatic
+	//cuckP->PC_active = true;								//Set Active
+	//cuckP->PC_mass = 5;
+	//cuckP->PC_BVtype = BV_Sphere;
+	//cuckP->PC_OBB.ext[0] = 2.5f;
+	//cuckP->PC_OBB.ext[1] = 0.5f;
+	//cuckP->PC_OBB.ext[2] = 0.5f;
+	//cuckP->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	////m_cHandler->GetPhysicsHandler()->RotateBB_Y(cuckP, (3.14 / 180) * 45);
+	//cuckP->PC_AABB.ext[0] = 0.5;
+	//cuckP->PC_AABB.ext[1] = 0.5;
+	//cuckP->PC_AABB.ext[2] = 0.5;
+	//cuckG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+	//cuck->Initialize(3, cuckP, cuckG);
+	//this->m_dynamicEntitys.push_back(cuck);
+	//-----
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 5, 0.5);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 5, 1.0);
 
-	StaticEntity* roof = new StaticEntity;
-	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
-	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
-	roofP->PC_is_Static = true;
-	roofP->PC_BVtype = BV_Plane;
-	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
-	roofP->PC_elasticity = 0;
-	roofP->PC_friction = 1.0f;
+	//StaticEntity* roof = new StaticEntity;
+	//PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	//roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	//roofP->PC_is_Static = true;
+	//roofP->PC_BVtype = BV_Plane;
+	//roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	//roofP->PC_elasticity = 0;
+	//roofP->PC_friction = 1.0f;
 
-	this->m_staticEntitys.push_back(roof);
+	//this->m_staticEntitys.push_back(roof);
 
-	DynamicEntity* platform = new DynamicEntity();
-	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
-	platformG->modelID = 1337;
-	platformG->active = true;
-	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
-	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
-	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
-	platformP->PC_is_Static = true;
-	platformP->PC_AABB.ext[0] = 5;
-	platformP->PC_AABB.ext[1] = 0.1f;
-	platformP->PC_AABB.ext[2] = 5;
-	platformP->PC_elasticity = 0;
-	platformP->PC_friction = 1.0f;
-	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
-	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
-#pragma region AIComp variables
-	platformTERMINATOR->AC_triggered = true;
-	platformTERMINATOR->AC_speed = 0.15f;
-	platformTERMINATOR->AC_position = platformP->PC_pos;
-	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
-	platformTERMINATOR->AC_nrOfWaypoint = 4;
-	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
-	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
-	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
-	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
-#pragma endregion
-	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
-	platformP->PC_entityID = platform->GetEntityID();
-	platformTERMINATOR->AC_entityID = platform->GetEntityID();
-	this->m_dynamicEntitys.push_back(platform);
-
-	DynamicEntity* plat = new DynamicEntity();
-	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
-	platG->modelID = 1337;
-	platG->active = true;
-	resHandler->GetModel(platG->modelID, platG->modelPtr);
-	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
-	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
-	platP->PC_is_Static = true;
-	platP->PC_AABB.ext[0] = 5;
-	platP->PC_AABB.ext[1] = 0.1f;
-	platP->PC_AABB.ext[2] = 5;
-	platP->PC_elasticity = 0;
-	platP->PC_friction = 1.0f;
-	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
-	AIComponent* platA = m_cHandler->GetAIComponent();
-#pragma region AIComp variables
-	platA->AC_triggered = true;
-	platA->AC_speed = 0.15f;
-	platA->AC_position = platP->PC_pos;
-	platA->AC_pattern = AI_ROUNDTRIP;
-	platA->AC_nrOfWaypoint = 4;
-	platA->AC_waypoints[0] = platP->PC_pos;
-	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
-	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
-	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
-#pragma endregion
-	plat->Initialize(5, platP, platG, platA);
-	platP->PC_entityID = plat->GetEntityID();
-	platA->AC_entityID = plat->GetEntityID();
-	this->m_dynamicEntitys.push_back(plat);
+//	DynamicEntity* platform = new DynamicEntity();
+//	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
+//	platformG->modelID = 1337;
+//	platformG->active = true;
+//	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
+//	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
+//	platformP->PC_pos = DirectX::XMVectorSet(-3, 1, -40, 0);
+//	platformP->PC_is_Static = true;
+//	platformP->PC_AABB.ext[0] = 5;
+//	platformP->PC_AABB.ext[1] = 0.1f;
+//	platformP->PC_AABB.ext[2] = 5;
+//	platformP->PC_elasticity = 0;
+//	platformP->PC_friction = 1.0f;
+//	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
+//	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
+//#pragma region AIComp variables
+//	platformTERMINATOR->AC_triggered = true;
+//	platformTERMINATOR->AC_speed = 0.15f;
+//	platformTERMINATOR->AC_position = platformP->PC_pos;
+//	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
+//	platformTERMINATOR->AC_nrOfWaypoint = 4;
+//	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
+//	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, 1, 0, 0);
+//	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
+//	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
+//#pragma endregion
+//	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
+//	platformP->PC_entityID = platform->GetEntityID();
+//	platformTERMINATOR->AC_entityID = platform->GetEntityID();
+//	this->m_dynamicEntitys.push_back(platform);
+//
+//	DynamicEntity* plat = new DynamicEntity();
+//	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
+//	platG->modelID = 1337;
+//	platG->active = true;
+//	resHandler->GetModel(platG->modelID, platG->modelPtr);
+//	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
+//	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
+//	platP->PC_is_Static = true;
+//	platP->PC_AABB.ext[0] = 5;
+//	platP->PC_AABB.ext[1] = 0.1f;
+//	platP->PC_AABB.ext[2] = 5;
+//	platP->PC_elasticity = 0;
+//	platP->PC_friction = 1.0f;
+//	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
+//	AIComponent* platA = m_cHandler->GetAIComponent();
+//#pragma region AIComp variables
+//	platA->AC_triggered = true;
+//	platA->AC_speed = 0.15f;
+//	platA->AC_position = platP->PC_pos;
+//	platA->AC_pattern = AI_ROUNDTRIP;
+//	platA->AC_nrOfWaypoint = 4;
+//	platA->AC_waypoints[0] = platP->PC_pos;
+//	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
+//	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
+//	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
+//#pragma endregion
+//	plat->Initialize(5, platP, platG, platA);
+//	platP->PC_entityID = plat->GetEntityID();
+//	platA->AC_entityID = plat->GetEntityID();
+//	this->m_dynamicEntitys.push_back(plat);
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 1.4, 0.0, 0.0);
@@ -688,7 +715,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 10, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, -0.5, -3, 0));
+	m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
+	m_player1.GetPhysicsComponent()->PC_BVtype = BV_AABB;
+	m_player1.GetPhysicsComponent()->PC_Sphere.radius = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[0] = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[1] = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[2] = 0.5f;
+
+	m_player2.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(-5, -1, -3, 0);
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
