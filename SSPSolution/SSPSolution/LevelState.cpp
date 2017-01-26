@@ -181,34 +181,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(2, ballP, ballG);
-	this->m_dynamicEntitys.push_back(ball);
-
-	//this is cuck dont hate on him just because he is a cuck
-	DynamicEntity* cuck = new DynamicEntity();
-	GraphicsComponent* cuckG = m_cHandler->GetGraphicsComponent();
-	cuckG->modelID = 1337;
-	cuckG->active = true;
-	resHandler->GetModel(cuckG->modelID, cuckG->modelPtr);
-	PhysicsComponent* cuckP = m_cHandler->GetPhysicsComponent();
-	cuckP->PC_entityID = 0;								//Set Entity ID
-	cuckP->PC_pos = DirectX::XMVectorSet(-9, 20, -8, 0);		//Set Position
-	cuckP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
-	cuckP->PC_is_Static = true;							//Set IsStatic
-	cuckP->PC_active = true;								//Set Active
-	cuckP->PC_mass = 5;
-	cuckP->PC_BVtype = BV_AABB;
-	cuckP->PC_OBB.ext[0] = 2.5f;
-	cuckP->PC_OBB.ext[1] = 0.5f;
-	cuckP->PC_OBB.ext[2] = 0.5f;
-	cuckP->PC_OBB.ort = DirectX::XMMatrixIdentity();
-	//m_cHandler->GetPhysicsHandler()->RotateBB_Y(cuckP, (3.14 / 180) * 45);
-	cuckP->PC_AABB.ext[0] = 0.5;
-	cuckP->PC_AABB.ext[1] = 0.5;
-	cuckP->PC_AABB.ext[2] = 0.5;
-	cuckG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	cuck->Initialize(3, cuckP, cuckG);
-	this->m_dynamicEntitys.push_back(cuck);
-	//-----
 	ball2->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 

@@ -1616,19 +1616,19 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->AdjustChainLinkPosition(&this->m_links.at(i));
 	}
-	this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
+	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
 	
 	// DYNAMIC VS DYNAMIC
 	if (this->m_isHost)
 	{
-		m_numberOfDynamics = this->m_dynamicComponents.size();
+		this->m_numberOfDynamics = this->m_dynamicComponents.size();
 		// Do dynamic vs dynamic checks
-		for (int i = this->m_startIndex; i < m_numberOfDynamics; i++)	// 
+		for (int i = 0; i < this->m_numberOfDynamics; i++)	// 
 		{
 			PhysicsComponent* current = this->m_dynamicComponents.at(i);
 			if (current->PC_collides)
 			{
-				for (int j = i + 1; j < m_numberOfDynamics; j++)
+				for (int j = i + 1; j < this->m_numberOfDynamics; j++)
 				{
 					PhysicsComponent* toCompare = this->m_dynamicComponents.at(j);
 					if (toCompare->PC_collides)
@@ -1670,8 +1670,8 @@ void PhysicsHandler::Update(float deltaTime)
 	}
 
 	// DYNAMIC VS STATIC
-	int nrOfDynamicComponents = this->m_dynamicComponents.size();
-	for (int i = this->m_startIndex; i < nrOfDynamicComponents; i++)	// 
+	this->m_numberOfDynamics = this->m_dynamicComponents.size();
+	for (int i = this->m_startIndex; i < this->m_numberOfDynamics; i++)	// 
 	{
 		PhysicsComponent* current = this->m_dynamicComponents.at(i);
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -1686,7 +1686,7 @@ void PhysicsHandler::Update(float deltaTime)
 			//hit detection/correction is done correctly
 			loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
 		}
-		int nrOfStaticComponents = this->m_staticComponents.size();
+		this->m_nrOfStaticObjects = this->m_staticComponents.size();
 		for (int i = 0; i < loopsNeeded; i++)
 		{
 			float newDT = dt / loopsNeeded;
@@ -1695,7 +1695,7 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_AABB)
 					{
 						//only collide with static environment for starters
-						for (int j = 0; j < nrOfStaticComponents; j++)
+						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
 							toCompare = this->m_staticComponents.at(j);
@@ -1725,7 +1725,7 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_Sphere)
 					{
 						//only collide with static environment for starters
-						for (int j = 0; j < nrOfStaticComponents; j++)
+						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
 							toCompare = this->m_staticComponents.at(j);
@@ -1753,7 +1753,7 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_OBB)
 					{
 						//only collide with static environment for starters
-						for (int j = 0; j < nrOfStaticComponents; j++)
+						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
 							toCompare = this->m_staticComponents.at(j);
@@ -1793,7 +1793,6 @@ void PhysicsHandler::Update(float deltaTime)
 
 			if (!current->PC_is_Static)
 			{
-				float windResistance = 1.0;
 				current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, newDT));
 				DirectX::XMFLOAT3 temp;
 				DirectX::XMStoreFloat3(&temp, current->PC_pos);
