@@ -84,7 +84,7 @@ public:
 		this->m_active = active;
 	};
 	void Select(OBB &selectedOBB, 
-		Container * selectedContainer, 
+		Container *& selectedContainer, 
 		unsigned int instanceID, 
 		unsigned int modelID)
 	{
@@ -95,11 +95,12 @@ public:
 
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 
 	void Select(OBB &selectedOBB,
-		CheckpointContainer * selectedContainer)
+		CheckpointContainer *& selectedContainer)
 	{
 		this->m_selectedObjectOBB = selectedOBB;
 		this->m_selectedContainer = selectedContainer;
@@ -109,12 +110,13 @@ public:
 		m_obbCenterPosition = selectedContainer->position;
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 
 
 	void Select(OBB &selectedOBB,
-		AIComponent * AiContainer)
+		AIComponent *& AiContainer)
 	{
 		DeSelect();
 		this->m_selectedContainer = nullptr;

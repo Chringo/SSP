@@ -67,12 +67,12 @@ struct Button : Container
 	{
 		this->type = BUTTON;
 	}
-	Button(const Container &obj) : Container(obj)
+	Button(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
 	{
 		this->type = BUTTON;
 	}
-	float interactionDistance;
-	float resetTime; // Seconds
+	float interactionDistance = 1.0f;
+	float resetTime = 0.0f; // Seconds
 };
 
 struct Lever : Container
@@ -99,6 +99,10 @@ struct Wheel : Container
 struct Door : Container
 {
 	Door() : Container()
+	{
+		this->type = DOOR;
+	}
+	Door(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Door
 	{
 		this->type = DOOR;
 	}

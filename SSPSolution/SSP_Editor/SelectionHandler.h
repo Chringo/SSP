@@ -46,7 +46,7 @@ public:
 	Container * GetSelected();
 	bool HasSelection();
 	void SetSelection(bool selection);
-	void SetSelectedContainer(Container* selection);
+	void SetSelectedContainer(Container*& selection);
 	void SetActiveAxis(int axis);
 
 	const unsigned int GetModelID();

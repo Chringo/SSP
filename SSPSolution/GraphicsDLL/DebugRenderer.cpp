@@ -94,13 +94,21 @@ int DebugRenderer::Initialize(ID3D11Device * device, ID3D11DeviceContext * devic
 	this->m_deviceContext		  = deviceContext;
 	// Compile the shaders \\
 
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(filePathVS, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(filePathVS, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertShaderBuffer, &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
 	this->m_pixelShader = nullptr;
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(filePathPS, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(filePathPS, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &pixelShaderBuffer, &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult)) {
 		return 1;
 	}
