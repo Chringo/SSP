@@ -227,6 +227,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->editorMode = editorMode;
 	if (!editorMode)
 	{
+		this->m_uiHandler = new UIHandler;
+		this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
@@ -246,8 +248,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 
-	this->m_uiHandler = new UIHandler;
-	this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
+
 
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
