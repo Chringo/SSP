@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "Header.h"
 #include "LevelHandler.h"
+#include <qtablewidget.h>
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
@@ -43,6 +44,7 @@ namespace Ui {
 
 		Q_OBJECT
 	private:
+		QTabWidget*			m_attributes_widget;
 		BehaviourType		m_Current_Type;
 		Pattern				m_Current_Pattern;
 		unsigned int		m_Current_Waypoint_Amt = 0;
@@ -72,21 +74,21 @@ namespace Ui {
 
 
 #pragma region Trigger Tab elements
+
 		QWidget*     m_triggerTab;
 		QComboBox*   m_availableTriggers;
-		QListWidget* m_triggerList;
+		//QListWidget* m_triggerList;
+		QTableWidget* m_triggerList;
 		QPushButton* m_add_trigger;
 		QPushButton* m_del_trigger;
 		QString m_triggerType[NUM_PUZZLE_ELEMENTS]{
-			"(unknown type)"
-			"(button)",
-			"(lever)",
-			"(wheel)",
-			"(door)",
-			"(magnet)",
-			"(plate)"
-
-
+			"(unknown type) "
+			"(button) ",
+			"(lever) ",
+			"(wheel) ",
+			"(door) ",
+			"(magnet) ",
+			"(plate) "
 		};
 
 #pragma endregion
@@ -112,10 +114,13 @@ namespace Ui {
 		void on_button_timer_Changed(double val);
 		void on_CheckpointAdd();
 		void on_CheckpointIndex_changed(int val);
+		void on_Attributes_tab_changed(int val);
 
 		void on_Add();
 		void on_Del();
 
+		void on_triggerSelection_Changed(int val);
+		void on_Add_Trigger();
 	private:
 		void SetTriggerData(Container*& selection);
 	};

@@ -12,6 +12,15 @@ Ui::BehaviourTypeHandler::BehaviourTypeHandler(const Ui::SSP_EditorClass * ui)
 
 void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 {
+	m_attributes_widget = ui->CustomBehaviourTabWidget;
+	m_availableTriggers = ui->availableTriggers;
+	m_triggerList = ui->TriggerTableWidget;
+	m_triggerList->horizontalHeader()->show();
+
+	m_add_trigger = ui->AddTriggerButton;
+	connect(m_add_trigger, SIGNAL(clicked()), this, SLOT(on_Add_Trigger()));
+	m_del_trigger = ui->DeleteTriggerButton;
+	connect(ui->CustomBehaviourTabWidget, SIGNAL(currentChanged(int)), this, SLOT(on_Attributes_tab_changed(int)));
 	this->m_Numerics[SPEED] = ui->SpeedValue;
 	this->m_Numerics[TIME] = ui->TimeValue;
 	this->m_PATH_TRIGGER = ui->TriggerPathValue;
@@ -66,6 +75,8 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_BehaviourType->setEnabled(false);
 			return;
 		}
+		if (m_attributes_widget->currentIndex() == 1) //if the trigger tab is up in the ui. Update it
+			SetTriggerData(selection);
 		m_BehaviourType->setEnabled(true);
 		if (m_selection->aiComponent != nullptr) //If the selection is a platform. Load up the platform UI and fill it with the data
 		{
@@ -335,6 +346,16 @@ void Ui::BehaviourTypeHandler::on_CheckpointIndex_changed(int val)
 	}
 }
 
+void Ui::BehaviourTypeHandler::on_Attributes_tab_changed(int val)
+{
+	if (m_selection)
+	{
+		if (val == 1)
+			SetTriggerData(m_selection);
+	}
+
+}
+
 void Ui::BehaviourTypeHandler::on_Add()
 {
 	if (m_selection == nullptr)
@@ -411,25 +432,69 @@ void Ui::BehaviourTypeHandler::on_Del()
 	}
 }
 
+void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(int val)
+{
+	//Container* selected = (Container*)&m_triggerList->currentItem()->data(Qt::UserRole);
+
+}
+
+void Ui::BehaviourTypeHandler::on_Add_Trigger()
+{
+
+	if (m_availableTriggers->currentIndex() <= 0)
+		return;
+	QTableWidgetItem* newItem = new QTableWidgetItem();
+	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
+
+	QString name = m_triggerType[selection->type]; // Get Type of container as name
+	name.append(QString::number(selection->internalID)); //append the id after the type in the name
+	newItem->setText(name); //set the name
+	newItem->setData(Qt::UserRole, m_availableTriggers->currentData(Qt::UserRole)); //Set a container pointer to the new item in the list
+	
+	//selection
+
+
+	m_triggerList->insertRow(m_triggerList->rowCount());
+	m_triggerList->setItem(m_triggerList->rowCount() - 1, 0, newItem);
+
+	m_triggerList->setItem(m_triggerList->rowCount() - 1, 1, new QTableWidgetItem("Choose a signal"));
+	
+
+
+}
+
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
-	if(selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
-		return
+	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
+		return;
 
-	this->m_triggerTab->setEnabled(true);
+	//this->m_triggerTab->setEnabled(true);
 	
 	Level* currentLevel = LevelHandler::GetInstance()->GetCurrentLevel();
+	//m_triggerList->clear();
+	
+	while (m_triggerList->rowCount() > 0) {
+		m_triggerList->removeRow(m_triggerList->rowCount() - 1);
+	}
+
+	
+	m_availableTriggers->clear();
+	m_availableTriggers->addItem(QString("None"));
 	for (size_t i = 0; i < ContainerType::NUM_PUZZLE_ELEMENTS; i++)
 	{
 		const std::vector<Container*> * container = currentLevel->GetPuzzleElements(ContainerType(i));
 		
 		for (size_t j = 0; j < container->size(); j++)
 		{
+			if (container->at(j)->internalID == selection->internalID) // do not make it possible to connect any instance to itself
+				continue;
+
 			QString name = m_triggerType[i];
 			name.append(QString::number(container->at(j)->internalID));
 			
 			
-		   m_availableTriggers->addItem(name, QVariant(container->at(j)->internalID));
+		   m_availableTriggers->addItem(name, qVariantFromValue((void*)container->at(j)));
+		
 		}
 	}
 
