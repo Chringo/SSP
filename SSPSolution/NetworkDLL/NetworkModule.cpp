@@ -306,17 +306,50 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID)
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
+void NetworkModule::SendStateWheelPacket(unsigned int entityID, int rotationState, float rotationAmount)
 {
-	const unsigned int packet_size = sizeof(StateElementPacket);
+	const unsigned int packet_size = sizeof(StateWheelPacket);
 	char packet_data[packet_size];
 
-	StateElementPacket packet;
+	StateWheelPacket packet;
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
-	packet.packet_type = UPDATE_ELEMENT_STATE;
+	packet.packet_type = UPDATE_WHEEL_STATE;
 	packet.entityID = entityID;
-	packet.newState = newState;
+	packet.rotationState = rotationState;
+	packet.rotationAmount = rotationAmount;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendStateButtonPacket(unsigned int entityID, bool isActive)
+{
+	const unsigned int packet_size = sizeof(StatePacket);
+	char packet_data[packet_size];
+
+	StatePacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_BUTTON_STATE;
+	packet.entityID = entityID;
+	packet.isActive = isActive;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendStateLeverPacket(unsigned int entityID, bool isActive)
+{
+	const unsigned int packet_size = sizeof(StatePacket);
+	char packet_data[packet_size];
+
+	StatePacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_LEVER_STATE;
+	packet.entityID = entityID;
+	packet.isActive = isActive;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -423,9 +456,8 @@ void NetworkModule::ReadMessagesFromClients()
 	SyncPacket syP;
 	EntityPacket eP;
 	AnimationPacket aP;
-	StateElementPacket seP;
 	StateWheelPacket swP;
-	StateButtonPacket sbP;
+	StatePacket sP;
 	CameraPacket cP;
 	GrabPacket gP;
 	SyncPhysicPacket sPP;
@@ -531,17 +563,6 @@ void NetworkModule::ReadMessagesFromClients()
 
 				break;
 
-			case UPDATE_ELEMENT_STATE:
-
-				seP.deserialize(&network_data[data_read]);	// Read the binary data into the object
-
-				this->packet_Buffer_ElementState.push_back(seP);	// Push the packet to the correct buffer
-				data_read += sizeof(StateElementPacket);
-				//DEBUG
-				//printf("Recived STATE_UPDATE packet\n");
-
-				break;
-
 			case UPDATE_WHEEL_STATE:
 
 				swP.deserialize(&network_data[data_read]);	// Read the binary data into the object
@@ -555,10 +576,21 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case UPDATE_BUTTON_STATE:
 
-				sbP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-				this->packet_Buffer_ButtonState.push_back(sbP);	// Push the packet to the correct buffer
-				data_read += sizeof(StateButtonPacket);
+				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
+				data_read += sizeof(StatePacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_LEVER_STATE:
+
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
+				data_read += sizeof(StatePacket);
 				//DEBUG
 				//printf("Recived STATE_UPDATE packet\n");
 
@@ -764,28 +796,6 @@ std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
 	return result;
 }
 
-std::list<StateElementPacket> NetworkModule::PacketBuffer_GetElementStatePackets()
-{
-	std::list<StateElementPacket> result;
-	std::list<StateElementPacket>::iterator iter;
-
-	for (iter = this->packet_Buffer_ElementState.begin(); iter != this->packet_Buffer_ElementState.end();)
-	{
-		if (iter->packet_type == UPDATE_ELEMENT_STATE)
-		{
-			result.push_back(*iter);
-			iter = this->packet_Buffer_ElementState.erase(iter);	//Returns the next element after the errased element		
-		}
-		else
-		{
-			iter++;
-		}
-
-	}
-
-	return result;
-}
-
 std::list<StateWheelPacket> NetworkModule::PacketBuffer_GetWheelStatePackets()
 {
 	std::list<StateWheelPacket> result;
@@ -808,17 +818,17 @@ std::list<StateWheelPacket> NetworkModule::PacketBuffer_GetWheelStatePackets()
 	return result;
 }
 
-std::list<StateButtonPacket> NetworkModule::PacketBuffer_GetButtonStatePackets()
+std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 {
-	std::list<StateButtonPacket> result;
-	std::list<StateButtonPacket>::iterator iter;
+	std::list<StatePacket> result;
+	std::list<StatePacket>::iterator iter;
 
-	for (iter = this->packet_Buffer_ButtonState.begin(); iter != this->packet_Buffer_ButtonState.end();)
+	for (iter = this->packet_Buffer_State.begin(); iter != this->packet_Buffer_State.end();)
 	{
-		if (iter->packet_type == UPDATE_BUTTON_STATE)
+		if (iter->packet_type == UPDATE_BUTTON_STATE || iter->packet_type == UPDATE_LEVER_STATE)
 		{
 			result.push_back(*iter);
-			iter = this->packet_Buffer_ButtonState.erase(iter);	//Returns the next element after the errased element		
+			iter = this->packet_Buffer_State.erase(iter);	//Returns the next element after the errased element		
 		}
 		else
 		{

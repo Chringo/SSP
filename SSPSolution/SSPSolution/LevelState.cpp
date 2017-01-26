@@ -476,44 +476,93 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
 	{
 
-		this->m_elementStatePacketList = this->m_networkModule->PacketBuffer_GetElementStatePackets();
-		if (this->m_elementStatePacketList.size() != 0)
+		// LEVERS AND BUTTONS //
+		this->m_statePacketList = this->m_networkModule->PacketBuffer_GetStatePackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_statePacketList.size() > 0)
 		{
 
-			std::list<StateElementPacket>::iterator itr;
-			PhysicsComponent* pp = nullptr;
-			for (itr = this->m_elementStatePacketList.begin(); itr != this->m_elementStatePacketList.end(); itr++)
-			{
-				bool found = false;
-				// First check doors (Currently only one)
-				for (int i = 0; i < this->m_doorEntities.size(); i++)
-				{
-					Entity* dP = this->m_doorEntities.at(i);
-					if (dP->GetEntityID() == itr->entityID) {
+			// Apply each packet to the right entity
+			std::list<StatePacket>::iterator itr;
 
+			for (itr = this->m_statePacketList.begin(); itr != this->m_statePacketList.end(); itr++)
+			{
+
+				if (itr->packet_type == UPDATE_BUTTON_STATE)
+				{
+					for (int i = 0; i < this->m_buttonEntities.size(); i++)
+					{
+						ButtonEntity* bP = this->m_buttonEntities.at(i);
+						if (bP->GetEntityID() == itr->entityID)
+						{
+							ButtonSyncState newState;
+							newState.entityID = itr->entityID;
+							newState.isActive = itr->isActive;
+
+							bP->SetSyncState(&newState);
+
+							break;
+						}
+
+					}
+
+				}
+				else if (itr->packet_type == UPDATE_LEVER_STATE)
+				{
+					for (int i = 0; i < this->m_leverEntities.size(); i++)
+					{
+						LeverEntity* lP = this->m_leverEntities.at(i);
+						if (lP->GetEntityID() == itr->entityID)
+						{
+							LeverSyncState newState;
+							newState.entityID = itr->entityID;
+							newState.isActive = itr->isActive;
+
+							lP->SetSyncState(&newState);
+
+							break;
+						}
+					}
+				}
+			}
+		}
+		this->m_statePacketList.clear();
+		// LEVERS AND BUTTONS END//
+
+
+		// WHEELS //
+		this->m_wheelStatePacketList = this->m_networkModule->PacketBuffer_GetWheelStatePackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_wheelStatePacketList.size() > 0)
+		{
+
+			// Apply each packet to the right entity
+			std::list<StateWheelPacket>::iterator itr;
+
+			for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
+			{
+
+				for (int i = 0; i < this->m_wheelEntities.size(); i++)
+				{
+					WheelEntity* wP = this->m_wheelEntities.at(i);
+
+					if (wP->GetEntityID() == itr->entityID)
+					{
+						WheelSyncState newState;
+						newState.entityID = itr->entityID;
+						newState.rotationState = itr->rotationState;
+						newState.rotationAmount = itr->rotationAmount;
+
+						wP->SetSyncState(&newState);
 
 						break;
 					}
 				}
-
-				//If no hit, Move to the next list (Currently no one else)
-				if (found != false)
-				{
-
-				}
 			}
-
 		}
-		this->m_elementStatePacketList.clear();
-
-
-
-
-
-
-
+		this->m_wheelStatePacketList.clear();
+		// WHEELS END //
 	}
-
 
 #pragma endregion Network_update_States
 
