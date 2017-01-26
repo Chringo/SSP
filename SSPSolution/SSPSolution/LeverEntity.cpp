@@ -50,3 +50,23 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 	}
 	return 0;
 }
+
+void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
+{
+	if (newSyncState != nullptr)
+	{
+		//The player is always the cause of the state change
+		this->m_isActive = newSyncState->isActive;
+		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+	}
+}
+
+LeverSyncState * LeverEntity::GetSyncState()
+{
+	LeverSyncState* result = nullptr;
+	if (this->m_needSync)
+	{
+		result = new LeverSyncState{this->m_entityID, this->m_isActive};
+	}
+	return result;
+}

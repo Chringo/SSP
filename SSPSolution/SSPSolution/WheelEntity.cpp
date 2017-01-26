@@ -311,3 +311,55 @@ float WheelEntity::GetInteractionDistance()
 {
 	return this->m_range;
 }
+
+void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
+{
+	if (newSyncState != nullptr)
+	{
+		this->m_rotationState = newSyncState->rotationState;
+		if (newSyncState->rotationState == 0)
+		{
+			//If we sync the rotation amount this becomes necessary
+			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
+			int percentIncOld = (int)((rotationAmount * 10.0f) + FLOAT_FIX);
+			rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
+			int percentIncNew = (int)((rotationAmount * 10.0f) + FLOAT_FIX);
+
+			//Now we have calculated the amount of 10% incrementation of the rotation we have and can check if it has changed
+			if (percentIncNew != percentIncOld)
+			{
+				//The increment has changed. Calculate the new percentIncrement and notify with appropriate event
+
+				//In the very rare occurrencee that the percent increase is equal or above 20% we need to send several notifications
+				int percentIncDiff = abs(percentIncNew - percentIncOld);
+				if (percentIncDiff > 1)
+				{
+					//Converter determines if percentInc has increased or not so we can correct the event notification
+					int converter = -1;
+					if (percentIncNew > percentIncOld)
+						converter = 1;
+					//Remember that the last event has already been sent
+					for (int incIter = 1; incIter < percentIncDiff; ++incIter)
+					{
+						//EVENT::WHEEL_0 + percentIncOld to get the start value
+						this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
+					}
+				}
+				//The event to notify with is the WHEEL_0 event + the increment.
+				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+			}
+		}
+	}
+}
+
+WheelSyncState * WheelEntity::GetSyncState()
+{
+	WheelSyncState* result = nullptr;
+
+	if (this->m_needSync)
+	{
+		result = new WheelSyncState{this->m_entityID, this->m_rotationState, DirectX::XMVectorGetY(this->m_pComp->PC_rotation)};
+	}
+
+	return result;
+}

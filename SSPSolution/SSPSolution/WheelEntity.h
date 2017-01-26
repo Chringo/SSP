@@ -4,7 +4,9 @@
 #include "Entity.h"
 
 struct WheelSyncState{
-
+	unsigned int entityID;
+	int rotationState;
+	float rotationAmount;
 };
 
 class WheelEntity :
@@ -30,6 +32,8 @@ private:
 	float m_resetCountdown;
 	// -2:resetingRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation
 	int m_rotationState;
+
+	bool m_needSync;
 public:
 	WheelEntity();
 	~WheelEntity();
@@ -51,6 +55,8 @@ public:
 	float GetRotateTime();
 	float GetInteractionDistance();
 
+	void SetSyncState(WheelSyncState* newSyncState);
+	WheelSyncState* GetSyncState();
 private:
 	//Functions
 };

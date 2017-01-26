@@ -3,7 +3,7 @@
 #include "Entity.h"
 
 struct ButtonSyncState {
-	int entityID;
+	unsigned int entityID;
 	bool isActive;
 };
 

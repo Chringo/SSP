@@ -3,8 +3,8 @@
 #include "Entity.h"
 
 struct LeverSyncState {
-	int entityID;
-	bool iActive;
+	unsigned int entityID;
+	bool isActive;
 };
 
 class LeverEntity :
@@ -28,6 +28,8 @@ public:
 	//For now we check only if the player is close enough
 	int CheckPressed(DirectX::XMFLOAT3 playerPos);
 
+	void SetSyncState(LeverSyncState* newSyncState);
+	LeverSyncState* GetSyncState();
 private:
 	//Functions
 };
