@@ -1950,6 +1950,29 @@ void PhysicsHandler::Update(float deltaTime)
 
 }
 
+void PhysicsHandler::CheckFieldIntersection()
+{
+	PhysicsComponent* current = nullptr;
+	int size = this->m_dynamicComponents.size();
+	for (int i = 0; i < size; i++)
+	{
+		current = this->m_dynamicComponents.at(i);
+		int nrOfFields = this->m_fields.size();
+		for (int y = 0; y < nrOfFields; y++)
+		{
+			if (current->PC_BVtype == BV_OBB)
+			{
+
+			}
+			if (current->PC_BVtype == BV_AABB)
+			{
+
+			}
+			if(current->PC_BVtype == BV_Sphere)
+		}
+	}
+}
+
 void PhysicsHandler::TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src)
 {
 	DirectX::XMFLOAT3 temp;
@@ -2388,6 +2411,22 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 	}
 
 	return true;
+}
+
+Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB & obb)
+{
+	this->m_fields.push_back(Field());
+	Field* field = &this->m_fields.at(this->m_fields.size());
+	field->F_BV.ext[0]	= obb.ext[0];
+	field->F_BV.ext[1]	= obb.ext[1];
+	field->F_BV.ext[2]	= obb.ext[2];
+	field->F_BV.ort		= obb.ort;
+	field->F_entitityID1 = entityID1;
+	field->F_entitityID2 = entityID2;
+	field->F_first_inide = false;
+	field->F_second_inside = false;
+
+	return nullptr;
 }
 
 void PhysicsHandler::SimpleCollition(float dt)
