@@ -64,19 +64,30 @@ namespace Ui {
 		Container*		m_selection = nullptr;
 
 #pragma region Button behaviour elements
-		QSpinBox * m_button_tagBox;
+		QSpinBox	   * m_button_tagBox;
 		QDoubleSpinBox * m_button_distance;
 		QDoubleSpinBox * m_button_timer;
 #pragma endregion
 
-#pragma region Door behaviour elements
-		QListWidget* m_door_triggerList;
-		QPushButton* m_door_add_trigger;
-		QPushButton* m_door_del_trigger;
-		QComboBox* m_door_availableTriggers;
-#pragma endregion
 
-#pragma region Trigget Tab elements
+
+#pragma region Trigger Tab elements
+		QWidget*     m_triggerTab;
+		QComboBox*   m_availableTriggers;
+		QListWidget* m_triggerList;
+		QPushButton* m_add_trigger;
+		QPushButton* m_del_trigger;
+		QString m_triggerType[NUM_PUZZLE_ELEMENTS]{
+			"(unknown type)"
+			"(button)",
+			"(lever)",
+			"(wheel)",
+			"(door)",
+			"(magnet)",
+			"(plate)"
+
+			
+		}
 
 #pragma endregion
 
@@ -104,6 +115,9 @@ namespace Ui {
 
 		void on_Add();
 		void on_Del();
+
+	private:
+		void SetTriggerData(Container*& selection);
 	};
 }
 #endif

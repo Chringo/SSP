@@ -317,7 +317,6 @@ border: black;</string>
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
-      <zorder>BehaviourStackWidget</zorder>
      </widget>
     </item>
     <item row="2" column="3" rowspan="3">
@@ -2005,13 +2004,68 @@ border: black;</string>
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QComboBox" name="availableTriggers_2">
+            <widget class="QComboBox" name="EventSignalBox">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(48, 48, 48);</string>
              </property>
              <item>
               <property name="text">
                <string>None</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>COLLIDED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BUTTON_DEACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BUTTON_ACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LEVER_DEACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LEVER_ACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>DOOR_CLOSED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>DOOR_OPENED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>WHEEL_DECREASING</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>WHEEL_INCREASING</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
               </property>
              </item>
             </widget>

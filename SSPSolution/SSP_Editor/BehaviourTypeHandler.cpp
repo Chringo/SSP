@@ -410,3 +410,28 @@ void Ui::BehaviourTypeHandler::on_Del()
 		//do stuff
 	}
 }
+
+void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
+{
+	if(selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
+		return
+
+	this->m_triggerTab->setEnabled(true);
+	
+	Level* currentLevel = LevelHandler::GetInstance()->GetCurrentLevel();
+	for (size_t i = 0; i < ContainerType::NUM_PUZZLE_ELEMENTS; i++)
+	{
+		const std::vector<Container*> * container = currentLevel->GetPuzzleElements(ContainerType(i));
+		
+		for (size_t j = 0; j < container->size(); j++)
+		{
+			QString name = m_triggerType[i];
+			name.append(QString::number(container->at(j)->internalID));
+			
+			
+		   m_availableTriggers->addItem(name, QVariant(container->at(j)->internalID));
+		}
+	}
+
+
+}

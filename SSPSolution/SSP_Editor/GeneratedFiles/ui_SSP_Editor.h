@@ -131,7 +131,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QPushButton *AddTriggerButton;
     QPushButton *DeleteTriggerButton;
-    QComboBox *availableTriggers_2;
+    QComboBox *EventSignalBox;
     QLabel *label_3;
     QWidget *CheckPoint;
     QGridLayout *gridLayout_6;
@@ -945,11 +945,11 @@ public:
 
         formLayout_2->setWidget(5, QFormLayout::SpanningRole, addDel_Frame);
 
-        availableTriggers_2 = new QComboBox(Triggers);
-        availableTriggers_2->setObjectName(QStringLiteral("availableTriggers_2"));
-        availableTriggers_2->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        EventSignalBox = new QComboBox(Triggers);
+        EventSignalBox->setObjectName(QStringLiteral("EventSignalBox"));
+        EventSignalBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
 
-        formLayout_2->setWidget(4, QFormLayout::FieldRole, availableTriggers_2);
+        formLayout_2->setWidget(4, QFormLayout::FieldRole, EventSignalBox);
 
         label_3 = new QLabel(Triggers);
         label_3->setObjectName(QStringLiteral("label_3"));
@@ -1101,9 +1101,20 @@ public:
         label->setText(QApplication::translate("SSP_EditorClass", "Scene Triggers : ", Q_NULLPTR));
         AddTriggerButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
         DeleteTriggerButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
-        availableTriggers_2->clear();
-        availableTriggers_2->insertItems(0, QStringList()
+        EventSignalBox->clear();
+        EventSignalBox->insertItems(0, QStringList()
          << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "COLLIDED", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "BUTTON_DEACTIVE", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "BUTTON_ACTIVE", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "LEVER_DEACTIVE", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "LEVER_ACTIVE", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "DOOR_CLOSED", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "DOOR_OPENED", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "WHEEL_DECREASING", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "WHEEL_INCREASING", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "New Item", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "New Item", Q_NULLPTR)
         );
         label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal : ", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Triggers), QApplication::translate("SSP_EditorClass", "Triggers", Q_NULLPTR));
