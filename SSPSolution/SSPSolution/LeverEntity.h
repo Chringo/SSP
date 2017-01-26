@@ -3,7 +3,8 @@
 #include "Entity.h"
 
 struct LeverSyncState {
-
+	int entityID;
+	bool iActive;
 };
 
 class LeverEntity :
@@ -13,6 +14,8 @@ private:
 	//Variables
 	bool m_isActive;
 	float m_range;
+
+	bool m_needSync;
 public:
 	LeverEntity();
 	virtual ~LeverEntity();
