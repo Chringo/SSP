@@ -60,7 +60,7 @@ Ui::AttributesHandler::~AttributesHandler()
 	delete this->m_BehaviourHandler;
 }
 
-void Ui::AttributesHandler::SetSelection(Container * selection)
+void Ui::AttributesHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{

@@ -28,7 +28,7 @@ private:
 	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
-	std::vector<std::vector<Container*>> m_pussleElements; //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access
+	std::vector<std::vector<Container*>> m_puzzleElements; //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access
 
 public:
 	Level();
@@ -68,8 +68,10 @@ public:
 	void Destroy(); //Clears the whole level, This is used when a new scene is loaded
 	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
 
-	Button* ConvertToButton(unsigned int entityId);
-	Container* ConvertToContainer(unsigned int entityId, ContainerType type);
+	const std::vector<Container*>* GetPuzzleElements(ContainerType type);
+	Button*    ConvertToButton(Container*& object);
+	Door*      ConvertToDoor  (Container*& object);
+	Container* ConvertToContainer(Container*& object); //polymorphism 
 
 	
 };

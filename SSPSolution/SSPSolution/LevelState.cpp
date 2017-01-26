@@ -71,8 +71,15 @@ int LevelState::ShutDown()
 		this->m_wheelEntities[i] = nullptr;
 	}
 	this->m_wheelEntities.clear();
+
+	for each (Checkpoint* cp in this->m_checkpoints)
+	{
+		delete cp;
+	}
+	this->m_checkpoints.clear();
 	// Clear level director
 	this->m_director.Shutdown();
+	
 	
 	return result;
 }
@@ -140,7 +147,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;								//Set Entity ID
 															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(-5, -1, -7, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 1;
@@ -182,7 +189,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 
 	this->m_player2.Initialize(3, playerP, playerG, playerAnim2);
-	
+
+
 	//this->m_dynamicEntitys.push_back();
 	
 	//Ball1
@@ -224,13 +232,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[2] = 0.5;
 	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
+	ball->Initialize(2, ballP, ballG);
 	ball2->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 5, 0.5);
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(2, 1, 5, 1.0);
 
 	StaticEntity* roof = new StaticEntity;
 	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
@@ -730,11 +739,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							this->m_player2.SetGrabbed(ep);
 							break;
 						}
-						else
-						{
-							this->m_player1.SetGrabbed(ep);
-							break;
-						}
 						
 					}
 
@@ -923,7 +927,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, -0.5, -3, 0));
+	m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
+	m_player1.GetPhysicsComponent()->PC_BVtype = BV_AABB;
+	m_player1.GetPhysicsComponent()->PC_Sphere.radius = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[0] = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[1] = 0.5f;
+	m_player1.GetPhysicsComponent()->PC_OBB.ext[2] = 0.5f;
+
+	m_player2.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(-5, -1, -3, 0);
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
@@ -1089,6 +1101,17 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				aiEntities[A]->SetAIComponent(temp);
 			}
 		}
+	}
+
+	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
+	for (int i = 0; i < data->numCheckpoints; i++)
+	{
+		CB->index = data->checkpoints[i].entityID;
+		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float)*3);
+		memcpy(&CB->obb.ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float)*16);
+		memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
+		
+		m_checkpoints.push_back(CB);
 	}
 
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
