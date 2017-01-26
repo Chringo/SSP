@@ -516,6 +516,8 @@ bool PhysicsHandler::OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsC
 	//IMPORTANT the second PhysicsComponent has to be the AABB
 	bool result = false;
 
+
+
 	PhysicsComponent OBBconverted;
 	OBBconverted.PC_BVtype = BV_OBB;
 	OBBconverted.PC_is_Static = objAABB->PC_is_Static;
@@ -528,11 +530,27 @@ bool PhysicsHandler::OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsC
 	OBBconverted.PC_elasticity = objAABB->PC_elasticity;
 	OBBconverted.PC_friction = objAABB->PC_friction;
 
+	DirectX::XMVECTOR originalPos = objOBB->PC_pos;
+	DirectX::XMVECTOR originalVel = objOBB->PC_velocity;
+
 	result = this->ObbObbIntersectionTest(objOBB, &OBBconverted, true, dt);
 
 	if (result)
 	{
 		int a = 0;
+		//DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(objAABB->PC_pos, objOBB->PC_pos);
+		//float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, DirectX::XMVectorSet(0, 1, 0, 0)));
+		//DirectX::XMVECTOR downVec = DirectX::XMVectorScale(DirectX::XMVectorSet(0, 1, 0, 0), dot);
+		//float yMin = DirectX::XMVectorGetY(DirectX::XMVectorSubtract(objOBB->PC_pos, downVec));
+		//float yMax = DirectX::XMVectorGetY(objAABB->PC_pos) + objAABB->PC_AABB.ext[1];
+
+		//float diff = fabs(yMin - yMax);
+		//if (diff < 0.499)
+		//{
+		//	objOBB->PC_velocity = originalVel;
+		//	objOBB->PC_pos = DirectX::XMVectorAdd(originalPos, DirectX::XMVectorSet(0, diff, 0, 0));
+		//}
+
 	}
 
 	objAABB->PC_pos = OBBconverted.PC_pos;
@@ -984,6 +1002,34 @@ DirectX::XMVECTOR PhysicsHandler::FindCollitionPoint(PhysicsComponent * obj1, Ph
 
 	//componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, toCorrect);
 	componentToMove->PC_normalForce = normal;
+	DirectX::XMVECTOR originalPos = componentToMove->PC_pos;
+	//if (DirectX::XMVector3NotEqual(normal, DirectX::XMVectorSet(0, 0, 0, 0)))
+	//{
+	//	DirectX::XMVECTOR oldpos = componentToMove->PC_pos;
+	//	componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, DirectX::XMVectorScale(normal, 0.25));
+	//	bool test = this->ObbObbIntersectionTest(componentToMove, staticComponent, false, dt);
+	//	DirectX::XMVECTOR diff;
+	//	if (test == false)
+	//	{
+	//		for (int i = 0; i < 10 ; i++)
+	//		{
+	//			if (!test)
+	//			{
+	//				diff = DirectX::XMVectorScale(DirectX::XMVectorSubtract(oldpos, componentToMove->PC_pos), 0.5f);
+	//				componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, diff);
+
+	//			}
+	//			else if (test)
+	//			{
+	//				diff = DirectX::XMVectorScale(DirectX::XMVectorSubtract(componentToMove->PC_pos, oldpos), 0.5f);
+	//				oldpos = componentToMove->PC_pos;
+	//				componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, diff);
+	//			}
+	//			test = this->ObbObbIntersectionTest(componentToMove, staticComponent, false, dt);
+	//		}
+	//	}
+
+	//}
 	this->CollitionDynamics(componentToMove, staticComponent, normal, dt);
 	componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, DirectX::XMVectorScale(componentToMove->PC_velocity, dt));
 

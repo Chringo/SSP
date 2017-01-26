@@ -901,7 +901,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, -0.5, -3, 0));
 	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(-4, -8, -10, 0);
 	m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
-	m_player1.GetPhysicsComponent()->PC_BVtype = BV_OBB;
+	m_player1.GetPhysicsComponent()->PC_BVtype = BV_AABB;
 	m_player1.GetPhysicsComponent()->PC_Sphere.radius = 0.5f;
 	m_player1.GetPhysicsComponent()->PC_OBB.ext[0] = 0.5f;
 	m_player1.GetPhysicsComponent()->PC_OBB.ext[1] = 0.5f;
