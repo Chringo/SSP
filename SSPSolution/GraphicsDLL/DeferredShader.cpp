@@ -373,6 +373,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 int DeferredShader::SetActive()
 {
+	this->m_deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+
 	//if (m_activeVariation == ShaderVariations)
 	//	return 0;
 	//Shader::SetActive(ShaderVariations);

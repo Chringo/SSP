@@ -205,6 +205,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_camera				   = nullptr;
 	this->m_graphicsComponents	   = nullptr;
 	this->m_shaderControl		   = nullptr;
+	this->m_uiHandler			   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
 }
@@ -245,6 +246,10 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 
+	this->m_uiHandler = new UIHandler;
+	this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
+
+	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG
 	 obbBoxes.reserve(20);
@@ -269,6 +274,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
@@ -323,6 +329,7 @@ int GraphicsHandler::Render(float deltaTime)
 	RenderBoundingBoxes(false);
 #endif // _DEBUG
 
+	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
 	return 0;
 }
@@ -428,6 +435,12 @@ void GraphicsHandler::Shutdown()
 		delete m_shaderControl;
 		this->m_shaderControl = nullptr;
 	}
+	if (this->m_uiHandler)
+	{
+		this->m_uiHandler->Shutdown();
+		delete this->m_uiHandler;
+		this->m_uiHandler = nullptr;
+	}
 	if (this->m_windowHandle)
 	{
 		this->m_windowHandle = nullptr;
@@ -520,6 +533,21 @@ int GraphicsHandler::UpdateComponentList()
 	}
 
 	return result;
+}
+
+UIComponent * GraphicsHandler::GetNextAvailableUIComponent()
+{
+	return this->m_uiHandler->GetNextUIComponent();
+}
+
+void GraphicsHandler::UpdateUIComponents(DirectX::XMFLOAT2 mousePos)
+{
+	this->m_uiHandler->UpdateUIComponentsclicked(mousePos);
+}
+
+TextComponent * GraphicsHandler::GetNextAvailableTextComponent()
+{
+	return this->m_uiHandler->GetNextTextComponent();
 }
 
 void GraphicsHandler::SetTempAnimComponent(void * component)
