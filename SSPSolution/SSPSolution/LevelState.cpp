@@ -1030,6 +1030,19 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
 	}
+
+	PhysicsHandler* phPtr = this->m_cHandler->GetPhysicsHandler();
+
+	int size = phPtr->GetNrOfComponents();
+	bool endReached = false;
+
+	endReached = phPtr->AABBAABBIntersectionTest(this->m_player1.GetPhysicsComponent(), this->endSpot, dt);
+
+	if (endReached == true)
+	{
+		//delete this->endSpot;
+		return 0;
+	}
 #pragma endregion Network_Key_events
 	this->m_cameraRef->Update(dt);
 	return result;
@@ -1049,8 +1062,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
 	
-
-
 	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
 		data->spawns[0].position[1],
@@ -1205,13 +1216,40 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		
 		m_checkpoints.push_back(CB);
 	}
+	CB = this->m_checkpoints.at(this->m_checkpoints.size() - 1);
+
+	StaticEntity* endCheckpoint = new StaticEntity();
+	GraphicsComponent* endCheckpointG = m_cHandler->GetGraphicsComponent();
+	endCheckpointG->modelID = 1337;
+	endCheckpointG->active = true;
+	resHandler->GetModel(endCheckpointG->modelID, endCheckpointG->modelPtr);
+	PhysicsComponent* endCheckpointP = m_cHandler->GetPhysicsComponent();
+	endCheckpointP->PC_entityID = 3;									//Set Entity ID
+	endCheckpointP->PC_pos = DirectX::XMVectorSubtract(CB->pos, DirectX::XMVectorSet(0,1,0,0));		//Set Position
+	endCheckpointP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	endCheckpointP->PC_is_Static = true;							//Set IsStatic
+	endCheckpointP->PC_active = true;								//Set Active
+	endCheckpointP->PC_BVtype = BV_AABB;
+	endCheckpointP->PC_willCorrect = false;
 	
+	endCheckpointP->PC_AABB.ext[0] = CB->obb.ext[0];
+	endCheckpointP->PC_AABB.ext[1] = CB->obb.ext[1];
+	endCheckpointP->PC_AABB.ext[2] = CB->obb.ext[2];
+
+	endCheckpointP->PC_mass = 10;
+	endCheckpointG->worldMatrix = DirectX::XMMatrixIdentity();
+	endCheckpoint->Initialize(3, endCheckpointP, endCheckpointG);
+
+	m_cHandler->GetPhysicsHandler()->SortComponents();
+
+	//hack, just temporary
+	this->endSpot = endCheckpointP;
+	this->m_staticEntitys.push_back(endCheckpoint);
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
 
-	m_cHandler->GetPhysicsHandler()->SortComponents();
-	
+
 	return 1;
 }
 

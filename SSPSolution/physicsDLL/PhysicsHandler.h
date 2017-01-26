@@ -63,6 +63,8 @@ struct PhysicsComponent
 	bool PC_steadfast;
 	float PC_friction;
 	float PC_elasticity;
+	bool PC_willCorrect = true;
+
 	BoundingVolumeType PC_BVtype;
 
 	AABB PC_AABB;
@@ -121,7 +123,6 @@ private:
 	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane, float dt);
 	bool AABBPlaneIntersectionTest(PhysicsComponent* objAABB, PhysicsComponent* objPlane, float dt);
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
-	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
 	//collitionCorrection
 	//void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
@@ -192,6 +193,8 @@ public:
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
+	PHYSICSDLL_API bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

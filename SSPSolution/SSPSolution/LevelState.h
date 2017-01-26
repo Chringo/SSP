@@ -42,6 +42,9 @@ private:
 	std::list<StatePacket> m_statePacketList;	//List with all updates for entities from the network
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
+
+	//temp
+	PhysicsComponent* endSpot;
 public:
 	LevelState();
 	virtual ~LevelState();

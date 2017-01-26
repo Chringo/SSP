@@ -140,148 +140,154 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 
 					// apply OOB check for more precisition
 					result = true;
-					if (
-						fabs(xOverlap  / x_total_ext) > fabs(yOverlap / y_total_ext)
-						&&
-						fabs(xOverlap / x_total_ext) > fabs(zOverlap / z_total_ext)
-						)
+
+					if (obj2->PC_willCorrect == true)
 					{
-						//overlapX
-						float distanceToMove = obj1->PC_AABB.ext[0] + obj2->PC_AABB.ext[0];
-						distanceToMove = distanceToMove - fabs(vecToObj[0]);
-						normal = DirectX::XMVectorSet(1, 0, 0, 0);
-						if (vecToObj[0] < 0)
+						if (
+							fabs(xOverlap / x_total_ext) > fabs(yOverlap / y_total_ext)
+							&&
+							fabs(xOverlap / x_total_ext) > fabs(zOverlap / z_total_ext)
+							)
 						{
-							distanceToMove *= -1;
-							normal = DirectX::XMVectorSet(-1, 0, 0, 0);
-						}
-						if (!obj1->PC_steadfast)
-						{
-
-							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, 0, 0, 0)); // old
-
-							float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
-							float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
-							diff = fabs(obj1YMin - obj2YMax);
-
-							if (diff < highLimit)
+							//overlapX
+							float distanceToMove = obj1->PC_AABB.ext[0] + obj2->PC_AABB.ext[0];
+							distanceToMove = distanceToMove - fabs(vecToObj[0]);
+							normal = DirectX::XMVectorSet(1, 0, 0, 0);
+							if (vecToObj[0] < 0)
 							{
-								normal = DirectX::XMVectorSet(0, 1, 0, 0);
-								yCorrection = diff;
-								distanceToMove = 0;
+								distanceToMove *= -1;
+								normal = DirectX::XMVectorSet(-1, 0, 0, 0);
 							}
-
-							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
-						}
-						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
-						{
-
-							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(-distanceToMove, 0, 0, 0)); // old
-
-							float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
-							float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
-							diff = fabs(obj2YMin - obj1YMax);
-
-							if (diff < highLimit)
+							if (!obj1->PC_steadfast)
 							{
-								yCorrection = diff;
-								distanceToMove = 0;
-							}
 
-							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
+								//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, 0, 0, 0)); // old
+
+								float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
+								float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
+								diff = fabs(obj1YMin - obj2YMax);
+
+								if (diff < highLimit)
+								{
+									normal = DirectX::XMVectorSet(0, 1, 0, 0);
+									yCorrection = diff;
+									distanceToMove = 0;
+								}
+
+								obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
+							}
+							else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
+							{
+
+								//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(-distanceToMove, 0, 0, 0)); // old
+
+								float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
+								float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
+								diff = fabs(obj2YMin - obj1YMax);
+
+								if (diff < highLimit)
+								{
+									yCorrection = diff;
+									distanceToMove = 0;
+								}
+
+								obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(distanceToMove, yCorrection, 0, 0));
+							}
 						}
+
+						if (
+							fabs(yOverlap / y_total_ext) > fabs(xOverlap / x_total_ext)
+							&&
+							fabs(yOverlap / y_total_ext) > fabs(zOverlap / z_total_ext)
+							)
+						{
+							float distanceToMove = obj1->PC_AABB.ext[1] + obj2->PC_AABB.ext[1];
+							distanceToMove = distanceToMove - fabs(vecToObj[1]);
+							normal = DirectX::XMVectorSet(0, 1, 0, 0);
+							if (vecToObj[1] < 0)
+							{
+								distanceToMove *= -1;
+								normal = DirectX::XMVectorSet(0, -1, 0, 0);
+							}
+							if (!obj1->PC_steadfast)
+							{
+								obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, distanceToMove, 0, 0));
+							}
+							else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
+							{
+								obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, -distanceToMove, 0, 0));
+							}
+						}
+
+						if (
+							fabs(zOverlap / z_total_ext) > fabs(xOverlap / x_total_ext)
+							&&
+							fabs(zOverlap / z_total_ext) > fabs(yOverlap / y_total_ext)
+							)
+						{
+							float distanceToMove = obj1->PC_AABB.ext[2] + obj2->PC_AABB.ext[2];
+							distanceToMove = distanceToMove - fabs(vecToObj[2]);
+							normal = DirectX::XMVectorSet(0, 0, 1, 0);
+							if (vecToObj[2] < 0)
+							{
+								distanceToMove *= -1;
+								normal = DirectX::XMVectorSet(0, 0, -1, 0);
+							}
+							if (!obj1->PC_steadfast)
+							{
+
+
+								//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, 0, distanceToMove, 0)); // old
+
+								float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
+								float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
+
+								diff = fabs(obj1YMin - obj2YMax);
+
+								if (diff < highLimit)
+								{
+									yCorrection = diff;
+									distanceToMove = 0;
+									normal = DirectX::XMVectorSet(0, 1, 0, 0);
+								}
+
+								obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
+
+							}
+							else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
+							{
+
+
+								//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, 0, -distanceToMove, 0)); // old
+
+								float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
+								float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
+
+								diff = fabs(obj2YMin - obj1YMax);
+
+								if (diff < highLimit)
+								{
+									yCorrection = diff;
+									distanceToMove = 0;
+								}
+
+								obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
+							}
+						}
+						//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, correction);
+
+						this->CollitionDynamics(obj1, obj2, normal, dt);
+						obj1->PC_normalForce = normal;
+
+						//overlappY
+
+						//overlappZ
+
+
+
 					}
-
-					if (
-						fabs(yOverlap / y_total_ext) > fabs(xOverlap / x_total_ext)
-						&&
-						fabs(yOverlap / y_total_ext) > fabs(zOverlap / z_total_ext)
-						)
-					{
-						float distanceToMove = obj1->PC_AABB.ext[1] + obj2->PC_AABB.ext[1];
-						distanceToMove = distanceToMove - fabs(vecToObj[1]);
-						normal = DirectX::XMVectorSet(0, 1, 0, 0);
-						if (vecToObj[1] < 0)
-						{
-							distanceToMove *= -1;
-							normal = DirectX::XMVectorSet(0, -1, 0, 0);
-						}
-						if (!obj1->PC_steadfast)
-						{
-							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, distanceToMove, 0, 0));
-						}
-						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
-						{
-							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, -distanceToMove, 0, 0));
-						}
-					}
-
-					if (
-						fabs(zOverlap / z_total_ext) > fabs(xOverlap / x_total_ext)
-						&&
-						fabs(zOverlap / z_total_ext) > fabs(yOverlap / y_total_ext)
-						)
-					{
-						float distanceToMove = obj1->PC_AABB.ext[2] + obj2->PC_AABB.ext[2];
-						distanceToMove = distanceToMove - fabs(vecToObj[2]);
-						normal = DirectX::XMVectorSet(0, 0, 1, 0);
-						if (vecToObj[2] < 0)
-						{
-							distanceToMove *= -1;
-							normal = DirectX::XMVectorSet(0, 0, -1, 0);
-						}
-						if (!obj1->PC_steadfast)
-						{
-
-
-							//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, 0, distanceToMove, 0)); // old
-
-							float obj1YMin = DirectX::XMVectorGetY(obj1->PC_pos) - obj1->PC_AABB.ext[1];
-							float obj2YMax = DirectX::XMVectorGetY(obj2->PC_pos) + obj2->PC_AABB.ext[1];
-
-							diff = fabs(obj1YMin - obj2YMax);
-
-							if (diff < highLimit)
-							{
-								yCorrection = diff;
-								distanceToMove = 0;
-								normal = DirectX::XMVectorSet(0, 1, 0, 0);
-							}
-
-							obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
-
-						}
-						else if (!obj2->PC_steadfast && !obj2->PC_is_Static)
-						{
-
-							
-							//obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, 0, -distanceToMove, 0)); // old
-
-							float obj2YMin = DirectX::XMVectorGetY(obj2->PC_pos) - obj2->PC_AABB.ext[1];
-							float obj1YMax = DirectX::XMVectorGetY(obj1->PC_pos) + obj1->PC_AABB.ext[1];
-
-							diff = fabs(obj2YMin - obj1YMax);
-
-							if (diff < highLimit)
-							{
-								yCorrection = diff;
-								distanceToMove = 0;
-							}
-
-							obj2->PC_pos = DirectX::XMVectorAdd(obj2->PC_pos, DirectX::XMVectorSet(0, yCorrection, distanceToMove, 0));
-						}
-					}
-					//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, correction);
-					this->CollitionDynamics(obj1, obj2, normal, dt);
-					obj1->PC_normalForce = normal;
-
-					//overlappY
-
-					//overlappZ
-
-
-
 				}
+
 			}
 		}
 	return result;
