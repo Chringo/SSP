@@ -95,6 +95,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
 			}
 			
+			return;
 		}
 		switch (m_selection->type) {
 		//BUTTON

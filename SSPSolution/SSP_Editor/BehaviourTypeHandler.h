@@ -74,6 +74,9 @@ namespace Ui {
 		QPushButton* m_door_add_trigger;
 		QPushButton* m_door_del_trigger;
 		QComboBox* m_door_availableTriggers;
+#pragma endregion
+
+#pragma region Trigget Tab elements
 
 #pragma endregion
 
