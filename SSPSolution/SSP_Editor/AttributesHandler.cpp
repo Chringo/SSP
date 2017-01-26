@@ -70,35 +70,7 @@ void Ui::AttributesHandler::SetSelection(Container *& selection)
 			return;
 		}
 		m_selection = selection;
-		m_numericBoxes[TRANSLATE][X]->setValue(selection->position.m128_f32[X]);
-		m_numericBoxes[TRANSLATE][Y]->setValue(selection->position.m128_f32[Y]);
-		m_numericBoxes[TRANSLATE][Z]->setValue(selection->position.m128_f32[Z]);
-
-
-		m_numericBoxes[ROTATE][X]->setValue(selection->rotation.m128_f32[X]);
-		m_numericBoxes[ROTATE][Y]->setValue(selection->rotation.m128_f32[Y]);
-		m_numericBoxes[ROTATE][Z]->setValue(selection->rotation.m128_f32[Z]);
-
-
-
-		if (m_selection->type == CHECKPOINT)
-		{
-			m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
-			m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
-			m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
-		}
-		else
-		{
-			m_numericBoxes[SCALE][X]->setValue(1.0f);
-			m_numericBoxes[SCALE][Y]->setValue(1.0f);
-			m_numericBoxes[SCALE][Z]->setValue(1.0f);
-		}
-
-		m_nameBox->setText("oops");
-		
-		m_uniqueID->setText(QString::number(selection->internalID));
-	
-		m_isStaticBox->setChecked(m_selection->isStatic);
+		UpdateSelection();
 		m_BehaviourHandler->SetSelection(selection);
 	
 	}
@@ -128,7 +100,40 @@ void Ui::AttributesHandler::Deselect()
 
 void Ui::AttributesHandler::UpdateSelection()
 {
-	SetSelection(m_selection); // This function updates. no need to rewrite
+
+	if (m_selection == nullptr)
+		return;
+	m_numericBoxes[TRANSLATE][X]->setValue(m_selection->position.m128_f32[X]);
+	m_numericBoxes[TRANSLATE][Y]->setValue(m_selection->position.m128_f32[Y]);
+	m_numericBoxes[TRANSLATE][Z]->setValue(m_selection->position.m128_f32[Z]);
+
+
+	m_numericBoxes[ROTATE][X]->setValue(m_selection->rotation.m128_f32[X]);
+	m_numericBoxes[ROTATE][Y]->setValue(m_selection->rotation.m128_f32[Y]);
+	m_numericBoxes[ROTATE][Z]->setValue(m_selection->rotation.m128_f32[Z]);
+
+
+
+	if (m_selection->type == CHECKPOINT)
+	{
+		m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
+		m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
+		m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+	}
+	else
+	{
+		m_numericBoxes[SCALE][X]->setValue(1.0f);
+		m_numericBoxes[SCALE][Y]->setValue(1.0f);
+		m_numericBoxes[SCALE][Z]->setValue(1.0f);
+	}
+
+	m_nameBox->setText("oops");
+
+	m_uniqueID->setText(QString::number(m_selection->internalID));
+
+	m_isStaticBox->setChecked(m_selection->isStatic);
+
+	//SetSelection(m_selection); // This function updates. no need to rewrite
 }
 
 void Ui::AttributesHandler::on_translate_X_changed(double val)
