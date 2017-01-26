@@ -958,23 +958,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPlayerInteraction(playerPos, 0);
 		}
 	}
-	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
-	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
-	{
-		(*i)->Update(dt, inputHandler);
-	}
-	//Doors require updates to change opening state
-	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
-	{
-		(*i)->Update(dt, inputHandler);
-	}
-	//Lock the camera to the player
 
 	//Check for state changes that should be sent over the networ
 	for (int i = 0; i < this->m_leverEntities.size(); i++)
 	{
 		LeverEntity* lP = this->m_leverEntities.at(i);
-		if(lP->GetSyncState() != nullptr) 
+		if (lP->GetSyncState() != nullptr)
 		{
 			this->m_networkModule->SendStateLeverPacket(lP->GetEntityID(), lP->GetSyncState()->isActive);
 		}
@@ -992,11 +981,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		WheelEntity* wP = this->m_wheelEntities.at(i);
 		if (wP->GetSyncState() != nullptr)
 		{
-			this->m_networkModule->SendStateWheelPacket(wP->GetEntityID(),wP->GetSyncState()->rotationState, wP->GetSyncState()->rotationAmount);
+			this->m_networkModule->SendStateWheelPacket(wP->GetEntityID(), wP->GetSyncState()->rotationState, wP->GetSyncState()->rotationAmount);
 		}
 	}
 
 
+	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
+	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+	//Doors require updates to change opening state
+	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+	//Lock the camera to the player
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
