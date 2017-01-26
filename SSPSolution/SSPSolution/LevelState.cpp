@@ -326,7 +326,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	wheel1P->PC_AABB.ext[0] = 0.5f;
 	wheel1P->PC_AABB.ext[1] = 0.5f;
 	wheel1P->PC_AABB.ext[2] = 0.5f;
-	wheel1->Initialize(617, wheel1P, wheel1G, 2.0f, 0.0f, 1.0f, 2.0f, true, 0.5f, 1.0f);
+	wheel1->Initialize(617, wheel1P, wheel1G, 2.0f, -0.5f, 0.5f, 2.0f, true, 0.5f, 1.0f);
 	wheel1->AddObserver(door1, door1->GetEntityID());
 	this->m_wheelEntities.push_back(wheel1);
 
