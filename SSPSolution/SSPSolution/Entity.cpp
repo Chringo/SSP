@@ -23,7 +23,6 @@ int Entity::SyncComponents()
 			// Works for now since we're only handling platforms
 			this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
 			this->m_aiComp->AC_position = this->m_pComp->PC_pos;
-			//this->m_pComp->PC_pos = this->m_aiComp->AC_position;
 		}
 		if (this->m_gComp != nullptr)
 		{
