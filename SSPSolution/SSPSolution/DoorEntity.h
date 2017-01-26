@@ -3,11 +3,6 @@
 #include "Entity.h"
 #include <vector>
 
-struct DoorSyncState {
-	int entityID;
-	bool isOpened;
-};
-
 struct ElementState {
 	int entityID;
 	EVENT desiredState;
