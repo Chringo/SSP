@@ -169,9 +169,16 @@ Resources::Status Level::AddCheckpointEntity()
 
 Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 {
+
+	
 	switch (type)
 	{
 	case BUTTON:
+
+		AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
+
+
+		this->RemoveModel(((Button*)element)->component.modelID, ((Button*)element)->internalID);
 		m_puzzleElements.at(BUTTON).push_back((Button*)element);
 		break;
 	case LEVER:

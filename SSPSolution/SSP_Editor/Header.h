@@ -172,6 +172,22 @@ public:
 		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
 
 
+		DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+		
+		this->component.worldMatrix = containerMatrix;
+
 		//listener load
 		this->numTriggers = dataPtr->Listener.numConnections;
 		for (int i = 0; i < this->numTriggers; i++)

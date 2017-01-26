@@ -162,7 +162,6 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
 		delete buttonData;
-
 	}
 
 	file.close();
@@ -445,9 +444,8 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHead
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Button * button = new Button(&dataPtr[i]);
-		DirectX::XMVECTOR bajs = button->position;
+		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(BUTTON, button);
-		GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 
 		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
 	
