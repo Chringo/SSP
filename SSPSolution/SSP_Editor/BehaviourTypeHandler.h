@@ -86,8 +86,8 @@ namespace Ui {
 			"(magnet)",
 			"(plate)"
 
-			
-		}
+
+		};
 
 #pragma endregion
 
