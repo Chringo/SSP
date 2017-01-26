@@ -38,12 +38,14 @@ private:
 	
 	// Reciver-buffers where all decoded packets will be placed in.
 	// Depending on the packet it will be put into the correct buffer
-	std::list<EntityPacket>		packet_Buffer_Entity;
-	std::list<AnimationPacket>	packet_Buffer_Animation;
-	std::list<StatePacket>		packet_Buffer_State;
-	std::list<CameraPacket>		packet_Buffer_Camera;
-	std::list<SyncPhysicPacket> packet_Buffer_Physic;
-	std::list<GrabPacket>		packet_Buffer_Grabbed;
+	std::list<EntityPacket>			packet_Buffer_Entity;
+	std::list<AnimationPacket>		packet_Buffer_Animation;
+	std::list<StateElementPacket>	packet_Buffer_ElementState;
+	std::list<StateWheelPacket>		packet_Buffer_WheelState;
+	std::list<StateButtonPacket>	packet_Buffer_ButtonState;
+	std::list<CameraPacket>			packet_Buffer_Camera;
+	std::list<SyncPhysicPacket>		packet_Buffer_Physic;
+	std::list<GrabPacket>			packet_Buffer_Grabbed;
 
 	// Help functions
 	int		ReceiveData(unsigned int client_id, char * recvbuf);	// Recive the binary data and stores it into recvbuf
@@ -86,12 +88,14 @@ public:
 	NETWORKDLL_API void PacketBuffer_UnLock();
 
 	// PacketBuffer functions
-	NETWORKDLL_API std::list<EntityPacket>		PacketBuffer_GetEntityPackets();		//Get all packets in packet_Buffer_Entity	
-	NETWORKDLL_API std::list<AnimationPacket>	PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
-	NETWORKDLL_API std::list<StatePacket>		PacketBuffer_GetStatePackets();			//Get all packets in packet_Buffer_State	
-	NETWORKDLL_API std::list<CameraPacket>		PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
-	NETWORKDLL_API std::list<SyncPhysicPacket>	PacketBuffer_GetPhysicPacket();			//Get all packets in packet_Buffer_Physic
-	NETWORKDLL_API std::list<GrabPacket>		PacketBuffer_GetGrabPacket();			//Get all packets in packet_Buffer_Grabbed
+	NETWORKDLL_API std::list<EntityPacket>			PacketBuffer_GetEntityPackets();		//Get all packets in packet_Buffer_Entity	
+	NETWORKDLL_API std::list<AnimationPacket>		PacketBuffer_GetAnimationPackets();		//Get all packets in packet_Buffer_Animation	
+	NETWORKDLL_API std::list<StateElementPacket>	PacketBuffer_GetElementStatePackets();			//Get all packets in packet_Buffer_State	
+	NETWORKDLL_API std::list<StateWheelPacket>		PacketBuffer_GetWheelStatePackets();			//Get all packets in packet_Buffer_State	
+	NETWORKDLL_API std::list<StateButtonPacket>		PacketBuffer_GetButtonStatePackets();			//Get all packets in packet_Buffer_State	
+	NETWORKDLL_API std::list<CameraPacket>			PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
+	NETWORKDLL_API std::list<SyncPhysicPacket>		PacketBuffer_GetPhysicPacket();			//Get all packets in packet_Buffer_Physic
+	NETWORKDLL_API std::list<GrabPacket>			PacketBuffer_GetGrabPacket();			//Get all packets in packet_Buffer_Grabbed
 
 };
 

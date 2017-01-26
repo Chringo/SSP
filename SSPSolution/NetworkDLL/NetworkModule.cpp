@@ -308,13 +308,13 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID)
 
 void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
 {
-	const unsigned int packet_size = sizeof(StatePacket);
+	const unsigned int packet_size = sizeof(StateElementPacket);
 	char packet_data[packet_size];
 
-	StatePacket packet;
+	StateElementPacket packet;
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
-	packet.packet_type = UPDATE_STATE;
+	packet.packet_type = UPDATE_ELEMENT_STATE;
 	packet.entityID = entityID;
 	packet.newState = newState;
 
@@ -423,7 +423,9 @@ void NetworkModule::ReadMessagesFromClients()
 	SyncPacket syP;
 	EntityPacket eP;
 	AnimationPacket aP;
-	StatePacket sP;
+	StateElementPacket seP;
+	StateWheelPacket swP;
+	StateButtonPacket sbP;
 	CameraPacket cP;
 	GrabPacket gP;
 	SyncPhysicPacket sPP;
@@ -529,12 +531,34 @@ void NetworkModule::ReadMessagesFromClients()
 
 				break;
 
-			case UPDATE_STATE:
+			case UPDATE_ELEMENT_STATE:
 
-				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				seP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
-				data_read += sizeof(StatePacket);
+				this->packet_Buffer_ElementState.push_back(seP);	// Push the packet to the correct buffer
+				data_read += sizeof(StateElementPacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_WHEEL_STATE:
+
+				swP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_WheelState.push_back(swP);	// Push the packet to the correct buffer
+				data_read += sizeof(StateWheelPacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_BUTTON_STATE:
+
+				sbP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_ButtonState.push_back(sbP);	// Push the packet to the correct buffer
+				data_read += sizeof(StateButtonPacket);
 				//DEBUG
 				//printf("Recived STATE_UPDATE packet\n");
 
@@ -740,17 +764,61 @@ std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
 	return result;
 }
 
-std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
+std::list<StateElementPacket> NetworkModule::PacketBuffer_GetElementStatePackets()
 {
-	std::list<StatePacket> result;
-	std::list<StatePacket>::iterator iter;
+	std::list<StateElementPacket> result;
+	std::list<StateElementPacket>::iterator iter;
 
-	for (iter = this->packet_Buffer_State.begin(); iter != this->packet_Buffer_State.end();)
+	for (iter = this->packet_Buffer_ElementState.begin(); iter != this->packet_Buffer_ElementState.end();)
 	{
-		if (iter->packet_type == UPDATE_STATE)
+		if (iter->packet_type == UPDATE_ELEMENT_STATE)
 		{
 			result.push_back(*iter);
-			iter = this->packet_Buffer_State.erase(iter);	//Returns the next element after the errased element		
+			iter = this->packet_Buffer_ElementState.erase(iter);	//Returns the next element after the errased element		
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<StateWheelPacket> NetworkModule::PacketBuffer_GetWheelStatePackets()
+{
+	std::list<StateWheelPacket> result;
+	std::list<StateWheelPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_WheelState.begin(); iter != this->packet_Buffer_WheelState.end();)
+	{
+		if (iter->packet_type == UPDATE_WHEEL_STATE)
+		{
+			result.push_back(*iter);
+			iter = this->packet_Buffer_WheelState.erase(iter);	//Returns the next element after the errased element		
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<StateButtonPacket> NetworkModule::PacketBuffer_GetButtonStatePackets()
+{
+	std::list<StateButtonPacket> result;
+	std::list<StateButtonPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_ButtonState.begin(); iter != this->packet_Buffer_ButtonState.end();)
+	{
+		if (iter->packet_type == UPDATE_BUTTON_STATE)
+		{
+			result.push_back(*iter);
+			iter = this->packet_Buffer_ButtonState.erase(iter);	//Returns the next element after the errased element		
 		}
 		else
 		{
