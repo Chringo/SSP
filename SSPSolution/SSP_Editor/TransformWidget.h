@@ -95,6 +95,7 @@ public:
 
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 
@@ -109,6 +110,7 @@ public:
 		m_obbCenterPosition = selectedContainer->position;
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 

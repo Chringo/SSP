@@ -64,6 +64,11 @@ void Ui::AttributesHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
+		if (m_selection != nullptr) {
+
+		if (selection->internalID == m_selection->internalID)
+			return;
+		}
 		m_selection = selection;
 		m_numericBoxes[TRANSLATE][X]->setValue(selection->position.m128_f32[X]);
 		m_numericBoxes[TRANSLATE][Y]->setValue(selection->position.m128_f32[Y]);
@@ -129,48 +134,60 @@ void Ui::AttributesHandler::UpdateSelection()
 void Ui::AttributesHandler::on_translate_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->position.m128_f32[X] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[X] != float(val)) {
+				m_selection->position.m128_f32[X] = float(val);
+				m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_translate_Y_changed(double val)
 {
 	if(m_selection != nullptr){
-		m_selection->position.m128_f32[Y] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[Y] != float(val)) {
+			m_selection->position.m128_f32[Y] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_translate_Z_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->position.m128_f32[Z] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[Z] != float(val)) {
+			m_selection->position.m128_f32[Z] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[X] = float(val);
+		if (m_selection->rotation.m128_f32[X] != float(val)){
+			m_selection->rotation.m128_f32[X] = float(val);
 		m_selection->isDirty = true;
+	}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_Y_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[Y] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->rotation.m128_f32[Y] != float(val)) {
+			m_selection->rotation.m128_f32[Y] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_Z_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[Z] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->rotation.m128_f32[Z] != float(val)) {
+			m_selection->rotation.m128_f32[Z] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 

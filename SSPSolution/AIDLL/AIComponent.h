@@ -29,7 +29,6 @@ __declspec(align(16)) struct AIComponent
 	int AC_nextWaypointID = 1;	// Index to next waypoint 
 	int AC_latestWaypointID = 0;// Index to latest visited waypoint
 	int AC_nrOfWaypoint = 0;	// Nr of waypoints used in array
-	
 
 	DirectX::XMVECTOR AC_waypoints[8];
 
