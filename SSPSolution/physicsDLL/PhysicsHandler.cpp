@@ -2145,14 +2145,14 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(nextPos, false);
 		
-		next->PC_BVtype = BV_Sphere;
+		next->PC_BVtype = BV_AABB;
 		next->PC_collides = false;
 		next->PC_Sphere.radius = 0.5;
 		//next->PC_friction = 0;
 
-		next->PC_AABB.ext[0] = 0.5f;
-		next->PC_AABB.ext[1] = 0.5f;
-		next->PC_AABB.ext[2] = 0.5f;
+		next->PC_AABB.ext[0] = 0.25f;
+		next->PC_AABB.ext[1] = 0.25f;
+		next->PC_AABB.ext[2] = 0.25f;
 		next->PC_gravityInfluence = 1.0f;
 
 		link.CL_previous = previous;
