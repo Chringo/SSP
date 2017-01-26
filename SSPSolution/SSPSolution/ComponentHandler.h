@@ -21,7 +21,10 @@ public:
 
 	GraphicsComponent* GetGraphicsComponent();
 	PhysicsComponent* GetPhysicsComponent();
+	UIComponent* GetUIComponent();
+	TextComponent* GetTextComponent();
 	AIComponent* GetAIComponent();
+
 	void UpdateGraphicsComponents();
 	void UpdateAIComponents();
 	void SetGraphicsComponentListSize(int gCompSize);
