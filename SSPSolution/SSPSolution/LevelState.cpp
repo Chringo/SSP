@@ -122,7 +122,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 2;								//Set Entity ID
 															//playerP->PC_pos = DirectX::XMVectorSet(0, -100, 0, 0);		//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(0,0,0,0);//Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
@@ -895,15 +895,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, -0.5, -3, 0));
-	m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0.0, 0, 0.0, 0);
-	m_player1.GetPhysicsComponent()->PC_BVtype = BV_AABB;
-	m_player1.GetPhysicsComponent()->PC_Sphere.radius = 0.5f;
-	m_player1.GetPhysicsComponent()->PC_OBB.ext[0] = 0.5f;
-	m_player1.GetPhysicsComponent()->PC_OBB.ext[1] = 0.5f;
-	m_player1.GetPhysicsComponent()->PC_OBB.ext[2] = 0.5f;
-
-	m_player2.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(-5, -1, -3, 0);
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
