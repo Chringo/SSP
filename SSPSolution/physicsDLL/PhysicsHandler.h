@@ -84,12 +84,16 @@ class PhysicsHandler
 {
 private:
 	std::vector<PhysicsComponent*> m_physicsComponents;
+
+	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<PhysicsComponent*> m_staticComponents;
+
 	std::vector<ChainLink> m_links;
-	int m_nrOfStaticObjects;
+
 
 	DirectX::XMVECTOR m_gravity;
 
-
+	int m_nrOfStaticObjects;
 	unsigned int	m_startIndex;		// At what index to start to check colision
 	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
 	bool			m_isHost;			// isHost is to check if this client should check collision between dynamic entities
@@ -156,7 +160,7 @@ public:
 
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
-	PHYSICSDLL_API void CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght);
+	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 
