@@ -463,9 +463,11 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMMATRIX> lo
 	for (int i = 0; i < jointCount; i++)
 	{
 		DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(m_AnimComponentList[0]->skeleton->GetSkeletonData()->joints[i].invBindPose);
+		//DirectX::XMMATRIX inverseBindPose = DirectX::XMMATRIX(m_AnimComponentList[0]->skeleton->GetSkeletonData()->joints[i].invBindPose);
 		DirectX::XMMATRIX toRoot = toRootTransform[i];
 
 		m_animGraphicsComponents[0]->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, toRoot);
+		//m_animGraphicsComponents[0]->finalJointTransforms[i] = inverseBindPose;
 	}
 }
 

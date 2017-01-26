@@ -47,7 +47,9 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 {
 	char* data = nullptr;
 	size_t size = 0;
- 	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
+ 	//Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
+	std::string testFile = "C:/Users/erik_/Desktop/SSP/SSPSolution/ResourceLib/AssetFiles/SkelMesh1.skel";
+	Status st = FileLoader::GetInstance()->LoadFile(testFile, data, &size);
 	if (st != ST_OK)
 		return st;
 	
@@ -83,33 +85,43 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	m_animationHandler
 	newSkeleton->AddAnimation
 	*/
+
 	ResourceContainer* animPtr;
 
-	int animsloaded = 0;
-	for (size_t i = 0; i < *animCount; i++)
+	unsigned int ids;
+	ids = 213;
+
+	for (int i = 0; i < 4; i++)
 	{
-		ResourceContainer* animPtr;
-		const unsigned int id = ((LayerIdHeader*)data)->id;
 		m_animHandler->LoadAnimation(id, animPtr);
-		st = m_animHandler->GetAnimation(id, animPtr);
-		switch (st) {
-			case Status::ST_RES_MISSING: { //if it doesent exist
-				Status mSt = m_animHandler->LoadAnimation(id, animPtr); //load the animation
-				if (st != ST_OK) {
-					continue;
-				}
-				else
-					newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
-				break;
-			}
-			case Status::ST_OK: {
-				animPtr->refCount += 1;
-				newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
-				break;
-			}
-			animsloaded++;
-		}
+		newSkeleton->AddAnimation((Animation*)animPtr->resource, i);
 	}
+
+	//int animsloaded = 0;
+	//for (size_t i = 0; i < *animCount; i++)
+	//{
+	//	ResourceContainer* animPtr;
+	//	const unsigned int id = ((LayerIdHeader*)data)->id;
+	//	m_animHandler->LoadAnimation(id, animPtr);
+	//	st = m_animHandler->GetAnimation(id, animPtr);
+	//	switch (st) {
+	//		case Status::ST_RES_MISSING: { //if it doesent exist
+	//			Status mSt = m_animHandler->LoadAnimation(id, animPtr); //load the animation
+	//			if (st != ST_OK) {
+	//				continue;
+	//			}
+	//			else
+	//				newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+	//			break;
+	//		}
+	//		case Status::ST_OK: {
+	//			animPtr->refCount += 1;
+	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+	//			break;
+	//		}
+	//		animsloaded++;
+	//	}
+	//}
 
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
 	m_emptyContainers.pop_front();							 // remove from empty container queue

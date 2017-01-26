@@ -48,7 +48,9 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 
 	char* data = nullptr;
 	size_t size = 0;
-	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
+	//Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
+	std::string tempFile = "C:/Users/erik_/Desktop/SSP/SSPSolution/ResourceLib/AssetFiles/SkelMesh1_WalkState.anim";
+	Status st = FileLoader::GetInstance()->LoadFile(tempFile, data, &size);
 	if (st != ST_OK)
 		return st;
 
