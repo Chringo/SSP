@@ -3,6 +3,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../AIDLL/AIComponent.h"
 #include "LevelHeaders.h"
+#include "../SSPSolution/ComponentStructs.h"
 
 enum ContainerType
 {
@@ -61,54 +62,15 @@ struct Container
 
 	};
 
-struct Button : Container
+struct ListenerContainer : Container
 {
-	Button() : Container()
+	ListenerContainer() : Container() {};
+	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
 	{
-		this->type = BUTTON;
 	}
-	Button(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
-	{
-		this->type = BUTTON;
-	}
-	float interactionDistance = 1.0f;
-	float resetTime = 0.0f; // Seconds
-};
-
-struct Lever : Container
-{
-	Lever() : Container() {
-		this->type = LEVER;
-	}
-	float interactionDistance;
-};
-struct Wheel : Container
-{
-	Wheel() : Container()
-	{
-		this->type = WHEEL;
-	}
-	float interactionDistance;
-	float minRotation;
-	float maxRotation;
-	float rotateTime;
-
-	float timeToReset;	  //Sekunder
-	float resetTime;	  //Sekunder
-};
-struct Door : Container
-{
-	Door() : Container()
-	{
-		this->type = DOOR;
-	}
-	Door(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Door
-	{
-		this->type = DOOR;
-	}
-	float rotateTime;
 	unsigned int numTriggers = 0;
-	unsigned int triggerEntityIds[10];
+	EVENT		 listenEvent[20];
+	unsigned int triggerEntityIds[20];
 
 	void AddTrigger(unsigned int entityId)
 	{
@@ -143,6 +105,56 @@ struct Door : Container
 		}
 		numTriggers -= 1;
 	}
+
+};
+
+struct Button : ListenerContainer
+{
+	Button() : ListenerContainer()
+	{
+		this->type = BUTTON;
+	}
+	Button(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Button
+	{
+		this->type = BUTTON;
+	}
+	float interactionDistance = 1.0f;
+	float resetTime = 0.0f; // Seconds
+};
+
+struct Lever : ListenerContainer
+{
+	Lever() : ListenerContainer() {
+		this->type = LEVER;
+	}
+	float interactionDistance;
+};
+struct Wheel : ListenerContainer
+{
+	Wheel() : ListenerContainer()
+	{
+		this->type = WHEEL;
+	}
+	float interactionDistance;
+	float minRotation;
+	float maxRotation;
+	float rotateTime;
+
+	float timeToReset;	  //Sekunder
+	float resetTime;	  //Sekunder
+};
+struct Door : ListenerContainer
+{
+	Door() : ListenerContainer()
+	{
+		this->type = DOOR;
+	}
+	Door(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Door
+	{
+		this->type = DOOR;
+	}
+	float rotateTime;
+	
 };
 struct CheckpointContainer : Container
 {

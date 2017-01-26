@@ -454,10 +454,12 @@ const std::vector<Container*>* Level::GetPuzzleElements(ContainerType type)
 	return &this->m_puzzleElements.at(type);
 }
 
-Button * Level::ConvertToButton(Container*& obj)
+Button * Level::ConvertToButton(Container*& object)
 {
 
-	Container* entity = this->GetInstanceEntity(obj->internalID);
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
 
 	if (entity != nullptr)
 	{
@@ -469,7 +471,7 @@ Button * Level::ConvertToButton(Container*& obj)
 		Button* newButton = new Button(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
 		this->m_puzzleElements.at(BUTTON).push_back(newButton); // add to button array
-		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		object = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
 		return newButton; //Return new button
 
 	}
@@ -480,8 +482,10 @@ Button * Level::ConvertToButton(Container*& obj)
 Door * Level::ConvertToDoor(Container *& object)
 {
 
-	Container* entity = this->GetInstanceEntity(object->internalID);
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
 
+	Container* entity = this->GetInstanceEntity(object->internalID);
 	if (entity != nullptr)
 	{
 		// Create a new door,
