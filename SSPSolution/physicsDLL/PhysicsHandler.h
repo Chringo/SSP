@@ -84,6 +84,10 @@ class PhysicsHandler
 {
 private:
 	std::vector<PhysicsComponent*> m_physicsComponents;
+
+	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<PhysicsComponent*> m_staticComponents;
+
 	std::vector<ChainLink> m_links;
 	int m_nrOfStaticObjects;
 

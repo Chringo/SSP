@@ -1621,15 +1621,16 @@ void PhysicsHandler::Update(float deltaTime)
 	// DYNAMIC VS DYNAMIC
 	if (this->m_isHost)
 	{
+		m_numberOfDynamics = this->m_dynamicComponents.size();
 		// Do dynamic vs dynamic checks
 		for (int i = this->m_startIndex; i < m_numberOfDynamics; i++)	// 
 		{
-			PhysicsComponent* current = this->m_physicsComponents.at(i);
+			PhysicsComponent* current = this->m_dynamicComponents.at(i);
 			if (current->PC_collides)
 			{
 				for (int j = i + 1; j < m_numberOfDynamics; j++)
 				{
-					PhysicsComponent* toCompare = this->m_physicsComponents.at(j);
+					PhysicsComponent* toCompare = this->m_dynamicComponents.at(j);
 					if (toCompare->PC_collides)
 					{
 						if (current->PC_BVtype == BV_AABB)
@@ -1669,9 +1670,10 @@ void PhysicsHandler::Update(float deltaTime)
 	}
 
 	// DYNAMIC VS STATIC
-	for (int i = this->m_startIndex; i < m_numberOfDynamics; i++)	// 
+	int nrOfDynamicComponents = this->m_dynamicComponents.size();
+	for (int i = this->m_startIndex; i < nrOfDynamicComponents; i++)	// 
 	{
-		PhysicsComponent* current = this->m_physicsComponents.at(i);
+		PhysicsComponent* current = this->m_dynamicComponents.at(i);
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 
 
@@ -1684,6 +1686,7 @@ void PhysicsHandler::Update(float deltaTime)
 			//hit detection/correction is done correctly
 			loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
 		}
+		int nrOfStaticComponents = this->m_staticComponents.size();
 		for (int i = 0; i < loopsNeeded; i++)
 		{
 			float newDT = dt / loopsNeeded;
@@ -1692,10 +1695,10 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_AABB)
 					{
 						//only collide with static environment for starters
-						for (int j = this->m_numberOfDynamics; j < this->m_physicsComponents.size(); j++)
+						for (int j = 0; j < nrOfStaticComponents; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_physicsComponents.at(j);
+							toCompare = this->m_staticComponents.at(j);
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 							{
 								this->AABBAABBIntersectionTest(current, toCompare, newDT);
@@ -1722,10 +1725,10 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_Sphere)
 					{
 						//only collide with static environment for starters
-						for (int j = this->m_numberOfDynamics; j < this->m_physicsComponents.size(); j++)
+						for (int j = 0; j < nrOfStaticComponents; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_physicsComponents.at(j);
+							toCompare = this->m_staticComponents.at(j);
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 							{
 								this->SphereAABBIntersectionTest(current, toCompare, newDT);
@@ -1750,10 +1753,10 @@ void PhysicsHandler::Update(float deltaTime)
 				if (current->PC_BVtype == BoundingVolumeType::BV_OBB)
 					{
 						//only collide with static environment for starters
-						for (int j = this->m_numberOfDynamics; j < this->m_physicsComponents.size(); j++)
+						for (int j = 0; j < nrOfStaticComponents; j++)
 						{
 							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_physicsComponents.at(j);
+							toCompare = this->m_staticComponents.at(j);
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 							{
 								//toCompare has to be AABB or bad peaople will take you in the night
@@ -2375,42 +2378,81 @@ bool PhysicsHandler::checkCollition()
 void PhysicsHandler::SortComponents()
 {
 	//this->m_nrOfStaticObjects = 20;
-	this->m_nrOfStaticObjects = 0;
-	int nrOfComponents = this->m_physicsComponents.size();
-	PhysicsComponent* current;
-	for (int i = 0; i < nrOfComponents; i++)
-	{
-		current = this->m_physicsComponents.at(i);
-		if (current->PC_is_Static)
-		{
-			this->m_nrOfStaticObjects++;
-		}
-	}
-	int pivot = nrOfComponents - this->m_nrOfStaticObjects;
-	int lastKnownStatic = pivot;
-	PhysicsComponent* dynamicToSwap = nullptr;
-	PhysicsComponent* staticToSwap = nullptr;
-	for (int i = pivot; i < nrOfComponents; i++)
-	{
-		current = this->m_physicsComponents.at(i);
-		if(!current->PC_is_Static)
-		{ 
-			dynamicToSwap = this->m_physicsComponents.at(i);
-			for (int x = lastKnownStatic; x >= 0 && dynamicToSwap != nullptr; x--)
-			{
-				staticToSwap = this->m_physicsComponents.at(x);
-				if (staticToSwap->PC_is_Static)
-				{
-					lastKnownStatic = x;
-					this->m_physicsComponents.at(i) = staticToSwap;
-					this->m_physicsComponents.at(x) = dynamicToSwap;
-					dynamicToSwap = nullptr;
-				}
+	//this->m_nrOfStaticObjects = 0;
+	//int nrOfComponents = this->m_physicsComponents.size();
+	//PhysicsComponent* current;
+	//for (int i = 0; i < nrOfComponents; i++)
+	//{
+	//	current = this->m_physicsComponents.at(i);
+	//	if (current->PC_is_Static)
+	//	{
+	//		this->m_nrOfStaticObjects++;
+	//	}
+	//}
+	//int pivot = nrOfComponents - this->m_nrOfStaticObjects;
+	//int lastKnownStatic = pivot;
+	//PhysicsComponent* dynamicToSwap = nullptr;
+	//PhysicsComponent* staticToSwap = nullptr;
+	//for (int i = pivot; i < nrOfComponents; i++)
+	//{
+	//	current = this->m_physicsComponents.at(i);
+	//	if(!current->PC_is_Static)
+	//	{ 
+	//		dynamicToSwap = this->m_physicsComponents.at(i);
+	//		for (int x = lastKnownStatic; x >= 0 && dynamicToSwap != nullptr; x--)
+	//		{
+	//			staticToSwap = this->m_physicsComponents.at(x);
+	//			if (staticToSwap->PC_is_Static)
+	//			{
+	//				lastKnownStatic = x;
+	//				this->m_physicsComponents.at(i) = staticToSwap;
+	//				this->m_physicsComponents.at(x) = dynamicToSwap;
+	//				dynamicToSwap = nullptr;
+	//			}
 
-			}
+	//		}
+	//	}
+	//}
+	//int a = this->m_physicsComponents.size();
+
+	this->m_dynamicComponents.clear();
+	this->m_staticComponents.clear();
+
+	int size = this->m_physicsComponents.size();
+
+	PhysicsComponent* ptr = nullptr;
+	for (int i = 0; i < size; i++)
+	{
+		ptr = this->m_physicsComponents.at(i);
+		if (ptr->PC_is_Static)
+		{
+			this->m_staticComponents.push_back(ptr);
+		}
+		else
+		{
+			this->m_dynamicComponents.push_back(ptr);
 		}
 	}
-	int a = this->m_physicsComponents.size();
+
+	int nrOfDynamic = this->m_dynamicComponents.size();
+	int nrOfStatic = this->m_staticComponents.size();
+	ptr = nullptr;
+	for (int i = 0; i < nrOfDynamic; i++)
+	{
+		ptr = this->m_dynamicComponents.at(i);
+		if (ptr->PC_is_Static)
+		{
+			int wrong = 1;
+		}
+	}
+	for (int i = 0; i < nrOfStatic; i++)
+	{
+		ptr = this->m_staticComponents.at(i);
+		if (!ptr->PC_is_Static)
+		{
+			int wrong = 1;
+		}
+	}
 }
 
 #ifdef _DEBUG
