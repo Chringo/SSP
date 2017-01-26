@@ -120,8 +120,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;								//Set Entity ID
-															
+	playerP->PC_entityID = 2;								//Set Entity ID														
 	playerP->PC_pos = DirectX::XMVectorSet(-5, -8, -8, 0);	//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(-10, -1, -7, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
@@ -436,20 +435,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if ((int)itr->entityID == 3)
-				{
-					pp = (*this->m_dynamicEntitys.at(0)).GetPhysicsComponent();
-
-					// Update the component
-					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-				}
 				else
 				{
 					// Find the entity
 					std::vector<DynamicEntity*>::iterator Ditr;
-					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
+					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) 
+					{
 
 						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
 						{
@@ -460,6 +451,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 							pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
 						}
 
 					}
@@ -914,11 +906,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 #pragma endregion Client/Player2 Specifics
 
-	//update all dynamic entities
-	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
-	{
-		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
-	}
+	////update all dynamic entities
+	//for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+	//{
+	//	this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+	//}
 
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
