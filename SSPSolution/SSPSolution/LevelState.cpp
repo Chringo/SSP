@@ -566,8 +566,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 #pragma endregion Network_update_States
 
-
-
 	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	//{
 	//	for (size_t i = 0; i < m_dynamicEntitys.size(); i++)
@@ -971,6 +969,34 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		(*i)->Update(dt, inputHandler);
 	}
 	//Lock the camera to the player
+
+	//Check for state changes that should be sent over the networ
+	for (int i = 0; i < this->m_leverEntities.size(); i++)
+	{
+		LeverEntity* lP = this->m_leverEntities.at(i);
+		if(lP->GetSyncState() != nullptr) 
+		{
+			this->m_networkModule->SendStateLeverPacket(lP->GetEntityID(), lP->GetSyncState()->isActive);
+		}
+	}
+	for (int i = 0; i < this->m_buttonEntities.size(); i++)
+	{
+		ButtonEntity* bP = this->m_buttonEntities.at(i);
+		if (bP->GetSyncState() != nullptr)
+		{
+			this->m_networkModule->SendStateButtonPacket(bP->GetEntityID(), bP->GetSyncState()->isActive);
+		}
+	}
+	for (int i = 0; i < this->m_wheelEntities.size(); i++)
+	{
+		WheelEntity* wP = this->m_wheelEntities.at(i);
+		if (wP->GetSyncState() != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wP->GetEntityID(),wP->GetSyncState()->rotationState, wP->GetSyncState()->rotationAmount);
+		}
+	}
+
+
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
