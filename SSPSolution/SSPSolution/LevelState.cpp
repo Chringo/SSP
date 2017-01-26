@@ -112,6 +112,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player1.Initialize(1, playerP, playerG);
+	this->m_player1.SetSpeed(0.5f);
 
 	//Player 2
 	this->m_player2 = Player();
@@ -136,6 +137,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(2, playerP, playerG);
+	this->m_player2.SetSpeed(0.5f);
 
 
 	//this->m_dynamicEntitys.push_back();
