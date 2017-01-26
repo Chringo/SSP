@@ -93,12 +93,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	// creating the player
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
-	playerG->modelID = 1337;
+	playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;								//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(-4, -8, -10, 0);		//Set Position
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
@@ -149,7 +149,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 3;									//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(-6, 0, -10, 0);		//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
@@ -215,16 +215,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
-	StaticEntity* roof = new StaticEntity;
-	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
-	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
-	roofP->PC_is_Static = true;
-	roofP->PC_BVtype = BV_Plane;
-	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
-	roofP->PC_elasticity = 0;
-	roofP->PC_friction = 1.0f;
+	//StaticEntity* roof = new StaticEntity;
+	//PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
+	//roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
+	//roofP->PC_is_Static = true;
+	//roofP->PC_BVtype = BV_Plane;
+	//roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
+	//roofP->PC_elasticity = 0;
+	//roofP->PC_friction = 1.0f;
 
-	this->m_staticEntitys.push_back(roof);
+	//this->m_staticEntitys.push_back(roof);
 
 #pragma region
 				//	DynamicEntity* platform = new DynamicEntity();
@@ -1077,7 +1077,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;
 
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
+	//m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
@@ -1240,14 +1240,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	endCheckpointG->worldMatrix = DirectX::XMMatrixIdentity();
 	endCheckpoint->Initialize(3, endCheckpointP, endCheckpointG);
 
-	m_cHandler->GetPhysicsHandler()->SortComponents();
-
 	//hack, just temporary
 	this->endSpot = endCheckpointP;
 	this->m_staticEntitys.push_back(endCheckpoint);
+
+	m_cHandler->GetPhysicsHandler()->SortComponents();
+
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
-	m_player1.GetGraphicComponent()->modelID = 2759249725;
-	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
+	m_player1.GetGraphicComponent()->modelID = 885141774;
+	Resources::ResourceHandler::GetInstance()->GetModel(885141774, model);
 
 
 	return 1;
