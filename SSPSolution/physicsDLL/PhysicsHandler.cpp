@@ -2462,9 +2462,9 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 	float closestDistance = 999999999;	//Gotta be big
 	DirectX::XMVECTOR vec;
 
-	for(int i = 0; i < this->m_numberOfDynamics; i++)	//We know the dynamics are in the front of the array
+	for(int i = 0; i < this->m_dynamicComponents.size(); i++)	//We know the dynamics are in the front of the array
 	{
-		pp = this->m_physicsComponents.at(i);
+		pp = this->m_dynamicComponents.at(i);
 
 		if (pp->PC_entityID != 0 && pp->PC_entityID != 1)	//Check so we sont find our own component we compare to
 		{
