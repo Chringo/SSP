@@ -99,8 +99,9 @@ int System::Initialize()
 
 
 	//this->m_Anim = new Animation();
-
+#ifdef _DEBUG
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
+#endif
 
 	return result;
 }
@@ -115,7 +116,9 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
+#ifdef _DEBUG
 		DebugHandler::instance().StartProgram();
+#endif
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -146,9 +149,10 @@ int System::Run()
 			DebugHandler::instance().ResetMinMax();
 			printf("Reseted min max on timers\n");
 		}
-		
+#ifdef _DEBUG
 		DebugHandler::instance().EndProgram();
 		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
+#endif
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();
@@ -161,7 +165,9 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
+#ifdef _DEBUG
 	DebugHandler::instance().StartTimer("Update");
+#endif
 	int result = 1;
 
 
@@ -249,13 +255,16 @@ int System::Update(float deltaTime)
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 
 
-
+#ifdef _DEBUG
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance().EndTimer();
 	//Render
 	DebugHandler::instance().StartTimer("Render");
+#endif
 	this->m_graphicsHandler->Render(deltaTime);
+#ifdef _DEBUG
 	DebugHandler::instance().EndTimer();
+#endif
 	return result;
 }
 
