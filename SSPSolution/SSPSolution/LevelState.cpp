@@ -153,9 +153,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_AABB;
-	ballP->PC_AABB.ext[0] = 0.35;
-	ballP->PC_AABB.ext[1] = 0.35;
-	ballP->PC_AABB.ext[2] = 0.35;
+	ballP->PC_AABB.ext[0] = 0.35f;
+	ballP->PC_AABB.ext[1] = 0.35f;
+	ballP->PC_AABB.ext[2] = 0.35f;
 	ballP->PC_mass = 10;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
@@ -291,7 +291,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
-	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 1.4, 0.0, 0.0);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 	
 	if (this->m_networkModule->IsHost())
 	{
@@ -524,7 +524,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 		}
 
-		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
@@ -547,7 +547,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (epp != nullptr)	//If a component was found
 			{
 				Entity* ent = nullptr;
-				for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 				{
 
 					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
@@ -588,7 +588,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				if (itr->grabbedID >= 0)	//Grab, negativ value is for drop
 				{
 					//Find the entity we want to grab
-					for (int i = 0; i < this->m_dynamicEntitys.size(); i++) 
+					for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 					{		
 						ep = this->m_dynamicEntitys.at(i);				
 						if (ep->GetEntityID() == itr->grabbedID)
@@ -652,7 +652,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
 			Entity* ent = nullptr;
-			for (int i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 			{
 				ent = this->m_dynamicEntitys.at(i);
 				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
@@ -690,7 +690,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
 		}
 
-		for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
@@ -712,7 +712,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (epp != nullptr)	//If a component was found
 			{
 				Entity* ent = nullptr;
-				for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 				{
 
 					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
@@ -750,7 +750,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				if (itr->grabbedID >= 0) //Grab
 				{
 					//Find the entity to grab
-					for (int i =0 ; i < this->m_dynamicEntitys.size(); i++) 
+					for (size_t i =0 ; i < this->m_dynamicEntitys.size(); i++)
 					{
 						ep = this->m_dynamicEntitys.at(i);
 
@@ -820,7 +820,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma endregion Client/Player2 Specifics
 
 	//update all dynamic entities
-	for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
 		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
 	}
@@ -889,7 +889,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 				//TEMP SULOTION
 				//Move the camera to player 2 since we joined a game 
-				DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0, 1.4, 0.0, 0.0);
+				DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 				m_cameraRef->SetCameraPivot(
 					&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
 					targetOffset,
@@ -1061,7 +1061,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 				temp->AC_speed = data->aiComponents[A].speed;
 				temp->AC_pattern = data->aiComponents[A].pattern;
 				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
-				for (size_t x = 0; x < temp->AC_nrOfWaypoint; x++)
+				for (int x = 0; x < temp->AC_nrOfWaypoint; x++)
 				{
 					temp->AC_waypoints[x] = {
 						data->aiComponents[A].wayPoints[x][0],
@@ -1077,7 +1077,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	}
 
 	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
-	for (int i = 0; i < data->numCheckpoints; i++)
+	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
 		CB->index = data->checkpoints[i].entityID;
 		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float)*3);
