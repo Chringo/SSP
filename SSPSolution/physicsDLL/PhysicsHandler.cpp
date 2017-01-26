@@ -1914,60 +1914,20 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 
 	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 
-	if (distance > link->CL_lenght + 0.1)
+	if (distance > link->CL_lenght)
 	{
-		diffVec = DirectX::XMVector3Normalize(diffVec);
-		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght + 0.1)));
-		link->CL_next->PC_pos = link->CL_next->PC_pos;
+		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght), diffVec);
+		toMove = DirectX::XMVectorScale(toMove, 0.5f);
 
-		//if (DirectX::XMVector3Equal(link->CL_next->PC_normalForce,DirectX::XMVectorSet(0,0,0,0)) && DirectX::XMVector3Equal(link->CL_previous->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
-		//{
-		//	diffVec = DirectX::XMVector3Normalize(diffVec);
-		//	link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght)));
-		//	link->CL_next->PC_pos = link->CL_next->PC_pos;
-		//}
-		//else if (DirectX::XMVector3NotEqual(link->CL_next->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)) && DirectX::XMVector3NotEqual(link->CL_previous->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
-		//{
-		//	DirectX::XMVECTOR para;
-		//	DirectX::XMVECTOR perp;
+		link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(toMove, -1));
+		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, toMove);
 
-		//	DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
 
-		//	DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, link->CL_next->PC_normalForce);
+		//diffVec = DirectX::XMVector3Normalize(diffVec);
+		//link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(diffVec, (link->CL_lenght)));
+		//link->CL_next->PC_pos = link->CL_next->PC_pos;
 
-		//	link->CL_next->PC_pos = DirectX::XMVectorSubtract(link->CL_next->PC_pos, perp);
-
-		//	DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, link->CL_previous->PC_normalForce);
-
-		//	link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, perp);
-
-		//}
-		//else if (DirectX::XMVector3NotEqual(link->CL_next->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
-		//{
-		//	DirectX::XMVECTOR para;
-		//	DirectX::XMVECTOR perp;
-
-		//	DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
-
-		//	DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, link->CL_next->PC_normalForce);
-
-		//	link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, perp);
-		//	link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, para);
-
-		//	//link->CL_previous->PC_velocity = DirectX::XMVectorAdd(link->CL_previous->PC_velocity, DirectX::XMVectorScale(this->m_gravity, -1));
-		//}
-		//else if (DirectX::XMVector3NotEqual(link->CL_previous->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
-		//{
-		//	DirectX::XMVECTOR para;
-		//	DirectX::XMVECTOR perp;
-
-		//	DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
-
-		//	DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, link->CL_previous->PC_normalForce);
-
-		//	link->CL_next->PC_pos = DirectX::XMVectorSubtract(link->CL_next->PC_pos, para);
-		//	link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, perp);
-		//}
+		
 	}
 
 }
@@ -2048,13 +2008,14 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(nextPos, false);
 		
-		next->PC_BVtype = BV_AABB;
+		next->PC_BVtype = BV_Sphere;
 		next->PC_collides = false;
-		next->PC_Sphere.radius = 0.1;
+		next->PC_Sphere.radius = 0.5;
+		//next->PC_friction = 0;
 
-		next->PC_AABB.ext[0] = 0.1f;
-		next->PC_AABB.ext[1] = 0.1f;
-		next->PC_AABB.ext[2] = 0.1f;
+		next->PC_AABB.ext[0] = 0.5f;
+		next->PC_AABB.ext[1] = 0.5f;
+		next->PC_AABB.ext[2] = 0.5f;
 		next->PC_gravityInfluence = 1.0f;
 
 		link.CL_previous = previous;
