@@ -471,6 +471,54 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_update_entities
 
+#pragma region
+
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+
+		this->m_elementStatePacketList = this->m_networkModule->PacketBuffer_GetElementStatePackets();
+		if (this->m_elementStatePacketList.size() != 0)
+		{
+
+			std::list<StateElementPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
+			for (itr = this->m_elementStatePacketList.begin(); itr != this->m_elementStatePacketList.end(); itr++)
+			{
+				bool found = false;
+				// First check doors (Currently only one)
+				for (int i = 0; i < this->m_doorEntities.size(); i++)
+				{
+					Entity* dP = this->m_doorEntities.at(i);
+					if (dP->GetEntityID() == itr->entityID) {
+
+
+						break;
+					}
+				}
+
+				//If no hit, Move to the next list (Currently no one else)
+				if (found != false)
+				{
+
+				}
+			}
+
+		}
+		this->m_elementStatePacketList.clear();
+
+
+
+
+
+
+
+	}
+
+
+#pragma endregion Network_update_States
+
+
+
 	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	//{
 	//	for (size_t i = 0; i < m_dynamicEntitys.size(); i++)

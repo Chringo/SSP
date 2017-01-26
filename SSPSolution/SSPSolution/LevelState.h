@@ -37,6 +37,9 @@ private:
 	std::vector<WheelEntity*> m_wheelEntities;
 	std::vector<Checkpoint*> m_checkpoints;
 	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
+	std::list<StateElementPacket> m_elementStatePacketList;	//List with all updates for entities from the network
+	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
+	std::list<StateButtonPacket> m_buttonPacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 public:
 	LevelState();

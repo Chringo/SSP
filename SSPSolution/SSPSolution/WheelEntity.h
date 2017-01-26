@@ -5,7 +5,7 @@
 
 struct WheelSyncState{
 	unsigned int entityID;
-	int rotationState;	//-1,0,1
+	int rotationState;	//-2:resetingRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation
 	float rotationAmount;
 };
 
