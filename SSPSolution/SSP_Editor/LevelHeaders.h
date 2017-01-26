@@ -78,7 +78,7 @@ namespace LevelData {
 		int pattern			  = 0;
 		int nrOfWaypoints     = 0;
 		float wayPoints[8][3];
-		ListenerHeader Listener;
+		//ListenerHeader Listener;
 	};
 
 	struct CheckpointHeader

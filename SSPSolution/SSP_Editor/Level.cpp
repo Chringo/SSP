@@ -167,6 +167,31 @@ Resources::Status Level::AddCheckpointEntity()
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
+{
+	switch (type)
+	{
+	case BUTTON:
+		m_puzzleElements.at(BUTTON).push_back((Button*)element);
+		break;
+	case LEVER:
+		break;
+	case WHEEL:
+		break;
+	case DOOR:
+		break;
+	case MAGNET:
+		break;
+	case PRESSUREPLATE:
+		break;
+	default:
+		break;
+	}
+
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);

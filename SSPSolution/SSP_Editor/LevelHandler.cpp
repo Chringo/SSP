@@ -114,8 +114,8 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	file.open(path, std::fstream::in | std::fstream::binary);			
 
 
-	LevelData::OLDMainLevelHeader header;
-	file.read((char*)&header, sizeof(LevelData::OLDMainLevelHeader));				 //Read file header
+	LevelData::MainLevelHeader header;
+	file.read((char*)&header, sizeof(LevelData::MainLevelHeader));				 //Read file header
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
@@ -153,6 +153,16 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadCheckpointComponents((LevelData::CheckpointHeader*)checkpointData, header.checkpointAmount);
 		delete checkpointData;
+	}
+	if (header.buttonAmount > 0)
+	{
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.buttonAmount;
+		char* buttonData = new char[buttonSize];
+		file.read(buttonData, buttonSize);
+
+		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
+		delete buttonData;
+
 	}
 
 	file.close();
@@ -420,7 +430,7 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 	{
 		CheckpointContainer * checkpoint = new CheckpointContainer(dataPtr[i]);
 
-		if (checkpoint->position.m128_f32[0] < -9999)
+		if (checkpoint->position.m128_f32[0] < -9999999)
 			checkpoint->position = { 0.0,0.0,0.0 };
 
 		checkpoint->Update();
@@ -432,5 +442,16 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 
 LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHeader * dataPtr, size_t numComponents)
 {
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Button * button = new Button(&dataPtr[i]);
+		DirectX::XMVECTOR bajs = button->position;
+		m_currentLevel.AddPuzzleElement(BUTTON, button);
+		GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
+
+		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
+	
+	}
+
 	return LevelData::LevelStatus();
 }

@@ -158,6 +158,35 @@ public:
 
 		return &data;
 	}
+	Button(LevelData::ButtonHeader* dataPtr)
+	{
+		this->type = BUTTON;
+
+		//entity load
+		this->internalID = dataPtr->EntityID;
+		this->isStatic = dataPtr->isStatic;
+		this->aiComponent = nullptr;
+		this->component.modelID = dataPtr->modelID;
+		this->component.worldMatrix = DirectX::XMMatrixIdentity();
+		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
+		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
+
+
+		//listener load
+		this->numTriggers = dataPtr->Listener.numConnections;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			this->listenEvent[i] = (EVENT)dataPtr->Listener.Event[i];
+			this->triggerEntityIds[i] = dataPtr->Listener.SenderID[i];
+		}
+
+		//unique data load
+		this->resetTime = dataPtr->resetTime;
+		this->interactionDistance = dataPtr->interactionDistance;
+
+		this->isDirty = true;
+		
+	}
 };
 
 struct Lever : ListenerContainer
