@@ -14,7 +14,7 @@ class Entity :
 private:
 	//Variables
 protected:
-	int m_entityID;
+	unsigned int m_entityID;
 	bool m_isGrabbed;
 	Entity* m_isGrabbedBy;
 	Subject m_subject;
