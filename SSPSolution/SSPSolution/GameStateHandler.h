@@ -2,7 +2,11 @@
 #define SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #include "GameState.h"
 #include "StartState.h"
+#include "LevelSelectState.h"
 #include <vector>
+
+#define START_WITHOUT_MENU
+
 class GameStateHandler
 {
 private:

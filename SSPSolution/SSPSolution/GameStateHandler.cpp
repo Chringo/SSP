@@ -45,6 +45,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 {
 	int result = 0;
 	
+#ifndef START_WITHOUT_MENU
 	StartState* startState = new StartState();
 	result = startState->Initialize(this, cHandler, cameraRef);
 
@@ -59,6 +60,27 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		delete startState;
 		startState = nullptr;
 	}
+#else
+	//Create, Initialize and push a LevelSelectState
+	LevelSelectState* levelSelect = new LevelSelectState();
+	result = levelSelect->Initialize(this, cHandler, cameraRef);
+
+	//If the initialization was successful
+	if (result > 0)
+	{
+		//Push it to the gamestate stack/vector
+		this->PushStateToStack(levelSelect);
+
+
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+	}
+	else
+	{
+		//Delete it
+		delete levelSelect;
+		levelSelect = nullptr;
+	}
+#endif
 	
 	return result;
 
