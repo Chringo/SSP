@@ -214,6 +214,7 @@ public:
 	ConstantBuffer::skeleton skeleton;
 
 	int Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
+	int ResetConstantBuffers();
 	int Shutdown();
 
 	
