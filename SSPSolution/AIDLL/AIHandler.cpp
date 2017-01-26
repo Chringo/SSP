@@ -162,6 +162,13 @@ int AIHandler::Update(float deltaTime)
 						UpdatePosition(i);
 				}
 			}
+#ifdef _DEBUG
+			if (this->m_AIComponents.at(i)->AC_pattern == AI_NONE)
+			{
+				printf("AIHandler::Update - Component %d to Entity %d was called containing AI_NONE pattern\n", 
+					i, this->m_AIComponents.at(i)->AC_entityID);
+			}
+#endif // _DEBUG
 		}
 	}
 	return SUCCESS;
