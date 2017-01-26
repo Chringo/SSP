@@ -46,6 +46,13 @@ int Entity::SyncComponents()
 	return result;
 }
 
+int Entity::AddObserver(Observer * observer, int entityID)
+{
+	this->m_subject.AddObserver(observer, entityID);
+
+	return 0;
+}
+
 void Entity::UnsafeSyncComponents()
 {
 	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));

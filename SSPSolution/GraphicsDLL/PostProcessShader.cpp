@@ -38,7 +38,11 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	 for (size_t i = 0; i < NUM_TYPES; i++)
 	 {
 		 this->m_pixelShader[i] = nullptr;
+#ifdef _DEBUG
 		 hResult = D3DCompileFromFile(filePaths[i], NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer[i], &errorMessage);
+#else
+		 hResult = D3DCompileFromFile(filePaths[i], NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &pixelShaderBuffer[i], &errorMessage);
+#endif // _DEBUG
 		 if (FAILED(hResult)){
 			// Shader::OutputShaderErrorMessage(errorMessage, filePaths[i]);
 			 this->active[i] = false;

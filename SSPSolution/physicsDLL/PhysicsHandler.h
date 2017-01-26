@@ -84,12 +84,16 @@ class PhysicsHandler
 {
 private:
 	std::vector<PhysicsComponent*> m_physicsComponents;
+
+	std::vector<PhysicsComponent*> m_dynamicComponents;
+	std::vector<PhysicsComponent*> m_staticComponents;
+
 	std::vector<ChainLink> m_links;
-	int m_nrOfStaticObjects;
+
 
 	DirectX::XMVECTOR m_gravity;
 
-
+	int m_nrOfStaticObjects;
 	unsigned int	m_startIndex;		// At what index to start to check colision
 	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
 	bool			m_isHost;			// isHost is to check if this client should check collision between dynamic entities
@@ -171,6 +175,7 @@ public:
 	PHYSICSDLL_API bool checkCollition();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
+	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

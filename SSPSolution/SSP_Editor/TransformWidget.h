@@ -35,7 +35,10 @@ private:
 	{
 		for (int i = 0; i < NUM_AXIS; i++)
 		{
+
 			m_axisOBBpos[i] = m_selectedContainer->position;
+
+			
 			//relative to origin
 			m_axisOBBpos[i].m128_f32[i] += 1.f;
 
@@ -60,8 +63,14 @@ public:
 
 	void UpdateOBB()
 	{
-		m_obbCenterPosition = DirectX::XMVector3TransformCoord(m_obbLastPosition, this->m_selectedContainer->component.worldMatrix);
-		m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
+		if (this->m_selectedContainer->type == CHECKPOINT)
+		{
+			m_obbCenterPosition = this->m_selectedContainer->position;
+		}
+		else {
+			m_obbCenterPosition = DirectX::XMVector3TransformCoord(m_obbLastPosition, this->m_selectedContainer->component.worldMatrix);
+			m_selectedObjectOBB.ort = this->m_selectedContainer->component.worldMatrix;
+		}
 
 		m_UpdateAxies();
 	};
@@ -75,7 +84,7 @@ public:
 		this->m_active = active;
 	};
 	void Select(OBB &selectedOBB, 
-		Container * selectedContainer, 
+		Container *& selectedContainer, 
 		unsigned int instanceID, 
 		unsigned int modelID)
 	{
@@ -84,13 +93,28 @@ public:
 		this->m_instanceID = instanceID;
 		this->m_modelID = modelID;
 
-		m_UpdateAxies();
 
+		m_UpdateAxies();
 		setActive(true);
 	};
 
 	void Select(OBB &selectedOBB,
-		AIComponent * AiContainer)
+		CheckpointContainer *& selectedContainer)
+	{
+		this->m_selectedObjectOBB = selectedOBB;
+		this->m_selectedContainer = selectedContainer;
+		this->m_instanceID = selectedContainer->internalID;
+		this->m_modelID = UINT_MAX;
+
+		m_obbCenterPosition = selectedContainer->position;
+
+		m_UpdateAxies();
+		setActive(true);
+	};
+
+
+	void Select(OBB &selectedOBB,
+		AIComponent *& AiContainer)
 	{
 		DeSelect();
 		this->m_selectedContainer = nullptr;

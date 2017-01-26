@@ -7,11 +7,20 @@
 #include "StaticEntity.h"
 #include "DynamicEntity.h"
 #include "LevelDirector.h"
+#include "DoorEntity.h"
+#include "ButtonEntity.h"
+#include "WheelEntity.h"
 
 class LevelState :
 	public GameState
 {
 private:
+	struct Checkpoint
+	{
+		unsigned int index;
+		DirectX::XMVECTOR pos;
+		OBB obb;
+	};
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
 	Player m_player2;
@@ -20,8 +29,15 @@ private:
 	DirectX::XMVECTOR m_player2_Spawn;
 
 	std::vector<DynamicEntity*> m_dynamicEntitys;
+	//Entities where no data needs to be moved between the components
 	std::vector<StaticEntity*>	m_staticEntitys;
+	//Puzzle entities
+	std::vector<DoorEntity*> m_doorEntities;
+	std::vector<ButtonEntity*> m_buttonEntities;
+	std::vector<WheelEntity*> m_wheelEntities;
+	std::vector<Checkpoint*> m_checkpoints;
 	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
+	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 public:
 	LevelState();
 	virtual ~LevelState();

@@ -52,7 +52,7 @@ namespace Ui {
 		AttributesHandler(const Ui::SSP_EditorClass* ui);
 		void Initialize(const Ui::SSP_EditorClass* ui);
 		~AttributesHandler();
-		void SetSelection(Container* selection);
+		void SetSelection(Container*& selection);
 		void Deselect();
 		void UpdateSelection();
 

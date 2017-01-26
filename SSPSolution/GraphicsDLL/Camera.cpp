@@ -57,7 +57,7 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	//camUp = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat4(&this->m_cameraUp), camRotationMatrix);
 	//Define the view matrix based on the transformed positions
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(camPos, lookAt, camUp));
-	
+
 	//Create the projection matrix
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
 
@@ -120,7 +120,7 @@ int Camera::UpdateProjection()
 	return result;
 }
 
-int Camera::UpdateProjection(float screenAspect , float fieldOfView , float nearPlane, float farPlane ) {
+int Camera::UpdateProjection(float screenAspect, float fieldOfView, float nearPlane, float farPlane) {
 
 	//Update the projection matrix
 	this->m_screenAspect = screenAspect;
@@ -262,13 +262,13 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 {
 	bool result = false;
 
-	
+
 
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
 	this->m_focusPointOffset = targetOffset;
-	
-	m_pitch = DirectX::XMConvertToRadians( -45.0);
+
+	m_pitch = DirectX::XMConvertToRadians(-45.0);
 	m_yaw = DirectX::XMConvertToRadians(-45.0);
 
 	this->m_camDirvector = m_Dir();
@@ -358,7 +358,7 @@ void Camera::RotateCameraPivot(float pitch, float yaw)
 		m_pitch = 1.48352986f;
 	else if (m_pitch < -1.48352986f)
 		m_pitch = -1.48352986f;
-	
+
 	this->m_camRightvector = m_Right();
 	this->m_camDirvector = m_Dir();
 
@@ -370,7 +370,7 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	DirectX::XMVECTOR temp, quatView, result;
 	temp = quatView = result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	//Precalculate the sin of the angle
-	float scalarSin = DirectX::XMScalarSin(float(angle)/ 2.0f);
+	float scalarSin = DirectX::XMScalarSin(float(angle) / 2.0f);
 	//Calculate the quaternion rotation
 	temp = DirectX::XMVectorSetX(temp, float(x) * scalarSin);
 	temp = DirectX::XMVectorSetY(temp, float(y) * scalarSin);
@@ -459,7 +459,7 @@ void Camera::DecreaseDistance(float amount)
 {
 	this->m_distance -= amount;
 
-	
+
 }
 
 GRAPHICSDLL_API void Camera::IncreaseDistance(float amount)
@@ -515,7 +515,7 @@ void Camera::m_updatePos()
 
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
-	
+
 	float x = m_distance * cos(m_pitch) * sin(m_yaw);
 	float y = m_distance * sin(m_pitch);
 	float z = m_distance * cos(m_pitch) * cos(m_yaw);
