@@ -16,7 +16,6 @@ private:
 	float m_range;
 	float m_resetTime;
 	float m_elapsedResetTime;
-
 	bool m_needSync;
 public:
 	ButtonEntity();
@@ -31,6 +30,8 @@ public:
 	//For now we check only if the player is close enough
 	int CheckPressed(DirectX::XMFLOAT3 playerPos);
 
+	void SetSyncState(ButtonSyncState* newSyncState);
+	ButtonSyncState* GetSyncState();
 private:
 	//Functions
 };
