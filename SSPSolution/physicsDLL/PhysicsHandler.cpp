@@ -287,7 +287,7 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 	return result;
 }
 
-bool PhysicsHandler::ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB, float dt)
+bool PhysicsHandler::ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB, bool doPhysics, float dt)
 {
 	DirectX::XMFLOAT3 transPF_v;
 	DirectX::XMFLOAT3 transPF_t;
@@ -500,8 +500,11 @@ bool PhysicsHandler::ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsCompo
 	}
 	/*no separating axis found,
 	the two boxes overlap */
-	printf("Collition has been detected\n");
-	this->ObbObbCollitionCorrection(objA, objB, dt);
+	//printf("Collition has been detected\n");
+	if (doPhysics)
+	{
+		this->ObbObbCollitionCorrection(objA, objB, dt);
+	}
 
 	return true;
 }
@@ -525,7 +528,7 @@ bool PhysicsHandler::OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsC
 	OBBconverted.PC_elasticity = objAABB->PC_elasticity;
 	OBBconverted.PC_friction = objAABB->PC_friction;
 
-	result = this->ObbObbIntersectionTest(objOBB, &OBBconverted, dt);
+	result = this->ObbObbIntersectionTest(objOBB, &OBBconverted, true, dt);
 
 	if (result)
 	{
@@ -886,6 +889,7 @@ DirectX::XMVECTOR PhysicsHandler::FindCollitionPoint(PhysicsComponent * obj1, Ph
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(pointOfIntersection, staticComponent->PC_pos);
 	DirectX::XMVECTOR normal = DirectX::XMVectorSet(0, 0, 0, 0);
 
+
 	float dot[3];
 
 	dot[0] = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, staticComponent->PC_OBB.ort.r[0]));
@@ -966,16 +970,20 @@ DirectX::XMVECTOR PhysicsHandler::FindCollitionPoint(PhysicsComponent * obj1, Ph
 		axises[2] = 0;
 	}
 
+	//OBB* ptr = &staticComponent->PC_OBB;
+	//this->FindNormalFromPointOfIntersection(ptr, diffVec, axises);
+
 	for (int i = 0; i < 3; i++)
 	{
 		normal = DirectX::XMVectorAdd(normal, DirectX::XMVectorScale(staticComponent->PC_OBB.ort.r[i], axises[i]));
 	}
 	normal = DirectX::XMVector3Normalize(normal);
-	DirectX::XMVECTOR toCorrect = DirectX::XMVectorSubtract(normal, DirectX::XMVectorMultiply(normal, DirectX::XMVectorSet(test2[0], test2[1], test2[2], 0)));
+	//DirectX::XMVECTOR toCorrect = DirectX::XMVectorSubtract(normal, DirectX::XMVectorMultiply(normal, DirectX::XMVectorSet(test2[0], test2[1], test2[2], 0)));
 	DirectX::XMVECTOR POItoA = DirectX::XMVectorSubtract(componentToMove->PC_pos, pointOfIntersection);
+	
 
-
-	componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, toCorrect);
+	//componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, toCorrect);
+	componentToMove->PC_normalForce = normal;
 	this->CollitionDynamics(componentToMove, staticComponent, normal, dt);
 	componentToMove->PC_pos = DirectX::XMVectorAdd(componentToMove->PC_pos, DirectX::XMVectorScale(componentToMove->PC_velocity, dt));
 
@@ -1010,6 +1018,89 @@ bool PhysicsHandler::IsPointInBox(DirectX::XMVECTOR point, OBB *& src, DirectX::
 		}
 	}
 	return result;
+}
+
+void PhysicsHandler::FindNormalFromPointOfIntersection(OBB *& src, DirectX::XMVECTOR vecToPoint, float * arr)
+{
+	float dot[3];
+
+	dot[0] = DirectX::XMVectorGetX(DirectX::XMVector3Dot(vecToPoint, src->ort.r[0]));
+	dot[1] = DirectX::XMVectorGetX(DirectX::XMVector3Dot(vecToPoint, src->ort.r[1]));
+	dot[2] = DirectX::XMVectorGetX(DirectX::XMVector3Dot(vecToPoint, src->ort.r[2]));
+
+	if (dot[0] > src->ext[0])
+	{
+		dot[0] = src->ext[0];
+	}
+	else if (dot[0] < -src->ext[0])
+	{
+		dot[0] = -src->ext[0];
+	}
+
+	if (dot[1] > src->ext[1])
+	{
+		dot[1] = src->ext[1];
+	}
+
+	else if (dot[1] < -src->ext[1])
+	{
+		dot[1] = -src->ext[1];
+	}
+
+	if (dot[2] > src->ext[2])
+	{
+		dot[2] = src->ext[2];
+	}
+	else if (dot[2] < -src->ext[2])
+	{
+		dot[2] = -src->ext[2];
+	}
+
+	float test2[3];
+
+	test2[0] = dot[0] / src->ext[0];
+	test2[1] = dot[1] / src->ext[1];
+	test2[2] = dot[2] / src->ext[2];
+
+	//float axises[3];
+	if (test2[0] >= 0.9)
+	{
+		arr[0] = 1;
+	}
+	else if (test2[0] <= -0.9)
+	{
+		arr[0] = -1;
+	}
+	else
+	{
+		arr[0] = 0;
+	}
+
+	if (test2[1] >= 0.9)
+	{
+		arr[1] = 1;
+	}
+	else if (test2[1] <= -0.9)
+	{
+		arr[1] = -1;
+	}
+	else
+	{
+		arr[1] = 0;
+	}
+
+	if (test2[2] >= 0.9)
+	{
+		arr[2] = 1;
+	}
+	else if (test2[2] <= -0.9)
+	{
+		arr[2] = -1;
+	}
+	else
+	{
+		arr[2] = 0;
+	}
 }
 
 bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, PhysicsComponent * objAABB, float dt)
@@ -1659,7 +1750,7 @@ void PhysicsHandler::Update(float deltaTime)
 						{
 							if (toCompare->PC_BVtype == BV_OBB)
 							{
-								this->ObbObbIntersectionTest(current, toCompare, dt);
+								this->ObbObbIntersectionTest(current, toCompare, true, dt);
 							}
 						}
 					}
@@ -1771,7 +1862,7 @@ void PhysicsHandler::Update(float deltaTime)
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
 							{
 								//to be continued
-								this->ObbObbIntersectionTest(current, toCompare, newDT);
+								this->ObbObbIntersectionTest(current, toCompare, true, newDT);
 							}
 
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
