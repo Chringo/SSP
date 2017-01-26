@@ -36,6 +36,17 @@ QMenu::item:selected {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
 	color:black;
 }
+QHeaderView::section
+{
+spacing: 10px;
+background-color:lightblue;
+color: black;
+margin: 1px;
+border:solid;
+text-align: right;
+font-family: arial;
+font-size:12px;
+}
 
 QGroupBox{
 background:   rgb(68, 68, 68);
@@ -1356,7 +1367,7 @@ border: black;</string>
               <string notr="true">background-color: rgb(74, 74, 74);</string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="Behaviour_None">
               <layout class="QFormLayout" name="formLayout_6"/>
@@ -1757,8 +1768,17 @@ border: black;</string>
           <layout class="QFormLayout" name="formLayout_2">
            <item row="0" column="1">
             <widget class="QComboBox" name="availableTriggers">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="maxVisibleItems">
+              <number>20</number>
              </property>
              <item>
               <property name="text">
@@ -1777,8 +1797,117 @@ border: black;</string>
              </property>
             </widget>
            </item>
+           <item row="5" column="0" colspan="2">
+            <widget class="QFrame" name="addDel_Frame">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="AddTriggerButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(129, 129, 129);</string>
+                </property>
+                <property name="text">
+                 <string>ADD</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="DeleteTriggerButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(129, 129, 129);</string>
+                </property>
+                <property name="text">
+                 <string>DEL</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="EventSignalBox">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>COLLIDED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BUTTON_DEACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BUTTON_ACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LEVER_DEACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LEVER_ACTIVE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>DOOR_CLOSED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>DOOR_OPENED</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>WHEEL_DECREASING</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>WHEEL_INCREASING</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Event Signal : </string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0" colspan="2">
-            <widget class="QListWidget" name="TriggerListWidget">
+            <widget class="QTableWidget" name="TriggerTableWidget">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1964,117 +2093,88 @@ border: black;</string>
               </palette>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(48, 48, 48);</string>
+              <string notr="true">background-color: rgb(48, 48, 48);
+
+Header- color:rgb(48, 48, 48);
+
+</string>
              </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="2">
-            <widget class="QFrame" name="addDel_Frame">
-             <property name="styleSheet">
-              <string notr="true"/>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustIgnored</enum>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QPushButton" name="AddTriggerButton">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(129, 129, 129);</string>
-                </property>
-                <property name="text">
-                 <string>ADD</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="DeleteTriggerButton">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(129, 129, 129);</string>
-                </property>
-                <property name="text">
-                 <string>DEL</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QComboBox" name="EventSignalBox">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             <property name="autoScroll">
+              <bool>false</bool>
              </property>
-             <item>
-              <property name="text">
-               <string>None</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>COLLIDED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>BUTTON_DEACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>BUTTON_ACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>LEVER_DEACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>LEVER_ACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>DOOR_CLOSED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>DOOR_OPENED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>WHEEL_DECREASING</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>WHEEL_INCREASING</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Event Signal : </string>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
              </property>
+             <property name="alternatingRowColors">
+              <bool>false</bool>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>false</bool>
+             </property>
+             <property name="cornerButtonEnabled">
+              <bool>false</bool>
+             </property>
+             <property name="rowCount">
+              <number>0</number>
+             </property>
+             <property name="columnCount">
+              <number>2</number>
+             </property>
+             <attribute name="horizontalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="horizontalHeaderCascadingSectionResizes">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>105</number>
+             </attribute>
+             <attribute name="horizontalHeaderHighlightSections">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderCascadingSectionResizes">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderHighlightSections">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderStretchLastSection">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>Trigger</string>
+              </property>
+              <property name="textAlignment">
+               <set>AlignCenter</set>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Event Signal</string>
+              </property>
+              <property name="textAlignment">
+               <set>AlignCenter</set>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>

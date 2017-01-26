@@ -34,6 +34,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -126,13 +127,13 @@ public:
     QFormLayout *formLayout_2;
     QComboBox *availableTriggers;
     QLabel *label;
-    QListWidget *TriggerListWidget;
     QFrame *addDel_Frame;
     QHBoxLayout *horizontalLayout;
     QPushButton *AddTriggerButton;
     QPushButton *DeleteTriggerButton;
     QComboBox *EventSignalBox;
     QLabel *label_3;
+    QTableWidget *TriggerTableWidget;
     QWidget *CheckPoint;
     QGridLayout *gridLayout_6;
     QLabel *checkpointTXT;
@@ -171,6 +172,17 @@ public:
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
 "	color:black;\n"
 "}\n"
+"QHeaderView::section\n"
+"{\n"
+"spacing: 10px;\n"
+"background-color:lightblue;\n"
+"color: black;\n"
+"margin: 1px;\n"
+"border:solid;\n"
+"text-align: right;\n"
+"font-family: arial;\n"
+"font-size:12px;\n"
+"}\n"
 "\n"
 "QGroupBox{\n"
 "background:   rgb(68, 68, 68);\n"
@@ -194,7 +206,8 @@ public:
 "background:  rgb(48, 48, 48);\n"
 "}\n"
 "\n"
-"\n"
+""
+                        "\n"
 "QToolBar{\n"
 "border: black;}\n"
 "\n"
@@ -205,8 +218,7 @@ public:
 "}\n"
 "\n"
 "\n"
-"QTabB"
-                        "ar::tab{\n"
+"QTabBar::tab{\n"
 "    background:  rgb(48, 48, 48);\n"
 "    border: 1px solid rgb(68, 68, 68) ;\n"
 "    border-bottom-color:  rgb(68, 68, 68); /* same as the pane color */\n"
@@ -239,15 +251,15 @@ public:
 "color: white;\n"
 "background : rgb(88, 88, 88);\n"
 "}\n"
-"QTreeWidget::Item:!has-children{ \n"
+"QTreeWidget::Item"
+                        ":!has-children{ \n"
 "spacing: 3px;\n"
 "border-radius: 1px;\n"
 "border: 1px solid;\n"
 "background : rgb(111, 111, 111);\n"
 "}\n"
 "QTreeView::item:hover {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x"
-                        "2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
 "    border: 1px solid #bfcde4;\n"
 "}\n"
 "\n"
@@ -285,7 +297,8 @@ public:
 "    border: 1px solid #bfcde4;}\n"
 "\n"
 "QPushButton:pressed{\n"
-"  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(221, 263, 239), stop: 1 #cbdaf1);\n"
+"  background: qlineargradient(x1: 0, y1:"
+                        " 0, x2: 0, y2: 1, stop: 0 rgb(221, 263, 239), stop: 1 #cbdaf1);\n"
 "    border: 1px solid #bfcde4;}\n"
 "\n"
 "background:   rgb(68, 68, 68);\n"
@@ -882,7 +895,10 @@ public:
         formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
         availableTriggers = new QComboBox(Triggers);
         availableTriggers->setObjectName(QStringLiteral("availableTriggers"));
+        sizePolicy.setHeightForWidth(availableTriggers->sizePolicy().hasHeightForWidth());
+        availableTriggers->setSizePolicy(sizePolicy);
         availableTriggers->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        availableTriggers->setMaxVisibleItems(20);
 
         formLayout_2->setWidget(0, QFormLayout::FieldRole, availableTriggers);
 
@@ -891,35 +907,6 @@ public:
         label->setStyleSheet(QStringLiteral(""));
 
         formLayout_2->setWidget(0, QFormLayout::LabelRole, label);
-
-        TriggerListWidget = new QListWidget(Triggers);
-        TriggerListWidget->setObjectName(QStringLiteral("TriggerListWidget"));
-        sizePolicy1.setHeightForWidth(TriggerListWidget->sizePolicy().hasHeightForWidth());
-        TriggerListWidget->setSizePolicy(sizePolicy1);
-        TriggerListWidget->setMaximumSize(QSize(16777215, 16777215));
-        QPalette palette3;
-        palette3.setBrush(QPalette::Active, QPalette::WindowText, brush);
-        palette3.setBrush(QPalette::Active, QPalette::Button, brush8);
-        palette3.setBrush(QPalette::Active, QPalette::Text, brush);
-        palette3.setBrush(QPalette::Active, QPalette::ButtonText, brush);
-        palette3.setBrush(QPalette::Active, QPalette::Base, brush8);
-        palette3.setBrush(QPalette::Active, QPalette::Window, brush8);
-        palette3.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
-        palette3.setBrush(QPalette::Inactive, QPalette::Button, brush8);
-        palette3.setBrush(QPalette::Inactive, QPalette::Text, brush);
-        palette3.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
-        palette3.setBrush(QPalette::Inactive, QPalette::Base, brush8);
-        palette3.setBrush(QPalette::Inactive, QPalette::Window, brush8);
-        palette3.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
-        palette3.setBrush(QPalette::Disabled, QPalette::Button, brush8);
-        palette3.setBrush(QPalette::Disabled, QPalette::Text, brush);
-        palette3.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
-        palette3.setBrush(QPalette::Disabled, QPalette::Base, brush8);
-        palette3.setBrush(QPalette::Disabled, QPalette::Window, brush8);
-        TriggerListWidget->setPalette(palette3);
-        TriggerListWidget->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-
-        formLayout_2->setWidget(3, QFormLayout::SpanningRole, TriggerListWidget);
 
         addDel_Frame = new QFrame(Triggers);
         addDel_Frame->setObjectName(QStringLiteral("addDel_Frame"));
@@ -955,6 +942,67 @@ public:
         label_3->setObjectName(QStringLiteral("label_3"));
 
         formLayout_2->setWidget(4, QFormLayout::LabelRole, label_3);
+
+        TriggerTableWidget = new QTableWidget(Triggers);
+        if (TriggerTableWidget->columnCount() < 2)
+            TriggerTableWidget->setColumnCount(2);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        __qtablewidgetitem->setTextAlignment(Qt::AlignCenter);
+        TriggerTableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        __qtablewidgetitem1->setTextAlignment(Qt::AlignCenter);
+        TriggerTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        TriggerTableWidget->setObjectName(QStringLiteral("TriggerTableWidget"));
+        sizePolicy1.setHeightForWidth(TriggerTableWidget->sizePolicy().hasHeightForWidth());
+        TriggerTableWidget->setSizePolicy(sizePolicy1);
+        TriggerTableWidget->setMaximumSize(QSize(16777215, 16777215));
+        QPalette palette3;
+        palette3.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette3.setBrush(QPalette::Active, QPalette::Button, brush8);
+        palette3.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette3.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette3.setBrush(QPalette::Active, QPalette::Base, brush8);
+        palette3.setBrush(QPalette::Active, QPalette::Window, brush8);
+        palette3.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette3.setBrush(QPalette::Inactive, QPalette::Button, brush8);
+        palette3.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette3.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette3.setBrush(QPalette::Inactive, QPalette::Base, brush8);
+        palette3.setBrush(QPalette::Inactive, QPalette::Window, brush8);
+        palette3.setBrush(QPalette::Disabled, QPalette::WindowText, brush);
+        palette3.setBrush(QPalette::Disabled, QPalette::Button, brush8);
+        palette3.setBrush(QPalette::Disabled, QPalette::Text, brush);
+        palette3.setBrush(QPalette::Disabled, QPalette::ButtonText, brush);
+        palette3.setBrush(QPalette::Disabled, QPalette::Base, brush8);
+        palette3.setBrush(QPalette::Disabled, QPalette::Window, brush8);
+        TriggerTableWidget->setPalette(palette3);
+        TriggerTableWidget->setStyleSheet(QLatin1String("background-color: rgb(48, 48, 48);\n"
+"\n"
+"Header- color:rgb(48, 48, 48);\n"
+"\n"
+""));
+        TriggerTableWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        TriggerTableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        TriggerTableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+        TriggerTableWidget->setAutoScroll(false);
+        TriggerTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        TriggerTableWidget->setAlternatingRowColors(false);
+        TriggerTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+        TriggerTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+        TriggerTableWidget->setSortingEnabled(false);
+        TriggerTableWidget->setCornerButtonEnabled(false);
+        TriggerTableWidget->setRowCount(0);
+        TriggerTableWidget->setColumnCount(2);
+        TriggerTableWidget->horizontalHeader()->setVisible(false);
+        TriggerTableWidget->horizontalHeader()->setCascadingSectionResizes(true);
+        TriggerTableWidget->horizontalHeader()->setDefaultSectionSize(105);
+        TriggerTableWidget->horizontalHeader()->setHighlightSections(true);
+        TriggerTableWidget->verticalHeader()->setVisible(false);
+        TriggerTableWidget->verticalHeader()->setCascadingSectionResizes(false);
+        TriggerTableWidget->verticalHeader()->setHighlightSections(false);
+        TriggerTableWidget->verticalHeader()->setStretchLastSection(false);
+
+        formLayout_2->setWidget(3, QFormLayout::SpanningRole, TriggerTableWidget);
 
         CustomBehaviourTabWidget->addTab(Triggers, QString());
         CheckPoint = new QWidget();
@@ -1029,7 +1077,7 @@ public:
 
         tabWidget->setCurrentIndex(0);
         CustomBehaviourTabWidget->setCurrentIndex(1);
-        BehaviourStackWidget->setCurrentIndex(0);
+        BehaviourStackWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -1117,6 +1165,10 @@ public:
          << QApplication::translate("SSP_EditorClass", "New Item", Q_NULLPTR)
         );
         label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal : ", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem = TriggerTableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem1 = TriggerTableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QApplication::translate("SSP_EditorClass", "Event Signal", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Triggers), QApplication::translate("SSP_EditorClass", "Triggers", Q_NULLPTR));
         checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", Q_NULLPTR));
         CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", Q_NULLPTR));
