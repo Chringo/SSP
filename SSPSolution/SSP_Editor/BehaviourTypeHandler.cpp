@@ -39,18 +39,34 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 		this->m_ListItems[(ListItems)i] = nullptr;
 	}
 
+	m_button_tagBox   = ui->button_tagBox;
+	m_button_distance = ui->button_dist_box;
+	m_button_timer    = ui->button_timer_box;
+	connect(ui->button_dist_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_distance_Changed(double)));
+	this->m_AddCheckpoint = ui->CheckPointADD;
+	connect(ui->CheckPointADD, SIGNAL(clicked()), this, SLOT(on_CheckpointAdd()));
+	this->m_CheckpointValue = ui->CheckPointValue;
+	connect(ui->CheckPointValue, SIGNAL(valueChanged(int)), this, SLOT(on_CheckpointIndex_changed(int)));
+	connect(ui->button_timer_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_timer_Changed(double)));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
 {
 }
 
-void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
+void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
 		Deselect(); //reset values
 		m_selection = selection;
+		if (m_selection->internalID == 0 || m_selection->internalID == 1 || m_selection->type == ContainerType::CHECKPOINT) { // if any of the spawnpoints are selected
+			m_BehaviourType->setCurrentIndex(NONE); //Close the window
+			m_Current_Type = NONE; //Update current type
+			m_BehaviourType->setEnabled(false);
+			return;
+		}
+		m_BehaviourType->setEnabled(true);
 		if (m_selection->aiComponent != nullptr)
 		{
  			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
@@ -80,11 +96,23 @@ void Ui::BehaviourTypeHandler::SetSelection(Container * selection)
 			}
 			
 		}
-		else
-		{
+		switch (m_selection->type) {
+
+		case ContainerType::BUTTON:
+			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for path
+			m_Current_Type = BUTTON; //Update current type
+			break;
+		case ContainerType::CHECKPOINT:
+		this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
+		break;
+		
+		
+
+		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
 		}
+	
 		
 	}
 }
@@ -93,10 +121,9 @@ void Ui::BehaviourTypeHandler::Deselect()
 {
 	m_selection = nullptr;
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
-	this->m_Numerics[SPEED]->setValue(0);
-	this->m_Numerics[TIME]->setValue(0);
-	
-	
+	m_BehaviourType->setCurrentIndex(NONE); //Close the window
+	m_Current_Type = NONE; //Update current type
+	this->m_CheckpointValue->setValue(0);
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -110,7 +137,7 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 	{
 	case Ui::NONE:
 		break;
-	case Ui::TRIGGER:
+	case Ui::BUTTON:
 	{
 		//reset
 		break;
@@ -228,11 +255,76 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 			{
 				AIController cont(m_selection->aiComponent);
 				cont.DeletePath();
+				return;
+			}
+		
+			else {
+				switch (val)
+				{
+				case BehaviourType::NONE: //if none, convert back to normal container
+
+					if (m_selection->type != ContainerType::MODEL)
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						m_selection->isDirty = true;
+					}
+					break;
+				case BehaviourType::BUTTON: 
+				{
+					if (m_selection->type == ContainerType::MODEL) {
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button
+						m_selection->isDirty = true;
+					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::BUTTON) //if the selection is not a container or button, 
+					{		
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						Button* newButton = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToButton(m_selection); //convert from container to button
+						m_selection->isDirty = true;
+					}
+					
+					m_button_tagBox->setValue((int)m_selection->internalID);
+					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
+
+					break;
+				}
+				}
+
 			}
 		}
+		
 	
 
 
+}
+
+void Ui::BehaviourTypeHandler::on_button_distance_Changed(double val)
+{
+
+	assert(m_selection->type == ContainerType::BUTTON);
+	((Button*)m_selection)->interactionDistance = (float)val;
+
+
+}
+
+void Ui::BehaviourTypeHandler::on_button_timer_Changed(double val)
+{
+	assert(m_selection->type == ContainerType::BUTTON);
+	((Button*)m_selection)->resetTime = (float)val;
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointAdd()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddCheckpointEntity();
+}
+
+void Ui::BehaviourTypeHandler::on_CheckpointIndex_changed(int val)
+{
+	if (m_selection == nullptr || m_selection->type != CHECKPOINT)
+		return;
+	else 
+	{
+		((CheckpointContainer*)m_selection)->checkpointNumber = val;
+	}
 }
 
 void Ui::BehaviourTypeHandler::on_Add()

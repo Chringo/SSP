@@ -166,76 +166,10 @@ int System::Update(float deltaTime)
 	DebugHandler::instance().StartTimer("Update");
 	int result = 1;
 
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_W))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_S))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_SPACE))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_D))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_A))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_E))
-	{	}
-	if (this->m_inputHandler->IsKeyDown(SDL_SCANCODE_Q))
-	{	}
-	//CAM
-	this->m_camera->Update(deltaTime);
-
-	//AI
-	this->m_AIHandler.Update(deltaTime);
 
 	this->m_physicsHandler.Update(deltaTime);
 
-	//Save progress
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
-	{
-		bool result = Progression::instance().WriteToFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with saving to file\n");
-		}
-		else
-		{
-			printf("Saved to file\n");
-		}
-	}
-	//Load
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
-	{
-		bool result = Progression::instance().ReadFromFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with loading from file\n");
-		}
-		else
-		{
-			printf("Loaded from file\n");
-		}
-	}
-
-	//Update animations here. Temp place right now.
-	//m_Anim->Update(deltaTime);
-	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
-
-	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	this->m_gsh.Update(deltaTime, this->m_inputHandler);
-	
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-	//temp input for testing chain
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-	{
-		PhysicsComponent* ballPtr = this->m_physicsHandler.GetDynamicComponentAt(0);
-		DirectX::XMVECTOR dir;
-		dir = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_camera->GetLookAt()), DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos()));
-		dir = DirectX::XMVectorAdd(dir, DirectX::XMVectorSet(0, 1, 0, 0));
-		//dir = DirectX::XMVectorSet(0.4, 1, 0, 0);
-		dir = DirectX::XMVectorScale(dir, 500);
-	}
-
 #ifdef _DEBUG
 	for (int i = 0; i < nrOfComponents; i++)
 	{
@@ -272,6 +206,50 @@ int System::Update(float deltaTime)
 		}
 	}
 #endif // _DEBUG
+
+	//CAM
+	this->m_camera->Update(deltaTime);
+
+	//AI
+	this->m_AIHandler.Update(deltaTime);
+
+	//Save progress
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
+	{
+		bool result = Progression::instance().WriteToFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with saving to file\n");
+		}
+		else
+		{
+			printf("Saved to file\n");
+		}
+	}
+	//Load
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
+	{
+		bool result = Progression::instance().ReadFromFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with loading from file\n");
+		}
+		else
+		{
+			printf("Loaded from file\n");
+		}
+	}
+
+	//Update animations here. Temp place right now.
+	//m_Anim->Update(deltaTime);
+	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+
+	
+	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	this->m_gsh.Update(deltaTime, this->m_inputHandler);
+
 
 
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);

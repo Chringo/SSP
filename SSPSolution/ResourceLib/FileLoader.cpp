@@ -202,6 +202,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	level.numLights		= header.lightAmount;
 	level.numEntities   = header.entityAmount;
 	level.numAI			= header.AiComponentAmount;
+	level.numCheckpoints = header.checkpointAmount;
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
@@ -230,6 +231,13 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		offset += aiSize;
 	}
 
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		file.read(data + offset, checkpointSize);
+		level.checkpoints = (LevelData::CheckpointHeader*) (data + offset);
+		offset += checkpointSize;
+	}
 	//Lights
 	/*
 		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize

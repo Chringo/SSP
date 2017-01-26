@@ -60,7 +60,7 @@ Ui::AttributesHandler::~AttributesHandler()
 	delete this->m_BehaviourHandler;
 }
 
-void Ui::AttributesHandler::SetSelection(Container * selection)
+void Ui::AttributesHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
@@ -74,9 +74,20 @@ void Ui::AttributesHandler::SetSelection(Container * selection)
 		m_numericBoxes[ROTATE][Y]->setValue(selection->rotation.m128_f32[Y]);
 		m_numericBoxes[ROTATE][Z]->setValue(selection->rotation.m128_f32[Z]);
 
-		m_numericBoxes[SCALE][X]->setValue(1.0f);
-		m_numericBoxes[SCALE][Y]->setValue(1.0f);
-		m_numericBoxes[SCALE][Z]->setValue(1.0f);
+
+
+		if (m_selection->type == CHECKPOINT)
+		{
+			m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
+			m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
+			m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+		}
+		else
+		{
+			m_numericBoxes[SCALE][X]->setValue(1.0f);
+			m_numericBoxes[SCALE][Y]->setValue(1.0f);
+			m_numericBoxes[SCALE][Z]->setValue(1.0f);
+		}
 
 		m_nameBox->setText("oops");
 		
@@ -166,17 +177,32 @@ void Ui::AttributesHandler::on_rotation_Z_changed(double val)
 void Ui::AttributesHandler::on_scale_X_changed(double val)
 {
 	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[0] = float(val);
+			m_selection->isDirty = true;
+		}
+
 	}
 }
 
 void Ui::AttributesHandler::on_scale_Y_changed(double val)
 {
-	if (m_selection != nullptr) {}
+	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[1] = float(val);
+			m_selection->isDirty = true;
+		}
+	}
 }
 
 void Ui::AttributesHandler::on_scale_Z_changed(double val)
 {
-	if (m_selection != nullptr) {}
+	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[2] = float(val);
+			m_selection->isDirty = true;
+		}
+	}
 }
 
 void Ui::AttributesHandler::on_isStatic_changed(int state)
