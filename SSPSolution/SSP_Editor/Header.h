@@ -120,6 +120,44 @@ struct Button : ListenerContainer
 	}
 	float interactionDistance = 1.0f;
 	float resetTime = 0.0f; // Seconds
+private:
+	LevelData::ButtonHeader data;
+public:
+	LevelData::ButtonHeader * GetData()
+	{
+		//fill entity data
+		data.EntityID = this->internalID;
+		data.isStatic = this->isStatic;
+		if (this->aiComponent != nullptr)
+		{
+			data.isStatic = false;
+			data.hasAi = true;
+		}
+		else {
+			data.hasAi = false;
+		}
+		data.modelID = this->component.modelID;
+		data.position[0] = this->position.m128_f32[0];
+		data.position[1] = this->position.m128_f32[1];
+		data.position[2] = this->position.m128_f32[2];
+		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[1] = this->rotation.m128_f32[1];
+		data.rotation[2] = this->rotation.m128_f32[2];
+
+		//fill listener data
+		data.Listener.numConnections = this->numTriggers;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			data.Listener.Event[i] = this->listenEvent[i];
+			data.Listener.SenderID[i] = this->triggerEntityIds[i];
+		}
+
+		//fill unique data
+		data.resetTime = this->resetTime;
+		data.interactionDistance = this->interactionDistance;
+
+		return &data;
+	}
 };
 
 struct Lever : ListenerContainer

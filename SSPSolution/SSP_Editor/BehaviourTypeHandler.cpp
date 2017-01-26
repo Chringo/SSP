@@ -293,7 +293,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					
 					m_button_tagBox->setValue((int)m_selection->internalID);
 					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
-
+					m_button_timer->setValue(((Button*)m_selection)->resetTime);
 					break;
 				}
 				}

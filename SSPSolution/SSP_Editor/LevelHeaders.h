@@ -11,6 +11,7 @@ namespace LevelData {
 		unsigned int entityAmount;
 		unsigned int lightAmount;
 		unsigned int AiComponentAmount;
+		unsigned int checkpointAmount;
 	};
 	struct MainLevelHeader
 	{
@@ -19,6 +20,11 @@ namespace LevelData {
 		unsigned int lightAmount;
 		unsigned int AiComponentAmount;
 		unsigned int checkpointAmount;
+		
+		unsigned int buttonAmount;
+		unsigned int doorAmount;
+		unsigned int leverAmount;
+		unsigned int wheelAmount;
 	};
 	
 	struct ResourceHeader {
@@ -60,7 +66,6 @@ namespace LevelData {
 
 	struct ListenerHeader
 	{
-		int listenID;
 		int numConnections;
 		int Event[20];
 		int SenderID[20];
@@ -73,6 +78,7 @@ namespace LevelData {
 		int pattern			  = 0;
 		int nrOfWaypoints     = 0;
 		float wayPoints[8][3];
+		ListenerHeader Listener;
 	};
 
 	struct CheckpointHeader
@@ -87,7 +93,7 @@ namespace LevelData {
 	struct ButtonHeader : EntityHeader
 	{
 		float interactionDistance;
-		float resetTimer;
+		float resetTime;
 		ListenerHeader Listener;
 	};
 
