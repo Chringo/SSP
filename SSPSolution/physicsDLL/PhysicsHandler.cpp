@@ -2022,15 +2022,15 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 }
 
 
-void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, float linkLenght)
+void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght)
 {
 	//important function will link from index1 to index2 and change the position of the PhysicsComponent at index2
 
-	PhysicsComponent* ptr = this->m_physicsComponents.at(index1);
-	PhysicsComponent* previous = this->m_physicsComponents.at(index1);
+	PhysicsComponent* ptr = playerComponent;
+	PhysicsComponent* previous = playerComponent;
 	PhysicsComponent* next = nullptr;
 
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_physicsComponents.at(index2)->PC_pos,this->m_physicsComponents.at(index1)->PC_pos);
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(ballComponent->PC_pos, playerComponent->PC_pos);
 	
 	if (!DirectX::XMVector3NotEqual(diffVec, DirectX::XMVectorSet(0, 0, 0, 0)))
 	{
@@ -2066,7 +2066,7 @@ void PhysicsHandler::CreateChainLink(int index1, int index2, int nrOfLinks, floa
 	ChainLink link;
 	link.CL_lenght = linkLenght;
 
-	next = this->m_physicsComponents.at(index2);
+	next = ballComponent;
 	next->PC_pos = nextPos;
 	link.CL_previous = previous;
 	link.CL_next = next;
@@ -2466,7 +2466,7 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 	{
 		pp = this->m_dynamicComponents.at(i);
 
-		if (pp->PC_entityID != 0 && pp->PC_entityID != 1)	//Check so we sont find our own component we compare to
+		if (pp->PC_entityID != 0 && pp->PC_entityID != 1 && pp->PC_entityID != 2)	//Check so we sont find our own component we compare to
 		{
 			
 			//Calc the distance
