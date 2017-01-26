@@ -79,7 +79,7 @@ struct ListenerContainer : Container
 			if (numTriggers == entityId)
 				return;
 		}
-		if (numTriggers < 10) {
+		if (numTriggers < 20) {
 			this->triggerEntityIds[numTriggers] = entityId;
 			numTriggers += 1;
 		}

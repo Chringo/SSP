@@ -58,6 +58,14 @@ namespace LevelData {
 	};
 	//different lights will be added later
 
+	struct ListenerHeader
+	{
+		int listenID;
+		int numConnections;
+		int Event[20];
+		int SenderID[20];
+	};
+
 	struct AiHeader{
 		unsigned int entityID = -1;
 		int time			  = 0;
@@ -76,6 +84,18 @@ namespace LevelData {
 		float ort[16];
 	};
 	
+	struct ButtonHeader : EntityHeader
+	{
+		float interactionDistance;
+		float resetTimer;
+		ListenerHeader Listener;
+	};
+
+	struct DoorHeader : EntityHeader
+	{
+		float RotateTimer;
+	};
+
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,
