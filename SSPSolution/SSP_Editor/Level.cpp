@@ -22,22 +22,17 @@ Level::Level()
 		m_SpawnPoints[1].component.modelID     = PLAYER2;
 		m_SpawnPoints[1].component.modelPtr	    = DataHandler::GetInstance()->GetModel(m_SpawnPoints[1].component.modelID);
 		
-		
-	//AIController cont(m_LevelAi.NewPathComponent());			   //TEMP
-	//cont.AddWaypoint( { 1.0f,0.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,0.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 5.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 3.0f,0.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 1.0f,5.0f,5.0f });						   //TEMP
-	//cont.AddWaypoint({ 0.0f,-5.0f,0.0f });
+		for (size_t i = 0; i < NUM_PUZZLE_ELEMENTS; i++)
+		{
+			this->m_puzzleElements.push_back(std::vector<Container*>());
+		}
 	
 }
 
 
 Level::~Level()
 {
+	this->Destroy();
 }
 
 std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntities()
@@ -48,6 +43,11 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
 {
 	return &m_LightMap;
+}
+
+std::vector<CheckpointContainer*>* Level::GetCheckpoints()
+{
+	return m_checkpointHandler.GetAllCheckpoints();
 }
 
 Container * Level::GetInstanceEntity(unsigned int entityID)
@@ -157,13 +157,23 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	}
 }
 
+Resources::Status Level::AddCheckpointEntity()
+{
+	CheckpointContainer * container = new CheckpointContainer();
+	container->checkpointNumber = 0;
+	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
 
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
-
+		
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
@@ -171,7 +181,7 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 
 		for (size_t i = 0; i < modelPtr->size(); i++)
 		{
-			if (i == instanceID)
+			if (modelPtr->at(i).internalID == instanceID)
 			{
 				modelPtr->at(i).position = position;
 				modelPtr->at(i).rotation = rotation;
@@ -194,6 +204,36 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 			}
 
 		}
+			for (size_t i = 0; i < m_puzzleElements.size(); i++)
+			{
+				for each (Container* container in m_puzzleElements.at(i)) {
+					if (container->internalID == instanceID)
+					{
+						container->position = position;
+						container->rotation = rotation;
+						DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+						DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+						DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+						DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+						//Create the rotation matrix
+						DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+						rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+						container->component.worldMatrix = containerMatrix;
+						container->isDirty = false;
+						return Resources::Status::ST_OK;
+
+					}
+
+				}
+
+			}
+
 		return Resources::Status::ST_RES_MISSING;
 	}
 }
@@ -225,6 +265,32 @@ Resources::Status Level::UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVE
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale)
+{
+	CheckpointContainer * container = m_checkpointHandler.GetCheckpoint(instanceID);
+	DirectX::XMMATRIX checkOrt = DirectX::XMMatrixIdentity();
+
+	DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+	DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+	DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+	rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+	checkOrt = DirectX::XMMatrixMultiply(checkOrt, rotationMatrix);
+	checkOrt = DirectX::XMMatrixMultiply(checkOrt, DirectX::XMMatrixTranslationFromVector(position));
+
+	container->obb.ext[0] = scale.m128_f32[0];
+	container->obb.ext[1] = scale.m128_f32[1];
+	container->obb.ext[2] = scale.m128_f32[2];
+
+	container->obb.ort = checkOrt;
+
+	return Resources::Status::ST_OK;
+}
+
+
+
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
 {
 	if (modelID == PLAYER1 || modelID == PLAYER2)
@@ -233,7 +299,13 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
 	std::vector<Container>* modelPtr;
 	if (got == m_ModelMap.end()) { // if  does not exists in memory
-
+		for (size_t i = 0; i < m_checkpointHandler.GetAllCheckpoints()->size(); i++)
+		{
+			if (m_checkpointHandler.GetAllCheckpoints()->at(i)->internalID == instanceID)
+			{
+				m_checkpointHandler.GetAllCheckpoints()->erase(m_checkpointHandler.GetAllCheckpoints()->begin() + i);
+			}
+		}
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
@@ -246,10 +318,24 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 				if (modelPtr->at(i).aiComponent != nullptr)
 					this->m_LevelAi.DeletePathComponent(instanceID);
 					modelPtr->erase(modelPtr->begin() + i);
+					return Resources::Status::ST_OK;
 			}
 		}
-		return Resources::Status::ST_OK;
+		for (size_t i = 0; i < m_puzzleElements.size(); i++)
+		{
+			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
+			{
+				if (m_puzzleElements.at(i).at(j)->internalID == instanceID)
+				{
+					m_puzzleElements.at(i).erase(m_puzzleElements.at(i).begin() + j);
+					return Resources::Status::ST_OK;
+				}
+
+			}
+		}
+		
 	}
+	return Resources::Status::ST_OK;
 }
 
 Resources::Status Level::DuplicateEntity( Container *& source, Container*& destination)
@@ -335,6 +421,18 @@ void Level::Destroy()
 	m_LevelAi.Destroy();
 	GlobalIDHandler::GetInstance()->ResetIDs();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
+	for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
+		for (size_t i = 0; i < elementContainer.size(); i++)
+		{
+			delete elementContainer.at(i);
+		}
+		elementContainer.clear();
+	}
+	for each (CheckpointContainer* container in *this->GetCheckpoints())
+	{
+		delete container;
+	}
+	this->GetCheckpoints()->clear();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
@@ -346,4 +444,93 @@ void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
 	m_SpawnPoints[index].position = DirectX::XMVectorSet(data.position[0], data.position[1], data.position[2], 0.0);
 	m_SpawnPoints[index].rotation = DirectX::XMVectorSet(data.rotation[0], data.rotation[1], data.rotation[2], 0.0);
 	m_SpawnPoints[index].isDirty = true;
+}
+
+const std::vector<Container*>* Level::GetPuzzleElements(ContainerType type)
+{
+	if (type >= ContainerType::NUM_PUZZLE_ELEMENTS)
+		return nullptr;
+	
+	return &this->m_puzzleElements.at(type);
+}
+
+Button * Level::ConvertToButton(Container*& obj)
+{
+
+	Container* entity = this->GetInstanceEntity(obj->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new button,
+		// transfer the entity information
+		// Remove the old container
+		// put the button into the button vector
+
+		Button* newButton = new Button(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(BUTTON).push_back(newButton); // add to button array
+		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newButton; //Return new button
+
+	}
+
+	return nullptr;
+}
+
+Door * Level::ConvertToDoor(Container *& object)
+{
+
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new door,
+		// transfer the entity information
+		// Remove the old container
+		// put the door into the door vector
+
+		Door* newDoor = new Door(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to button array
+		object = newDoor; //set the object to the new button as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		return newDoor; //Return new button
+	}
+
+	return nullptr;
+}
+
+
+
+Container * Level::ConvertToContainer(Container *& object)
+{
+	if (object->type >= ContainerType::NUM_PUZZLE_ELEMENTS)
+		return nullptr;
+
+	ContainerType type = object->type;
+	//Create new container.
+	//fill it with data.
+	//put it into the corresponding array
+	//Remove from the puzzle array it came from
+
+	for (size_t i = 0; i < m_puzzleElements.at(type).size(); i++)
+	{
+		if (m_puzzleElements.at(type).at(i)->internalID == object->internalID) // puzzleElement Found
+		{
+			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(m_puzzleElements.at(type).at(i)->component.modelID); //find the vector that holds this type of model
+			std::vector<Container>* modelPtr;
+
+			Container newComponent((Container)*m_puzzleElements.at(type).at(i));		// Create new container component
+			modelPtr = &got->second;													// The vector that holds the the corresponding model
+			modelPtr->push_back(newComponent);											// Push back the newly created container
+			m_puzzleElements.at(type).erase(m_puzzleElements.at(type).begin() + i);	    // Erase the puzzle element
+			object = &modelPtr->back();
+			return &modelPtr->back(); //Return the model
+		}
+
+	}
+
+	
+
+
+	return nullptr;
 }
