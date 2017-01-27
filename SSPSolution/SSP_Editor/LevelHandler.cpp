@@ -68,6 +68,27 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		delete checkpointData;
 	}
 
+	if (header.buttonAmount > 0)
+	{
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.buttonAmount;
+		char* buttonData = new char[buttonSize];
+		this->GetButtonData(buttonData);
+		file.write(buttonData, buttonSize);
+		delete buttonData;
+	}
+	if (header.doorAmount > 0)
+	{
+
+	}
+	if (header.leverAmount > 0)
+	{
+
+	}
+	if (header.wheelAmount > 0)
+	{
+
+	}
+
 	file.close();
 	//Cleanup
 	delete resData;
@@ -132,6 +153,15 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadCheckpointComponents((LevelData::CheckpointHeader*)checkpointData, header.checkpointAmount);
 		delete checkpointData;
+	}
+	if (header.buttonAmount > 0)
+	{
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.buttonAmount;
+		char* buttonData = new char[buttonSize];
+		file.read(buttonData, buttonSize);
+
+		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
+		delete buttonData;
 	}
 
 	file.close();
@@ -203,6 +233,11 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 	header.lightAmount       = m_currentLevel.GetNumLights();
 	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
 	header.checkpointAmount = (unsigned int)m_currentLevel.GetCheckpoints()->size();
+	header.buttonAmount = (unsigned int)m_currentLevel.GetPuzzleElements(BUTTON)->size();
+	header.doorAmount = (unsigned int)m_currentLevel.GetPuzzleElements(DOOR)->size();
+	header.leverAmount = (unsigned int)m_currentLevel.GetPuzzleElements(LEVER)->size();
+	header.wheelAmount = (unsigned int)m_currentLevel.GetPuzzleElements(WHEEL)->size();
+
 	return header;
 }
 
@@ -232,7 +267,10 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 
 			entity.isStatic	   = entityContainer->at(i).isStatic;
 			if (entityContainer->at(i).aiComponent != nullptr)
+			{
+				entity.isStatic = false;
 				entity.hasAi = true;
+			}
 			else
 				entity.hasAi = false;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
@@ -325,6 +363,19 @@ LevelData::LevelStatus LevelHandler::GetCheckpointData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Button* button in *this->m_currentLevel.GetPuzzleElements(BUTTON))
+	{
+		LevelData::ButtonHeader* bh = button->GetData();
+		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::ButtonHeader));
+		offset += sizeof(LevelData::ButtonHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -378,7 +429,7 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 	{
 		CheckpointContainer * checkpoint = new CheckpointContainer(dataPtr[i]);
 
-		if (checkpoint->position.m128_f32[0] < -9999)
+		if (checkpoint->position.m128_f32[0] < -9999999)
 			checkpoint->position = { 0.0,0.0,0.0 };
 
 		checkpoint->Update();
@@ -386,4 +437,19 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 	}
 
 	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Button * button = new Button(&dataPtr[i]);
+		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
+		m_currentLevel.AddPuzzleElement(BUTTON, button);
+
+		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
+	
+	}
+
+	return LevelData::LevelStatus();
 }

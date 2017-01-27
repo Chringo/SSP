@@ -67,7 +67,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			return;
 		}
 		m_BehaviourType->setEnabled(true);
-		if (m_selection->aiComponent != nullptr)
+		if (m_selection->aiComponent != nullptr) //If the selection is a platform. Load up the platform UI and fill it with the data
 		{
  			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
  			m_Current_Type = PATH; //Update current type
@@ -94,19 +94,28 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 				WaypointLabel += QString::number(temp + 1);
 				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
 			}
+
+			return;
 			
 		}
 		switch (m_selection->type) {
-
+		//BUTTON
 		case ContainerType::BUTTON:
-			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for path
+			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for Button
 			m_Current_Type = BUTTON; //Update current type
 			break;
+		////////////
+		//CHECKPOINT
 		case ContainerType::CHECKPOINT:
-		this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
-		break;
-		
-		
+			this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
+			break;
+		/////////
+		//DOOR
+		case ContainerType::DOOR:
+			m_BehaviourType->setCurrentIndex(DOOR); //Open the window for Door
+			m_Current_Type = DOOR; //Update current type
+			break;
+		/////////
 
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -284,7 +293,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					
 					m_button_tagBox->setValue((int)m_selection->internalID);
 					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
-
+					m_button_timer->setValue(((Button*)m_selection)->resetTime);
 					break;
 				}
 				}

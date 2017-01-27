@@ -43,6 +43,7 @@ public:
 	Resources::Status AddModelEntity(unsigned int modelID,  DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status AddModelEntityFromLevelFile(unsigned int modelID, unsigned int instanceID,DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status AddCheckpointEntity();
+	Resources::Status AddPuzzleElement(ContainerType type, void * element);
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale);

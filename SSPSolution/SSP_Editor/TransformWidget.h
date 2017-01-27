@@ -48,7 +48,7 @@ private:
 	}
 
 public:
-	unsigned int GetInstanceID() { return m_instanceID; };
+	unsigned int GetInstanceID() { return m_selectedContainer->internalID; };
 	unsigned int GetModelID() { return m_modelID; };
 	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
@@ -95,6 +95,7 @@ public:
 
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 
@@ -109,6 +110,7 @@ public:
 		m_obbCenterPosition = selectedContainer->position;
 
 		m_UpdateAxies();
+		UpdateOBB();
 		setActive(true);
 	};
 

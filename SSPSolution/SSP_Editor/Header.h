@@ -3,6 +3,7 @@
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../AIDLL/AIComponent.h"
 #include "LevelHeaders.h"
+#include "../SSPSolution/ComponentStructs.h"
 
 enum ContainerType
 {
@@ -61,54 +62,15 @@ struct Container
 
 	};
 
-struct Button : Container
+struct ListenerContainer : Container
 {
-	Button() : Container()
+	ListenerContainer() : Container() {};
+	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
 	{
-		this->type = BUTTON;
 	}
-	Button(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
-	{
-		this->type = BUTTON;
-	}
-	float interactionDistance = 1.0f;
-	float resetTime = 0.0f; // Seconds
-};
-
-struct Lever : Container
-{
-	Lever() : Container() {
-		this->type = LEVER;
-	}
-	float interactionDistance;
-};
-struct Wheel : Container
-{
-	Wheel() : Container()
-	{
-		this->type = WHEEL;
-	}
-	float interactionDistance;
-	float minRotation;
-	float maxRotation;
-	float rotateTime;
-
-	float timeToReset;	  //Sekunder
-	float resetTime;	  //Sekunder
-};
-struct Door : Container
-{
-	Door() : Container()
-	{
-		this->type = DOOR;
-	}
-	Door(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Door
-	{
-		this->type = DOOR;
-	}
-	float rotateTime;
 	unsigned int numTriggers = 0;
-	unsigned int triggerEntityIds[10];
+	EVENT		 listenEvent[20];
+	unsigned int triggerEntityIds[20];
 
 	void AddTrigger(unsigned int entityId)
 	{
@@ -117,7 +79,7 @@ struct Door : Container
 			if (numTriggers == entityId)
 				return;
 		}
-		if (numTriggers < 10) {
+		if (numTriggers < 20) {
 			this->triggerEntityIds[numTriggers] = entityId;
 			numTriggers += 1;
 		}
@@ -143,6 +105,139 @@ struct Door : Container
 		}
 		numTriggers -= 1;
 	}
+
+};
+
+struct Button : ListenerContainer
+{
+	Button() : ListenerContainer()
+	{
+		this->type = BUTTON;
+	}
+	Button(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Button
+	{
+		this->type = BUTTON;
+	}
+	float interactionDistance = 1.0f;
+	float resetTime = 0.0f; // Seconds
+private:
+	LevelData::ButtonHeader data;
+public:
+	LevelData::ButtonHeader * GetData()
+	{
+		//fill entity data
+		data.EntityID = this->internalID;
+		data.isStatic = this->isStatic;
+		if (this->aiComponent != nullptr)
+		{
+			data.isStatic = false;
+			data.hasAi = true;
+		}
+		else {
+			data.hasAi = false;
+		}
+		data.modelID = this->component.modelID;
+		data.position[0] = this->position.m128_f32[0];
+		data.position[1] = this->position.m128_f32[1];
+		data.position[2] = this->position.m128_f32[2];
+		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[1] = this->rotation.m128_f32[1];
+		data.rotation[2] = this->rotation.m128_f32[2];
+
+		//fill listener data
+		data.Listener.numConnections = this->numTriggers;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			data.Listener.Event[i] = this->listenEvent[i];
+			data.Listener.SenderID[i] = this->triggerEntityIds[i];
+		}
+
+		//fill unique data
+		data.resetTime = this->resetTime;
+		data.interactionDistance = this->interactionDistance;
+
+		return &data;
+	}
+	Button(LevelData::ButtonHeader* dataPtr)
+	{
+		this->type = BUTTON;
+
+		//entity load
+		this->internalID = dataPtr->EntityID;
+		this->isStatic = dataPtr->isStatic;
+		this->aiComponent = nullptr;
+		this->component.modelID = dataPtr->modelID;
+		this->component.worldMatrix = DirectX::XMMatrixIdentity();
+		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
+		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
+
+
+		DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+		
+		this->component.worldMatrix = containerMatrix;
+
+		//listener load
+		this->numTriggers = dataPtr->Listener.numConnections;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			this->listenEvent[i] = (EVENT)dataPtr->Listener.Event[i];
+			this->triggerEntityIds[i] = dataPtr->Listener.SenderID[i];
+		}
+
+		//unique data load
+		this->resetTime = dataPtr->resetTime;
+		this->interactionDistance = dataPtr->interactionDistance;
+
+		this->isDirty = true;
+		
+	}
+};
+
+struct Lever : ListenerContainer
+{
+	Lever() : ListenerContainer() {
+		this->type = LEVER;
+	}
+	float interactionDistance;
+};
+struct Wheel : ListenerContainer
+{
+	Wheel() : ListenerContainer()
+	{
+		this->type = WHEEL;
+	}
+	float interactionDistance;
+	float minRotation;
+	float maxRotation;
+	float rotateTime;
+
+	float timeToReset;	  //Sekunder
+	float resetTime;	  //Sekunder
+};
+struct Door : ListenerContainer
+{
+	Door() : ListenerContainer()
+	{
+		this->type = DOOR;
+	}
+	Door(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Door
+	{
+		this->type = DOOR;
+	}
+	float rotateTime;
+	
 };
 struct CheckpointContainer : Container
 {
