@@ -1745,186 +1745,186 @@ void PhysicsHandler::Update(float deltaTime)
 	float dt = (deltaTime / 50000);
 	this->m_bullet.Update(dt);
 
-	int nrOfChainLinks = this->m_links.size();
-	for (int i = 0; i < nrOfChainLinks; i++)
-	{
-		this->DoChainPhysics(&this->m_links.at(i), dt);
-	}
-	for (int i = 0; i < nrOfChainLinks; i++)
-	{
-		this->AdjustChainLinkPosition(&this->m_links.at(i));
-	}
-	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
-	
-	// DYNAMIC VS DYNAMIC
-	if (this->m_isHost)
-	{
-		this->m_numberOfDynamics = this->m_dynamicComponents.size();
-		// Do dynamic vs dynamic checks
-		for (unsigned int i = 0; i < this->m_numberOfDynamics; i++)	// 
-		{
-			PhysicsComponent* current = this->m_dynamicComponents.at(i);
-			int currentIndex = i;
-			if (current->PC_collides)
-			{
-				for (unsigned int j = i + 1; j < this->m_numberOfDynamics; j++)
-				{
-					PhysicsComponent* toCompare = this->m_dynamicComponents.at(j);
-					if (toCompare->PC_collides)
-					{
-						if (current->PC_BVtype == BV_AABB)
-						{
-							if (toCompare->PC_BVtype == BV_AABB)
-							{
-								this->AABBAABBIntersectionTest(current, toCompare, dt);
-							}
-						}
-						if (current->PC_BVtype == BV_Sphere)
-						{
-							if (toCompare->PC_BVtype == BV_AABB)
-							{
-								this->SphereAABBIntersectionTest(current, toCompare, dt);
-							}
-							if (toCompare->PC_BVtype == BV_OBB)
-							{
-								this->SphereOBBIntersectionTest(current, toCompare, dt);
-							}
-							if (toCompare->PC_BVtype == BV_Sphere)
-							{
-								this->SphereSphereIntersectionTest(current, toCompare, dt);
-							}
-						}
-						if (current->PC_BVtype == BV_OBB)
-						{
-							if (toCompare->PC_BVtype == BV_OBB)
-							{
-								if (this->ObbObbIntersectionTest(current, toCompare, true, dt))
-								{
-									this->m_bullet.GetNextPos(current, currentIndex);
-									this->m_bullet.GetNextPos(toCompare, j);
-								}
-								
-							}
+	//int nrOfChainLinks = this->m_links.size();
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->DoChainPhysics(&this->m_links.at(i), dt);
+	//}
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->AdjustChainLinkPosition(&this->m_links.at(i));
+	//}
+	////this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
+	//
+	//// DYNAMIC VS DYNAMIC
+	//if (this->m_isHost)
+	//{
+	//	this->m_numberOfDynamics = this->m_dynamicComponents.size();
+	//	// Do dynamic vs dynamic checks
+	//	for (unsigned int i = 0; i < this->m_numberOfDynamics; i++)	// 
+	//	{
+	//		PhysicsComponent* current = this->m_dynamicComponents.at(i);
+	//		int currentIndex = i;
+	//		if (current->PC_collides)
+	//		{
+	//			for (unsigned int j = i + 1; j < this->m_numberOfDynamics; j++)
+	//			{
+	//				PhysicsComponent* toCompare = this->m_dynamicComponents.at(j);
+	//				if (toCompare->PC_collides)
+	//				{
+	//					if (current->PC_BVtype == BV_AABB)
+	//					{
+	//						if (toCompare->PC_BVtype == BV_AABB)
+	//						{
+	//							this->AABBAABBIntersectionTest(current, toCompare, dt);
+	//						}
+	//					}
+	//					if (current->PC_BVtype == BV_Sphere)
+	//					{
+	//						if (toCompare->PC_BVtype == BV_AABB)
+	//						{
+	//							this->SphereAABBIntersectionTest(current, toCompare, dt);
+	//						}
+	//						if (toCompare->PC_BVtype == BV_OBB)
+	//						{
+	//							this->SphereOBBIntersectionTest(current, toCompare, dt);
+	//						}
+	//						if (toCompare->PC_BVtype == BV_Sphere)
+	//						{
+	//							this->SphereSphereIntersectionTest(current, toCompare, dt);
+	//						}
+	//					}
+	//					if (current->PC_BVtype == BV_OBB)
+	//					{
+	//						if (toCompare->PC_BVtype == BV_OBB)
+	//						{
+	//							if (this->ObbObbIntersectionTest(current, toCompare, true, dt))
+	//							{
+	//								this->m_bullet.GetNextPos(current, currentIndex);
+	//								this->m_bullet.GetNextPos(toCompare, j);
+	//							}
+	//							
+	//						}
 
-						}
-					}
+	//					}
+	//				}
 
-				}
-			}
-		}
-	}
+	//			}
+	//		}
+	//	}
+	//}
 
 	// DYNAMIC VS STATIC
-	this->m_numberOfDynamics = this->m_dynamicComponents.size();
-	for (unsigned int i = this->m_startIndex; i < this->m_numberOfDynamics; i++)	// 
-	{
-		PhysicsComponent* current = this->m_dynamicComponents.at(i);
-		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
-		int currentIndex = i;
+	//this->m_numberOfDynamics = this->m_dynamicComponents.size();
+	//for (unsigned int i = this->m_startIndex; i < this->m_numberOfDynamics; i++)	// 
+	//{
+	//	PhysicsComponent* current = this->m_dynamicComponents.at(i);
+	//	current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
+	//	int currentIndex = i;
 
-		int loopsNeeded = 1;
-		float speed = DirectX::XMVectorGetX(DirectX::XMVector3Length(current->PC_velocity));
-		float speedLimit = 0.3f; // speed limit that detemines when a component needs more checks to ensure it doesn't go through walls
-		if (speed > speedLimit)
-		{
-			//if speed is to great increase number of loops to insure 
-			//hit detection/correction is done correctly
-			loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
-		}
-		this->m_nrOfStaticObjects = this->m_staticComponents.size();
-		for (int i = 0; i < loopsNeeded; i++)
-		{
-			float newDT = dt / loopsNeeded;
-			if (!current->PC_steadfast)
-			{
-				if (current->PC_BVtype == BoundingVolumeType::BV_AABB)
-					{
-						//only collide with static environment for starters
-						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
-						{
-							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_staticComponents.at(j);
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
-							{
-								this->AABBAABBIntersectionTest(current, toCompare, newDT);
-							}
+	//	int loopsNeeded = 1;
+	//	float speed = DirectX::XMVectorGetX(DirectX::XMVector3Length(current->PC_velocity));
+	//	float speedLimit = 0.3f; // speed limit that detemines when a component needs more checks to ensure it doesn't go through walls
+	//	if (speed > speedLimit)
+	//	{
+	//		//if speed is to great increase number of loops to insure 
+	//		//hit detection/correction is done correctly
+	//		loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
+	//	}
+	//	this->m_nrOfStaticObjects = this->m_staticComponents.size();
+	//	for (int i = 0; i < loopsNeeded; i++)
+	//	{
+	//		float newDT = dt / loopsNeeded;
+	//		if (!current->PC_steadfast)
+	//		{
+	//			//if (current->PC_BVtype == BoundingVolumeType::BV_AABB)
+	//			//	{
+				//		//only collide with static environment for starters
+				//		for (int j = 0; j < this->m_nrOfStaticObjects; j++)
+				//		{
+				//			PhysicsComponent* toCompare = nullptr;
+				//			toCompare = this->m_staticComponents.at(j);
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
+				//			{
+				//				this->AABBAABBIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
-							{
-								this->AABBPlaneIntersectionTest(current, toCompare, newDT);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
+				//			{
+				//				this->AABBPlaneIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
-							{
-								//to be continued
-								this->m_bullet.GetNextPos(current, currentIndex);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
+				//			{
+				//				//to be continued
+				//				this->m_bullet.GetNextPos(current, currentIndex);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
-							{
-								//
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
+				//			{
+				//				//
+				//			}
 
-						}
-					}
-				if (current->PC_BVtype == BoundingVolumeType::BV_Sphere)
-					{
-						//only collide with static environment for starters
-						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
-						{
-							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_staticComponents.at(j);
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
-							{
-								this->SphereAABBIntersectionTest(current, toCompare, newDT);
-							}
+				//		}
+				//	}
+				//if (current->PC_BVtype == BoundingVolumeType::BV_Sphere)
+				//	{
+				//		//only collide with static environment for starters
+				//		for (int j = 0; j < this->m_nrOfStaticObjects; j++)
+				//		{
+				//			PhysicsComponent* toCompare = nullptr;
+				//			toCompare = this->m_staticComponents.at(j);
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
+				//			{
+				//				this->SphereAABBIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
-							{
-								this->SpherePlaneIntersectionTest(current, toCompare, newDT);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
+				//			{
+				//				this->SpherePlaneIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
-							{
-								this->SphereOBBIntersectionTest(current, toCompare, newDT);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
+				//			{
+				//				this->SphereOBBIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
-							{
-								this->SphereSphereIntersectionTest(current, toCompare, newDT);
-							}
-						}
-					}
-				if (current->PC_BVtype == BoundingVolumeType::BV_OBB)
-					{
-						//only collide with static environment for starters
-						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
-						{
-							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_staticComponents.at(j);
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
-							{
-								//toCompare has to be AABB or bad peaople will take you in the night
-								this->OBBAABBIntersectionTest(current, toCompare, newDT);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
+				//			{
+				//				this->SphereSphereIntersectionTest(current, toCompare, newDT);
+				//			}
+				//		}
+				//	}
+				//if (current->PC_BVtype == BoundingVolumeType::BV_OBB)
+				//	{
+				//		//only collide with static environment for starters
+				//		for (int j = 0; j < this->m_nrOfStaticObjects; j++)
+				//		{
+				//			PhysicsComponent* toCompare = nullptr;
+				//			toCompare = this->m_staticComponents.at(j);
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
+				//			{
+				//				//toCompare has to be AABB or bad peaople will take you in the night
+				//				this->OBBAABBIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
-							{
-								this->OBBPlaneIntersectionTest(current, toCompare, newDT);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
+				//			{
+				//				this->OBBPlaneIntersectionTest(current, toCompare, newDT);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
-							{
-								//to be continued
-								//this->ObbObbIntersectionTest(current, toCompare, true, newDT);
-								this->m_bullet.GetNextPos(current, currentIndex);
-							}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
+				//			{
+				//				//to be continued
+				//				//this->ObbObbIntersectionTest(current, toCompare, true, newDT);
+				//				this->m_bullet.GetNextPos(current, currentIndex);
+				//			}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
-							{
-								this->SphereSphereIntersectionTest(current, toCompare, newDT);
-							}
-						}
+				//			if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
+				//			{
+				//				this->SphereSphereIntersectionTest(current, toCompare, newDT);
+				//			}
+	/*					}
 					}
 
 			}
@@ -1954,7 +1954,7 @@ void PhysicsHandler::Update(float deltaTime)
 			}
 		}
 
-	}
+	}*/
 
 
 }

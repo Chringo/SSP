@@ -50,6 +50,7 @@ void BulletInterpreter::Initialize()
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
+
 	this->m_dynamicsWorld->stepSimulation(dt);
 }
 
