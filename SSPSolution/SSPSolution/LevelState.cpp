@@ -163,7 +163,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 	m_player1.SetBall(ball);
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(ballP, this->m_player1.GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
 	//Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
@@ -213,7 +213,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(ballP, this->m_player2.GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
 	StaticEntity* roof = new StaticEntity;
 	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
