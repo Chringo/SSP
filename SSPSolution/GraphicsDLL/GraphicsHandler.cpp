@@ -226,13 +226,13 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #ifdef _DEBUG
 	this->editorMode = editorMode;
 	if (!editorMode)
+#endif //_DEBUG
 	{
 		this->m_uiHandler = new UIHandler;
 		this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
-#endif //_DEBUG
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -293,12 +293,11 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	Resources::Model* modelPtr = nullptr;
+
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_graphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
 		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
@@ -510,7 +509,7 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 
 	return nullptr;
 }
-
+	
 int GraphicsHandler::UpdateComponentList()
 {
 	int result = 0;
