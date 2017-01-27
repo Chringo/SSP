@@ -630,7 +630,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
 
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT))
 		{
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
@@ -794,7 +794,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 		
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT))
 		{
 
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();

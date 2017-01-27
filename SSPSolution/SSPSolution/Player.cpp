@@ -71,7 +71,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 
 	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_I))
+	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT))
 	{
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
