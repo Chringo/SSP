@@ -70,6 +70,7 @@ void ButtonEntity::SetSyncState(ButtonSyncState * newSyncState)
 	{
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
+		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 	}
 }
@@ -80,7 +81,7 @@ ButtonSyncState * ButtonEntity::GetSyncState()
 	if (this->m_needSync)
 	{
 		result = new ButtonSyncState{this->m_entityID, this->m_isActive};
-		this->m_needSync == false;
+		this->m_needSync = false;
 	}
 	return result;
 }
