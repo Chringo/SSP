@@ -453,13 +453,22 @@ void Level::Destroy()
 	m_LevelAi.Destroy();
 	GlobalIDHandler::GetInstance()->ResetIDs();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
-	for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
-		for (size_t i = 0; i < elementContainer.size(); i++)
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
 		{
-			delete elementContainer.at(i);
+			delete m_puzzleElements.at(i).at(j);
 		}
-		elementContainer.clear();
+		m_puzzleElements.at(i).clear();
 	}
+
+	//for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
+	//	for (size_t i = 0; i < elementContainer.size(); i++)
+	//	{
+	//		delete elementContainer.at(i);
+	//	}
+	//	elementContainer.clear();
+	//}
 	for each (CheckpointContainer* container in *this->GetCheckpoints())
 	{
 		delete container;
