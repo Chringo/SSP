@@ -149,7 +149,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 3;									//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(32, -11,-6, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
@@ -794,7 +794,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 		
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsKeyPressed(SDL_BUTTON_RIGHT))
 		{
 
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
@@ -1249,8 +1249,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 885141774;
 	Resources::ResourceHandler::GetInstance()->GetModel(885141774, model);
-
-
+	DirectX::XMVECTOR offset = { 0.0, -38.0, 0.0 };
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1.GetPhysicsComponent()->PC_pos, offset);
+	//m_player1.GetPhysicsComponent()->PC_pos
+	
 	return 1;
 }
 
