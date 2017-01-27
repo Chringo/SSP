@@ -148,9 +148,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BulletInterpreter.h" />
     <ClInclude Include="PhysicsHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BulletInterpreter.cpp" />
     <ClCompile Include="PhysicsHandler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
