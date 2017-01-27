@@ -1367,7 +1367,7 @@ border: black;</string>
               <string notr="true">background-color: rgb(74, 74, 74);</string>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="Behaviour_None">
               <layout class="QFormLayout" name="formLayout_6"/>
@@ -1797,7 +1797,7 @@ border: black;</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0" colspan="2">
+           <item row="7" column="0" colspan="2">
             <widget class="QFrame" name="addDel_Frame">
              <property name="styleSheet">
               <string notr="true"/>
@@ -1830,80 +1830,6 @@ border: black;</string>
                </widget>
               </item>
              </layout>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QComboBox" name="EventSignalBox">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(48, 48, 48);</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>None</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>COLLIDED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>BUTTON_DEACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>BUTTON_ACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>LEVER_DEACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>LEVER_ACTIVE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>DOOR_CLOSED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>DOOR_OPENED</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>WHEEL_DECREASING</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>WHEEL_INCREASING</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>New Item</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Event Signal : </string>
-             </property>
             </widget>
            </item>
            <item row="3" column="0" colspan="2">
@@ -2100,7 +2026,7 @@ Header- color:rgb(48, 48, 48);
 </string>
              </property>
              <property name="verticalScrollBarPolicy">
-              <enum>Qt::ScrollBarAlwaysOff</enum>
+              <enum>Qt::ScrollBarAsNeeded</enum>
              </property>
              <property name="horizontalScrollBarPolicy">
               <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -2175,6 +2101,25 @@ Header- color:rgb(48, 48, 48);
                <set>AlignCenter</set>
               </property>
              </column>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2">
+            <widget class="QComboBox" name="EventSignalBox">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Event Signal</string>
+             </property>
             </widget>
            </item>
           </layout>

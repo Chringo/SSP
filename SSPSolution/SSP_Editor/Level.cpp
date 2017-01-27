@@ -362,7 +362,8 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 
 bool Level::isEmpty()
 {
-	if (this->GetNumEntities() == 0) {
+	if (this->GetNumEntities() == 0 && this->GetNumPuzzleElements() == 0 && this->GetNumLights() == 0) {
+		
 		return true;
 	}
 	return false;
@@ -383,6 +384,16 @@ unsigned int Level::GetNumEntities()
 unsigned int Level::GetNumLights()
 {
 	return 0;
+}
+
+unsigned int Level::GetNumPuzzleElements()
+{
+	unsigned int amount;
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		amount += (unsigned int)m_puzzleElements.at(i).size();
+	}
+	return amount;
 }
 
 Container * Level::GetSpawnPoint(int index)

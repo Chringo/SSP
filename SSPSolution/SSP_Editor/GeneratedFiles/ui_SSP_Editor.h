@@ -131,9 +131,9 @@ public:
     QHBoxLayout *horizontalLayout;
     QPushButton *AddTriggerButton;
     QPushButton *DeleteTriggerButton;
+    QTableWidget *TriggerTableWidget;
     QComboBox *EventSignalBox;
     QLabel *label_3;
-    QTableWidget *TriggerTableWidget;
     QWidget *CheckPoint;
     QGridLayout *gridLayout_6;
     QLabel *checkpointTXT;
@@ -930,18 +930,7 @@ public:
         horizontalLayout->addWidget(DeleteTriggerButton);
 
 
-        formLayout_2->setWidget(5, QFormLayout::SpanningRole, addDel_Frame);
-
-        EventSignalBox = new QComboBox(Triggers);
-        EventSignalBox->setObjectName(QStringLiteral("EventSignalBox"));
-        EventSignalBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-
-        formLayout_2->setWidget(4, QFormLayout::FieldRole, EventSignalBox);
-
-        label_3 = new QLabel(Triggers);
-        label_3->setObjectName(QStringLiteral("label_3"));
-
-        formLayout_2->setWidget(4, QFormLayout::LabelRole, label_3);
+        formLayout_2->setWidget(7, QFormLayout::SpanningRole, addDel_Frame);
 
         TriggerTableWidget = new QTableWidget(Triggers);
         if (TriggerTableWidget->columnCount() < 2)
@@ -981,7 +970,7 @@ public:
 "Header- color:rgb(48, 48, 48);\n"
 "\n"
 ""));
-        TriggerTableWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        TriggerTableWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         TriggerTableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         TriggerTableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
         TriggerTableWidget->setAutoScroll(false);
@@ -1003,6 +992,17 @@ public:
         TriggerTableWidget->verticalHeader()->setStretchLastSection(false);
 
         formLayout_2->setWidget(3, QFormLayout::SpanningRole, TriggerTableWidget);
+
+        EventSignalBox = new QComboBox(Triggers);
+        EventSignalBox->setObjectName(QStringLiteral("EventSignalBox"));
+        EventSignalBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        formLayout_2->setWidget(6, QFormLayout::SpanningRole, EventSignalBox);
+
+        label_3 = new QLabel(Triggers);
+        label_3->setObjectName(QStringLiteral("label_3"));
+
+        formLayout_2->setWidget(5, QFormLayout::LabelRole, label_3);
 
         CustomBehaviourTabWidget->addTab(Triggers, QString());
         CheckPoint = new QWidget();
@@ -1077,7 +1077,7 @@ public:
 
         tabWidget->setCurrentIndex(0);
         CustomBehaviourTabWidget->setCurrentIndex(1);
-        BehaviourStackWidget->setCurrentIndex(1);
+        BehaviourStackWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -1149,26 +1149,15 @@ public:
         label->setText(QApplication::translate("SSP_EditorClass", "Scene Triggers : ", Q_NULLPTR));
         AddTriggerButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
         DeleteTriggerButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
-        EventSignalBox->clear();
-        EventSignalBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "COLLIDED", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "BUTTON_DEACTIVE", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "BUTTON_ACTIVE", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "LEVER_DEACTIVE", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "LEVER_ACTIVE", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "DOOR_CLOSED", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "DOOR_OPENED", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "WHEEL_DECREASING", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "WHEEL_INCREASING", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "New Item", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "New Item", Q_NULLPTR)
-        );
-        label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal : ", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem = TriggerTableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem1 = TriggerTableWidget->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("SSP_EditorClass", "Event Signal", Q_NULLPTR));
+        EventSignalBox->clear();
+        EventSignalBox->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+        );
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Triggers), QApplication::translate("SSP_EditorClass", "Triggers", Q_NULLPTR));
         checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", Q_NULLPTR));
         CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", Q_NULLPTR));

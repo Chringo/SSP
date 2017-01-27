@@ -64,25 +64,45 @@ struct Container
 
 struct ListenerContainer : Container
 {
-	ListenerContainer() : Container() {};
-	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
-	{
-	}
 	unsigned int numTriggers = 0;
 	EVENT		 listenEvent[20];
 	unsigned int triggerEntityIds[20];
+	Container*	 triggerContainers[20]; //pointers to the triggers
+	ListenerContainer() : Container() {
+		memset(triggerEntityIds, 0, sizeof(UINT) * 20);
 
-	void AddTrigger(unsigned int entityId)
+	};
+	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
+	{
+	}
+	bool AddTrigger(Container* trigger, EVENT listenEvent)
 	{
 		for (size_t i = 0; i < numTriggers; i++)
 		{
-			if (numTriggers == entityId)
-				return;
+			if (triggerEntityIds[i] == trigger->internalID) //check if it already exists
+				return false;
 		}
-		if (numTriggers < 10) {
-			this->triggerEntityIds[numTriggers] = entityId;
+		if (numTriggers < 20) {
+			this->triggerEntityIds[numTriggers] = trigger->internalID;
+			this->triggerContainers[numTriggers] = trigger;
+			this->listenEvent[numTriggers] = listenEvent;
 			numTriggers += 1;
 		}
+		else
+			return false;
+	}
+
+	bool UpdateTriggerEvent(Container* trigger, EVENT newEvent) {
+		for (size_t i = 0; i < numTriggers; i++)
+		{
+			if (triggerEntityIds[i] == trigger->internalID) //check if it already exists
+			{
+				listenEvent[i] = newEvent;
+				return true;
+			}
+		}
+
+		return false;
 	}
 	void DeleteTrigger(unsigned int entityId)
 	{
@@ -101,7 +121,9 @@ struct ListenerContainer : Container
 
 		for (size_t j = index; j < numTriggers - 1; j++) //move the data to the left in the array
 		{
-			triggerEntityIds[j] = triggerEntityIds[j + 1];
+			triggerEntityIds[j]		= triggerEntityIds[j + 1];
+			triggerContainers[j]    = triggerContainers[j + 1];
+			listenEvent[j]		    = listenEvent[j + 1];
 		}
 		numTriggers -= 1;
 	}

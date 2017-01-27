@@ -6,6 +6,7 @@
 #include "Header.h"
 #include "LevelHandler.h"
 #include <qtablewidget.h>
+#include "EVENT_Strings.h"
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
@@ -44,6 +45,7 @@ namespace Ui {
 
 		Q_OBJECT
 	private:
+		EventStrings		m_eventStrings;
 		QTabWidget*			m_attributes_widget;
 		BehaviourType		m_Current_Type;
 		Pattern				m_Current_Pattern;
@@ -75,9 +77,10 @@ namespace Ui {
 
 #pragma region Trigger Tab elements
 
+		ContainerType m_currentEventType = ContainerType::BUTTON;
 		QWidget*     m_triggerTab;
 		QComboBox*   m_availableTriggers;
-		//QListWidget* m_triggerList;
+		QComboBox*	 m_eventBox;
 		QTableWidget* m_triggerList;
 		QPushButton* m_add_trigger;
 		QPushButton* m_del_trigger;
@@ -90,6 +93,7 @@ namespace Ui {
 			"(magnet) ",
 			"(plate) "
 		};
+		
 
 #pragma endregion
 
@@ -119,10 +123,14 @@ namespace Ui {
 		void on_Add();
 		void on_Del();
 
-		void on_triggerSelection_Changed(int val);
+		void on_triggerSelection_Changed(QTableWidgetItem * item);
+		void on_eventSelection_Changed(int val);
 		void on_Add_Trigger();
 	private:
 		void SetTriggerData(Container*& selection);
+		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
+		void ClearTriggerList();
+		void ClearEventList();
 	};
 }
 #endif

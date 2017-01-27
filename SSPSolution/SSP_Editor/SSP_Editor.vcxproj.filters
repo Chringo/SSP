@@ -224,6 +224,9 @@
     <ClInclude Include="CheckpointHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EVENT_Strings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt">
