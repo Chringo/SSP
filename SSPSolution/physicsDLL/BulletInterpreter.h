@@ -65,6 +65,7 @@ struct PhysicsComponent
 	BoundingVolumeType PC_BVtype;
 	bool PC_steadfast;
 	bool PC_NotExistInBulletWorld;
+	int PC_IndexRigidBody = -1;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -139,8 +140,8 @@ public:
 	//type of rigidBodies
 	void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
 	void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
-	void CreateOBB(DirectX::XMVECTOR ext,const DirectX::XMMATRIX &ortho, DirectX::XMVECTOR pos, int mass,int index);
-	void CreateAABB(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos, int index);
+	void CreateOBB(PhysicsComponent* src,int index);
+	void CreateAABB(PhysicsComponent* src, int index);
 
 };
 #endif

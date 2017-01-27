@@ -1721,7 +1721,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.009f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.00f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
@@ -1743,6 +1743,7 @@ void PhysicsHandler::ShutDown()
 void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 50000);
+	this->m_bullet.Update(dt);
 
 	int nrOfChainLinks = this->m_links.size();
 	for (int i = 0; i < nrOfChainLinks; i++)
@@ -1763,6 +1764,7 @@ void PhysicsHandler::Update(float deltaTime)
 		for (unsigned int i = 0; i < this->m_numberOfDynamics; i++)	// 
 		{
 			PhysicsComponent* current = this->m_dynamicComponents.at(i);
+			int currentIndex = i;
 			if (current->PC_collides)
 			{
 				for (unsigned int j = i + 1; j < this->m_numberOfDynamics; j++)
@@ -1796,7 +1798,12 @@ void PhysicsHandler::Update(float deltaTime)
 						{
 							if (toCompare->PC_BVtype == BV_OBB)
 							{
-								this->ObbObbIntersectionTest(current, toCompare, true, dt);
+								if (this->ObbObbIntersectionTest(current, toCompare, true, dt))
+								{
+									this->m_bullet.GetNextPos(current, currentIndex);
+									this->m_bullet.GetNextPos(toCompare, j);
+								}
+								
 							}
 						}
 					}
@@ -1812,7 +1819,7 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		PhysicsComponent* current = this->m_dynamicComponents.at(i);
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
-
+		int currentIndex = i;
 
 		int loopsNeeded = 1;
 		float speed = DirectX::XMVectorGetX(DirectX::XMVector3Length(current->PC_velocity));
@@ -1849,7 +1856,7 @@ void PhysicsHandler::Update(float deltaTime)
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
 							{
 								//to be continued
-
+								this->m_bullet.GetNextPos(current, currentIndex);
 							}
 
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
@@ -1908,7 +1915,8 @@ void PhysicsHandler::Update(float deltaTime)
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
 							{
 								//to be continued
-								this->ObbObbIntersectionTest(current, toCompare, true, newDT);
+								//this->ObbObbIntersectionTest(current, toCompare, true, newDT);
+								this->m_bullet.GetNextPos(current, currentIndex);
 							}
 
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
@@ -2642,19 +2650,15 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 }
 
 PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
-{
-	DirectX::XMVECTOR pos = src->PC_pos;
-	DirectX::XMVECTOR ext = DirectX::XMVectorSet(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2], 0);
-	
-	
+{	
 	if (src->PC_BVtype == BV_AABB)
 	{
-		this->m_bullet.CreateAABB(ext, pos, index);
+		this->m_bullet.CreateAABB(src, index);
 	}
 	else if(src->PC_BVtype == BV_OBB)
 	{
-		DirectX::XMMATRIX orth = src->PC_OBB.ort;
-		this->m_bullet.CreateOBB(ext, orth, pos, src->PC_mass,index);
+		
+		this->m_bullet.CreateOBB(src,index);
 	}
 }
 

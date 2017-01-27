@@ -103,7 +103,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
-	playerP->PC_BVtype = BV_AABB;
+	playerP->PC_BVtype = BV_OBB;
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
@@ -127,7 +127,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
-	playerP->PC_BVtype = BV_AABB;
+	playerP->PC_BVtype = BV_OBB;
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
@@ -215,16 +215,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
-	StaticEntity* roof = new StaticEntity;
-	PhysicsComponent* roofP = m_cHandler->GetPhysicsComponent();
-	roofP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);
-	roofP->PC_is_Static = true;
-	roofP->PC_BVtype = BV_Plane;
-	roofP->PC_Plane.PC_normal = DirectX::XMVectorSet(0,-1, 0, 0);
-	roofP->PC_elasticity = 0;
-	roofP->PC_friction = 1.0f;
-
-	this->m_staticEntitys.push_back(roof);
 
 #pragma region
 				//	DynamicEntity* platform = new DynamicEntity();
