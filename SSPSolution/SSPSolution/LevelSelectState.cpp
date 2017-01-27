@@ -32,8 +32,8 @@ int LevelSelectState::Initialize(GameStateHandler * gsh, ComponentHandler* cHand
 	this->currentLevel = new LevelState();
 
 	//Create, Initialize and push a LevelState
-
 	result = currentLevel->Initialize(gsh, cHandler, cameraRef);
+
 	//If the initialization was successful
 	if (result <= 0)
 	{
