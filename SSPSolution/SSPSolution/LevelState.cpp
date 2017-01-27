@@ -160,7 +160,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
-
+	m_player1.SetBall(ball);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(ballP, this->m_player1.GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
 
 	//Ball2
@@ -183,7 +183,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
-
+	m_player2.SetBall(ball2);
 	//----
 	//DynamicEntity* cuck = new DynamicEntity();
 	//GraphicsComponent* cuckG = m_cHandler->GetGraphicsComponent();
@@ -934,7 +934,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::Status st = Resources::ST_OK;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
-	
+	std::vector<DynamicEntity*> aiEntities;	
 
 
 	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
@@ -948,9 +948,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-
-	std::vector<DynamicEntity*> aiEntities;
-
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
 
