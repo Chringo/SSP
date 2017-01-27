@@ -183,6 +183,11 @@ void Player::SetAiming(bool isAming)
 	this->m_isAiming = isAming;
 }
 
+void Player::SetBall(Entity * ball)
+{
+	this->m_ball = ball;
+}
+
 float Player::GetSpeed()
 {
 	return this->m_speed;
@@ -211,4 +216,9 @@ bool Player::GetIsAming()
 Entity * Player::GetGrabbed()
 {
 	return this->m_grabbed;
+}
+
+Entity * Player::GetBall()
+{
+	return this->m_ball;
 }
