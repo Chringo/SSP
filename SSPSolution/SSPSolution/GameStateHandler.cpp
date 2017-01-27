@@ -55,7 +55,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		//Push it to the gamestate stack/vector
 		this->m_stateStack.push_back(levelSelect);
 		
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingErikLevel.level"));
 	}
 	else
 	{
