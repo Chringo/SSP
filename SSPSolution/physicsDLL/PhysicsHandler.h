@@ -116,7 +116,13 @@ public:
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
+	
 	PHYSICSDLL_API void TransferBoxesToBullet(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
+	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
+	
+	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

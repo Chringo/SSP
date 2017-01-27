@@ -1956,7 +1956,6 @@ void PhysicsHandler::Update(float deltaTime)
 
 	}*/
 
-
 }
 
 void PhysicsHandler::CheckFieldIntersection()
@@ -2661,6 +2660,16 @@ PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src
 		
 		this->m_bullet.CreateOBB(src,index);
 	}
+}
+
+PHYSICSDLL_API void PhysicsHandler::ApplyPlayer1ToBullet(PhysicsComponent * player1)
+{
+	this->m_bullet.SetPlayer1(player1);
+}
+
+PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)
+{
+	return this->m_bullet.GetRigidBody(index);
 }
 
 #ifdef _DEBUG

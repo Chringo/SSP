@@ -107,12 +107,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
-	playerP->PC_AABB.ext[0] = 0.5f;
-	playerP->PC_AABB.ext[1] = 0.5f;
-	playerP->PC_AABB.ext[2] = 0.5f;
+	//playerP->PC_velocity = DirectX::XMVectorSet(1,0,0,0);
+
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player1.Initialize(1, playerP, playerG);
-	this->m_player1.SetSpeed(0.5f);
+	this->m_player1.SetSpeed(2.0f);
+
+	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
+
+	this->m_cHandler->GetPhysicsHandler()->TransferBoxesToBullet(playerP, 0);
 
 	//Player 2
 	this->m_player2 = Player();
@@ -127,6 +130,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
+	playerP->PC_velocity = DirectX::XMVectorSet(1, 0, 0, 0);
 	playerP->PC_BVtype = BV_OBB;
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
@@ -137,6 +141,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	this->m_player2.Initialize(2, playerP, playerG);
 	this->m_player2.SetSpeed(0.5f);
+
+	//this->m_cHandler->GetPhysicsHandler()->ApplyPlayer2ToBullet(playerP);
 
 
 	//this->m_dynamicEntitys.push_back();
@@ -1065,8 +1071,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
-	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 
 	
 	
@@ -1116,6 +1122,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+
+		t_pc->PC_mass = 0;
 
 		/*DirectX::XMMATRIX tempRot = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
 			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] });
@@ -1218,11 +1226,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	ptr = m_cHandler->GetPhysicsHandler();
 	int size = m_cHandler->GetPhysicsHandler()->GetNrOfComponents();
 
-	for (int i = 0; i < size; i++)
+	/*for (int i = 0; i < size; i++)
 	{
 		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(i), i);
 	}
-
+*/
 	
 	int bajs = 0;
 	return 1;

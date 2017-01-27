@@ -122,6 +122,9 @@ private:
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 
+	PhysicsComponent* player1;
+	PhysicsComponent* player2;
+
 public:
 	PHYSICSDLL_API BulletInterpreter();
 	PHYSICSDLL_API virtual ~BulletInterpreter();
@@ -142,6 +145,11 @@ public:
 	void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
 	void CreateOBB(PhysicsComponent* src,int index);
 	void CreateAABB(PhysicsComponent* src, int index);
+
+	btRigidBody* GetRigidBody(int index);
+
+	void SetPlayer1(PhysicsComponent* p1);
+	void SetPlayer2(PhysicsComponent* p2);
 
 };
 #endif

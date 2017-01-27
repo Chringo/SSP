@@ -43,15 +43,37 @@ void BulletInterpreter::Initialize()
 		this->m_solver,
 		this->m_collitionConfiguration
 	);
+	this->player1 = nullptr;
+	this->player2 = nullptr;
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, -0.01, 0));
+	this->m_dynamicsWorld->setGravity(btVector3(0, 0.00, 0));
 }
 
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
+	//std::vector<btRigidBody*>::iterator iter;
+	//for (iter = this->m_rigidBodies.begin(); iter != this->m_rigidBodies.end(); iter++)
+	//{
+	//	(*iter._Ptr)->setLinearVelocity();
+	//}
+
+	//if (this->player1 != nullptr)
+	//{
+	//	btVector3 newVelocity = this->crt_xmvecVec3(this->player1->PC_velocity);
+	//	this->GetRigidBody(this->player1->PC_IndexRigidBody)->setLinearVelocity(newVelocity);
+	//}
+
 
 	this->m_dynamicsWorld->stepSimulation(dt);
+	//this->player1->PC_velocity = DirectX::XMVectorSet(1,0,0,0);
+	
+	//update players
+	this->GetNextPos(this->player1, this->player1->PC_IndexRigidBody);
+	printf("velocity playerx %d", DirectX::XMVectorGetX(this->player1->PC_velocity));
+	printf(", y %d", DirectX::XMVectorGetY(this->player1->PC_velocity));
+	printf(", z %d", DirectX::XMVectorGetZ(this->player1->PC_velocity));
+
 }
 
 void BulletInterpreter::GetNextPos(PhysicsComponent * src, int index)
@@ -60,7 +82,10 @@ void BulletInterpreter::GetNextPos(PhysicsComponent * src, int index)
 
 
 	btTransform trans;
+	btVector3 velo = this->crt_xmvecVec3(src->PC_velocity);
 
+
+	this->m_rigidBodies.at(index)->setLinearVelocity(velo);
 	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
 	btVector3 origin = trans.getOrigin();
 	src->PC_pos = this->crt_Vec3XMVEc(origin);
@@ -70,8 +95,8 @@ void BulletInterpreter::GetNextPos(PhysicsComponent * src, int index)
 	if (index == 0 && (noVelocity == false))
 	{
 		//btVector3 velocity = this->crt_xmvecVec3(src->PC_velocity);
-		btVector3 velocity = btVector3(3, 0, 0);
-		this->m_rigidBodies.at(index)->setAngularVelocity(velocity);
+		//btVector3 velocity = btVector3(3, 0, 0);
+		//this->m_rigidBodies.at(index)->setAngularVelocity(velocity);
 	}
 
 	if (src->PC_BVtype == BV_OBB)
@@ -374,6 +399,23 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	this->m_physicsHandlerIndex.push_back(index);
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
+}
+
+btRigidBody * BulletInterpreter::GetRigidBody(int index)
+{
+	return this->m_rigidBodies.at(index);
+}
+
+void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)
+{
+	this->player1 = p1;
+	this->player1->PC_IndexRigidBody = 0;
+}
+
+void BulletInterpreter::SetPlayer2(PhysicsComponent * p2)
+{
+	this->player2 = p2;
+	this->player2->PC_IndexRigidBody = 1;
 }
 
 void BulletInterpreter::CreateDummyObjects()
