@@ -2641,6 +2641,23 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 	return closest;
 }
 
+PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
+{
+	DirectX::XMVECTOR pos = src->PC_pos;
+	DirectX::XMVECTOR ext = DirectX::XMVectorSet(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2], 0);
+	
+	
+	if (src->PC_BVtype == BV_AABB)
+	{
+		this->m_bullet.CreateAABB(ext, pos, index);
+	}
+	else if(src->PC_BVtype == BV_OBB)
+	{
+		DirectX::XMMATRIX orth = src->PC_OBB.ort;
+		this->m_bullet.CreateOBB(ext, orth, pos, src->PC_mass,index);
+	}
+}
+
 #ifdef _DEBUG
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {

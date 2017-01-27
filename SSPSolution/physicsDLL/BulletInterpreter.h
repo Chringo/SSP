@@ -139,8 +139,8 @@ public:
 	//type of rigidBodies
 	void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
 	void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
-	void CreateBox(DirectX::XMVECTOR ext,const DirectX::XMMATRIX &ortho, DirectX::XMVECTOR pos);
-	void CreateBox(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos);
+	void CreateOBB(DirectX::XMVECTOR ext,const DirectX::XMMATRIX &ortho, DirectX::XMVECTOR pos, int mass,int index);
+	void CreateAABB(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos, int index);
 
 };
 #endif

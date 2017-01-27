@@ -1075,8 +1075,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	
-	//this->m_cHandler->GetPhysicsHandler()
-	
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 
@@ -1224,8 +1222,19 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
 
+
 	m_cHandler->GetPhysicsHandler()->SortComponents();
+	PhysicsHandler* ptr = nullptr;
+	ptr = m_cHandler->GetPhysicsHandler();
+	int size = m_cHandler->GetPhysicsHandler()->GetNrOfComponents();
+
+	for (int i = 0; i < size; i++)
+	{
+		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(i), i);
+	}
+
 	
+	int bajs = 0;
 	return 1;
 }
 

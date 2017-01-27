@@ -310,7 +310,7 @@ void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float 
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 }
 
-void BulletInterpreter::CreateBox(DirectX::XMVECTOR ext, const DirectX::XMMATRIX& ortho, DirectX::XMVECTOR pos)
+void BulletInterpreter::CreateOBB(DirectX::XMVECTOR ext, const DirectX::XMMATRIX& ortho, DirectX::XMVECTOR pos, int mass, int index)
 {
 	btVector3 extends = this->crt_xmvecVec3(ext);
 	btCollisionShape* box = new btBoxShape(extends);
@@ -326,7 +326,7 @@ void BulletInterpreter::CreateBox(DirectX::XMVECTOR ext, const DirectX::XMMATRIX
 
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
-		5,  //mass
+		mass,  //mass
 		boxMotionState,
 		box,
 		btVector3(0, 0, 0)
@@ -338,9 +338,10 @@ void BulletInterpreter::CreateBox(DirectX::XMVECTOR ext, const DirectX::XMMATRIX
 	//rigidBody->setAngularVelocity(rotation);
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_physicsHandlerIndex.push_back(index);
 }
 
-void BulletInterpreter::CreateBox(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos)
+void BulletInterpreter::CreateAABB(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos, int index)
 {
 	btVector3 extends = this->crt_xmvecVec3(ext);
 	btCollisionShape* box = new btBoxShape(extends);
@@ -366,6 +367,7 @@ void BulletInterpreter::CreateBox(DirectX::XMVECTOR ext, DirectX::XMVECTOR pos)
 	
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_physicsHandlerIndex.push_back(index);
 }
 
 void BulletInterpreter::CreateDummyObjects()
