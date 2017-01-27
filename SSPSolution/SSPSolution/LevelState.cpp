@@ -121,8 +121,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;								//Set Entity ID
-															
+	playerP->PC_entityID = 2;								//Set Entity ID														
 	playerP->PC_pos = DirectX::XMVectorSet(-5, -8, -8, 0);	//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(-10, -1, -7, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
@@ -440,20 +439,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if ((int)itr->entityID == 3)
-				{
-					pp = (*this->m_dynamicEntitys.at(0)).GetPhysicsComponent();
-
-					// Update the component
-					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-				}
 				else
 				{
 					// Find the entity
 					std::vector<DynamicEntity*>::iterator Ditr;
-					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) {
+					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++) 
+					{
 
 						if (itr->entityID == (*Ditr._Ptr)->GetEntityID()) 
 						{
@@ -464,6 +455,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 							pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
 						}
 
 					}
@@ -474,6 +466,101 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_entityPacketList.clear();	//Clear the list
 	}
 #pragma endregion Network_update_entities
+
+#pragma region
+
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+
+		// LEVERS AND BUTTONS //
+		this->m_statePacketList = this->m_networkModule->PacketBuffer_GetStatePackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_statePacketList.size() > 0)
+		{
+
+			// Apply each packet to the right entity
+			std::list<StatePacket>::iterator itr;
+
+			for (itr = this->m_statePacketList.begin(); itr != this->m_statePacketList.end(); itr++)
+			{
+
+				if (itr->packet_type == UPDATE_BUTTON_STATE)
+				{
+					for (int i = 0; i < this->m_buttonEntities.size(); i++)
+					{
+						ButtonEntity* bP = this->m_buttonEntities.at(i);
+						if (bP->GetEntityID() == itr->entityID)
+						{
+							ButtonSyncState newState;
+							newState.entityID = itr->entityID;
+							newState.isActive = itr->isActive;
+
+							bP->SetSyncState(&newState);
+
+							break;
+						}
+
+					}
+
+				}
+				else if (itr->packet_type == UPDATE_LEVER_STATE)
+				{
+					for (int i = 0; i < this->m_leverEntities.size(); i++)
+					{
+						LeverEntity* lP = this->m_leverEntities.at(i);
+						if (lP->GetEntityID() == itr->entityID)
+						{
+							LeverSyncState newState;
+							newState.entityID = itr->entityID;
+							newState.isActive = itr->isActive;
+
+							lP->SetSyncState(&newState);
+
+							break;
+						}
+					}
+				}
+			}
+		}
+		this->m_statePacketList.clear();
+		// LEVERS AND BUTTONS END//
+
+
+		// WHEELS //
+		this->m_wheelStatePacketList = this->m_networkModule->PacketBuffer_GetWheelStatePackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_wheelStatePacketList.size() > 0)
+		{
+
+			// Apply each packet to the right entity
+			std::list<StateWheelPacket>::iterator itr;
+
+			for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
+			{
+
+				for (int i = 0; i < this->m_wheelEntities.size(); i++)
+				{
+					WheelEntity* wP = this->m_wheelEntities.at(i);
+
+					if (wP->GetEntityID() == itr->entityID)
+					{
+						WheelSyncState newState;
+						newState.entityID = itr->entityID;
+						newState.rotationState = itr->rotationState;
+						newState.rotationAmount = itr->rotationAmount;
+
+						wP->SetSyncState(&newState);
+
+						break;
+					}
+				}
+			}
+		}
+		this->m_wheelStatePacketList.clear();
+		// WHEELS END //
+	}
+
+#pragma endregion Network_update_States
 
 	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	//{
@@ -653,7 +740,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			
 
-			this->m_networkModule->SendEntityUpdatePacket(0, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
 
 			Entity* ent = nullptr;
 			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
@@ -823,11 +910,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 #pragma endregion Client/Player2 Specifics
 
-	//update all dynamic entities
-	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-	{
-		this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
-	}
+	////update all dynamic entities
+	//for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
+	//{
+	//	this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
+	//}
 
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
@@ -867,6 +954,34 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPlayerInteraction(playerPos, 0);
 		}
 	}
+
+	//Check for state changes that should be sent over the networ
+	for (int i = 0; i < this->m_leverEntities.size(); i++)
+	{
+		LeverEntity* lP = this->m_leverEntities.at(i);
+		if (lP->GetSyncState() != nullptr)
+		{
+			this->m_networkModule->SendStateLeverPacket(lP->GetEntityID(), lP->GetSyncState()->isActive);
+		}
+	}
+	for (int i = 0; i < this->m_buttonEntities.size(); i++)
+	{
+		ButtonEntity* bP = this->m_buttonEntities.at(i);
+		if (bP->GetSyncState() != nullptr)
+		{
+			this->m_networkModule->SendStateButtonPacket(bP->GetEntityID(), bP->GetSyncState()->isActive);
+		}
+	}
+	for (int i = 0; i < this->m_wheelEntities.size(); i++)
+	{
+		WheelEntity* wP = this->m_wheelEntities.at(i);
+		if (wP->GetSyncState() != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wP->GetEntityID(), wP->GetSyncState()->rotationState, wP->GetSyncState()->rotationAmount);
+		}
+	}
+
+
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
