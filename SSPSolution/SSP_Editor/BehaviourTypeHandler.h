@@ -69,6 +69,14 @@ namespace Ui {
 		QDoubleSpinBox * m_button_timer;
 #pragma endregion
 
+#pragma region Door behaviour elements
+		QListWidget* m_door_triggerList;
+		QPushButton* m_door_add_trigger;
+		QPushButton* m_door_del_trigger;
+		QComboBox* m_door_availableTriggers;
+
+#pragma endregion
+
 	public:
 		BehaviourTypeHandler();
 		BehaviourTypeHandler(const Ui::SSP_EditorClass* ui);
