@@ -819,6 +819,28 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 #pragma endregion Client/Player2 Specifics
 
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	{
+		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+		m_player1.GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
+		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player1.GetBall()->GetPhysicsComponent()->PC_pos = 
+			DirectX::XMVectorAdd(
+				m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(3, 1, 1, 0));
+		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.ball->GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
+		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+		m_player2.GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
+		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(
+				m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(3, 1, 1, 0));
+		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.ball->GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
+	}
+
 	//update all dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
