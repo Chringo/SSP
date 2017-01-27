@@ -11,6 +11,7 @@ namespace LevelData {
 		unsigned int entityAmount;
 		unsigned int lightAmount;
 		unsigned int AiComponentAmount;
+		unsigned int checkpointAmount;
 	};
 	struct MainLevelHeader
 	{
@@ -19,6 +20,11 @@ namespace LevelData {
 		unsigned int lightAmount;
 		unsigned int AiComponentAmount;
 		unsigned int checkpointAmount;
+		
+		unsigned int buttonAmount;
+		unsigned int doorAmount;
+		unsigned int leverAmount;
+		unsigned int wheelAmount;
 	};
 	
 	struct ResourceHeader {
@@ -58,6 +64,13 @@ namespace LevelData {
 	};
 	//different lights will be added later
 
+	struct ListenerHeader
+	{
+		int numConnections;
+		int Event[20];
+		int SenderID[20];
+	};
+
 	struct AiHeader{
 		unsigned int entityID = -1;
 		int time			  = 0;
@@ -65,6 +78,7 @@ namespace LevelData {
 		int pattern			  = 0;
 		int nrOfWaypoints     = 0;
 		float wayPoints[8][3];
+		//ListenerHeader Listener;
 	};
 
 	struct CheckpointHeader
@@ -76,6 +90,18 @@ namespace LevelData {
 		float ort[16];
 	};
 	
+	struct ButtonHeader : EntityHeader
+	{
+		float interactionDistance;
+		float resetTime;
+		ListenerHeader Listener;
+	};
+
+	struct DoorHeader : EntityHeader
+	{
+		float RotateTimer;
+	};
+
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,

@@ -167,6 +167,38 @@ Resources::Status Level::AddCheckpointEntity()
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
+{
+
+	
+	switch (type)
+	{
+	case BUTTON:
+
+		AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
+
+
+		this->RemoveModel(((Button*)element)->component.modelID, ((Button*)element)->internalID);
+		m_puzzleElements.at(BUTTON).push_back((Button*)element);
+		break;
+	case LEVER:
+		break;
+	case WHEEL:
+		break;
+	case DOOR:
+		break;
+	case MAGNET:
+		break;
+	case PRESSUREPLATE:
+		break;
+	default:
+		break;
+	}
+
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation) // Author : Johan Ganeteg
 {
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(modelID);
@@ -421,13 +453,22 @@ void Level::Destroy()
 	m_LevelAi.Destroy();
 	GlobalIDHandler::GetInstance()->ResetIDs();
 	//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->Deselect();
-	for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
-		for (size_t i = 0; i < elementContainer.size(); i++)
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
 		{
-			delete elementContainer.at(i);
+			delete m_puzzleElements.at(i).at(j);
 		}
-		elementContainer.clear();
+		m_puzzleElements.at(i).clear();
 	}
+
+	//for each (std::vector<Container*> elementContainer in m_puzzleElements){ //Remove all puzzle elements
+	//	for (size_t i = 0; i < elementContainer.size(); i++)
+	//	{
+	//		delete elementContainer.at(i);
+	//	}
+	//	elementContainer.clear();
+	//}
 	for each (CheckpointContainer* container in *this->GetCheckpoints())
 	{
 		delete container;
@@ -454,10 +495,12 @@ const std::vector<Container*>* Level::GetPuzzleElements(ContainerType type)
 	return &this->m_puzzleElements.at(type);
 }
 
-Button * Level::ConvertToButton(Container*& obj)
+Button * Level::ConvertToButton(Container*& object)
 {
 
-	Container* entity = this->GetInstanceEntity(obj->internalID);
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
 
 	if (entity != nullptr)
 	{
@@ -469,7 +512,7 @@ Button * Level::ConvertToButton(Container*& obj)
 		Button* newButton = new Button(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
 		this->m_puzzleElements.at(BUTTON).push_back(newButton); // add to button array
-		obj = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		object = newButton; //set the obj to the new button as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
 		return newButton; //Return new button
 
 	}
@@ -480,8 +523,10 @@ Button * Level::ConvertToButton(Container*& obj)
 Door * Level::ConvertToDoor(Container *& object)
 {
 
-	Container* entity = this->GetInstanceEntity(object->internalID);
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
 
+	Container* entity = this->GetInstanceEntity(object->internalID);
 	if (entity != nullptr)
 	{
 		// Create a new door,
