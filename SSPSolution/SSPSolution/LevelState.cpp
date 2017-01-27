@@ -471,23 +471,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_update_entities
 
-	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
-	//{
-	//	for (size_t i = 0; i < m_dynamicEntitys.size(); i++)
-	//	{
-	//		if (m_dynamicEntitys[i]->GetAIComponent() != nullptr)
-	//			m_dynamicEntitys[i]->GetAIComponent()->AC_triggered = false;
-	//	}
-	//}
-	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
-	//{
-	//	for (size_t i = 0; i < m_dynamicEntitys.size(); i++)
-	//	{
-	//		if (m_dynamicEntitys[i]->GetAIComponent() != nullptr)
-	//			m_dynamicEntitys[i]->GetAIComponent()->AC_triggered = true;
-	//	}
-	//}
-
 	float yaw = inputHandler->GetMouseDelta().x;
 	float pitch = inputHandler->GetMouseDelta().y;
 	float mouseSens = 0.1f * dt;
