@@ -81,6 +81,16 @@ struct ChainLink
 	PhysicsComponent* CL_previous;
 };
 
+struct Field
+{
+	OBB F_BV;
+
+	unsigned int F_entitityID1;
+	unsigned int F_entitityID2;
+	bool F_first_inide;
+	bool F_second_inside;
+
+};
 
 #pragma endregion
 

@@ -1726,7 +1726,7 @@ bool PhysicsHandler::Initialize()
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
 	this->m_isHost = true;
-
+	this->m_bullet.Initialize();
 
 	return true;
 }
