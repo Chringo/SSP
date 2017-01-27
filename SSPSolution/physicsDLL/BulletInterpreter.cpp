@@ -44,7 +44,7 @@ void BulletInterpreter::Initialize()
 		this->m_collitionConfiguration
 	);
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, 0, 0));
+	this->m_dynamicsWorld->setGravity(btVector3(0, -0.01, 0));
 }
 
 void BulletInterpreter::Update(const float& dt)

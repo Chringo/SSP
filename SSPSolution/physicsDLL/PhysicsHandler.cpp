@@ -1721,7 +1721,7 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.00f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.01f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
@@ -1805,6 +1805,7 @@ void PhysicsHandler::Update(float deltaTime)
 								}
 								
 							}
+
 						}
 					}
 
