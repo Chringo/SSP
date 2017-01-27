@@ -24,6 +24,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			this->m_elapsedResetTime = this->m_resetTime;
 			this->m_isActive = false;
 			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
+			this->m_needSync = true;
 		}
 	}
 	return result;
@@ -57,6 +58,7 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		this->m_isActive = !this->m_isActive;
 		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
+		this->m_needSync = true;
 	}
 
 	return 0;
@@ -69,6 +71,7 @@ void ButtonEntity::SetSyncState(ButtonSyncState * newSyncState)
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
+		this->m_needSync = false;
 	}
 }
 
