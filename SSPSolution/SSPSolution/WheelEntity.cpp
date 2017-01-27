@@ -64,6 +64,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
 				this->m_rotationState = 0;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_100);
+				this->m_needSync = true;
 			}
 			else {
 				//Check if the rotation increase has exceeded a 10% increment
@@ -89,10 +90,12 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
+							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+					this->m_needSync = true;
 				}
 			}
 
@@ -111,6 +114,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = 0;
 				this->m_isMin = true;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_0);
+				this->m_needSync = true;
 			}
 			else
 			{
@@ -138,10 +142,12 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
+							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+					this->m_needSync = true;
 				}
 			}
 			this->SyncComponents();
@@ -160,6 +166,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = 0;
 				this->m_isMin = true;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_0);
+				this->m_needSync = true;
 			}
 			else
 			{
@@ -191,7 +198,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
+					this->m_needSync = true;
 				}
+				
 			}
 			this->SyncComponents();
 		}
@@ -226,6 +235,8 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 			&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < this->m_range
 			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
 		{
+			this->m_needSync = true;
+
 			if (increasing == 1)
 			{
 				//Check if max has been reached
@@ -316,6 +327,8 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 {
 	if (newSyncState != nullptr)
 	{
+		this->m_needSync = false;
+
 		this->m_rotationState = newSyncState->rotationState;
 		if (newSyncState->rotationState == 0)
 		{
