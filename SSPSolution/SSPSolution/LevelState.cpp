@@ -720,13 +720,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(true);
-			this->m_cameraRef->SetDistance(2);
+			//this->m_cameraRef->SetDistance(2);
 		}
 
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(false);
-			this->m_cameraRef->SetDistance(10);
+		//	this->m_cameraRef->SetDistance(10);
 		}
 
 		if (this->m_player1.GetIsAming())
