@@ -794,7 +794,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 		
-		if (inputHandler->IsKeyPressed(SDL_BUTTON_RIGHT))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
 
 			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
