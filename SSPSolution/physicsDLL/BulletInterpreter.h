@@ -115,7 +115,7 @@ private:
 	btSequentialImpulseConstraintSolver* m_solver;
 	btDiscreteDynamicsWorld* m_dynamicsWorld;
 
-	std::vector<btRigidBody*> m_rigidBodies;
+	
 	std::vector<int> m_physicsHandlerIndex;
 	
 	void CreateDummyObjects();
@@ -126,12 +126,14 @@ private:
 	PhysicsComponent* player2;
 
 public:
+	std::vector<btRigidBody*> m_rigidBodies;
+	
 	PHYSICSDLL_API BulletInterpreter();
 	PHYSICSDLL_API virtual ~BulletInterpreter();
 
 	PHYSICSDLL_API void Initialize();
 	PHYSICSDLL_API void Update(const float& dt);
-	PHYSICSDLL_API void GetNextPos(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void SyncWithPC(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void Shutdown();
 
 	PHYSICSDLL_API void CreateRigidBody(PhysicsComponent* fromGame);
@@ -150,6 +152,7 @@ public:
 
 	void SetPlayer1(PhysicsComponent* p1);
 	void SetPlayer2(PhysicsComponent* p2);
+
 
 };
 #endif

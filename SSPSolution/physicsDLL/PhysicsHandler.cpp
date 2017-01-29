@@ -1745,6 +1745,14 @@ void PhysicsHandler::Update(float deltaTime)
 	float dt = (deltaTime / 50000);
 	this->m_bullet.Update(dt);
 
+	int size = this->m_physicsComponents.size();
+	for (int i = 0; i < size - 4; i++)
+	{
+		this->m_bullet.SyncWithPC(this->GetDynamicComponentAt(i), i);
+	}
+
+	
+
 	//int nrOfChainLinks = this->m_links.size();
 	//for (int i = 0; i < nrOfChainLinks; i++)
 	//{
@@ -2666,6 +2674,12 @@ PHYSICSDLL_API void PhysicsHandler::ApplyPlayer1ToBullet(PhysicsComponent * play
 {
 	this->m_bullet.SetPlayer1(player1);
 }
+
+PHYSICSDLL_API void PhysicsHandler::ApplyPlayer2ToBullet(PhysicsComponent * player2)
+{
+	this->m_bullet.SetPlayer2(player2);
+}
+
 
 PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)
 {

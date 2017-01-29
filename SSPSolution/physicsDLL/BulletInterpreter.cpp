@@ -46,47 +46,53 @@ void BulletInterpreter::Initialize()
 	this->player1 = nullptr;
 	this->player2 = nullptr;
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, 0.00, 0));
+	this->m_dynamicsWorld->setGravity(btVector3(0, 1, 0));
 }
 
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
-	//std::vector<btRigidBody*>::iterator iter;
-	//for (iter = this->m_rigidBodies.begin(); iter != this->m_rigidBodies.end(); iter++)
-	//{
-	//	(*iter._Ptr)->setLinearVelocity();
-	//}
-
 	//if (this->player1 != nullptr)
 	//{
 	//	btVector3 newVelocity = this->crt_xmvecVec3(this->player1->PC_velocity);
 	//	this->GetRigidBody(this->player1->PC_IndexRigidBody)->setLinearVelocity(newVelocity);
 	//}
+	//float interval = 1.0f / 60.0f;
 
-
-	this->m_dynamicsWorld->stepSimulation(dt);
-	//this->player1->PC_velocity = DirectX::XMVectorSet(1,0,0,0);
-	
-	//update players
-	this->GetNextPos(this->player1, this->player1->PC_IndexRigidBody);
 	printf("velocity playerx %d", DirectX::XMVectorGetX(this->player1->PC_velocity));
 	printf(", y %d", DirectX::XMVectorGetY(this->player1->PC_velocity));
 	printf(", z %d", DirectX::XMVectorGetZ(this->player1->PC_velocity));
 
+	this->m_dynamicsWorld->stepSimulation(dt);
+	
+	//this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	//this->player1->PC_velocity = DirectX::XMVectorSet(1,0,0,0);
+	
+	//update players
+
+
 }
 
-void BulletInterpreter::GetNextPos(PhysicsComponent * src, int index)
+void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 {
 	DirectX::XMVECTOR result;
-
 
 	btTransform trans;
 	btVector3 velo = this->crt_xmvecVec3(src->PC_velocity);
 
+	if (index == 0)
+	{
+		this->m_rigidBodies.at(index)->setLinearVelocity(velo);
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
+	}
+	else
+	{
 
+	}
 	this->m_rigidBodies.at(index)->setLinearVelocity(velo);
 	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
+	
+	
 	btVector3 origin = trans.getOrigin();
 	src->PC_pos = this->crt_Vec3XMVEc(origin);
 
