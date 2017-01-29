@@ -2160,7 +2160,6 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	return newObject;
 }
 
-
 void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght)
 {
 	//important function will link from index1 to index2 and change the position of the PhysicsComponent at index2

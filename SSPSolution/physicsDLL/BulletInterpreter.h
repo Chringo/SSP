@@ -125,6 +125,7 @@ private:
 	PhysicsComponent* player1;
 	PhysicsComponent* player2;
 
+	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	

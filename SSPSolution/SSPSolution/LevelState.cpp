@@ -99,7 +99,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;								//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);								//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(30, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
@@ -123,8 +123,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 2;								//Set Entity ID												
-	playerP->PC_pos = { 0 };								//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(-10, -1, -7, 0);//Set Rotation
+	playerP->PC_pos = DirectX::XMVectorSet(5, 0, 0, 0); 	//Set Position
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
@@ -1050,7 +1050,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	std::vector<DynamicEntity*> aiEntities;	
 
 
-	/*
+	
 
 	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
@@ -1064,13 +1064,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		0);
 	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-		DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-		DirectX::XMVectorAdd(
-			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	*/
+	//m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+	//	DirectX::XMVectorAdd(
+	//		m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+	//m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+	//	DirectX::XMVectorAdd(
+	//		m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
@@ -1106,14 +1105,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_rotation	   = rot;						//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
+		t_pc->PC_BVtype = BV_OBB;
+		t_pc->PC_OBB.ort = rotate;
 
 
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 		//get information from file
-		t_pc->PC_BVtype = BV_AABB;
 
-		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
+		/*t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
 		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
 
@@ -1122,11 +1122,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
-		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);*/
 
 		t_pc->PC_mass = 0;
-
-		/*DirectX::XMMATRIX tempRot = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
+		/*
+		DirectX::XMMATRIX tempRot = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
 			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] });
 		tempRot = tempRot*rotate;
 
@@ -1142,7 +1142,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		t_pc->PC_OBB = m_ConvertOBB( modelPtr->GetOBBData()); //Convert and insert OBB data
 	
-		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
+		t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 
 #pragma region AIComp check
 		// Correct check but does not work with current testinglevel

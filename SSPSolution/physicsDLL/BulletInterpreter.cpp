@@ -2,6 +2,37 @@
 #include <fstream>
 
 
+DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
+{
+
+	DirectX::XMMATRIX rotMatrix;
+	DirectX::XMMATRIX toReturn;
+	DirectX::XMVECTOR rotationScalars = src->PC_rotation;
+
+	float xRad = 0;
+	float yRad = 0;
+	float zRad = 0;
+
+	//get the rotation in degrees
+	xRad = DirectX::XMVectorGetX(rotationScalars);
+	yRad = DirectX::XMVectorGetY(rotationScalars);
+	zRad = DirectX::XMVectorGetZ(rotationScalars);
+
+	//convert to radian
+	xRad = (180.0f / 3.140f)*xRad;
+	yRad = (180.0f / 3.140f)*yRad;
+	zRad = (180.0f / 3.140f)*zRad;
+
+	//do some mathemagic
+	rotMatrix = DirectX::XMMatrixRotationX(xRad);
+	rotMatrix *= DirectX::XMMatrixRotationY(yRad);
+	rotMatrix *= DirectX::XMMatrixRotationZ(zRad);
+
+	toReturn = rotMatrix;
+
+	return toReturn;
+}
+
 BulletInterpreter::BulletInterpreter()
 {
 	this->m_broadphase = nullptr;
@@ -10,7 +41,6 @@ BulletInterpreter::BulletInterpreter()
 	this->m_solver = nullptr;
 	this->m_dynamicsWorld = nullptr;
 }
-
 
 BulletInterpreter::~BulletInterpreter()
 {
@@ -46,31 +76,15 @@ void BulletInterpreter::Initialize()
 	this->player1 = nullptr;
 	this->player2 = nullptr;
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, 1, 0));
+	this->m_dynamicsWorld->setGravity(btVector3(0, -100.0, 0));
 }
 
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
-	//if (this->player1 != nullptr)
-	//{
-	//	btVector3 newVelocity = this->crt_xmvecVec3(this->player1->PC_velocity);
-	//	this->GetRigidBody(this->player1->PC_IndexRigidBody)->setLinearVelocity(newVelocity);
-	//}
-	//float interval = 1.0f / 60.0f;
-
-	printf("velocity playerx %d", DirectX::XMVectorGetX(this->player1->PC_velocity));
-	printf(", y %d", DirectX::XMVectorGetY(this->player1->PC_velocity));
-	printf(", z %d", DirectX::XMVectorGetZ(this->player1->PC_velocity));
 
 	this->m_dynamicsWorld->stepSimulation(dt);
 	
-	//this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-	//this->player1->PC_velocity = DirectX::XMVectorSet(1,0,0,0);
-	
-	//update players
-
-
 }
 
 void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
@@ -351,8 +365,21 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	//creating a mothion state
 	btVector3 startTrans = this->crt_xmvecVec3(src->PC_pos);
 
-	btQuaternion startTransQ = btQuaternion(0, 0, 0, 1.0f);
-	btTransform initialTransform = btTransform(startTransQ, startTrans);
+	//DirectX::XMMATRIX rotationMatrix = this->RotateBB(src);
+
+	btVector3 r1 = this->crt_xmvecVec3(orth.r[0]);
+	btVector3 r2 = this->crt_xmvecVec3(orth.r[1]);
+	btVector3 r3 = this->crt_xmvecVec3(orth.r[2]);
+
+	btMatrix3x3 test;
+	test.setValue
+	(
+		r1.getX(), r1.getY(), r1.getZ(),
+		r2.getX(), r2.getY(), r2.getZ(),
+		r3.getX(), r3.getY(), r3.getZ()
+	);
+
+	btTransform initialTransform = btTransform(test, startTrans);
 
 	btDefaultMotionState* boxMotionState = nullptr;
 	boxMotionState = new btDefaultMotionState(initialTransform);
@@ -362,7 +389,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 		src->PC_mass,  //mass
 		boxMotionState,
 		box,
-		btVector3(0, 0, 0)
+		btVector3(0, 0, 0)		//Interia / masspunkt 
 	);
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
