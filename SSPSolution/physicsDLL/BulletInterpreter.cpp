@@ -19,16 +19,19 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	zRad = DirectX::XMVectorGetZ(rotationScalars);
 
 	//convert to radian
-	xRad = (180.0f / 3.140f)*xRad;
-	yRad = (180.0f / 3.140f)*yRad;
-	zRad = (180.0f / 3.140f)*zRad;
+	xRad = (DirectX::XMConvertToRadians(-xRad));
+	yRad = (DirectX::XMConvertToRadians(yRad));
+	zRad = (DirectX::XMConvertToRadians(zRad));
 
 	//do some mathemagic
-	rotMatrix = DirectX::XMMatrixRotationX(xRad);
-	rotMatrix *= DirectX::XMMatrixRotationY(yRad);
-	rotMatrix *= DirectX::XMMatrixRotationZ(zRad);
+	DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(xRad);
+	DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(yRad);
+	DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(zRad);
 
-	toReturn = rotMatrix;
+	DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+	DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+	
+	toReturn = DirectX::XMMatrixMultiply(rotate, src->PC_OBB.ort);
 
 	return toReturn;
 }
@@ -365,8 +368,6 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	//creating a mothion state
 	btVector3 startTrans = this->crt_xmvecVec3(src->PC_pos);
 
-	//DirectX::XMMATRIX rotationMatrix = this->RotateBB(src);
-
 	btVector3 r1 = this->crt_xmvecVec3(orth.r[0]);
 	btVector3 r2 = this->crt_xmvecVec3(orth.r[1]);
 	btVector3 r3 = this->crt_xmvecVec3(orth.r[2]);
@@ -443,6 +444,8 @@ void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)
 {
 	this->player1 = p1;
 	this->player1->PC_IndexRigidBody = 0;
+
+	//this->player1->PC_OBB.ort = this->RotateBB(p1);
 }
 
 void BulletInterpreter::SetPlayer2(PhysicsComponent * p2)

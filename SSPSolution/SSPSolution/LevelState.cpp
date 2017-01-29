@@ -1106,7 +1106,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
 		t_pc->PC_BVtype = BV_OBB;
-		t_pc->PC_OBB.ort = rotate;
+		t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 
 
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
@@ -1232,8 +1232,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(i), i);
 	}
 
-	
-	int bajs = 0;
 	return 1;
 }
 
