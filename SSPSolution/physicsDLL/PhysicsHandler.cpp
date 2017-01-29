@@ -1618,7 +1618,7 @@ void PhysicsHandler::FindNormalFromPointOfIntersection(OBB *& src, DirectX::XMVE
 	}
 }
 
-bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, PhysicsComponent * objAABB, float dt)
+bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, PhysicsComponent * objAABB, bool doPhysics, float dt)
 {
 	//this section of the code found on http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=4
 	DirectX::XMVECTOR sphere_local = DirectX::XMVectorSubtract(objSphere->PC_pos, objAABB->PC_pos);
@@ -1653,7 +1653,7 @@ bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, Ph
 	bool result = d <= (objSphere->PC_Sphere.radius * objSphere->PC_Sphere.radius);
 	//-------------
 
-	if (result)
+	if (result && doPhysics)
 	{
 		float axises[3];
 		axises[0] = 0.0f;
@@ -1685,8 +1685,9 @@ bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, Ph
 		DirectX::XMVECTOR toAdd = DirectX::XMVectorSet(axises[0], axises[1], axises[2], 0);
 		pointOfIntersection = DirectX::XMVectorAdd(pointOfIntersection, toAdd);
 
-		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(sphere_local, pointOfIntersection);
-
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSet(0, 0, 0, 0);
+		diffVec = DirectX::XMVectorSubtract(sphere_local, pointOfIntersection);
+		
 		float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 
 		diffVec = DirectX::XMVector3Normalize(diffVec);
@@ -1696,6 +1697,7 @@ bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, Ph
 		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(DirectX::XMVectorScale(diffVec, objSphere->PC_Sphere.radius), DirectX::XMVectorScale(diffVec, lenght));
 
 		objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, toMove);
+
 		this->CollitionDynamics(objSphere, objAABB, diffVec, dt);
 		objSphere->PC_normalForce = diffVec;
 		if (!objAABB->PC_is_Static)
@@ -1724,47 +1726,60 @@ bool PhysicsHandler::SphereOBBIntersectionTest(PhysicsComponent * objSphere, Phy
 	DirectX::XMMATRIX rotInv = DirectX::XMMatrixInverse(&t, rot);
 
 	toSphere = DirectX::XMVectorSubtract(objSphere->PC_pos, objOBB->PC_pos);
-	originalToSphere = toSphere;
-	originalVel = objSphere->PC_velocity;
-	float vel = DirectX::XMVectorGetX(DirectX::XMVector3Length(objSphere->PC_velocity));
-
-	//rotate the toSphere vector to get sphere in OBBs locan space
 	toSphere = DirectX::XMVector3Transform(toSphere, rotInv);
-	objSphere->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, toSphere);
-	//rotate sphere velocity to be in OBBs local space
-	objSphere->PC_velocity = DirectX::XMVector3Transform(objSphere->PC_velocity, rotInv);
-	//convert the OBB to AABB for sphereVSAABB test
-	PhysicsComponent testAABB;
-	testAABB.PC_BVtype = BV_AABB;
-	testAABB.PC_elasticity = objOBB->PC_elasticity;
-	testAABB.PC_friction = objOBB->PC_friction;
-	testAABB.PC_is_Static = objOBB->PC_is_Static;
-	testAABB.PC_pos = objOBB->PC_pos;
-	testAABB.PC_AABB.ext[0] = objOBB->PC_OBB.ext[0];
-	testAABB.PC_AABB.ext[1] = objOBB->PC_OBB.ext[1];
-	testAABB.PC_AABB.ext[2] = objOBB->PC_OBB.ext[2];
-	
-	//do sphereVSAABB test
-	bool result = this->SphereAABBIntersectionTest(objSphere, &testAABB, dt);
+	toSphere = DirectX::XMVectorSetByIndex(toSphere, 0, 3);
+
+	AABB aabb;
+	aabb.ext[0] = objOBB->PC_OBB.ext[0];
+	aabb.ext[1] = objOBB->PC_OBB.ext[1];
+	aabb.ext[2] = objOBB->PC_OBB.ext[2];
+
+	Sphere* sphere_ptr = &objSphere->PC_Sphere;
+	AABB* aabb_ptr = &aabb;
+
+	bool result = this->SphereAABBIntersectionTest(sphere_ptr, toSphere, aabb_ptr, DirectX::XMVectorSet(0, 0, 0, 0));
+
 	if (result)
 	{
-		//if result is true get the new toSphere vector
-		toSphere = DirectX::XMVectorSubtract(objSphere->PC_pos, objOBB->PC_pos);
-		objSphere->PC_pos = DirectX::XMVectorSetByIndex(objSphere->PC_pos, 0, 3);
-		//rotate sphere pos/velocity out of OBBs local space
-		toSphere = DirectX::XMVector3Transform(toSphere, rot);
-		toSphere = DirectX::XMVectorSetByIndex(toSphere, 0, 3);
-		//objSphere->PC_velocity = DirectX::XMVector3Transform(objSphere->PC_velocity, rot);
-		objSphere->PC_velocity = originalVel;
-		this->CollitionDynamics(objSphere, objOBB, toSphere, dt);
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(objSphere->PC_pos, objOBB->PC_pos);
+		DirectX::XMVECTOR pointOfIntersection = objOBB->PC_pos;
 
-		objSphere->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, toSphere);
-	}
-	else
-	{
-		//if no intersection was found reset sphere pos/velocity to original values
-		objSphere->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, originalToSphere);
-		objSphere->PC_velocity = originalVel;
+		float dot[3];
+		for (int i = 0; i < 3; i++)
+		{
+			dot[i] = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, objOBB->PC_OBB.ort.r[i]));
+			if (dot[i] > objOBB->PC_OBB.ext[i])
+			{
+				dot[i] = objOBB->PC_OBB.ext[i];
+			}
+			else if (dot[i] < -objOBB->PC_OBB.ext[i])
+			{
+				dot[i] = -objOBB->PC_OBB.ext[i];
+			}
+
+			pointOfIntersection = DirectX::XMVectorAdd(pointOfIntersection, DirectX::XMVectorScale(objOBB->PC_OBB.ort.r[i], dot[i]));
+		}
+		//pointOfIntersection = DirectX::XMVectorAdd(pointOfIntersection, DirectX::XMVectorScale(objOBB->PC_OBB.ort.r[0], dot[0]));
+
+		DirectX::XMVECTOR POI_to_sphere = DirectX::XMVectorSubtract(objSphere->PC_pos, pointOfIntersection);
+
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(POI_to_sphere));
+
+		float distanceToMove = objSphere->PC_Sphere.radius - distance;
+
+		DirectX::XMVECTOR normal = DirectX::XMVector3Normalize(POI_to_sphere);
+		DirectX::XMVECTOR toMove = DirectX::XMVectorScale(normal, distanceToMove);
+		if (!objSphere->PC_steadfast)
+		{
+			objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, toMove);
+			this->CollitionDynamics(objSphere, objOBB, normal, dt);
+			objSphere->PC_normalForce = normal;
+		}
+		else
+		{
+
+		}
+
 	}
 
 	return result;
@@ -1929,7 +1944,7 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		float old_perpendicularVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(pPerpendicular));
 
 		float e = (obj1->PC_elasticity + obj2->PC_elasticity) / 2;
-		float frictionConstant = (obj1->PC_friction + obj2->PC_friction);
+		float frictionConstant = (obj1->PC_friction + obj2->PC_friction) / 2;
 
 
 		float newParallelVel = (old_parallelVel * e);
@@ -1942,7 +1957,10 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 			old_parallelVel *= -1;
 		}
 		pParallel = DirectX::XMVector3Normalize(pParallel);
-		pPerpendicular = DirectX::XMVector3Normalize(pPerpendicular);
+		//pPerpendicular = DirectX::XMVector3Normalize(pPerpendicular);
+
+		pParallel = DirectX::XMVectorSetByIndex(pParallel, 0, 3);
+		pPerpendicular = DirectX::XMVectorSetByIndex(pPerpendicular, 0, 3);
 
 		float parallelImpuls = obj1->PC_mass * newParallelVel - obj1->PC_mass * old_parallelVel;
 		float parallelForce = parallelImpuls / dt;
@@ -1959,7 +1977,7 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		{
 			frictionForce = maxFriction;
 		}
-		DirectX::XMVECTOR frictionFORCE = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, -1), frictionForce);
+		DirectX::XMVECTOR frictionFORCE = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, -1), frictionConstant);
 		//frictionFORCE = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorScale(pPerpendicular, -1)), frictionForce);
 
 		this->ApplyForceToComponent(obj1, DirectX::XMVectorScale(pParallel, parallelForce), dt);
@@ -1969,8 +1987,8 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 	else
 	{
 		DirectX::XMVECTOR pParallel;
-		DirectX::XMVECTOR pPerpendicular1;
-		DirectX::XMVECTOR pPerpendicular2;
+		DirectX::XMVECTOR pPerpendicular1 = DirectX::XMVectorSet(0, 0, 0, 0);
+		DirectX::XMVECTOR pPerpendicular2 = DirectX::XMVectorSet(0, 0, 0, 0);
 
 		float v1_old[3];
 		float v1_new[3];
@@ -1988,7 +2006,7 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		v2_old[1] = DirectX::XMVectorGetY(pParallel);
 		v2_old[2] = DirectX::XMVectorGetZ(pParallel);
 
-		float e = obj1->PC_elasticity + obj2->PC_elasticity;
+		float e = (obj1->PC_elasticity + obj2->PC_elasticity) / 2;
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -2008,13 +2026,15 @@ void PhysicsHandler::CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent*
 		pParallelForce2 = DirectX::XMVectorSubtract(DirectX::XMVectorScale(DirectX::XMVectorSet(v2_new[0], v2_new[1], v2_new[2], 0), obj2->PC_mass), DirectX::XMVectorScale(DirectX::XMVectorSet(v2_old[0], v2_old[1], v2_old[2], 0), obj2->PC_mass));
 		pParallelForce2 = DirectX::XMVectorScale(pParallelForce2, 1 / dt);
 
-		float frictionConstant = (obj1->PC_friction + obj2->PC_friction);
+		float frictionConstant = (obj1->PC_friction + obj2->PC_friction) / 2;
 
 
-		DirectX::XMVECTOR frictionForce1 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular1, -1), frictionConstant);
+		DirectX::XMVECTOR frictionForce1 = DirectX::XMVectorSet(0, 0, 0, 0);
+		frictionForce1 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular1, -1), frictionConstant);
 		frictionForce1 = DirectX::XMVectorAdd(frictionForce1, DirectX::XMVectorScale(pPerpendicular2, frictionConstant));
 
-		DirectX::XMVECTOR frictionForce2 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular2, -1), frictionConstant);
+		DirectX::XMVECTOR frictionForce2 = DirectX::XMVectorSet(0, 0, 0, 0);
+		frictionForce2 = DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular2, -1), frictionConstant);
 		frictionForce2 = DirectX::XMVectorAdd(frictionForce2, DirectX::XMVectorScale(pPerpendicular1, frictionConstant));
 
 		this->ApplyForceToComponent(obj1, pParallelForce1, dt);
@@ -2195,6 +2215,21 @@ bool PhysicsHandler::Initialize()
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
 	this->m_isHost = true;
+	PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(-10, -6.0f, -9, 0), false);
+	ptr->PC_gravityInfluence = 0.0f;
+	ptr->PC_velocity = DirectX::XMVectorSet(0.05, 0, 0, 0);
+	ptr->PC_BVtype = BV_OBB;
+	ptr->PC_AABB.ext[0] = 1.0f;
+	ptr->PC_AABB.ext[1] = 1.0f;
+	ptr->PC_AABB.ext[2] = 1.0f;
+	ptr->PC_OBB.ext[0] = 3;
+	ptr->PC_OBB.ext[1] = 1;
+	ptr->PC_OBB.ext[2] = 3;
+	ptr->PC_steadfast = true;
+	ptr->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	this->RotateBB_Y(ptr, (3.14f / 180) * -45);
+	ptr->PC_elasticity = 0.1f;
+	ptr->PC_friction = 0.9f;
 
 	return true;
 }
@@ -2251,7 +2286,7 @@ void PhysicsHandler::Update(float deltaTime)
 						{
 							if (toCompare->PC_BVtype == BV_AABB)
 							{
-								this->SphereAABBIntersectionTest(current, toCompare, dt);
+								this->SphereAABBIntersectionTest(current, toCompare, true, dt);
 							}
 							if (toCompare->PC_BVtype == BV_OBB)
 							{
@@ -2267,6 +2302,10 @@ void PhysicsHandler::Update(float deltaTime)
 							if (toCompare->PC_BVtype == BV_OBB)
 							{
 								this->ObbObbIntersectionTest(current, toCompare, true, dt);
+							}
+							if (toCompare->PC_BVtype == BV_Sphere)
+							{
+								this->SphereOBBIntersectionTest(toCompare, current, dt);
 							}
 						}
 					}
@@ -2338,7 +2377,7 @@ void PhysicsHandler::Update(float deltaTime)
 							toCompare = this->m_staticComponents.at(j);
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 							{
-								this->SphereAABBIntersectionTest(current, toCompare, newDT);
+								this->SphereAABBIntersectionTest(current, toCompare, true, newDT);
 							}
 
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
