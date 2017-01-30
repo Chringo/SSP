@@ -37,6 +37,7 @@ private:
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	
+	void LoadSounds();
 
 public:
 
@@ -47,7 +48,6 @@ public:
 	int Initialize();
 	void Shutdown();
 
-	void LoadSounds();
 	int PlaySound2D(Sounds2D soundEnum);
 	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos);
 	

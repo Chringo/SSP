@@ -18,6 +18,8 @@ int SoundHandler::Initialize()
 		return 0;	//Error on creation
 	}
 
+	this->LoadSounds();
+
 	return 1;
 }
 
@@ -51,11 +53,27 @@ void SoundHandler::LoadSounds()
 #pragma region
 	//Sound 1
 	sp = m_soundEngine->addSoundSourceFromFile("1.mp3");
-	this->m_sounds2D.push_back(sp);
+	if (sp != nullptr)
+	{
+		sp->grab();
+		this->m_sounds2D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
 
 	//Sound 2
 	sp = m_soundEngine->addSoundSourceFromFile("2.wav");
-	this->m_sounds2D.push_back(sp);
+	if (sp != nullptr)
+	{
+		sp->grab();
+		this->m_sounds2D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
 
 #pragma endregion 2D_Sounds
 
