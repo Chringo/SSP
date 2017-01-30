@@ -539,6 +539,26 @@ int GraphicsHandler::ReserveAnimationComponents(size_t new_cap)
 	this->m_animationGraphicsComponents.reserve(new_cap);
 	return  result;
 }
+int GraphicsHandler::ReserveAdditionalDynamicComponents(size_t addition)
+{
+	int result = 0;
+	this->m_dynamicGraphicsComponents.reserve(this->m_dynamicGraphicsComponents.capacity() + addition);
+	return result;
+}
+
+int GraphicsHandler::ReserveAdditionalStaticComponents(size_t addition)
+{
+	int result = 0;
+	this->m_staticGraphicsComponents.reserve(this->m_staticGraphicsComponents.capacity() + addition);
+	return result;
+}
+
+int GraphicsHandler::ReserveAdditionalAnimationComponents(size_t addition)
+{
+	int result = 0;
+	this->m_animationGraphicsComponents.reserve(this->m_animationGraphicsComponents.capacity() + addition);
+	return result;
+}
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
@@ -568,6 +588,27 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 	}
 
 	return nullptr;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
+{
+	GraphicsComponent* newComponent = new GraphicsComponent();
+	this->m_staticGraphicsComponents.push_back(newComponent);
+	return newComponent;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
+{
+	GraphicsComponent* newComponent = new GraphicsComponent();
+	this->m_dynamicGraphicsComponents.push_back(newComponent);
+	return newComponent;
+}
+
+GraphicsAnimationComponent * GraphicsHandler::GetNextAvailableAnimationComponent()
+{
+	GraphicsAnimationComponent* newComponent = new GraphicsAnimationComponent();
+	this->m_animationGraphicsComponents.push_back(newComponent);
+	return newComponent;
 }
 	
 int GraphicsHandler::UpdateComponentList()

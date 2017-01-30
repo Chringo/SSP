@@ -95,6 +95,9 @@ public:
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableStaticComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableDynamicComponent();
+	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
@@ -115,8 +118,13 @@ public:
 	GRAPHICSDLL_API int GenerateOctree();
 	//Increase the capacity of the container to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(), new storage is allocated, otherwise the method does nothing.
 	GRAPHICSDLL_API int ReserveDynamicComponents(size_t new_cap);
-	GRAPHICSDLL_API int ReserveStaticComponents(size_t amount);
-	GRAPHICSDLL_API int ReserveAnimationComponents(size_t amount);
+	GRAPHICSDLL_API int ReserveStaticComponents(size_t new_cap);
+	GRAPHICSDLL_API int ReserveAnimationComponents(size_t new_cap);
+	//Does the same as above but adds the containers capacity to the new cap thus inreasing the capacity by 'addition'
+	GRAPHICSDLL_API int ReserveAdditionalDynamicComponents(size_t addition);
+	GRAPHICSDLL_API int ReserveAdditionalStaticComponents(size_t addition);
+	GRAPHICSDLL_API int ReserveAdditionalAnimationComponents(size_t addition);
+
 	
 
 	//TEMP STUFF
