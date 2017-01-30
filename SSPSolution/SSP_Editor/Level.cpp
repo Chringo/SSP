@@ -392,7 +392,8 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 
 bool Level::isEmpty()
 {
-	if (this->GetNumEntities() == 0) {
+	if (this->GetNumEntities() == 0 && this->GetNumPuzzleElements() == 0 && this->GetNumLights() == 0) {
+		
 		return true;
 	}
 	return false;
@@ -413,6 +414,16 @@ unsigned int Level::GetNumEntities()
 unsigned int Level::GetNumLights()
 {
 	return 0;
+}
+
+unsigned int Level::GetNumPuzzleElements()
+{
+	unsigned int amount;
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		amount += (unsigned int)m_puzzleElements.at(i).size();
+	}
+	return amount;
 }
 
 Container * Level::GetSpawnPoint(int index)
@@ -534,8 +545,8 @@ Door * Level::ConvertToDoor(Container *& object)
 
 		Door* newDoor = new Door(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
-		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to button array
-		object = newDoor; //set the object to the new button as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to door array
+		object = newDoor; //set the object to the new door as well. In case the programmer tries to use the object afterwards. This avoids crashes
 		return newDoor; //Return new button
 	}
 
