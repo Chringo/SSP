@@ -130,17 +130,6 @@ namespace LevelData {
 		ListenerHeader Listener;
 	};
 
-	struct WheelHeader : EntityHeader
-	{
-		float interactionDistance;
-		float resetDelay;
-		float resetTime;
-		float min;
-		float max;
-		float start;
-		ListenerHeader Listener;
-	};
-
 	enum LevelStatus {
 		L_ERROR_CREATING_FILE,
 		L_OK,

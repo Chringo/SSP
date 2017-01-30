@@ -109,12 +109,7 @@ public:
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
-
-	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
-	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
-
-	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
-
+	
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	GRAPHICSDLL_API int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);

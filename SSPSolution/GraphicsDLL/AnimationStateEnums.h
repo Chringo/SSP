@@ -7,7 +7,7 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-GRAPHICSDLL_API enum AnimationStates : int
+enum AnimationStates : int
 {
 	ANIMATION_ERROR = -1,
 	PLAYER_IDLE = 0,
