@@ -179,6 +179,7 @@
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Progression.cpp" />
+    <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="StartState.cpp" />
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="Subject.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Progression.h" />
+    <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="StartState.h" />
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="Subject.h" />

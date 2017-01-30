@@ -31,7 +31,6 @@ int System::Shutdown()
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
 	DebugHandler::instance().Shutdown();
-
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
@@ -95,7 +94,6 @@ int System::Initialize()
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
-
 
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
