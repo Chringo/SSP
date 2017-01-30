@@ -193,7 +193,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		header.resAmount * sizeof(LevelData::ResourceHeader) +		 //Calculate file size
 		header.entityAmount		 * sizeof(LevelData::EntityHeader) +
 		header.lightAmount       * sizeof(LevelData::LightHeader)  + 
-		header.AiComponentAmount * sizeof(LevelData::OLDAiHeader);
+		header.AiComponentAmount * sizeof(LevelData::AiHeader);
 
 	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, totalMem); //get memorychunk
 	size_t offset = 0;
@@ -225,9 +225,9 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	//AI Entities
 	if (header.AiComponentAmount > 0)
 	{
-		size_t aiSize = sizeof(LevelData::OLDAiHeader) * header.AiComponentAmount;
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		file.read(data + offset, aiSize);							//read all aiComponents					
-		level.aiComponents = (LevelData::OLDAiHeader*) (data + offset);
+		level.aiComponents = (LevelData::AiHeader*) (data + offset);
 		offset += aiSize;
 	}
 

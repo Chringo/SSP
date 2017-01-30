@@ -52,7 +52,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
     //AI Entities
 	if (header.AiComponentAmount > 0)
 	{
-		size_t aiSize = sizeof(LevelData::NEWAiHeader) * header.AiComponentAmount;
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
 		GetAiData(aiData);								        //Get ai data	
 		file.write(aiData, aiSize);						//Write all aiComponents					
@@ -140,12 +140,12 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	//AI Entities
 	if (header.AiComponentAmount > 0)
 	{
-		size_t aiSize = sizeof(LevelData::OLDAiHeader) * header.AiComponentAmount;
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
 		file.read(aiData, aiSize);							//read all aiComponents	
 		
 		//TODO: LOAD INTO LEVEL
-		LoadAiComponents((LevelData::OLDAiHeader*)aiData, header.AiComponentAmount);
+		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
 		
 		delete aiData;
 	}
@@ -340,7 +340,7 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
 	{
-		LevelData::NEWAiHeader ai;
+		LevelData::AiHeader ai;
 		ai.entityID		 = aiData->at(i)->AC_entityID;
 		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
 		ai.pattern		 = aiData->at(i)->AC_pattern;
@@ -354,8 +354,8 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
 				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
 		}
-		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::NEWAiHeader));
-		offset += sizeof(LevelData::NEWAiHeader);
+		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
+		offset += sizeof(LevelData::AiHeader);
 	}
 
 
@@ -417,7 +417,7 @@ LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataP
 	return LevelData::LevelStatus::L_OK;
 }
 
-LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::OLDAiHeader * dataPtr, size_t numComponents)
+LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * dataPtr, size_t numComponents)
 {
 	for (size_t i = 0; i < numComponents; i++)
 	{
