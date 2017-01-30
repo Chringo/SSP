@@ -453,6 +453,36 @@ void GraphicsHandler::Shutdown()
 	//	delete this->m_animGraphicsComponents[i];
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
+	//Clear the memory for the components
+	for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+	{
+		if (this->m_staticGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_staticGraphicsComponents[i];
+			this->m_staticGraphicsComponents[i] = nullptr;
+		}
+	}
+	for (size_t i = 0; i < this->m_dynamicGraphicsComponents.size(); i++)
+	{
+		if (this->m_staticGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_staticGraphicsComponents[i];
+			this->m_staticGraphicsComponents[i] = nullptr;
+		}
+	}
+	for (size_t i = 0; i < this->m_animationGraphicsComponents.size(); i++)
+	{
+		if (this->m_staticGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_staticGraphicsComponents[i];
+			this->m_staticGraphicsComponents[i] = nullptr;
+		}
+	}
+	this->m_animationGraphicsComponents.clear();
+	this->m_staticGraphicsComponents.clear();
+	this->m_dynamicGraphicsComponents.clear();
+
+
 #ifdef _DEBUG
 	if (!editorMode)
 	{
@@ -480,6 +510,13 @@ void GraphicsHandler::Shutdown()
 	m_debugRender.Release();
 #endif // _DEBUG
 
+}
+
+GRAPHICSDLL_API int GraphicsHandler::GenerateOctree()
+{
+	int result = 0;
+	//Check amount of components to be included into the octree
+	return result;
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)

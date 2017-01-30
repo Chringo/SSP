@@ -64,12 +64,15 @@ private:
 	UIHandler*				m_uiHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
-	
 
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
+	//New way of saving graphics components
+	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
+	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
+	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
 
 	//temp
 	Camera* m_camera;
@@ -105,6 +108,14 @@ public:
 	GRAPHICSDLL_API int renderFinalEditor();
 	GRAPHICSDLL_API int clearEditor();
 	GRAPHICSDLL_API void Shutdown();
+
+	//Culling functions
+	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
+	GRAPHICSDLL_API int GenerateOctree();
+	GRAPHICSDLL_API int GenerateOctree();
+	GRAPHICSDLL_API int ReservDynamicComponents();
+	GRAPHICSDLL_API int ReservStaticComponents();
+	
 
 	//TEMP STUFF
 public:
