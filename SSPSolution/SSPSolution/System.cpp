@@ -28,6 +28,7 @@ int System::Shutdown()
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
+	this->m_soundHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
 	DebugHandler::instance().Shutdown();
@@ -90,8 +91,12 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
+
+	//Initialize the SoundHandler
+	this->m_soundHandler = SoundHandler();
+	this->m_soundHandler.Initialize();
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, &this->m_soundHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 

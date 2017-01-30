@@ -1,7 +1,7 @@
 #include "ComponentHandler.h"
 
 ComponentHandler::ComponentHandler()
-{
+{	
 }
 
 
@@ -9,13 +9,14 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, SoundHandler* soundHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr)
+	this->m_soundHandler = soundHandler;
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || soundHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -77,7 +78,11 @@ void ComponentHandler::UpdateGraphicsComponents()
 
 void ComponentHandler::UpdateAIComponents()
 {
+	this->m_soundHandler->UpdateSoundHandler();
+}
 
+void ComponentHandler::UpdateSoundHandler()
+{
 }
 
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
