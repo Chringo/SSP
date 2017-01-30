@@ -1135,7 +1135,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
 
-		t_pc->PC_friction = 0.9f;
+		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)

@@ -2708,7 +2708,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		next->PC_BVtype = BV_Sphere;
 		next->PC_collides = false;
 		next->PC_Sphere.radius = 0.35f;
-		//next->PC_friction = 0;
+		next->PC_friction = 0.0;
 
 		next->PC_AABB.ext[0] = 0.25f;
 		next->PC_AABB.ext[1] = 0.25f;
