@@ -20,6 +20,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->m_isMin = true;
 	//Load modifiable settings
 	this->m_range = interactionDistance;
+	this->m_needSync = false;
 
 	this->m_minRotation = minRotation * DirectX::XM_PI * 2;
 	this->m_maxRotation = maxRotation * DirectX::XM_PI * 2;
@@ -90,12 +91,10 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
-							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 			}
 
@@ -142,12 +141,10 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
-							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 			}
 			this->SyncComponents();
@@ -198,7 +195,6 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 				
 			}
@@ -327,9 +323,8 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 {
 	if (newSyncState != nullptr)
 	{
-		this->m_needSync = false;
-
 		this->m_rotationState = newSyncState->rotationState;
+		this->m_resetCountdown = this->m_resetTime;
 		if (newSyncState->rotationState == 0)
 		{
 			//If we sync the rotation amount this becomes necessary
@@ -372,6 +367,7 @@ WheelSyncState * WheelEntity::GetSyncState()
 	if (this->m_needSync)
 	{
 		result = new WheelSyncState{this->m_entityID, this->m_rotationState, DirectX::XMVectorGetY(this->m_pComp->PC_rotation)};
+		this->m_needSync = false;
 	}
 
 	return result;
