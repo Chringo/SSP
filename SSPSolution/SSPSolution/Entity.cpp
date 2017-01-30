@@ -64,7 +64,15 @@ int Entity::AddObserver(Observer * observer, int entityID)
 
 void Entity::UnsafeSyncComponents()
 {
-	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	//rotate and translate the obb in the game
+	if (this->m_pComp->PC_BVtype == BV_OBB)
+	{
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	}
+	else
+	{
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	}
 }
 
 PhysicsComponent* Entity::SetPhysicsComponent(PhysicsComponent * pComp)

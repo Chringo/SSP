@@ -108,7 +108,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//this delta time is added in bullet
 				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards);
 				//velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
-				//velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
 				
 				//this deltatime is added to the bullet
 				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));

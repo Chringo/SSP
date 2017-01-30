@@ -100,7 +100,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_entityID = 1;								//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
 	
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0); //Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet((3.14/180) * 45, 0, 0, 0); //Set Rotation
 	
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
@@ -583,8 +583,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
+		
+		//this->m_player1.SyncComponents();
 
-		this->m_player2.SyncComponents();
 		//update all dynamic (moving) entities
 		Entity* ent = nullptr;
 
@@ -1065,8 +1066,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+	//m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	//m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	//m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 	//	DirectX::XMVectorAdd(
 	//		m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));

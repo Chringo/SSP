@@ -441,7 +441,7 @@ void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)
 	this->player1 = p1;
 	this->player1->PC_IndexRigidBody = 0;
 
-	this->player1->PC_OBB.ort = this->RotateBB(p1);
+	this->player1->PC_OBB.ort = this->RotateBB(this->player1);
 }
 
 void BulletInterpreter::SetPlayer2(PhysicsComponent * p2)
