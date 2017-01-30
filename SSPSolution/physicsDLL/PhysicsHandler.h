@@ -79,6 +79,16 @@ struct ChainLink
 	PhysicsComponent* CL_next; 
 	PhysicsComponent* CL_previous;
 };
+struct Field
+{
+	OBB F_BV;
+
+	unsigned int F_entitityID1;
+	unsigned int F_entitityID2;
+	bool F_first_inide;
+	bool F_second_inside;
+
+};
 
 class PhysicsHandler
 {
@@ -90,6 +100,7 @@ private:
 
 	std::vector<ChainLink> m_links;
 
+	std::vector<Field> m_fields;
 
 	DirectX::XMVECTOR m_gravity;
 
@@ -145,6 +156,8 @@ public:
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
 
+	PHYSICSDLL_API void CheckFieldIntersection();
+
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Z(PhysicsComponent* src, const float &radian);
@@ -163,6 +176,8 @@ public:
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+
+	PHYSICSDLL_API Field* CreateField(DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, OBB &obb);
 
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);

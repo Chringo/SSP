@@ -101,9 +101,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
 				float forwardsVel = 0.0f, sidewaysVel = 0.0f;
 				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
-				velocity = DirectX::XMVectorScale(this->m_lookDir, m_speed * forwards);
-				velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
+				DirectX::XMVECTOR lookAtDir = this->m_lookDir;
+				lookAtDir.m128_f32[1] = 0.0f;
+				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT);
+				//velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
 				//Rotate the velocity vector
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 				//Add the velocity to our physicsComponent
@@ -183,6 +185,11 @@ void Player::SetAiming(bool isAming)
 	this->m_isAiming = isAming;
 }
 
+void Player::SetBall(Entity * ball)
+{
+	this->m_ball = ball;
+}
+
 float Player::GetSpeed()
 {
 	return this->m_speed;
@@ -211,4 +218,9 @@ bool Player::GetIsAming()
 Entity * Player::GetGrabbed()
 {
 	return this->m_grabbed;
+}
+
+Entity * Player::GetBall()
+{
+	return this->m_ball;
 }

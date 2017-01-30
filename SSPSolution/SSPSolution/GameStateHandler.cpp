@@ -45,6 +45,22 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 {
 	int result = 0;
 	
+#ifndef START_WITHOUT_MENU
+	StartState* startState = new StartState();
+	result = startState->Initialize(this, cHandler, cameraRef);
+
+	if (result > 0)
+	{
+		//Push it to the gamestate stack/vector
+		this->m_stateStack.push_back(startState);
+	}
+	else
+	{
+		//Delete it
+		delete startState;
+		startState = nullptr;
+	}
+#else
 	//Create, Initialize and push a LevelSelectState
 	LevelSelectState* levelSelect = new LevelSelectState();
 	result = levelSelect->Initialize(this, cHandler, cameraRef);
@@ -53,9 +69,10 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->m_stateStack.push_back(levelSelect);
-		
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+		this->PushStateToStack(levelSelect);
+
+
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Intro Level.level"));
 	}
 	else
 	{
@@ -63,7 +80,29 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		delete levelSelect;
 		levelSelect = nullptr;
 	}
+#endif
+	
 	return result;
+
+	////Create, Initialize and push a LevelSelectState
+	//LevelSelectState* levelSelect = new LevelSelectState();
+	//result = levelSelect->Initialize(this, cHandler);
+
+	////If the initialization was successful
+	//if (result > 0)
+	//{
+	//	//Push it to the gamestate stack/vector
+	//	this->m_stateStack.push_back(levelSelect);
+	//	
+	//	levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+	//}
+	//else
+	//{
+	//	//Delete it
+	//	delete levelSelect;
+	//	levelSelect = nullptr;
+	//}
+	//return result;
 
 
 	////Create, Initialize and push a LevelState
@@ -91,7 +130,7 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 	//Update the active state
 	if (this->m_stateStack.size())
 	{
-		this->m_stateStack.back()->Update(dt, inputHandler);
+		result = this->m_stateStack.back()->Update(dt, inputHandler);
 	}
 	//Delete the states
 	while (this->m_statesToRemove.size())
@@ -103,4 +142,13 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 		this->m_statesToRemove.pop_back();
 	}
 	return result;
+}
+
+int GameStateHandler::PushStateToStack(GameState * state)
+{
+	int result = 1;
+
+	this->m_stateStack.push_back(state);
+
+	return 1;
 }

@@ -26,6 +26,10 @@ private:
 	ID3D11RasterizerState*	  m_rasterizerStateWireFrame;
 
 	ID3D11Texture2D* m_depthStencilBuffer;
+
+	ID3D11BlendState* g_pBlendStateNoBlend = NULL;
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
 	/*
 	remove comment here to find vram
 	
@@ -53,6 +57,7 @@ public:
 	ID3D11ShaderResourceView* GetBackbufferSRV();
 
 	int SetRasterizerState(D3D11_FILL_MODE mode);
+	int ClearBlendState();
 };
 
 #endif
