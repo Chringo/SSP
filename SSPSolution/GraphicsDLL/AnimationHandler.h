@@ -50,20 +50,12 @@ private:
 	/*List with animations components*/
 	std::vector<AnimationComponent*> m_AnimComponentList;
 
-	//std::vector<AnimStateData> animStateList;
-
-	//AnimStateData Anim_StateData[ANIMSTATE_MAX_COUNT];
-
 	bool m_TransitionComplete;
 	float m_TransitionDuration;
 	float m_TransitionTimeLeft;
 
 	int * m_nrOfGraphicsAnimationComponents;
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
-
-	/*This is the data that is stored per model that have a skeleton and keyframe animations.
-	Examples include: both the two players and animatible props like levers and doors.*/
-	//std::vector<AnimationDataContainer> m_AnimationData;
 
 public: 
 	//Functions used outside the class.
@@ -80,6 +72,7 @@ public:
 	
 private:
 	//Functions only used in class.
+
 	//void Push(AnimStateData animState);
 	//void Pop();
 	void CalculateFinalTransform(std::vector<DirectX::XMMATRIX> localMatrices);

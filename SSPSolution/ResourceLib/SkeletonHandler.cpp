@@ -78,14 +78,20 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 	skelData.joints = nullptr;
 
 	int animsloaded = 0;
-	for (size_t i = 0; i < *animCount; i++)
+	std::vector<unsigned int> animIDs;
+	for (int i = 0; i < *animCount; ++i)
+	{
+		animIDs.push_back(((LayerIdHeader*)data)->id);
+		data += sizeof(LayerIdHeader);
+	}
+
+	for (size_t i = 0; i < animIDs.size(); i++)
 	{
 		ResourceContainer* animPtr;
-		const unsigned int id = ((LayerIdHeader*)data)->id;
-		st = m_animHandler->GetAnimation(id, animPtr);
+		st = m_animHandler->GetAnimation(animIDs.at(i), animPtr);
 		switch (st) {
 		case Status::ST_RES_MISSING: { //if it doesent exist
-			Status mSt = m_animHandler->LoadAnimation(id, animPtr); //load the animation
+			Status mSt = m_animHandler->LoadAnimation(animIDs.at(i), animPtr); //load the animation
 			if (mSt != ST_OK) {
 				continue;
 			}
@@ -98,8 +104,8 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
 			break;
 		}
-		animsloaded++;
 		}
+		animsloaded++;
 	}
 
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
