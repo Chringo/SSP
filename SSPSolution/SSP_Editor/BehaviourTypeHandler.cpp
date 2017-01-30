@@ -62,6 +62,11 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	this->m_CheckpointValue = ui->CheckPointValue;
 	connect(ui->CheckPointValue, SIGNAL(valueChanged(int)), this, SLOT(on_CheckpointIndex_changed(int)));
 	connect(ui->button_timer_box, SIGNAL(valueChanged(double)), this, SLOT(on_button_timer_Changed(double)));
+
+
+
+	this->m_door_rotationTime = ui->rotateTimeBox;
+	connect(ui->rotateTimeBox, SIGNAL(valueChanged(double)), this, SLOT(on_RotationTime_changed(double)));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -326,25 +331,17 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 						m_selection->isDirty = true;
 					}
 
-
+					m_door_rotationTime->setValue(((Door*)m_selection)->rotateTime);
 				}
 				}
-
 			}
 		}
-		
-	
-
-
 }
-
 void Ui::BehaviourTypeHandler::on_button_distance_Changed(double val)
 {
 
 	assert(m_selection->type == ContainerType::BUTTON);
 	((Button*)m_selection)->interactionDistance = (float)val;
-
-
 }
 
 void Ui::BehaviourTypeHandler::on_button_timer_Changed(double val)
@@ -470,7 +467,6 @@ void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * it
 			m_eventBox->insertItem(i+1, strings->at(i));
 		}
 	}
-
 	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
 	m_eventBox->setCurrentText(hej);
 }
@@ -498,8 +494,10 @@ void Ui::BehaviourTypeHandler::on_Add_Trigger()
 	if (m_availableTriggers->currentIndex() <= 0 || m_triggerList->rowCount() >= 20) 
 		return;
 	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
-	EVENT triggerEvent = EVENT::BUTTON_DEACTIVE;
 	
+	m_currentEventType = selection->type;
+	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
+	EVENT triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
 	
 	//QString hej = m_eventBox->currentText();
 	//triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())); //Get the right EVENT enum integer.
@@ -508,7 +506,7 @@ void Ui::BehaviourTypeHandler::on_Add_Trigger()
 	{
 		//m_triggerList->setCurrentCell(-1, -1);
 		m_eventBox->clear();
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
+	;
 		m_eventBox->insertItem(0, "None");
 		for (size_t i = 1; i < strings->size(); i++)
 		{
@@ -530,6 +528,15 @@ void Ui::BehaviourTypeHandler::on_Delete_Trigger()
 		m_triggerList->removeRow(m_triggerList->currentRow());
 	}
 	
+}
+
+void Ui::BehaviourTypeHandler::on_RotationTime_changed(double val)
+{
+	if (m_selection->type != ContainerType::DOOR)
+		return;
+
+	((Door*)m_selection)->rotateTime = (float)val;
+
 }
 
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
@@ -568,8 +575,6 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 		m_eventBox->setCurrentText(string); //Set the correct string item in the event box
 		
 	}
-	
-
 	
 	m_availableTriggers->clear();
 	m_availableTriggers->addItem(QString("None"));

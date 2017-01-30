@@ -108,6 +108,9 @@ public:
     QDoubleSpinBox *button_timer_box;
     QWidget *Behaviour_Door;
     QGridLayout *gridLayout_4;
+    QDoubleSpinBox *rotateTimeBox;
+    QLabel *label_5;
+    QSpacerItem *verticalSpacer_2;
     QWidget *Behaviour_Path;
     QGridLayout *gridLayout_2;
     QLabel *TIMETEXT;
@@ -775,6 +778,21 @@ public:
         gridLayout_4->setSpacing(6);
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        rotateTimeBox = new QDoubleSpinBox(Behaviour_Door);
+        rotateTimeBox->setObjectName(QStringLiteral("rotateTimeBox"));
+        rotateTimeBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        gridLayout_4->addWidget(rotateTimeBox, 0, 1, 1, 1);
+
+        label_5 = new QLabel(Behaviour_Door);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        gridLayout_4->addWidget(label_5, 0, 0, 1, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_4->addItem(verticalSpacer_2, 1, 0, 1, 1);
+
         BehaviourStackWidget->addWidget(Behaviour_Door);
         Behaviour_Path = new QWidget();
         Behaviour_Path->setObjectName(QStringLiteral("Behaviour_Path"));
@@ -1076,7 +1094,7 @@ public:
         QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
 
         tabWidget->setCurrentIndex(0);
-        CustomBehaviourTabWidget->setCurrentIndex(1);
+        CustomBehaviourTabWidget->setCurrentIndex(0);
         BehaviourStackWidget->setCurrentIndex(0);
 
 
@@ -1126,6 +1144,7 @@ public:
         tag_label->setText(QApplication::translate("SSP_EditorClass", " Tag", Q_NULLPTR));
         tag_label_2->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction", Q_NULLPTR));
         tag_label_3->setText(QApplication::translate("SSP_EditorClass", "Reset timer (Seconds)", Q_NULLPTR));
+        label_5->setText(QApplication::translate("SSP_EditorClass", "Rotation time :", Q_NULLPTR));
         TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", Q_NULLPTR));
         PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", Q_NULLPTR));
         WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));

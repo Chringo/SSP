@@ -73,6 +73,10 @@ namespace Ui {
 		QDoubleSpinBox * m_button_timer;
 #pragma endregion
 
+#pragma region Door behaviour elements
+		QDoubleSpinBox * m_door_rotationTime;
+#pragma endregion
+
 
 
 #pragma region Trigger Tab elements
@@ -127,6 +131,8 @@ namespace Ui {
 		void on_eventSelection_Changed(int val);
 		void on_Add_Trigger();
 		void on_Delete_Trigger();
+
+		void on_RotationTime_changed(double val);
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
