@@ -2215,21 +2215,7 @@ bool PhysicsHandler::Initialize()
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
 	this->m_isHost = true;
-	PhysicsComponent* ptr = this->CreatePhysicsComponent(DirectX::XMVectorSet(-10, -6.0f, -9, 0), false);
-	ptr->PC_gravityInfluence = 0.0f;
-	ptr->PC_velocity = DirectX::XMVectorSet(0.05, 0, 0, 0);
-	ptr->PC_BVtype = BV_OBB;
-	ptr->PC_AABB.ext[0] = 1.0f;
-	ptr->PC_AABB.ext[1] = 1.0f;
-	ptr->PC_AABB.ext[2] = 1.0f;
-	ptr->PC_OBB.ext[0] = 3;
-	ptr->PC_OBB.ext[1] = 1;
-	ptr->PC_OBB.ext[2] = 3;
-	ptr->PC_steadfast = true;
-	ptr->PC_OBB.ort = DirectX::XMMatrixIdentity();
-	this->RotateBB_Y(ptr, (3.14f / 180) * -45);
-	ptr->PC_elasticity = 0.1f;
-	ptr->PC_friction = 0.9f;
+
 
 	return true;
 }
