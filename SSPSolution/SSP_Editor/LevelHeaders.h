@@ -71,7 +71,7 @@ namespace LevelData {
 		int SenderID[20];
 	};
 
-	struct AiHeader{
+	struct OLDAiHeader{
 		unsigned int entityID = -1;
 		int time			  = 0;
 		float speed			  = 0;
@@ -79,6 +79,16 @@ namespace LevelData {
 		int nrOfWaypoints     = 0;
 		float wayPoints[8][3];
 		//ListenerHeader Listener;
+	};
+
+	struct NEWAiHeader {
+		unsigned int entityID = -1;
+		int time = 0;
+		float speed = 0;
+		int pattern = 0;
+		int nrOfWaypoints = 0;
+		float wayPoints[8][3];
+		ListenerHeader Listener;
 	};
 
 	struct CheckpointHeader
@@ -139,7 +149,7 @@ namespace LevelData {
 		LightHeader* lights;
 
 		unsigned int numAI;
-		AiHeader* aiComponents;
+		OLDAiHeader* aiComponents;
 		
 		unsigned int numCheckpoints;
 		CheckpointHeader* checkpoints;

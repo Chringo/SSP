@@ -41,7 +41,7 @@ private:
 
 #pragma region Load Functions
 	LevelData::LevelStatus LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities);
-	LevelData::LevelStatus LoadAiComponents(LevelData::AiHeader* dataPtr, size_t numComponents);
+	LevelData::LevelStatus LoadAiComponents(LevelData::OLDAiHeader* dataPtr, size_t numComponents);
 	LevelData::LevelStatus LoadCheckpointComponents(LevelData::CheckpointHeader* dataPtr, size_t numComponents);
 	LevelData::LevelStatus LoadTriggerComponents(LevelData::ButtonHeader* dataPtr, size_t numComponents);
 	LevelData::LevelStatus LoadTriggerComponents(LevelData::DoorHeader* dataPtr, size_t numComponents);
