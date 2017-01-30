@@ -99,7 +99,7 @@ namespace LevelData {
 
 	struct DoorHeader : EntityHeader
 	{
-		float RotateTimer;
+		float rotateTime;
 		ListenerHeader Listener;
 	};
 

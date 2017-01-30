@@ -376,6 +376,19 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(BUTTON))
+	{
+		LevelData::DoorHeader* bh = door->GetData();
+		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));
+		offset += sizeof(LevelData::DoorHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -451,5 +464,20 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHead
 	
 	}
 
-	return LevelData::LevelStatus();
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Door * door = new Door(&dataPtr[i]);
+		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
+		m_currentLevel.AddPuzzleElement(DOOR, door);
+
+		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
+
+	}
+
+	return LevelData::LevelStatus::L_OK;
 }

@@ -171,14 +171,11 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 {
 
 	
+	AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
+	this->RemoveModel(((Container*)element)->component.modelID, ((Container*)element)->internalID);
 	switch (type)
 	{
 	case BUTTON:
-
-		AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
-
-
-		this->RemoveModel(((Button*)element)->component.modelID, ((Button*)element)->internalID);
 		m_puzzleElements.at(BUTTON).push_back((Button*)element);
 		break;
 	case LEVER:
@@ -186,6 +183,7 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 	case WHEEL:
 		break;
 	case DOOR:
+		m_puzzleElements.at(DOOR).push_back((Door*)element);
 		break;
 	case MAGNET:
 		break;
