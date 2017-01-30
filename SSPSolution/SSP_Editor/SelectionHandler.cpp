@@ -342,7 +342,7 @@ bool SelectionHandler::PickObjectSelection()
 			{
 				//minHitDistance = hitDistance;
 				//update widget with the intersected obb
-				this->m_transformWidget.Select(obj, wayPoint);
+				//this->m_transformWidget.Select(obj, wayPoint);
 				//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
 
 				//gotHit = result;
