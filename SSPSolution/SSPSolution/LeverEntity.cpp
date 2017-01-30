@@ -35,6 +35,7 @@ int LeverEntity::React(int entityID, EVENT reactEvent)
 	{
 		this->m_isActive = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
+		this->m_needSync = true;
 	}
 	return result;
 }
@@ -47,6 +48,7 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 	{
 		this->m_isActive = !this->m_isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+		this->m_needSync = true;
 	}
 	return 0;
 }
@@ -58,6 +60,7 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+		this->m_needSync = false;
 	}
 }
 

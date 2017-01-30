@@ -14,7 +14,9 @@ enum PacketTypes {
 	DISCONNECT_ACCEPTED,
 	UPDATE_ENTITY,
 	UPDATE_ANIMATION,
-	UPDATE_STATE,
+	UPDATE_WHEEL_STATE,
+	UPDATE_BUTTON_STATE,
+	UPDATE_LEVER_STATE,
 	UPDATE_CAMERA,
 	UPDATE_GRAB,
 	SYNC_PHYSICS,
@@ -87,10 +89,26 @@ struct AnimationPacket : public Packet
 	}
 };
 
+struct StateWheelPacket : public Packet
+{
+	unsigned int entityID;
+	int rotationState;
+	float rotationAmount;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(StateWheelPacket));
+	}
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(StateWheelPacket));
+	}
+};
+
 struct StatePacket : public Packet
 {
-	unsigned int	entityID;
-	bool			newState;		
+	unsigned int entityID;
+	bool isActive;
 
 	void serialize(char * data)
 	{
