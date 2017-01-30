@@ -9,6 +9,7 @@
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
 #include "DebugRenderer.h"
+#include "UIHandler.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -60,6 +61,7 @@ private:
 	DeferredShader*			m_deferredSH;
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
+	UIHandler*				m_uiHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
 	
@@ -102,6 +104,11 @@ public:
 	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
 	GRAPHICSDLL_API int UpdateAnimComponentList();
+
+	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
+	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
+
+	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
 
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
