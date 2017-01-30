@@ -300,6 +300,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ClInclude Include="DataHandler.h" />
     <ClInclude Include="EditorCommunicator.h" />
     <ClInclude Include="EditorInputHandler.h" />
+    <ClInclude Include="EVENT_Strings.h" />
     <ClInclude Include="GlobalIDHandler.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Level.h" />

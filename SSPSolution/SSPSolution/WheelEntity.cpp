@@ -20,6 +20,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->m_isMin = true;
 	//Load modifiable settings
 	this->m_range = interactionDistance;
+	this->m_needSync = false;
 
 	this->m_minRotation = minRotation * DirectX::XM_PI * 2;
 	this->m_maxRotation = maxRotation * DirectX::XM_PI * 2;
@@ -327,9 +328,8 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 {
 	if (newSyncState != nullptr)
 	{
-		this->m_needSync = false;
-
 		this->m_rotationState = newSyncState->rotationState;
+		this->m_resetCountdown = this->m_resetTime;
 		if (newSyncState->rotationState == 0)
 		{
 			//If we sync the rotation amount this becomes necessary
@@ -372,6 +372,7 @@ WheelSyncState * WheelEntity::GetSyncState()
 	if (this->m_needSync)
 	{
 		result = new WheelSyncState{this->m_entityID, this->m_rotationState, DirectX::XMVectorGetY(this->m_pComp->PC_rotation)};
+		this->m_needSync = false;
 	}
 
 	return result;

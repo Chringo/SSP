@@ -78,7 +78,11 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	}
 	if (header.doorAmount > 0)
 	{
-
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		this->GetDoorData(doorData);
+		file.write(doorData, doorSize);
+		delete doorData;
 	}
 	if (header.leverAmount > 0)
 	{
@@ -162,6 +166,15 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
 		delete buttonData;
+	}
+	if (header.doorAmount > 0)
+	{
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		file.read(doorData, doorSize);
+
+		LoadTriggerComponents((LevelData::DoorHeader*)doorData, header.doorAmount);
+		delete doorData;
 	}
 
 	file.close();
@@ -376,6 +389,19 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(DOOR))
+	{
+		LevelData::DoorHeader* bh = door->GetData();
+		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));
+		offset += sizeof(LevelData::DoorHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -444,12 +470,23 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHead
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Button * button = new Button(&dataPtr[i]);
-		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(BUTTON, button);
 
 		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
-	
 	}
 
-	return LevelData::LevelStatus();
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Door * door = new Door(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(DOOR, door);
+
+		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
 }

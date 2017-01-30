@@ -16,6 +16,7 @@ int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
 	this->m_isActive = 0;
+	this->m_needSync = false;
 	this->m_range = 5.0f;
 	this->SyncComponents();
 	return result;
@@ -35,7 +36,6 @@ int LeverEntity::React(int entityID, EVENT reactEvent)
 	{
 		this->m_isActive = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
-		this->m_needSync = true;
 	}
 	return result;
 }
@@ -60,7 +60,7 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
-		this->m_needSync = false;
+		
 	}
 }
 
@@ -70,6 +70,7 @@ LeverSyncState * LeverEntity::GetSyncState()
 	if (this->m_needSync)
 	{
 		result = new LeverSyncState{this->m_entityID, this->m_isActive};
+		this->m_needSync = false;
 	}
 	return result;
 }

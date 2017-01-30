@@ -155,7 +155,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 2;								//Set Entity ID												
 	playerP->PC_pos = { 0 };								//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(-10, -1, -7, 0);//Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
@@ -167,8 +166,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_AABB.ext[1] = 0.5f;
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	this->m_player2.Initialize(3, playerP, playerG, playerAnim1);
-															/*TEMP ANIM STUFF*/
+	/*TEMP ANIM STUFF*/
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
 	{
@@ -220,7 +218,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[0] = 0.35f;
 	ballP->PC_AABB.ext[1] = 0.35f;
 	ballP->PC_AABB.ext[2] = 0.35f;
-	ballP->PC_mass = 10;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -244,33 +241,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_AABB.ext[0] = 0.5;
 	ballP->PC_AABB.ext[1] = 0.5;
 	ballP->PC_AABB.ext[2] = 0.5;
-	ballP->PC_mass = 10;
+	ballP->PC_mass = 2;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
-	//----
-	//DynamicEntity* cuck = new DynamicEntity();
-	//GraphicsComponent* cuckG = m_cHandler->GetGraphicsComponent();
-	//cuckG->modelID = 1337;
-	//cuckG->active = true;
-	//resHandler->GetModel(ballG->modelID, ballG->modelPtr);
-	//PhysicsComponent* cuckP = m_cHandler->GetPhysicsComponent();
-	//cuckP->PC_entityID = 3;									//Set Entity ID
-	//cuckP->PC_pos = DirectX::XMVectorSet(-3, 0, -10, 0);		//Set Position
-	//cuckP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	//cuckP->PC_is_Static = false;							//Set IsStatic
-	//cuckP->PC_active = true;								//Set Active
-	//cuckP->PC_BVtype = BV_AABB;
-	//cuckP->PC_AABB.ext[0] = 0.5;
-	//cuckP->PC_AABB.ext[1] = 0.5;
-	//cuckP->PC_AABB.ext[2] = 0.5;
-	//cuckP->PC_mass = 10;
-	//cuckG->worldMatrix = DirectX::XMMatrixIdentity();
-	//ball->Initialize(2, ballP, ballG);
-	//ball2->Initialize(3, ballP, ballG);
-	//this->m_dynamicEntitys.push_back(ball2);
-	//----
 
 	//Entity* ptr = (Entity*)ball;
 	//this->m_player1.SetGrabbed(ball);
@@ -1106,7 +1081,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
 	std::vector<DynamicEntity*> aiEntities;	
-
 
 	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
