@@ -9,7 +9,7 @@ DoorEntity::~DoorEntity()
 {
 }
 
-int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float rotateTime, float minRotation, float maxRotation)
+int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, std::vector<ElementState> subjectStates, float rotateTime, float minRotation, float maxRotation)
 {
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
 
@@ -19,6 +19,8 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->m_maxRotation = maxRotation;
 	this->m_rotatePerSec = this->m_maxRotation / this->m_rotateTime;
 	this->SyncComponents();
+
+	this->m_subjectStates = subjectStates;
 
 	return 0;
 }
@@ -58,37 +60,17 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 {
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//this->m_isOpened = reactEvent == EVENT::BUTTON_ACTIVE;
-
-	if (reactEvent == EVENT::BUTTON_ACTIVE)
+	int i = 0;
+	for (std::vector<ElementState>::iterator element = this->m_subjectStates.begin(); element != this->m_subjectStates.end(); element++)
 	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
+		if ((element->entityID == entityID))
+		{
+			element->desiredStateReached = element->desiredState == reactEvent;
+		}
+		i += element->desiredStateReached;
 	}
-	else if(reactEvent == EVENT::BUTTON_DEACTIVE)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}
-	else if (reactEvent == EVENT::WHEEL_100)
-	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-	}
-	else if (reactEvent == EVENT::WHEEL_0)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}
-	else if (reactEvent == EVENT::LEVER_ACTIVE)
-	{
-		this->m_isOpened = true;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_OPENED);
-	}
-	else if (reactEvent == EVENT::LEVER_DEACTIVE)
-	{
-		this->m_isOpened = false;
-		this->m_subject.Notify(this->m_entityID, EVENT::DOOR_CLOSED);
-	}
+	
+	this->m_isOpened = i == this->m_subjectStates.size();
 
 	return 0;
 }
