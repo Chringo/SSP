@@ -512,11 +512,32 @@ void GraphicsHandler::Shutdown()
 
 }
 
-GRAPHICSDLL_API int GraphicsHandler::GenerateOctree()
+int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
 	return result;
+}
+
+int GraphicsHandler::ReserveDynamicComponents(size_t new_cap)
+{
+	int result = 0;
+	this->m_dynamicGraphicsComponents.reserve(new_cap);
+	return  result;
+}
+
+int GraphicsHandler::ReserveStaticComponents(size_t new_cap)
+{
+	int result = 0;
+	this->m_staticGraphicsComponents.reserve(new_cap);
+	return  result;
+}
+
+int GraphicsHandler::ReserveAnimationComponents(size_t new_cap)
+{
+	int result = 0;
+	this->m_animationGraphicsComponents.reserve(new_cap);
+	return  result;
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)

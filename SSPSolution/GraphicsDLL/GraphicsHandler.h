@@ -113,8 +113,10 @@ public:
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
 	GRAPHICSDLL_API int GenerateOctree();
 	GRAPHICSDLL_API int GenerateOctree();
-	GRAPHICSDLL_API int ReservDynamicComponents();
-	GRAPHICSDLL_API int ReservStaticComponents();
+	//Increase the capacity of the container to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(), new storage is allocated, otherwise the method does nothing.
+	GRAPHICSDLL_API int ReserveDynamicComponents(size_t new_cap);
+	GRAPHICSDLL_API int ReserveStaticComponents(size_t amount);
+	GRAPHICSDLL_API int ReserveAnimationComponents(size_t amount);
 	
 
 	//TEMP STUFF
