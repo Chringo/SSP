@@ -569,7 +569,7 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 
 			if (trigger->type == ContainerType::MODEL) {								// this is a check to make sure that the trigger is not a model.	   									   
 				((ListenerContainer*)selection)->DeleteTrigger(trigger->internalID); 	// This is because, you can add a button, then convert that button to a model,
-																						// In that case, every listener that is connected to that button needs to remove that connection
+				continue;																// In that case, every listener that is connected to that button needs to remove that connection
 			}																			// So if the selected objects connections has changed to something that is not a trigger.
 																						// The trigger will be removed
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);

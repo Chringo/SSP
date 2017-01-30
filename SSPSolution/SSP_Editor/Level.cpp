@@ -63,7 +63,16 @@ Container * Level::GetInstanceEntity(unsigned int entityID)
 			}
 		}
 	}
-	
+
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		for each (Container* container in m_puzzleElements.at(i)) {
+			if (container->internalID == entityID)
+			{
+				return container;
+			}
+		}
+	}
 	return nullptr;
 }
 
