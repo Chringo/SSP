@@ -18,7 +18,7 @@ enum ContainerType
 	LIGHT,
 	AIWAYPOINT,
 	CHECKPOINT,
-
+	AI,
 	NUM_TYPES
 };
 struct Container
@@ -27,7 +27,6 @@ struct Container
 	DirectX::XMVECTOR position;		// Total värde. 
 	DirectX::XMVECTOR rotation;		// Total värde. 
 	GraphicsComponent component;
-	AIComponent*	  aiComponent = nullptr;
 	bool			  isDirty      = false;
 	bool			  isStatic     = true;
 
@@ -40,7 +39,6 @@ struct Container
 		this->position		= obj.position		;
 		this->rotation		= obj.rotation		;
 		this->component		= obj.component		;
-		this->aiComponent	= obj.aiComponent	;
 		this->isDirty		= obj.isDirty		;
 		this->isStatic		= obj.isStatic		;
 		this->type = MODEL;
@@ -51,7 +49,6 @@ struct Container
 		this->position	  = obj.position;
 		this->rotation	  = obj.rotation;
 		this->component   = obj.component;
-		this->aiComponent = obj.aiComponent;
 		this->isDirty	  = obj.isDirty;
 		this->isStatic	  = obj.isStatic;
 		this->type = MODEL;
@@ -149,14 +146,14 @@ public:
 		//fill entity data
 		data.EntityID = this->internalID;
 		data.isStatic = this->isStatic;
-		if (this->aiComponent != nullptr)
-		{
-			data.isStatic = false;
-			data.hasAi = true;
-		}
-		else {
-			data.hasAi = false;
-		}
+		//if (this->aiComponent != nullptr)
+		//{
+		//	data.isStatic = false;
+		//	data.hasAi = true;
+		//}
+		//else {
+		//	data.hasAi = false;
+		//}
 		data.modelID = this->component.modelID;
 		data.position[0] = this->position.m128_f32[0]; //pos
 		data.position[1] = this->position.m128_f32[1];
@@ -186,7 +183,6 @@ public:
 		//entity load
 		this->internalID = dataPtr->EntityID;
 		this->isStatic = dataPtr->isStatic;
-		this->aiComponent = nullptr;
 		this->component.modelID = dataPtr->modelID;
 		this->component.worldMatrix = DirectX::XMMatrixIdentity();
 		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
@@ -267,14 +263,14 @@ public:
 		//fill entity data
 		data.EntityID = this->internalID;
 		data.isStatic = this->isStatic;
-		if (this->aiComponent != nullptr)
-		{
-			data.isStatic = false;
-			data.hasAi = true;
-		}
-		else {
-			data.hasAi = false;
-		}
+	//if (this->aiComponent != nullptr)
+	//{
+	//	data.isStatic = false;
+	//	data.hasAi = true;
+	//}
+	//else {
+	//	data.hasAi = false;
+	//}
 		data.modelID = this->component.modelID;
 		data.position[0] = this->position.m128_f32[0];
 		data.position[1] = this->position.m128_f32[1];
@@ -303,7 +299,6 @@ public:
 		//entity load
 		this->internalID = dataPtr->EntityID;
 		this->isStatic = dataPtr->isStatic;
-		this->aiComponent = nullptr;
 		this->component.modelID = dataPtr->modelID;
 		this->component.worldMatrix = DirectX::XMMatrixIdentity();
 		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
@@ -428,6 +423,32 @@ public:
 
 };
 
+struct AiContainer : ListenerContainer
+{
+	AiContainer() : ListenerContainer() {
+		this->type = AI;
+	}
+
+	AiContainer(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Ai
+	{
+		this->type = AI;
+	}
+	AIComponent	  aiComponent;
+
+
+
+	void ConvertFromContainer(Container* obj)
+	{
+		this->internalID = obj->internalID;
+		this->position	 = obj->position;
+		this->rotation   = obj->rotation;
+		this->component  = obj->component;
+		this->isDirty	 = obj->isDirty;
+		this->isStatic	 = obj->isStatic;
+		this->type		 = AI;
+
+	}
+};
 struct SelectionLists
 {
 	std::vector<Resources::Model*>* modelPtr;

@@ -279,12 +279,12 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.rotation[2] = entityContainer->at(i).rotation.m128_f32[2];
 
 			entity.isStatic	   = entityContainer->at(i).isStatic;
-			if (entityContainer->at(i).aiComponent != nullptr)
-			{
-				entity.isStatic = false;
-				entity.hasAi = true;
-			}
-			else
+			//if (entityContainer->at(i).aiComponent != nullptr)
+			//{
+			//	entity.isStatic = false;
+			//	entity.hasAi = true;
+			//}
+			//else
 				entity.hasAi = false;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
 			offset += sizeof(LevelData::EntityHeader);
@@ -337,22 +337,22 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 {
 	unsigned int offset = 0;
-	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
+	std::vector<AiContainer*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
 	{
 		LevelData::AiHeader ai;
-		ai.entityID		 = aiData->at(i)->AC_entityID;
-		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
-		ai.pattern		 = aiData->at(i)->AC_pattern;
-		ai.speed		 = aiData->at(i)->AC_speed;
-		ai.time			 = aiData->at(i)->AC_time;
+		ai.entityID		 = aiData->at(i)->aiComponent.AC_entityID;
+		ai.nrOfWaypoints = aiData->at(i)->aiComponent.AC_nrOfWaypoint;
+		ai.pattern		 = aiData->at(i)->aiComponent.AC_pattern;
+		ai.speed		 = aiData->at(i)->aiComponent.AC_speed;
+		ai.time			 = aiData->at(i)->aiComponent.AC_time;
 		memset(ai.wayPoints, 0, sizeof(float) * 24);
 
 		for (size_t j = 0; j < ai.nrOfWaypoints; j++)
 		{
-				ai.wayPoints[j][0] = aiData->at(i)->AC_waypoints[j].m128_f32[0];
-				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
-				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
+				ai.wayPoints[j][0] = aiData->at(i)->aiComponent.AC_waypoints[j].m128_f32[0];
+				ai.wayPoints[j][1] = aiData->at(i)->aiComponent.AC_waypoints[j].m128_f32[1];
+				ai.wayPoints[j][2] = aiData->at(i)->aiComponent.AC_waypoints[j].m128_f32[2];
 		}
 		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
 		offset += sizeof(LevelData::AiHeader);
@@ -422,26 +422,27 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		
-			AIComponent* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-			newComponent->AC_entityID	  = dataPtr[i].entityID;
-			newComponent->AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
-			newComponent->AC_speed		  = dataPtr[i].speed;
-			newComponent->AC_pattern	  = dataPtr[i].pattern;
-			newComponent->AC_time		  = dataPtr[i].time;
-			for (size_t k = 0; k < newComponent->AC_nrOfWaypoint; k++)
+			AiContainer* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
+			newComponent->aiComponent.AC_entityID	  = dataPtr[i].entityID;
+			newComponent->aiComponent.AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
+			newComponent->aiComponent.AC_speed		  = dataPtr[i].speed;
+			newComponent->aiComponent.AC_pattern	  = dataPtr[i].pattern;
+			newComponent->aiComponent.AC_time		  = dataPtr[i].time;
+			for (size_t k = 0; k < newComponent->aiComponent.AC_nrOfWaypoint; k++)
 			{
 				for (size_t j = 0; j < 3; j++)
 				{
-					newComponent->AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
+					newComponent->aiComponent.AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
 				}
 			}
-			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->AC_entityID);
+			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->aiComponent.AC_entityID);
 			if (cont == nullptr) {
-				std::cout << "The entity that has the AIcomponent with id :" << newComponent->AC_entityID << "does not exist" << std::endl;
+				std::cout << "The entity that has the AIcomponent with id :" << newComponent->aiComponent.AC_entityID << "does not exist" << std::endl;
 				return LevelData::LevelStatus::L_FILE_NOT_FOUND;
 			}
 			else {
-				cont->aiComponent = newComponent;
+				this->m_currentLevel.ConvertToAI(cont);
+					//cont->aiComponent = newComponent;
 			}
 
 	}

@@ -354,8 +354,6 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		{
 			if (instanceID == modelPtr->at(i).internalID)
 			{
-				if (modelPtr->at(i).aiComponent != nullptr)
-					this->m_LevelAi.DeletePathComponent(instanceID);
 					modelPtr->erase(modelPtr->begin() + i);
 					return Resources::Status::ST_OK;
 			}
@@ -372,6 +370,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 
 			}
 		}
+		m_LevelAi.DeletePathComponent(instanceID);
 		
 	}
 	return Resources::Status::ST_OK;
@@ -389,7 +388,6 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 	else {
 		Container temp = *source;
 		temp.component.modelPtr = source->component.modelPtr;
-		temp.aiComponent = nullptr;
 		modelPtr = &got->second;
 		temp.internalID = GlobalIDHandler::GetInstance()->GetNewId();
 		modelPtr->push_back(temp);
@@ -557,6 +555,7 @@ Door * Level::ConvertToDoor(Container *& object)
 		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to door array
 		object = newDoor; //set the object to the new door as well. In case the programmer tries to use the object afterwards. This avoids crashes
 		return newDoor; //Return new button
+		
 	}
 
 	return nullptr;
@@ -593,6 +592,33 @@ Container * Level::ConvertToContainer(Container *& object)
 	}
 
 	
+
+
+	return nullptr;
+}
+
+AiContainer * Level::ConvertToAI(Container *& object)
+{
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+
+	Container* entity = this->GetInstanceEntity(object->internalID);
+	if (entity != nullptr)
+	{
+		// Create a new door,
+		// transfer the entity information
+		// Remove the old container
+		// put the door into the door vector
+
+
+		AiContainer* newAI = this->m_LevelAi.NewPathComponent(); // get new ai component
+
+		newAI->ConvertFromContainer(entity); //Get the data from the  container
+
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		object = newAI; //set the object to the new AI as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		return newAI; //Return new ai
+	}
 
 
 	return nullptr;

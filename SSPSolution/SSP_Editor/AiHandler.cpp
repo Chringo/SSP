@@ -15,25 +15,25 @@ AiHandler::~AiHandler()
 	}
 }
 
-AIComponent * AiHandler::NewPathComponent()
+AiContainer * AiHandler::NewPathComponent()
 {
-	m_Components.push_back(new AIComponent());
-	m_Components.back()->AC_pattern = Pattern::AI_ONEWAY;
+	m_Components.push_back(new AiContainer());
+	m_Components.back()->aiComponent.AC_pattern = Pattern::AI_ONEWAY;
 	return m_Components.back();
 }
 
-AIComponent * AiHandler::GetPathComponent(int EntityID)
+AiContainer * AiHandler::GetPathComponent(int EntityID)
 {
 	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_Components.at(i)->AC_entityID == EntityID) {
+		if (m_Components.at(i)->aiComponent.AC_entityID == EntityID) {
 			return m_Components.at(EntityID);
 		}
 	}
 	return nullptr;
 }
 
-std::vector<AIComponent*>* AiHandler::GetAllPathComponents()
+std::vector<AiContainer*>* AiHandler::GetAllPathComponents()
 {
 	return &m_Components;
 }
@@ -42,7 +42,7 @@ void AiHandler::DeletePathComponent(int EntityID)
 {
 	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_Components.at(i)->AC_entityID == EntityID) {
+		if (m_Components.at(i)->aiComponent.AC_entityID == EntityID) {
 			delete m_Components.at(i);
 			m_Components.erase(m_Components.begin() + i);
 			return;

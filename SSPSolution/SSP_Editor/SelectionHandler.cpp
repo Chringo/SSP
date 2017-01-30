@@ -321,10 +321,10 @@ bool SelectionHandler::PickObjectSelection()
 			gotHit = result;
 		}
 	}
-	std::vector<AIComponent*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
+	std::vector<AiContainer*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
-		AIComponent* wayPoint = container->at(i);
+		AIComponent* wayPoint = &container->at(i)->aiComponent;
 		OBB obj;
 		obj.ort.r[0] = { 1.0f,0.0f,0.0f };
 		obj.ort.r[1] = { 0.0f,1.0f,0.0f };

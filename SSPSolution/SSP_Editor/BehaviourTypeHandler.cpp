@@ -88,16 +88,42 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 		if (m_attributes_widget->currentIndex() == 1) //if the trigger tab is up in the ui. Update it
 			SetTriggerData(selection);
 		m_BehaviourType->setEnabled(true);
-		if (m_selection->aiComponent != nullptr) //If the selection is a platform. Load up the platform UI and fill it with the data
-		{
- 			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
- 			m_Current_Type = PATH; //Update current type
-			this->m_Numerics[SPEED]->setValue(m_selection->aiComponent->AC_speed);
-			this->m_Numerics[TIME]->setValue(m_selection->aiComponent->AC_time);
 
-			this->m_PATH_TRIGGER->setValue(m_selection->aiComponent->AC_triggered);
-			this->m_Path_Trigger_Box->setChecked(m_selection->aiComponent->AC_triggered);
-			this->m_Pattern->setCurrentIndex(selection->aiComponent->AC_pattern - 1);
+		switch (m_selection->type) {
+//BUTTON
+#pragma region Button
+		case ContainerType::BUTTON:
+			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for Button
+			m_Current_Type = BUTTON; //Update current type
+			break;
+#pragma endregion
+////////////
+//CHECKPOINT
+#pragma region Checkpoint
+		case ContainerType::CHECKPOINT:
+			this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
+			break;
+#pragma endregion
+/////////
+//DOOR
+#pragma region Door
+		case ContainerType::DOOR:
+			m_BehaviourType->setCurrentIndex(DOOR); //Open the window for Door
+			m_Current_Type = DOOR; //Update current type
+			break;
+#pragma endregion
+/////////
+//AI
+#pragma region AI
+		case ContainerType::AI:
+			m_BehaviourType->setCurrentIndex(PATH); //Open the window for path
+			m_Current_Type = PATH; //Update current type
+			this->m_Numerics[SPEED]->setValue(((AiContainer*)m_selection)->aiComponent.AC_speed);
+			this->m_Numerics[TIME]->setValue(((AiContainer*)m_selection)->aiComponent.AC_time);
+
+			this->m_PATH_TRIGGER->setValue(((AiContainer*)m_selection)->aiComponent.AC_triggered);
+			this->m_Path_Trigger_Box->setChecked(((AiContainer*)m_selection)->aiComponent.AC_triggered);
+			this->m_Pattern->setCurrentIndex(((AiContainer*)m_selection)->aiComponent.AC_pattern - 1);
 			for (int i = 0; i < NUM_WAYPOINTS; i++)
 			{
 				if (this->m_ListItems[(ListItems)i] != nullptr)
@@ -107,35 +133,16 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 					this->m_ListItems[i] = nullptr;
 				}
 			}
-
-			for (size_t i = 0; i < m_selection->aiComponent->AC_nrOfWaypoint; i++)
+			for (size_t i = 0; i < ((AiContainer*)m_selection)->aiComponent.AC_nrOfWaypoint; i++)
 			{
 				int temp = this->m_WaypointList->count();
 				QString WaypointLabel = "Waypoint ";
 				WaypointLabel += QString::number(temp + 1);
 				this->m_ListItems[(ListItems)temp] = new QListWidgetItem(WaypointLabel, this->m_WaypointList);
 			}
-			return;
-		
-		}
-		switch (m_selection->type) {
-		//BUTTON
-		case ContainerType::BUTTON:
-			m_BehaviourType->setCurrentIndex(BUTTON); //Open the window for Button
-			m_Current_Type = BUTTON; //Update current type
 			break;
-		////////////
-		//CHECKPOINT
-		case ContainerType::CHECKPOINT:
-			this->m_CheckpointValue->setValue(((CheckpointContainer*)m_selection)->checkpointNumber);
-			break;
-		/////////
-		//DOOR
-		case ContainerType::DOOR:
-			m_BehaviourType->setCurrentIndex(DOOR); //Open the window for Door
-			m_Current_Type = DOOR; //Update current type
-			break;
-		/////////
+#pragma endregion
+/////////
 
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -212,9 +219,9 @@ void Ui::BehaviourTypeHandler::on_Time_changed(double val)
 	{
 		int i = 0;
 		//do thing
-		if (m_selection->aiComponent != nullptr)
+		if (m_selection->type == AI)
 		{
-			AIController cont(m_selection->aiComponent);
+			AIController cont(&((AiContainer*)m_selection)->aiComponent);
 			cont.SetTime(val);
 		}
 	}
@@ -248,9 +255,9 @@ void Ui::BehaviourTypeHandler::on_Speed_changed(double val)
 	{
 		int i = 0;
 		//do thing
-		if (m_selection->aiComponent != nullptr)
+		if (m_selection->type == AI)
 		{
-			AIController cont(m_selection->aiComponent);
+			AIController cont(&((AiContainer*)m_selection)->aiComponent);
 			cont.SetSpeed((float)val);
 		}
 	}
@@ -265,9 +272,9 @@ void Ui::BehaviourTypeHandler::on_Pattern_changed(int val)
 	}
 	if (m_selection == nullptr)
 		return;
-	if (m_selection->aiComponent != nullptr)
+	if (m_selection->type == AI )
 	{
-		AIController cont(m_selection->aiComponent);
+		AIController cont(&((AiContainer*)m_selection)->aiComponent);
 		cont.SetPattern(val + 1);
 	}
 }
@@ -282,9 +289,9 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 		//remove AI COMP
 		if (m_selection != nullptr)
 		{
-			if (m_selection->aiComponent != nullptr && val != PATH)
+			if (m_selection->type == AI && val != PATH)
 			{
-				AIController cont(m_selection->aiComponent);
+				AIController cont(&((AiContainer*)m_selection)->aiComponent);
 				cont.DeletePath();
 				return;
 			}
@@ -333,6 +340,21 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 
 					m_door_rotationTime->setValue(((Door*)m_selection)->rotateTime);
 				}
+				case BehaviourType::PATH:
+				{
+					if (m_selection->type == ContainerType::MODEL) {
+						AiContainer* newAI = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToAI(m_selection); //convert from container to ai
+						m_selection->isDirty = true;
+					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::AI) //if the selection is not a container or button, 
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						AiContainer* newAI = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToAI(m_selection); //convert from container to ai
+						m_selection->isDirty = true;
+					}
+
+				}
+
 				}
 			}
 		}
@@ -393,14 +415,14 @@ void Ui::BehaviourTypeHandler::on_Add()
 			//if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
 
 				//Ask The Ai handler to create a new Path Component
-				if (m_selection->aiComponent == nullptr)
+				if (m_selection->type != AI)
 				{
-					AIComponent* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-					this->m_selection->aiComponent = newComponent;
-					newComponent->AC_entityID = m_selection->internalID;
+
+					AiContainer* newComponent = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToAI(m_selection);
+					newComponent->aiComponent.AC_entityID = m_selection->internalID;
 				}
 			//}
-				AIController control(m_selection->aiComponent);
+				AIController control(&((AiContainer*)m_selection)->aiComponent);
 				DirectX::XMVECTOR newPos = m_selection->position;
 			
 				control.AddWaypoint(newPos);
@@ -423,14 +445,10 @@ void Ui::BehaviourTypeHandler::on_Del()
 		delete this->m_ListItems[(ListItems)currentRow];
 		this->m_ListItems[(ListItems)currentRow] = nullptr;
 
-		AIController control(m_selection->aiComponent);
+		AIController control(&((AiContainer*)m_selection)->aiComponent);
 		control.RemoveWayPoint(currentRow);		//Remove the waypoint
 
-		if (this->m_WaypointList->count() <= 0) //if There is no waypoints, remove the ai component
-		{
-			LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->DeletePathComponent(m_selection->aiComponent->AC_entityID);
-			m_selection->aiComponent = nullptr;
-		}
+
 		for (int i = currentRow; i < NUM_WAYPOINTS; i++)
 		{
 			if (currentRow == WAYPOINT8)
