@@ -276,6 +276,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render(float deltaTime)
 {
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+	this->m_d3dHandler->ClearBlendState();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
@@ -331,6 +332,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
+	
 	return 0;
 }
 
