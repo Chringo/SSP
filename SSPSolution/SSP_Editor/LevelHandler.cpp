@@ -392,7 +392,7 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
 {
 	unsigned int offset = 0;
-	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(BUTTON))
+	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(DOOR))
 	{
 		LevelData::DoorHeader* bh = door->GetData();
 		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));

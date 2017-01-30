@@ -562,6 +562,10 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 		for (size_t i = 0; i < ((ListenerContainer*)selection)->numTriggers; i++)
 		{
 			Container* trigger = ((ListenerContainer*)selection)->triggerContainers[i];
+			if (trigger == nullptr) {
+				trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
+			}
+
 
 			if (trigger->type == ContainerType::MODEL) {								// this is a check to make sure that the trigger is not a model.	   									   
 				((ListenerContainer*)selection)->DeleteTrigger(trigger->internalID); 	// This is because, you can add a button, then convert that button to a model,

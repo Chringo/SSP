@@ -68,7 +68,7 @@ struct ListenerContainer : Container
 	Container*	 triggerContainers[20]; //pointers to the triggers
 	ListenerContainer() : Container() {
 		memset(triggerEntityIds, 0, sizeof(UINT) * 20);
-
+		memset(triggerContainers, NULL, sizeof(Container*));
 	};
 	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
 	{
