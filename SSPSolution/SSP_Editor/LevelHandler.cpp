@@ -78,7 +78,11 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	}
 	if (header.doorAmount > 0)
 	{
-
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		this->GetButtonData(doorData);
+		file.write(doorData, doorSize);
+		delete doorData;
 	}
 	if (header.leverAmount > 0)
 	{
@@ -162,6 +166,15 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
 		delete buttonData;
+	}
+	if (header.doorAmount > 0)
+	{
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		file.read(doorData, doorSize);
+
+		LoadTriggerComponents((LevelData::DoorHeader*)doorData, header.doorAmount);
+		delete doorData;
 	}
 
 	file.close();
@@ -457,11 +470,9 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHead
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Button * button = new Button(&dataPtr[i]);
-		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(BUTTON, button);
 
 		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
-	
 	}
 
 	return LevelData::LevelStatus::L_OK;
@@ -472,11 +483,9 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Door * door = new Door(&dataPtr[i]);
-		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(DOOR, door);
 
 		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
-
 	}
 
 	return LevelData::LevelStatus::L_OK;
