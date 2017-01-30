@@ -85,7 +85,7 @@ namespace Ui {
 		QPushButton* m_add_trigger;
 		QPushButton* m_del_trigger;
 		QString m_triggerType[NUM_PUZZLE_ELEMENTS]{
-			"(unknown type) "
+			"(unknown)",
 			"(button) ",
 			"(lever) ",
 			"(wheel) ",
@@ -126,6 +126,7 @@ namespace Ui {
 		void on_triggerSelection_Changed(QTableWidgetItem * item);
 		void on_eventSelection_Changed(int val);
 		void on_Add_Trigger();
+		void on_Delete_Trigger();
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);

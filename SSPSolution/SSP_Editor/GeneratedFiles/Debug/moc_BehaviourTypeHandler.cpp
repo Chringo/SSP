@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Ui__BehaviourTypeHandler_t {
-    QByteArrayData data[21];
-    char stringdata0[386];
+    QByteArrayData data[22];
+    char stringdata0[404];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -49,7 +49,8 @@ QT_MOC_LITERAL(16, 294, 27), // "on_triggerSelection_Changed"
 QT_MOC_LITERAL(17, 322, 17), // "QTableWidgetItem*"
 QT_MOC_LITERAL(18, 340, 4), // "item"
 QT_MOC_LITERAL(19, 345, 25), // "on_eventSelection_Changed"
-QT_MOC_LITERAL(20, 371, 14) // "on_Add_Trigger"
+QT_MOC_LITERAL(20, 371, 14), // "on_Add_Trigger"
+QT_MOC_LITERAL(21, 386, 17) // "on_Delete_Trigger"
 
     },
     "Ui::BehaviourTypeHandler\0on_Speed_changed\0"
@@ -62,7 +63,7 @@ QT_MOC_LITERAL(20, 371, 14) // "on_Add_Trigger"
     "on_Attributes_tab_changed\0on_Add\0"
     "on_Del\0on_triggerSelection_Changed\0"
     "QTableWidgetItem*\0item\0on_eventSelection_Changed\0"
-    "on_Add_Trigger"
+    "on_Add_Trigger\0on_Delete_Trigger"
 };
 #undef QT_MOC_LITERAL
 
@@ -72,7 +73,7 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      16,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -80,22 +81,23 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   94,    2, 0x0a /* Public */,
-       4,    1,   97,    2, 0x0a /* Public */,
-       5,    1,  100,    2, 0x0a /* Public */,
-       6,    1,  103,    2, 0x0a /* Public */,
-       7,    1,  106,    2, 0x0a /* Public */,
-       8,    1,  109,    2, 0x0a /* Public */,
-       9,    1,  112,    2, 0x0a /* Public */,
-      10,    1,  115,    2, 0x0a /* Public */,
-      11,    0,  118,    2, 0x0a /* Public */,
-      12,    1,  119,    2, 0x0a /* Public */,
-      13,    1,  122,    2, 0x0a /* Public */,
-      14,    0,  125,    2, 0x0a /* Public */,
-      15,    0,  126,    2, 0x0a /* Public */,
-      16,    1,  127,    2, 0x0a /* Public */,
-      19,    1,  130,    2, 0x0a /* Public */,
-      20,    0,  133,    2, 0x0a /* Public */,
+       1,    1,   99,    2, 0x0a /* Public */,
+       4,    1,  102,    2, 0x0a /* Public */,
+       5,    1,  105,    2, 0x0a /* Public */,
+       6,    1,  108,    2, 0x0a /* Public */,
+       7,    1,  111,    2, 0x0a /* Public */,
+       8,    1,  114,    2, 0x0a /* Public */,
+       9,    1,  117,    2, 0x0a /* Public */,
+      10,    1,  120,    2, 0x0a /* Public */,
+      11,    0,  123,    2, 0x0a /* Public */,
+      12,    1,  124,    2, 0x0a /* Public */,
+      13,    1,  127,    2, 0x0a /* Public */,
+      14,    0,  130,    2, 0x0a /* Public */,
+      15,    0,  131,    2, 0x0a /* Public */,
+      16,    1,  132,    2, 0x0a /* Public */,
+      19,    1,  135,    2, 0x0a /* Public */,
+      20,    0,  138,    2, 0x0a /* Public */,
+      21,    0,  139,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Double,    3,
@@ -113,6 +115,7 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 17,   18,
     QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -140,6 +143,7 @@ void Ui::BehaviourTypeHandler::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 13: _t->on_triggerSelection_Changed((*reinterpret_cast< QTableWidgetItem*(*)>(_a[1]))); break;
         case 14: _t->on_eventSelection_Changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 15: _t->on_Add_Trigger(); break;
+        case 16: _t->on_Delete_Trigger(); break;
         default: ;
         }
     }
@@ -170,13 +174,13 @@ int Ui::BehaviourTypeHandler::qt_metacall(QMetaObject::Call _c, int _id, void **
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 16)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 17;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 16)
+        if (_id < 17)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 16;
+        _id -= 17;
     }
     return _id;
 }

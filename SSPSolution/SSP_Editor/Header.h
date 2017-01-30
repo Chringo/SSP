@@ -36,7 +36,6 @@ struct Container
 		type = MODEL;
 	};
 	Container(const Container &obj) {  // copy constructor
-	
 		this->internalID	= obj.internalID	;
 		this->position		= obj.position		;
 		this->rotation		= obj.rotation		;
@@ -48,7 +47,6 @@ struct Container
 	}
 	Container& operator=(Container const& obj)
 	{
-	
 		this->internalID  = obj.internalID;
 		this->position	  = obj.position;
 		this->rotation	  = obj.rotation;
@@ -125,6 +123,7 @@ struct ListenerContainer : Container
 			triggerContainers[j]    = triggerContainers[j + 1];
 			listenEvent[j]		    = listenEvent[j + 1];
 		}
+		triggerContainers[numTriggers] = nullptr;
 		numTriggers -= 1;
 	}
 
@@ -159,10 +158,10 @@ public:
 			data.hasAi = false;
 		}
 		data.modelID = this->component.modelID;
-		data.position[0] = this->position.m128_f32[0];
+		data.position[0] = this->position.m128_f32[0]; //pos
 		data.position[1] = this->position.m128_f32[1];
 		data.position[2] = this->position.m128_f32[2];
-		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[0] = this->rotation.m128_f32[0]; // rot
 		data.rotation[1] = this->rotation.m128_f32[1];
 		data.rotation[2] = this->rotation.m128_f32[2];
 

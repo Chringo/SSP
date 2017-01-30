@@ -23,12 +23,14 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_add_trigger = ui->AddTriggerButton;
 	connect(m_add_trigger, SIGNAL(clicked()), this, SLOT(on_Add_Trigger()));
 	m_del_trigger = ui->DeleteTriggerButton;
+	connect(m_del_trigger, SIGNAL(clicked()), this, SLOT(on_Delete_Trigger()));
 	connect(ui->CustomBehaviourTabWidget, SIGNAL(currentChanged(int)), this, SLOT(on_Attributes_tab_changed(int)));
 	this->m_Numerics[SPEED] = ui->SpeedValue;
 	this->m_Numerics[TIME] = ui->TimeValue;
 	this->m_PATH_TRIGGER = ui->TriggerPathValue;
 	connect(ui->SpeedValue, SIGNAL(valueChanged(double)), this, SLOT(on_Speed_changed(double)));
 	connect(ui->TimeValue, SIGNAL(valueChanged(double)), this, SLOT(on_Time_changed(double)));
+
 	connect(ui->TriggerPathValue, SIGNAL(valueChanged(int)), this, SLOT(on_Path_Trigger_changed(int)));
 
 	this->m_BehaviourType = ui->BehaviourDropDown;
@@ -190,8 +192,6 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 				this->m_ListItems[i] = nullptr;
 			}
 		}
-	
-
 		break;
 	}
 	default:
@@ -312,6 +312,21 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					m_button_distance->setValue(((Button*)m_selection)->interactionDistance);
 					m_button_timer->setValue(((Button*)m_selection)->resetTime);
 					break;
+				}
+				case BehaviourType::DOOR:
+				{
+					if (m_selection->type == ContainerType::MODEL) {
+						Door* newDoor = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToDoor(m_selection); //convert from container to door
+						m_selection->isDirty = true;
+					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::DOOR) //if the selection is not a container or door, 
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						Door* newDoor = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToDoor(m_selection); //convert from container to door
+						m_selection->isDirty = true;
+					}
+
+
 				}
 				}
 
@@ -506,6 +521,17 @@ void Ui::BehaviourTypeHandler::on_Add_Trigger()
 
 }
 
+void Ui::BehaviourTypeHandler::on_Delete_Trigger()
+{
+	if (m_triggerList->rowCount() > 0)
+	{
+		Container* selection = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
+		((ListenerContainer*)m_selection)->DeleteTrigger(selection->internalID);
+		m_triggerList->removeRow(m_triggerList->currentRow());
+	}
+	
+}
+
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
 	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
@@ -535,9 +561,6 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 																						// In that case, every listener that is connected to that button needs to remove that connection
 			}																			// So if the selected objects connections has changed to something that is not a trigger.
 																						// The trigger will be removed
-
-
-
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
 		}
 		m_triggerList->selectRow(0);
@@ -562,14 +585,9 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			QString name = m_triggerType[i];
 			name.append(QString::number(container->at(j)->internalID));
 			
-			
-		   m_availableTriggers->addItem(name, qVariantFromValue((void*)container->at(j)));
-		
+		   m_availableTriggers->addItem(name, qVariantFromValue((void*)container->at(j)));	
 		}
 	}
-	
-
-
 }
 
 void Ui::BehaviourTypeHandler::AddTriggerItemToList(Container *& trigger, ContainerType type, int signal)
@@ -579,8 +597,7 @@ void Ui::BehaviourTypeHandler::AddTriggerItemToList(Container *& trigger, Contai
 	name.append(QString::number(trigger->internalID)); //append the id after the type in the name
 	newItem->setText(name); //set the name
 	newItem->setData(Qt::UserRole, qVariantFromValue((void*)trigger)); //Set a container pointer to the new item in the list
-	
-																					//selection
+																	   //selection
 	QString eventName;
 	if (signal == -1)
 		eventName = "None";
