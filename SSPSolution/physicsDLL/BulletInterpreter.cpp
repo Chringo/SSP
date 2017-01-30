@@ -19,18 +19,20 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	zRad = DirectX::XMVectorGetZ(rotationScalars);
 
 	//convert to radian
-	xRad = (DirectX::XMConvertToRadians(-xRad));
-	yRad = (DirectX::XMConvertToRadians(yRad));
-	zRad = (DirectX::XMConvertToRadians(zRad));
+	//xRad = (DirectX::XMConvertToRadians(xRad));
+	//yRad = (DirectX::XMConvertToRadians(yRad));
+	//zRad = (DirectX::XMConvertToRadians(zRad));
 
-	//do some mathemagic
-	DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(xRad);
-	DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(yRad);
-	DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(zRad);
+	////do some mathemagic
+	//DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(xRad);
+	//DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(yRad);
+	//DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(zRad);
 
-	DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
-	DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+	//DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixX, rotationMatrixZ);
+	//rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 	
+	DirectX::XMMATRIX rotate = DirectX::XMMatrixRotationRollPitchYaw(xRad, yRad, zRad);
+
 	toReturn = DirectX::XMMatrixMultiply(rotate, src->PC_OBB.ort);
 
 	return toReturn;
@@ -79,14 +81,14 @@ void BulletInterpreter::Initialize()
 	this->player1 = nullptr;
 	this->player2 = nullptr;
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, -100.0, 0));
+	this->m_dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
 
-	this->m_dynamicsWorld->stepSimulation(dt);
+	this->m_dynamicsWorld->stepSimulation(1.0f/60.0f);
 	
 }
 
@@ -95,43 +97,29 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 	DirectX::XMVECTOR result;
 
 	btTransform trans;
-	btVector3 velo = this->crt_xmvecVec3(src->PC_velocity);
 
-	if (index == 0)
+	if (src->PC_IndexRigidBody != -1)
 	{
-		this->m_rigidBodies.at(index)->setLinearVelocity(velo);
+		//this->m_rigidBodies.at(0)->setLinearVelocity(this->crt_xmvecVec3(src->PC_velocity));
 		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
-	}
-	else
-	{
 
-	}
-	this->m_rigidBodies.at(index)->setLinearVelocity(velo);
-	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
-	
-	
-	btVector3 origin = trans.getOrigin();
-	src->PC_pos = this->crt_Vec3XMVEc(origin);
+		btVector3 origin = trans.getOrigin();
+		src->PC_pos = this->crt_Vec3XMVEc(origin);
 
-	bool noVelocity = DirectX::XMVector3Equal(DirectX::XMVectorSet(0, 0, 0, 0), src->PC_velocity);
 
-	if (index == 0 && (noVelocity == false))
-	{
-		//btVector3 velocity = this->crt_xmvecVec3(src->PC_velocity);
-		//btVector3 velocity = btVector3(3, 0, 0);
-		//this->m_rigidBodies.at(index)->setAngularVelocity(velocity);
-	}
+		if (src->PC_BVtype == BV_OBB)
+		{
+			//convert the position to xmvector 
+			btQuaternion rotation = trans.getRotation();
+			DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
 
-	if (src->PC_BVtype == BV_OBB)
-	{
-		//convert the position to xmvector 
+			src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
+
+			//do graphics component update aswell atleast try it and see result
+		}
 		
-
-		btQuaternion rotation = trans.getRotation();
-		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
-
-		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
 	}
+
 }
 
 void BulletInterpreter::Shutdown()
@@ -385,15 +373,23 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	btDefaultMotionState* boxMotionState = nullptr;
 	boxMotionState = new btDefaultMotionState(initialTransform);
 
+	btVector3 interia(0, 0, 0);
+	if (src->PC_mass != 0)
+	{
+		box->calculateLocalInertia(src->PC_mass, interia);
+	}
+
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
 		src->PC_mass,  //mass
 		boxMotionState,
 		box,
-		btVector3(0, 0, 0)		//Interia / masspunkt 
+		interia		//Interia / masspunkt 
 	);
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
+
+
 
 	btVector3 rotation = btVector3(1,1,1);
 	//rigidBody->setAngularVelocity(rotation);
@@ -445,13 +441,15 @@ void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)
 	this->player1 = p1;
 	this->player1->PC_IndexRigidBody = 0;
 
-	//this->player1->PC_OBB.ort = this->RotateBB(p1);
+	this->player1->PC_OBB.ort = this->RotateBB(p1);
 }
 
 void BulletInterpreter::SetPlayer2(PhysicsComponent * p2)
 {
 	this->player2 = p2;
 	this->player2->PC_IndexRigidBody = 1;
+
+	this->player2->PC_OBB.ort = this->RotateBB(p2);
 }
 
 void BulletInterpreter::CreateDummyObjects()

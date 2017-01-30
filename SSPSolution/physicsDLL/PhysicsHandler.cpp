@@ -1615,6 +1615,7 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_X(PhysicsComponent* src, const float 
 {
 	DirectX::XMMATRIX xMatrix;
 	DirectX::XMMATRIX test = src->PC_OBB.ort;
+
 	src->PC_rotation = DirectX::XMVectorSetByIndex(src->PC_rotation, radian, 0);
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
@@ -1743,6 +1744,7 @@ void PhysicsHandler::ShutDown()
 void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 50000);
+	
 	this->m_bullet.Update(dt);
 
 	int size = this->m_physicsComponents.size();
@@ -1750,6 +1752,8 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->m_bullet.SyncWithPC(this->GetDynamicComponentAt(i), i);
 	}
+
+
 
 	
 
@@ -2186,7 +2190,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(nextPos, false);
 		
-		next->PC_BVtype = BV_Sphere;
+		next->PC_BVtype = BV_OBB;
 		next->PC_collides = false;
 		next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
