@@ -80,7 +80,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	{
 		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
 		char* doorData = new char[doorSize];
-		this->GetButtonData(doorData);
+		this->GetDoorData(doorData);
 		file.write(doorData, doorSize);
 		delete doorData;
 	}
