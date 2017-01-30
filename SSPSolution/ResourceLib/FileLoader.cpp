@@ -238,6 +238,14 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		level.checkpoints = (LevelData::CheckpointHeader*) (data + offset);
 		offset += checkpointSize;
 	}
+
+	if (header.buttonAmount > 0)
+	{
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.checkpointAmount;
+		file.read(data + offset, buttonSize);
+		level.buttons = (LevelData::ButtonHeader*) (data + offset);
+		offset += buttonSize;
+	};
 	//Lights
 	/*
 		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize

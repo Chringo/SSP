@@ -48,6 +48,27 @@ PhysicsComponent * ComponentHandler::GetPhysicsComponent()
 	return newComponent;
 }
 
+
+UIComponent* ComponentHandler::GetUIComponent()
+{
+	UIComponent* uiComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		uiComponent = this->m_graphicsHandler->GetNextAvailableUIComponent();
+	}
+	return uiComponent;
+}
+
+TextComponent * ComponentHandler::GetTextComponent()
+{
+	TextComponent* textComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		textComponent = this->m_graphicsHandler->GetNextAvailableTextComponent();
+	}
+	return textComponent;
+}
+
 AIComponent * ComponentHandler::GetAIComponent()
 {
 	AIComponent* newComp = nullptr;

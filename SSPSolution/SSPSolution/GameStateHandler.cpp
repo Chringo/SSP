@@ -104,3 +104,12 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 	}
 	return result;
 }
+
+int GameStateHandler::PushStateToStack(GameState * state)
+{
+	int result = 1;
+
+	this->m_stateStack.push_back(state);
+
+	return 1;
+}

@@ -33,7 +33,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	{
 		return 1;
 	}
-
+	
 	// Create the swapchain \\
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
@@ -49,7 +49,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	swapChainDesc.SampleDesc.Count = 1; //No MSAA
 	swapChainDesc.SampleDesc.Quality = 0;
-
+	
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = *windowHandle;
@@ -141,6 +141,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	this->m_gDeviceContext->RSSetViewports(1, this->m_viewport);
 
 	Resources::ResourceHandler::GetInstance()->SetDeviceAndContext(this->m_gDevice, this->m_gDeviceContext);
+
+	D3D11_BLEND_DESC BlendState;
+	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
+	BlendState.RenderTarget[0].BlendEnable = FALSE;
+	BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	this->m_gDevice->CreateBlendState(&BlendState, &g_pBlendStateNoBlend);
 
 	/*
 	Uncumment this to find vram
@@ -316,4 +322,12 @@ int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
 
 	return 0;
 }
+
+int Direct3DHandler::ClearBlendState()
+{
+	this->m_gDeviceContext->OMSetBlendState(this->g_pBlendStateNoBlend, this->blendFactor, this->sampleMask);
+	return 0;
+}
+
+
 

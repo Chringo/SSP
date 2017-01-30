@@ -6,6 +6,7 @@ DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
 	this->m_timerToEnd = 0;
+	this->m_timersEnded = 0;
 	this->m_displayFPS = true;
 	this->ClearConsole();
 	for (int i = 0; i < FRAMES_FOR_AVG; i++)
@@ -44,6 +45,7 @@ int DebugHandler::StartTimer(std::string label)
 	LARGE_INTEGER currTime;
 	QueryPerformanceCounter(&currTime);
 	int result = this->m_timers.size();
+	this->m_timerToEnd = result;
 	this->m_timers.push_back(Timer(currTime));
 	this->m_labels.push_back(label);
 
@@ -54,7 +56,9 @@ int DebugHandler::EndTimer()
 {
 	LARGE_INTEGER currTime;
 	QueryPerformanceCounter(&currTime);
-	this->m_timers.at(this->m_timers.size() - 1).endTime = currTime;
+	this->m_timersEnded++;
+	this->m_timers.at(this->m_timerToEnd).endTime = currTime;
+	this->m_timerToEnd = this->m_timers.size() - this->m_timersEnded - 1;
 
 	return 0;
 }
@@ -194,6 +198,7 @@ int DebugHandler::Display(float dTime)
 	this->m_timers.clear();
 	this->m_labels.clear();
 	this->m_timerToEnd = 0;
+	this->m_timersEnded = 0;
 
 	if (this->m_displayFPS)
 	{
