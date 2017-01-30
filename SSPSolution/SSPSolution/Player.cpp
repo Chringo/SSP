@@ -111,11 +111,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
 				
 				//this deltatime is added to the bullet
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
+				//velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
 				//Rotate the velocity vector
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 				//Add the velocity to our physicsComponent
 				this->m_pComp->PC_velocity = velocity;
+				//this->m_pComp->dir
 			}
 
 		//}

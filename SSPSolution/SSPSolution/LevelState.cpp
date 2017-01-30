@@ -165,34 +165,33 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_dynamicEntitys.push_back(ball);
 	//
 	
-	//m_player1.SetBall(ball);
+	m_player1.SetBall(ball);
 	
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
+	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
-	////Ball2
-	//DynamicEntity* ball2 = new DynamicEntity();
-	//ballG = m_cHandler->GetGraphicsComponent();
-	//ballG->modelID = 1321651915;
-	//ballG->active = true;
-	//resHandler->GetModel(ballG->modelID, ballG->modelPtr);
-	//ballP = m_cHandler->GetPhysicsComponent();
-	//ballP->PC_entityID = 4;									//Set Entity ID
-	//ballP->PC_pos = { 0 };									//Set Position
-	//ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	//ballP->PC_is_Static = false;							//Set IsStatic
-	//ballP->PC_active = true;								//Set Active
-	//ballP->PC_BVtype = BV_Sphere;
-	//ballP->PC_Sphere.radius = 0.35f;
-	//ballP->PC_AABB.ext[0] = 0.5;
-	//ballP->PC_AABB.ext[1] = 0.5;
-	//ballP->PC_AABB.ext[2] = 0.5;
-	//ballP->PC_mass = 10;
-	//ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	//ball2->Initialize(4, ballP, ballG);
-	//
-	//this->m_dynamicEntitys.push_back(ball2);
-	//m_player2.SetBall(ball2);
-	//----
+	//Ball2
+	DynamicEntity* ball2 = new DynamicEntity();
+	ballG = m_cHandler->GetGraphicsComponent();
+	ballG->modelID = 1321651915;
+	ballG->active = true;
+	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
+	ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_OBB.ext[0] = 0.15;
+	ballP->PC_OBB.ext[1] = 0.15;
+	ballP->PC_OBB.ext[2] = 0.15;
+	ballP->PC_mass = 10;
+	ballG->worldMatrix = DirectX::XMMatrixIdentity();
+	ball2->Initialize(4, ballP, ballG);
+	
+	this->m_dynamicEntitys.push_back(ball2);
+	m_player2.SetBall(ball2);
+
 	//DynamicEntity* cuck = new DynamicEntity();
 	//GraphicsComponent* cuckG = m_cHandler->GetGraphicsComponent();
 	//cuckG->modelID = 1337;
@@ -215,8 +214,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//this->m_dynamicEntitys.push_back(ball2);
 	//----
 
-	//Entity* ptr = (Entity*)ball;
-	//this->m_player1.SetGrabbed(ball);
 
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
@@ -1066,17 +1063,17 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	//m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-	//m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-	//m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-	//	DirectX::XMVectorAdd(
-	//		m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	//m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-	//	DirectX::XMVectorAdd(
-	//		m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+		DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+		DirectX::XMVectorAdd(
+			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 2, 5.0);
+	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 2, 1.0);
 
 	
 	
@@ -1126,7 +1123,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 0.95f;
+		t_pc->PC_friction = 0.0f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;

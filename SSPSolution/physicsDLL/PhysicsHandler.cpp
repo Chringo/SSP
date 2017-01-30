@@ -1753,8 +1753,17 @@ void PhysicsHandler::Update(float deltaTime)
 		this->m_bullet.SyncWithPC(this->GetDynamicComponentAt(i), i);
 	}
 
+	int nrOfChainLinks = this->m_links.size();
+	
+	for (int i = 0; i < nrOfChainLinks; i++)
+	{
+		this->DoChainPhysics(&this->m_links.at(i), dt);
+	}
 
-
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->AdjustChainLinkPosition(&this->m_links.at(i));
+	//}
 	
 
 	//int nrOfChainLinks = this->m_links.size();
@@ -1936,37 +1945,37 @@ void PhysicsHandler::Update(float deltaTime)
 				//			{
 				//				this->SphereSphereIntersectionTest(current, toCompare, newDT);
 				//			}
-	/*					}
-					}
+		//				}
+		//			}
 
-			}
-			DirectX::XMVECTOR pParallel;
-			DirectX::XMVECTOR pPerpendicular;
+	//		//}
+	//		DirectX::XMVECTOR pParallel;
+	//		DirectX::XMVECTOR pPerpendicular;
 
-			DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
+	//		DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
 
-			DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, (float)current->PC_gravityInfluence), current->PC_mass), 1.0f);
+	//		DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, (float)current->PC_gravityInfluence), current->PC_mass), 1.0f);
 
-			this->ApplyForceToComponent(current, gravityForce, newDT);
+			//this->ApplyForceToComponent(current, gravityForce, newDT);
 
-			if (!current->PC_is_Static)
-			{
-				current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, newDT));
-				DirectX::XMFLOAT3 temp;
-				DirectX::XMStoreFloat3(&temp, current->PC_pos);
-				if (temp.y < -20)
-				{
-					current->PC_pos = DirectX::XMVectorSet(temp.x, -5, temp.z, 0);
-					current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-				}
-			}
-			else
-			{
-				current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			}
-		}
+	//		if (!current->PC_is_Static)
+	//		{
+	//			current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, newDT));
+	//			DirectX::XMFLOAT3 temp;
+	//			DirectX::XMStoreFloat3(&temp, current->PC_pos);
+	//			if (temp.y < -20)
+	//			{
+	//				current->PC_pos = DirectX::XMVectorSet(temp.x, -5, temp.z, 0);
+	//				current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	//		}
+	//	}
 
-	}*/
+	//}
 
 }
 
@@ -2192,12 +2201,12 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		
 		next->PC_BVtype = BV_OBB;
 		next->PC_collides = false;
-		next->PC_Sphere.radius = 0.35f;
+		//next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
 
-		next->PC_AABB.ext[0] = 0.25f;
-		next->PC_AABB.ext[1] = 0.25f;
-		next->PC_AABB.ext[2] = 0.25f;
+		next->PC_AABB.ext[0] = 0.15f;
+		next->PC_AABB.ext[1] = 0.15f;
+		next->PC_AABB.ext[2] = 0.15f;
 		next->PC_gravityInfluence = 1.0f;
 
 		link.CL_previous = previous;

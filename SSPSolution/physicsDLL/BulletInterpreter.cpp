@@ -87,6 +87,12 @@ void BulletInterpreter::Initialize()
 void BulletInterpreter::Update(const float& dt)
 {
 	//time will act on the objects
+	
+	
+	btVector3 vel = this->crt_xmvecVec3(this->player1->PC_velocity);
+	vel *= 10;
+	//velo *= 10;
+	this->m_rigidBodies.at(0)->setLinearVelocity(vel);
 
 	this->m_dynamicsWorld->stepSimulation(1.0f/60.0f);
 	
@@ -388,6 +394,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	);
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
+	rigidBody->setFriction(src->PC_friction);
 
 
 
