@@ -103,7 +103,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
-	playerP->PC_BVtype = BV_AABB;
+	playerP->PC_elasticity = 0.5f;
+	playerP->PC_friction = 0.9f;
+	playerP->PC_BVtype = BV_Sphere;
+	playerP->PC_Sphere.radius = 0.5f;
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
@@ -139,9 +142,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player2.SetSpeed(0.5f);
 
 
-	//this->m_dynamicEntitys.push_back();
-	
-	//Ball1
+	////this->m_dynamicEntitys.push_back();
+	//
+	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
 	ballG->modelID = 1337;
@@ -165,7 +168,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	m_player1.SetBall(ball);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
-	//Ball2
+	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
 	ballG = m_cHandler->GetGraphicsComponent();
 	ballG->modelID = 1337;
@@ -1132,7 +1135,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.r[3].m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.r[3].m128_f32[2]);*/
 
-		t_pc->PC_friction = 0.95f;
+		t_pc->PC_friction = 0.7f;
+		t_pc->PC_elasticity = 0.1f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
