@@ -648,3 +648,50 @@ AiContainer * Level::ConvertToAI(Container *& object)
 
 	return nullptr;
 }
+
+Wheel * Level::ConvertToWheel(Container *& object)
+{
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new wheel,
+		// transfer the entity information
+		// Remove the old container
+		// put the wheel into the wheel vector
+
+		Wheel* newWheel = new Wheel(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(WHEEL).push_back(newWheel); // add to wheel array
+		object = newWheel; //set the obj to the new wheel as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newWheel; //Return new Wheel
+
+	}
+	return nullptr;
+}
+
+Lever * Level::ConvertToLever(Container *& object)
+{
+	
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new lever,
+		// transfer the entity information
+		// Remove the old container
+		// put the wheel into the wheel vector
+
+		Lever* newLever = new Lever(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(LEVER).push_back(newLever); // add to Lever array
+		object = newLever; //set the obj to the new Lever as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newLever; //Return new Lever
+
+	}
+	return nullptr;
+}

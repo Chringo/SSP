@@ -58,9 +58,8 @@ public:
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_2;
     QTreeWidget *scene_tree;
-    QLabel *label_2;
     QPushButton *pushButton;
-    QWidget *RenderWidget;
+    QLabel *label_2;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -126,6 +125,37 @@ public:
     QLabel *TRIGGERTAGTEXTPATH;
     QSpinBox *TriggerPathValue;
     QCheckBox *TriggerPathCheckBox;
+    QWidget *Lever;
+    QFormLayout *formLayout_4;
+    QDoubleSpinBox *lever_interactionDist;
+    QLabel *label_lever_InteractionDist;
+    QWidget *Wheel;
+    QVBoxLayout *verticalLayout_4;
+    QFrame *frame_3;
+    QHBoxLayout *horizontalLayout_5;
+    QLabel *label_wheelinteraction;
+    QDoubleSpinBox *wheel_interactionDistBox;
+    QFrame *frame;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_minRot;
+    QDoubleSpinBox *wheel_minRotationBox;
+    QFrame *frame_2;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_maxRot;
+    QDoubleSpinBox *wheel_maxRotationBox;
+    QFrame *frame_4;
+    QHBoxLayout *horizontalLayout_6;
+    QLabel *label_rotTime;
+    QDoubleSpinBox *wheel_rotationTimeBox;
+    QFrame *frame_5;
+    QHBoxLayout *horizontalLayout_7;
+    QLabel *label_timeTilReset;
+    QDoubleSpinBox *wheel_timeTilResetBox;
+    QFrame *frame_6;
+    QHBoxLayout *horizontalLayout_8;
+    QLabel *label_resetTime;
+    QDoubleSpinBox *wheel_resetTimeBox;
+    QSpacerItem *verticalSpacer_3;
     QWidget *Triggers;
     QFormLayout *formLayout_2;
     QComboBox *availableTriggers;
@@ -145,6 +175,7 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QPushButton *CheckPointADD;
     QLabel *label_4;
+    QWidget *RenderWidget;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -370,31 +401,15 @@ public:
 
         gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
 
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
-
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
 
         gridLayout->addWidget(pushButton, 4, 1, 1, 1);
 
-        RenderWidget = new QWidget(centralWidget);
-        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
-        RenderWidget->setSizePolicy(sizePolicy1);
-        RenderWidget->setMinimumSize(QSize(1, 1));
-        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
-        RenderWidget->setMouseTracking(true);
-        RenderWidget->setFocusPolicy(Qt::StrongFocus);
-        RenderWidget->setAcceptDrops(true);
-        RenderWidget->setAutoFillBackground(false);
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
 
-        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
 
         Values = new QGroupBox(centralWidget);
         Values->setObjectName(QStringLiteral("Values"));
@@ -445,7 +460,7 @@ public:
         xValue_translate->setWrapping(true);
         xValue_translate->setFrame(true);
         xValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        xValue_translate->setDecimals(4);
+        xValue_translate->setDecimals(2);
         xValue_translate->setMinimum(-10000);
         xValue_translate->setMaximum(10000);
 
@@ -457,7 +472,7 @@ public:
         xValue_scale->setWrapping(true);
         xValue_scale->setFrame(true);
         xValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        xValue_scale->setDecimals(4);
+        xValue_scale->setDecimals(2);
         xValue_scale->setMinimum(-10000);
         xValue_scale->setMaximum(10000);
 
@@ -468,7 +483,7 @@ public:
         zValue_scale->setMinimumSize(QSize(0, 0));
         zValue_scale->setWrapping(true);
         zValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        zValue_scale->setDecimals(4);
+        zValue_scale->setDecimals(2);
         zValue_scale->setMinimum(-10000);
         zValue_scale->setMaximum(10000);
 
@@ -478,7 +493,7 @@ public:
         yValue_rot->setObjectName(QStringLiteral("yValue_rot"));
         yValue_rot->setWrapping(true);
         yValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_rot->setDecimals(4);
+        yValue_rot->setDecimals(2);
         yValue_rot->setMinimum(-10000);
         yValue_rot->setMaximum(10000);
 
@@ -498,7 +513,7 @@ public:
         zValue_rot->setObjectName(QStringLiteral("zValue_rot"));
         zValue_rot->setWrapping(true);
         zValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        zValue_rot->setDecimals(4);
+        zValue_rot->setDecimals(2);
         zValue_rot->setMinimum(-10000);
         zValue_rot->setMaximum(10000);
 
@@ -508,7 +523,7 @@ public:
         yValue_translate->setObjectName(QStringLiteral("yValue_translate"));
         yValue_translate->setWrapping(true);
         yValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_translate->setDecimals(4);
+        yValue_translate->setDecimals(2);
         yValue_translate->setMinimum(-10000);
         yValue_translate->setMaximum(10000);
 
@@ -518,7 +533,7 @@ public:
         zValue_translate->setObjectName(QStringLiteral("zValue_translate"));
         zValue_translate->setWrapping(true);
         zValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        zValue_translate->setDecimals(4);
+        zValue_translate->setDecimals(2);
         zValue_translate->setMinimum(-10000);
         zValue_translate->setMaximum(10000);
 
@@ -534,7 +549,7 @@ public:
         yValue_scale->setMinimumSize(QSize(0, 0));
         yValue_scale->setWrapping(true);
         yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_scale->setDecimals(4);
+        yValue_scale->setDecimals(2);
         yValue_scale->setMinimum(-10000);
         yValue_scale->setMaximum(10000);
 
@@ -542,15 +557,15 @@ public:
 
         xValue_rot = new QDoubleSpinBox(transformFrame);
         xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
-        xValue_rot->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(xValue_rot->sizePolicy().hasHeightForWidth());
+        xValue_rot->setSizePolicy(sizePolicy1);
         xValue_rot->setWrapping(true);
         xValue_rot->setFrame(true);
         xValue_rot->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        xValue_rot->setDecimals(4);
+        xValue_rot->setDecimals(2);
         xValue_rot->setMinimum(-10000);
         xValue_rot->setMaximum(10000);
 
@@ -561,11 +576,11 @@ public:
 
         variousOptionsframe = new QFrame(Values);
         variousOptionsframe->setObjectName(QStringLiteral("variousOptionsframe"));
-        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
-        variousOptionsframe->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(variousOptionsframe->sizePolicy().hasHeightForWidth());
+        variousOptionsframe->setSizePolicy(sizePolicy2);
         variousOptionsframe->setFrameShape(QFrame::StyledPanel);
         variousOptionsframe->setFrameShadow(QFrame::Raised);
         formLayout = new QFormLayout(variousOptionsframe);
@@ -901,6 +916,199 @@ public:
         gridLayout_2->addWidget(TriggerPathCheckBox, 11, 1, 1, 2);
 
         BehaviourStackWidget->addWidget(Behaviour_Path);
+        Lever = new QWidget();
+        Lever->setObjectName(QStringLiteral("Lever"));
+        formLayout_4 = new QFormLayout(Lever);
+        formLayout_4->setSpacing(6);
+        formLayout_4->setContentsMargins(11, 11, 11, 11);
+        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        lever_interactionDist = new QDoubleSpinBox(Lever);
+        lever_interactionDist->setObjectName(QStringLiteral("lever_interactionDist"));
+        sizePolicy1.setHeightForWidth(lever_interactionDist->sizePolicy().hasHeightForWidth());
+        lever_interactionDist->setSizePolicy(sizePolicy1);
+        lever_interactionDist->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        lever_interactionDist->setMaximum(99999);
+
+        formLayout_4->setWidget(1, QFormLayout::FieldRole, lever_interactionDist);
+
+        label_lever_InteractionDist = new QLabel(Lever);
+        label_lever_InteractionDist->setObjectName(QStringLiteral("label_lever_InteractionDist"));
+        label_lever_InteractionDist->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+
+        formLayout_4->setWidget(1, QFormLayout::LabelRole, label_lever_InteractionDist);
+
+        BehaviourStackWidget->addWidget(Lever);
+        Wheel = new QWidget();
+        Wheel->setObjectName(QStringLiteral("Wheel"));
+        verticalLayout_4 = new QVBoxLayout(Wheel);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        frame_3 = new QFrame(Wheel);
+        frame_3->setObjectName(QStringLiteral("frame_3"));
+        frame_3->setFrameShape(QFrame::StyledPanel);
+        frame_3->setFrameShadow(QFrame::Raised);
+        horizontalLayout_5 = new QHBoxLayout(frame_3);
+        horizontalLayout_5->setSpacing(6);
+        horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
+        label_wheelinteraction = new QLabel(frame_3);
+        label_wheelinteraction->setObjectName(QStringLiteral("label_wheelinteraction"));
+        label_wheelinteraction->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_5->addWidget(label_wheelinteraction);
+
+        wheel_interactionDistBox = new QDoubleSpinBox(frame_3);
+        wheel_interactionDistBox->setObjectName(QStringLiteral("wheel_interactionDistBox"));
+        sizePolicy1.setHeightForWidth(wheel_interactionDistBox->sizePolicy().hasHeightForWidth());
+        wheel_interactionDistBox->setSizePolicy(sizePolicy1);
+        wheel_interactionDistBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_interactionDistBox->setMaximum(99999);
+
+        horizontalLayout_5->addWidget(wheel_interactionDistBox);
+
+
+        verticalLayout_4->addWidget(frame_3);
+
+        frame = new QFrame(Wheel);
+        frame->setObjectName(QStringLiteral("frame"));
+        frame->setFrameShape(QFrame::StyledPanel);
+        frame->setFrameShadow(QFrame::Raised);
+        horizontalLayout_3 = new QHBoxLayout(frame);
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        label_minRot = new QLabel(frame);
+        label_minRot->setObjectName(QStringLiteral("label_minRot"));
+        label_minRot->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_3->addWidget(label_minRot);
+
+        wheel_minRotationBox = new QDoubleSpinBox(frame);
+        wheel_minRotationBox->setObjectName(QStringLiteral("wheel_minRotationBox"));
+        sizePolicy1.setHeightForWidth(wheel_minRotationBox->sizePolicy().hasHeightForWidth());
+        wheel_minRotationBox->setSizePolicy(sizePolicy1);
+        wheel_minRotationBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_minRotationBox->setMaximum(99999);
+
+        horizontalLayout_3->addWidget(wheel_minRotationBox);
+
+
+        verticalLayout_4->addWidget(frame);
+
+        frame_2 = new QFrame(Wheel);
+        frame_2->setObjectName(QStringLiteral("frame_2"));
+        frame_2->setFrameShape(QFrame::StyledPanel);
+        frame_2->setFrameShadow(QFrame::Raised);
+        horizontalLayout_4 = new QHBoxLayout(frame_2);
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        label_maxRot = new QLabel(frame_2);
+        label_maxRot->setObjectName(QStringLiteral("label_maxRot"));
+        label_maxRot->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_4->addWidget(label_maxRot);
+
+        wheel_maxRotationBox = new QDoubleSpinBox(frame_2);
+        wheel_maxRotationBox->setObjectName(QStringLiteral("wheel_maxRotationBox"));
+        sizePolicy1.setHeightForWidth(wheel_maxRotationBox->sizePolicy().hasHeightForWidth());
+        wheel_maxRotationBox->setSizePolicy(sizePolicy1);
+        wheel_maxRotationBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_maxRotationBox->setMaximum(99999);
+
+        horizontalLayout_4->addWidget(wheel_maxRotationBox);
+
+
+        verticalLayout_4->addWidget(frame_2);
+
+        frame_4 = new QFrame(Wheel);
+        frame_4->setObjectName(QStringLiteral("frame_4"));
+        frame_4->setFrameShape(QFrame::StyledPanel);
+        frame_4->setFrameShadow(QFrame::Raised);
+        horizontalLayout_6 = new QHBoxLayout(frame_4);
+        horizontalLayout_6->setSpacing(6);
+        horizontalLayout_6->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
+        label_rotTime = new QLabel(frame_4);
+        label_rotTime->setObjectName(QStringLiteral("label_rotTime"));
+        label_rotTime->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_6->addWidget(label_rotTime);
+
+        wheel_rotationTimeBox = new QDoubleSpinBox(frame_4);
+        wheel_rotationTimeBox->setObjectName(QStringLiteral("wheel_rotationTimeBox"));
+        sizePolicy1.setHeightForWidth(wheel_rotationTimeBox->sizePolicy().hasHeightForWidth());
+        wheel_rotationTimeBox->setSizePolicy(sizePolicy1);
+        wheel_rotationTimeBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_rotationTimeBox->setMaximum(99999);
+
+        horizontalLayout_6->addWidget(wheel_rotationTimeBox);
+
+
+        verticalLayout_4->addWidget(frame_4);
+
+        frame_5 = new QFrame(Wheel);
+        frame_5->setObjectName(QStringLiteral("frame_5"));
+        frame_5->setFrameShape(QFrame::StyledPanel);
+        frame_5->setFrameShadow(QFrame::Raised);
+        horizontalLayout_7 = new QHBoxLayout(frame_5);
+        horizontalLayout_7->setSpacing(6);
+        horizontalLayout_7->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
+        label_timeTilReset = new QLabel(frame_5);
+        label_timeTilReset->setObjectName(QStringLiteral("label_timeTilReset"));
+        label_timeTilReset->setLayoutDirection(Qt::RightToLeft);
+        label_timeTilReset->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_7->addWidget(label_timeTilReset);
+
+        wheel_timeTilResetBox = new QDoubleSpinBox(frame_5);
+        wheel_timeTilResetBox->setObjectName(QStringLiteral("wheel_timeTilResetBox"));
+        sizePolicy1.setHeightForWidth(wheel_timeTilResetBox->sizePolicy().hasHeightForWidth());
+        wheel_timeTilResetBox->setSizePolicy(sizePolicy1);
+        wheel_timeTilResetBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_timeTilResetBox->setMaximum(99999);
+
+        horizontalLayout_7->addWidget(wheel_timeTilResetBox);
+
+
+        verticalLayout_4->addWidget(frame_5);
+
+        frame_6 = new QFrame(Wheel);
+        frame_6->setObjectName(QStringLiteral("frame_6"));
+        frame_6->setLayoutDirection(Qt::LeftToRight);
+        frame_6->setFrameShape(QFrame::StyledPanel);
+        frame_6->setFrameShadow(QFrame::Raised);
+        horizontalLayout_8 = new QHBoxLayout(frame_6);
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        horizontalLayout_8->setContentsMargins(-1, -1, 9, -1);
+        label_resetTime = new QLabel(frame_6);
+        label_resetTime->setObjectName(QStringLiteral("label_resetTime"));
+        label_resetTime->setLayoutDirection(Qt::RightToLeft);
+        label_resetTime->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_8->addWidget(label_resetTime);
+
+        wheel_resetTimeBox = new QDoubleSpinBox(frame_6);
+        wheel_resetTimeBox->setObjectName(QStringLiteral("wheel_resetTimeBox"));
+        sizePolicy1.setHeightForWidth(wheel_resetTimeBox->sizePolicy().hasHeightForWidth());
+        wheel_resetTimeBox->setSizePolicy(sizePolicy1);
+        wheel_resetTimeBox->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        wheel_resetTimeBox->setMaximum(99999);
+
+        horizontalLayout_8->addWidget(wheel_resetTimeBox);
+
+
+        verticalLayout_4->addWidget(frame_6);
+
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_4->addItem(verticalSpacer_3);
+
+        BehaviourStackWidget->addWidget(Wheel);
 
         formLayout_3->setWidget(5, QFormLayout::FieldRole, BehaviourStackWidget);
 
@@ -960,8 +1168,11 @@ public:
         __qtablewidgetitem1->setTextAlignment(Qt::AlignCenter);
         TriggerTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         TriggerTableWidget->setObjectName(QStringLiteral("TriggerTableWidget"));
-        sizePolicy1.setHeightForWidth(TriggerTableWidget->sizePolicy().hasHeightForWidth());
-        TriggerTableWidget->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(TriggerTableWidget->sizePolicy().hasHeightForWidth());
+        TriggerTableWidget->setSizePolicy(sizePolicy3);
         TriggerTableWidget->setMaximumSize(QSize(16777215, 16777215));
         QPalette palette3;
         palette3.setBrush(QPalette::Active, QPalette::WindowText, brush);
@@ -1067,6 +1278,19 @@ public:
 
         gridLayout->addWidget(Values, 2, 3, 3, 1);
 
+        RenderWidget = new QWidget(centralWidget);
+        RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
+        sizePolicy3.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
+        RenderWidget->setSizePolicy(sizePolicy3);
+        RenderWidget->setMinimumSize(QSize(1, 1));
+        RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
+        RenderWidget->setMouseTracking(true);
+        RenderWidget->setFocusPolicy(Qt::StrongFocus);
+        RenderWidget->setAcceptDrops(true);
+        RenderWidget->setAutoFillBackground(false);
+
+        gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -1114,8 +1338,8 @@ public:
         QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
         ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
         pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
         Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
         nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
         scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
@@ -1160,6 +1384,13 @@ public:
         DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
         TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
         TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
+        label_lever_InteractionDist->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction :", Q_NULLPTR));
+        label_wheelinteraction->setText(QApplication::translate("SSP_EditorClass", "Interaction Dist:", Q_NULLPTR));
+        label_minRot->setText(QApplication::translate("SSP_EditorClass", "Min Rotation:", Q_NULLPTR));
+        label_maxRot->setText(QApplication::translate("SSP_EditorClass", "Max Rotation:", Q_NULLPTR));
+        label_rotTime->setText(QApplication::translate("SSP_EditorClass", "Rotation Time:", Q_NULLPTR));
+        label_timeTilReset->setText(QApplication::translate("SSP_EditorClass", "Time til reset (s):", Q_NULLPTR));
+        label_resetTime->setText(QApplication::translate("SSP_EditorClass", "Reset time (s):", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", Q_NULLPTR));
         availableTriggers->clear();
         availableTriggers->insertItems(0, QStringList()
