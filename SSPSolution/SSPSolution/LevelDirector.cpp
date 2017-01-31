@@ -91,6 +91,7 @@ void FSMEnvironment::LevelDirector::SetGoalID(int goal)
 bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;
+
 	// Query list of states to see if the state exists
 	for (unsigned int i = 0; i < m_states.size(); i++)
 	{
@@ -101,30 +102,37 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 			break;
 		}
 	}
+
 	return change;
 }
 
 #pragma region temp
 void FSMEnvironment::State::Initialize()
 {
+	stateID = -1;
 
+	// State - Data
+	playerOne = false;
+	playerTwo = false;
+	timeDelay = -1;
+	hint = Hint::NONE;
 }
 int FSMEnvironment::State::CheckTransitions()
 {
+	// TODO: check if conditions are true for goalState
 
-	return 1;// TODO: Return ID
+	return 1;	// TODO: Return stateID
 }
 void FSMEnvironment::State::Enter()
 {
-
+	// TODO: logic unique for enter
 }
 void FSMEnvironment::State::Exit()
 {
-
+	// TODO: logic unique for exit
 }
 void FSMEnvironment::State::Update(float dt)
 {
-
+	// TODO: Update logic for currentState
 }
 #pragma endregion
-

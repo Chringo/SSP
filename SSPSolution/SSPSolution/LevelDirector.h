@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #include "Observer.h"
 #include <vector>
+//INCLUDE sound component or handler 
 namespace FSMEnvironment
 {
 
@@ -21,12 +22,14 @@ namespace FSMEnvironment
 		// TODO: Data that allows the functions to be generic
 
 		// State - Data
+		bool playerOne = false;
+		bool playerTwo = false;
 		int timeDelay = -1;
 		Hint hint = Hint::NONE;
 		
 
 		// Sub-states
-		void Initialize();//Reset state
+		void Initialize();	//Reset state
 		int CheckTransitions();
 		void Enter();
 		void Exit();
@@ -41,14 +44,14 @@ namespace FSMEnvironment
 		State* m_defaultState;	// Default logical behaviour for the level
 		State* m_goalState;		// A state which is the current goal for the FSM
 		int m_goalID;			// ID of a state which the FSM transitions to
-		std::vector<State> m_states;// Holds the states which defines the behaviour
+		std::vector<State> m_states;	// Holds the states which defines the behaviour
 	public:
 		LevelDirector();
 		~LevelDirector();
 		int Shutdown();
 
 		int Initialize();		// Initiate values for new level, i.e. reset values and load new level
-		int Update(float deltaTime);// Update LD and check state
+		int Update(float deltaTime);	// Update LD and check state
 
 		int React(int entityID, EVENT event);
 
