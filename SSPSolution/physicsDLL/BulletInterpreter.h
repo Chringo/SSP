@@ -159,6 +159,7 @@ public:
 	PHYSICSDLL_API void Initialize();
 	PHYSICSDLL_API void Update(const float& dt);
 	PHYSICSDLL_API void SyncWithPC(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);
 	PHYSICSDLL_API void Shutdown();
 
 	PHYSICSDLL_API void CreateRigidBody(PhysicsComponent* fromGame);

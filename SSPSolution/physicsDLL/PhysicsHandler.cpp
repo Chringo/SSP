@@ -1747,6 +1747,9 @@ void PhysicsHandler::Update(float deltaTime)
 	
 	this->m_bullet.Update(dt);
 
+	//sync positions with bullet world
+
+
 	int size = this->m_physicsComponents.size();
 	for (int i = 0; i < size - 4; i++)
 	{

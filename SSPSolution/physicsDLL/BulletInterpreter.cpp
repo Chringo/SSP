@@ -105,30 +105,35 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 
 	btTransform trans;
 
+	if (src->PC_ApplyImpulse == true)
+	{
+		this->SyncPosWithBullet(src);
+
+		btVector3 force;
+		btVector3 posAffectedByForce;
+
+
+		force = this->crt_xmvecVec3(src->PC_ForceDir);
+		force.normalize();
+		//force = btVector3(0, 1, 1);
+
+		force *= src->PC_Power;
+		posAffectedByForce = btVector3(0, 0.2, 0);
+
+
+		//this->m_rigidBodies.at(index)->applyForce(power, this->crt_xmvecVec3(src->PC_pos));
+		btRigidBody* holder = nullptr;
+		holder = this->m_rigidBodies.at(index);
+		holder->applyImpulse(force, posAffectedByForce);
+
+		src->PC_ForceDir = DirectX::XMVectorSet(0, 0, 0, 0);
+		src->PC_Power = 0;
+		src->PC_ApplyImpulse = false;
+	}
+
 	//update positions
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_ApplyImpulse == true)
-		{
-			btVector3 power;
-			btVector3 pos;
-
-			//power = this->crt_xmvecVec3(src->PC_ForceDir);
-			power = btVector3(0, 1, 1);
-
-			power *= src->PC_Power;
-			pos = btVector3(0,0.2,0);
-
-
-			//this->m_rigidBodies.at(index)->applyForce(power, this->crt_xmvecVec3(src->PC_pos));
-			btRigidBody* holder = nullptr;
-			holder = this->m_rigidBodies.at(index);
-			holder->applyImpulse(power, pos);
-
-			src->PC_ForceDir = DirectX::XMVectorSet(0, 0, 0, 0);
-			src->PC_Power = 0;
-			src->PC_ApplyImpulse = false;
-		}
 
 		//get the position in the Bullet world
 		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
@@ -155,13 +160,31 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 	if (src->PC_Bullet_AffectedByGravity == false)
 	{
 		//if the gravity influence is zero, the component will not be affected by gravity
+		this->m_rigidBodies.at(index)->clearForces();
 		this->m_rigidBodies.at(index)->setGravity(btVector3(0,0,0));
+		
 	}
 	else
 	{
 		this->m_rigidBodies.at(index)->setGravity(this->m_GravityAcc);
 	}
 
+}
+
+PHYSICSDLL_API void BulletInterpreter::SyncPosWithBullet(PhysicsComponent* src)
+{
+	btRigidBody* temp = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	btTransform tTranform; 
+	temp->getMotionState()->getWorldTransform(tTranform);
+	
+	btVector3 nPos = this->crt_xmvecVec3(src->PC_pos);
+	tTranform.setOrigin(nPos);
+
+	btMotionState* newMotionState = nullptr;
+	newMotionState = temp->getMotionState();
+	
+	newMotionState->setWorldTransform(tTranform);
+	temp->setMotionState(newMotionState);
 }
 
 void BulletInterpreter::Shutdown()
