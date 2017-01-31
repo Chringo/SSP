@@ -408,7 +408,6 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	Resources::Model* modelPtr = nullptr;
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_graphicsComponents[i]->active == false)
@@ -421,8 +420,8 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(m_animGraphicsComponents[i]->modelID, modelPtr);
-		m_shaderControl->Draw(modelPtr, m_animGraphicsComponents[i]);
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+		
 	}
 	
 	m_shaderControl->DrawFinal();
