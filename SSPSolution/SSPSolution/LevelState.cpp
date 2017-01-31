@@ -1305,6 +1305,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 
 
+		DynamicEntity* tde = new DynamicEntity();
+		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
+		m_dynamicEntitys.push_back(tde);
 	}
 	for (size_t A = 0; A < aiEntities.size(); A++)
 	{
