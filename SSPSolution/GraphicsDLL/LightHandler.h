@@ -30,12 +30,11 @@ namespace LIGHT
 		ID3D11DeviceContext*	  m_gDeviceContext;
 
 		ID3D11Buffer* lightBuffers[NUM_LT] = { nullptr }; //Light constBuffers
+		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT];
 		//PointLightStruct*    pointLightStruct = nullptr;
 		//SpotLightStruct*     spotLightStruct = nullptr;
 		//DirLightStruct*	      dirLightStruct = nullptr;
-		ID3D11ShaderResourceView*  pointLightStructuredBuffer = nullptr;
-		ID3D11ShaderResourceView*  spotLightStructuredBuffer  = nullptr;
-		ID3D11ShaderResourceView*  dirLightStructuredBuffer   = nullptr;
+		
 
 	public: //inits etc
 
