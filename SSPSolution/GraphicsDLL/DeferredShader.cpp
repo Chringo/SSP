@@ -49,30 +49,46 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	// Compile the shaders \\
 
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Normal], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Normal], &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
 
 		return 1;
 	}
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Animated], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Animated], &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult))
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, vsAnimFilename);
 
 		return 1;
 	}
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &geoShaderBuffer, &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
-		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, gsFilename);
 		return 1;
 	}
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &pixelShaderBuffer, &errorMessage);
+#endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
-		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
+		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
 
@@ -357,6 +373,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 int DeferredShader::SetActive()
 {
+	this->m_deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+
 	//if (m_activeVariation == ShaderVariations)
 	//	return 0;
 	//Shader::SetActive(ShaderVariations);
@@ -551,10 +569,10 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	return 0;
 }
 
-int DeferredShader::Draw(Resources::Model * model, penis * component)
+int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * component)
 {
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
-	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalTransforms);
+	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalJointTransforms);
 	Resources::Mesh* meshPtr = model->GetMesh();
 	ID3D11Buffer* vBuf = meshPtr->GetAnimVerticesBuffer();
 	ID3D11Buffer* iBuf = meshPtr->GetIndicesBuffer();
@@ -687,7 +705,12 @@ int DeferredShader::InitializeGridShader(ID3D11Device * device)
 
 	// Compile the shaders \\
 
+#ifdef _DEBUG
 	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_DEBUG, 0, &pixelShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &pixelShaderBuffer, &errorMessage);
+#endif // _DEBUG
+
 	if (FAILED(hResult))
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, psFilename);

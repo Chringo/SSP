@@ -11,26 +11,37 @@ Subject::~Subject()
 {
 }
 
-int Subject::Notify(int entityID, EVENT newEvent)
+void Subject::Notify(int entityID, EVENT newEvent)
 {
-	int result = 0;
-	return result;
+	std::map<int, Observer*>::iterator itr;
+
+	for (itr = this->m_observers.begin(); itr != this->m_observers.end(); itr++)
+	{
+		itr->second->React(entityID, newEvent);
+	}
 }
 
-int Subject::AddObserver(Observer * observer)
+void Subject::AddObserver(Observer * observer, int entityID)
 {
-	int result = 0;
-	return result;
-}
-
-int Subject::RemoveObserver(Observer * observer)
-{
-	int result = 0;
-	return result;
+	this->m_observers.insert( std::pair<int, Observer*>(entityID, observer) );
 }
 
 int Subject::RemoveObserver(int entityID)
 {
-	int result = 0;
-	return result;
+	if (this->m_observers.erase(entityID) != 0)
+	{
+		return 1;
+	}
+
+	return 0;
 }
+
+//int Subject::RemoveObserver(Observer * observer)
+//{
+//	if (this->m_observers.erase(observer) != 0)
+//	{
+//		return 1;
+//	}
+//
+//	return 0;
+//}

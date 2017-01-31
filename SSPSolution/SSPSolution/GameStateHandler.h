@@ -1,8 +1,12 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATEHANDLER_H
 #include "GameState.h"
+#include "StartState.h"
 #include "LevelSelectState.h"
 #include <vector>
+
+#define START_WITHOUT_MENU
+
 class GameStateHandler
 {
 private:
@@ -17,6 +21,9 @@ public:
 	int Initialize(ComponentHandler* cHandler, Camera* cameraRef);
 
 	int Update(float dt, InputHandler* inputHandler);
+
+	//Push a state to the stack
+	int PushStateToStack(GameState* state);
 private:
 };
 

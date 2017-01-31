@@ -1,6 +1,7 @@
 #ifndef SSPEDITOR_UI_ATTRHANDLER_H
 #define SSPEDITOR_UI_ATTRHANDLER_H
 #include "ui_SSP_Editor.h"
+#include "BehaviourTypeHandler.h"
 #include <qobject.h>
 #include "Header.h"
 
@@ -43,13 +44,15 @@ namespace Ui {
 		QDoubleSpinBox* m_numericBoxes[NUM_NUMERIC_ATTR][NUM_VECTOR_INDICES] ;
 		QLineEdit*		m_nameBox;
 		QLabel*			m_uniqueID;
+		QCheckBox*		m_isStaticBox;
 		Container*		m_selection = nullptr;
+		BehaviourTypeHandler* m_BehaviourHandler = nullptr;
 	public:
 		static AttributesHandler* GetInstance(); // Singleton
 		AttributesHandler(const Ui::SSP_EditorClass* ui);
 		void Initialize(const Ui::SSP_EditorClass* ui);
 		~AttributesHandler();
-		void SetSelection(Container* selection);
+		void SetSelection(Container*& selection);
 		void Deselect();
 		void UpdateSelection();
 
@@ -65,7 +68,7 @@ namespace Ui {
 		void on_scale_X_changed(double val);
 		void on_scale_Y_changed(double val);
 		void on_scale_Z_changed(double val);
-	
+		void on_isStatic_changed(int state);
 	};
 }
 

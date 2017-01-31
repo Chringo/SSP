@@ -4,15 +4,17 @@
 class StaticEntity :
 	public Entity
 {
+private:
+	//Variables
 public:
 	StaticEntity();
 	~StaticEntity();
 
-	int Initialize();
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp = nullptr);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
-
-
+private:
+	//Functions
 };
 #endif

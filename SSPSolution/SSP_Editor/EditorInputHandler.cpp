@@ -30,7 +30,7 @@ EditorInputHandler::EditorInputHandler(
 
 	hr = DIMouse->SetDataFormat(&c_dfDIMouse);
 	hr = DIMouse->SetCooperativeLevel(handle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
-	this->m_hwnd	    = handle;
+	//this->m_hwnd	    = handle;
 	this->m_Camera	    = camera;
 
 	this->m_PreviousPos = camera->GetCameraPos();
@@ -75,25 +75,6 @@ void EditorInputHandler::KeyboardMovement(double dT)
 	}
 	if (this->m_KeysHeld[ALT] == true)
 		MouseMovement(dT);
-		
-	
-
-	//if (this->m_KeysHeld[Bools::CONTROL] == true)
-	//{
-	//	if (m_KeysHeld[Bools::D])
-	//	{
-	//		if (SelectionHandler::GetInstance()->HasSelection())
-	//		{
-	//			Container* temp = SelectionHandler::GetInstance()->GetSelected();
-	//			Container* newEntity = nullptr;
-	//			Resources::Status st = LevelHandler::GetInstance()->GetCurrentLevel()->DuplicateEntity(temp, newEntity);
-	//			if (st == Resources::Status::ST_OK)
-	//				SelectionHandler::GetInstance()->SetSelectedContainer(newEntity);
-	//		}
-	//		m_KeysHeld[Bools::D] = false;
-	//	}
-	//}
-		
 
 	if ((translateCameraY || translateCameraZ || translateCameraX))
 	{
@@ -110,7 +91,7 @@ void EditorInputHandler::KeyboardMovement(double dT)
 			float(translateCameraY),
 			float(translateCameraZ)
 		);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 	}
 }
 
@@ -119,6 +100,7 @@ void EditorInputHandler::MouseMovement(double dT)
 	DIMouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouse.currentState);
 	float pitch = 0;
 	float yaw = 0;
+	float rotationAmount = (DirectX::XM_PI / 8) / 2;
 
 		if (m_mouse.currentState.rgbButtons[0])
 		{
@@ -139,22 +121,33 @@ void EditorInputHandler::MouseMovement(double dT)
 			}
 		}
 
-	if ((yaw || pitch))
-	{
-		float rotationAmount = DirectX::XM_PI / 8;
-	
-		DirectX::XMFLOAT4 newRotation =
-			DirectX::XMFLOAT4(
-				yaw * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				pitch * DirectX::XMScalarSin(rotationAmount / 2.0f),
-				0.0f,
-				DirectX::XMScalarCos(rotationAmount / 2.0f)
-			);
-	
-		this->m_Camera->SetRotation(newRotation);
-		this->m_Camera->Update();
-	}
+	DirectX::XMFLOAT4 camUpFloat;
+	DirectX::XMFLOAT3 camPosFloat;
+	DirectX::XMFLOAT3 camTargetFloat;
+	this->m_Camera->GetCameraUp(camUpFloat);
+	camPosFloat = this->m_Camera->GetCameraPos();
+	camTargetFloat = this->m_Camera->GetLookAt();
 
+	DirectX::XMVECTOR rotationVector;
+
+	DirectX::XMVECTOR camUpVec = { 0.0f, 1.0f,0.0f,0.0f };//DirectX::XMLoadFloat4(&camUpFloat);
+	DirectX::XMVECTOR camPosVec = DirectX::XMLoadFloat3(&camPosFloat);
+	DirectX::XMVECTOR camTargetVec = DirectX::XMLoadFloat3(&camTargetFloat);
+
+	DirectX::XMVECTOR camDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(camTargetVec, camPosVec));
+
+	DirectX::XMVECTOR camRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(camDir, camUpVec));
+
+	camRight.m128_f32[3] = rotationAmount * -yaw;
+	camUpVec.m128_f32[3] = rotationAmount * pitch;
+
+	if (pitch||yaw)
+	{
+		this->m_Camera->RotateCamera(camRight);
+		this->m_Camera->RotateCamera(camUpVec);
+	};
+
+	this->m_Camera->UpdateView();
 }
 
 
@@ -194,7 +187,7 @@ void EditorInputHandler::MouseZoom(double dT)
 			0.0f,
 			float(translateCameraZ)
 		);
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 	}
 }
 
@@ -203,7 +196,7 @@ void EditorInputHandler::CameraReset()
 		this->m_Camera->Initialize(this->m_Width / this->m_Height);
 		this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
 		this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
-		this->m_Camera->Update();
+		this->m_Camera->UpdateView();
 }
 
 void EditorInputHandler::UpdateMouse()
@@ -317,9 +310,12 @@ void EditorInputHandler::ViewPortChanged(float height, float width)
 
 void EditorInputHandler::deleteModel()
 {
-	LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
-		(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
-	SelectionHandler::GetInstance()->SetSelection(false);
+	if (SelectionHandler::GetInstance()->HasSelection())
+	{
+		LevelHandler::GetInstance()->GetCurrentLevel()->RemoveModel
+			(SelectionHandler::GetInstance()->GetModelID(), SelectionHandler::GetInstance()->GetInstanceID());
+		SelectionHandler::GetInstance()->SetSelection(false);
+	}
 }
 
 void EditorInputHandler::detectInput(double dT, QKeyEvent* evt)

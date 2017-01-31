@@ -8,15 +8,19 @@
 
 enum PacketTypes {
 
-	CONNECTION_REQUEST = 0,
-	CONNECTION_ACCEPTED = 1,
-	DISCONNECT_REQUEST = 2,
-	DISCONNECT_ACCEPTED = 3,
-	UPDATE_ENTITY = 4,
-	UPDATE_ANIMATION = 5,
-	UPDATE_STATE = 6,
-	UPDATE_CAMERA = 7,
-	TEST_PACKET = 8,
+	CONNECTION_REQUEST,
+	CONNECTION_ACCEPTED,
+	DISCONNECT_REQUEST,
+	DISCONNECT_ACCEPTED,
+	UPDATE_ENTITY,
+	UPDATE_ANIMATION,
+	UPDATE_WHEEL_STATE,
+	UPDATE_BUTTON_STATE,
+	UPDATE_LEVER_STATE,
+	UPDATE_CAMERA,
+	UPDATE_GRAB,
+	SYNC_PHYSICS,
+	TEST_PACKET,
 };
 
 struct Packet
@@ -55,9 +59,9 @@ struct EntityPacket: public Packet
 {											
 	unsigned int		entityID;					
 	DirectX::XMFLOAT3	newPos;				
-	DirectX::XMFLOAT3	newVelocity;			
-	DirectX::XMFLOAT3	newRotation;			
-	DirectX::XMFLOAT3	newRotationVelocity;	
+	DirectX::XMFLOAT3	newVelocity;
+	DirectX::XMFLOAT3	newRotation;
+	//DirectX::XMVECTOR	newRotationVelocity;
 
 	void serialize(char * data)
 	{
@@ -85,10 +89,26 @@ struct AnimationPacket : public Packet
 	}
 };
 
+struct StateWheelPacket : public Packet
+{
+	unsigned int entityID;
+	int rotationState;
+	float rotationAmount;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(StateWheelPacket));
+	}
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(StateWheelPacket));
+	}
+};
+
 struct StatePacket : public Packet
 {
-	unsigned int	entityID;
-	bool			newState;		
+	unsigned int entityID;
+	bool isActive;
 
 	void serialize(char * data)
 	{
@@ -115,4 +135,36 @@ struct CameraPacket : public Packet
 	}
 };
 
+struct GrabPacket : public Packet
+{
+	unsigned int entityID;
+	int grabbedID;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(GrabPacket));
+	}
+
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(GrabPacket));
+	}
+};
+
+struct SyncPhysicPacket : public Packet
+{
+	unsigned int	startIndex;
+	unsigned int	nrOfDynamics;
+	bool			isHost;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(SyncPhysicPacket));
+	}
+
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(SyncPhysicPacket));
+	}
+};
 #endif

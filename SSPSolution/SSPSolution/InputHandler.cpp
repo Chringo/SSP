@@ -23,7 +23,7 @@ InputHandler::~InputHandler()
 	this->Shutdown();
 }
 
-void InputHandler::Initialize(int screenWidth, int screenHeight)
+void InputHandler::Initialize(int screenWidth, int screenHeight, SDL_Window * window)
 {
 	this->m_mouseX = 0;
 	this->m_mouseY = 0;
@@ -40,6 +40,10 @@ void InputHandler::Initialize(int screenWidth, int screenHeight)
 	//Save the resolution for future use
 	this->m_screenWidth = screenWidth;
 	this->m_screenHeight = screenHeight;
+	SDL_CaptureMouse(SDL_TRUE);
+	m_mouseCaptured = SDL_TRUE;
+	SDL_WarpMouseInWindow(window, m_screenWidth/2, m_screenHeight/2);
+	
 	return;
 }
 
@@ -57,10 +61,15 @@ void InputHandler::Update()
 	//If we cant, the old data will be used
 
 	this->ReadKeyboard();
-	this->ReadMouse();
-
 	this->ProcessInput();
 	return;
+}
+
+int InputHandler::captureMouse(SDL_bool boolean)
+{
+	SDL_CaptureMouse(boolean);
+	m_mouseCaptured = boolean;
+	return 0;
 }
 
 void InputHandler::SetMouseState(int button, bool state)
@@ -98,22 +107,11 @@ void InputHandler::ReadKeyboard()
 {
 	//Copy the old data
 	this->m_oldKeyboardState = this->m_keyboardState;
+	this->m_oldMouseButtonState = this->m_mouseButtonState;
 	return;
 }
 
-void InputHandler::ReadMouse()
-{
-	//Copy the old data
-	this->m_oldMouseButtonState = this->m_mouseButtonState;
-	//Read the new data
-	int xPos = 0, yPos = 0;
-	SDL_GetMouseState(&xPos, &yPos);
-	this->m_mouseDX = xPos - this->m_mouseX;
-	this->m_mouseDY = yPos - this->m_mouseY;
-	this->m_mouseX = xPos;
-	this->m_mouseY = yPos;
-	return;
-}
+
 
 void InputHandler::ProcessInput()
 {
@@ -245,6 +243,29 @@ void InputHandler::ApplyMouseWheel(int x, int y)
 	this->m_mouseWheelY += y;
 	return;
 }
+
+void InputHandler::mouseMovement(SDL_Window * window)
+{
+	if (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_CAPTURE)
+	{
+		int tmpx, tmpy;
+
+		int midx = this->m_screenWidth / 2;
+		int midy = this->m_screenHeight / 2;
+
+		
+		SDL_ShowCursor(SDL_DISABLE);
+		SDL_GetMouseState(&tmpx, &tmpy);
+
+		m_mouseDX = (midx - tmpx);
+		m_mouseDY = (midy - tmpy);
+		
+		SDL_WarpMouseInWindow(window, midx, midy);
+		//SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+}
+
+
 
 DirectX::XMFLOAT2 InputHandler::GetMousePos()
 {

@@ -21,7 +21,7 @@ namespace Resources {
 
 		std::unordered_map<unsigned int, ResourceContainer> m_skeletons;
 		std::deque <Skeleton*> m_emptyContainers;
-		std::vector<Skeleton>  m_containers;
+		std::vector<std::vector<Skeleton>*>  m_containers;
 		ID3D11Device*		   m_device		 = nullptr;
 		AnimationHandler*	   m_animHandler = nullptr;
 		Skeleton*			   m_placeHolder = nullptr;
@@ -35,6 +35,8 @@ namespace Resources {
 
 		void SetDevice(ID3D11Device* device) { this->m_device = device; };
 		virtual ~SkeletonHandler();
+	private:
+		Skeleton* GetEmptyContainer();
 	};
 
 }

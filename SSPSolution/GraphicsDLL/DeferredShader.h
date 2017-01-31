@@ -1,5 +1,5 @@
-#ifndef GRAPHICSDLL_DeferredShader
-#define GRAPHICSDLL_DeferredShader
+#ifndef GRAPHICSDLL_SHADERS_DeferredShader_H
+#define GRAPHICSDLL_SHADERS_DeferredShader_H
 
 #include "ConstantBufferHandler.h"
 #include "Shader.h"
@@ -50,7 +50,7 @@ public:
 
 	int Draw(Resources::Model* model);
 	int Draw(Resources::Model* model, GraphicsComponent * component);
-	int Draw(Resources::Model* model, penis * component);
+	int Draw(Resources::Model* model, GraphicsAnimationComponent * component);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);

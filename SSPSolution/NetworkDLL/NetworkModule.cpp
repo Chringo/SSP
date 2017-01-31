@@ -94,6 +94,7 @@ int NetworkModule::Initialize()
 	this->GetMyIp();					// Set my_ip to local ip-address
 	this->time_start = std::clock();	// Start the network system clock
 	
+	this->isHost = true;
 	printf("Network module Initialized\n");
 
 	return 1;
@@ -234,6 +235,7 @@ int NetworkModule::Join(char* ip)
 		printf("client %d has been connected to the this client\n", this->client_id);
 		this->client_id++;
 
+		this->isHost = false;	//If you joined another client, you are not host
 		return 1;
 	}
 
@@ -269,7 +271,7 @@ void NetworkModule::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newVelocity, DirectX::XMFLOAT3 newRotation, DirectX::XMFLOAT3 newRotationVelocity)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -279,10 +281,11 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMFLO
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
-	packet.newPos = newPos;
-	packet.newRotation = newRotation;
-	packet.newRotationVelocity = newRotationVelocity;
-	packet.newVelocity = newVelocity;
+	DirectX::XMStoreFloat3(&packet.newPos, newPos);
+	DirectX::XMStoreFloat3(&packet.newRotation, newRotation);
+	DirectX::XMStoreFloat3(&packet.newVelocity, newVelocity);
+	//packet.newRotationVelocity = newRotationVelocity;
+
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -303,7 +306,24 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID)
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
+void NetworkModule::SendStateWheelPacket(unsigned int entityID, int rotationState, float rotationAmount)
+{
+	const unsigned int packet_size = sizeof(StateWheelPacket);
+	char packet_data[packet_size];
+
+	StateWheelPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_WHEEL_STATE;
+	packet.entityID = entityID;
+	packet.rotationState = rotationState;
+	packet.rotationAmount = rotationAmount;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendStateButtonPacket(unsigned int entityID, bool isActive)
 {
 	const unsigned int packet_size = sizeof(StatePacket);
 	char packet_data[packet_size];
@@ -311,9 +331,25 @@ void NetworkModule::SendStatePacket(unsigned int entityID, bool newState)
 	StatePacket packet;
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
-	packet.packet_type = UPDATE_STATE;
+	packet.packet_type = UPDATE_BUTTON_STATE;
 	packet.entityID = entityID;
-	packet.newState = newState;
+	packet.isActive = isActive;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendStateLeverPacket(unsigned int entityID, bool isActive)
+{
+	const unsigned int packet_size = sizeof(StatePacket);
+	char packet_data[packet_size];
+
+	StatePacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_LEVER_STATE;
+	packet.entityID = entityID;
+	packet.isActive = isActive;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -330,6 +366,39 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	packet.packet_type = UPDATE_CAMERA;
 	packet.pos = newPos;
 	//packet.rotation = newRotation;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+{
+	const unsigned int packet_size = sizeof(SyncPhysicPacket);
+	char packet_data[packet_size];
+
+	SyncPhysicPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = SYNC_PHYSICS;
+	packet.startIndex = startIndex;
+	packet.nrOfDynamics = nrOfDynamics;
+	packet.isHost = isHost;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
+void NetworkModule::SendGrabPacket(unsigned int entityID, unsigned int grabbedID)
+{
+	const unsigned int packet_size = sizeof(GrabPacket);
+	char packet_data[packet_size];
+
+	GrabPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_GRAB;
+	packet.entityID = entityID;
+	packet.grabbedID = grabbedID;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -387,8 +456,11 @@ void NetworkModule::ReadMessagesFromClients()
 	SyncPacket syP;
 	EntityPacket eP;
 	AnimationPacket aP;
+	StateWheelPacket swP;
 	StatePacket sP;
 	CameraPacket cP;
+	GrabPacket gP;
+	SyncPhysicPacket sPP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
 	
@@ -398,7 +470,9 @@ void NetworkModule::ReadMessagesFromClients()
 		
 		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
-		
+		int data_read = 0;
+		printf("\n\n\n\n\n %d \n",data_length);
+		printf("\n\n\n\n\n\n\n %d, %d \n", sizeof(AnimationPacket), sizeof(EntityPacket));
 		// If there was data
 		if (data_length <= 0)
 		{
@@ -406,129 +480,174 @@ void NetworkModule::ReadMessagesFromClients()
 			iter++;
 			continue;
 		}
-
-		//Read the header (skip the first 4 bytes since it is virtual function information)
-		memcpy(&header, &network_data[4], sizeof(PacketTypes));
-
-		switch (header)
+		while( data_read != data_length)
 		{
+			//Read the header (skip the first 4 bytes since it is virtual function information)
+			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
 
-		case CONNECTION_REQUEST:
-	
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			this->SendSyncPacket();
-
-			//DEBUG
-			//printf("Host received connection packet from client\n");
-
-			iter++;
-			break;
-
-		case CONNECTION_ACCEPTED:
-	
-			syP.deserialize(network_data);	// Read the binary data into the object
-			
-			// Sync clock (Still not used)
-			this->time_current = (int)syP.timestamp;
-			this->time_start = syP.time_start;
-			
-			this->SendFlagPacket(TEST_PACKET);
-
-			//DEBUG
-			//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
-
-			iter++;
-			break;
-
-		case DISCONNECT_REQUEST:
-					
-			p.deserialize(network_data);	// Read the binary data into the object
-
-			this->SendFlagPacket(DISCONNECT_ACCEPTED);
-			this->RemoveClient(iter->first);	// iter->first is the ID
-
-			//DEBUG
-			//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
-
-			iter = this->connectedClients.end();
-			break;
-
-		case DISCONNECT_ACCEPTED:
-			
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			this->RemoveClient(iter->first);
-
-			//DEBUF
-			//printf("Client recived: DISCONNECT_ACCEPTED\n");
-
-			iter = this->connectedClients.end();
-			break;
-
-		case UPDATE_ENTITY:
-
-			eP.deserialize(network_data);	// Read the binary data into the object
-			
-			this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
-
-			//DEBUG
-			//printf("Recived ENTITY_UPDATE packet\n");
-
-			iter++;
-			break;
-
-		case UPDATE_ANIMATION:
-
-			aP.deserialize(network_data);	// Read the binary data into the object
-
-			this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
-
-			//DEBUG
-			//printf("Recived ANIMATION_UPDATE packet\n");
-
-			iter++;
-			break;
-
-		case UPDATE_STATE:
-
-			sP.deserialize(network_data);	// Read the binary data into the object
-			
-			this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
-			
-			//DEBUG
-			//printf("Recived STATE_UPDATE packet\n");
-
-			iter++;
-			break;
+#pragma region
 		
-		case UPDATE_CAMERA:
+			switch (header)
+			{
 
-			cP.deserialize(network_data);	// Read the binary data into the object
+			case CONNECTION_REQUEST:
 
-			this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
-			
-			//DEBUG
-			//printf("Recived CAMERA_UPDATE packet\n");
-			
-			iter++;
-			break;
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				data_read += sizeof(Packet);
+				//DEBUG
+				//printf("Host received connection packet from client\n");
 
-		case TEST_PACKET:
+				break;
 
-			p.deserialize(network_data);	// Read the binary data into the object
-			
-			// DEBUG
-			//printf("Recived TEST_PACKET packet\n");
-			//printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
+			case CONNECTION_ACCEPTED:
 
-			iter++;
-			break;
+				syP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-		default:
-			printf("Unkown packet type %d\n", header);
+				// Sync clock (Still not used)
+				this->time_current = (int)syP.timestamp;
+				this->time_start = syP.time_start;
+				data_read += sizeof(SyncPacket);
+				//DEBUG
+				//printf("Client received CONNECTION_ACCEPTED packet from Host\n");
+
+				break;
+
+			case DISCONNECT_REQUEST:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->SendFlagPacket(DISCONNECT_ACCEPTED);
+				closesocket(iter->second);
+				this->RemoveClient(iter->first);	// iter->first is the ID
+				
+				//DEBUG
+				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
+
+				iter = this->connectedClients.end();
+				data_read = data_length;
+				break;
+
+			case DISCONNECT_ACCEPTED:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				closesocket(iter->second);
+				this->RemoveClient(iter->first);
+				//DEBUF
+				//printf("Client recived: DISCONNECT_ACCEPTED\n");
+
+				iter = this->connectedClients.end();
+				data_read = data_length;
+				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
+
+				break;
+
+			case UPDATE_ENTITY:
+
+				eP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Entity.push_back(eP);	// Push the packet to the correct buffer
+				data_read += sizeof(EntityPacket);
+				//DEBUG
+				//printf("Recived ENTITY_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_ANIMATION:
+
+				aP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Animation.push_back(aP);	// Push the packet to the correct buffer
+				data_read += sizeof(AnimationPacket);
+				//DEBUG
+				//printf("Recived ANIMATION_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_WHEEL_STATE:
+
+				swP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_WheelState.push_back(swP);	// Push the packet to the correct buffer
+				data_read += sizeof(StateWheelPacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_BUTTON_STATE:
+
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
+				data_read += sizeof(StatePacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_LEVER_STATE:
+
+				sP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_State.push_back(sP);	// Push the packet to the correct buffer
+				data_read += sizeof(StatePacket);
+				//DEBUG
+				//printf("Recived STATE_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_CAMERA:
+
+				cP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Camera.push_back(cP);	// Push the packet to the correct buffer
+				data_read += sizeof(CameraPacket);
+				//DEBUG
+				//printf("Recived CAMERA_UPDATE packet\n");
+
+				break;
+
+			case UPDATE_GRAB:
+				gP.deserialize(&network_data[data_read]);
+
+				this->packet_Buffer_Grabbed.push_back(gP);
+				data_read += sizeof(GrabPacket);
+
+				break;
+
+			case SYNC_PHYSICS:
+
+				sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
+				data_read += sizeof(SyncPhysicPacket);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
+			case TEST_PACKET:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				data_read += sizeof(Packet);
+				// DEBUG
+				//printf("Recived TEST_PACKET packet\n");
+				//printf("PacketID: %d, Timestamp: %f\n", p.packet_ID, p.timestamp);
+
+				break;
+
+			default:
+				printf("Unkown packet type %d\n", header);
+				data_read = data_length;	//Break
+			}
+#pragma endregion ALL_PACKETS
 		}
-	}
+
+		if (iter != this->connectedClients.end()) {
+			iter++;
+		}
+		
+}
 
 }
 
@@ -591,6 +710,9 @@ void NetworkModule::SendToAll(char * packets, int totalSize)
 		{
 			printf("send failed with error: %d\n", WSAGetLastError());
 			closesocket(currentSocket);
+			this->RemoveClient(iter->first);
+			iter = this->connectedClients.end();
+			break;
 		}
 		else	//If the message was sent, incresse the packet ID
 		{
@@ -674,6 +796,28 @@ std::list<AnimationPacket> NetworkModule::PacketBuffer_GetAnimationPackets()
 	return result;
 }
 
+std::list<StateWheelPacket> NetworkModule::PacketBuffer_GetWheelStatePackets()
+{
+	std::list<StateWheelPacket> result;
+	std::list<StateWheelPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_WheelState.begin(); iter != this->packet_Buffer_WheelState.end();)
+	{
+		if (iter->packet_type == UPDATE_WHEEL_STATE)
+		{
+			result.push_back(*iter);
+			iter = this->packet_Buffer_WheelState.erase(iter);	//Returns the next element after the errased element		
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
 std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 {
 	std::list<StatePacket> result;
@@ -681,7 +825,7 @@ std::list<StatePacket> NetworkModule::PacketBuffer_GetStatePackets()
 
 	for (iter = this->packet_Buffer_State.begin(); iter != this->packet_Buffer_State.end();)
 	{
-		if (iter->packet_type == UPDATE_STATE)
+		if (iter->packet_type == UPDATE_BUTTON_STATE || iter->packet_type == UPDATE_LEVER_STATE)
 		{
 			result.push_back(*iter);
 			iter = this->packet_Buffer_State.erase(iter);	//Returns the next element after the errased element		
@@ -718,7 +862,56 @@ std::list<CameraPacket> NetworkModule::PacketBuffer_GetCameraPackets()
 	return result;
 }
 
+std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
+{
+	std::list<SyncPhysicPacket> result;
+	std::list<SyncPhysicPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Physic.begin(); iter != this->packet_Buffer_Physic.end();)
+	{
+		if (iter->packet_type == UPDATE_CAMERA)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Physic.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
+{
+	std::list<GrabPacket> result;
+	std::list<GrabPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Grabbed.begin(); iter != this->packet_Buffer_Grabbed.end();)
+	{
+		if (iter->packet_type == UPDATE_GRAB)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Grabbed.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
 int NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
+}
+
+bool NetworkModule::IsHost()
+{
+	return  this->isHost;
 }

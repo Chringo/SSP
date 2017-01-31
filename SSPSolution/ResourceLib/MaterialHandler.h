@@ -20,7 +20,7 @@ namespace Resources
 	private:
 		std::unordered_map<unsigned int, ResourceContainer> m_materials;
 		std::deque<Material*> m_emptyContainers;
-		std::vector<Material> m_containers;
+		std::vector<std::vector<Material>*> m_containers;
 		ID3D11Device* m_device = nullptr;
 
 		Material* m_placeholder = nullptr;

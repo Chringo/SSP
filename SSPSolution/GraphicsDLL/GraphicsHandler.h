@@ -9,6 +9,7 @@
 #include "ConstantBufferHandler.h"
 #include "ShaderControl.h"
 #include "DebugRenderer.h"
+#include "UIHandler.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -29,6 +30,7 @@ private:
 		T_AABB,
 		T_PLANE,
 		T_SPHERE,
+		T_WAYPOINT,
 		T_NUM_TYPES
 	};
 	DebugRenderer m_debugRender;
@@ -37,8 +39,10 @@ private:
 	std::vector<Plane*> planes;
 	std::vector<Sphere*> spheres;
 
+	std::vector<int> numWaypoints;
 	std::vector<DirectX::XMVECTOR*> positions[T_NUM_TYPES];
 	std::vector<DirectX::XMVECTOR>  colors[T_NUM_TYPES];
+	
 	
 	ID3D11DepthStencilView* dsv;
 public:
@@ -46,6 +50,7 @@ public:
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 private:
 	void RenderBoundingBoxes(bool noClip = true);
 #endif // _DEBUG
@@ -56,11 +61,12 @@ private:
 	DeferredShader*			m_deferredSH;
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
+	UIHandler*				m_uiHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
 	
 
-	penis** m_animGraphicsComponents = nullptr;
+	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
@@ -88,7 +94,10 @@ public:
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
 
+	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
+	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
+	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
 
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);

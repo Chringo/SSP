@@ -188,17 +188,21 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	LevelData::MainLevelHeader header;
 	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
 
-	size_t totalMem = header.resAmount * sizeof(LevelData::ResourceHeader) + //Calculate file size
-		header.entityAmount * sizeof(LevelData::EntityHeader) +
-		header.lightAmount * sizeof(LevelData::LightHeader);
+	size_t totalMem = 
+		sizeof(LevelData::SpawnHeader) * 2 +
+		header.resAmount * sizeof(LevelData::ResourceHeader) +		 //Calculate file size
+		header.entityAmount		 * sizeof(LevelData::EntityHeader) +
+		header.lightAmount       * sizeof(LevelData::LightHeader)  + 
+		header.AiComponentAmount * sizeof(LevelData::AiHeader);
 
 	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, totalMem); //get memorychunk
 	size_t offset = 0;
 	
-	
-	level.numResources  = header.resAmount;
+	level.numResources  = header.resAmount; 
 	level.numLights		= header.lightAmount;
 	level.numEntities   = header.entityAmount;
+	level.numAI			= header.AiComponentAmount;
+	level.numCheckpoints = header.checkpointAmount;
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
@@ -206,12 +210,42 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	level.resources = (LevelData::ResourceHeader*) data; //put data into level variable
 	offset += resSize;
 
+	//Spawn points
+	file.read(data + offset, sizeof(LevelData::SpawnHeader) * 2);
+	level.spawns[0] = *(LevelData::SpawnHeader*)(data + offset);
+	level.spawns[1] = *(LevelData::SpawnHeader*)(data + offset + sizeof(LevelData::SpawnHeader)); //Put the spawn data into the level struct
+	offset += sizeof(LevelData::SpawnHeader) * 2;
+
 	//Model Entities
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;	  //memsize
 	file.read(data + offset , modelSize);										  // read all the entity data
 	level.entities = (LevelData::EntityHeader*) (data + offset);
 	offset += modelSize;
 
+	//AI Entities
+	if (header.AiComponentAmount > 0)
+	{
+		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
+		file.read(data + offset, aiSize);							//read all aiComponents					
+		level.aiComponents = (LevelData::AiHeader*) (data + offset);
+		offset += aiSize;
+	}
+
+	if (header.checkpointAmount > 0)
+	{
+		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
+		file.read(data + offset, checkpointSize);
+		level.checkpoints = (LevelData::CheckpointHeader*) (data + offset);
+		offset += checkpointSize;
+	}
+
+	if (header.buttonAmount > 0)
+	{
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.checkpointAmount;
+		file.read(data + offset, buttonSize);
+		level.buttons = (LevelData::ButtonHeader*) (data + offset);
+		offset += buttonSize;
+	};
 	//Lights
 	/*
 		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize

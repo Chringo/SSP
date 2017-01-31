@@ -11,10 +11,12 @@ StaticEntity::~StaticEntity()
 {
 }
 
-int StaticEntity::Initialize()
+int StaticEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
 {
+	this->InitializeBase(entityID, pComp, gComp, aiComp);
 	return 0;
 }
+
 
 int StaticEntity::Update(float dT, InputHandler * inputHandler)
 {

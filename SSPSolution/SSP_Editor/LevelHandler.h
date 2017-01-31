@@ -32,10 +32,17 @@ private:
 	LevelData::MainLevelHeader GetMainHeader();
 	LevelData::LevelStatus GetEntityData(char* dataPtr);
 	LevelData::LevelStatus GetResourceData(char* dataPtr);
+	LevelData::LevelStatus GetSpawnData(char* dataPtr);
+	LevelData::LevelStatus GetAiData(char* dataPtr);
+	LevelData::LevelStatus GetCheckpointData(char* dataPtr);
+	LevelData::LevelStatus GetButtonData(char* dataPtr);
 #pragma endregion
 
 #pragma region Load Functions
 	LevelData::LevelStatus LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities);
+	LevelData::LevelStatus LoadAiComponents(LevelData::AiHeader* dataPtr, size_t numComponents);
+	LevelData::LevelStatus LoadCheckpointComponents(LevelData::CheckpointHeader* dataPtr, size_t numComponents);
+	LevelData::LevelStatus LoadTriggerComponents(LevelData::ButtonHeader* dataPtr, size_t numComponents);
 #pragma endregion
  };
 

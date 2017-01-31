@@ -16,7 +16,7 @@ Ui::AttributesHandler * Ui::AttributesHandler::GetInstance()
 Ui::AttributesHandler::AttributesHandler(const Ui::SSP_EditorClass * ui)
 {
 	this->Initialize(ui);
-	Deselect();
+
 }
 
 void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
@@ -46,33 +46,33 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_nameBox = ui->lineEdit;
 
 	m_uniqueID = ui->uniqueIDLabel;
+
+	m_isStaticBox = ui->isStaticCheck;
+	connect(ui->isStaticCheck, SIGNAL(stateChanged(int)), this, SLOT(on_isStatic_changed(int)));
+	m_BehaviourHandler = new BehaviourTypeHandler(ui);
+	m_BehaviourHandler->Initialize(ui);
+
+	Deselect();
 }
 
 Ui::AttributesHandler::~AttributesHandler()
 {
+	delete this->m_BehaviourHandler;
 }
 
-void Ui::AttributesHandler::SetSelection(Container * selection)
+void Ui::AttributesHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
+		if (m_selection != nullptr) {
+
+		if (selection->internalID == m_selection->internalID)
+			return;
+		}
 		m_selection = selection;
-		m_numericBoxes[TRANSLATE][X]->setValue(selection->position.m128_f32[X]);
-		m_numericBoxes[TRANSLATE][Y]->setValue(selection->position.m128_f32[Y]);
-		m_numericBoxes[TRANSLATE][Z]->setValue(selection->position.m128_f32[Z]);
-
-
-		m_numericBoxes[ROTATE][X]->setValue(selection->rotation.m128_f32[X]);
-		m_numericBoxes[ROTATE][Y]->setValue(selection->rotation.m128_f32[Y]);
-		m_numericBoxes[ROTATE][Z]->setValue(selection->rotation.m128_f32[Z]);
-
-		m_numericBoxes[SCALE][X]->setValue(1.0f);
-		m_numericBoxes[SCALE][Y]->setValue(1.0f);
-		m_numericBoxes[SCALE][Z]->setValue(1.0f);
-
-		m_nameBox->setText("oops");
-		
-		m_uniqueID->setText(QString::number(selection->internalID));
+		UpdateSelection();
+		m_BehaviourHandler->SetSelection(selection);
+	
 	}
 
 }
@@ -94,74 +94,151 @@ void Ui::AttributesHandler::Deselect()
 	m_numericBoxes[SCALE][Z]->setValue(0);
 
 	m_uniqueID->setText(QString::number(0));
+	m_BehaviourHandler->Deselect();
 
 }
 
 void Ui::AttributesHandler::UpdateSelection()
 {
-	SetSelection(m_selection); // This function updates. no need to rewrite
+
+	if (m_selection == nullptr)
+		return;
+	m_numericBoxes[TRANSLATE][X]->setValue(m_selection->position.m128_f32[X]);
+	m_numericBoxes[TRANSLATE][Y]->setValue(m_selection->position.m128_f32[Y]);
+	m_numericBoxes[TRANSLATE][Z]->setValue(m_selection->position.m128_f32[Z]);
+
+
+	m_numericBoxes[ROTATE][X]->setValue(m_selection->rotation.m128_f32[X]);
+	m_numericBoxes[ROTATE][Y]->setValue(m_selection->rotation.m128_f32[Y]);
+	m_numericBoxes[ROTATE][Z]->setValue(m_selection->rotation.m128_f32[Z]);
+
+
+
+	if (m_selection->type == CHECKPOINT)
+	{
+		m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
+		m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
+		m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+	}
+	else
+	{
+		m_numericBoxes[SCALE][X]->setValue(1.0f);
+		m_numericBoxes[SCALE][Y]->setValue(1.0f);
+		m_numericBoxes[SCALE][Z]->setValue(1.0f);
+	}
+
+	m_nameBox->setText("oops");
+
+	m_uniqueID->setText(QString::number(m_selection->internalID));
+
+	m_isStaticBox->setChecked(m_selection->isStatic);
+
+	//SetSelection(m_selection); // This function updates. no need to rewrite
 }
 
 void Ui::AttributesHandler::on_translate_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->position.m128_f32[X] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[X] != float(val)) {
+				m_selection->position.m128_f32[X] = float(val);
+				m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_translate_Y_changed(double val)
 {
 	if(m_selection != nullptr){
-		m_selection->position.m128_f32[Y] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[Y] != float(val)) {
+			m_selection->position.m128_f32[Y] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_translate_Z_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->position.m128_f32[Z] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->position.m128_f32[Z] != float(val)) {
+			m_selection->position.m128_f32[Z] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[X] = float(val);
+		if (m_selection->rotation.m128_f32[X] != float(val)){
+			m_selection->rotation.m128_f32[X] = float(val);
 		m_selection->isDirty = true;
+	}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_Y_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[Y] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->rotation.m128_f32[Y] != float(val)) {
+			m_selection->rotation.m128_f32[Y] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_rotation_Z_changed(double val)
 {
 	if (m_selection != nullptr) {
-		m_selection->rotation.m128_f32[Z] = float(val);
-		m_selection->isDirty = true;
+		if (m_selection->rotation.m128_f32[Z] != float(val)) {
+			m_selection->rotation.m128_f32[Z] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
 void Ui::AttributesHandler::on_scale_X_changed(double val)
 {
 	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[0] = float(val);
+			m_selection->isDirty = true;
+		}
+
 	}
 }
 
 void Ui::AttributesHandler::on_scale_Y_changed(double val)
 {
-	if (m_selection != nullptr) {}
+	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[1] = float(val);
+			m_selection->isDirty = true;
+		}
+	}
 }
 
 void Ui::AttributesHandler::on_scale_Z_changed(double val)
 {
-	if (m_selection != nullptr) {}
+	if (m_selection != nullptr) {
+		if (m_selection->type == CHECKPOINT) {
+			((CheckpointContainer*)m_selection)->scale.m128_f32[2] = float(val);
+			m_selection->isDirty = true;
+		}
+	}
+}
+
+void Ui::AttributesHandler::on_isStatic_changed(int state)
+{
+	if (m_selection != nullptr)
+	{
+		switch (Qt::CheckState(state)) {
+
+		case Qt::Unchecked:
+			m_selection->isStatic = false;
+			break;
+		case Qt::Checked:
+			m_selection->isStatic = true;
+			break;
+		}
+	}
 }

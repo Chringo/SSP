@@ -10,11 +10,9 @@
 //Project DLLs
 #include "../GraphicsDLL/GraphicsHandler.h"
 #include "../GraphicsDLL/Camera.h"
-#include "Animation.h"
+#include "../GraphicsDLL/AnimationHandler.h"
 #include "../physicsDLL/PhysicsHandler.h"
-#include "../NetworkDLL/NetworkModule.h"
 #include "../AIDLL/AIHandler.h"
-#pragma comment (lib, "../Debug/PhysicsDLL")
 #pragma comment (lib, "../Debug/NetworkDLL")
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -30,7 +28,6 @@ private:
 	LPCWSTR m_applicationName;
 	//This is the window we render to
 	SDL_Window* m_window;
-
 	GameStateHandler m_gsh;
 
 	Camera* m_camera;
@@ -39,14 +36,12 @@ private:
 	//These are the subsystems
 	GraphicsHandler* m_graphicsHandler;
 	PhysicsHandler m_physicsHandler; //this is a physicsHandler
+	AIHandler m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
-	NetworkModule m_networkModule;
-	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
+	
 	/*Testing for playing animation.*/
-	Animation* m_Anim;
-	/*AI*/
-	AIHandler* m_AIHandler;
+	AnimationHandler* m_Anim;
 public:
 	System();
 	~System();
@@ -57,13 +52,15 @@ public:
 	int Run();
 	int Update(float deltaTime);
 
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
+
 private:
 	int HandleEvents();
 	int FullscreenToggle();
 
 	//temporary functions
 	void LockCameraToPlayer(float translateCameraX, float translateCameraY, float translateCameraZ);
-	void CreateDummyObjects();
 };
 
 #endif

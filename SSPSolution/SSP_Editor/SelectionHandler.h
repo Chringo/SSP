@@ -30,6 +30,7 @@ private:
 public:
 	SelectionHandler();
 	~SelectionHandler();
+	Ui::AttributesHandler* m_attributesHandler;
 
 	void Initialize(Camera * camera,
 		int winWidth,
@@ -40,11 +41,12 @@ public:
 	static SelectionHandler* GetInstance();
 	void Update();
 	bool NeedsUpdate();
+	DirectX::XMVECTOR * GetOBBCenterPosition() { return this->m_transformWidget.GetOBBCenterPostition(); };
 
 	Container * GetSelected();
 	bool HasSelection();
 	void SetSelection(bool selection);
-	void SetSelectedContainer(Container* selection);
+	void SetSelectedContainer(Container*& selection);
 	void SetActiveAxis(int axis);
 
 	const unsigned int GetModelID();
@@ -66,6 +68,7 @@ public:
 private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::vector<Resources::Model*>* m_modelPtr;
+	std::vector<CheckpointContainer*>* m_checkpointPtr;
 
 	bool m_IsDirty = true;
 	PickRay m_ray;
