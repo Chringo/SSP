@@ -52,6 +52,8 @@ private:
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
 
+	int lol; //Needed to prevent heap corruption, don't ask why
+
 	static DebugHandler* m_instance;
 	DebugHandler();
 
