@@ -1238,7 +1238,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_anim);// Entity needs its ID
 
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
-			aiEntities.push_back(tde);// Push entity to initialize AIComp later
 		}
 	}
 	for (size_t i = 0; i < data->numAI; i++)
@@ -1308,34 +1307,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DynamicEntity* tde = new DynamicEntity();
 		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
 		m_dynamicEntitys.push_back(tde);
-	}
-	for (size_t A = 0; A < aiEntities.size(); A++)
-	{
-		for (size_t B = 0; B < data->numAI; B++)
-		{
-			if (data->aiComponents[B].EntityID == aiEntities[A]->GetEntityID())
-			{
-				aiEntities[A]->GetPhysicsComponent()->PC_steadfast = true;
-				AIComponent* temp = m_cHandler->GetAIComponent();
-				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
-				temp->AC_entityID = data->aiComponents[A].EntityID;
-				temp->AC_time = data->aiComponents[A].time;
-				temp->AC_speed = data->aiComponents[A].speed;
-				temp->AC_pattern = data->aiComponents[A].pattern;
-				temp->AC_nrOfWaypoint = data->aiComponents[A].nrOfWaypoints;
-				for (int x = 0; x < temp->AC_nrOfWaypoint; x++)
-				{
-					temp->AC_waypoints[x] = {
-						data->aiComponents[A].wayPoints[x][0],
-						data->aiComponents[A].wayPoints[x][1],
-						data->aiComponents[A].wayPoints[x][2]
-					};
-				}
-				temp->AC_position = temp->AC_waypoints[0];
-				aiEntities[A]->GetPhysicsComponent()->PC_pos = temp->AC_position;
-				aiEntities[A]->SetAIComponent(temp);
-			}
-		}
 	}
 
 	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
