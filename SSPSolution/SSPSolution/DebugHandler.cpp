@@ -183,7 +183,7 @@ int DebugHandler::DisplayConsole(float dTime)
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
 
-		std::cout << std::fixed << std::setprecision(1) << iter->label.c_str() << ": [" << iter->minTime << "] "
+		std::cout << std::fixed << std::setprecision(1) << iter->label << ": [" << iter->minTime << "] "
 			<< time << " [" << iter->maxTime << "] us, " 
 			<< (float)((time / (float)elapsedTime.QuadPart) * 100) << "%";
 		GetConsoleScreenBufferInfo(console, &screen);
@@ -235,6 +235,9 @@ void DebugHandler::Shutdown()
 {
 	if (m_instance != nullptr)
 	{
+		this->m_timers.clear();
+		this->m_labelsValues.clear();
+		this->m_customValues.clear();
 		delete this->m_instance;
 	}
 }
