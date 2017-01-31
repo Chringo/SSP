@@ -935,9 +935,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	{
+		// Reset player-position to spawn
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-
+		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 	
