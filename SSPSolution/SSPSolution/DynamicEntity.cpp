@@ -9,9 +9,9 @@ DynamicEntity::~DynamicEntity()
 }
 
 
-int DynamicEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent* aiComp)
+int DynamicEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, AIComponent* aiComp)
 {
-	this->InitializeBase(entityID, pComp, gComp, aiComp);
+	this->InitializeBase(entityID, pComp, gComp, aComp, aiComp);
 	return 0;
 }
 

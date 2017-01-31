@@ -9,14 +9,15 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, SoundHandler* soundHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler, SoundHandler* soundHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
+	this->m_aHandler = aHandler;
 	this->m_soundHandler = soundHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || soundHandler == nullptr)
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr || soundHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -29,6 +30,15 @@ GraphicsComponent * ComponentHandler::GetGraphicsComponent()
 		graphicsComponent = this->m_graphicsHandler->GetNextAvailableComponent();
 	}
 	return graphicsComponent;
+}
+GraphicsAnimationComponent * ComponentHandler::GetGraphicsAnimationComponent()
+{
+	GraphicsAnimationComponent * graphicsAnimComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsAnimComponent = this->m_graphicsHandler->GetNextAvailableAnimationComponent();
+	}
+	return graphicsAnimComponent;
 }
 
 PhysicsComponent * ComponentHandler::GetPhysicsComponent()
@@ -71,6 +81,16 @@ AIComponent * ComponentHandler::GetAIComponent()
 	return newComp;
 }
 
+AnimationComponent * ComponentHandler::GetAnimationComponent()
+{
+	AnimationComponent* animComp = nullptr;
+	if (this->m_aHandler != nullptr)
+	{
+		animComp = this->m_aHandler->GetNextAvailableComponent();
+	}
+	return animComp;
+}
+
 SoundComponent2D * ComponentHandler::GetSoundComponent2D()
 {
 	return this->m_soundHandler->GetSoundComponent2D();
@@ -86,6 +106,11 @@ void ComponentHandler::UpdateGraphicsComponents()
 	this->m_graphicsHandler->UpdateComponentList();
 }
 
+void ComponentHandler::UpdateGraphicsAnimationComponents()
+{
+	this->m_graphicsHandler->UpdateAnimComponentList();
+}
+
 void ComponentHandler::UpdateAIComponents()
 {
 	this->m_soundHandler->UpdateSoundHandler();
@@ -98,6 +123,12 @@ void ComponentHandler::UpdateSoundHandler()
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
+	return;
+}
+
+void ComponentHandler::SetGraphicsAnimationComponentListSize(int gCompSize)
+{
+	this->m_graphicsHandler->SetAnimComponentArraySize(gCompSize);
 	return;
 }
 

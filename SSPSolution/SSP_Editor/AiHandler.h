@@ -17,16 +17,17 @@ When a new level is created. This class is cleared of its data.
 class AiHandler
 {
 private:
-	std::vector<AIComponent*>m_Components;
+	std::vector<AiContainer*>m_Components;
 public:
 	AiHandler();
 	virtual ~AiHandler();
 
 	//Path Component Functions
-	AIComponent* NewPathComponent();
-	AIComponent* GetPathComponent(int EntityID);
-	std::vector<AIComponent*>* GetAllPathComponents();
+	AiContainer* NewPathComponent();
+	AiContainer* GetPathComponent(int EntityID);
+	std::vector<AiContainer*>* GetAllPathComponents();
 	void DeletePathComponent(int EntityID);
+	void UpdatePathComponent(int entityID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	/////////////////////////////////////////////
 
 	void Destroy(); //Used when a new level is loaded. 

@@ -153,29 +153,35 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				*axisColors[i]
 			);
 		}
-	}
-
-	
-	std::vector<AIComponent*>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
+	}	
+	std::vector<AiContainer*>* container = m_Communicator->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
+		this->m_Communicator->GetGraphicsHandler()->RenderFromEditor(
+			container->at(i)->component.modelPtr,
+			&container->at(i)->component);
+
 		GraphicsHptr->RenderBoundingVolume(
-			container->at(i)->AC_waypoints, 
-			container->at(i)->AC_nrOfWaypoint);
+			container->at(i)->aiComponent.AC_waypoints, 
+			container->at(i)->aiComponent.AC_nrOfWaypoint);
+
+		if (container->at(i)->isDirty)
+		{
+			Container* ptr = (Container*)container->at(i);
+			SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
+			this->m_Communicator->UpdateModel(container->at(i)->component.modelID, container->at(i)->internalID, container->at(i)->position, container->at(i)->rotation);
+
+
+
+			if (SelectionHandler::GetInstance()->HasSelection())
+			{
+
+				SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+				SelectionHandler::GetInstance()->Update();
+			}
+		}
 	}
-	// TEMP TO TEST PATH
-//DirectX::XMVECTOR path[8];
-//
-//path[0] = { 1.0f,0.0f,0.0f };
-//path[1] = { 5.0f,0.0f,0.0f };
-//path[2] = { 5.0f,5.0f,0.0f };
-//path[3] = { 5.0f,5.0f,5.0f };
-//path[4] = { 5.0f,0.0f,5.0f };
-//path[5] = { 3.0f,0.0f,5.0f };
-//path[6] = { 1.0f,5.0f,5.0f };
-//path[7] = { 0.0f,0.0f,0.0f };
-//GraphicsHptr->RenderBoundingVolume(path, 8);
-//
+
 
 	/*TEMP TO TEST CHECKPOINTS*/
 	for each(CheckpointContainer * checkpoint in *m_Communicator->GetCurrentLevel()->GetCheckpoints())
