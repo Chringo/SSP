@@ -272,11 +272,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma endregion AIComponent tests
 
 #pragma region
-	this->soundComponent = cHandler->GetSoundComonent();
-	this->soundComponent->entityID = 0;
+	this->soundComponent = cHandler->GetSoundComponent2D();
 	this->soundComponent->isActive = true;
 	this->soundComponent->loop = false;
-	this->soundComponent->pos = DirectX::XMFLOAT3(0,0,0);
 	this->soundComponent->sound = Sounds2D::NO_SOUND2D;
 
 #pragma endregion SOUND_TEST

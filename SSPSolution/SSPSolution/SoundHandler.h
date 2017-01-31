@@ -19,13 +19,11 @@ enum Sounds3D
 	NO_SOUND3D = -1,
 };
 
-struct SoundComponent
+struct SoundComponent2D
 {
-	unsigned int		entityID;
 	Sounds2D			sound;
 	bool				loop;
 	bool				isActive;
-	DirectX::XMFLOAT3	pos;
 
 };
 
@@ -34,7 +32,7 @@ class SoundHandler
 {
 private:
 	irrklang::ISoundEngine* m_soundEngine;
-	std::vector<SoundComponent*> soundComponents;
+	std::vector<SoundComponent2D*> sound2DComponents;
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	std::list<irrklang::ISound*> m_activeSounds;
@@ -54,7 +52,7 @@ public:
 	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
 	
 	void UpdateSoundHandler();
-	SoundComponent* GetSoundComponent();
+	SoundComponent2D* GetSoundComponent2D();
 
 };
 

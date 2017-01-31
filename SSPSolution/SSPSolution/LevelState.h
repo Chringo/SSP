@@ -44,7 +44,7 @@ private:
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 
 	//TEMP SOUND//
-	SoundComponent* soundComponent = nullptr;;
+	SoundComponent2D* soundComponent = nullptr;;
 	
 public:
 	LevelState();

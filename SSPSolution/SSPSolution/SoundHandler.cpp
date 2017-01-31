@@ -25,8 +25,8 @@ int SoundHandler::Initialize()
 
 void SoundHandler::Shutdown()
 {
-	for (int i = 0; i < this->soundComponents.size(); i++) {
-		delete this->soundComponents.at(i);
+	for (int i = 0; i < this->sound2DComponents.size(); i++) {
+		delete this->sound2DComponents.at(i);
 	}
 
 	std::list<irrklang::ISound*>::iterator itrS;
@@ -144,13 +144,13 @@ void SoundHandler::UpdateSoundHandler()
 	}
 
 	//Check for sounds to play
-	std::vector<SoundComponent*>::iterator itr;
-	for (itr = this->soundComponents.begin(); itr != this->soundComponents.end(); itr++) 
+	std::vector<SoundComponent2D*>::iterator itr;
+	for (itr = this->sound2DComponents.begin(); itr != this->sound2DComponents.end(); itr++) 
 	{
 		if (!(*itr)->isActive)
 		{
 			delete (*itr);
-			itr = this->soundComponents.erase(itr);
+			itr = this->sound2DComponents.erase(itr);
 		}
 		else
 		{
@@ -165,10 +165,10 @@ void SoundHandler::UpdateSoundHandler()
 	}
 }
 
-SoundComponent * SoundHandler::GetSoundComponent()
+SoundComponent2D * SoundHandler::GetSoundComponent2D()
 {
-	SoundComponent* scp = new SoundComponent();
-	this->soundComponents.push_back(scp);
+	SoundComponent2D* scp = new SoundComponent2D();
+	this->sound2DComponents.push_back(scp);
 	
 	return scp;
 }
