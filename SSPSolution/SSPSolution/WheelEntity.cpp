@@ -14,7 +14,7 @@ WheelEntity::~WheelEntity()
 
 int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
 {
-	int result = this->InitializeBase(entityID, pComp, gComp);
+	int result = this->InitializeBase(entityID, pComp, gComp, nullptr);
 	//Load default values
 	this->m_rotationState = 0;
 	this->m_isMin = true;
