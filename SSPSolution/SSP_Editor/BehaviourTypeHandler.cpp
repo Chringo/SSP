@@ -69,7 +69,11 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(ui->rotateTimeBox, SIGNAL(valueChanged(double)), this, SLOT(on_RotationTime_changed(double)));
 
 
+#pragma region Lever ui elements
 
+	m_lever_distance = ui->lever_interactionDist;
+	connect(m_lever_distance, SIGNAL(valueChanged(double)), this, SLOT(on_lever_distance_changed(double)));
+#pragma endregion
 #pragma region Wheel ui elements
 
 	m_wheel_minRotation		= ui->wheel_minRotationBox;
@@ -171,8 +175,14 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			break;
 #pragma endregion
 /////////
-
-
+//Lever
+#pragma region Lever
+		case ContainerType::LEVER:
+			m_BehaviourType->setCurrentIndex(LEVER); //Open the window for LEVER
+			m_Current_Type = LEVER; //Update current type
+			break;
+#pragma endregion
+/////////
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
@@ -208,11 +218,16 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 		break;
 	case Ui::BUTTON:
 	{
+
+		m_button_tagBox		->setValue(0);
+		m_button_distance	->setValue(0);
+		m_button_timer		->setValue(0);
 		//reset
 		break;
 	}
 	case Ui::DOOR:
 	{
+		m_door_rotationTime->setValue(0);
 		//reset
 		break;
 	}
@@ -245,6 +260,11 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 		m_wheel_resetTime		->setValue(0.0f);
 
 	}
+
+	case Ui::LEVER:
+		
+		m_lever_distance->setValue(0);
+		break;
 	default:
 		break;
 	}
@@ -416,6 +436,21 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					break;
 				}
 
+				case BehaviourType::LEVER:
+				{
+					if (m_selection->type == ContainerType::MODEL) {
+						Lever* newLever = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToLever(m_selection); //convert from container to lever
+						m_selection->isDirty = true;
+					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::LEVER) //if the selection is not a container or door, 
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						Lever* newLever = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToLever(m_selection);	   //convert from container to lever
+						m_selection->isDirty = true;
+					}
+					m_lever_distance->setValue(((Lever*)m_selection)->interactionDistance);
+					break;
+				}
 				}
 			}
 		}
@@ -423,7 +458,8 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 void Ui::BehaviourTypeHandler::on_button_distance_Changed(double val)
 {
 
-	assert(m_selection->type == ContainerType::BUTTON);
+	if (m_selection == nullptr || m_selection->type != BUTTON)
+		return;
 	((Button*)m_selection)->interactionDistance = (float)val;
 }
 
@@ -600,7 +636,16 @@ void Ui::BehaviourTypeHandler::on_Wheel_resetTime_changed(double val)
 
 }
 #pragma endregion
+#pragma region Lever callbacks
+void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::LEVER)
+		return;
 
+	((Lever*)m_selection)->interactionDistance = (float)val;
+
+}
+#pragma endregion
 #pragma region Trigger Functions
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {

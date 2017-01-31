@@ -77,6 +77,9 @@ namespace Ui {
 		QDoubleSpinBox * m_door_rotationTime;
 #pragma endregion
 
+#pragma region Lever behavour elements
+		QDoubleSpinBox * m_lever_distance;
+#pragma endregion
 #pragma region Wheel behaviour elements
 
 		QDoubleSpinBox *  m_wheel_minRotation;
@@ -152,6 +155,11 @@ namespace Ui {
 		void on_Wheel_rotationTime_changed(double val);
 		void on_Wheel_timeTilReset_changed(double val);
 		void on_Wheel_resetTime_changed(double val);
+#pragma endregion
+
+
+#pragma region Lever callbacks
+		void on_lever_distance_changed(double val);
 #pragma endregion
 	private:
 		void SetTriggerData(Container*& selection);

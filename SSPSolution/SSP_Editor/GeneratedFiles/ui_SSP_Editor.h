@@ -126,9 +126,10 @@ public:
     QSpinBox *TriggerPathValue;
     QCheckBox *TriggerPathCheckBox;
     QWidget *Lever;
-    QFormLayout *formLayout_4;
+    QGridLayout *gridLayout_7;
     QDoubleSpinBox *lever_interactionDist;
     QLabel *label_lever_InteractionDist;
+    QSpacerItem *verticalSpacer_5;
     QWidget *Wheel;
     QVBoxLayout *verticalLayout_4;
     QFrame *frame_3;
@@ -918,24 +919,33 @@ public:
         BehaviourStackWidget->addWidget(Behaviour_Path);
         Lever = new QWidget();
         Lever->setObjectName(QStringLiteral("Lever"));
-        formLayout_4 = new QFormLayout(Lever);
-        formLayout_4->setSpacing(6);
-        formLayout_4->setContentsMargins(11, 11, 11, 11);
-        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        gridLayout_7 = new QGridLayout(Lever);
+        gridLayout_7->setSpacing(6);
+        gridLayout_7->setContentsMargins(11, 11, 11, 11);
+        gridLayout_7->setObjectName(QStringLiteral("gridLayout_7"));
         lever_interactionDist = new QDoubleSpinBox(Lever);
         lever_interactionDist->setObjectName(QStringLiteral("lever_interactionDist"));
-        sizePolicy1.setHeightForWidth(lever_interactionDist->sizePolicy().hasHeightForWidth());
-        lever_interactionDist->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lever_interactionDist->sizePolicy().hasHeightForWidth());
+        lever_interactionDist->setSizePolicy(sizePolicy2);
         lever_interactionDist->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
         lever_interactionDist->setMaximum(99999);
 
-        formLayout_4->setWidget(1, QFormLayout::FieldRole, lever_interactionDist);
+        gridLayout_7->addWidget(lever_interactionDist, 1, 1, 1, 1);
 
         label_lever_InteractionDist = new QLabel(Lever);
         label_lever_InteractionDist->setObjectName(QStringLiteral("label_lever_InteractionDist"));
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(label_lever_InteractionDist->sizePolicy().hasHeightForWidth());
+        label_lever_InteractionDist->setSizePolicy(sizePolicy3);
         label_lever_InteractionDist->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
 
-        formLayout_4->setWidget(1, QFormLayout::LabelRole, label_lever_InteractionDist);
+        gridLayout_7->addWidget(label_lever_InteractionDist, 1, 0, 1, 1);
+
+        verticalSpacer_5 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_7->addItem(verticalSpacer_5, 2, 1, 1, 1);
 
         BehaviourStackWidget->addWidget(Lever);
         Wheel = new QWidget();
@@ -1168,11 +1178,11 @@ public:
         __qtablewidgetitem1->setTextAlignment(Qt::AlignCenter);
         TriggerTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         TriggerTableWidget->setObjectName(QStringLiteral("TriggerTableWidget"));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(TriggerTableWidget->sizePolicy().hasHeightForWidth());
-        TriggerTableWidget->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(TriggerTableWidget->sizePolicy().hasHeightForWidth());
+        TriggerTableWidget->setSizePolicy(sizePolicy4);
         TriggerTableWidget->setMaximumSize(QSize(16777215, 16777215));
         QPalette palette3;
         palette3.setBrush(QPalette::Active, QPalette::WindowText, brush);
@@ -1280,8 +1290,8 @@ public:
 
         RenderWidget = new QWidget(centralWidget);
         RenderWidget->setObjectName(QStringLiteral("RenderWidget"));
-        sizePolicy3.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
-        RenderWidget->setSizePolicy(sizePolicy3);
+        sizePolicy4.setHeightForWidth(RenderWidget->sizePolicy().hasHeightForWidth());
+        RenderWidget->setSizePolicy(sizePolicy4);
         RenderWidget->setMinimumSize(QSize(1, 1));
         RenderWidget->setCursor(QCursor(Qt::ArrowCursor));
         RenderWidget->setMouseTracking(true);
@@ -1363,7 +1373,6 @@ public:
          << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Lever", Q_NULLPTR)
          << QApplication::translate("SSP_EditorClass", "Wheel", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Pressure plate", Q_NULLPTR)
         );
         tag_label->setText(QApplication::translate("SSP_EditorClass", " Tag", Q_NULLPTR));
         tag_label_2->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction", Q_NULLPTR));
@@ -1384,7 +1393,7 @@ public:
         DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
         TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
         TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
-        label_lever_InteractionDist->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction :", Q_NULLPTR));
+        label_lever_InteractionDist->setText(QApplication::translate("SSP_EditorClass", "Dist. of interaction :", Q_NULLPTR));
         label_wheelinteraction->setText(QApplication::translate("SSP_EditorClass", "Interaction Dist:", Q_NULLPTR));
         label_minRot->setText(QApplication::translate("SSP_EditorClass", "Min Rotation:", Q_NULLPTR));
         label_maxRot->setText(QApplication::translate("SSP_EditorClass", "Max Rotation:", Q_NULLPTR));
