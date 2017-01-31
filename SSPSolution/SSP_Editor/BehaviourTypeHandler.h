@@ -77,6 +77,19 @@ namespace Ui {
 		QDoubleSpinBox * m_door_rotationTime;
 #pragma endregion
 
+#pragma region Lever behavour elements
+		QDoubleSpinBox * m_lever_distance;
+#pragma endregion
+#pragma region Wheel behaviour elements
+
+		QDoubleSpinBox *  m_wheel_minRotation;
+		QDoubleSpinBox *  m_wheel_maxRotation;
+		QDoubleSpinBox *  m_wheel_interactionDist;
+		QDoubleSpinBox *  m_wheel_rotationTime	  ;
+		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
+		QDoubleSpinBox *  m_wheel_resetTime;
+#pragma endregion
+
 
 
 #pragma region Trigger Tab elements
@@ -133,6 +146,21 @@ namespace Ui {
 		void on_Delete_Trigger();
 
 		void on_RotationTime_changed(double val);
+
+
+#pragma region Wheel callbacks
+		void on_Wheel_minRotation_changed(double val);
+		void on_Wheel_maxRotation_changed(double val);
+		void on_Wheel_interactionDist_changed(double val);
+		void on_Wheel_rotationTime_changed(double val);
+		void on_Wheel_timeTilReset_changed(double val);
+		void on_Wheel_resetTime_changed(double val);
+#pragma endregion
+
+
+#pragma region Lever callbacks
+		void on_lever_distance_changed(double val);
+#pragma endregion
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
