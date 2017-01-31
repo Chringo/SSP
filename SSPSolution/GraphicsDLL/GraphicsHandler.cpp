@@ -516,6 +516,29 @@ int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
+	int componentCount = this->m_staticGraphicsComponents.size();
+
+
+	//Create the BoundingVolume we cull against
+	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[0];
+	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[1];
+	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[2];
+
+	float minX, maxX, minY, maxY, minZ, maxZ;
+	minX = minY = minZ = INT_MAX;
+	maxX = maxY = maxZ = INT_MIN;
+
+	struct BV {
+		unsigned int entityID;
+
+	};
+
+	for each (GraphicsComponent* gComp in this->m_staticGraphicsComponents)
+	{
+
+	}
+
+
 	return result;
 }
 
