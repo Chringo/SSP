@@ -465,7 +465,8 @@ void Ui::BehaviourTypeHandler::on_button_distance_Changed(double val)
 
 void Ui::BehaviourTypeHandler::on_button_timer_Changed(double val)
 {
-	assert(m_selection->type == ContainerType::BUTTON);
+	if (m_selection == nullptr || m_selection->type != BUTTON)
+		return;
 	((Button*)m_selection)->resetTime = (float)val;
 }
 
