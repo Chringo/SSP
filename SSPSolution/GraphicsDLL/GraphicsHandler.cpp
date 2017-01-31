@@ -946,25 +946,140 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 
 void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 {
-	//Create the extensions, we cull them if not needed later
-	for (int i = 0; i < 8; i++)
-		curNode->branches[i] = new OctreeNode();
-	//For the 8 new branches
+	if (depth < this->m_maxDepth)
+	{
+		//Create the extensions, we cull them if not needed later
+		for (int i = 0; i < 8; i++)
+			curNode->branches[i] = new OctreeNode();
+		//For the 8 new branches
+#pragma region
 	//MIN	MIN		MIN
+		curNode->branches[0]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[0]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[0]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[0]->ext.x = curNode->ext.x / 2;
+		curNode->branches[0]->ext.y = curNode->ext.y / 2;
+		curNode->branches[0]->ext.z = curNode->ext.z / 2;
+		//MIN	MIN		MAX											 
+		curNode->branches[1]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[1]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[1]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[1]->ext.x = curNode->ext.x / 2;
+		curNode->branches[1]->ext.y = curNode->ext.y / 2;
+		curNode->branches[1]->ext.z = curNode->ext.z / 2;
+		//MAX	MIN		MAX											  
+		curNode->branches[2]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[2]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[2]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[2]->ext.x = curNode->ext.x / 2;
+		curNode->branches[2]->ext.y = curNode->ext.y / 2;
+		curNode->branches[2]->ext.z = curNode->ext.z / 2;
+		//MIN	MIN		MAX											  
+		curNode->branches[3]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[3]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[3]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[3]->ext.x = curNode->ext.x / 2;
+		curNode->branches[3]->ext.y = curNode->ext.y / 2;
+		curNode->branches[3]->ext.z = curNode->ext.z / 2;
 
-	//MIN	MIN		MAX
-	//MAX	MIN		MAX
-	//MIN	MIN		MAX
+		//MIN	MAX		MIN											  
+		curNode->branches[4]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[4]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[4]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[4]->ext.x = curNode->ext.x / 2;
+		curNode->branches[4]->ext.y = curNode->ext.y / 2;
+		curNode->branches[4]->ext.z = curNode->ext.z / 2;
+		//MIN	MAX		MAX											  
+		curNode->branches[5]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[5]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[5]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[5]->ext.x = curNode->ext.x / 2;
+		curNode->branches[5]->ext.y = curNode->ext.y / 2;
+		curNode->branches[5]->ext.z = curNode->ext.z / 2;
+		//MAX	MAX		MAX											  
+		curNode->branches[6]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[6]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[6]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[6]->ext.x = curNode->ext.x / 2;
+		curNode->branches[6]->ext.y = curNode->ext.y / 2;
+		curNode->branches[6]->ext.z = curNode->ext.z / 2;
+		//MIN	MAX		MAX											  
+		curNode->branches[7]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[7]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[7]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[7]->ext.x = curNode->ext.x / 2;
+		curNode->branches[7]->ext.y = curNode->ext.y / 2;
+		curNode->branches[7]->ext.z = curNode->ext.z / 2;
 
-	//MIN	MAX		MIN
-	//MIN	MAX		MAX
-	//MAX	MAX		MAX
-	//MIN	MAX		MAX
+#pragma endregion Creating the branches
 
-	//The min values
-	float minX = curNode->pos.x - curNode->ext.x;
-	float minY = curNode->pos.y - curNode->ext.y;
-	float minZ = curNode->pos.z - curNode->ext.z;
+
+		//Fill the branches with the components
+		bool isLeaf = false;
+		//Check if this node we are currently working on can split
+		int containedCount = curNode->containedComponents.size();
+		if (containedCount> 0)
+		{
+			if (curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize)
+			{
+				if (depth < this->m_minDepth)
+				{
+					if (containedCount > this->m_minContainment)
+					{
+						//Split this node
+						int xSplit = -1, ySplit = -1, zSplit = -1;
+						for (int index = 0; index < containedCount; index++)
+						{
+							float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
+							if (abs(distance) < curNode->containedComponents[index].ext.x)
+								xSplit = 0;
+							else
+								xSplit += (distance > 0) * 2;
+
+							distance = curNode->containedComponents[index].pos.y - curNode->pos.y;
+							if (abs(distance) < curNode->containedComponents[index].ext.y)
+								ySplit = 0;
+							else
+								ySplit += (distance > 0) * 2;
+
+							distance = curNode->containedComponents[index].pos.z - curNode->pos.z;
+							if (abs(distance) < curNode->containedComponents[index].ext.z)
+								zSplit = 0;
+							else
+								zSplit += (distance > 0) * 2;
+						}
+
+
+
+					}
+				}
+			}
+		}
+
+		//Cull the branches without components
+		for (int i = 0; i < 8; i++)
+		{
+			if (curNode->branches[i]->containedComponents.size() == 0)
+			{
+				delete curNode->branches[i];
+				curNode->branches[i] = nullptr;
+			}
+		}
+	}
 	
 
+}
+
+int GraphicsHandler::AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2)
+{
+	//If the distance between the centers is more than the combined exstensions, the box is not colliding on that axis
+	if (abs(pos1.x - pos2.x) > ext1.x + ext2.x)
+		return 0;
+	if (abs(pos1.y - pos2.y) > ext1.y + ext2.y)
+		return 0;
+	if (abs(pos1.z - pos2.z) > ext1.z + ext2.z)
+		return 0;
+	//A one line version that does not use branch prediction
+	//return abs(pos1.x - pos2.x) > ext1.x + ext2.x * abs(pos1.y - pos2.y) > ext1.y + ext2.y * abs(pos1.z - pos2.z) > ext1.z + ext2.z;
+	return 1;
 }

@@ -97,17 +97,18 @@ private:
 	int m_octreeSize[3];
 	int m_maxDepth;			//The max depth of a node that contains components
 	int m_minDepth;			//The minimum amount of depth for a node that contains components
-	int m_minSize;			//The minimum size of a node for which it is still worth splitting
+	float m_minSize;		//The minimum size of a nodes sides for which it is still worth splitting
+
 	int m_minContainment;	//The minimum amount contained components for which it is still wroth splitting after minDepth is reached
 	//We want to keep splittin the nodes until the time it takes to check if the nodes that contain the components becomes larger than the time gained by culling away the contained components
-	struct OctreeNode {
-		OctreeNode* branches[8];
-		std::vector<unsigned int> containedEntities;
-		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 ext;
-	};
 	struct OctreeBV {
 		unsigned int componentIndex;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+	}; 
+	struct OctreeNode {
+		OctreeNode* branches[8] = { nullptr };
+		std::vector<OctreeBV> containedComponents;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
 	};
@@ -168,6 +169,7 @@ private:
 	void m_CreateTempsTestComponents();
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
+	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
 };
 
 #endif
