@@ -24,6 +24,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			this->m_elapsedResetTime = this->m_resetTime;
 			this->m_isActive = false;
 			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
+			this->m_needSync = true;
 		}
 	}
 	return result;
@@ -39,7 +40,7 @@ int ButtonEntity::React(int entityID, EVENT reactEvent)
 int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
 {
 	int result = 0;
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, nullptr);
 	this->m_isActive = false;
 	this->m_needSync = false;
 	this->m_range = interactionDistance;

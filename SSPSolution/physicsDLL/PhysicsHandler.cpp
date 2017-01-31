@@ -2156,6 +2156,10 @@ void PhysicsHandler::Update(float deltaTime)
 							{
 								this->SphereOBBIntersectionTest(toCompare, current, dt);
 							}
+							if (toCompare->PC_BVtype == BV_Sphere)
+							{
+								this->SphereOBBIntersectionTest(toCompare, current, dt);
+							}
 						}
 					}
 
