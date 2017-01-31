@@ -938,29 +938,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 
-		//m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-		//	DirectX::XMVectorAdd(
-		//		m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-		//m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-		//	DirectX::XMVectorAdd(
-		//		m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-
-		//m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		//m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		//m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		//m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
-		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	}
-
-	////update all dynamic entities
-	//for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
-	//{
-	//	this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
-	//}
-
+	
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
