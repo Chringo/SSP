@@ -448,6 +448,107 @@ struct AiContainer : ListenerContainer
 		this->type		 = AI;
 
 	}
+private:
+	LevelData::AiHeader data;
+public:
+	LevelData::AiHeader * GetData()
+	{
+		//fill entity data
+		data.EntityID = this->internalID;
+		data.isStatic = this->isStatic;
+		//if (this->aiComponent != nullptr)
+		//{
+		//	data.isStatic = false;
+		//	data.hasAi = true;
+		//}
+		//else {
+		//	data.hasAi = false;
+		//}
+		data.modelID = this->component.modelID;
+		data.position[0] = this->position.m128_f32[0];
+		data.position[1] = this->position.m128_f32[1];
+		data.position[2] = this->position.m128_f32[2];
+		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[1] = this->rotation.m128_f32[1];
+		data.rotation[2] = this->rotation.m128_f32[2];
+
+		//fill listener data
+		data.Listener.numConnections = this->numTriggers;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			data.Listener.Event[i] = this->listenEvent[i];
+			data.Listener.SenderID[i] = this->triggerEntityIds[i];
+		}
+
+		//fill unique data
+		data.time = this->aiComponent.AC_time;
+		data.speed = this->aiComponent.AC_speed;
+		data.pattern = this->aiComponent.AC_pattern;
+		data.nrOfWaypoints = this->aiComponent.AC_nrOfWaypoint;
+		
+		for (int i = 0; i < data.nrOfWaypoints; i++)
+		{
+			data.wayPoints[i][0] = this->aiComponent.AC_waypoints[i].m128_f32[0];
+			data.wayPoints[i][1] = this->aiComponent.AC_waypoints[i].m128_f32[1];
+			data.wayPoints[i][2] = this->aiComponent.AC_waypoints[i].m128_f32[2];
+		}
+
+		return &data;
+	}
+
+	AiContainer(LevelData::AiHeader* dataPtr)
+	{
+		this->type = AI;
+
+		//entity load
+		this->internalID = dataPtr->EntityID;
+		this->isStatic = dataPtr->isStatic;
+		this->component.modelID = dataPtr->modelID;
+		this->component.worldMatrix = DirectX::XMMatrixIdentity();
+		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
+		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
+
+
+		DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+
+		this->component.worldMatrix = containerMatrix;
+
+		//listener load
+		this->numTriggers = dataPtr->Listener.numConnections;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			this->listenEvent[i] = (EVENT)dataPtr->Listener.Event[i];
+			this->triggerEntityIds[i] = dataPtr->Listener.SenderID[i];
+		}
+
+		//unique data load
+		//fill unique data
+		this->aiComponent.AC_time =	dataPtr->time;
+		this->aiComponent.AC_speed = dataPtr->speed;
+		this->aiComponent.AC_pattern = dataPtr->pattern;
+		this->aiComponent.AC_nrOfWaypoint = dataPtr->nrOfWaypoints;
+
+		for (int i = 0; i < data.nrOfWaypoints; i++)
+		{
+			this->aiComponent.AC_waypoints[i].m128_f32[0] = dataPtr->wayPoints[i][0];
+			this->aiComponent.AC_waypoints[i].m128_f32[1] = dataPtr->wayPoints[i][1];
+			this->aiComponent.AC_waypoints[i].m128_f32[2] = dataPtr->wayPoints[i][2];
+		}
+
+		this->isDirty = true;
+	}
 };
 struct SelectionLists
 {
