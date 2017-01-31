@@ -344,9 +344,11 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 			if (m_checkpointHandler.GetAllCheckpoints()->at(i)->internalID == instanceID)
 			{
 				m_checkpointHandler.GetAllCheckpoints()->erase(m_checkpointHandler.GetAllCheckpoints()->begin() + i);
+				return  Resources::Status::ST_OK;
 			}
 		}
-		return Resources::Status::ST_RES_MISSING;
+	
+
 	}
 	else {
 		modelPtr = &got->second;
@@ -359,6 +361,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 					return Resources::Status::ST_OK;
 			}
 		}
+	}
 		for (size_t i = 0; i < m_puzzleElements.size(); i++)
 		{
 			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
@@ -373,7 +376,6 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		}
 		m_LevelAi.DeletePathComponent(instanceID);
 		
-	}
 	return Resources::Status::ST_OK;
 }
 

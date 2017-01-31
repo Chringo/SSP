@@ -26,8 +26,8 @@ AiContainer * AiHandler::GetPathComponent(int EntityID)
 {
 	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_Components.at(i)->aiComponent.AC_entityID == EntityID) {
-			return m_Components.at(EntityID);
+		if (m_Components.at(i)->internalID == EntityID) {
+			return m_Components.at(i);
 		}
 	}
 	return nullptr;
@@ -42,7 +42,7 @@ void AiHandler::DeletePathComponent(int EntityID)
 {
 	for (size_t i = 0; i < m_Components.size(); i++)
 	{
-		if (m_Components.at(i)->aiComponent.AC_entityID == EntityID) {
+		if (m_Components.at(i)->internalID == EntityID) {
 			delete m_Components.at(i);
 			m_Components.erase(m_Components.begin() + i);
 			return;

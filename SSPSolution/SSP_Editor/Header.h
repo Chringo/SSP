@@ -439,6 +439,7 @@ struct AiContainer : ListenerContainer
 
 	void ConvertFromContainer(Container* obj)
 	{
+		this->aiComponent.AC_entityID = obj->internalID;
 		this->internalID = obj->internalID;
 		this->position	 = obj->position;
 		this->rotation   = obj->rotation;
