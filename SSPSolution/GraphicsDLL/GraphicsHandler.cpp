@@ -638,28 +638,48 @@ int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
-	int componentCount = this->m_staticGraphicsComponents.size();
+	int componentCount = this->m_nrOfGraphicsComponents;
 
 
 	//Create the BoundingVolume we cull against
-	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[0];
-	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[1];
-	this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[2];
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[0];
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[1];
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[2];
 
 	float minX, maxX, minY, maxY, minZ, maxZ;
 	minX = minY = minZ = INT_MAX;
 	maxX = maxY = maxZ = INT_MIN;
 
 	struct BV {
-		unsigned int entityID;
-
+		unsigned int componentIndex;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
 	};
-
-	for each (GraphicsComponent* gComp in this->m_staticGraphicsComponents)
+	std::vector<BV> listOfComponentBV;
+	listOfComponentBV.resize(componentCount);
+	for (size_t i = 0; i < componentCount; i++)
 	{
+		listOfComponentBV[i].ext.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[0];
+		listOfComponentBV[i].ext.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[1];
+		listOfComponentBV[i].ext.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		listOfComponentBV[i].pos.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.x;
+		listOfComponentBV[i].pos.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.y;
+		listOfComponentBV[i].pos.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.z;
 
+		//Check for the lowest and highest values
+		if (listOfComponentBV[i].ext.x < minX)
+			minX = listOfComponentBV[i].ext.x;
+		else if (listOfComponentBV[i].ext.x > maxX)
+			maxX = listOfComponentBV[i].ext.x;
+		if (listOfComponentBV[i].ext.y < minY)
+			minY = listOfComponentBV[i].ext.y;
+		else if (listOfComponentBV[i].ext.y > maxY)
+			maxY = listOfComponentBV[i].ext.y;
+		if (listOfComponentBV[i].ext.z < minZ)
+			minZ = listOfComponentBV[i].ext.z;
+		else if (listOfComponentBV[i].ext.z > maxZ)
+			maxZ = listOfComponentBV[i].ext.z;
 	}
-
 
 	return result;
 }
