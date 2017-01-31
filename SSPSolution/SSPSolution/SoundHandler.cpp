@@ -25,8 +25,14 @@ int SoundHandler::Initialize()
 
 void SoundHandler::Shutdown()
 {
+	//2D components
 	for (int i = 0; i < this->sound2DComponents.size(); i++) {
 		delete this->sound2DComponents.at(i);
+	}
+
+	//3D components
+	for (int i = 0; i < this->sound3DComponents.size(); i++) {
+		delete this->sound3DComponents.at(i);
 	}
 
 	std::list<irrklang::ISound*>::iterator itrS;
@@ -118,10 +124,10 @@ int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool lo
 	{
 		irrklang::ISoundSource* sp = this->m_sounds3D.at(soundEnum);
 		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);
-		irrklang::ISound* newActiveSound = this->m_soundEngine->play3D(sp, pos, loop);
+		irrklang::ISound* newActiveSound = this->m_soundEngine->play3D(sp, pos, loop, false, true);
 		
-		//newActiveSound->grab();
-		//this->m_activeSounds.push_back(newActiveSound);
+		newActiveSound->grab();
+		this->m_activeSounds.push_back(newActiveSound);
 		
 		return 1;
 	}
@@ -143,7 +149,8 @@ void SoundHandler::UpdateSoundHandler()
 		}
 	}
 
-	//Check for sounds to play
+	//Check 2D components
+#pragma region
 	std::vector<SoundComponent2D*>::iterator itr;
 	for (itr = this->sound2DComponents.begin(); itr != this->sound2DComponents.end(); itr++) 
 	{
@@ -163,6 +170,30 @@ void SoundHandler::UpdateSoundHandler()
 			 }
 		}
 	}
+#pragma endregion 2D_COMPONENT_UPDATE
+	//Check 3D components
+#pragma region
+	std::vector<SoundComponent3D*>::iterator itr3;
+	for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr++)
+	{
+		if (!(*itr3)->isActive)
+		{
+			delete (*itr3);
+			itr3 = this->sound3DComponents.erase(itr3);
+		}
+		else
+		{
+			if ((*itr3)->sound != Sounds3D::NO_SOUND3D)
+			{
+				//Play the sound
+				this->PlaySound3D( (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
+				//Reset the comopnent to play no sound
+				(*itr3)->sound = Sounds3D::NO_SOUND3D;
+			}
+		}
+	}
+
+#pragma endregion 3D_COMPONENT_UPDATER
 }
 
 SoundComponent2D * SoundHandler::GetSoundComponent2D()
@@ -170,5 +201,13 @@ SoundComponent2D * SoundHandler::GetSoundComponent2D()
 	SoundComponent2D* scp = new SoundComponent2D();
 	this->sound2DComponents.push_back(scp);
 	
+	return scp;
+}
+
+SoundComponent3D * SoundHandler::GetSoundComponent3D()
+{
+	SoundComponent3D* scp = new SoundComponent3D();
+	this->sound3DComponents.push_back(scp);
+
 	return scp;
 }

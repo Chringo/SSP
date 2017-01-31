@@ -24,15 +24,22 @@ struct SoundComponent2D
 	Sounds2D			sound;
 	bool				loop;
 	bool				isActive;
-
 };
 
+struct SoundComponent3D
+{
+	Sounds3D			sound;
+	bool				loop;
+	bool				isActive;
+	DirectX::XMFLOAT3	pos;
+};
 
 class SoundHandler
 {
 private:
 	irrklang::ISoundEngine* m_soundEngine;
 	std::vector<SoundComponent2D*> sound2DComponents;
+	std::vector<SoundComponent3D*> sound3DComponents;
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	std::list<irrklang::ISound*> m_activeSounds;
@@ -53,6 +60,7 @@ public:
 	
 	void UpdateSoundHandler();
 	SoundComponent2D* GetSoundComponent2D();
+	SoundComponent3D* GetSoundComponent3D();
 
 };
 
