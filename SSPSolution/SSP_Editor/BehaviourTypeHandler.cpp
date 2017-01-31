@@ -339,6 +339,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					}
 
 					m_door_rotationTime->setValue(((Door*)m_selection)->rotateTime);
+					break;
 				}
 				case BehaviourType::PATH:
 				{

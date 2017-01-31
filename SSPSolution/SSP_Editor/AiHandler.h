@@ -27,6 +27,7 @@ public:
 	AiContainer* GetPathComponent(int EntityID);
 	std::vector<AiContainer*>* GetAllPathComponents();
 	void DeletePathComponent(int EntityID);
+	void UpdatePathComponent(int entityID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	/////////////////////////////////////////////
 
 	void Destroy(); //Used when a new level is loaded. 
