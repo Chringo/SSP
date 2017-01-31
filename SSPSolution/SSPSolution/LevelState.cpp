@@ -116,7 +116,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_AABB.ext[0] = 0.5f;
-	playerP->PC_AABB.ext[1] = 3.75f;
+	playerP->PC_AABB.ext[1] = 0.5f;
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	//this->m_player1.Initialize(1, playerP, playerG, nullptr);
