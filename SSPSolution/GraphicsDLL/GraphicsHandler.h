@@ -69,10 +69,13 @@ private:
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
+	int m_nrOfGraphicsAnimationComponents;
+	int m_maxGraphicsAnimationComponents;
 	//New way of saving graphics components
 	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
 	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
 	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
+
 
 	//temp
 	Camera* m_camera;
@@ -84,6 +87,11 @@ private:
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
+
+	int IncreaseArraySizeAnim();
+	int IncreaseArraySizeAnim(int increaseTo);
+	int DecreaseArraySizeAnim();
+	int DecreaseArraySizeAnim(int decreaseTo);
 
 	//[0] = x, [1] = y, [2] = z
 	int m_octreeSize[3];
@@ -107,23 +115,28 @@ public:
 	GRAPHICSDLL_API int Render(float deltaTime);
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
+	GRAPHICSDLL_API int SetAnimComponentArraySize(int newSize);
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableStaticComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableDynamicComponent();
-	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
+	GRAPHICSDLL_API int UpdateAnimComponentList();
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
-
+	
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	GRAPHICSDLL_API int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
 	GRAPHICSDLL_API int renderFinalEditor();
 	GRAPHICSDLL_API int clearEditor();
 	GRAPHICSDLL_API void Shutdown();
+
+	GRAPHICSDLL_API GraphicsAnimationComponent** GetGraphicsAnimationComponents() { return m_animGraphicsComponents; };
+	GRAPHICSDLL_API int * GetAmountOfGraphicAnimationComponents() { return &m_nrOfGraphicsAnimationComponents; };
 
 	//Culling functions
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
@@ -143,6 +156,7 @@ public:
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
+	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };
