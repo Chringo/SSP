@@ -1,6 +1,6 @@
 #pragma once
-#ifndef GRAPHICSDLL_LIGHTHSTRUCTS_H
-#define GRAPHICSDLL_LIGHTHSTRUCTS_H
+#ifndef GRAPHICSDLL_LIGHTSTRUCTS_H
+#define GRAPHICSDLL_LIGHTSTRUCTS_H
 #include <DirectXMath.h>
 
 #ifdef GRAPHICSDLL_EXPORTS
@@ -22,7 +22,7 @@ namespace LIGHT
 
 	struct LightColor 
 	{
-		float r, g, b;
+		float b, g, r;
 	};
 	struct LightFalloff
 	{
@@ -31,6 +31,7 @@ namespace LIGHT
 
 	struct GRAPHICSDLL_API Light
 	{
+		unsigned int ID;
 		LIGHT_TYPE LT;
 		LightColor color;
 		float intensity;
