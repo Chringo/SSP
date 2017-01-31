@@ -24,15 +24,15 @@ int FSMEnvironment::LevelDirector::Initialize()
 	State test;
 	test.stateID = 0;
 	test.timeDelay = 10;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	test.stateID = 1;
 	test.timeDelay = 15;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	test.stateID = 2;
 	test.timeDelay = 20;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	for (int i = 0; i < 3; i++)
 	{
@@ -110,16 +110,28 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 void FSMEnvironment::State::Initialize()
 {
 	stateID = -1;
+	int goalStateID = 0;
 
 	// State - Data
 	playerOne = false;
 	playerTwo = false;
 	timeDelay = -1;
-	hint = Hint::NONE;
+	
+	for (size_t i = 0; i < 5; i++)
+	{
+		subjects->entityID = -1;
+		subjects->used = false;
+	}
+
+	hint1 = Hint::NONE;
+	hint2 = Hint::NONE;
+	hint3 = Hint::NONE;
 }
 int FSMEnvironment::State::CheckTransitions()
 {
 	// TODO: check if conditions are true for goalState
+	if (!playerOne && !playerTwo)
+		return 0;
 
 	return 1;	// TODO: Return stateID
 }
