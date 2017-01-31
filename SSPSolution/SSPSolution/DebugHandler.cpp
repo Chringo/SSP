@@ -38,7 +38,7 @@ DebugHandler::~DebugHandler()
 {
 }
 
-int DebugHandler::StartTimer(int timerID)
+int DebugHandler::StartTimer(size_t timerID)
 {
 	int result = 0;
 
@@ -53,7 +53,7 @@ int DebugHandler::StartTimer(int timerID)
 	return result;
 }
 
-int DebugHandler::EndTimer(int timerID)
+int DebugHandler::EndTimer(size_t timerID)
 {
 	int result = 0;
 
@@ -170,7 +170,7 @@ int DebugHandler::DisplayConsole(float dTime)
 
 	std::vector<Timer>::iterator iter;
 
-	unsigned int time, minTime, maxTime;
+	unsigned int time;
 	int i;
 	for (i = 0, iter = this->m_timers.begin();
 		iter != this->m_timers.end();
@@ -225,7 +225,7 @@ int DebugHandler::DisplayConsole(float dTime)
 		
 	}
 
-	COORD finishedCursonLoc = { 0, this->m_timers.size() + nrOfCustomLabels + 1 };
+	COORD finishedCursonLoc = { (SHORT)0, (SHORT)(this->m_timers.size() + (size_t)nrOfCustomLabels + 1) };
 	SetConsoleCursorPosition(console, finishedCursonLoc);
 
 	return 0;

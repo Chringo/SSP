@@ -28,10 +28,6 @@ private:
 		~Timer()
 		{
 		}
-		Timer(LARGE_INTEGER start)
-		{
-			this->startTime = start;
-		}
 		unsigned int GetTimeMS(LARGE_INTEGER frequency) // !!! Not MS atm  us
 		{
 			LARGE_INTEGER elapsedTime;
@@ -71,8 +67,8 @@ public:
 	}
 
 	int CreateTimer(std::string label); //returns timer ID, -1 fail
-	int StartTimer(int timerID); 
-	int EndTimer(int timerID); 
+	int StartTimer(size_t timerID);
+	int EndTimer(size_t timerID);
 
 	int StartProgram(); // Needed at start of program to show timer %
 	int EndProgram(); // Needed at end of program to show timer %
