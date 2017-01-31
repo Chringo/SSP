@@ -88,7 +88,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	{
 		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
 		char* leverData = new char[leverSize];
-		this->GetDoorData(leverData);
+		this->GetLeverData(leverData);
 		file.write(leverData, leverSize);
 		delete leverData;
 	}
@@ -96,7 +96,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	{
 		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
 		char* wheelData = new char[wheelSize];
-		this->GetDoorData(wheelData);
+		this->GetWheelData(wheelData);
 		file.write(wheelData, wheelSize);
 		delete wheelData;
 	}
@@ -183,6 +183,25 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadTriggerComponents((LevelData::DoorHeader*)doorData, header.doorAmount);
 		delete doorData;
+	}
+
+	if (header.leverAmount > 0)
+	{
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		file.read(leverData, leverSize);
+
+		LoadTriggerComponents((LevelData::LeverHeader*)leverData, header.leverAmount);
+		delete leverData;
+	}
+	if (header.wheelAmount > 0)
+	{
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		file.read(wheelData, wheelSize);
+
+		LoadTriggerComponents((LevelData::WheelHeader*)wheelData, header.wheelAmount);
+		delete wheelData;
 	}
 
 	file.close();
