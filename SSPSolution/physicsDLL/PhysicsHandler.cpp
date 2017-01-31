@@ -2595,6 +2595,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 void PhysicsHandler::ResetChainLink()
 {
 	int nrOfChainLinks = this->m_links.size();
+	this->m_links[0].CL_previous->PC_velocity = { 0 };
 	for (size_t i = 0; i < nrOfChainLinks; i++)
 	{
 		this->m_links[i].CL_next->PC_velocity = { 0 };
