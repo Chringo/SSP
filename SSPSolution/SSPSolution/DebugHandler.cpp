@@ -5,8 +5,6 @@ DebugHandler* DebugHandler::m_instance = nullptr;
 DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
-	this->m_timerToEnd = 0;
-	this->m_timersEnded = 0;
 	this->m_displayFPS = true;
 	this->ClearConsole();
 	for (int i = 0; i < FRAMES_FOR_AVG; i++)
@@ -73,7 +71,9 @@ int DebugHandler::EndTimer(int timerID)
 int DebugHandler::CreateTimer(std::string label)
 {
 	this->m_timers.push_back(Timer());
-	this->m_labels.push_back(label);
+	this->m_labels.push_back(label); 
+	this->m_timerMins.push_back(9999999);
+	this->m_timerMaxs.push_back(0);
 
 	return 0;
 }
@@ -137,8 +137,17 @@ int DebugHandler::UpdateCustomLabelIncrease(int labelID, float addValue)
 
 int DebugHandler::ResetMinMax()
 {
-	this->m_timerMins.clear();
-	this->m_timerMaxs.clear();
+	std::vector<unsigned int>::iterator iterMax;
+	std::vector<unsigned int>::iterator iterMin;
+
+	for (iterMax = this->m_timerMaxs.begin(), iterMin = this->m_timerMins.begin();
+		iterMax != this->m_timerMaxs.end() && iterMin != this->m_timerMins.end();
+		iterMax++, iterMin++)
+	{
+		(*iterMax) = 0;
+		(*iterMin) = 99999999;
+	}
+
 	this->m_minFPS = 999999;
 	this->m_maxFPS = 0;
 
@@ -165,12 +174,6 @@ int DebugHandler::DisplayConsole(float dTime)
 
 	std::vector<Timer>::iterator iter;
 	std::vector<std::string>::iterator iterLabel;
-	int nrOfTimers = this->m_timers.size();
-	for (int i = this->m_timerMins.size(); i < nrOfTimers; i++)
-	{
-		this->m_timerMins.push_back(9999999);
-		this->m_timerMaxs.push_back(0);
-	}
 
 	unsigned int time, minTime, maxTime;
 	int i;
@@ -210,11 +213,6 @@ int DebugHandler::DisplayConsole(float dTime)
 		std::cout << std::endl;
 	}
 
-	this->m_timers.clear();
-	this->m_labels.clear();
-	this->m_timerToEnd = 0;
-	this->m_timersEnded = 0;
-
 	if (this->m_displayFPS)
 	{
 		int sum = 0, avgFPS;
@@ -237,7 +235,7 @@ int DebugHandler::DisplayConsole(float dTime)
 		
 	}
 
-	COORD finishedCursonLoc = { 0, nrOfTimers + nrOfCustomLabels + 1 };
+	COORD finishedCursonLoc = { 0, this->m_timers.size() + nrOfCustomLabels + 1 };
 	SetConsoleCursorPosition(console, finishedCursonLoc);
 
 	return 0;
@@ -245,5 +243,8 @@ int DebugHandler::DisplayConsole(float dTime)
 
 void DebugHandler::Shutdown()
 {
-	if (m_instance != nullptr) delete this->m_instance;
+	if (m_instance != nullptr)
+	{
+		delete this->m_instance;
+	}
 }

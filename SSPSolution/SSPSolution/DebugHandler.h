@@ -46,8 +46,6 @@ private:
 	unsigned int m_maxFPS;
 	unsigned int m_minFPS;
 	int m_currFrameTimesPtr;
-	unsigned short int m_timerToEnd;
-	unsigned short int m_timersEnded;
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
