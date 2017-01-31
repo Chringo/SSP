@@ -13,6 +13,15 @@ SamplerState pointSampler : register(s1);
 //	matrix worldMatrix;
 //}
 
+struct PointLight //Must be 16 bit aligned!
+{
+    float3 color;
+    float intensity;
+    float4 position;
+    float radius;
+    float3 lightFalloff;
+};
+
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
@@ -22,6 +31,8 @@ cbuffer camera : register(b1)
 	// do not need padding here. float4 = 16bit
 
 }
+
+StructuredBuffer<PointLight> pointlights : register(t8);
 
 struct VS_OUT
 {

@@ -18,7 +18,8 @@ namespace LIGHT
 {
 	class GRAPHICSDLL_API LightHandler
 	{
-
+	private:
+		static const int MAX_NUM_POINTLIGHTS = 10;
 	private:
 		LightHandler();
 		~LightHandler();
@@ -27,6 +28,15 @@ namespace LIGHT
 
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
+
+		ID3D11Buffer* lightBuffers[NUM_LT] = { nullptr }; //Light constBuffers
+		//PointLightStruct*    pointLightStruct = nullptr;
+		//SpotLightStruct*     spotLightStruct = nullptr;
+		//DirLightStruct*	      dirLightStruct = nullptr;
+		ID3D11ShaderResourceView*  pointLightStructuredBuffer = nullptr;
+		ID3D11ShaderResourceView*  spotLightStructuredBuffer  = nullptr;
+		ID3D11ShaderResourceView*  dirLightStructuredBuffer   = nullptr;
+
 	public: //inits etc
 
 		void Initialize(ID3D11Device*, ID3D11DeviceContext*);
