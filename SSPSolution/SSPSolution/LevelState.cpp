@@ -1222,21 +1222,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
-			//tse->SetGraphicsComponent(t_gc);
-			//tse->SetPhysicsComponent(t_pc);
-			//tse->SetAnimationComponent(t_anim);
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_anim);// Entity needs its ID
-
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-
 			DynamicEntity* tde = new DynamicEntity();
-			//tde->SetGraphicsComponent(t_gc);
-			//tde->SetPhysicsComponent(t_pc);
-			//tde->SetAnimationComponent(t_anim);
 			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_anim);// Entity needs its ID
-
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 		}
 	}
