@@ -5,6 +5,8 @@
 #include "AIController.h"
 #include "Header.h"
 #include "LevelHandler.h"
+#include <qtablewidget.h>
+#include "EVENT_Strings.h"
 namespace Ui {
 	enum BehaviourType {
 		NONE = 0,
@@ -43,6 +45,8 @@ namespace Ui {
 
 		Q_OBJECT
 	private:
+		EventStrings		m_eventStrings;
+		QTabWidget*			m_attributes_widget;
 		BehaviourType		m_Current_Type;
 		Pattern				m_Current_Pattern;
 		unsigned int		m_Current_Waypoint_Amt = 0;
@@ -64,16 +68,49 @@ namespace Ui {
 		Container*		m_selection = nullptr;
 
 #pragma region Button behaviour elements
-		QSpinBox * m_button_tagBox;
+		QSpinBox	   * m_button_tagBox;
 		QDoubleSpinBox * m_button_distance;
 		QDoubleSpinBox * m_button_timer;
 #pragma endregion
 
 #pragma region Door behaviour elements
-		QListWidget* m_door_triggerList;
-		QPushButton* m_door_add_trigger;
-		QPushButton* m_door_del_trigger;
-		QComboBox* m_door_availableTriggers;
+		QDoubleSpinBox * m_door_rotationTime;
+#pragma endregion
+
+#pragma region Lever behavour elements
+		QDoubleSpinBox * m_lever_distance;
+#pragma endregion
+#pragma region Wheel behaviour elements
+
+		QDoubleSpinBox *  m_wheel_minRotation;
+		QDoubleSpinBox *  m_wheel_maxRotation;
+		QDoubleSpinBox *  m_wheel_interactionDist;
+		QDoubleSpinBox *  m_wheel_rotationTime	  ;
+		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
+		QDoubleSpinBox *  m_wheel_resetTime;
+#pragma endregion
+
+
+
+#pragma region Trigger Tab elements
+
+		ContainerType m_currentEventType = ContainerType::BUTTON;
+		QWidget*     m_triggerTab;
+		QComboBox*   m_availableTriggers;
+		QComboBox*	 m_eventBox;
+		QTableWidget* m_triggerList;
+		QPushButton* m_add_trigger;
+		QPushButton* m_del_trigger;
+		QString m_triggerType[NUM_PUZZLE_ELEMENTS]{
+			"(unknown)",
+			"(button) ",
+			"(lever) ",
+			"(wheel) ",
+			"(door) ",
+			"(magnet) ",
+			"(plate) "
+		};
+		
 
 #pragma endregion
 
@@ -98,9 +135,37 @@ namespace Ui {
 		void on_button_timer_Changed(double val);
 		void on_CheckpointAdd();
 		void on_CheckpointIndex_changed(int val);
+		void on_Attributes_tab_changed(int val);
 
 		void on_Add();
 		void on_Del();
+
+		void on_triggerSelection_Changed(QTableWidgetItem * item);
+		void on_eventSelection_Changed(int val);
+		void on_Add_Trigger();
+		void on_Delete_Trigger();
+
+		void on_RotationTime_changed(double val);
+
+
+#pragma region Wheel callbacks
+		void on_Wheel_minRotation_changed(double val);
+		void on_Wheel_maxRotation_changed(double val);
+		void on_Wheel_interactionDist_changed(double val);
+		void on_Wheel_rotationTime_changed(double val);
+		void on_Wheel_timeTilReset_changed(double val);
+		void on_Wheel_resetTime_changed(double val);
+#pragma endregion
+
+
+#pragma region Lever callbacks
+		void on_lever_distance_changed(double val);
+#pragma endregion
+	private:
+		void SetTriggerData(Container*& selection);
+		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
+		void ClearTriggerList();
+		void ClearEventList();
 	};
 }
 #endif

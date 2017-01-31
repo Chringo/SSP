@@ -222,7 +222,7 @@ void EditorInputHandler::UpdateMouse()
 
 void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 {
-	if (evt->button() == Qt::LeftButton)
+	if (evt->button() == Qt::LeftButton && !this->m_KeysHeld[ALT])
 	{
 		////*MOUSEPICKING*//
 		SelectionHandler::GetInstance()->ProjectRay(m_mouse.x, m_mouse.y);
@@ -231,7 +231,7 @@ void EditorInputHandler::mouseButtonDown(QMouseEvent * evt)
 		bool widget = false;
 
 		
-		if (SelectionHandler::GetInstance()->HasSelection())
+		if (SelectionHandler::GetInstance()->HasSelection() )
 		{
 			widget = SelectionHandler::GetInstance()->PickTransformWidget();
 		}

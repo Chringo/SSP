@@ -15,11 +15,11 @@ Player::~Player()
 }
 
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
 	int result = 0;
 
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, aComp);
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
@@ -35,6 +35,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+
+	AnimationComponent* test = this->m_aComp;
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -66,7 +68,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			
 			float strength = 1.0f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
+			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1.5f, 0, 0)), strength);
 			this->SetGrabbed(nullptr);	//Release the entity
 		}
 

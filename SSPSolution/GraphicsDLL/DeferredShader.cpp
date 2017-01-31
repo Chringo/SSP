@@ -571,6 +571,7 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 
 int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * component)
 {
+
 	ConstantBufferHandler::GetInstance()->world.UpdateBuffer(&component->worldMatrix);
 	ConstantBufferHandler::GetInstance()->skeleton.UpdateBuffer(&component->finalJointTransforms);
 	Resources::Mesh* meshPtr = model->GetMesh();

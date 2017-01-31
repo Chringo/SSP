@@ -72,6 +72,9 @@ private:
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
+	int m_nrOfGraphicsAnimationComponents;
+	int m_maxGraphicsAnimationComponents;
+
 
 	//temp
 	Camera* m_camera;
@@ -83,6 +86,11 @@ private:
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
+
+	int IncreaseArraySizeAnim();
+	int IncreaseArraySizeAnim(int increaseTo);
+	int DecreaseArraySizeAnim();
+	int DecreaseArraySizeAnim(int decreaseTo);
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
@@ -93,14 +101,17 @@ public:
 	GRAPHICSDLL_API int Render(float deltaTime);
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
+	GRAPHICSDLL_API int SetAnimComponentArraySize(int newSize);
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
+	GRAPHICSDLL_API int UpdateAnimComponentList();
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
-
+	
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	GRAPHICSDLL_API int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
@@ -108,10 +119,14 @@ public:
 	GRAPHICSDLL_API int clearEditor();
 	GRAPHICSDLL_API void Shutdown();
 
+	GRAPHICSDLL_API GraphicsAnimationComponent** GetGraphicsAnimationComponents() { return m_animGraphicsComponents; };
+	GRAPHICSDLL_API int * GetAmountOfGraphicAnimationComponents() { return &m_nrOfGraphicsAnimationComponents; };
+
 	//TEMP STUFF
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
+	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
 };

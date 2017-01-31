@@ -78,15 +78,27 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	}
 	if (header.doorAmount > 0)
 	{
-
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		this->GetDoorData(doorData);
+		file.write(doorData, doorSize);
+		delete doorData;
 	}
 	if (header.leverAmount > 0)
 	{
-
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		this->GetLeverData(leverData);
+		file.write(leverData, leverSize);
+		delete leverData;
 	}
 	if (header.wheelAmount > 0)
 	{
-
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		this->GetWheelData(wheelData);
+		file.write(wheelData, wheelSize);
+		delete wheelData;
 	}
 
 	file.close();
@@ -162,6 +174,34 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 
 		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
 		delete buttonData;
+	}
+	if (header.doorAmount > 0)
+	{
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		file.read(doorData, doorSize);
+
+		LoadTriggerComponents((LevelData::DoorHeader*)doorData, header.doorAmount);
+		delete doorData;
+	}
+
+	if (header.leverAmount > 0)
+	{
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		file.read(leverData, leverSize);
+
+		LoadTriggerComponents((LevelData::LeverHeader*)leverData, header.leverAmount);
+		delete leverData;
+	}
+	if (header.wheelAmount > 0)
+	{
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		file.read(wheelData, wheelSize);
+
+		LoadTriggerComponents((LevelData::WheelHeader*)wheelData, header.wheelAmount);
+		delete wheelData;
 	}
 
 	file.close();
@@ -266,12 +306,12 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.rotation[2] = entityContainer->at(i).rotation.m128_f32[2];
 
 			entity.isStatic	   = entityContainer->at(i).isStatic;
-			if (entityContainer->at(i).aiComponent != nullptr)
-			{
-				entity.isStatic = false;
-				entity.hasAi = true;
-			}
-			else
+			//if (entityContainer->at(i).aiComponent != nullptr)
+			//{
+			//	entity.isStatic = false;
+			//	entity.hasAi = true;
+			//}
+			//else
 				entity.hasAi = false;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
 			offset += sizeof(LevelData::EntityHeader);
@@ -324,27 +364,13 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 {
 	unsigned int offset = 0;
-	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
-	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
+	
+	for each (AiContainer* ai in *m_currentLevel.GetAiHandler()->GetAllPathComponents())
 	{
-		LevelData::AiHeader ai;
-		ai.entityID		 = aiData->at(i)->AC_entityID;
-		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
-		ai.pattern		 = aiData->at(i)->AC_pattern;
-		ai.speed		 = aiData->at(i)->AC_speed;
-		ai.time			 = aiData->at(i)->AC_time;
-		memset(ai.wayPoints, 0, sizeof(float) * 24);
-
-		for (size_t j = 0; j < ai.nrOfWaypoints; j++)
-		{
-				ai.wayPoints[j][0] = aiData->at(i)->AC_waypoints[j].m128_f32[0];
-				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
-				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
-		}
-		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
+		LevelData::AiHeader * ah = ai->GetData();
+		memcpy(dataPtr + offset, (char*)ah, sizeof(LevelData::AiHeader));
 		offset += sizeof(LevelData::AiHeader);
 	}
-
 
 	return LevelData::LevelStatus::L_OK;
 }
@@ -376,6 +402,45 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(DOOR))
+	{
+		LevelData::DoorHeader* bh = door->GetData();
+		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));
+		offset += sizeof(LevelData::DoorHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetLeverData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Lever* lever in *this->m_currentLevel.GetPuzzleElements(LEVER))
+	{
+		LevelData::LeverHeader* lh = lever->GetData();
+		memcpy(dataPtr + offset, (char*)lh, sizeof(LevelData::LeverHeader));
+		offset += sizeof(LevelData::LeverHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetWheelData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Wheel* wheel in *this->m_currentLevel.GetPuzzleElements(WHEEL))
+	{
+		LevelData::WheelHeader* wh = wheel->GetData();
+		memcpy(dataPtr + offset, (char*)wh, sizeof(LevelData::WheelHeader));
+		offset += sizeof(LevelData::WheelHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -395,29 +460,10 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 {
 	for (size_t i = 0; i < numComponents; i++)
 	{
-		
-			AIComponent* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-			newComponent->AC_entityID	  = dataPtr[i].entityID;
-			newComponent->AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
-			newComponent->AC_speed		  = dataPtr[i].speed;
-			newComponent->AC_pattern	  = dataPtr[i].pattern;
-			newComponent->AC_time		  = dataPtr[i].time;
-			for (size_t k = 0; k < newComponent->AC_nrOfWaypoint; k++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					newComponent->AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
-				}
-			}
-			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->AC_entityID);
-			if (cont == nullptr) {
-				std::cout << "The entity that has the AIcomponent with id :" << newComponent->AC_entityID << "does not exist" << std::endl;
-				return LevelData::LevelStatus::L_FILE_NOT_FOUND;
-			}
-			else {
-				cont->aiComponent = newComponent;
-			}
-
+		AiContainer* newComponent = new AiContainer(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(AI, newComponent);
+			
+		newComponent->component.modelPtr = DataHandler::GetInstance()->GetModel(newComponent->component.modelID);
 	}
 
 	return LevelData::LevelStatus::L_OK;
@@ -444,12 +490,49 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHead
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Button * button = new Button(&dataPtr[i]);
-		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(BUTTON, button);
 
 		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
-	
 	}
 
-	return LevelData::LevelStatus();
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Door * door = new Door(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(DOOR, door);
+
+		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::WheelHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Wheel * wheel = new Wheel(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(WHEEL, wheel);
+
+		wheel->component.modelPtr = DataHandler::GetInstance()->GetModel(wheel->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::LeverHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Lever * lever = new Lever(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(LEVER, lever);
+
+		lever->component.modelPtr = DataHandler::GetInstance()->GetModel(lever->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
 }

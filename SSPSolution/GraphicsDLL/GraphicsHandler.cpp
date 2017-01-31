@@ -195,6 +195,113 @@ int GraphicsHandler::DecreaseArraySize(int decreaseTo)
 	return 1;
 }
 
+int GraphicsHandler::IncreaseArraySizeAnim()
+{
+	GraphicsAnimationComponent** newArray = new GraphicsAnimationComponent*[this->m_maxGraphicsAnimationComponents + ARRAY_INC];
+
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents + ARRAY_INC; i++)
+	{
+		if (i < this->m_nrOfGraphicsAnimationComponents)
+		{
+			newArray[i] = this->m_animGraphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = new GraphicsAnimationComponent();
+		}
+	}
+	delete[] this->m_animGraphicsComponents;
+	this->m_animGraphicsComponents = newArray;
+	this->m_maxGraphicsAnimationComponents += ARRAY_INC;
+
+	return 1;
+}
+
+int GraphicsHandler::IncreaseArraySizeAnim(int increaseTo)
+{
+	GraphicsAnimationComponent** newArray = new GraphicsAnimationComponent*[increaseTo];
+
+	for (int i = 0; i < increaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsAnimationComponents)
+		{
+			newArray[i] = this->m_animGraphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+	delete[] this->m_graphicsComponents;
+	this->m_animGraphicsComponents = newArray;
+	this->m_maxGraphicsAnimationComponents = increaseTo;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySizeAnim()
+{
+	this->m_maxGraphicsAnimationComponents -= ARRAY_INC;
+	GraphicsAnimationComponent** newArray = new GraphicsAnimationComponent*[this->m_maxGraphicsComponents];
+
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++)
+	{
+		if (i < this->m_nrOfGraphicsAnimationComponents)
+		{
+			newArray[i] = this->m_animGraphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = this->m_maxGraphicsAnimationComponents; i < this->m_maxGraphicsAnimationComponents + ARRAY_INC; i++)
+	{
+		if (this->m_animGraphicsComponents[i])
+		{
+			delete this->m_animGraphicsComponents[i];
+		}
+	}
+
+	delete[] this->m_animGraphicsComponents;
+	this->m_animGraphicsComponents = newArray;
+
+	return 1;
+}
+
+int GraphicsHandler::DecreaseArraySizeAnim(int decreaseTo)
+{
+	GraphicsAnimationComponent** newArray = new GraphicsAnimationComponent*[decreaseTo];
+
+	for (int i = 0; i < decreaseTo; i++)
+	{
+		if (i < this->m_nrOfGraphicsAnimationComponents)
+		{
+			newArray[i] = this->m_animGraphicsComponents[i];
+		}
+		else
+		{
+			newArray[i] = nullptr;
+		}
+	}
+
+	for (int i = decreaseTo; i < this->m_maxGraphicsAnimationComponents; i++)
+	{
+		if (this->m_animGraphicsComponents[i])
+		{
+			delete this->m_animGraphicsComponents[i];
+		}
+	}
+
+	delete[] this->m_animGraphicsComponents;
+	this->m_animGraphicsComponents = newArray;
+	this->m_maxGraphicsAnimationComponents = decreaseTo;
+
+
+	return 1;
+}
+
 GraphicsHandler::GraphicsHandler()
 {
 	this->m_d3dHandler			   = nullptr;
@@ -209,6 +316,8 @@ GraphicsHandler::GraphicsHandler()
 	this->m_LightHandler		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
+	this->m_nrOfGraphicsAnimationComponents = 0;
+	this->m_maxGraphicsAnimationComponents = 5;
 }
 
 
@@ -238,7 +347,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
 		this->m_graphicsComponents[i] = new GraphicsComponent();
+	}
 
+	this->m_animGraphicsComponents = new GraphicsAnimationComponent*[this->m_maxGraphicsAnimationComponents];
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++) {
+		//this->m_graphicsComponents[i] = nullptr;
+		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
 	}
 	this->m_LightHandler = new LightHandler;
 	this->m_LightHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
@@ -296,7 +410,6 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_graphicsComponents[i]->active == false)
@@ -304,9 +417,15 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+	{
+		if (this->m_animGraphicsComponents[i]->active == false)
+			continue;
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+		
+	}
 	
-
-
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
@@ -467,16 +586,19 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 
-
-
-		if (m_animGraphicsComponents != nullptr) {
-			delete this->m_animGraphicsComponents[1];
-			delete[] this->m_animGraphicsComponents;
+		for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++)
+		{
+			if (this->m_animGraphicsComponents[i] != nullptr)
+			{
+				delete this->m_animGraphicsComponents[i];
+				this->m_animGraphicsComponents[i] = nullptr;
+			}
 		}
 	}
 #endif // _DEBUG
 
 	
+	delete[] this->m_animGraphicsComponents;
 	delete[] this->m_graphicsComponents;
 #ifdef _DEBUG
 	m_debugRender.Release();
@@ -491,6 +613,20 @@ int GraphicsHandler::SetComponentArraySize(int newSize)
 		this->IncreaseArraySize(newSize);
 	}
 	else if (this->m_maxGraphicsComponents > newSize)
+	{
+		this->DecreaseArraySize(newSize);
+	}
+
+	return 0;
+}
+
+int GraphicsHandler::SetAnimComponentArraySize(int newSize)
+{
+	if (this->m_maxGraphicsAnimationComponents < newSize)
+	{
+		this->IncreaseArraySize(newSize);
+	}
+	else if (this->m_maxGraphicsAnimationComponents > newSize)
 	{
 		this->DecreaseArraySize(newSize);
 	}
@@ -513,7 +649,22 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableComponent()
 
 	return nullptr;
 }
-	
+GraphicsAnimationComponent* GraphicsHandler::GetNextAvailableAnimationComponent()
+{
+	if (this->m_nrOfGraphicsAnimationComponents < this->m_maxGraphicsAnimationComponents)
+	{
+		this->m_nrOfGraphicsAnimationComponents++;
+		return this->m_animGraphicsComponents[this->m_nrOfGraphicsAnimationComponents - 1];
+	}
+	else
+	{
+		this->IncreaseArraySizeAnim();
+		return this->GetNextAvailableAnimationComponent();
+	}
+
+	return nullptr;
+}
+
 int GraphicsHandler::UpdateComponentList()
 {
 	int result = 0;
@@ -533,6 +684,31 @@ int GraphicsHandler::UpdateComponentList()
 	if (!this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1]->active)
 	{
 		this->m_nrOfGraphicsComponents--;
+		result++;
+	}
+
+	return result;
+}
+
+int GraphicsHandler::UpdateAnimComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfGraphicsAnimationComponents - 1; i++)
+	{
+		if (!this->m_animGraphicsComponents[i]->active)
+		{
+			GraphicsAnimationComponent* tempComponentPtr = this->m_animGraphicsComponents[this->m_nrOfGraphicsAnimationComponents - 1];
+			this->m_animGraphicsComponents[this->m_nrOfGraphicsAnimationComponents - 1] = this->m_animGraphicsComponents[i];
+			this->m_animGraphicsComponents[i] = tempComponentPtr;
+			this->m_nrOfGraphicsAnimationComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_animGraphicsComponents[this->m_nrOfGraphicsAnimationComponents - 1]->active)
+	{
+		this->m_nrOfGraphicsAnimationComponents--;
 		result++;
 	}
 
@@ -562,6 +738,11 @@ void GraphicsHandler::SetTempAnimComponent(void * component)
 GraphicsComponent * GraphicsHandler::getComponent(int index)
 {
 	return this->m_graphicsComponents[index];
+}
+
+GraphicsAnimationComponent * GraphicsHandler::getAnimComponent(int index)
+{
+	return this->m_animGraphicsComponents[index];
 }
 
 void GraphicsHandler::m_CreateTempsTestComponents()

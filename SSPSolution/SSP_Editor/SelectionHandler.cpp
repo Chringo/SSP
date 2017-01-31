@@ -313,6 +313,7 @@ bool SelectionHandler::PickObjectSelection()
 		//transformWidget.setActive(result);
 		if (result && hitDistance < minHitDistance)
 		{
+			
 			minHitDistance = hitDistance;
 			//update widget with the intersected obb
 			this->m_transformWidget.Select(obj, spawn, i, spawn->component.modelPtr->GetId());
@@ -321,32 +322,23 @@ bool SelectionHandler::PickObjectSelection()
 			gotHit = result;
 		}
 	}
-	std::vector<AIComponent*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
+	std::vector<AiContainer*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{
-		AIComponent* wayPoint = container->at(i);
-		OBB obj;
-		obj.ort.r[0] = { 1.0f,0.0f,0.0f };
-		obj.ort.r[1] = { 0.0f,1.0f,0.0f };
-		obj.ort.r[2] = { 0.0f,0.0f,1.0f };
-		obj.ext[0] = 0.2f;
-		obj.ext[1] = 0.2f;
-		obj.ext[2] = 0.2f;
+		Container* ai = (Container*) container->at(i);
+		OBB obj = m_ConvertOBB(ai->component.modelPtr->GetOBBData(), ai);
 
-		for (size_t j = 0; j < wayPoint->AC_nrOfWaypoint; j++)
+		bool result = false;
+		result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, ai->position, hitDistance);
+		//transformWidget.setActive(result);
+		if (result && hitDistance < minHitDistance)
 		{
-			bool result = false;
-			result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, wayPoint->AC_waypoints[j], hitDistance);
-			//transformWidget.setActive(result);
-			if (result && hitDistance < minHitDistance)
-			{
-				//minHitDistance = hitDistance;
-				//update widget with the intersected obb
-				this->m_transformWidget.Select(obj, wayPoint);
-				//Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(wayPoint);
+			minHitDistance = hitDistance;
+			//update widget with the intersected obb
+			this->m_transformWidget.Select(obj, ai, i, ai->component.modelPtr->GetId());
+			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(ai);
 
-				//gotHit = result;
-			}
+			gotHit = result;
 		}
 
 	}
