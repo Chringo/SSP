@@ -38,6 +38,25 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	return toReturn;
 }
 
+PHYSICSDLL_API void BulletInterpreter::ApplyMovementPlayer1(float dt)
+{
+	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
+	btVector3 OldVelocity = rb->getLinearVelocity();
+	btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
+	//newVel /= 100;
+	
+	if (newVel.isZero() == false)
+	{
+		newVel = OldVelocity + newVel;
+		rb->setLinearVelocity(newVel);
+	}
+	this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+}
+
+PHYSICSDLL_API void BulletInterpreter::ApplyMovementPlayer2()
+{
+}
+
 BulletInterpreter::BulletInterpreter()
 {
 	this->m_broadphase = nullptr;
@@ -85,22 +104,17 @@ void BulletInterpreter::Initialize()
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 }
 
-void BulletInterpreter::Update(const float& dt)
+void BulletInterpreter::UpdateBulletEngine(const float& dt)
 {
 	//time will act on the objects
-	
-	
-	//btVector3 vel = this->crt_xmvecVec3(this->player1->PC_velocity);
-	//vel *= 10;
-	//////velo *= 10;
-	//this->m_rigidBodies.at(0)->setLinearVelocity(vel);
 
 	this->m_dynamicsWorld->stepSimulation(1.0f/60.0f);
 	
 }
 
-void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
+void BulletInterpreter::Update(PhysicsComponent * src, int index, float dt)
 {
+
 	DirectX::XMVECTOR result;
 
 	btTransform trans;
@@ -120,8 +134,6 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 		force *= src->PC_Power;
 		posAffectedByForce = btVector3(0, 0.2, 0);
 
-
-		//this->m_rigidBodies.at(index)->applyForce(power, this->crt_xmvecVec3(src->PC_pos));
 		btRigidBody* holder = nullptr;
 		holder = this->m_rigidBodies.at(index);
 		holder->applyImpulse(force, posAffectedByForce);
@@ -132,6 +144,9 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 	}
 
 	//update positions
+	this->ApplyMovementPlayer1(dt);
+	this->ApplyMovementPlayer2();
+
 	if (src->PC_IndexRigidBody != -1)
 	{
 
@@ -161,7 +176,7 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 	{
 		//if the gravity influence is zero, the component will not be affected by gravity
 		this->m_rigidBodies.at(index)->clearForces();
-		this->m_rigidBodies.at(index)->setGravity(btVector3(0,0,0));
+		//this->m_rigidBodies.at(index)->setGravity(btVector3(0,0,0));
 		
 	}
 	else
@@ -169,6 +184,7 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 		this->m_rigidBodies.at(index)->setGravity(this->m_GravityAcc);
 	}
 
+	//player movement
 }
 
 PHYSICSDLL_API void BulletInterpreter::SyncPosWithBullet(PhysicsComponent* src)

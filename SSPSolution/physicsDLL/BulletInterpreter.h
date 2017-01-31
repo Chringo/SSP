@@ -137,7 +137,6 @@ private:
 	btSequentialImpulseConstraintSolver* m_solver;
 	btDiscreteDynamicsWorld* m_dynamicsWorld;
 
-	
 	std::vector<int> m_physicsHandlerIndex;
 	
 	btVector3 m_GravityAcc;
@@ -150,6 +149,10 @@ private:
 	PhysicsComponent* player2;
 
 	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
+
+	//player specifics
+	PHYSICSDLL_API void ApplyMovementPlayer1(float dt);
+	PHYSICSDLL_API void ApplyMovementPlayer2();
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -157,9 +160,11 @@ public:
 	PHYSICSDLL_API virtual ~BulletInterpreter();
 
 	PHYSICSDLL_API void Initialize();
-	PHYSICSDLL_API void Update(const float& dt);
-	PHYSICSDLL_API void SyncWithPC(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);
+
+	PHYSICSDLL_API void UpdateBulletEngine(const float& dt); //lets time pass in the bullet engine, letting forces move and apply on the rigid bodies
+	PHYSICSDLL_API void Update(PhysicsComponent* src, int index, float dt);	//this function call and add forces on player and components during events
+
+	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);	//forces updates in bullet world, when the ball is grabed, the ball needs a new position in bullet
 	PHYSICSDLL_API void Shutdown();
 
 	PHYSICSDLL_API void CreateRigidBody(PhysicsComponent* fromGame);

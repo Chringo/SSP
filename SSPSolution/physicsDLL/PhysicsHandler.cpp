@@ -1745,7 +1745,7 @@ void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 50000);
 	
-	this->m_bullet.Update(dt);
+	this->m_bullet.UpdateBulletEngine(dt);
 
 	//sync positions with bullet world
 
@@ -1753,7 +1753,7 @@ void PhysicsHandler::Update(float deltaTime)
 	int size = this->m_physicsComponents.size();
 	for (int i = 0; i < size - 4; i++)
 	{
-		this->m_bullet.SyncWithPC(this->GetDynamicComponentAt(i), i);
+		this->m_bullet.Update(this->GetDynamicComponentAt(i), i, dt);
 	}
 
 	int nrOfChainLinks = this->m_links.size();
@@ -2201,15 +2201,19 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(nextPos, false);
+		int indexBullet = this->m_physicsComponents.size() - 1;
 		
 		next->PC_BVtype = BV_OBB;
 		next->PC_collides = false;
+		next->PC_active = true;
 		//next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
 
-		next->PC_AABB.ext[0] = 0.15f;
-		next->PC_AABB.ext[1] = 0.15f;
-		next->PC_AABB.ext[2] = 0.15f;
+		this->TransferBoxesToBullet(next, indexBullet);
+
+		next->PC_OBB.ext[0] = 0.15f;
+		next->PC_OBB.ext[1] = 0.15f;
+		next->PC_OBB.ext[2] = 0.15f;
 		next->PC_gravityInfluence = 1.0f;
 
 		link.CL_previous = previous;
