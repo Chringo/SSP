@@ -72,7 +72,7 @@ int DebugHandler::CreateTimer(std::string label)
 {
 	this->m_timers.push_back(Timer());
 	this->m_labels.push_back(label); 
-	this->m_timerMins.push_back(9999999);
+	this->m_timerMins.push_back(999999);
 	this->m_timerMaxs.push_back(0);
 
 	return 0;
@@ -145,7 +145,7 @@ int DebugHandler::ResetMinMax()
 		iterMax++, iterMin++)
 	{
 		(*iterMax) = 0;
-		(*iterMin) = 99999999;
+		(*iterMin) = 999999;
 	}
 
 	this->m_minFPS = 999999;

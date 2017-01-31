@@ -30,8 +30,9 @@ int System::Shutdown()
 	this->m_AIHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
+#ifdef _DEBUG
 	DebugHandler::instance().Shutdown();
-
+#endif
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
