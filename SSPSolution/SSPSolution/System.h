@@ -39,11 +39,9 @@ private:
 	AIHandler m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
+	
 	/*Testing for playing animation.*/
 	AnimationHandler* m_Anim;
-	SoundHandler m_soundHandler;
-
-
 public:
 	System();
 	~System();
