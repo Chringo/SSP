@@ -74,4 +74,9 @@ void Resources::Animation::SetAnimationData(AnimationData * anim)
 			anim->joints[i].keyframes,
 			sizeof(Keyframe) * anim->joints[i].keyframeCount);
 	}
+	//Extract animation state data.
+	m_StateData.isLooping = false;
+	m_StateData.startTime = m_anim.joints[0].keyframes[0].timeValue;
+	int keyframeCount = m_anim.joints[0].keyframeCount;
+	m_StateData.endTime = m_anim.joints[0].keyframes[keyframeCount - 1].timeValue;
 }
