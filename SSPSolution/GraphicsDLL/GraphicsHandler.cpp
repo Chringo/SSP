@@ -650,11 +650,7 @@ int GraphicsHandler::GenerateOctree()
 	minX = minY = minZ = INT_MAX;
 	maxX = maxY = maxZ = INT_MIN;
 
-	struct BV {
-		unsigned int componentIndex;
-		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 ext;
-	};
+	
 	std::vector<BV> listOfComponentBV;
 	listOfComponentBV.resize(componentCount);
 	for (size_t i = 0; i < componentCount; i++)
@@ -679,6 +675,18 @@ int GraphicsHandler::GenerateOctree()
 			minZ = listOfComponentBV[i].ext.z;
 		else if (listOfComponentBV[i].ext.z > maxZ)
 			maxZ = listOfComponentBV[i].ext.z;
+	}
+
+	//Initialize the octree root
+	for (int i = 0; i < 8; i++)
+	{
+		this->m_octreeRoot.extensions[i] = nullptr;
+	}
+
+	//For min depth, build a tree
+	for (int depth = 0; depth < this->m_minDepth; depth++)
+	{
+
 	}
 
 	return result;
@@ -933,5 +941,29 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	}
 	
 
+
+}
+
+void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
+{
+	//Create the extensions, we cull them if not needed later
+	for (int i = 0; i < 8; i++)
+		curNode->branches[i] = new OctreeNode();
+	//For the 8 new branches
+	//MIN	MIN		MIN
+	//MIN	MIN		MAX
+	//MAX	MIN		MAX
+	//MIN	MIN		MAX
+
+	//MIN	MAX		MIN
+	//MIN	MAX		MAX
+	//MAX	MAX		MAX
+	//MIN	MAX		MAX
+
+	//The min values
+	float minX = curNode->pos.x - curNode->ext.x;
+	float minY = curNode->pos.y - curNode->ext.y;
+	float minZ = curNode->pos.z - curNode->ext.z;
+	
 
 }

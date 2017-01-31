@@ -101,8 +101,15 @@ private:
 	int m_minContainment;	//The minimum amount contained components for which it is still wroth splitting after minDepth is reached
 	//We want to keep splittin the nodes until the time it takes to check if the nodes that contain the components becomes larger than the time gained by culling away the contained components
 	struct OctreeNode {
-		OctreeNode* extensions[8];
+		OctreeNode* branches[8];
 		std::vector<unsigned int> containedEntities;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+	};
+	struct OctreeBV {
+		unsigned int componentIndex;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
 	};
 	OctreeNode m_octreeRoot;
 public:
@@ -159,6 +166,8 @@ public:
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
+
+	void OctreeExtend(OctreeNode* curNode, int depth);
 };
 
 #endif
