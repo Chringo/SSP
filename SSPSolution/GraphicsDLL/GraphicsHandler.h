@@ -84,6 +84,19 @@ private:
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
+
+	//[0] = x, [1] = y, [2] = z
+	int m_octreeSize[3];
+	int m_maxDepth;			//The max depth of a node that contains components
+	int m_minDepth;			//The minimum amount of depth for a node that contains components
+	int m_minSize;			//The minimum size of a node for which it is still worth splitting
+	int m_minContainment;	//The minimum amount contained components for which it is still wroth splitting after minDepth is reached
+	//We want to keep splittin the nodes until the time it takes to check if the nodes that contain the components becomes larger than the time gained by culling away the contained components
+	struct OctreeNode {
+		OctreeNode* extensions[8];
+		std::vector<unsigned int> containedEntities;
+	};
+	OctreeNode m_octreeRoot;
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
@@ -114,7 +127,6 @@ public:
 
 	//Culling functions
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
-	GRAPHICSDLL_API int GenerateOctree();
 	GRAPHICSDLL_API int GenerateOctree();
 	//Increase the capacity of the container to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(), new storage is allocated, otherwise the method does nothing.
 	GRAPHICSDLL_API int ReserveDynamicComponents(size_t new_cap);
