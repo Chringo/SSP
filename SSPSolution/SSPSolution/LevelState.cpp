@@ -1227,7 +1227,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		// Temporary check to work with both new and old testinglevels
 		for (size_t q = 0; q < data->numAI; q++)
 		{
-			if (currEntity->EntityID == data->aiComponents[q].entityID)
+			if (currEntity->EntityID == data->aiComponents[q].EntityID)
 			{
 				t_pc->PC_is_Static = false;
 			}
@@ -1262,12 +1262,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		for (size_t B = 0; B < data->numAI; B++)
 		{
-			if (data->aiComponents[B].entityID == aiEntities[A]->GetEntityID())
+			if (data->aiComponents[B].EntityID == aiEntities[A]->GetEntityID())
 			{
 				aiEntities[A]->GetPhysicsComponent()->PC_steadfast = true;
 				AIComponent* temp = m_cHandler->GetAIComponent();
 				temp->AC_triggered = true;// Temp: Needed for AIHandler->Update()
-				temp->AC_entityID = data->aiComponents[A].entityID;
+				temp->AC_entityID = data->aiComponents[A].EntityID;
 				temp->AC_time = data->aiComponents[A].time;
 				temp->AC_speed = data->aiComponents[A].speed;
 				temp->AC_pattern = data->aiComponents[A].pattern;

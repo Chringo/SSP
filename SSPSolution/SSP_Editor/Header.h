@@ -541,7 +541,7 @@ public:
 		this->aiComponent.AC_pattern = dataPtr->pattern;
 		this->aiComponent.AC_nrOfWaypoint = dataPtr->nrOfWaypoints;
 
-		for (int i = 0; i < data.nrOfWaypoints; i++)
+		for (int i = 0; i < dataPtr->nrOfWaypoints; i++)
 		{
 			this->aiComponent.AC_waypoints[i].m128_f32[0] = dataPtr->wayPoints[i][0];
 			this->aiComponent.AC_waypoints[i].m128_f32[1] = dataPtr->wayPoints[i][1];
