@@ -219,6 +219,8 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+	this->m_soundHandler.UpdateSoundHandler();
+
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{

@@ -27,6 +27,7 @@ public:
 	UIComponent* GetUIComponent();
 	TextComponent* GetTextComponent();
 	AIComponent* GetAIComponent();
+	SoundComponent* GetSoundComonent();
 
 	void UpdateGraphicsComponents();
 	void UpdateAIComponents();

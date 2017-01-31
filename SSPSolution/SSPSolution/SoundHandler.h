@@ -2,6 +2,7 @@
 #define	SSPAPPLICATION_SOUND_SOUNDHANDLER_H
 
 #include <vector>
+#include <list>
 #include <DirectXMath.h>
 #include "../irrKlang/Include/irrKlang.h"
 #pragma comment (lib, "../irrKlang/lib/irrKlang")
@@ -9,8 +10,8 @@
 enum Sounds2D
 {
 	NO_SOUND2D = -1,
-	SOUND1,
-	SOUND2,
+	MENU1,
+	MENU2,
 };
 
 enum Sounds3D
@@ -21,7 +22,7 @@ enum Sounds3D
 struct SoundComponent
 {
 	unsigned int		entityID;
-	Sounds3D			sound;
+	Sounds2D			sound;
 	bool				loop;
 	bool				isActive;
 	DirectX::XMFLOAT3	pos;
@@ -36,6 +37,7 @@ private:
 	std::vector<SoundComponent*> soundComponents;
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
+	std::list<irrklang::ISound*> m_activeSounds;
 	
 	void LoadSounds();
 
@@ -48,8 +50,8 @@ public:
 	int Initialize();
 	void Shutdown();
 
-	int PlaySound2D(Sounds2D soundEnum);
-	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos);
+	int PlaySound2D(Sounds2D soundEnum, bool loop);
+	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
 	
 	void UpdateSoundHandler();
 	SoundComponent* GetSoundComponent();

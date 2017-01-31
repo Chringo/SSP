@@ -271,6 +271,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	this->m_dynamicEntitys.push_back(plat);  
 #pragma endregion AIComponent tests
 
+#pragma region
+	this->soundComponent = cHandler->GetSoundComonent();
+	this->soundComponent->entityID = 0;
+	this->soundComponent->isActive = true;
+	this->soundComponent->loop = false;
+	this->soundComponent->pos = DirectX::XMFLOAT3(0,0,0);
+	this->soundComponent->sound = Sounds2D::NO_SOUND2D;
+
+#pragma endregion SOUND_TEST
+
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
@@ -980,6 +990,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		this->soundComponent->sound = Sounds2D::MENU2;
+		this->soundComponent->loop = true;
+	}
+
 
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))

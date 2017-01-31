@@ -71,6 +71,11 @@ AIComponent * ComponentHandler::GetAIComponent()
 	return newComp;
 }
 
+SoundComponent * ComponentHandler::GetSoundComonent()
+{
+	return this->m_soundHandler->GetSoundComponent();
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
