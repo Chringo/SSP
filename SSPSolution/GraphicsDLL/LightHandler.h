@@ -12,6 +12,8 @@
 #include <vector>
 #include "LightStructs.h"
 
+
+//Dont forget to clench your butthole so no heresy gets in!
 namespace LIGHT
 {
 	class GRAPHICSDLL_API LightHandler
