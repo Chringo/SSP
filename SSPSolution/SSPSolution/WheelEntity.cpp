@@ -91,12 +91,10 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
-							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 			}
 
@@ -143,12 +141,10 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 						{
 							//EVENT::WHEEL_0 + percentIncOld to get the start value
 							this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
-							this->m_needSync = true;
 						}
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 			}
 			this->SyncComponents();
@@ -199,7 +195,6 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 					}
 					//The event to notify with is the WHEEL_0 event + the increment.
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
-					this->m_needSync = true;
 				}
 				
 			}
