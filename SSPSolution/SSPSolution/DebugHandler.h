@@ -66,9 +66,9 @@ public:
 		return *m_instance;
 	}
 
-	int StartTimer(std::string label); //returns timer ID, -1 fail
-	int EndTimer();
-	int EndTimer(int timerID);
+	int CreateTimer(std::string label); //returns timer ID, -1 fail
+	int StartTimer(int timerID); 
+	int EndTimer(int timerID); 
 
 	int StartProgram(); // Needed at start of program to show timer %
 	int EndProgram(); // Needed at end of program to show timer %
@@ -80,7 +80,8 @@ public:
 
 	int ResetMinMax();
 
-	int Display(float dTime); // Call this in the end to display everything in the console
+	int DisplayConsole(float dTime); // Call this in the end to display everything in the console
+	int Display();
 
 	void Shutdown();
 };

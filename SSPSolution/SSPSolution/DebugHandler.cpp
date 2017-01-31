@@ -40,25 +40,40 @@ DebugHandler::~DebugHandler()
 {
 }
 
-int DebugHandler::StartTimer(std::string label)
+int DebugHandler::StartTimer(int timerID)
 {
-	LARGE_INTEGER currTime;
-	QueryPerformanceCounter(&currTime);
-	int result = this->m_timers.size();
-	this->m_timerToEnd = result;
-	this->m_timers.push_back(Timer(currTime));
-	this->m_labels.push_back(label);
+	int result = 0;
+
+	if (timerID < this->m_timers.size())
+	{
+		LARGE_INTEGER currTime;
+		QueryPerformanceCounter(&currTime);
+		this->m_timers.at(timerID).startTime = currTime;
+		result = 1;
+	}
 
 	return result;
 }
 
-int DebugHandler::EndTimer()
+int DebugHandler::EndTimer(int timerID)
 {
-	LARGE_INTEGER currTime;
-	QueryPerformanceCounter(&currTime);
-	this->m_timersEnded++;
-	this->m_timers.at(this->m_timerToEnd).endTime = currTime;
-	this->m_timerToEnd = this->m_timers.size() - this->m_timersEnded - 1;
+	int result = 0;
+
+	if (timerID < this->m_timers.size())
+	{
+		LARGE_INTEGER currTime;
+		QueryPerformanceCounter(&currTime);
+		this->m_timers.at(timerID).endTime = currTime;
+		result = 1;
+	}
+
+	return result;
+}
+
+int DebugHandler::CreateTimer(std::string label)
+{
+	this->m_timers.push_back(Timer());
+	this->m_labels.push_back(label);
 
 	return 0;
 }
@@ -130,7 +145,7 @@ int DebugHandler::ResetMinMax()
 	return 0;
 }
 
-int DebugHandler::Display(float dTime)
+int DebugHandler::DisplayConsole(float dTime)
 {
 	COORD topLeft = { 0, 0 };
 	COORD FPSLocation = { 50, 0 };
