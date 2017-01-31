@@ -1219,22 +1219,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-
-#pragma region AIComp check
-		// Correct check but does not work with current testinglevel
-		//if(currEntity->hasAi)
-		//	t_pc->PC_is_Static = false;
-		// Temporary check to work with both new and old testinglevels
-		for (size_t q = 0; q < data->numAI; q++)
-		{
-			if (currEntity->EntityID == data->aiComponents[q].EntityID)
-			{
-				t_pc->PC_is_Static = false;
-			}
-		}
-#pragma endregion
-
-
+		
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			//tse->SetGraphicsComponent(t_gc);
