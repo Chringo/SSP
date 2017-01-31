@@ -227,6 +227,10 @@ struct Lever : ListenerContainer
 	Lever() : ListenerContainer() {
 		this->type = LEVER;
 	}
+	Lever(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Lever
+	{
+		this->type = LEVER;
+	}
 	float interactionDistance;
 };
 struct Wheel : ListenerContainer
@@ -235,13 +239,16 @@ struct Wheel : ListenerContainer
 	{
 		this->type = WHEEL;
 	}
-	float interactionDistance;
-	float minRotation;
-	float maxRotation;
-	float rotateTime;
-
-	float timeToReset;	  //Sekunder
-	float resetTime;	  //Sekunder
+	Wheel(const Container &obj) : ListenerContainer(obj) //copy constructor to convert from a container type to Wheel
+	{
+		this->type = WHEEL;
+	}
+	float interactionDistance = 3.0f;
+	float minRotation = 0.0f;
+	float maxRotation = 720.0f;
+	float rotateTime  = 4.0f;
+	float timeToReset = 0.0f;	  //Sekunder
+	float resetTime   = 4.0f;	  //Sekunder
 };
 struct Door : ListenerContainer
 {

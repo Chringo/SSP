@@ -67,6 +67,25 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 	this->m_door_rotationTime = ui->rotateTimeBox;
 	connect(ui->rotateTimeBox, SIGNAL(valueChanged(double)), this, SLOT(on_RotationTime_changed(double)));
+
+
+
+#pragma region Wheel ui elements
+
+	m_wheel_minRotation		= ui->wheel_minRotationBox;
+	m_wheel_maxRotation		= ui->wheel_maxRotationBox;
+	m_wheel_interactionDist	= ui->wheel_interactionDistBox;
+	m_wheel_rotationTime	= ui->wheel_rotationTimeBox;
+	m_wheel_timeTilReset	= ui->wheel_timeTilResetBox;
+	m_wheel_resetTime		= ui->wheel_resetTimeBox;
+	connect(m_wheel_minRotation,	 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_minRotation_changed(double)));
+	connect(m_wheel_maxRotation,	 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_maxRotation_changed(double)));
+	connect(m_wheel_interactionDist, SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_interactionDist_changed(double)));
+	connect(m_wheel_rotationTime,    SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_rotationTime_changed(double)));
+	connect(m_wheel_timeTilReset,	 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_timeTilReset_changed(double)));
+	connect(m_wheel_resetTime,		 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_resetTime_changed(double)));
+
+#pragma endregion
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -143,6 +162,16 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			break;
 #pragma endregion
 /////////
+//Wheel
+#pragma region WHEEL
+		case ContainerType::WHEEL:
+			m_BehaviourType->setCurrentIndex(WHEEL); //Open the window for wheel
+			m_Current_Type = WHEEL; //Update current type
+
+			break;
+#pragma endregion
+/////////
+
 
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
@@ -205,6 +234,16 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 			}
 		}
 		break;
+	}
+	case Ui::WHEEL:
+	{
+		m_wheel_interactionDist	->setValue(0.0f);
+		m_wheel_rotationTime	->setValue(0.0f);
+		m_wheel_timeTilReset	->setValue(0.0f);
+		m_wheel_minRotation		->setValue(0.0f);
+		m_wheel_maxRotation		->setValue(0.0f);
+		m_wheel_resetTime		->setValue(0.0f);
+
 	}
 	default:
 		break;
@@ -353,7 +392,28 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 						AiContainer* newAI = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToAI(m_selection); //convert from container to ai
 						m_selection->isDirty = true;
 					}
+					break;
+				}
+				case BehaviourType::WHEEL:
+				{
+					if (m_selection->type == ContainerType::MODEL) {
+						Wheel* newWheel = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToWheel(m_selection); //convert from container to wheel
+						m_selection->isDirty = true;
+					}
+					else if (m_selection->type != ContainerType::MODEL && m_selection->type != ContainerType::WHEEL) //if the selection is not a container or door, 
+					{
+						Container* cont = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToContainer(m_selection); // convert to container
+						Wheel* newWheel = LevelHandler::GetInstance()->GetCurrentLevel()->ConvertToWheel(m_selection);	   //convert from container to wheel
+						m_selection->isDirty = true;
+					}
 
+					m_wheel_interactionDist	 ->setValue(((Wheel*)m_selection)->interactionDistance)	 ;
+					m_wheel_rotationTime	 ->setValue(((Wheel*)m_selection)->rotateTime)			 ;
+					m_wheel_timeTilReset	 ->setValue(((Wheel*)m_selection)->timeToReset)			 ;
+					m_wheel_minRotation		 ->setValue(((Wheel*)m_selection)->minRotation)			 ;
+					m_wheel_maxRotation		 ->setValue(((Wheel*)m_selection)->maxRotation)			 ;
+					m_wheel_resetTime		 ->setValue(((Wheel*)m_selection)->resetTime)			 ;
+					break;
 				}
 
 				}
@@ -397,7 +457,7 @@ void Ui::BehaviourTypeHandler::on_Attributes_tab_changed(int val)
 	}
 
 }
-
+#pragma region AI functions
 void Ui::BehaviourTypeHandler::on_Add()
 {
 	if (m_selection == nullptr)
@@ -469,95 +529,79 @@ void Ui::BehaviourTypeHandler::on_Del()
 		//do stuff
 	}
 }
+#pragma endregion
 
-void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * item)
-{
-	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
-	
-	if (selected == nullptr) //some QT sorcery sometimes calls this callback when an item is deleted
-		return;
-	if (m_currentEventType != selected->type)
-	{
-		m_currentEventType = selected->type;
-		ClearEventList();
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(selected->type);
-		for (size_t i = 0; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i+1, strings->at(i));
-		}
-	}
-	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
-	m_eventBox->setCurrentText(hej);
-}
-
-void Ui::BehaviourTypeHandler::on_eventSelection_Changed(int val)
-{
-	if (val <= 0 ||m_triggerList->rowCount() < 1)
-		return;
-	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
-	if (selected == nullptr) 
-		return;
-
-	if (m_currentEventType != selected->type)
-	{
-		this->on_triggerSelection_Changed(m_triggerList->selectedItems().at(0)); //if by some reason, the wrong events show up on the selected object.
-	}
-	((ListenerContainer*)m_selection)->UpdateTriggerEvent(selected,EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())));
-	m_triggerList->item(m_triggerList->currentRow(),1)->setText(m_eventBox->currentText()); //take the text from the event box and apply that to the trigger list
-	
-}
-
-void Ui::BehaviourTypeHandler::on_Add_Trigger()
-{
-
-	if (m_availableTriggers->currentIndex() <= 0 || m_triggerList->rowCount() >= 20) 
-		return;
-	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
-	
-	m_currentEventType = selection->type;
-	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
-	EVENT triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
-	
-	//QString hej = m_eventBox->currentText();
-	//triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())); //Get the right EVENT enum integer.
-//	m_eventStrings.GetEventStringsFromType(selection->type)->at(0);
-	if (((ListenerContainer*)m_selection)->AddTrigger(selection, triggerEvent)) //add the trigger to the selected component
-	{
-		//m_triggerList->setCurrentCell(-1, -1);
-		m_eventBox->clear();
-	;
-		m_eventBox->insertItem(0, "None");
-		for (size_t i = 1; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i, strings->at(i));
-		}
-
-		AddTriggerItemToList(selection, selection->type, -1); // if successfull, add it to the ui list
-	}
-
-
-}
-
-void Ui::BehaviourTypeHandler::on_Delete_Trigger()
-{
-	if (m_triggerList->rowCount() > 0)
-	{
-		Container* selection = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
-		((ListenerContainer*)m_selection)->DeleteTrigger(selection->internalID);
-		m_triggerList->removeRow(m_triggerList->currentRow());
-	}
-	
-}
-
+#pragma region Door functions
 void Ui::BehaviourTypeHandler::on_RotationTime_changed(double val)
 {
-	if (m_selection->type != ContainerType::DOOR)
+	
+	if (m_selection == nullptr || m_selection->type != ContainerType::DOOR)
 		return;
 
 	((Door*)m_selection)->rotateTime = (float)val;
 
 }
+#pragma endregion
 
+#pragma region Wheel callbacks
+void Ui::BehaviourTypeHandler::on_Wheel_minRotation_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+	
+	((Wheel*)m_selection)->minRotation = (float)val;
+	
+}
+
+void Ui::BehaviourTypeHandler::on_Wheel_maxRotation_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+	
+	((Wheel*)m_selection)->maxRotation = (float)val;
+
+}
+
+void Ui::BehaviourTypeHandler::on_Wheel_interactionDist_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+
+
+	((Wheel*)m_selection)->interactionDistance = (float)val;
+	
+
+}
+
+void Ui::BehaviourTypeHandler::on_Wheel_rotationTime_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+	((Wheel*)m_selection)->rotateTime = (float)val;
+	
+
+}
+
+void Ui::BehaviourTypeHandler::on_Wheel_timeTilReset_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+
+	((Wheel*)m_selection)->timeToReset = (float)val;
+	
+
+}
+
+void Ui::BehaviourTypeHandler::on_Wheel_resetTime_changed(double val)
+{
+	if (m_selection == nullptr || m_selection->type != ContainerType::WHEEL)
+		return;
+	((Wheel*)m_selection)->resetTime = (float)val;
+
+}
+#pragma endregion
+
+#pragma region Trigger Functions
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
 	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
@@ -655,3 +699,83 @@ void Ui::BehaviourTypeHandler::ClearEventList()
 	m_eventBox->clear();
 	//m_eventBox->insertItem(0, "None");
 }
+
+void Ui::BehaviourTypeHandler::on_Delete_Trigger()
+{
+	if (m_triggerList->rowCount() > 0)
+	{
+		Container* selection = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
+		((ListenerContainer*)m_selection)->DeleteTrigger(selection->internalID);
+		m_triggerList->removeRow(m_triggerList->currentRow());
+	}
+
+}
+
+void Ui::BehaviourTypeHandler::on_Add_Trigger()
+{
+
+	if (m_availableTriggers->currentIndex() <= 0 || m_triggerList->rowCount() >= 20)
+		return;
+	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
+
+	m_currentEventType = selection->type;
+	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
+	EVENT triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
+
+	//QString hej = m_eventBox->currentText();
+	//triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())); //Get the right EVENT enum integer.
+	//	m_eventStrings.GetEventStringsFromType(selection->type)->at(0);
+	if (((ListenerContainer*)m_selection)->AddTrigger(selection, triggerEvent)) //add the trigger to the selected component
+	{
+		//m_triggerList->setCurrentCell(-1, -1);
+		m_eventBox->clear();
+		;
+		m_eventBox->insertItem(0, "None");
+		for (size_t i = 1; i < strings->size(); i++)
+		{
+			m_eventBox->insertItem(i, strings->at(i));
+		}
+
+		AddTriggerItemToList(selection, selection->type, -1); // if successfull, add it to the ui list
+	}
+
+
+}
+
+void Ui::BehaviourTypeHandler::on_eventSelection_Changed(int val)
+{
+	if (val <= 0 || m_triggerList->rowCount() < 1)
+		return;
+	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
+	if (selected == nullptr)
+		return;
+
+	if (m_currentEventType != selected->type)
+	{
+		this->on_triggerSelection_Changed(m_triggerList->selectedItems().at(0)); //if by some reason, the wrong events show up on the selected object.
+	}
+	((ListenerContainer*)m_selection)->UpdateTriggerEvent(selected, EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())));
+	m_triggerList->item(m_triggerList->currentRow(), 1)->setText(m_eventBox->currentText()); //take the text from the event box and apply that to the trigger list
+
+}
+
+void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * item)
+{
+	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
+
+	if (selected == nullptr) //some QT sorcery sometimes calls this callback when an item is deleted
+		return;
+	if (m_currentEventType != selected->type)
+	{
+		m_currentEventType = selected->type;
+		ClearEventList();
+		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(selected->type);
+		for (size_t i = 0; i < strings->size(); i++)
+		{
+			m_eventBox->insertItem(i + 1, strings->at(i));
+		}
+	}
+	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
+	m_eventBox->setCurrentText(hej);
+}
+#pragma endregion
