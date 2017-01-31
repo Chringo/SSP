@@ -246,35 +246,36 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 			}
 
 		}
-			for (size_t i = 0; i < m_puzzleElements.size(); i++)
-			{
-				for each (Container* container in m_puzzleElements.at(i)) {
-					if (container->internalID == instanceID)
-					{
-						container->position = position;
-						container->rotation = rotation;
-						DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+		for (size_t i = 0; i < m_puzzleElements.size(); i++)
+		{
+			for each (Container* container in m_puzzleElements.at(i)) {
+				if (container->internalID == instanceID)
+				{
+					container->position = position;
+					container->rotation = rotation;
+					DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
-						DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
-						DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
-						DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
-						//Create the rotation matrix
-						DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
-						rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+					DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+					DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+					DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+					//Create the rotation matrix
+					DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+					rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
 
-						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
-						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
-						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
-						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-						container->component.worldMatrix = containerMatrix;
-						container->isDirty = false;
-						return Resources::Status::ST_OK;
-
-					}
+					//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+					//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+					containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+					containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+					container->component.worldMatrix = containerMatrix;
+					container->isDirty = false;
+					return Resources::Status::ST_OK;
 
 				}
 
 			}
+
+		}
+		m_LevelAi.UpdatePathComponent(instanceID,position,rotation);
 
 		return Resources::Status::ST_RES_MISSING;
 	}
@@ -346,9 +347,11 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 			if (m_checkpointHandler.GetAllCheckpoints()->at(i)->internalID == instanceID)
 			{
 				m_checkpointHandler.GetAllCheckpoints()->erase(m_checkpointHandler.GetAllCheckpoints()->begin() + i);
+				return  Resources::Status::ST_OK;
 			}
 		}
-		return Resources::Status::ST_RES_MISSING;
+	
+
 	}
 	else {
 		modelPtr = &got->second;
@@ -361,6 +364,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 					return Resources::Status::ST_OK;
 			}
 		}
+	}
 		for (size_t i = 0; i < m_puzzleElements.size(); i++)
 		{
 			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
@@ -375,7 +379,6 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		}
 		m_LevelAi.DeletePathComponent(instanceID);
 		
-	}
 	return Resources::Status::ST_OK;
 }
 
