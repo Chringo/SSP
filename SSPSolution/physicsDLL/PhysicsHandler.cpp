@@ -2592,6 +2592,20 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
+void PhysicsHandler::ResetChainLink()
+{
+	// This resets the player, the chain link, and the ball
+	int nrOfChainLinks = this->m_links.size();
+	this->m_links[0].CL_previous->PC_velocity = { 0 };
+	for (size_t i = 0; i < nrOfChainLinks; i++)
+	{
+		this->m_links[i].CL_next->PC_velocity = { 0 };
+		this->m_links[i].CL_next->PC_pos =
+			DirectX::XMVectorAdd(
+				this->m_links[i].CL_previous->PC_pos, DirectX::XMVectorSet(0.33f, 0.11f, 0, 0));
+	}
+}
+
 bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos)
 {
 	Ray ray;

@@ -935,32 +935,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	{
+		// Reset player-position to spawn
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-		m_player1.GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
-		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(
-				m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(3, 1, 1, 0));
-		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.ball->GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
 		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-		m_player2.GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(1, 6, 0, 0));
-		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(
-				m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(3, 1, 1, 0));
-		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.ball->GetPhysicsComponent(), 5, 1.0);	//Note that 'ballP' is temporary
+		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
-
-	////update all dynamic entities
-	//for (int i = 0; i < this->m_dynamicEntitys.size(); i++)
-	//{
-	//	this->m_dynamicEntitys.at(i)->Update(dt, inputHandler);
-	//}
-
+	
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
@@ -1222,21 +1203,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
-			//tse->SetGraphicsComponent(t_gc);
-			//tse->SetPhysicsComponent(t_pc);
-			//tse->SetAnimationComponent(t_anim);
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_anim);// Entity needs its ID
-
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-
 			DynamicEntity* tde = new DynamicEntity();
-			//tde->SetGraphicsComponent(t_gc);
-			//tde->SetPhysicsComponent(t_pc);
-			//tde->SetAnimationComponent(t_anim);
 			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_anim);// Entity needs its ID
-
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 		}
 	}
