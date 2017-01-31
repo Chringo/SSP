@@ -104,13 +104,13 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 	if (this->m_isGrabbedBy != nullptr)
 	{
 		this->m_isGrabbed = true;
-		this->m_pComp->PC_gravityInfluence = 0;
+		this->m_pComp->PC_Bullet_AffectedByGravity = false;
 		this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	else {
 		this->m_isGrabbed = false;
-		this->m_pComp->PC_gravityInfluence = 1;
-		//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		this->m_pComp->PC_Bullet_AffectedByGravity = true;
+		this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	
 	return lastValue;

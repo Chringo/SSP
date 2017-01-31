@@ -81,7 +81,8 @@ void BulletInterpreter::Initialize()
 	this->player1 = nullptr;
 	this->player2 = nullptr;
 
-	this->m_dynamicsWorld->setGravity(btVector3(0, -10, 0));
+	this->m_GravityAcc = btVector3(0, -10, 0);
+	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 }
 
 void BulletInterpreter::Update(const float& dt)
@@ -89,10 +90,10 @@ void BulletInterpreter::Update(const float& dt)
 	//time will act on the objects
 	
 	
-	btVector3 vel = this->crt_xmvecVec3(this->player1->PC_velocity);
-	vel *= 10;
-	//velo *= 10;
-	this->m_rigidBodies.at(0)->setLinearVelocity(vel);
+	//btVector3 vel = this->crt_xmvecVec3(this->player1->PC_velocity);
+	//vel *= 10;
+	//////velo *= 10;
+	//this->m_rigidBodies.at(0)->setLinearVelocity(vel);
 
 	this->m_dynamicsWorld->stepSimulation(1.0f/60.0f);
 	
@@ -104,12 +105,36 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 
 	btTransform trans;
 
+	//update positions
 	if (src->PC_IndexRigidBody != -1)
 	{
-		//this->m_rigidBodies.at(0)->setLinearVelocity(this->crt_xmvecVec3(src->PC_velocity));
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
+		if (src->PC_ApplyImpulse == true)
+		{
+			btVector3 power;
+			btVector3 pos;
 
+			//power = this->crt_xmvecVec3(src->PC_ForceDir);
+			power = btVector3(0, 1, 1);
+
+			power *= src->PC_Power;
+			pos = btVector3(0,0.2,0);
+
+
+			//this->m_rigidBodies.at(index)->applyForce(power, this->crt_xmvecVec3(src->PC_pos));
+			btRigidBody* holder = nullptr;
+			holder = this->m_rigidBodies.at(index);
+			holder->applyImpulse(power, pos);
+
+			src->PC_ForceDir = DirectX::XMVectorSet(0, 0, 0, 0);
+			src->PC_Power = 0;
+			src->PC_ApplyImpulse = false;
+		}
+
+		//get the position in the Bullet world
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
 		btVector3 origin = trans.getOrigin();
+
+		//update PhysicsComponent
 		src->PC_pos = this->crt_Vec3XMVEc(origin);
 
 
@@ -124,6 +149,17 @@ void BulletInterpreter::SyncWithPC(PhysicsComponent * src, int index)
 			//do graphics component update aswell atleast try it and see result
 		}
 		
+	}
+
+	//for grabbed
+	if (src->PC_Bullet_AffectedByGravity == false)
+	{
+		//if the gravity influence is zero, the component will not be affected by gravity
+		this->m_rigidBodies.at(index)->setGravity(btVector3(0,0,0));
+	}
+	else
+	{
+		this->m_rigidBodies.at(index)->setGravity(this->m_GravityAcc);
 	}
 
 }

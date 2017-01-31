@@ -100,7 +100,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_entityID = 1;								//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
 	
-	playerP->PC_rotation = DirectX::XMVectorSet((3.14/180) * 45, 0, 0, 0); //Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0); //Set Rotation
 	
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;

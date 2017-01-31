@@ -56,6 +56,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (this->m_grabbed != nullptr)
 	{
 		this->m_grabbed->GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
+		//sync with bullet
 	}
 
 
@@ -65,8 +66,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 			
-			float strength = 1.0f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
+			float strength = 100.0f;
+			//this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
+			this->m_grabbed->GetPhysicsComponent()->ApplyForce(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Release the entity
 		}
 
@@ -77,7 +79,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 
-			float strength = 1.5f;
+			float strength = 1.5f;		
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Relsease the entity
 		}
