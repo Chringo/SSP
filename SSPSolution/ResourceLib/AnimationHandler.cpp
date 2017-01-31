@@ -48,8 +48,7 @@ Resources::Status Resources::AnimationHandler::LoadAnimation(const unsigned int 
 
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/SkelMesh1_AnimLayer1.anim";
-	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
+	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
 	if (st != ST_OK)
 		return st;
 
