@@ -232,6 +232,87 @@ struct Lever : ListenerContainer
 		this->type = LEVER;
 	}
 	float interactionDistance;
+
+private:
+	LevelData::LeverHeader data;
+public:
+	LevelData::LeverHeader * GetData()
+	{
+		//fill entity data
+		data.EntityID = this->internalID;
+		data.isStatic = this->isStatic;
+		//if (this->aiComponent != nullptr)
+		//{
+		//	data.isStatic = false;
+		//	data.hasAi = true;
+		//}
+		//else {
+		//	data.hasAi = false;
+		//}
+		data.modelID = this->component.modelID;
+		data.position[0] = this->position.m128_f32[0];
+		data.position[1] = this->position.m128_f32[1];
+		data.position[2] = this->position.m128_f32[2];
+		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[1] = this->rotation.m128_f32[1];
+		data.rotation[2] = this->rotation.m128_f32[2];
+
+		//fill listener data
+		data.Listener.numConnections = this->numTriggers;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			data.Listener.Event[i] = this->listenEvent[i];
+			data.Listener.SenderID[i] = this->triggerEntityIds[i];
+		}
+
+		//fill unique data
+		data.interactionDistance = this->interactionDistance;
+
+		return &data;
+	}
+	Lever(LevelData::LeverHeader* dataPtr)
+	{
+		this->type = LEVER;
+
+		//entity load
+		this->internalID = dataPtr->EntityID;
+		this->isStatic = dataPtr->isStatic;
+		this->component.modelID = dataPtr->modelID;
+		this->component.worldMatrix = DirectX::XMMatrixIdentity();
+		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
+		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
+
+
+		DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+
+		this->component.worldMatrix = containerMatrix;
+
+		//listener load
+		this->numTriggers = dataPtr->Listener.numConnections;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			this->listenEvent[i] = (EVENT)dataPtr->Listener.Event[i];
+			this->triggerEntityIds[i] = dataPtr->Listener.SenderID[i];
+		}
+
+		//unique data load
+		this->interactionDistance = dataPtr->interactionDistance;
+
+		this->isDirty = true;
+	}
+
 };
 struct Wheel : ListenerContainer
 {
@@ -249,6 +330,99 @@ struct Wheel : ListenerContainer
 	float rotateTime  = 4.0f;
 	float timeToReset = 0.0f;	  //Sekunder
 	float resetTime   = 4.0f;	  //Sekunder
+
+
+
+private:
+	LevelData::WheelHeader data;
+public:
+	LevelData::WheelHeader * GetData()
+	{
+		//fill entity data
+		data.EntityID = this->internalID;
+		data.isStatic = this->isStatic;
+		//if (this->aiComponent != nullptr)
+		//{
+		//	data.isStatic = false;
+		//	data.hasAi = true;
+		//}
+		//else {
+		//	data.hasAi = false;
+		//}
+		data.modelID = this->component.modelID;
+		data.position[0] = this->position.m128_f32[0];
+		data.position[1] = this->position.m128_f32[1];
+		data.position[2] = this->position.m128_f32[2];
+		data.rotation[0] = this->rotation.m128_f32[0];
+		data.rotation[1] = this->rotation.m128_f32[1];
+		data.rotation[2] = this->rotation.m128_f32[2];
+
+		//fill listener data
+		data.Listener.numConnections = this->numTriggers;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			data.Listener.Event[i] = this->listenEvent[i];
+			data.Listener.SenderID[i] = this->triggerEntityIds[i];
+		}
+
+		//fill unique data
+		data.interactionDistance = this->interactionDistance;
+		data.min = this->minRotation;
+		data.max = this->maxRotation;
+		data.resetTime = this->resetTime;
+		data.resetDelay = this->timeToReset;	  //Sekunder
+		data.time = this->rotateTime;	  //Sekunder
+
+
+		return &data;
+	}
+	Wheel(LevelData::WheelHeader* dataPtr)
+	{
+		this->type = WHEEL;
+
+		//entity load
+		this->internalID = dataPtr->EntityID;
+		this->isStatic = dataPtr->isStatic;
+		this->component.modelID = dataPtr->modelID;
+		this->component.worldMatrix = DirectX::XMMatrixIdentity();
+		this->position = { dataPtr->position[0], dataPtr->position[1], dataPtr->position[2] };
+		this->rotation = { dataPtr->rotation[0], dataPtr->rotation[1], dataPtr->rotation[2] };
+
+
+		DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+		//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+		containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+
+		this->component.worldMatrix = containerMatrix;
+
+		//listener load
+		this->numTriggers = dataPtr->Listener.numConnections;
+		for (int i = 0; i < this->numTriggers; i++)
+		{
+			this->listenEvent[i] = (EVENT)dataPtr->Listener.Event[i];
+			this->triggerEntityIds[i] = dataPtr->Listener.SenderID[i];
+		}
+
+		//unique data load
+		this->interactionDistance = dataPtr->interactionDistance;
+		this->minRotation		  = dataPtr->min;
+		this->maxRotation		  = dataPtr->max;
+		this->resetTime			  = dataPtr->resetTime;
+		this->timeToReset		  = dataPtr->resetDelay;
+		this->rotateTime		  = dataPtr->time;
+
+		this->isDirty = true;
+	}
 };
 struct Door : ListenerContainer
 {
@@ -466,8 +640,8 @@ public:
 		data.isStatic = this->isStatic;
 		//if (this->aiComponent != nullptr)
 		//{
-		//	data.isStatic = false;
-		//	data.hasAi = true;
+		data.isStatic = false;
+		data.hasAi = true;
 		//}
 		//else {
 		//	data.hasAi = false;

@@ -86,11 +86,19 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	}
 	if (header.leverAmount > 0)
 	{
-
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		this->GetDoorData(leverData);
+		file.write(leverData, leverSize);
+		delete leverData;
 	}
 	if (header.wheelAmount > 0)
 	{
-
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		this->GetDoorData(wheelData);
+		file.write(wheelData, wheelSize);
+		delete wheelData;
 	}
 
 	file.close();
@@ -388,6 +396,32 @@ LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetLeverData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Lever* lever in *this->m_currentLevel.GetPuzzleElements(LEVER))
+	{
+		LevelData::LeverHeader* lh = lever->GetData();
+		memcpy(dataPtr + offset, (char*)lh, sizeof(LevelData::LeverHeader));
+		offset += sizeof(LevelData::LeverHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetWheelData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Wheel* wheel in *this->m_currentLevel.GetPuzzleElements(WHEEL))
+	{
+		LevelData::WheelHeader* wh = wheel->GetData();
+		memcpy(dataPtr + offset, (char*)wh, sizeof(LevelData::WheelHeader));
+		offset += sizeof(LevelData::WheelHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -453,6 +487,32 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader
 		m_currentLevel.AddPuzzleElement(DOOR, door);
 
 		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::WheelHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Wheel * wheel = new Wheel(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(WHEEL, wheel);
+
+		wheel->component.modelPtr = DataHandler::GetInstance()->GetModel(wheel->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::LeverHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Lever * lever = new Lever(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(LEVER, lever);
+
+		lever->component.modelPtr = DataHandler::GetInstance()->GetModel(lever->component.modelID);
 	}
 
 	return LevelData::LevelStatus::L_OK;

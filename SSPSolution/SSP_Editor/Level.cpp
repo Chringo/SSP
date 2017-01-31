@@ -188,8 +188,10 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 		m_puzzleElements.at(BUTTON).push_back((Button*)element);
 		break;
 	case LEVER:
+		m_puzzleElements.at(LEVER).push_back((Button*)element);
 		break;
 	case WHEEL:
+		m_puzzleElements.at(WHEEL).push_back((Button*)element);
 		break;
 	case DOOR:
 		m_puzzleElements.at(DOOR).push_back((Door*)element);

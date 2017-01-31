@@ -135,7 +135,7 @@ namespace LevelData {
 		float resetTime;
 		float min;
 		float max;
-		float start;
+		float time;
 		ListenerHeader Listener;
 	};
 
