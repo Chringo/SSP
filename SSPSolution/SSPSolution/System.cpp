@@ -100,6 +100,8 @@ int System::Initialize()
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
 	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
+	DebugHandler::instance().CreateTimer("Update");
+	DebugHandler::instance().CreateTimer("Render");
 #endif
 
 	return result;
@@ -143,14 +145,15 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
+#ifdef _DEBUG
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance().ResetMinMax();
 			printf("Reseted min max on timers\n");
 		}
-#ifdef _DEBUG
+
 		DebugHandler::instance().EndProgram();
-		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
+		DebugHandler::instance().DisplayConsole((float)elapsedTime.QuadPart);
 #endif
 	}
 	if (this->m_fullscreen)
@@ -165,7 +168,7 @@ int System::Update(float deltaTime)
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
 #ifdef _DEBUG
-	DebugHandler::instance().StartTimer("Update");
+	DebugHandler::instance().StartTimer(0);
 #endif
 	int result = 1;
 
@@ -256,13 +259,13 @@ int System::Update(float deltaTime)
 
 #ifdef _DEBUG
 	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance().EndTimer();
+	DebugHandler::instance().EndTimer(0);
 	//Render
-	DebugHandler::instance().StartTimer("Render");
+	DebugHandler::instance().StartTimer(1);
 #endif
 	this->m_graphicsHandler->Render(deltaTime);
 #ifdef _DEBUG
-	DebugHandler::instance().EndTimer();
+	DebugHandler::instance().EndTimer(1);
 #endif
 	return result;
 }
