@@ -651,7 +651,7 @@ int GraphicsHandler::GenerateOctree()
 	maxX = maxY = maxZ = INT_MIN;
 
 	
-	std::vector<BV> listOfComponentBV;
+	std::vector<OctreeBV> listOfComponentBV;
 	listOfComponentBV.resize(componentCount);
 	for (size_t i = 0; i < componentCount; i++)
 	{
@@ -680,7 +680,7 @@ int GraphicsHandler::GenerateOctree()
 	//Initialize the octree root
 	for (int i = 0; i < 8; i++)
 	{
-		this->m_octreeRoot.extensions[i] = nullptr;
+		this->m_octreeRoot.branches[i] = nullptr;
 	}
 
 	//For min depth, build a tree
@@ -951,6 +951,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 		curNode->branches[i] = new OctreeNode();
 	//For the 8 new branches
 	//MIN	MIN		MIN
+
 	//MIN	MIN		MAX
 	//MAX	MIN		MAX
 	//MIN	MIN		MAX
