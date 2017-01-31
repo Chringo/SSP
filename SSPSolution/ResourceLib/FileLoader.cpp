@@ -203,6 +203,10 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	level.numEntities   = header.entityAmount;
 	level.numAI			= header.AiComponentAmount;
 	level.numCheckpoints = header.checkpointAmount;
+	level.numButton = header.buttonAmount;
+	level.numDoor = header.doorAmount;
+	level.numLever = header.leverAmount;
+	level.numWheel = header.wheelAmount;
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
@@ -241,11 +245,35 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 
 	if (header.buttonAmount > 0)
 	{
-		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.checkpointAmount;
+		size_t buttonSize = sizeof(LevelData::ButtonHeader) * header.buttonAmount;
 		file.read(data + offset, buttonSize);
 		level.buttons = (LevelData::ButtonHeader*) (data + offset);
 		offset += buttonSize;
-	};
+	}
+
+	if (header.doorAmount > 0)
+	{
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		file.read(data + offset, doorSize);
+		level.doors = (LevelData::DoorHeader*) (data + offset);
+		offset += doorSize;
+	}
+
+	if (header.leverAmount > 0)
+	{
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		file.read(data + offset, leverSize);
+		level.levers = (LevelData::LeverHeader*) (data + offset);
+		offset += leverSize;
+	}
+
+	if (header.wheelAmount > 0)
+	{
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		file.read(data + offset, wheelSize);
+		level.wheels = (LevelData::WheelHeader*) (data + offset);
+		offset += wheelSize;
+	}
 	//Lights
 	/*
 		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize

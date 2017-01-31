@@ -81,8 +81,17 @@ namespace LevelData {
 	//	//ListenerHeader Listener;
 	//};
 
-	struct AiHeader {
-		unsigned int entityID = -1;
+	//struct AiHeader {
+	//	unsigned int entityID = -1;
+	//	int time = 0;
+	//	float speed = 0;
+	//	int pattern = 0;
+	//	int nrOfWaypoints = 0;
+	//	float wayPoints[8][3];
+	//	ListenerHeader Listener;
+	//};
+
+	struct AiHeader : EntityHeader {
 		int time = 0;
 		float speed = 0;
 		int pattern = 0;
@@ -126,7 +135,7 @@ namespace LevelData {
 		float resetTime;
 		float min;
 		float max;
-		float start;
+		float time;
 		ListenerHeader Listener;
 	};
 
