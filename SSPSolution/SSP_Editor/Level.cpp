@@ -198,6 +198,9 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 		break;
 	case PRESSUREPLATE:
 		break;
+	case AI:
+		m_LevelAi.GetAllPathComponents()->push_back((AiContainer*)element);
+		break;
 	default:
 		break;
 	}

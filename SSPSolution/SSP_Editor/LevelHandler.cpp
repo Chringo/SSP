@@ -407,9 +407,8 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 {
 	for (size_t i = 0; i < numComponents; i++)
 	{
-		
 		AiContainer* newComponent = new AiContainer(&dataPtr[i]);
-		LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->GetAllPathComponents()->push_back(newComponent);
+		m_currentLevel.AddPuzzleElement(AI, newComponent);
 			
 		newComponent->component.modelPtr = DataHandler::GetInstance()->GetModel(newComponent->component.modelID);
 	}
