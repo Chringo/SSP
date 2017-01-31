@@ -76,6 +76,11 @@ SoundComponent2D * ComponentHandler::GetSoundComponent2D()
 	return this->m_soundHandler->GetSoundComponent2D();
 }
 
+SoundComponent3D * ComponentHandler::GetSoundComponent3D()
+{
+	return this->m_soundHandler->GetSoundComponent3D();
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();

@@ -7,6 +7,7 @@
 #include "../irrKlang/Include/irrKlang.h"
 #pragma comment (lib, "../irrKlang/lib/irrKlang")
 
+
 enum Sounds2D
 {
 	NO_SOUND2D = -1,
@@ -17,6 +18,7 @@ enum Sounds2D
 enum Sounds3D
 {
 	NO_SOUND3D = -1,
+	MENU1_3D,
 };
 
 struct SoundComponent2D
@@ -34,7 +36,7 @@ struct SoundComponent3D
 	DirectX::XMFLOAT3	pos;
 };
 
-class SoundHandler
+class SoundHandler : public irrklang::ISoundStopEventReceiver
 {
 private:
 	irrklang::ISoundEngine* m_soundEngine;
@@ -43,12 +45,11 @@ private:
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	std::list<irrklang::ISound*> m_activeSounds;
+	//SoundEndReciver* endListner;
 	
 	void LoadSounds();
 
 public:
-
-
 	SoundHandler();
 	~SoundHandler();
 
@@ -61,6 +62,8 @@ public:
 	void UpdateSoundHandler();
 	SoundComponent2D* GetSoundComponent2D();
 	SoundComponent3D* GetSoundComponent3D();
+
+	void OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData);
 
 };
 

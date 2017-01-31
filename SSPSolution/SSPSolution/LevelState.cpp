@@ -277,6 +277,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->soundComponent->loop = false;
 	this->soundComponent->sound = Sounds2D::NO_SOUND2D;
 
+	this->soundComponent2 = cHandler->GetSoundComponent3D();
+	this->soundComponent2->isActive = true;
+	this->soundComponent2->loop = false;
+	this->soundComponent2->pos = DirectX::XMFLOAT3(0,0,0);
+	this->soundComponent2->sound = Sounds3D::NO_SOUND3D;
+
 #pragma endregion SOUND_TEST
 
 
@@ -991,8 +997,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		this->soundComponent->sound = Sounds2D::MENU2;
-		this->soundComponent->loop = true;
+		this->soundComponent->sound = Sounds2D::MENU1;
+		//this->soundComponent->loop = true;
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		this->soundComponent2->sound = Sounds3D::MENU1_3D;
+		this->soundComponent2->pos = DirectX::XMFLOAT3(10,0,0);
 	}
 
 

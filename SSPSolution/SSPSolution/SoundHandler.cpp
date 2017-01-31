@@ -20,6 +20,13 @@ int SoundHandler::Initialize()
 
 	this->LoadSounds();
 
+	irrklang::vec3df position(0, 0, 0);        // position of the listener
+	irrklang::vec3df lookDirection(10, 0, 10); // the direction the listener looks into
+	irrklang::vec3df velPerSecond(0, 0, 0);    // only relevant for doppler effects
+	irrklang::vec3df upVector(0, 1, 0);        // where 'up' is in your 3D scene
+
+	this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
+
 	return 1;
 }
 
@@ -54,7 +61,6 @@ void SoundHandler::Shutdown()
 	{
 		(*itr)->drop();
 	}
-
 	this->m_soundEngine->drop();
 }
 
@@ -64,7 +70,7 @@ void SoundHandler::LoadSounds()
 
 	//Load 2D sounds
 #pragma region
-	//Sound 1
+	//Menu1
 	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu1.mp3");
 	if (sp != nullptr)
 	{
@@ -76,7 +82,7 @@ void SoundHandler::LoadSounds()
 		printf("Failed to load sound");
 	}
 
-	//Sound 2
+	//Menu2
 	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu2.mp3");
 	if (sp != nullptr)
 	{
@@ -92,8 +98,18 @@ void SoundHandler::LoadSounds()
 
 	//Load 3D sounds
 #pragma region
-
-
+	//Menu1 for 3D
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu1_3D.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(30);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
 #pragma endregion 3D_Sounds
 	
 	sp = nullptr;
@@ -108,8 +124,12 @@ int SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop)
 		irrklang::ISoundSource* sp = this->m_sounds2D.at(soundEnum);
 		irrklang::ISound* newActiveSound = this->m_soundEngine->play2D(sp, loop, false, true);
 		
-		newActiveSound->grab();
-		this->m_activeSounds.push_back(newActiveSound);
+		if (newActiveSound)
+		{
+			newActiveSound->setSoundStopEventReceiver(this);
+			newActiveSound->grab();
+			this->m_activeSounds.push_back(newActiveSound);
+		}
 
 		return 1;
 	}
@@ -126,8 +146,12 @@ int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool lo
 		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);
 		irrklang::ISound* newActiveSound = this->m_soundEngine->play3D(sp, pos, loop, false, true);
 		
-		newActiveSound->grab();
-		this->m_activeSounds.push_back(newActiveSound);
+		if (newActiveSound)
+		{
+			newActiveSound->setSoundStopEventReceiver(this);
+			newActiveSound->grab();
+			this->m_activeSounds.push_back(newActiveSound);
+		}
 		
 		return 1;
 	}
@@ -138,16 +162,6 @@ int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool lo
 
 void SoundHandler::UpdateSoundHandler()
 {
-	//Remove sounds that has finnished playing
-	std::list<irrklang::ISound*>::iterator itrS;
-	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
-	{
-		if((*itrS)->isFinished())
-		{
-			(*itrS)->drop();
-			itrS = this->m_activeSounds.erase(itrS);
-		}
-	}
 
 	//Check 2D components
 #pragma region
@@ -174,7 +188,7 @@ void SoundHandler::UpdateSoundHandler()
 	//Check 3D components
 #pragma region
 	std::vector<SoundComponent3D*>::iterator itr3;
-	for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr++)
+	for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr3++)
 	{
 		if (!(*itr3)->isActive)
 		{
@@ -210,4 +224,20 @@ SoundComponent3D * SoundHandler::GetSoundComponent3D()
 	this->sound3DComponents.push_back(scp);
 
 	return scp;
+}
+
+void SoundHandler::OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData)
+{
+	//Remove sounds that has finnished playing
+	std::list<irrklang::ISound*>::iterator itrS;
+	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
+	{
+		if ((*itrS) == sound)
+		{
+			(*itrS)->drop();
+			itrS = this->m_activeSounds.erase(itrS);
+			break;
+		}
+	}
+
 }
