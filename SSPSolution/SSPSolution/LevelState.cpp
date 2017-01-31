@@ -1188,6 +1188,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 		//get information from file
+		//This is old code for demo purposes.
 		t_pc->PC_BVtype = BV_AABB;
 
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
@@ -1266,47 +1267,47 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_gc->modelPtr = modelPtr;
 		//Create world matrix from data
 		//memcpy(pos.m128_f32, data->aiComponents[i].position, sizeof(float) * 3);//Convert from POD to DirectX Vector
-		memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
-		translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
-		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
-		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
-		//Create the rotation matrix
-		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
-		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
-		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
+translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
+DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
+DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+//Create the rotation matrix
+DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 
-		st = Resources::ResourceHandler::GetInstance()->GetModel(data->aiComponents[i].modelID, modelPtr);
+st = Resources::ResourceHandler::GetInstance()->GetModel(data->aiComponents[i].modelID, modelPtr);
 #ifdef _DEBUG
-		if (st != Resources::ST_OK)
-			std::cout << "Model could not be found when loading level data,  ID: " << data->aiComponents[i].modelID << std::endl;
+if (st != Resources::ST_OK)
+std::cout << "Model could not be found when loading level data,  ID: " << data->aiComponents[i].modelID << std::endl;
 #endif // _DEBUG
 #pragma endregion
 #pragma region Physics
-		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = t_ac->AC_position;
-		t_pc->PC_entityID = data->aiComponents[i].EntityID;
-		t_pc->PC_is_Static = false;
-		t_pc->PC_steadfast = true;
-		t_pc->PC_gravityInfluence = 0;
-		t_pc->PC_friction = 0.7f;
-		t_pc->PC_elasticity = 0.1f;
-		t_pc->PC_BVtype = BV_AABB;
-		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
-		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
-		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
-		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
-			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
-		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
-		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
-		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
+t_pc->PC_pos = t_ac->AC_position;
+t_pc->PC_entityID = data->aiComponents[i].EntityID;
+t_pc->PC_is_Static = false;
+t_pc->PC_steadfast = true;
+t_pc->PC_gravityInfluence = 0;
+t_pc->PC_friction = 0.7f;
+t_pc->PC_elasticity = 0.1f;
+t_pc->PC_BVtype = BV_AABB;
+t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
+t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
+t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
+DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
+	t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
+t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 #pragma endregion
 
 
-		DynamicEntity* tde = new DynamicEntity();
-		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-		m_dynamicEntitys.push_back(tde);
+DynamicEntity* tde = new DynamicEntity();
+tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
+m_dynamicEntitys.push_back(tde);
 	}
 
 	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
@@ -1327,20 +1328,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::ButtonHeader tempHeader = data->buttons[i];
 		ButtonEntity* tempEntity = new ButtonEntity();
 
-		GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
-		button1G->active = true;
-		button1G->modelID = tempHeader.modelID;
-		button1G->worldMatrix = DirectX::XMMatrixIdentity();
-		resHandler->GetModel(button1G->modelID, button1G->modelPtr);
-		PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
-		button1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
-		button1P->PC_pos = DirectX::XMVectorSet(-6.0f, -10.0f, -19.0f, 0.0f);		//Set Position
-		button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);					//Set Rotation
-		button1P->PC_is_Static = true;												//Set IsStatic
-		button1P->PC_active = true;													//Set Active
-		button1P->PC_gravityInfluence = 1.0f;
-		button1P->PC_mass = 5;
-
 		//Create world matrix from data
 		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
@@ -1352,19 +1339,51 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+
+		GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
+		button1G->active = true;
+		button1G->modelID = tempHeader.modelID;
 		button1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+		resHandler->GetModel(button1G->modelID, button1G->modelPtr);
+		PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
+		button1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
+		button1P->PC_pos = pos;														//Set Position
+		button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);					//Set Rotation
+		button1P->PC_is_Static = true;												//Set IsStatic
+		button1P->PC_active = true;													//Set Active
+		button1P->PC_gravityInfluence = 1.0f;
+		button1P->PC_mass = 5;
+
+
+
+		st = Resources::ResourceHandler::GetInstance()->GetModel(tempHeader.modelID, modelPtr);
+
+		//Copy the bounding volume data from the model into the physics component for reference
+		button1P->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
+		button1P->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
+		button1P->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
 
 
 		button1P->PC_BVtype = BV_AABB;
+		//Check for rotation, if found then set the bounding volume to OBB
+		if (abs(tempHeader.rotation[0]) > 0.00000000001f && abs(tempHeader.rotation[1]) > 0.00000000001f && abs(tempHeader.rotation[2]) > 0.00000000001f)
+		{
+			//There is a rotation
+			button1P->PC_BVtype = BV_OBB;
+		}
+
+		//Calculate the actual OBB extension
+		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
+			button1P->PC_AABB.ext[1] , button1P->PC_AABB.ext[2] }, rotate);
+
 		button1P->PC_OBB.ext[0] = 0.5f;
 		button1P->PC_OBB.ext[1] = 0.5f;
 		button1P->PC_OBB.ext[2] = 0.5f;
-		button1P->PC_AABB.ext[0] = 0.5f;
-		button1P->PC_AABB.ext[1] = 0.5f;
-		button1P->PC_AABB.ext[2] = 0.5f;
-		button1->Initialize(616, button1P, button1G, 2.0f);
-		button1->AddObserver(door1, door1->GetEntityID());
-		this->m_buttonEntities.push_back(button1);
+		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		button1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+		tempEntity->Initialize(616, button1P, button1G, 2.0f);
+		this->m_buttonEntities.push_back(tempEntity);
 	}
 	//Create the levers
 	//Create the Wheels
