@@ -178,11 +178,6 @@ int DebugHandler::DisplayConsole(float dTime)
 	{
 		time = iter->GetTimeMS(this->m_frequency);
 
-		minTime = this->m_timers.at(i).minTime;
-		maxTime = this->m_timers.at(i).maxTime;
-		this->m_timers.at(i).minTime = (minTime < time) ? minTime : time;
-		this->m_timers.at(i).maxTime = (maxTime > time) ? maxTime : time;
-
 		LARGE_INTEGER elapsedTime;
 		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
