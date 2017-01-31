@@ -48,7 +48,7 @@ namespace LevelData {
 		float position[3]	   ;
 		float rotation[3]	   ;
 		bool isStatic		   ;
-		bool hasAi = false;
+		bool hasAi = false	   ;
 	};
 
 	struct SpawnHeader {
@@ -71,14 +71,24 @@ namespace LevelData {
 		int SenderID[20];
 	};
 
-	struct AiHeader{
+	//struct AiHeader{
+	//	unsigned int entityID = -1;
+	//	int time			  = 0;
+	//	float speed			  = 0;
+	//	int pattern			  = 0;
+	//	int nrOfWaypoints     = 0;
+	//	float wayPoints[8][3];
+	//	//ListenerHeader Listener;
+	//};
+
+	struct AiHeader {
 		unsigned int entityID = -1;
-		int time			  = 0;
-		float speed			  = 0;
-		int pattern			  = 0;
-		int nrOfWaypoints     = 0;
+		int time = 0;
+		float speed = 0;
+		int pattern = 0;
+		int nrOfWaypoints = 0;
 		float wayPoints[8][3];
-		//ListenerHeader Listener;
+		ListenerHeader Listener;
 	};
 
 	struct CheckpointHeader
@@ -99,7 +109,25 @@ namespace LevelData {
 
 	struct DoorHeader : EntityHeader
 	{
-		float RotateTimer;
+		float rotateTime;
+		ListenerHeader Listener;
+	};
+
+	struct LeverHeader : EntityHeader
+	{
+		float interactionDistance;
+		ListenerHeader Listener;
+	};
+
+	struct WheelHeader : EntityHeader
+	{
+		float interactionDistance;
+		float resetDelay;
+		float resetTime;
+		float min;
+		float max;
+		float start;
+		ListenerHeader Listener;
 	};
 
 	enum LevelStatus {
@@ -125,5 +153,18 @@ namespace LevelData {
 		
 		unsigned int numCheckpoints;
 		CheckpointHeader* checkpoints;
+
+		unsigned int numButton;
+		ButtonHeader * buttons;
+
+		unsigned int numDoor;
+		DoorHeader * doors;
+
+		unsigned int numLever;
+		LeverHeader * levers;
+
+		unsigned int numWheel;
+		WheelHeader * wheels;
+		
 	};
 }

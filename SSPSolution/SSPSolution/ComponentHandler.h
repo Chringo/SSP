@@ -24,6 +24,8 @@ public:
 	GraphicsComponent* GetGraphicsComponent();
 	GraphicsAnimationComponent * GetGraphicsAnimationComponent();
 	PhysicsComponent* GetPhysicsComponent();
+	UIComponent* GetUIComponent();
+	TextComponent* GetTextComponent();
 	AIComponent* GetAIComponent();
 	AnimationComponent* GetAnimationComponent();
 	void UpdateGraphicsComponents();

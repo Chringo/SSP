@@ -12,6 +12,7 @@ private:
 	float m_speed;
 	float m_throwStrength;
 	bool m_isAiming;
+	Entity* m_ball;
 
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
@@ -35,6 +36,7 @@ public:
 	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
 	void SetAiming(bool isAming);
+	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType);
@@ -45,6 +47,7 @@ public:
 	DirectX::XMVECTOR GetRightDir();
 	bool GetIsAming();
 	Entity* GetGrabbed();
+	Entity* GetBall();
 
 private:
 

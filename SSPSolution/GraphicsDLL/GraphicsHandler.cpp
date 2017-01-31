@@ -312,6 +312,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_camera				   = nullptr;
 	this->m_graphicsComponents	   = nullptr;
 	this->m_shaderControl		   = nullptr;
+	this->m_uiHandler			   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
@@ -334,11 +335,13 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #ifdef _DEBUG
 	this->editorMode = editorMode;
 	if (!editorMode)
+#endif //_DEBUG
 	{
+		this->m_uiHandler = new UIHandler;
+		this->m_uiHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
-#endif //_DEBUG
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -359,6 +362,9 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 
+
+
+	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG
 	 obbBoxes.reserve(20);
@@ -383,6 +389,8 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+	this->m_d3dHandler->ClearBlendState();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
@@ -400,12 +408,10 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	Resources::Model* modelPtr = nullptr;
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_graphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(this->m_graphicsComponents[i]->modelID, modelPtr);
 		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
 	}
 
@@ -414,8 +420,8 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
-		Resources::ResourceHandler::GetInstance()->GetModel(m_animGraphicsComponents[i]->modelID, modelPtr);
-		m_shaderControl->Draw(modelPtr, m_animGraphicsComponents[i]);
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+		
 	}
 	
 	m_shaderControl->DrawFinal();
@@ -443,7 +449,9 @@ int GraphicsHandler::Render(float deltaTime)
 	RenderBoundingBoxes(false);
 #endif // _DEBUG
 
+	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
+	
 	return 0;
 }
 
@@ -547,6 +555,12 @@ void GraphicsHandler::Shutdown()
 		m_shaderControl->Release();
 		delete m_shaderControl;
 		this->m_shaderControl = nullptr;
+	}
+	if (this->m_uiHandler)
+	{
+		this->m_uiHandler->Shutdown();
+		delete this->m_uiHandler;
+		this->m_uiHandler = nullptr;
 	}
 	if (this->m_windowHandle)
 	{
@@ -690,13 +704,28 @@ int GraphicsHandler::UpdateAnimComponentList()
 			result++;
 		}
 	}
-	if (!this->m_graphicsComponents[this->m_nrOfGraphicsComponents - 1]->active)
+	if (!this->m_animGraphicsComponents[this->m_nrOfGraphicsAnimationComponents - 1]->active)
 	{
-		this->m_nrOfGraphicsComponents--;
+		this->m_nrOfGraphicsAnimationComponents--;
 		result++;
 	}
 
 	return result;
+}
+
+UIComponent * GraphicsHandler::GetNextAvailableUIComponent()
+{
+	return this->m_uiHandler->GetNextUIComponent();
+}
+
+void GraphicsHandler::UpdateUIComponents(DirectX::XMFLOAT2 mousePos)
+{
+	this->m_uiHandler->UpdateUIComponentsclicked(mousePos);
+}
+
+TextComponent * GraphicsHandler::GetNextAvailableTextComponent()
+{
+	return this->m_uiHandler->GetNextTextComponent();
 }
 
 void GraphicsHandler::SetTempAnimComponent(void * component)
