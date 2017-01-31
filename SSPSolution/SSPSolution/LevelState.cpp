@@ -356,82 +356,82 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
-	WheelEntity* wheel1 = new WheelEntity();
-	ButtonEntity* button1 = new ButtonEntity();
-	DoorEntity* door1 = new DoorEntity();
+	//WheelEntity* wheel1 = new WheelEntity();
+	//ButtonEntity* button1 = new ButtonEntity();
+	//DoorEntity* door1 = new DoorEntity();
 
-	//DOOR
-	GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
-	door1G->modelID = 1337;
-	door1G->active = true;
-	door1G->worldMatrix = DirectX::XMMatrixIdentity();
-	resHandler->GetModel(door1G->modelID, door1G->modelPtr);
-	PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
-	door1P->PC_entityID = 666;								//Set Entity ID
-	door1P->PC_pos = DirectX::XMVectorSet(-14.0f, -10.0f, -14.0f, 0.0f);		//Set Position
-	door1P->PC_rotation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);		//Set Rotation
-	door1P->PC_is_Static = true;							//Set IsStatic
-	door1P->PC_active = true;								//Set Active
-	door1P->PC_mass = 5.0f;
-	door1P->PC_BVtype = BV_AABB;
-	door1P->PC_AABB.ext[0] = 0.5f;
-	door1P->PC_AABB.ext[1] = 0.5f;
-	door1P->PC_AABB.ext[2] = 0.5f;
-	std::vector<ElementState> subjectStates;
-	subjectStates.push_back(ElementState{ 616, EVENT::BUTTON_ACTIVE, false });
-	subjectStates.push_back(ElementState{ 617, EVENT::WHEEL_100, false });
-	door1->Initialize(666, door1P, door1G, subjectStates, 0.4f);
+	////DOOR
+	//GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
+	//door1G->modelID = 1337;
+	//door1G->active = true;
+	//door1G->worldMatrix = DirectX::XMMatrixIdentity();
+	//resHandler->GetModel(door1G->modelID, door1G->modelPtr);
+	//PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
+	//door1P->PC_entityID = 666;								//Set Entity ID
+	//door1P->PC_pos = DirectX::XMVectorSet(-14.0f, -10.0f, -14.0f, 0.0f);		//Set Position
+	//door1P->PC_rotation = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);		//Set Rotation
+	//door1P->PC_is_Static = true;							//Set IsStatic
+	//door1P->PC_active = true;								//Set Active
+	//door1P->PC_mass = 5.0f;
+	//door1P->PC_BVtype = BV_AABB;
+	//door1P->PC_AABB.ext[0] = 0.5f;
+	//door1P->PC_AABB.ext[1] = 0.5f;
+	//door1P->PC_AABB.ext[2] = 0.5f;
+	//std::vector<ElementState> subjectStates;
+	//subjectStates.push_back(ElementState{ 616, EVENT::BUTTON_ACTIVE, false });
+	//subjectStates.push_back(ElementState{ 617, EVENT::WHEEL_100, false });
+	//door1->Initialize(666, door1P, door1G, subjectStates, 0.4f);
 
-	//BUTTON
-	GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
-	button1G->modelID = 1337;
-	button1G->active = true;
-	button1G->worldMatrix = DirectX::XMMatrixIdentity();
-	resHandler->GetModel(button1G->modelID, button1G->modelPtr);
-	PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
-	button1P->PC_entityID = 616;									//Set Entity ID
-	button1P->PC_pos = DirectX::XMVectorSet(-6.0f, -10.0f, -19.0f, 0.0f);		//Set Position
-	button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	button1P->PC_is_Static = true;								//Set IsStatic
-	button1P->PC_active = true;									//Set Active
-	button1P->PC_gravityInfluence = 1.0f;
-	button1P->PC_mass = 5;
-	button1P->PC_BVtype = BV_AABB;
-	button1P->PC_OBB.ext[0] = 0.5f;
-	button1P->PC_OBB.ext[1] = 0.5f;
-	button1P->PC_OBB.ext[2] = 0.5f;
-	button1P->PC_AABB.ext[0] = 0.5f;
-	button1P->PC_AABB.ext[1] = 0.5f;
-	button1P->PC_AABB.ext[2] = 0.5f;
-	button1->Initialize(616, button1P, button1G, 2.0f);
-	button1->AddObserver(door1, door1->GetEntityID());
-	this->m_buttonEntities.push_back(button1);
-	//WHEEL
-	GraphicsComponent* wheel1G = m_cHandler->GetGraphicsComponent();
-	wheel1G->modelID = 1337;
-	wheel1G->active = true;
-	wheel1G->worldMatrix = DirectX::XMMatrixIdentity();
-	resHandler->GetModel(wheel1G->modelID, wheel1G->modelPtr);
-	PhysicsComponent* wheel1P = m_cHandler->GetPhysicsComponent();
-	wheel1P->PC_entityID = 617;									//Set Entity ID
-	wheel1P->PC_pos = DirectX::XMVectorSet(-8.0f, -10.0f, -19.0f, 0.0f);		//Set Position
-	wheel1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
-	wheel1P->PC_is_Static = true;								//Set IsStatic
-	wheel1P->PC_active = true;									//Set Active
-	wheel1P->PC_gravityInfluence = 1.0f;
-	wheel1P->PC_mass = 5;
-	wheel1P->PC_BVtype = BV_AABB;
-	wheel1P->PC_OBB.ext[0] = 0.5f;
-	wheel1P->PC_OBB.ext[1] = 0.5f;
-	wheel1P->PC_OBB.ext[2] = 0.5f;
-	wheel1P->PC_AABB.ext[0] = 0.5f;
-	wheel1P->PC_AABB.ext[1] = 0.5f;
-	wheel1P->PC_AABB.ext[2] = 0.5f;
-	wheel1->Initialize(617, wheel1P, wheel1G, 2.0f, -0.5f, 0.5f, 2.0f, true, 0.5f, 1.0f);
-	wheel1->AddObserver(door1, door1->GetEntityID());
-	this->m_wheelEntities.push_back(wheel1);
+	////BUTTON
+	//GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
+	//button1G->modelID = 1337;
+	//button1G->active = true;
+	//button1G->worldMatrix = DirectX::XMMatrixIdentity();
+	//resHandler->GetModel(button1G->modelID, button1G->modelPtr);
+	//PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
+	//button1P->PC_entityID = 616;									//Set Entity ID
+	//button1P->PC_pos = DirectX::XMVectorSet(-6.0f, -10.0f, -19.0f, 0.0f);		//Set Position
+	//button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	//button1P->PC_is_Static = true;								//Set IsStatic
+	//button1P->PC_active = true;									//Set Active
+	//button1P->PC_gravityInfluence = 1.0f;
+	//button1P->PC_mass = 5;
+	//button1P->PC_BVtype = BV_AABB;
+	//button1P->PC_OBB.ext[0] = 0.5f;
+	//button1P->PC_OBB.ext[1] = 0.5f;
+	//button1P->PC_OBB.ext[2] = 0.5f;
+	//button1P->PC_AABB.ext[0] = 0.5f;
+	//button1P->PC_AABB.ext[1] = 0.5f;
+	//button1P->PC_AABB.ext[2] = 0.5f;
+	//button1->Initialize(616, button1P, button1G, 2.0f);
+	//button1->AddObserver(door1, door1->GetEntityID());
+	//this->m_buttonEntities.push_back(button1);
+	////WHEEL
+	//GraphicsComponent* wheel1G = m_cHandler->GetGraphicsComponent();
+	//wheel1G->modelID = 1337;
+	//wheel1G->active = true;
+	//wheel1G->worldMatrix = DirectX::XMMatrixIdentity();
+	//resHandler->GetModel(wheel1G->modelID, wheel1G->modelPtr);
+	//PhysicsComponent* wheel1P = m_cHandler->GetPhysicsComponent();
+	//wheel1P->PC_entityID = 617;									//Set Entity ID
+	//wheel1P->PC_pos = DirectX::XMVectorSet(-8.0f, -10.0f, -19.0f, 0.0f);		//Set Position
+	//wheel1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	//wheel1P->PC_is_Static = true;								//Set IsStatic
+	//wheel1P->PC_active = true;									//Set Active
+	//wheel1P->PC_gravityInfluence = 1.0f;
+	//wheel1P->PC_mass = 5;
+	//wheel1P->PC_BVtype = BV_AABB;
+	//wheel1P->PC_OBB.ext[0] = 0.5f;
+	//wheel1P->PC_OBB.ext[1] = 0.5f;
+	//wheel1P->PC_OBB.ext[2] = 0.5f;
+	//wheel1P->PC_AABB.ext[0] = 0.5f;
+	//wheel1P->PC_AABB.ext[1] = 0.5f;
+	//wheel1P->PC_AABB.ext[2] = 0.5f;
+	//wheel1->Initialize(617, wheel1P, wheel1G, 2.0f, -0.5f, 0.5f, 2.0f, true, 0.5f, 1.0f);
+	//wheel1->AddObserver(door1, door1->GetEntityID());
+	//this->m_wheelEntities.push_back(wheel1);
 
-	this->m_doorEntities.push_back(door1);
+	//this->m_doorEntities.push_back(door1);
 
 	return result;
 }
@@ -1320,12 +1320,62 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		m_checkpoints.push_back(CB);
 	}
 
+	//Create the PuzzleElements
+	//Create the Buttons
+	for (size_t i = 0; i < data->numButton; i++)
+	{
+		LevelData::ButtonHeader tempHeader = data->buttons[i];
+		ButtonEntity* tempEntity = new ButtonEntity();
+
+		GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
+		button1G->active = true;
+		button1G->modelID = tempHeader.modelID;
+		button1G->worldMatrix = DirectX::XMMatrixIdentity();
+		resHandler->GetModel(button1G->modelID, button1G->modelPtr);
+		PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
+		button1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
+		button1P->PC_pos = DirectX::XMVectorSet(-6.0f, -10.0f, -19.0f, 0.0f);		//Set Position
+		button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);					//Set Rotation
+		button1P->PC_is_Static = true;												//Set IsStatic
+		button1P->PC_active = true;													//Set Active
+		button1P->PC_gravityInfluence = 1.0f;
+		button1P->PC_mass = 5;
+
+		//Create world matrix from data
+		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		translate = DirectX::XMMatrixTranslationFromVector(pos);
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+		button1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+
+
+		button1P->PC_BVtype = BV_AABB;
+		button1P->PC_OBB.ext[0] = 0.5f;
+		button1P->PC_OBB.ext[1] = 0.5f;
+		button1P->PC_OBB.ext[2] = 0.5f;
+		button1P->PC_AABB.ext[0] = 0.5f;
+		button1P->PC_AABB.ext[1] = 0.5f;
+		button1P->PC_AABB.ext[2] = 0.5f;
+		button1->Initialize(616, button1P, button1G, 2.0f);
+		button1->AddObserver(door1, door1->GetEntityID());
+		this->m_buttonEntities.push_back(button1);
+	}
+	//Create the levers
+	//Create the Wheels
+	//Create the doors
+
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);
 
-	m_cHandler->GetPhysicsHandler()->SortComponents();
 
+	m_cHandler->GetPhysicsHandler()->SortComponents();
 	return 1;
 }
 
