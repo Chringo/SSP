@@ -70,10 +70,9 @@ int DebugHandler::EndTimer(int timerID)
 
 int DebugHandler::CreateTimer(std::string label)
 {
-	this->m_timers.push_back(Timer());
-	this->m_labels.push_back(label); 
-	this->m_timerMins.push_back(999999);
-	this->m_timerMaxs.push_back(0);
+	Timer timer;
+	timer.label = label;
+	this->m_timers.push_back(timer);
 
 	return 0;
 }
@@ -137,15 +136,12 @@ int DebugHandler::UpdateCustomLabelIncrease(int labelID, float addValue)
 
 int DebugHandler::ResetMinMax()
 {
-	std::vector<unsigned int>::iterator iterMax;
-	std::vector<unsigned int>::iterator iterMin;
+	std::vector<Timer>::iterator iter;
 
-	for (iterMax = this->m_timerMaxs.begin(), iterMin = this->m_timerMins.begin();
-		iterMax != this->m_timerMaxs.end() && iterMin != this->m_timerMins.end();
-		iterMax++, iterMin++)
+	for (iter = this->m_timers.begin(); iter != this->m_timers.end(); iter++)
 	{
-		(*iterMax) = 0;
-		(*iterMin) = 999999;
+		iter->maxTime = 0;
+		iter->minTime = 999999;
 	}
 
 	this->m_minFPS = 999999;
@@ -173,28 +169,27 @@ int DebugHandler::DisplayConsole(float dTime)
 	SetConsoleCursorPosition(console, topLeft);
 
 	std::vector<Timer>::iterator iter;
-	std::vector<std::string>::iterator iterLabel;
 
 	unsigned int time, minTime, maxTime;
 	int i;
-	for (i = 0, iter = this->m_timers.begin(), iterLabel = this->m_labels.begin();
-		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
-		i++, iter++, iterLabel++)
+	for (i = 0, iter = this->m_timers.begin();
+		iter != this->m_timers.end();
+		i++, iter++)
 	{
 		time = iter->GetTimeMS(this->m_frequency);
 
-		minTime = this->m_timerMins.at(i);
-		maxTime = this->m_timerMaxs.at(i);
-		this->m_timerMins.at(i) = (minTime < time) ? minTime : time;
-		this->m_timerMaxs.at(i) = (maxTime > time) ? maxTime : time;
+		minTime = this->m_timers.at(i).minTime;
+		maxTime = this->m_timers.at(i).maxTime;
+		this->m_timers.at(i).minTime = (minTime < time) ? minTime : time;
+		this->m_timers.at(i).maxTime = (maxTime > time) ? maxTime : time;
 
 		LARGE_INTEGER elapsedTime;
 		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
 
-		std::cout << std::fixed << std::setprecision(1) << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
-			<< time << " [" << this->m_timerMaxs.at(i) << "] us, " 
+		std::cout << std::fixed << std::setprecision(1) << iter->label.c_str() << ": [" << iter->minTime << "] "
+			<< time << " [" << iter->maxTime << "] us, " 
 			<< (float)((time / (float)elapsedTime.QuadPart) * 100) << "%";
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(

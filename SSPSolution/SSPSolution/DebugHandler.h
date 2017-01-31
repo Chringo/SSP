@@ -14,10 +14,16 @@ class DebugHandler
 {
 private:
 	struct Timer {
+		std::string label;
+		unsigned int minTime;
+		unsigned int maxTime;
 		LARGE_INTEGER startTime;
 		LARGE_INTEGER endTime;
 		Timer()
 		{
+			this->label = "EMPTY";
+			this->minTime = 9999999;
+			this->maxTime = 0;
 		}
 		~Timer()
 		{
@@ -37,9 +43,6 @@ private:
 
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
-	std::vector<std::string> m_labels;
-	std::vector<unsigned int> m_timerMins;
-	std::vector<unsigned int> m_timerMaxs;
 	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
 	unsigned int m_frameTimes[FRAMES_FOR_AVG];
