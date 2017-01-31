@@ -385,7 +385,29 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
 	std::vector<Container>* modelPtr;
 
-	if (got == m_ModelMap.end()) { // if  does not exists in memory
+	if (got == m_ModelMap.end()) { // if  does not exists in container memory
+
+		for (size_t i = 0; i < m_puzzleElements.size(); i++) // check puzzle elements
+		{
+			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
+			{
+				if (m_puzzleElements.at(i).at(j)->component.modelID == source->component.modelID)
+				{
+					
+
+					Container temp = *source;
+					temp.component.modelPtr = source->component.modelPtr;
+					modelPtr = &got->second;
+					temp.internalID = GlobalIDHandler::GetInstance()->GetNewId();
+					destination = &modelPtr->back();
+					//SelectionHandler::GetInstance()->SetSelectedContainer()
+					this->m_ModelMap[source->component.modelID].push_back(temp);
+
+					return Resources::Status::ST_OK;
+				}
+
+			}
+		}
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
