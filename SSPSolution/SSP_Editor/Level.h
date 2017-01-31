@@ -60,6 +60,7 @@ public:
 	bool isEmpty();
 	unsigned int GetNumEntities();
 	unsigned int GetNumLights();
+	unsigned int GetNumPuzzleElements();
 	Container* GetSpawnPoint(int index);
 	AiHandler* GetAiHandler() { return &m_LevelAi; };
 	CheckpointHandler* GetCheckpointHandler() { return &this->m_checkpointHandler; };
