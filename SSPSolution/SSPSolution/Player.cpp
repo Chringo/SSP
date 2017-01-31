@@ -15,11 +15,11 @@ Player::~Player()
 }
 
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
 	int result = 0;
 
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, aComp);
 	this->m_speed = 0.01f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
@@ -35,6 +35,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+
+	AnimationComponent* test = this->m_aComp;
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -59,7 +61,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 
 
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	if(inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
 	{
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)

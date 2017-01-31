@@ -1,6 +1,9 @@
 #ifndef SSPAPPLICATION_ENTITIES_PLAYER_H
 #define SSPAPPLICATION_ENTITIES_PLAYER_H
+
+#include "..\GraphicsDLL\AnimationStateEnums.h"
 #include "Entity.h"
+
 class Player :
 	public Entity
 {
@@ -21,7 +24,7 @@ public:
 	Player();
 	~Player();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
