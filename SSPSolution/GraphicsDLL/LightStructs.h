@@ -2,7 +2,6 @@
 #ifndef GRAPHICSDLL_LIGHTSTRUCTS_H
 #define GRAPHICSDLL_LIGHTSTRUCTS_H
 #include <DirectXMath.h>
-
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
@@ -32,6 +31,7 @@ namespace LIGHT
 	struct GRAPHICSDLL_API Light
 	{
 		unsigned int ID;
+		OBB* BoundingBox;
 		LIGHT_TYPE LT;
 		LightColor color;
 		float intensity;

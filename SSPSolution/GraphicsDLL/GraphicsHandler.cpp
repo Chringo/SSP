@@ -206,6 +206,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_graphicsComponents	   = nullptr;
 	this->m_shaderControl		   = nullptr;
 	this->m_uiHandler			   = nullptr;
+	this->m_LightHandler		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
 }
@@ -239,7 +240,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		this->m_graphicsComponents[i] = new GraphicsComponent();
 
 	}
-
+	this->m_LightHandler = new LightHandler;
+	this->m_LightHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);

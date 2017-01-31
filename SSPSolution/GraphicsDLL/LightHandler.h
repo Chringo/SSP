@@ -12,19 +12,29 @@
 #include <vector>
 #include "LightStructs.h"
 
+namespace LIGHT
+{
 	class GRAPHICSDLL_API LightHandler
 	{
 
 	private:
-		unsigned int m_LightID;
-		std::vector<LIGHT::Light*> m_LightVector;
-	public:
 		LightHandler();
 		~LightHandler();
 
-		void Initialize();
-		void Get_Light(unsigned int);
-		void Add_Light(unsigned int id, LightColor col, LightFalloff fall, Light light, LIGHT_TYPE lt);
-		void Remove_Light(unsigned int);
+		std::vector<LIGHT::Light*> m_LightVector;
+
+		ID3D11Device*			  m_gDevice;
+		ID3D11DeviceContext*	  m_gDeviceContext;
+	public: //inits etc
+
+		void Initialize(ID3D11Device*, ID3D11DeviceContext*);
+		static LightHandler* getInstance();
+
+	public: //dataFlow
+		std::vector<LIGHT::Light*>* Get_Light_List() { return &this->m_LightVector; };
+		LIGHT::Light* Get_Light(unsigned int id);
+		void Add_Light(LIGHT::Light* light);
+		void Remove_Light(unsigned int id);
 	};
+}
 #endif
