@@ -36,28 +36,32 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_W) || inputHandler->IsKeyDown(SDL_SCANCODE_W && SDL_SCANCODE_D))
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		forwards++;
 
+#ifdef _DEBUG
 		/*If the player is currently walking, dont update any information from here.*/
 		if (!stateExists(PLAYER_RUN_FORWARD))
 		{
 			SetAnimationComponent(PLAYER_RUN_FORWARD, 0.25f, Blending::SMOOTH_TRANSITION);
 			this->m_aComp->previousState = PLAYER_RUN_FORWARD;
 		}
+
 	}
 	/*If the player is not walking, go to idle.*/
 	else if(inputHandler->IsKeyReleased(SDL_SCANCODE_W))
 	{
 		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
 		this->m_aComp->previousState = PLAYER_IDLE;
+#endif // _DEBUG
 	}
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
 		forwards--;
 
+#ifdef _DEBUG
 		if (!stateExists(PLAYER_RUN_BACKWARD))
 		{
 			SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION);
@@ -69,11 +73,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
 		this->m_aComp->previousState = PLAYER_IDLE;
+#endif // _DEBUG
+
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
 	{
 		sideways++;
-
+#ifdef _DEBUG
 		if (!stateExists(PLAYER_RUN_RIGHT))
 		{
 			SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION);
@@ -85,12 +91,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
 		this->m_aComp->previousState = PLAYER_IDLE;
+#endif
 	}
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
 	{
 		sideways--;
 
+#ifdef _DEBUG
 		if (!stateExists(PLAYER_RUN_LEFT))
 		{
 			SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION);
@@ -102,6 +110,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
 		this->m_aComp->previousState = PLAYER_IDLE;
+#endif // _DEBUG
+
 	}
 
 	if (this->m_grabbed != nullptr)
