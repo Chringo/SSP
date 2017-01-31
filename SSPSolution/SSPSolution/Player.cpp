@@ -36,9 +36,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 
-	AnimationComponent* test = this->m_aComp;
-
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_W) || inputHandler->IsKeyDown(SDL_SCANCODE_W && SDL_SCANCODE_D))
 	{
 		forwards++;
 
@@ -62,8 +60,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 		if (!stateExists(PLAYER_RUN_BACKWARD))
 		{
-			//SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION);
-			//this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
+			SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION);
+			this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 		}
 	}
 
@@ -78,8 +76,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 		if (!stateExists(PLAYER_RUN_RIGHT))
 		{
-			//SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION);
-			//this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+			SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION);
+			this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 		}
 	}
 
@@ -95,8 +93,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 		if (!stateExists(PLAYER_RUN_LEFT))
 		{
-			//SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION);
-			//this->m_aComp->previousState = PLAYER_RUN_LEFT;
+			SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION);
+			this->m_aComp->previousState = PLAYER_RUN_LEFT;
 		}
 	}
 

@@ -10,8 +10,8 @@
 enum AnimationStates : int
 {
 	ANIMATION_ERROR = -1,
-	PLAYER_RUN_FORWARD = 0, //Temp place right now because the order of indexing is strange for idle and walk. 
-	PLAYER_IDLE,
+	PLAYER_IDLE = 0, //Temp place right now because the order of indexing is strange for idle and walk. 
+	PLAYER_RUN_FORWARD,
 	PLAYER_RUN_BACKWARD,
 	PLAYER_RUN_LEFT,
 	PLAYER_RUN_RIGHT,
