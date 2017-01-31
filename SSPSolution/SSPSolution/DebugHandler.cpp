@@ -7,7 +7,7 @@ DebugHandler::DebugHandler()
 	QueryPerformanceFrequency(&this->m_frequency);
 	this->m_displayFPS = true;
 	this->ClearConsole();
-	for (int i = 0; i < FRAMES_FOR_AVG; i++)
+	for (int i = 0; i < this->m_FRAMES_FOR_AVG; i++)
 	{
 		this->m_frameTimes[i] = 40;
 	}
@@ -206,13 +206,13 @@ int DebugHandler::DisplayConsole(float dTime)
 	if (this->m_displayFPS)
 	{
 		int sum = 0, avgFPS;
-		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
+		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
 		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
-		for (int k = 0; k < FRAMES_FOR_AVG; k++)
+		for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
 		{
 			sum += this->m_frameTimes[k];
 		}
-		avgFPS = sum / FRAMES_FOR_AVG;
+		avgFPS = sum / this->m_FRAMES_FOR_AVG;
 		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
 		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
 		SetConsoleCursorPosition(console, FPSLocation);

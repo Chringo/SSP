@@ -7,9 +7,6 @@
 #include <Windows.h>
 #include <string>
 
-// How many frames to use for average fps
-const int FRAMES_FOR_AVG = 100;
-
 class DebugHandler
 {
 private:
@@ -40,11 +37,14 @@ private:
 		}
 	};
 
+	// How many frames to use for average fps
+	const static int m_FRAMES_FOR_AVG = 100;
+
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
 	std::vector<std::string> m_labelsValues;
 	std::vector<float> m_customValues;
-	unsigned int m_frameTimes[FRAMES_FOR_AVG];
+	unsigned int m_frameTimes[m_FRAMES_FOR_AVG];
 	unsigned int m_maxFPS;
 	unsigned int m_minFPS;
 	int m_currFrameTimesPtr;
