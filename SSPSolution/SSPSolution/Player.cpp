@@ -36,23 +36,73 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 
-	AnimationComponent* test = this->m_aComp;
-
+	/*If the player is walking forward. */
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		forwards++;
+
+		/*If the player is currently walking, dont update any information from here.*/
+		if (!stateExists(PLAYER_RUN_FORWARD))
+		{
+			SetAnimationComponent(PLAYER_RUN_FORWARD, 0.25f, Blending::SMOOTH_TRANSITION);
+			this->m_aComp->previousState = PLAYER_RUN_FORWARD;
+		}
 	}
+	/*If the player is not walking, go to idle.*/
+	else if(inputHandler->IsKeyReleased(SDL_SCANCODE_W))
+	{
+		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
+		this->m_aComp->previousState = PLAYER_IDLE;
+	}
+
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
 		forwards--;
+
+		if (!stateExists(PLAYER_RUN_BACKWARD))
+		{
+			//SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION);
+			//this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
+		}
+	}
+
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_S))
+	{
+		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
+		this->m_aComp->previousState = PLAYER_IDLE;
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
 	{
 		sideways++;
+
+		if (!stateExists(PLAYER_RUN_RIGHT))
+		{
+			//SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION);
+			//this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+		}
 	}
+
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_D))
+	{
+		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
+		this->m_aComp->previousState = PLAYER_IDLE;
+	}
+
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
 	{
 		sideways--;
+
+		if (!stateExists(PLAYER_RUN_LEFT))
+		{
+			//SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION);
+			//this->m_aComp->previousState = PLAYER_RUN_LEFT;
+		}
+	}
+
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_A))
+	{
+		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
+		this->m_aComp->previousState = PLAYER_IDLE;
 	}
 
 	if (this->m_grabbed != nullptr)
@@ -183,6 +233,29 @@ DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 void Player::SetAiming(bool isAming)
 {
 	this->m_isAiming = isAming;
+}
+
+bool Player::stateExists(int animationState)
+{
+	/*If the previous state is not equal to current state.*/
+	if (m_aComp->previousState != animationState)
+	{
+		m_aComp->previousState = animationState;
+		return false;
+	}
+	/*If the previous state is equal to current state.*/
+	else
+	{
+		return true;
+	}
+}
+
+void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType)
+{
+	this->m_aComp->m_TransitionDuration = transitionDuration;
+	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+	this->m_aComp->target_State->stateIndex = animationState;
+	this->m_aComp->blendFlag = blendingType;
 }
 
 float Player::GetSpeed()

@@ -20,12 +20,18 @@ struct AnimationComponent
 	/*System variables.*/
 	int active = 0;
 
+	/*Used to check if a state is either new or old.*/
+	int previousState = 1;
+
 	/*Used to play one or two animations, for blending.*/
 	Resources::Animation::AnimationState* source_State; // Always available
 	Resources::Animation::AnimationState* target_State;
 	/*The source and target local times.*/
 	float source_Time = 0.f;
 	float target_Time = 0.f;
+
+	float m_TransitionDuration = 0.f;
+	float m_TransitionTimeLeft = 0.f;
 
 	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
@@ -51,8 +57,6 @@ private:
 	std::vector<AnimationComponent*> m_AnimComponentList;
 
 	bool m_TransitionComplete;
-	float m_TransitionDuration;
-	float m_TransitionTimeLeft;
 
 	int * m_nrOfGraphicsAnimationComponents;
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
@@ -77,9 +81,12 @@ private:
 	//void Pop();
 	void CalculateFinalTransform(std::vector<DirectX::XMMATRIX> localMatrices);
 	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
-	//void Blend(float secondsElapsed);
-	//void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animStateData, float globalTimeElapsed, int animIndex);
-	//void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+	void Blend(float secondsElapsed);
+	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+
+	//void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation);
+	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
+	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
 };
 
 #endif

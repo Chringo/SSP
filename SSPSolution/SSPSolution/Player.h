@@ -36,6 +36,9 @@ public:
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
 	void SetAiming(bool isAming);
 
+	bool stateExists(int animationState);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType);
+
 	float GetSpeed();
 	DirectX::XMVECTOR GetLookDir();
 	DirectX::XMVECTOR GetUpDir();

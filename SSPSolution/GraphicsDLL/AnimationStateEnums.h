@@ -10,11 +10,13 @@
 GRAPHICSDLL_API enum AnimationStates : int
 {
 	ANIMATION_ERROR = -1,
-	PLAYER_IDLE = 0,
-	PLAYER_WALK,
-	PLAYER_RUN,  
+	PLAYER_RUN_FORWARD = 0, //Temp place right now because the order of indexing is strange for idle and walk. 
+	PLAYER_IDLE,
+	PLAYER_RUN_BACKWARD,
+	PLAYER_RUN_LEFT,
+	PLAYER_RUN_RIGHT,
+	PLAYER_PICKUP,
 	PLAYER_THROW, 
-	PLAYER_JUMP,
 	LEVEL_DEACTIVATED = 0,
 	LEVEL_ACTIVATED,
 	DOOR_OPENING = 0, 
