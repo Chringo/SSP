@@ -905,11 +905,6 @@ border: black;</string>
                <string>Wheel</string>
               </property>
              </item>
-             <item>
-              <property name="text">
-               <string>Pressure plate</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="5" column="1">
@@ -1755,11 +1750,11 @@ border: black;</string>
               </layout>
              </widget>
              <widget class="QWidget" name="Lever">
-              <layout class="QFormLayout" name="formLayout_4">
+              <layout class="QGridLayout" name="gridLayout_7">
                <item row="1" column="1">
                 <widget class="QDoubleSpinBox" name="lever_interactionDist">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1774,13 +1769,32 @@ border: black;</string>
                </item>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_lever_InteractionDist">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
-                  <string>Distance of interaction :</string>
+                  <string>Dist. of interaction :</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                  </property>
                 </widget>
+               </item>
+               <item row="2" column="1">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </widget>
