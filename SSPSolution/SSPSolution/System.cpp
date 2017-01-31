@@ -31,7 +31,7 @@ int System::Shutdown()
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
 #ifdef _DEBUG
-	DebugHandler::instance().Shutdown();
+	DebugHandler::instance()->Shutdown();
 #endif
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
@@ -100,9 +100,9 @@ int System::Initialize()
 
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
-	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
-	DebugHandler::instance().CreateTimer("Update");
-	DebugHandler::instance().CreateTimer("Render");
+	DebugHandler::instance()->CreateCustomLabel("Frame counter", 0);
+	DebugHandler::instance()->CreateTimer("Update");
+	DebugHandler::instance()->CreateTimer("Render");
 #endif
 
 	return result;
@@ -119,7 +119,7 @@ int System::Run()
 	while (this->m_running)
 	{
 #ifdef _DEBUG
-		DebugHandler::instance().StartProgram();
+		DebugHandler::instance()->StartProgram();
 #endif
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
@@ -149,12 +149,12 @@ int System::Run()
 #ifdef _DEBUG
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
-			DebugHandler::instance().ResetMinMax();
+			DebugHandler::instance()->ResetMinMax();
 			printf("Reseted min max on timers\n");
 		}
 
-		DebugHandler::instance().EndProgram();
-		DebugHandler::instance().DisplayConsole((float)elapsedTime.QuadPart);
+		DebugHandler::instance()->EndProgram();
+		DebugHandler::instance()->DisplayConsole((float)elapsedTime.QuadPart);
 #endif
 	}
 	if (this->m_fullscreen)
@@ -169,7 +169,7 @@ int System::Update(float deltaTime)
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
 #ifdef _DEBUG
-	DebugHandler::instance().StartTimer(0);
+	DebugHandler::instance()->StartTimer(0);
 #endif
 	int result = 1;
 
@@ -259,14 +259,14 @@ int System::Update(float deltaTime)
 
 
 #ifdef _DEBUG
-	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance().EndTimer(0);
+	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
+	DebugHandler::instance()->EndTimer(0);
 	//Render
-	DebugHandler::instance().StartTimer(1);
+	DebugHandler::instance()->StartTimer(1);
 #endif
 	this->m_graphicsHandler->Render(deltaTime);
 #ifdef _DEBUG
-	DebugHandler::instance().EndTimer(1);
+	DebugHandler::instance()->EndTimer(1);
 #endif
 	return result;
 }

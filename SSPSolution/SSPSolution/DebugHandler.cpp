@@ -1,6 +1,6 @@
 #include "DebugHandler.h"
 
-DebugHandler* DebugHandler::m_instance = nullptr;
+//DebugHandler* DebugHandler::m_instance = nullptr;
 
 DebugHandler::DebugHandler()
 {
@@ -36,6 +36,12 @@ void DebugHandler::ClearConsole()
 
 DebugHandler::~DebugHandler()
 {
+}
+
+DebugHandler* DebugHandler::instance()
+{
+	static DebugHandler instance;
+	return &instance;
 }
 
 int DebugHandler::StartTimer(size_t timerID)
@@ -233,11 +239,7 @@ int DebugHandler::DisplayConsole(float dTime)
 
 void DebugHandler::Shutdown()
 {
-	if (m_instance != nullptr)
-	{
-		this->m_timers.clear();
-		this->m_labelsValues.clear();
-		this->m_customValues.clear();
-		delete this->m_instance;
-	}
+	this->m_timers.clear();
+	this->m_labelsValues.clear();
+	this->m_customValues.clear();
 }

@@ -52,21 +52,22 @@ private:
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
 
-	int lol; //Needed to prevent heap corruption, don't ask why
+	//int lol; //Needed to prevent heap corruption, don't ask why
 
-	static DebugHandler* m_instance;
+	//static DebugHandler* m_instance;
 	DebugHandler();
 
 	void ClearConsole();
 
 public:
-	~DebugHandler();
+	virtual ~DebugHandler();
 
-	static DebugHandler& instance()
+	/*static DebugHandler& instance()
 	{
 		if (m_instance == nullptr) m_instance = new DebugHandler();
 		return *m_instance;
-	}
+	}*/
+	static DebugHandler* instance();
 
 	int CreateTimer(std::string label); //returns timer ID, -1 fail
 	int StartTimer(size_t timerID);
