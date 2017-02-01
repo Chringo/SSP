@@ -10,6 +10,9 @@ FSMEnvironment::LevelDirector::~LevelDirector(){}
 int FSMEnvironment::LevelDirector::Shutdown()
 {
 	this->m_states.clear();
+	this->m_defaultState = nullptr;
+	this->m_currentState = nullptr;
+	this->m_goalState = nullptr;
 	return SUCCESS;
 }
 
@@ -17,7 +20,6 @@ int FSMEnvironment::LevelDirector::Initialize()
 {
 	// Reset values
 	this->m_states.clear();
-
 	this->m_defaultState = nullptr;
 	this->m_currentState = nullptr;
 	this->m_goalState = nullptr;
