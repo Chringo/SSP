@@ -8,10 +8,21 @@ Texture2D wPosTex		: register(t5);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-//cbuffer worldMatrix : register(b0)
-//{
-//	matrix worldMatrix;
-//}
+cbuffer camera : register(b1)
+{
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+
+    float4 camPos;
+
+}
+cbuffer LightInfo : register(b5)
+{
+    uint NUM_POINTLIGHTS;
+    uint NUM_AREALIGHTS;
+    uint NUM_DIRECTIONALLIGHTS;
+    uint NUM_SPOTLIGHTS;
+}
 
 struct PointLight //Must be 16 bit aligned!
 {
@@ -19,18 +30,11 @@ struct PointLight //Must be 16 bit aligned!
     float intensity;
     float4 position;
     float radius;
-    float3 lightFalloff;
+    float constantFalloff;
+    float linearFalloff;
+    float quadraticFalloff;
 };
 
-cbuffer camera : register(b1)
-{
-    float4x4 viewMatrix;
-    float4x4 projectionMatrix;
-
-    float4 camPos;
-	// do not need padding here. float4 = 16bit
-
-}
 
 StructuredBuffer<PointLight> pointlights : register(t8);
 
@@ -148,10 +152,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     light[2] = initCustomLight(float3(0.5, 1.2, -2.0), float3(1., 1., 1.));
 
     //SAMPLING
-    float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
+    float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
     float3 metalSamp = (metal.Sample(pointSampler, input.UV));
     float3 roughSamp = (rough.Sample(pointSampler, input.UV));
-    float3 AOSamp = (AO.Sample(pointSampler, input.UV)).rgb;
+    float3 AOSamp    = (AO.Sample(pointSampler, input.UV)).rgb;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV));
     float3 N = (normalTex.Sample(pointSampler, input.UV));
 

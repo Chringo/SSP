@@ -364,8 +364,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 
-
-
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG

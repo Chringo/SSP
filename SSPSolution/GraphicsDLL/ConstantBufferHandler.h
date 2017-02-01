@@ -134,7 +134,10 @@ public:
 		private:
 			struct pData
 			{
-				DirectX::XMFLOAT4X4 temp;
+				UINT NUM_POINTLIGHTS;
+				UINT NUM_AREALIGHTS;
+				UINT NUM_DIRECTIONALLIGHTS;
+				UINT NUM_SPOTLIGHTS;
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

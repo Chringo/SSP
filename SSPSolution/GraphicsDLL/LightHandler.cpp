@@ -105,7 +105,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	srvDesc.Format					 = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension			 = D3D11_SRV_DIMENSION_BUFFEREX;
 	srvDesc.Buffer.ElementOffset	 = 0;
-	srvDesc.Buffer.ElementWidth		 = structSize;
+	//srvDesc.Buffer.ElementWidth		 = structSize;
 	srvDesc.Buffer.NumElements	     = MAX_NUM_LIGHTS[type];
 	if (FAILED(hr = m_gDevice->CreateShaderResourceView(lightBuffers[type], &srvDesc, &m_structuredBuffers[type]))) {
 #ifdef  _DEBUG
