@@ -20,6 +20,7 @@ namespace Resources
 		struct AnimationState
 		{
 			/*Animation state information.*/
+			int stateIndex = 0;
 			float startTime = 0.f;
 			float endTime = 0.f;
 			bool isLooping = false;
