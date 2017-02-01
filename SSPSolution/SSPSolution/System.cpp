@@ -255,6 +255,11 @@ int System::Update(float deltaTime)
 		}
 	}
 
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+	{
+		this->m_soundHandler.ReInitSoundEngine();
+	}
+
 	this->m_AnimationHandler->Update(deltaTime);
 	
 	

@@ -47,6 +47,7 @@ private:
 	std::list<irrklang::ISound*> m_activeSounds;
 	
 	void LoadSounds();
+	void DropSounds();	//Drop irrKlang resources that is keept outside of the Sound engine
 
 public:
 	SoundHandler();
@@ -64,6 +65,7 @@ public:
 	SoundComponent3D* GetSoundComponent3D();
 
 	void OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData);
+	bool ReInitSoundEngine();	//Try to reload the irrKlang engine and loaded sounds
 
 };
 

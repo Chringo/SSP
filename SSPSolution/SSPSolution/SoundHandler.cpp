@@ -15,17 +15,11 @@ int SoundHandler::Initialize()
 
 	if (!this->m_soundEngine)
 	{
+		this->m_soundEngine = nullptr;
 		return 0;	//Error on creation
 	}
 
 	this->LoadSounds();
-
-	irrklang::vec3df position(0, 0, 0);        // position of the listener
-	irrklang::vec3df lookDirection(10, 0, 10); // the direction the listener looks into
-	irrklang::vec3df velPerSecond(0, 0, 0);    // only relevant for doppler effects
-	irrklang::vec3df upVector(0, 1, 0);        // where 'up' is in your 3D scene
-
-	this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
 
 	return 1;
 }
@@ -42,25 +36,7 @@ void SoundHandler::Shutdown()
 		delete this->sound3DComponents.at(i);
 	}
 
-	std::list<irrklang::ISound*>::iterator itrS;
-	//Active sounds
-	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
-	{
-		(*itrS)->drop();
-	}
-
-	std::vector<irrklang::ISoundSource*>::iterator itr;
-	//Clear 2D sounds
-	for (itr = this->m_sounds2D.begin(); itr != this->m_sounds2D.end(); itr++)
-	{
-		(*itr)->drop();
-	}
-
-	//Clear 3D sounds
-	for (itr = this->m_sounds3D.begin(); itr != this->m_sounds3D.end(); itr++)
-	{
-		(*itr)->drop();
-	}
+	this->DropSounds();	//Drop all irrKlang related resourcses
 
 	if (this->m_soundEngine)
 	{
@@ -119,6 +95,29 @@ void SoundHandler::LoadSounds()
 	
 	sp = nullptr;
 
+}
+
+void SoundHandler::DropSounds()
+{
+	std::list<irrklang::ISound*>::iterator itrS;
+	//Active sounds
+	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
+	{
+		(*itrS)->drop();
+	}
+
+	std::vector<irrklang::ISoundSource*>::iterator itr;
+	//Clear 2D sounds
+	for (itr = this->m_sounds2D.begin(); itr != this->m_sounds2D.end(); itr++)
+	{
+		(*itr)->drop();
+	}
+
+	//Clear 3D sounds
+	for (itr = this->m_sounds3D.begin(); itr != this->m_sounds3D.end(); itr++)
+	{
+		(*itr)->drop();
+	}
 }
 
 int SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop)
@@ -260,4 +259,18 @@ void SoundHandler::OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVE
 		}
 	}
 
+}
+
+bool SoundHandler::ReInitSoundEngine()
+{
+	bool result = false;
+	irrklang::ISoundDeviceList* deviceList = irrklang::createSoundDeviceList();
+	//If there is a sound device to use
+	if (deviceList->getDeviceCount() != 0)
+	{	
+		this->DropSounds();	//Drop all loaded sound since they must be cnnected with the new engine
+		result = this->Initialize();
+	}
+
+	return result;
 }
