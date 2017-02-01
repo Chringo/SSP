@@ -17,7 +17,10 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->m_rotateTime = rotateTime;
 	this->m_minRotation = minRotation;
 	this->m_maxRotation = maxRotation;
-	this->m_rotatePerSec = this->m_maxRotation / this->m_rotateTime;
+	float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+	this->m_minRotation += currentYRotation;
+	this->m_maxRotation += currentYRotation;
+	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
 	this->SyncComponents();
 
 	this->m_subjectStates = subjectStates;
