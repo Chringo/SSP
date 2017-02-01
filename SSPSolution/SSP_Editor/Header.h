@@ -747,12 +747,15 @@ struct Point : Light
 	
 	Point()
 	{
+		this->type = LIGHT;
+
 		data.color = { 0.8f, 0.6f, 0.6f };
 		data.falloff = { 1.0f, 0.07f, 0.017f };
 		data.intensity = 0.7f;
 		data.radius = 3.0f;
 		data.position = { 0.0f,0.0f,0.0f };
 
+		this->position = data.position;
 		pickSphere.radius = 0.25f;
 		rangeSphere.radius = data.radius;
 	}

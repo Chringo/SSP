@@ -25,46 +25,7 @@ void SelectionHandler::Initialize(Camera * camera,
 	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_checkpointPtr = currentLevel->GetCheckpoints();
 	this->m_lightPtr = currentLevel->GetLights();
-	//CheckpointContainer * testcheckbox = new CheckpointContainer;
-	//testcheckbox->obb.ext[0] = 1.0;
-	//testcheckbox->obb.ext[1] = 1.0;
-	//testcheckbox->obb.ext[2] = 1.0;
-	//testcheckbox->obb.ort = DirectX::XMMatrixIdentity();
-	//testcheckbox->position = { 0.0 };
-	//testcheckbox->scale = { 1.0, 1.0, 1.0 };
-	//testcheckbox->internalID = 1;
-	//testcheckbox->component.worldMatrix = DirectX::XMMatrixIdentity();
 
-
-	Point * pointlight1 = new Point();
-	pointlight1->type = LIGHT;
-	pointlight1->position = { 1.0, 0.0, 0.0 };
-	pointlight1->component.worldMatrix = DirectX::XMMatrixIdentity();
-	pointlight1->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-
-	Point * pointlight2 = new Point();
-	pointlight2->type = LIGHT;
-	pointlight2->position = { 3.0, 0.0, 0.0 };
-	pointlight2->component.worldMatrix = DirectX::XMMatrixIdentity();
-	pointlight2->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-
-	//CheckpointContainer * testcheckbox2 = new CheckpointContainer;
-	//testcheckbox2->obb.ext[0] = 1.0;
-	//testcheckbox2->obb.ext[1] = 1.0;
-	//testcheckbox2->obb.ext[2] = 1.0;
-	//testcheckbox2->obb.ort = DirectX::XMMatrixIdentity();
-	//testcheckbox2->position = { 1.0 };
-	//testcheckbox2->scale = { 1.0, 1.0, 1.0 };
-	//testcheckbox2->internalID = 2;
-	//testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
-
-
-	currentLevel->GetLights()->push_back(pointlight1);
-	currentLevel->GetLights()->push_back(pointlight2);
-	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
-	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
-	//currentLevel->GetCheckpoints()->push_back(testcheckbox);
-	//currentLevel->GetCheckpoints()->push_back(testcheckbox2);
 }
 
 void SelectionHandler::updateWindowSize(int winHeight, int winWidth)

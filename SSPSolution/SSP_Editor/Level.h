@@ -47,7 +47,7 @@ public:
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale);
-
+	Resources::Status AddPointLight();
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
 

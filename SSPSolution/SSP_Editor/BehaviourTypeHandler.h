@@ -68,8 +68,6 @@ namespace Ui {
 		unsigned int		m_Current_Waypoint_Amt = 0;
 		QComboBox* 			m_BehaviourType;
 		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
-		QDoubleSpinBox*		m_LightDoubleSpinBoxes[NUM_LFLOATSPIN];
-		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
 		QCheckBox*			m_Path_Trigger_Box;
 		QSpinBox*			m_PATH_TRIGGER;
 		QComboBox*			m_Pattern;
@@ -107,6 +105,8 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_rotationTime	  ;
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
+		QDoubleSpinBox*		m_LightDoubleSpinBoxes[NUM_LFLOATSPIN];
+		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
 #pragma endregion
 
 
@@ -176,13 +176,10 @@ namespace Ui {
 		void on_Wheel_resetTime_changed(double val);
 #pragma endregion
 
-
-#pragma region Lever callbacks
-		void on_lever_distance_changed(double val);
-#pragma endregion
+		void on_Light_Add_changed();
 
 #pragma region Light callbacks
-		void on_Light_Add_changed();
+
 
 		void on_R_changed(int val);
 		void on_G_changed(int val);
@@ -194,6 +191,11 @@ namespace Ui {
 		void on_Linear_changed(double val);
 		void on_Quadratic_changed(double val);
 #pragma endregion
+#pragma region Lever callbacks
+		void on_lever_distance_changed(double val);
+#pragma endregion
+
+
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);

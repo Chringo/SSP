@@ -334,6 +334,16 @@ Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVE
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::AddPointLight()
+{
+	Point * container = new Point();
+	
+	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	this->m_lights.push_back(container);
+
+	return Resources::Status::ST_OK;
+}
+
 
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
