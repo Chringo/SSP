@@ -1,7 +1,5 @@
 #include "DebugHandler.h"
 
-//DebugHandler* DebugHandler::m_instance = nullptr;
-
 DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);

@@ -75,10 +75,6 @@ private:
 	TextComponent* m_vramTextComp;
 	IDXGIAdapter3* m_adapter;
 
-
-	//int lol; //Needed to prevent heap corruption, don't ask why
-
-	//static DebugHandler* m_instance;
 	DebugHandler();
 
 	void ClearConsole();
@@ -86,11 +82,6 @@ private:
 public:
 	virtual ~DebugHandler();
 
-	/*static DebugHandler& instance()
-	{
-		if (m_instance == nullptr) m_instance = new DebugHandler();
-		return *m_instance;
-	}*/
 	static DebugHandler* instance();
 
 	int SetComponentHandler(ComponentHandler* compHandler);
