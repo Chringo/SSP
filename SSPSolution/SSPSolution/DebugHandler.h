@@ -6,19 +6,20 @@
 #include <iomanip>
 #include <Windows.h>
 #include <string>
+#include "ComponentHandler.h"
 
 class DebugHandler
 {
 private:
 	struct Timer {
-		std::string label;
+		std::wstring label;
+		TextComponent* textComp;
 		unsigned int minTime;
 		unsigned int maxTime;
 		LARGE_INTEGER startTime;
 		LARGE_INTEGER endTime;
 		Timer()
 		{
-			this->label = "EMPTY";
 			this->minTime = 9999999;
 			this->maxTime = 0;
 		}
@@ -42,7 +43,7 @@ private:
 
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
-	std::vector<std::string> m_labelsValues;
+	std::vector<std::wstring> m_labelsValues;
 	std::vector<float> m_customValues;
 	unsigned int m_frameTimes[m_FRAMES_FOR_AVG];
 	unsigned int m_maxFPS;
@@ -51,8 +52,10 @@ private:
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
+	bool m_displayDebug;
+	ComponentHandler* compHandler;
 
-	//int lol; //Needed to prevent heap corruption, don't ask why
+	int lol; //Needed to prevent heap corruption, don't ask why
 
 	//static DebugHandler* m_instance;
 	DebugHandler();
@@ -69,22 +72,25 @@ public:
 	}*/
 	static DebugHandler* instance();
 
-	int CreateTimer(std::string label); //returns timer ID, -1 fail
+	int SetComponentHandler(ComponentHandler* compHandler);
+
+	int CreateTimer(std::wstring label); //returns timer ID, -1 fail
 	int StartTimer(size_t timerID);
 	int EndTimer(size_t timerID);
 
 	int StartProgram(); // Needed at start of program to show timer %
 	int EndProgram(); // Needed at end of program to show timer %
 	int ShowFPS(bool show);
+	int ToggleDebugInfo();
 
-	int CreateCustomLabel(std::string label, float value); //returns label ID, -1 fail
+	int CreateCustomLabel(std::wstring label, float value); //returns label ID, -1 fail
 	int UpdateCustomLabel(int labelID, float newValue);
 	int UpdateCustomLabelIncrease(int labelID, float addValue);
 
 	int ResetMinMax();
 
 	int DisplayConsole(float dTime); // Call this in the end to display everything in the console
-	int Display();
+	int DisplayOnScreen();
 
 	void Shutdown();
 };

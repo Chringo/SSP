@@ -44,6 +44,13 @@ DebugHandler* DebugHandler::instance()
 	return &instance;
 }
 
+int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
+{
+	this->compHandler = compHandler;
+
+	return 0;
+}
+
 int DebugHandler::StartTimer(size_t timerID)
 {
 	int result = 0;
@@ -74,10 +81,18 @@ int DebugHandler::EndTimer(size_t timerID)
 	return result;
 }
 
-int DebugHandler::CreateTimer(std::string label)
+int DebugHandler::CreateTimer(std::wstring label)
 {
 	Timer timer;
+	if (this->compHandler == nullptr)
+	{
+		return -1;
+	}
+	timer.textComp = this->compHandler->GetTextComponent();
 	timer.label = label;
+	timer.textComp->text = label + L": [" + L"0" + L"] "
+		+ L"0" + L" [" + L"0" + L"] us, " + L"0.0" + L"%";
+	timer.textComp->active = false;
 	this->m_timers.push_back(timer);
 
 	return 0;
@@ -104,7 +119,15 @@ int DebugHandler::ShowFPS(bool show)
 	return 0;
 }
 
-int DebugHandler::CreateCustomLabel(std::string label, float value)
+int DebugHandler::ToggleDebugInfo()
+{
+	this->m_displayDebug = !this->m_displayDebug;
+	this->ClearConsole();
+
+	return 0;
+}
+
+int DebugHandler::CreateCustomLabel(std::wstring label, float value)
 {
 	this->m_labelsValues.push_back(label);
 	this->m_customValues.push_back(value);
@@ -158,6 +181,10 @@ int DebugHandler::ResetMinMax()
 
 int DebugHandler::DisplayConsole(float dTime)
 {
+	if (!this->m_displayDebug)
+	{
+		return 0;
+	}
 	COORD topLeft = { 0, 0 };
 	COORD FPSLocation = { 50, 0 };
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -189,7 +216,7 @@ int DebugHandler::DisplayConsole(float dTime)
 		elapsedTime.QuadPart *= 1000000;
 		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
 
-		std::cout << std::fixed << std::setprecision(1) << iter->label << ": [" << iter->minTime << "] "
+		std::wcout << std::fixed << std::setprecision(1) << iter->label << ": [" << iter->minTime << "] "
 			<< time << " [" << iter->maxTime << "] us, " 
 			<< (float)((time / (float)elapsedTime.QuadPart) * 100) << "%";
 		GetConsoleScreenBufferInfo(console, &screen);
@@ -201,7 +228,7 @@ int DebugHandler::DisplayConsole(float dTime)
 	int nrOfCustomLabels = this->m_labelsValues.size();
 	for (int j = 0; j < nrOfCustomLabels; j++)
 	{
-		std::cout << this->m_labelsValues.at(j) << ": " << this->m_customValues.at(j);
+		std::wcout << this->m_labelsValues.at(j).c_str() << ": " << this->m_customValues.at(j);
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 5, screen.dwCursorPosition, &written
@@ -233,6 +260,13 @@ int DebugHandler::DisplayConsole(float dTime)
 
 	COORD finishedCursonLoc = { (SHORT)0, (SHORT)(this->m_timers.size() + (size_t)nrOfCustomLabels + 1) };
 	SetConsoleCursorPosition(console, finishedCursonLoc);
+
+	return 1;
+}
+
+int DebugHandler::DisplayOnScreen()
+{
+	
 
 	return 0;
 }

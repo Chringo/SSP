@@ -100,9 +100,10 @@ int System::Initialize()
 
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
-	DebugHandler::instance()->CreateCustomLabel("Frame counter", 0);
-	DebugHandler::instance()->CreateTimer("Update");
-	DebugHandler::instance()->CreateTimer("Render");
+	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
+	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"Render");
 #endif
 
 	return result;
@@ -147,6 +148,10 @@ int System::Run()
 			this->FullscreenToggle();
 		}
 #ifdef _DEBUG
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
+		{
+			DebugHandler::instance()->ToggleDebugInfo();
+		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance()->ResetMinMax();
