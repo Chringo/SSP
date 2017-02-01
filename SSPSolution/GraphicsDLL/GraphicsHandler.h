@@ -105,6 +105,7 @@ private:
 		unsigned int componentIndex;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
+		bool isRendered;
 	}; 
 	struct OctreeNode {
 		OctreeNode* branches[8] = { nullptr };

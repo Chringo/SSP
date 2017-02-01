@@ -1031,7 +1031,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 						//For every contained component
 						for (int index = 0; index < containedCount; index++)
 						{
-							float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
+							/*float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
 							if (abs(distance) < curNode->containedComponents[index].ext.x)
 								xSplit = 0;
 							else
@@ -1047,13 +1047,24 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 							if (abs(distance) < curNode->containedComponents[index].ext.z)
 								zSplit = 0;
 							else
-								zSplit += (distance > 0) * 2;
-							//We have now checked the splitting of entities
+								zSplit += (distance > 0) * 2;*/
+							
+							//For all 8 branches: check if they intersect with the entity
+							for (int j = 0; j < 8; j++)
+							{
+								if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index].pos, curNode->containedComponents[index].ext))
+								{
+									//The component is within the branch
+									curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
+								}
+							}
 
 						}
-
-
-
+						//After having pushed the components into the child remove them from this branch unless this is the root
+						if (depth > 0)
+						{
+							curNode->containedComponents.clear();
+						}
 					}
 				}
 			}
