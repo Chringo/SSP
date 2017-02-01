@@ -28,7 +28,7 @@ namespace FSMEnvironment
 		int React(int entityID, EVENT event);//TODO: Might be moved to state
 		// Add function to attach either state or LD to an entity
 
-		unsigned int GetID() const { return this->m_directorID; }
+		unsigned int GetID() const { return this->m_directorID; }// Director's ID acts as an entity ID
 
 	private:	// Helper functions
 		// TODO: 
