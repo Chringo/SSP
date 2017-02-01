@@ -7,7 +7,6 @@
 namespace FSMEnvironment
 {
 #define State DirectorState
-	class State;
 	class LevelDirector
 	{
 	private:	// Variables
