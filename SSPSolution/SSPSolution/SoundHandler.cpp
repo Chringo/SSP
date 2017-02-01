@@ -108,7 +108,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(20);	//At what distance the sound cant be heard (not sure on the units)
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -167,63 +167,67 @@ int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool lo
 
 void SoundHandler::UpdateSoundHandler()
 {
-
+	if (this->m_soundEngine)
+	{
 	//Check 2D components
-#pragma region
-	std::vector<SoundComponent2D*>::iterator itr;
-	for (itr = this->sound2DComponents.begin(); itr != this->sound2DComponents.end(); itr++) 
-	{
-		if (!(*itr)->isActive)
+	#pragma region
+		std::vector<SoundComponent2D*>::iterator itr;
+		for (itr = this->sound2DComponents.begin(); itr != this->sound2DComponents.end(); itr++) 
 		{
-			delete (*itr);
-			itr = this->sound2DComponents.erase(itr);
-		}
-		else
-		{
-			if ((*itr)->sound != Sounds2D::NO_SOUND2D)
+			if (!(*itr)->isActive)
 			{
-				//Play the sound
-				this->PlaySound2D((*itr)->sound, (*itr)->loop);
-				//Reset the comopnent to play no sound
-				(*itr)->sound = Sounds2D::NO_SOUND2D;
-			 }
-		}
-	}
-#pragma endregion 2D_COMPONENT_UPDATE
-	//Check 3D components
-#pragma region
-	std::vector<SoundComponent3D*>::iterator itr3;
-	for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr3++)
-	{
-		if (!(*itr3)->isActive)
-		{
-			delete (*itr3);
-			itr3 = this->sound3DComponents.erase(itr3);
-		}
-		else
-		{
-			if ((*itr3)->sound != Sounds3D::NO_SOUND3D)
+				delete (*itr);
+				itr = this->sound2DComponents.erase(itr);
+			}
+			else
 			{
-				//Play the sound
-				this->PlaySound3D( (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
-				//Reset the comopnent to play no sound
-				(*itr3)->sound = Sounds3D::NO_SOUND3D;
+				if ((*itr)->sound != Sounds2D::NO_SOUND2D)
+				{
+					//Play the sound
+					this->PlaySound2D((*itr)->sound, (*itr)->loop);
+					//Reset the comopnent to play no sound
+					(*itr)->sound = Sounds2D::NO_SOUND2D;
+				 }
 			}
 		}
-	}
+	#pragma endregion 2D_COMPONENT_UPDATE
+		//Check 3D components
+	#pragma region
+		std::vector<SoundComponent3D*>::iterator itr3;
+		for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr3++)
+		{
+			if (!(*itr3)->isActive)
+			{
+				delete (*itr3);
+				itr3 = this->sound3DComponents.erase(itr3);
+			}
+			else
+			{
+				if ((*itr3)->sound != Sounds3D::NO_SOUND3D)
+				{
+					//Play the sound
+					this->PlaySound3D( (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
+					//Reset the comopnent to play no sound
+					(*itr3)->sound = Sounds3D::NO_SOUND3D;
+				}
+			}
+		}
 
 #pragma endregion 3D_COMPONENT_UPDATER
+	}
 }
 
 void SoundHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
 {
-	irrklang::vec3df position(newPos.x, newPos.y, newPos.z);        // position of the listener
-	irrklang::vec3df lookDirection(newLookDir.x, newLookDir.y, newLookDir.z); // the direction the listener looks into
-	irrklang::vec3df velPerSecond(0, 0, 0);    // only relevant for doppler effects
-	irrklang::vec3df upVector(newUpVector.x, newUpVector.y, newUpVector.z);        // where 'up' is in your 3D scene
+	if (this->m_soundEngine)
+	{
+		irrklang::vec3df position(newPos.x, newPos.y, newPos.z);        // position of the listener
+		irrklang::vec3df lookDirection(newLookDir.x, newLookDir.y, newLookDir.z); // the direction the listener looks into
+		irrklang::vec3df velPerSecond(0, 0, 0);    // only relevant for doppler effects
+		irrklang::vec3df upVector(newUpVector.x, newUpVector.y, newUpVector.z);        // where 'up' is in your 3D scene
 
-	this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
-
+		this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
+	}
 }
 
 SoundComponent2D * SoundHandler::GetSoundComponent2D()
