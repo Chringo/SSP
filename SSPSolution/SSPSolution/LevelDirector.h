@@ -40,8 +40,10 @@ namespace FSMEnvironment
 		bool playerTwo = false;
 		int timeDelay = -1;
 
+		// up to five entities will be supported per "checkpoint"
 		Condition subjects[5];
 
+		// multiple hints have to be held for use in a state
 		Hint hint1 = Hint::NONE;
 		Hint hint2 = Hint::NONE;
 		Hint hint3 = Hint::NONE;
