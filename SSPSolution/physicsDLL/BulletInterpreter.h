@@ -111,6 +111,7 @@ struct Field
 {
 	OBB F_BV;
 
+	DirectX::XMVECTOR F_pos;
 	unsigned int F_entitityID1;
 	unsigned int F_entitityID2;
 	bool F_first_inide;

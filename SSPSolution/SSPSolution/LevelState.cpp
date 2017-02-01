@@ -250,9 +250,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_OBB;
-	ballP->PC_OBB.ext[0] = 0.15;
-	ballP->PC_OBB.ext[1] = 0.15;
-	ballP->PC_OBB.ext[2] = 0.15;
+	ballP->PC_OBB.ext[0] = 0.5;
+	ballP->PC_OBB.ext[1] = 0.5;
+	ballP->PC_OBB.ext[2] = 0.5;
 	ballP->PC_mass = 10;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
