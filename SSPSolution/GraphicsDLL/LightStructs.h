@@ -9,8 +9,6 @@
 #endif
 namespace LIGHT
 {
-
-
 	enum GRAPHICSDLL_API LIGHT_TYPE
 	{
 		LT_POINT,

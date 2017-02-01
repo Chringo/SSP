@@ -19,7 +19,7 @@ namespace LIGHT
 	private:
 		enum LIGHT_BUFFER_SLOTS // Determines the slots that the buffers are set in the shader
 		{
-			POINTLIGHT_BUFFER		 = 5, //IMPORTANT: In the shader, these buffers needs to be registered as a t buffer
+			POINTLIGHT_BUFFER		 = 5, // IMPORTANT: In the shader, these buffers needs to be registered as a t buffer
 			DIRECTIONALLIGHT_BUFFER	 = 6, // not register(sX); BUT, register(tX); 
 			AREALIGHT_BUFFER		 = 7,
 			SPOTLIGHT_BUFFER		 = 8
