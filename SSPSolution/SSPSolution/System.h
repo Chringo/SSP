@@ -35,13 +35,13 @@ private:
 	InputHandler* m_inputHandler;
 	//These are the subsystems
 	GraphicsHandler* m_graphicsHandler;
+	AnimationHandler* m_AnimationHandler; //Handles all animations for entities. 
 	PhysicsHandler m_physicsHandler; //this is a physicsHandler
 	AIHandler m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
-	
-	/*Testing for playing animation.*/
-	AnimationHandler* m_Anim;
+	//SoundHandler
+	SoundHandler m_soundHandler;
 public:
 	System();
 	~System();

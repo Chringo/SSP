@@ -28,13 +28,13 @@ int System::Shutdown()
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
+	this->m_soundHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
+	this->m_AnimationHandler->ShutDown();
+	delete this->m_AnimationHandler;
 	DebugHandler::instance().Shutdown();
-
-	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	
 	return result;
 }
 
@@ -56,7 +56,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -91,11 +91,19 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
+
+	//Initialize the animation handler. 
+	this->m_AnimationHandler = new AnimationHandler();
+	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
+
+
+	//Initialize the SoundHandler
+	this->m_soundHandler = SoundHandler();
+	this->m_soundHandler.Initialize();
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler, &this->m_soundHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
-
 
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
@@ -220,6 +228,8 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+	this->m_soundHandler.UpdateSoundHandler();
+
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -249,10 +259,13 @@ int System::Update(float deltaTime)
 		}
 	}
 
-	//Update animations here. Temp place right now.
-	//m_Anim->Update(deltaTime);
-	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+	{
+		this->m_soundHandler.ReInitSoundEngine();
+	}
 
+	this->m_AnimationHandler->Update(deltaTime);
+	
 	
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
