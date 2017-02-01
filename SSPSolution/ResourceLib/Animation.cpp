@@ -61,7 +61,6 @@ std::shared_ptr<char> Resources::Animation::GetDataAsBinary(size_t * size, bool 
 
 void Resources::Animation::SetAnimationData(AnimationData * anim)
 {
-
 	if (this->m_anim.joints != nullptr)
 		Destroy();
 	m_anim.jointCount			= anim->jointCount;
@@ -74,8 +73,9 @@ void Resources::Animation::SetAnimationData(AnimationData * anim)
 			anim->joints[i].keyframes,
 			sizeof(Keyframe) * anim->joints[i].keyframeCount);
 	}
+
 	//Extract animation state data.
-	m_StateData.isLooping = false;
+	m_StateData.isLooping = true;
 	m_StateData.startTime = m_anim.joints[0].keyframes[0].timeValue;
 	int keyframeCount = m_anim.joints[0].keyframeCount;
 	m_StateData.endTime = m_anim.joints[0].keyframes[keyframeCount - 1].timeValue;
