@@ -94,6 +94,9 @@ int DebugHandler::CreateTimer(std::wstring label)
 	timer.textComp->text = label + L": [" + L"0" + L"] "
 		+ L"0" + L" [" + L"0" + L"] us, " + L"0.0" + L"%";
 	timer.textComp->active = false;
+	timer.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (this->m_timers.size() * 30.f));
+	timer.textComp->scale = DirectX::XMFLOAT2(.4f, .4f);
+
 	this->m_timers.push_back(timer);
 
 	return 0;
@@ -161,6 +164,8 @@ int DebugHandler::CreateCustomLabel(std::wstring label, float value)
 	TextComponent* textComp = this->compHandler->GetTextComponent();
 	textComp->active = false;
 	tempValue.textComp = textComp;
+	tempValue.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + ((this->m_timers.size() + this->m_values.size()) * 30.f));
+	tempValue.textComp->scale = DirectX::XMFLOAT2(.4f, .4f);
 	tempValue.label = label;
 	tempValue.value = value;
 	this->m_values.push_back(tempValue);
@@ -302,7 +307,6 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	std::vector<Timer>::iterator iter;
 	unsigned int time;
 	int i;
-	float spacing = 30.f;
 	for (i = 0, iter = this->m_timers.begin();
 		iter != this->m_timers.end();
 		i++, iter++)
@@ -317,8 +321,6 @@ int DebugHandler::DisplayOnScreen(float dTime)
 		iter->textComp->text = iter->label + L": [" + std::to_wstring(iter->minTime) + L"] "
 			+ std::to_wstring(time) + L" [" + std::to_wstring(iter->maxTime) + L"] us, "
 			+ std::to_wstring((float)((time / (float)elapsedTime.QuadPart) * 100)) + L"%";
-
-		iter->textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (i * spacing));
 	}
 
 	int nrOfCustomLabels = this->m_values.size();
