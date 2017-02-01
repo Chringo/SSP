@@ -1,5 +1,12 @@
 #include "DirectorState.h"
 
+DirectorState::DirectorState()
+{
+}
+DirectorState::~DirectorState()
+{
+}
+
 void DirectorState::Initialize()
 {
 	stateID = -1;
