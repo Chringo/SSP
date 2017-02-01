@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SSP_Editor.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.1
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -29,6 +29,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStackedWidget>
@@ -51,15 +52,6 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QVBoxLayout *verticalLayout;
-    QTreeWidget *assetTree;
-    QWidget *tab_2;
-    QVBoxLayout *verticalLayout_2;
-    QTreeWidget *scene_tree;
-    QPushButton *pushButton;
-    QLabel *label_2;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -176,7 +168,45 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QPushButton *CheckPointADD;
     QLabel *label_4;
+    QWidget *Lights;
+    QGridLayout *gridLayout_8;
+    QLabel *label_6;
+    QComboBox *LightDropDown;
+    QStackedWidget *LightWindows;
+    QWidget *None;
+    QWidget *Point;
+    QGridLayout *gridLayout_9;
+    QLabel *label_12;
+    QSpinBox *R_Colorvalue;
+    QLabel *label_8;
+    QSpacerItem *verticalSpacer_6;
+    QLabel *label_9;
+    QLabel *label_10;
+    QSpinBox *G_Colorvalue;
+    QDoubleSpinBox *RadiusValue;
+    QSlider *G_Slider;
+    QSlider *R_Slider;
+    QSlider *B_Slider;
+    QSpinBox *B_Colorvalue;
+    QLabel *label_14;
+    QLabel *label_13;
+    QLabel *label_7;
+    QLabel *label_11;
+    QDoubleSpinBox *QuadValue;
+    QDoubleSpinBox *LinearValue;
+    QDoubleSpinBox *ConstantValue;
+    QSpacerItem *horizontalSpacer;
+    QPushButton *ADD_Light_Button;
     QWidget *RenderWidget;
+    QLabel *label_2;
+    QPushButton *pushButton;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QVBoxLayout *verticalLayout;
+    QTreeWidget *assetTree;
+    QWidget *tab_2;
+    QVBoxLayout *verticalLayout_2;
+    QTreeWidget *scene_tree;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -355,65 +385,11 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        Values = new QGroupBox(centralWidget);
+        Values->setObjectName(QStringLiteral("Values"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy);
-        tabWidget->setMinimumSize(QSize(200, 0));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        verticalLayout = new QVBoxLayout(tab);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        assetTree = new QTreeWidget(tab);
-        assetTree->setObjectName(QStringLiteral("assetTree"));
-        assetTree->setLayoutDirection(Qt::LeftToRight);
-        assetTree->setTextElideMode(Qt::ElideNone);
-        assetTree->setSortingEnabled(true);
-        assetTree->setHeaderHidden(true);
-        assetTree->header()->setCascadingSectionResizes(false);
-
-        verticalLayout->addWidget(assetTree);
-
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
-        verticalLayout_2 = new QVBoxLayout(tab_2);
-        verticalLayout_2->setSpacing(0);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        scene_tree = new QTreeWidget(tab_2);
-        scene_tree->setObjectName(QStringLiteral("scene_tree"));
-        scene_tree->setLayoutDirection(Qt::LeftToRight);
-        scene_tree->setTextElideMode(Qt::ElideNone);
-        scene_tree->setSortingEnabled(true);
-        scene_tree->setHeaderHidden(true);
-        scene_tree->header()->setCascadingSectionResizes(false);
-
-        verticalLayout_2->addWidget(scene_tree);
-
-        tabWidget->addTab(tab_2, QString());
-
-        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
-
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
-
-        Values = new QGroupBox(centralWidget);
-        Values->setObjectName(QStringLiteral("Values"));
         sizePolicy.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
         Values->setSizePolicy(sizePolicy);
         Values->setMinimumSize(QSize(250, 571));
@@ -1282,6 +1258,176 @@ public:
         gridLayout_6->addWidget(label_4, 2, 1, 1, 1);
 
         CustomBehaviourTabWidget->addTab(CheckPoint, QString());
+        Lights = new QWidget();
+        Lights->setObjectName(QStringLiteral("Lights"));
+        gridLayout_8 = new QGridLayout(Lights);
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setContentsMargins(11, 11, 11, 11);
+        gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
+        label_6 = new QLabel(Lights);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        gridLayout_8->addWidget(label_6, 1, 0, 1, 1);
+
+        LightDropDown = new QComboBox(Lights);
+        LightDropDown->setObjectName(QStringLiteral("LightDropDown"));
+        LightDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        gridLayout_8->addWidget(LightDropDown, 1, 1, 1, 1);
+
+        LightWindows = new QStackedWidget(Lights);
+        LightWindows->setObjectName(QStringLiteral("LightWindows"));
+        None = new QWidget();
+        None->setObjectName(QStringLiteral("None"));
+        LightWindows->addWidget(None);
+        Point = new QWidget();
+        Point->setObjectName(QStringLiteral("Point"));
+        gridLayout_9 = new QGridLayout(Point);
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setContentsMargins(11, 11, 11, 11);
+        gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
+        label_12 = new QLabel(Point);
+        label_12->setObjectName(QStringLiteral("label_12"));
+
+        gridLayout_9->addWidget(label_12, 5, 0, 1, 2);
+
+        R_Colorvalue = new QSpinBox(Point);
+        R_Colorvalue->setObjectName(QStringLiteral("R_Colorvalue"));
+        R_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        R_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        R_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(R_Colorvalue, 1, 1, 1, 1);
+
+        label_8 = new QLabel(Point);
+        label_8->setObjectName(QStringLiteral("label_8"));
+
+        gridLayout_9->addWidget(label_8, 1, 0, 1, 1);
+
+        verticalSpacer_6 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_9->addItem(verticalSpacer_6, 9, 2, 1, 1);
+
+        label_9 = new QLabel(Point);
+        label_9->setObjectName(QStringLiteral("label_9"));
+
+        gridLayout_9->addWidget(label_9, 2, 0, 1, 1);
+
+        label_10 = new QLabel(Point);
+        label_10->setObjectName(QStringLiteral("label_10"));
+
+        gridLayout_9->addWidget(label_10, 3, 0, 1, 1);
+
+        G_Colorvalue = new QSpinBox(Point);
+        G_Colorvalue->setObjectName(QStringLiteral("G_Colorvalue"));
+        G_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        G_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        G_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(G_Colorvalue, 2, 1, 1, 1);
+
+        RadiusValue = new QDoubleSpinBox(Point);
+        RadiusValue->setObjectName(QStringLiteral("RadiusValue"));
+        RadiusValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        RadiusValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
+        gridLayout_9->addWidget(RadiusValue, 4, 2, 1, 2);
+
+        G_Slider = new QSlider(Point);
+        G_Slider->setObjectName(QStringLiteral("G_Slider"));
+        G_Slider->setMaximum(255);
+        G_Slider->setPageStep(25);
+        G_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(G_Slider, 2, 2, 1, 2);
+
+        R_Slider = new QSlider(Point);
+        R_Slider->setObjectName(QStringLiteral("R_Slider"));
+        R_Slider->setMaximum(255);
+        R_Slider->setPageStep(25);
+        R_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(R_Slider, 1, 2, 1, 2);
+
+        B_Slider = new QSlider(Point);
+        B_Slider->setObjectName(QStringLiteral("B_Slider"));
+        B_Slider->setMaximum(255);
+        B_Slider->setPageStep(25);
+        B_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(B_Slider, 3, 2, 1, 2);
+
+        B_Colorvalue = new QSpinBox(Point);
+        B_Colorvalue->setObjectName(QStringLiteral("B_Colorvalue"));
+        B_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        B_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        B_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(B_Colorvalue, 3, 1, 1, 1);
+
+        label_14 = new QLabel(Point);
+        label_14->setObjectName(QStringLiteral("label_14"));
+
+        gridLayout_9->addWidget(label_14, 8, 0, 1, 2);
+
+        label_13 = new QLabel(Point);
+        label_13->setObjectName(QStringLiteral("label_13"));
+
+        gridLayout_9->addWidget(label_13, 7, 0, 1, 2);
+
+        label_7 = new QLabel(Point);
+        label_7->setObjectName(QStringLiteral("label_7"));
+
+        gridLayout_9->addWidget(label_7, 6, 0, 1, 2);
+
+        label_11 = new QLabel(Point);
+        label_11->setObjectName(QStringLiteral("label_11"));
+
+        gridLayout_9->addWidget(label_11, 4, 0, 1, 2);
+
+        QuadValue = new QDoubleSpinBox(Point);
+        QuadValue->setObjectName(QStringLiteral("QuadValue"));
+        QuadValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        QuadValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        QuadValue->setMaximum(1);
+        QuadValue->setSingleStep(0.01);
+
+        gridLayout_9->addWidget(QuadValue, 8, 2, 1, 1);
+
+        LinearValue = new QDoubleSpinBox(Point);
+        LinearValue->setObjectName(QStringLiteral("LinearValue"));
+        LinearValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        LinearValue->setFrame(true);
+        LinearValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        LinearValue->setMaximum(1);
+        LinearValue->setSingleStep(0.01);
+
+        gridLayout_9->addWidget(LinearValue, 7, 2, 1, 1);
+
+        ConstantValue = new QDoubleSpinBox(Point);
+        ConstantValue->setObjectName(QStringLiteral("ConstantValue"));
+        ConstantValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        ConstantValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        ConstantValue->setMaximum(1);
+        ConstantValue->setSingleStep(0.01);
+
+        gridLayout_9->addWidget(ConstantValue, 6, 2, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout_9->addItem(horizontalSpacer, 6, 3, 1, 1);
+
+        LightWindows->addWidget(Point);
+
+        gridLayout_8->addWidget(LightWindows, 4, 0, 1, 2);
+
+        ADD_Light_Button = new QPushButton(Lights);
+        ADD_Light_Button->setObjectName(QStringLiteral("ADD_Light_Button"));
+        ADD_Light_Button->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_8->addWidget(ADD_Light_Button, 0, 0, 1, 2);
+
+        CustomBehaviourTabWidget->addTab(Lights, QString());
 
         verticalLayout_3->addWidget(CustomBehaviourTabWidget);
 
@@ -1300,6 +1446,60 @@ public:
         RenderWidget->setAutoFillBackground(false);
 
         gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
+
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
+
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy);
+        tabWidget->setMinimumSize(QSize(200, 0));
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        verticalLayout = new QVBoxLayout(tab);
+        verticalLayout->setSpacing(0);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        assetTree = new QTreeWidget(tab);
+        assetTree->setObjectName(QStringLiteral("assetTree"));
+        assetTree->setLayoutDirection(Qt::LeftToRight);
+        assetTree->setTextElideMode(Qt::ElideNone);
+        assetTree->setSortingEnabled(true);
+        assetTree->setHeaderHidden(true);
+        assetTree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout->addWidget(assetTree);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        verticalLayout_2 = new QVBoxLayout(tab_2);
+        verticalLayout_2->setSpacing(0);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        scene_tree = new QTreeWidget(tab_2);
+        scene_tree->setObjectName(QStringLiteral("scene_tree"));
+        scene_tree->setLayoutDirection(Qt::LeftToRight);
+        scene_tree->setTextElideMode(Qt::ElideNone);
+        scene_tree->setSortingEnabled(true);
+        scene_tree->setHeaderHidden(true);
+        scene_tree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout_2->addWidget(scene_tree);
+
+        tabWidget->addTab(tab_2, QString());
+
+        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
 
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
@@ -1326,10 +1526,21 @@ public:
 
         retranslateUi(SSP_EditorClass);
         QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
+        QObject::connect(LightDropDown, SIGNAL(currentIndexChanged(int)), LightWindows, SLOT(setCurrentIndex(int)));
+        QObject::connect(R_Colorvalue, SIGNAL(valueChanged(int)), R_Slider, SLOT(setValue(int)));
+        QObject::connect(R_Slider, SIGNAL(sliderMoved(int)), R_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(G_Colorvalue, SIGNAL(valueChanged(int)), G_Slider, SLOT(setValue(int)));
+        QObject::connect(G_Slider, SIGNAL(sliderMoved(int)), G_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(B_Colorvalue, SIGNAL(valueChanged(int)), B_Slider, SLOT(setValue(int)));
+        QObject::connect(B_Slider, SIGNAL(sliderMoved(int)), B_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(G_Slider, SIGNAL(valueChanged(int)), G_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(B_Slider, SIGNAL(valueChanged(int)), B_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(R_Slider, SIGNAL(valueChanged(int)), R_Colorvalue, SLOT(setValue(int)));
 
-        tabWidget->setCurrentIndex(0);
-        CustomBehaviourTabWidget->setCurrentIndex(0);
+        CustomBehaviourTabWidget->setCurrentIndex(3);
         BehaviourStackWidget->setCurrentIndex(0);
+        LightWindows->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -1337,92 +1548,112 @@ public:
 
     void retranslateUi(QMainWindow *SSP_EditorClass)
     {
-        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", Q_NULLPTR));
-        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", Q_NULLPTR));
-        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
-        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
-        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
-        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
-        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
-        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
-        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
-        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", Q_NULLPTR));
-        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", Q_NULLPTR));
-        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", Q_NULLPTR));
-        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", Q_NULLPTR));
-        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", Q_NULLPTR));
+        SSP_EditorClass->setWindowTitle(QApplication::translate("SSP_EditorClass", "SSP_Editor", 0));
+        actionNew_scene->setText(QApplication::translate("SSP_EditorClass", "New scene", 0));
+        actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", 0));
+        actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", 0));
+        actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", 0));
+        Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", 0));
+        nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", 0));
+        scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", 0));
+        rotationlabel->setText(QApplication::translate("SSP_EditorClass", "Rotation", 0));
+        translateLabel->setText(QApplication::translate("SSP_EditorClass", "Translate", 0));
+        UIDTEXT->setText(QApplication::translate("SSP_EditorClass", "Unique ID:", 0));
+        uniqueIDLabel->setText(QApplication::translate("SSP_EditorClass", "0", 0));
+        ISSTATICTEXT->setText(QApplication::translate("SSP_EditorClass", "Is Static:", 0));
         isStaticCheck->setText(QString());
         animationBox->clear();
         animationBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
         );
-        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
-        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", Q_NULLPTR));
+        ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", 0));
+        BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", 0));
         BehaviourDropDown->clear();
         BehaviourDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Button", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Door", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Path", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Lever", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Wheel", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "Button", 0)
+         << QApplication::translate("SSP_EditorClass", "Door", 0)
+         << QApplication::translate("SSP_EditorClass", "Path", 0)
+         << QApplication::translate("SSP_EditorClass", "Lever", 0)
+         << QApplication::translate("SSP_EditorClass", "Wheel", 0)
         );
-        tag_label->setText(QApplication::translate("SSP_EditorClass", " Tag", Q_NULLPTR));
-        tag_label_2->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction", Q_NULLPTR));
-        tag_label_3->setText(QApplication::translate("SSP_EditorClass", "Reset timer (Seconds)", Q_NULLPTR));
-        label_5->setText(QApplication::translate("SSP_EditorClass", "Rotation time :", Q_NULLPTR));
-        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", Q_NULLPTR));
-        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", Q_NULLPTR));
-        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", Q_NULLPTR));
+        tag_label->setText(QApplication::translate("SSP_EditorClass", " Tag", 0));
+        tag_label_2->setText(QApplication::translate("SSP_EditorClass", "Distance of interaction", 0));
+        tag_label_3->setText(QApplication::translate("SSP_EditorClass", "Reset timer (Seconds)", 0));
+        label_5->setText(QApplication::translate("SSP_EditorClass", "Rotation time :", 0));
+        TIMETEXT->setText(QApplication::translate("SSP_EditorClass", "Time (ms)", 0));
+        PATTERNTEXT->setText(QApplication::translate("SSP_EditorClass", "Pattern", 0));
+        WAYPOINTTEXT->setText(QApplication::translate("SSP_EditorClass", "Waypoints", 0));
         PatternDropDown->clear();
         PatternDropDown->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Circular", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Round Trip", Q_NULLPTR)
-         << QApplication::translate("SSP_EditorClass", "Random", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Linear", 0)
+         << QApplication::translate("SSP_EditorClass", "Circular", 0)
+         << QApplication::translate("SSP_EditorClass", "Round Trip", 0)
+         << QApplication::translate("SSP_EditorClass", "Random", 0)
         );
-        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", Q_NULLPTR));
-        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
-        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
-        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", Q_NULLPTR));
-        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", Q_NULLPTR));
-        label_lever_InteractionDist->setText(QApplication::translate("SSP_EditorClass", "Dist. of interaction :", Q_NULLPTR));
-        label_wheelinteraction->setText(QApplication::translate("SSP_EditorClass", "Interaction Dist:", Q_NULLPTR));
-        label_minRot->setText(QApplication::translate("SSP_EditorClass", "Min Rotation:", Q_NULLPTR));
-        label_maxRot->setText(QApplication::translate("SSP_EditorClass", "Max Rotation:", Q_NULLPTR));
-        label_rotTime->setText(QApplication::translate("SSP_EditorClass", "Rotation Time:", Q_NULLPTR));
-        label_timeTilReset->setText(QApplication::translate("SSP_EditorClass", "Time til reset (s):", Q_NULLPTR));
-        label_resetTime->setText(QApplication::translate("SSP_EditorClass", "Reset time (s):", Q_NULLPTR));
-        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", Q_NULLPTR));
+        SPEEDTEXT->setText(QApplication::translate("SSP_EditorClass", "Speed", 0));
+        AddButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
+        DeleteButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
+        TRIGGERTAGTEXTPATH->setText(QApplication::translate("SSP_EditorClass", "Trigger Tag", 0));
+        TriggerPathCheckBox->setText(QApplication::translate("SSP_EditorClass", "Not Triggered", 0));
+        label_lever_InteractionDist->setText(QApplication::translate("SSP_EditorClass", "Dist. of interaction :", 0));
+        label_wheelinteraction->setText(QApplication::translate("SSP_EditorClass", "Interaction Dist:", 0));
+        label_minRot->setText(QApplication::translate("SSP_EditorClass", "Min Rotation:", 0));
+        label_maxRot->setText(QApplication::translate("SSP_EditorClass", "Max Rotation:", 0));
+        label_rotTime->setText(QApplication::translate("SSP_EditorClass", "Rotation Time:", 0));
+        label_timeTilReset->setText(QApplication::translate("SSP_EditorClass", "Time til reset (s):", 0));
+        label_resetTime->setText(QApplication::translate("SSP_EditorClass", "Reset time (s):", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Behaviour), QApplication::translate("SSP_EditorClass", "Behaviour", 0));
         availableTriggers->clear();
         availableTriggers->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
         );
-        label->setText(QApplication::translate("SSP_EditorClass", "Scene Triggers : ", Q_NULLPTR));
-        AddTriggerButton->setText(QApplication::translate("SSP_EditorClass", "ADD", Q_NULLPTR));
-        DeleteTriggerButton->setText(QApplication::translate("SSP_EditorClass", "DEL", Q_NULLPTR));
+        label->setText(QApplication::translate("SSP_EditorClass", "Scene Triggers : ", 0));
+        AddTriggerButton->setText(QApplication::translate("SSP_EditorClass", "ADD", 0));
+        DeleteTriggerButton->setText(QApplication::translate("SSP_EditorClass", "DEL", 0));
         QTableWidgetItem *___qtablewidgetitem = TriggerTableWidget->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QApplication::translate("SSP_EditorClass", "Trigger", Q_NULLPTR));
+        ___qtablewidgetitem->setText(QApplication::translate("SSP_EditorClass", "Trigger", 0));
         QTableWidgetItem *___qtablewidgetitem1 = TriggerTableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QApplication::translate("SSP_EditorClass", "Event Signal", Q_NULLPTR));
+        ___qtablewidgetitem1->setText(QApplication::translate("SSP_EditorClass", "Event Signal", 0));
         EventSignalBox->clear();
         EventSignalBox->insertItems(0, QStringList()
-         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "None", 0)
         );
-        label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal", Q_NULLPTR));
-        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Triggers), QApplication::translate("SSP_EditorClass", "Triggers", Q_NULLPTR));
-        checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", Q_NULLPTR));
-        CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", Q_NULLPTR));
-        label_4->setText(QApplication::translate("SSP_EditorClass", "Empty Space", Q_NULLPTR));
-        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", Q_NULLPTR));
-        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
+        label_3->setText(QApplication::translate("SSP_EditorClass", "Event Signal", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Triggers), QApplication::translate("SSP_EditorClass", "Triggers", 0));
+        checkpointTXT->setText(QApplication::translate("SSP_EditorClass", "Checkpoint ID", 0));
+        CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", 0));
+        label_4->setText(QApplication::translate("SSP_EditorClass", "Empty Space", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", 0));
+        label_6->setText(QApplication::translate("SSP_EditorClass", "Light Type", 0));
+        LightDropDown->clear();
+        LightDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "None", 0)
+         << QApplication::translate("SSP_EditorClass", "Point", 0)
+         << QApplication::translate("SSP_EditorClass", "Directional", 0)
+         << QApplication::translate("SSP_EditorClass", "Area", 0)
+         << QApplication::translate("SSP_EditorClass", "Spot", 0)
+         << QApplication::translate("SSP_EditorClass", "Ambient", 0)
+        );
+        label_12->setText(QApplication::translate("SSP_EditorClass", "Falloff", 0));
+        label_8->setText(QApplication::translate("SSP_EditorClass", "R", 0));
+        label_9->setText(QApplication::translate("SSP_EditorClass", "G", 0));
+        label_10->setText(QApplication::translate("SSP_EditorClass", "B", 0));
+        label_14->setText(QApplication::translate("SSP_EditorClass", "Quadratic", 0));
+        label_13->setText(QApplication::translate("SSP_EditorClass", "Linear", 0));
+        label_7->setText(QApplication::translate("SSP_EditorClass", "Constant", 0));
+        label_11->setText(QApplication::translate("SSP_EditorClass", "Radius", 0));
+        ADD_Light_Button->setText(QApplication::translate("SSP_EditorClass", "ADD NEW LIGHT", 0));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Lights), QApplication::translate("SSP_EditorClass", "Lights", 0));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", 0));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", 0));
+        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", 0));
+        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", 0));
+        menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", 0));
     } // retranslateUi
 
 };
