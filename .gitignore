@@ -1,9 +1,11 @@
 # Paths
 SSPSolution/packages/**
+SSPSolution/SSPSolution/Debug/**
 
 # Other databases
 *.bsc
 *.sbr
+
 
 # Temporary compiled files
 *.idb
