@@ -2,10 +2,12 @@
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #include "Observer.h"
 #include <vector>
+#include "DirectorState.h"
 //INCLUDE sound component or handler 
 namespace FSMEnvironment
 {
-
+#define State DirectorState
+	class State;
 	class LevelDirector
 	{
 	private:	// Variables
