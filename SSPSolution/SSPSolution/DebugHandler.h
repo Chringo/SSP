@@ -71,6 +71,7 @@ private:
 	ComponentHandler* compHandler;
 	TextComponent* m_physRamTextComp;
 	TextComponent* m_virtRamTextComp;
+	TextComponent* m_pageFaultTextComp;
 	TextComponent* m_vramTextComp;
 	IDXGIAdapter3* m_adapter;
 

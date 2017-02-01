@@ -71,10 +71,16 @@ int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 	this->m_virtRamTextComp->position = DirectX::XMFLOAT2(950.f, 40.f);
 	this->m_virtRamTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
+	//init the virtual ram usage text component
+	this->m_pageFaultTextComp = this->compHandler->GetTextComponent();
+	this->m_pageFaultTextComp->active = false;
+	this->m_pageFaultTextComp->position = DirectX::XMFLOAT2(950.f, 60.f);
+	this->m_pageFaultTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
+
 	//init the vram usage text component
 	this->m_vramTextComp = this->compHandler->GetTextComponent();
 	this->m_vramTextComp->active = false;
-	this->m_vramTextComp->position = DirectX::XMFLOAT2(950.f, 60.f);
+	this->m_vramTextComp->position = DirectX::XMFLOAT2(950.f, 80.f);
 	this->m_vramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	return 0;
@@ -159,6 +165,7 @@ int DebugHandler::ToggleDebugInfo()
 		this->m_fpsTextComp->active = false;
 		this->m_physRamTextComp->active = false;
 		this->m_virtRamTextComp->active = false;
+		this->m_pageFaultTextComp->active = false;
 		this->m_vramTextComp->active = false;
 	}
 	else 
@@ -176,6 +183,7 @@ int DebugHandler::ToggleDebugInfo()
 		this->m_fpsTextComp->active = true;
 		this->m_physRamTextComp->active = true;
 		this->m_virtRamTextComp->active = true;
+		this->m_pageFaultTextComp->active = true;
 		this->m_vramTextComp->active = true;
 	}
 
@@ -387,6 +395,10 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	SIZE_T peakVirtMemUsedByMe = pmc.PeakPagefileUsage;
 	this->m_virtRamTextComp->text = L"Pagefile usage(current/peak): " + std::to_wstring(virtMemUsedByMe / 1024 / 1024)
 		+ L"/" + std::to_wstring(peakVirtMemUsedByMe / 1024 / 1024) + L" MB";
+
+	//Page faults
+	DWORD pageFaults = pmc.PageFaultCount;
+	this->m_pageFaultTextComp->text = L"Page Fault Count: " + std::to_wstring(pageFaults);
 
 	//vram used
 	DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
