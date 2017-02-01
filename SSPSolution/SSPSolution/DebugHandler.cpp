@@ -6,14 +6,10 @@ DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
 
-#if VER_PRODUCTBUILD > 9600 //Has windows 10 sdk
-
 	IDXGIFactory4* pFactory;
 	CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)&pFactory);
 
 	pFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(&this->m_adapter));
-
-#endif
 
 	this->m_displayDebug = false;
 	for (int i = 0; i < this->m_FRAMES_FOR_AVG; i++)
@@ -63,16 +59,22 @@ int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 	this->m_fpsTextComp->position = DirectX::XMFLOAT2(500.f, 20.f);
 	this->m_fpsTextComp->scale = DirectX::XMFLOAT2(.4f, .4f);
 
-	//init the ram usage text component
-	this->m_ramTextComp = this->compHandler->GetTextComponent();
-	this->m_ramTextComp->active = false;
-	this->m_ramTextComp->position = DirectX::XMFLOAT2(1000.f, 20.f);
-	this->m_ramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
+	//init the physical ram usage text component
+	this->m_physRamTextComp = this->compHandler->GetTextComponent();
+	this->m_physRamTextComp->active = false;
+	this->m_physRamTextComp->position = DirectX::XMFLOAT2(950.f, 20.f);
+	this->m_physRamTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
+
+	//init the virtual ram usage text component
+	this->m_virtRamTextComp = this->compHandler->GetTextComponent();
+	this->m_virtRamTextComp->active = false;
+	this->m_virtRamTextComp->position = DirectX::XMFLOAT2(950.f, 40.f);
+	this->m_virtRamTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	//init the vram usage text component
 	this->m_vramTextComp = this->compHandler->GetTextComponent();
 	this->m_vramTextComp->active = false;
-	this->m_vramTextComp->position = DirectX::XMFLOAT2(1000.f, 40.f);
+	this->m_vramTextComp->position = DirectX::XMFLOAT2(950.f, 60.f);
 	this->m_vramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	return 0;
@@ -155,7 +157,8 @@ int DebugHandler::ToggleDebugInfo()
 			iter->textComp->active = false;
 		}
 		this->m_fpsTextComp->active = false;
-		this->m_ramTextComp->active = false;
+		this->m_physRamTextComp->active = false;
+		this->m_virtRamTextComp->active = false;
 		this->m_vramTextComp->active = false;
 	}
 	else 
@@ -171,7 +174,8 @@ int DebugHandler::ToggleDebugInfo()
 			iter->textComp->active = true;
 		}
 		this->m_fpsTextComp->active = true;
-		this->m_ramTextComp->active = true;
+		this->m_physRamTextComp->active = true;
+		this->m_virtRamTextComp->active = true;
 		this->m_vramTextComp->active = true;
 	}
 
@@ -370,25 +374,26 @@ int DebugHandler::DisplayOnScreen(float dTime)
 
 	this->m_currFrameTimesPtr++;
 
+	//physical ram used
 	PROCESS_MEMORY_COUNTERS pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
 	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-	this->m_ramTextComp->text = L"RAM usage: " + std::to_wstring(physMemUsedByMe / 1024 / 1024)
-		+ L" MB";
+	SIZE_T peakPhysMemUsedByMe = pmc.PeakWorkingSetSize;
+	this->m_physRamTextComp->text = L"Physical RAM usage(current/peak): " + std::to_wstring(physMemUsedByMe / 1024 / 1024)
+		+ L"/" + std::to_wstring(peakPhysMemUsedByMe / 1024 / 1024) + L" MB";
 
-#if VER_PRODUCTBUILD > 9600 //Has windows 10 sdk
+	//virtual ram(pagefile) used
+	SIZE_T virtMemUsedByMe = pmc.PagefileUsage;
+	SIZE_T peakVirtMemUsedByMe = pmc.PeakPagefileUsage;
+	this->m_virtRamTextComp->text = L"Virtual RAM usage(current/peak): " + std::to_wstring(virtMemUsedByMe / 1024 / 1024)
+		+ L"/" + std::to_wstring(peakVirtMemUsedByMe / 1024 / 1024) + L" MB";
 
+	//vram used
 	DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
 	this->m_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
 
 	size_t usedVRAM = videoMemoryInfo.CurrentUsage / 1024 / 1024;
 	this->m_vramTextComp->text = L"VRAM usage: " + std::to_wstring(usedVRAM) + L" MB";
-
-#else
-
-	this->m_vramTextComp->text = L"VRAM usage: Windows SDK 10 not found!";
-
-#endif
 
 	return 1;
 }

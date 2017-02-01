@@ -6,18 +6,13 @@
 #include <iomanip>
 #include <Windows.h>
 #include <Psapi.h>
-#include "ntverp.h"
 #include <string>
 #include "ComponentHandler.h"
-
-#if VER_PRODUCTBUILD > 9600 //Has windows 10 sdk
-
 #include <d3d11_3.h>
 #include <dxgi1_4.h>
 
 #pragma comment(lib, "dxgi.lib")
 
-#endif
 
 //Some guidelines to use the debug handler
 // -Create timers before custom values
@@ -74,15 +69,11 @@ private:
 	LARGE_INTEGER m_programEnd;
 	bool m_displayDebug;
 	ComponentHandler* compHandler;
-	TextComponent* m_ramTextComp;
+	TextComponent* m_physRamTextComp;
+	TextComponent* m_virtRamTextComp;
 	TextComponent* m_vramTextComp;
-	DWORDLONG m_totalPhysMem;
-
-#if VER_PRODUCTBUILD > 9600 //Has windows 10 sdk
-
 	IDXGIAdapter3* m_adapter;
 
-#endif
 
 	//int lol; //Needed to prevent heap corruption, don't ask why
 
