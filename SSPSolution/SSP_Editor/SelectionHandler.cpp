@@ -38,11 +38,13 @@ void SelectionHandler::Initialize(Camera * camera,
 
 	Point * pointlight1 = new Point();
 	pointlight1->type = LIGHT;
+	pointlight1->position = { 1.0, 0.0, 0.0 };
 	pointlight1->component.worldMatrix = DirectX::XMMatrixIdentity();
 	pointlight1->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 
 	Point * pointlight2 = new Point();
 	pointlight2->type = LIGHT;
+	pointlight1->position = { 3.0, 0.0, 0.0 };
 	pointlight2->component.worldMatrix = DirectX::XMMatrixIdentity();
 	pointlight2->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 
@@ -273,13 +275,13 @@ bool SelectionHandler::PickObjectSelection()
 	{
 		bool result = false;
 		//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, container->obb, container->position, hitDistance);
-		result = this->m_PhysicsHandler->IntersectRaySphere(m_ray.localOrigin, this->m_ray.direction, light->pickSphere);
+		result = this->m_PhysicsHandler->IntersectRaySphere(m_ray.localOrigin, this->m_ray.direction, light->pickSphere, light->position, hitDistance);
 		if (result && hitDistance < minHitDistance)
 		{
 			minHitDistance = hitDistance;
 			//update widget with the intersected obb
-			this->m_transformWidget.Select(container->obb, container); //OVERLOAD AND HANLDE THIS
-			Container* cont = (Container*)container;
+			this->m_transformWidget.Select(light->pickSphere, light); //OVERLOAD AND HANLDE THIS
+			Container* cont = (Container*)light;
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
 
 			gotHit = result;

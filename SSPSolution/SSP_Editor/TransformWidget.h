@@ -113,6 +113,24 @@ public:
 		setActive(true);
 	};
 
+	void Select(Sphere &selectedSphere,
+		Point *& selectedContainer)
+	{
+		this->m_selectedObjectOBB.ort = DirectX::XMMatrixIdentity();
+		this->m_selectedObjectOBB.ext[0] = selectedSphere.radius;
+		this->m_selectedObjectOBB.ext[1] = selectedSphere.radius;
+		this->m_selectedObjectOBB.ext[2] = selectedSphere.radius;
+		this->m_selectedContainer = selectedContainer;
+		this->m_instanceID = selectedContainer->internalID;
+		this->m_modelID = UINT_MAX;
+
+		m_obbCenterPosition = selectedContainer->position;
+
+
+		UpdateOBB();
+		setActive(true);
+	};
+
 
 	void SelectAxis(int i)
 	{

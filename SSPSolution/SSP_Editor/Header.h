@@ -367,8 +367,8 @@ public:
 
 		//fill unique data
 		data.interactionDistance = this->interactionDistance;
-		data.min = this->minRotation;
-		data.max = this->maxRotation;
+		data.min = this->minRotation / 360.f;
+		data.max = this->maxRotation / 360.f;
 		data.resetTime = this->resetTime;
 		data.resetDelay = this->timeToReset;	  //Sekunder
 		data.time = this->rotateTime;	  //Sekunder
@@ -415,8 +415,8 @@ public:
 
 		//unique data load
 		this->interactionDistance = dataPtr->interactionDistance;
-		this->minRotation		  = dataPtr->min;
-		this->maxRotation		  = dataPtr->max;
+		this->minRotation		  = dataPtr->min * 360.f;
+		this->maxRotation		  = dataPtr->max * 360.f;
 		this->resetTime			  = dataPtr->resetTime;
 		this->timeToReset		  = dataPtr->resetDelay;
 		this->rotateTime		  = dataPtr->time;
