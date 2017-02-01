@@ -47,6 +47,7 @@ DebugHandler* DebugHandler::instance()
 int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 {
 	this->compHandler = compHandler;
+	this->m_fpsTextComp = this->compHandler->GetTextComponent();
 
 	return 0;
 }
@@ -121,7 +122,34 @@ int DebugHandler::ShowFPS(bool show)
 
 int DebugHandler::ToggleDebugInfo()
 {
-	this->m_displayDebug = !this->m_displayDebug;
+	if (this->m_displayDebug)
+	{
+		this->m_displayDebug = false;
+
+		for (std::vector<Timer>::iterator iter = this->m_timers.begin(); iter != this->m_timers.end(); iter++)
+		{
+			iter->textComp->active = false;
+		}
+		for (std::vector<Value>::iterator iter = this->m_values.begin(); iter != this->m_values.end(); iter++)
+		{
+			iter->textComp->active = false;
+		}
+
+	}
+	else 
+	{
+		this->m_displayDebug = true;
+
+		for (std::vector<Timer>::iterator iter = this->m_timers.begin(); iter != this->m_timers.end(); iter++)
+		{
+			iter->textComp->active = true;
+		}
+		for (std::vector<Value>::iterator iter = this->m_values.begin(); iter != this->m_values.end(); iter++)
+		{
+			iter->textComp->active = true;
+		}
+	}
+
 	this->ClearConsole();
 
 	return 0;
@@ -269,7 +297,7 @@ int DebugHandler::DisplayConsole(float dTime)
 	return 1;
 }
 
-int DebugHandler::DisplayOnScreen()
+int DebugHandler::DisplayOnScreen(float dTime)
 {
 	std::vector<Timer>::iterator iter;
 	unsigned int time;
@@ -298,6 +326,26 @@ int DebugHandler::DisplayOnScreen()
 	{
 		this->m_values.at(j).textComp->text = this->m_values.at(j).label + L": "
 			+ std::to_wstring(this->m_values.at(j).value);
+	}
+
+	if (this->m_displayFPS)
+	{
+		int sum = 0, avgFPS;
+		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
+		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
+		for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
+		{
+			sum += this->m_frameTimes[k];
+		}
+		avgFPS = sum / this->m_FRAMES_FOR_AVG;
+		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+		
+		this->m_fpsTextComp->text = L"FPS: " + std::to_wstring(avgFPS) + L" ["
+			+ std::to_wstring(this->m_minFPS) + L"] (" + std::to_wstring(this->m_frameTimes[this->m_currFrameTimesPtr])
+			+ L") [" + std::to_wstring(this->m_maxFPS) + L"]";
+
+		this->m_currFrameTimesPtr++;
 	}
 
 	return 0;

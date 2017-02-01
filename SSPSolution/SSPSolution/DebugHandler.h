@@ -53,6 +53,7 @@ private:
 	unsigned int m_maxFPS;
 	unsigned int m_minFPS;
 	int m_currFrameTimesPtr;
+	TextComponent* m_fpsTextComp;
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
@@ -94,7 +95,7 @@ public:
 	int ResetMinMax();
 
 	int DisplayConsole(float dTime); // Call this in the end to display everything in the console
-	int DisplayOnScreen();
+	int DisplayOnScreen(float dTime);
 
 	void Shutdown();
 };
