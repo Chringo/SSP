@@ -37,14 +37,18 @@ private:
 			return time;
 		}
 	};
+	struct Value {
+		std::wstring label;
+		TextComponent* textComp;
+		float value;
+	};
 
 	// How many frames to use for average fps
 	const static int m_FRAMES_FOR_AVG = 100;
 
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
-	std::vector<std::wstring> m_labelsValues;
-	std::vector<float> m_customValues;
+	std::vector<Value> m_values;
 	unsigned int m_frameTimes[m_FRAMES_FOR_AVG];
 	unsigned int m_maxFPS;
 	unsigned int m_minFPS;
@@ -55,7 +59,7 @@ private:
 	bool m_displayDebug;
 	ComponentHandler* compHandler;
 
-	int lol; //Needed to prevent heap corruption, don't ask why
+	//int lol; //Needed to prevent heap corruption, don't ask why
 
 	//static DebugHandler* m_instance;
 	DebugHandler();

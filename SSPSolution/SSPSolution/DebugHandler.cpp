@@ -129,17 +129,22 @@ int DebugHandler::ToggleDebugInfo()
 
 int DebugHandler::CreateCustomLabel(std::wstring label, float value)
 {
-	this->m_labelsValues.push_back(label);
-	this->m_customValues.push_back(value);
+	Value tempValue;
+	TextComponent* textComp = this->compHandler->GetTextComponent();
+	textComp->active = false;
+	tempValue.textComp = textComp;
+	tempValue.label = label;
+	tempValue.value = value;
+	this->m_values.push_back(tempValue);
 
 	return 0;
 }
 
 int DebugHandler::UpdateCustomLabel(int labelID, float newValue)
 {
-	if ((unsigned int)labelID < this->m_labelsValues.size())
+	if ((unsigned int)labelID < this->m_values.size())
 	{
-		this->m_customValues.at(labelID) = newValue;
+		this->m_values.at(labelID).value = newValue;
 	}
 	else 
 	{
@@ -151,9 +156,9 @@ int DebugHandler::UpdateCustomLabel(int labelID, float newValue)
 
 int DebugHandler::UpdateCustomLabelIncrease(int labelID, float addValue)
 {
-	if ((unsigned int)labelID < this->m_labelsValues.size())
+	if ((unsigned int)labelID < this->m_values.size())
 	{
-		this->m_customValues.at(labelID) += addValue;
+		this->m_values.at(labelID).value += addValue;
 	}
 	else
 	{
@@ -225,10 +230,10 @@ int DebugHandler::DisplayConsole(float dTime)
 		);
 		std::cout << std::endl;
 	}
-	int nrOfCustomLabels = this->m_labelsValues.size();
+	int nrOfCustomLabels = this->m_values.size();
 	for (int j = 0; j < nrOfCustomLabels; j++)
 	{
-		std::wcout << this->m_labelsValues.at(j).c_str() << ": " << this->m_customValues.at(j);
+		std::wcout << this->m_values.at(j).label << ": " << this->m_values.at(j).value;
 		GetConsoleScreenBufferInfo(console, &screen);
 		FillConsoleOutputCharacterA(
 			console, ' ', 5, screen.dwCursorPosition, &written
@@ -266,7 +271,34 @@ int DebugHandler::DisplayConsole(float dTime)
 
 int DebugHandler::DisplayOnScreen()
 {
-	
+	std::vector<Timer>::iterator iter;
+	unsigned int time;
+	int i;
+	float spacing = 30.f;
+	for (i = 0, iter = this->m_timers.begin();
+		iter != this->m_timers.end();
+		i++, iter++)
+	{
+		time = iter->GetTimeMS(this->m_frequency);
+
+		LARGE_INTEGER elapsedTime;
+		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
+		elapsedTime.QuadPart *= 1000000;
+		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+
+		iter->textComp->text = iter->label + L": [" + std::to_wstring(iter->minTime) + L"] "
+			+ std::to_wstring(time) + L" [" + std::to_wstring(iter->maxTime) + L"] us, "
+			+ std::to_wstring((float)((time / (float)elapsedTime.QuadPart) * 100)) + L"%";
+
+		iter->textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (i * spacing));
+	}
+
+	int nrOfCustomLabels = this->m_values.size();
+	for (int j = 0; j < nrOfCustomLabels; j++)
+	{
+		this->m_values.at(j).textComp->text = this->m_values.at(j).label + L": "
+			+ std::to_wstring(this->m_values.at(j).value);
+	}
 
 	return 0;
 }
@@ -274,6 +306,5 @@ int DebugHandler::DisplayOnScreen()
 void DebugHandler::Shutdown()
 {
 	this->m_timers.clear();
-	this->m_labelsValues.clear();
-	this->m_customValues.clear();
+	this->m_values.clear();
 }
