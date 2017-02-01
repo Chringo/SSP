@@ -2,6 +2,7 @@
 
 SoundHandler::SoundHandler()
 {
+	this->componentID = 0;
 }
 
 SoundHandler::~SoundHandler()
@@ -232,6 +233,8 @@ void SoundHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 
 SoundComponent2D * SoundHandler::GetSoundComponent2D()
 {
 	SoundComponent2D* scp = new SoundComponent2D();
+	scp->componentID = this->componentID;	//Set the Id of the component
+	this->componentID++;
 	this->sound2DComponents.push_back(scp);
 	
 	return scp;
@@ -240,6 +243,8 @@ SoundComponent2D * SoundHandler::GetSoundComponent2D()
 SoundComponent3D * SoundHandler::GetSoundComponent3D()
 {
 	SoundComponent3D* scp = new SoundComponent3D();
+	scp->componentID = this->componentID;
+	this->componentID++;
 	this->sound3DComponents.push_back(scp);
 
 	return scp;

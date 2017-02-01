@@ -23,6 +23,7 @@ enum Sounds3D
 
 struct SoundComponent2D
 {
+	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
 	Sounds2D			sound;
 	bool				loop;
 	bool				isActive;
@@ -30,6 +31,7 @@ struct SoundComponent2D
 
 struct SoundComponent3D
 {
+	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
 	Sounds3D			sound;
 	bool				loop;
 	bool				isActive;
@@ -46,6 +48,8 @@ private:
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	std::list<irrklang::ISound*> m_activeSounds;
 	
+	unsigned int componentID;
+
 	void LoadSounds();
 	void DropSounds();	//Drop irrKlang resources that is keept outside of the Sound engine
 
