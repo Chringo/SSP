@@ -59,8 +59,8 @@ void SelectionHandler::Initialize(Camera * camera,
 	//testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
 
 
-	//currentLevel->GetLights()->push_back(pointlight1);
-	//currentLevel->GetLights()->push_back(pointlight2);
+	currentLevel->GetLights()->push_back(pointlight1);
+	currentLevel->GetLights()->push_back(pointlight2);
 	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
 	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
 	//currentLevel->GetCheckpoints()->push_back(testcheckbox);

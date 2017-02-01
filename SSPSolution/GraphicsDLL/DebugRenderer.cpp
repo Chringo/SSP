@@ -545,7 +545,6 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Plane & 
 ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere & box, DirectX::XMVECTOR color, int ringIndex)
 {
 	box.radius;
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
 
 	float step = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
 	float theta = 0.0f;
@@ -570,7 +569,6 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 			point.m128_f32[2] += box.radius * DirectX::XMScalarSin(theta);
 		}
 
-		point = DirectX::XMVector3TransformCoord(point, worldMatrix);
 		m_points[M_SPHERE][i] = Point(point.m128_f32, color.m128_f32);
 
 		theta += step;
