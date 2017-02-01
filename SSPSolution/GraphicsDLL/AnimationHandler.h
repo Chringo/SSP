@@ -1,12 +1,10 @@
 #ifndef GRAPHICSDLL_ANIMATIONS_ANIMATIONHANDLER_H
 #define GRAPHICSDLL_ANIMATIONS_ANIMATIONHANDLER_H
 
-#include <stack>
-#include <queue>
 #include <DirectXMath.h>
 #include <vector>
-#include <map>
 #include <iostream>
+#include "AnimationStateEnums.h"
 #include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
@@ -17,58 +15,30 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
-//struct GraphicsAnimationComponent
-//{
-//	int active = 0;
-//	int modelID = -1;
-//	int jointCount = 0;
-//
-//	DirectX::XMMATRIX worldMatrix;
-//	DirectX::XMMATRIX finalJointTransforms[32];
-//};
-
 struct AnimationComponent
 {
+	/*System variables.*/
 	int active = 0;
-	int modelID = -1;
-	int skeletonID = 1;
-	int animationState = 0;
-};
 
-struct SkeletonTemp
-{
-	int parentIndex;
-	int jointIndex;
-	DirectX::XMMATRIX invBindPose;
-};
+	/*Used to check if a state is either new or old.*/
+	int previousState = 1;
 
-struct AnimationClip
-{
-	int animationState;
-	int previousState;
+	/*Used to play one or two animations, for blending.*/
+	Resources::Animation::AnimationState* source_State; // Always available
+	Resources::Animation::AnimationState* target_State;
+	/*The source and target local times.*/
+	float source_Time = 0.f;
+	float target_Time = 0.f;
 
-	bool isLooping;
-	bool isActive;
+	float m_TransitionDuration = 0.f;
+	float m_TransitionTimeLeft = 0.f;
 
-	float startFrame;
-	float endFrame;
+	bool m_TransitionComplete = false;
 
-	float localTime;
-};
+	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
-enum AnimationStates
-{
-	IDLE_STATE	=	0, 
-	WALK_STATE	=	1,
-	RUN_STATE	=	2, 
-	THROW_STATE =	3
-};
-
-enum BlendingStates
-{
-	NO_TRANSITION		=	0,
-	SMOOTH_TRANSITION	=	1,
-	FROZEN_TRANSITION	=	2
+	Resources::Skeleton* skeleton = nullptr;
+	std::vector<Resources::Animation*>* animation_States = nullptr;
 };
 
 struct BlendKeyframe
@@ -80,63 +50,41 @@ struct BlendKeyframe
 
 class AnimationHandler
 {
-
 private:
-	//Variables
-	std::vector<AnimationClip> m_animationStack;
+	//Variables used only in class.
+	int m_nrOfAnimComps;
+	int m_maxAnimComps;
 
-	GraphicsAnimationComponent * m_graphicsAnimationComponent;
+	int m_AnimCompIndex;
 
-	BlendingStates m_BlendState;
-	bool m_TransitionComplete;
-	
-	float m_globalTimeElapsed;
-	
-	float m_TransitionDuration;
-	float m_TransitionTimeLeft;
+	/*List with animations components*/
+	std::vector<AnimationComponent*> m_AnimComponentList;
 
-	std::vector<SkeletonTemp> m_skeletonContainer;
+	int * m_nrOfGraphicsAnimationComponents;
 
-	std::vector<const Resources::Animation::AnimationJoint*> m_animationContainer;
-
-	//std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
-
-	//std::vector<DirectX::XMFLOAT4X4> m_localTransforms;
+	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 
 public: 
-
-	AnimationHandler();
-	~AnimationHandler();
-
-	void AddAnimation(int animationState, bool isLooping, float transitionTime);
-
+	//Functions used outside the class.
+	GRAPHICSDLL_API AnimationHandler();
+	GRAPHICSDLL_API ~AnimationHandler();
+	GRAPHICSDLL_API void ShutDown();
+	GRAPHICSDLL_API void Initialize(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents);
 	GRAPHICSDLL_API void Update(float dt);
-
-	void Push(int animationState, bool isLooping, float transitionTime);
-
-	void Pop();
-
-	Resources::Model* GetAnimatedModel(int modelId);
-	Resources::Skeleton* GetSkeleton(Resources::Model* modelPtr);
-	Resources::Animation* GetAnimations(Resources::Skeleton* skeletonPtr);
-
-	float GetStartFrame(int animationState);
-	float GetEndFrame(int animationState);
-
-	void InterpolateKeys(AnimationClip animationClip, float globalTimeElapsed);
-	void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimationClip animationClip, float globalTimeElapsed, int animIndex);
-
-	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
-
-	void Blend(float secondsElapsed);
-
-	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
-
-	GraphicsAnimationComponent * GetGraphicsAnimationComponentTEMP() { return this->m_graphicsAnimationComponent; };
+	GRAPHICSDLL_API AnimationComponent* CreateAnimationComponent();
+	GRAPHICSDLL_API AnimationComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API void UpdateAnimationComponents(float dt);
+	
 private:
-	//Functions
+	//Functions only used in class.
+	void SetAnimCompIndex(int animCompIndex);
+	void CalculateFinalTransform(std::vector<DirectX::XMMATRIX> localMatrices);
+	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
+	void Blend(float secondsElapsed);
+	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
+	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
 };
-
 
 #endif
 

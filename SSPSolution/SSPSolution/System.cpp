@@ -30,6 +30,8 @@ int System::Shutdown()
 	this->m_AIHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
+	this->m_AnimationHandler->ShutDown();
+	delete this->m_AnimationHandler;
 
 	DebugHandler::instance()->Shutdown();
 
@@ -57,7 +59,7 @@ int System::Initialize()
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
@@ -92,8 +94,13 @@ int System::Initialize()
 	//Initialize the InputHandler
 	this->m_inputHandler = new InputHandler();
 	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
+
+	//Initialize the animation handler. 
+	this->m_AnimationHandler = new AnimationHandler();
+	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
+
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 
@@ -255,10 +262,8 @@ int System::Update(float deltaTime)
 		}
 	}
 
-	//Update animations here. Temp place right now.
-	//m_Anim->Update(deltaTime);
-	//m_graphicsHandler->SetTempAnimComponent((void*)m_Anim->GetAnimationComponentTEMP());
-
+	this->m_AnimationHandler->Update(deltaTime);
+	
 	
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);

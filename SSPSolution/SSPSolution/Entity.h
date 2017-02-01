@@ -4,9 +4,9 @@
 #include "Subject.h"
 #include "InputHandler.h"
 //Subject includes this for the events
-#include "../GraphicsDLL/GraphicsHandler.h"
+#include "../GraphicsDLL/GraphicsComponent.h"
 #include "../physicsDLL/PhysicsHandler.h"
-#include "../AIDLL/AIHandler.h"
+#include "../AIDLL/AIComponent.h"
 #include "ComponentHandler.h"
 class Entity :
 	public Observer
@@ -21,6 +21,7 @@ protected:
 	PhysicsComponent* m_pComp;
 	GraphicsComponent* m_gComp;
 	AIComponent* m_aiComp;
+	AnimationComponent* m_aComp;
 
 public:
 	Entity();
@@ -38,6 +39,7 @@ public:
 	PhysicsComponent* SetPhysicsComponent(PhysicsComponent* pComp);
 	GraphicsComponent* SetGraphicsComponent(GraphicsComponent* gComp);
 	AIComponent* SetAIComponent(AIComponent* aiComp);
+	AnimationComponent* SetAnimationComponent(AnimationComponent* aComp);
 	bool SetGrabbed(Entity* isGrabbedBy);
 	bool IsGrabbed();
 	int SetEntityID(int entityID);
@@ -45,6 +47,7 @@ public:
 	PhysicsComponent* GetPhysicsComponent();
 	GraphicsComponent* GetGraphicComponent();
 	AIComponent* GetAIComponent();
+	AnimationComponent* GetAnimationComponent();
 
 	bool GetGrabbed();
 	int GetEntityID();
@@ -53,7 +56,7 @@ private:
 protected:
 	void UnsafeSyncComponents();
 	//Returns 1 for correct and 0 for incorrect initialization.
-	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp = nullptr);
+	int InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp = nullptr);
 
 };
 
