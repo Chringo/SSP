@@ -505,6 +505,7 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
+	m_LightHandler->SetBuffersAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
 	RenderBoundingBoxes();
