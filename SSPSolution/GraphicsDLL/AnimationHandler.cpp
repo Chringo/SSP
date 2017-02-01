@@ -62,9 +62,18 @@ void AnimationHandler::Update(float dt)
 					}
 					else
 					{
-						/*Push the IDLE state to the stack.*/
-						//Push(PLAYER_IDLE, true, 0.5);
-						m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
+						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+						{
+							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true);
+							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+						}
+						else
+						{
+							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true);
+							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+						}
+						
 						break;
 					}
 				}
@@ -186,13 +195,13 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 		{
 			int startFrame = (int)animState->startTime;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
-
-			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
-			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
-			DirectX::XMVECTOR quat = XMLoadFloat4(&tempQuat);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[startFrame].translation[0],
+				animatedJoint.keyframes[startFrame].translation[1], animatedJoint.keyframes[startFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[startFrame].scale[0],
+				animatedJoint.keyframes[startFrame].scale[1], animatedJoint.keyframes[startFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[startFrame].quaternion[0],
+				animatedJoint.keyframes[startFrame].quaternion[1], animatedJoint.keyframes[startFrame].quaternion[2],
+				animatedJoint.keyframes[startFrame].quaternion[3] };
 
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
@@ -207,13 +216,13 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 		{
 			int endFrame = animatedJoint.keyframeCount - 1;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
-
-			DirectX::XMVECTOR trans = XMLoadFloat3(&tempTrans);
-			DirectX::XMVECTOR scale = XMLoadFloat3(&tempScale);
-			DirectX::XMVECTOR quat = XMLoadFloat4(&tempQuat);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[endFrame].translation[0],
+				animatedJoint.keyframes[endFrame].translation[1], animatedJoint.keyframes[endFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[endFrame].scale[0],
+				animatedJoint.keyframes[endFrame].scale[1], animatedJoint.keyframes[endFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[endFrame].quaternion[0],
+				animatedJoint.keyframes[endFrame].quaternion[1], animatedJoint.keyframes[endFrame].quaternion[2],
+			animatedJoint.keyframes[endFrame].quaternion[3]};
 
 			DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(scale);
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
@@ -239,20 +248,20 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
-					DirectX::XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
-					DirectX::XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
-					DirectX::XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
-					DirectX::XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
-					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
-					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
-
-					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
-					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
-					DirectX::XMVECTOR quat1 = XMLoadFloat4(&tempQuat1);
-
-					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
-					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
-					DirectX::XMVECTOR quat2 = XMLoadFloat4(&tempQuat2);
+					DirectX::XMVECTOR trans1 = { animatedJoint.keyframes[i].translation[0], 
+						animatedJoint.keyframes[i].translation[1], animatedJoint.keyframes[i].translation[2] };
+					DirectX::XMVECTOR trans2 = { animatedJoint.keyframes[i + 1].translation[0],
+						animatedJoint.keyframes[i + 1].translation[1], animatedJoint.keyframes[i + 1].translation[2] };
+					DirectX::XMVECTOR scale1 = { animatedJoint.keyframes[i].scale[0],
+						animatedJoint.keyframes[i].scale[1], animatedJoint.keyframes[i].scale[2] };
+					DirectX::XMVECTOR scale2 = { animatedJoint.keyframes[i + 1].scale[0],
+						animatedJoint.keyframes[i + 1].scale[1], animatedJoint.keyframes[i + 1].scale[2] };
+					DirectX::XMVECTOR quat1 = { animatedJoint.keyframes[i].quaternion[0],
+						animatedJoint.keyframes[i].quaternion[1], animatedJoint.keyframes[i].quaternion[2],
+						animatedJoint.keyframes[i].quaternion[3]};
+					DirectX::XMVECTOR quat2 = { animatedJoint.keyframes[i + 1].quaternion[0],
+						animatedJoint.keyframes[i + 1].quaternion[1], animatedJoint.keyframes[i + 1].quaternion[2],
+						animatedJoint.keyframes[i + 1].quaternion[3] };
 
 					DirectX::XMVECTOR lerpTrans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					DirectX::XMVECTOR lerpScale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
@@ -332,13 +341,17 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 		{
 			int startFrame = (int)m_AnimComponentList[m_AnimCompIndex]->source_State->startTime;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[startFrame].translation[0],
+				animatedJoint.keyframes[startFrame].translation[1], animatedJoint.keyframes[startFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[startFrame].scale[0],
+				animatedJoint.keyframes[startFrame].scale[1], animatedJoint.keyframes[startFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[startFrame].quaternion[0],
+				animatedJoint.keyframes[startFrame].quaternion[1], animatedJoint.keyframes[startFrame].quaternion[2],
+				animatedJoint.keyframes[startFrame].quaternion[3] };
 
-			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
-			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
-			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
+			blendKey.trans = trans;
+			blendKey.scale = scale;
+			blendKey.quat = quat;
 
 			blendKeysPerAnimation[0].push_back(blendKey);
 		}
@@ -348,13 +361,17 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 		{
 			int endFrame = animatedJoint.keyframeCount - 1;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[endFrame].translation[0],
+				animatedJoint.keyframes[endFrame].translation[1], animatedJoint.keyframes[endFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[endFrame].scale[0],
+				animatedJoint.keyframes[endFrame].scale[1], animatedJoint.keyframes[endFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[endFrame].quaternion[0],
+				animatedJoint.keyframes[endFrame].quaternion[1], animatedJoint.keyframes[endFrame].quaternion[2],
+				animatedJoint.keyframes[endFrame].quaternion[3] };
 
-			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
-			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
-			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
+			blendKey.trans = trans;
+			blendKey.scale = scale;
+			blendKey.quat = quat;
 
 			blendKeysPerAnimation[0].push_back(blendKey);
 		}
@@ -375,20 +392,20 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (sourceTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
-					DirectX::XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
-					DirectX::XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
-					DirectX::XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
-					DirectX::XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
-					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
-					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
-
-					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
-					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
-					DirectX::XMVECTOR quat1 = DirectX::XMLoadFloat4(&tempQuat1);
-
-					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
-					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
-					DirectX::XMVECTOR quat2 = DirectX::XMLoadFloat4(&tempQuat2);
+					DirectX::XMVECTOR trans1 = { animatedJoint.keyframes[i].translation[0],
+						animatedJoint.keyframes[i].translation[1], animatedJoint.keyframes[i].translation[2] };
+					DirectX::XMVECTOR trans2 = { animatedJoint.keyframes[i + 1].translation[0],
+						animatedJoint.keyframes[i + 1].translation[1], animatedJoint.keyframes[i + 1].translation[2] };
+					DirectX::XMVECTOR scale1 = { animatedJoint.keyframes[i].scale[0],
+						animatedJoint.keyframes[i].scale[1], animatedJoint.keyframes[i].scale[2] };
+					DirectX::XMVECTOR scale2 = { animatedJoint.keyframes[i + 1].scale[0],
+						animatedJoint.keyframes[i + 1].scale[1], animatedJoint.keyframes[i + 1].scale[2] };
+					DirectX::XMVECTOR quat1 = { animatedJoint.keyframes[i].quaternion[0],
+						animatedJoint.keyframes[i].quaternion[1], animatedJoint.keyframes[i].quaternion[2],
+						animatedJoint.keyframes[i].quaternion[3] };
+					DirectX::XMVECTOR quat2 = { animatedJoint.keyframes[i + 1].quaternion[0],
+						animatedJoint.keyframes[i + 1].quaternion[1], animatedJoint.keyframes[i + 1].quaternion[2],
+						animatedJoint.keyframes[i + 1].quaternion[3] };
 
 					blendKey.trans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					blendKey.scale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
@@ -422,13 +439,17 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 		{
 			int startFrame = (int)m_AnimComponentList[m_AnimCompIndex]->source_State->startTime;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[startFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[startFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[startFrame].quaternion);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[startFrame].translation[0],
+				animatedJoint.keyframes[startFrame].translation[1], animatedJoint.keyframes[startFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[startFrame].scale[0],
+				animatedJoint.keyframes[startFrame].scale[1], animatedJoint.keyframes[startFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[startFrame].quaternion[0],
+				animatedJoint.keyframes[startFrame].quaternion[1], animatedJoint.keyframes[startFrame].quaternion[2],
+				animatedJoint.keyframes[startFrame].quaternion[3] };
 
-			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
-			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
-			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
+			blendKey.trans = trans;
+			blendKey.scale = scale;
+			blendKey.quat = quat;
 
 			blendKeysPerAnimation[1].push_back(blendKey);
 		}
@@ -438,13 +459,17 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 		{
 			int endFrame = animatedJoint.keyframeCount - 1;
 
-			DirectX::XMFLOAT3 tempTrans(animatedJoint.keyframes[endFrame].translation);
-			DirectX::XMFLOAT3 tempScale(animatedJoint.keyframes[endFrame].scale);
-			DirectX::XMFLOAT4 tempQuat(animatedJoint.keyframes[endFrame].quaternion);
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[endFrame].translation[0],
+				animatedJoint.keyframes[endFrame].translation[1], animatedJoint.keyframes[endFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[endFrame].scale[0],
+				animatedJoint.keyframes[endFrame].scale[1], animatedJoint.keyframes[endFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[endFrame].quaternion[0],
+				animatedJoint.keyframes[endFrame].quaternion[1], animatedJoint.keyframes[endFrame].quaternion[2],
+				animatedJoint.keyframes[endFrame].quaternion[3] };
 
-			blendKey.trans = DirectX::XMLoadFloat3(&tempTrans);
-			blendKey.scale = DirectX::XMLoadFloat3(&tempScale);
-			blendKey.quat = DirectX::XMLoadFloat4(&tempQuat);
+			blendKey.trans = trans;
+			blendKey.scale = scale;
+			blendKey.quat = quat;
 
 			blendKeysPerAnimation[1].push_back(blendKey);
 		}
@@ -465,20 +490,20 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (targetTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
-					DirectX::XMFLOAT3 tempTrans1(animatedJoint.keyframes[i].translation);
-					DirectX::XMFLOAT3 tempTrans2(animatedJoint.keyframes[i + 1].translation);
-					DirectX::XMFLOAT3 tempScale1(animatedJoint.keyframes[i].scale);
-					DirectX::XMFLOAT3 tempScale2(animatedJoint.keyframes[i + 1].scale);
-					DirectX::XMFLOAT4 tempQuat1(animatedJoint.keyframes[i].quaternion);
-					DirectX::XMFLOAT4 tempQuat2(animatedJoint.keyframes[i + 1].quaternion);
-
-					DirectX::XMVECTOR trans1 = DirectX::XMLoadFloat3(&tempTrans1);
-					DirectX::XMVECTOR scale1 = DirectX::XMLoadFloat3(&tempScale1);
-					DirectX::XMVECTOR quat1 = DirectX::XMLoadFloat4(&tempQuat1);
-
-					DirectX::XMVECTOR trans2 = DirectX::XMLoadFloat3(&tempTrans2);
-					DirectX::XMVECTOR scale2 = DirectX::XMLoadFloat3(&tempScale2);
-					DirectX::XMVECTOR quat2 = DirectX::XMLoadFloat4(&tempQuat2);
+					DirectX::XMVECTOR trans1 = { animatedJoint.keyframes[i].translation[0],
+						animatedJoint.keyframes[i].translation[1], animatedJoint.keyframes[i].translation[2] };
+					DirectX::XMVECTOR trans2 = { animatedJoint.keyframes[i + 1].translation[0],
+						animatedJoint.keyframes[i + 1].translation[1], animatedJoint.keyframes[i + 1].translation[2] };
+					DirectX::XMVECTOR scale1 = { animatedJoint.keyframes[i].scale[0],
+						animatedJoint.keyframes[i].scale[1], animatedJoint.keyframes[i].scale[2] };
+					DirectX::XMVECTOR scale2 = { animatedJoint.keyframes[i + 1].scale[0],
+						animatedJoint.keyframes[i + 1].scale[1], animatedJoint.keyframes[i + 1].scale[2] };
+					DirectX::XMVECTOR quat1 = { animatedJoint.keyframes[i].quaternion[0],
+						animatedJoint.keyframes[i].quaternion[1], animatedJoint.keyframes[i].quaternion[2],
+						animatedJoint.keyframes[i].quaternion[3] };
+					DirectX::XMVECTOR quat2 = { animatedJoint.keyframes[i + 1].quaternion[0],
+						animatedJoint.keyframes[i + 1].quaternion[1], animatedJoint.keyframes[i + 1].quaternion[2],
+						animatedJoint.keyframes[i + 1].quaternion[3] };
 
 					blendKey.trans = DirectX::XMVectorLerp(trans1, trans2, lerpFactor);
 					blendKey.scale = DirectX::XMVectorLerp(scale1, scale2, lerpFactor);
@@ -491,6 +516,18 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 	}
 
 	m_AnimComponentList[m_AnimCompIndex]->target_Time += globalTime;
+}
+
+void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping)
+{
+	this->m_AnimComponentList[this->m_AnimCompIndex]->m_TransitionDuration = transitionDuration;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State = this->m_AnimComponentList[this->m_AnimCompIndex]->
+		animation_States->at(animationState)->GetAnimationStateData();
+	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->stateIndex = animationState;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->m_TransitionDuration = transitionDuration;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->blendFlag = blendingType;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->isLooping = isLooping;
+	
 }
 
 void AnimationHandler::Blend(float secondsElapsed)

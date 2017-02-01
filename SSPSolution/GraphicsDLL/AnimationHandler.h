@@ -84,6 +84,7 @@ private:
 	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
 	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping);
 };
 
 #endif

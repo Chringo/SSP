@@ -174,7 +174,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_AABB.ext[0] = 0.5f;
-	playerP->PC_AABB.ext[1] = 0.5f;
+	playerP->PC_AABB.ext[1] = 3.6f;
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	/*TEMP ANIM STUFF*/
@@ -672,6 +672,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					this->m_player1.SetGrabbed(ent);
 					this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+
+#ifdef _DEBUG
+					if (!this->m_player1.stateExists(PLAYER_PICKUP))
+					{
+						/*Player animation for picking up ball is set here.*/
+						this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, SMOOTH_TRANSITION, false);
+					}
+#endif // _DEBUG
+
+
 				}
 			}
 
