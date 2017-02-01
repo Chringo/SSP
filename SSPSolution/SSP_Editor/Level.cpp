@@ -485,7 +485,6 @@ void Level::Destroy()
 {
 	m_uniqueModels.clear();
 	m_ModelMap.clear();
-	m_LightMap.clear();
 	levelName = "untitled_level";
 
 	m_SpawnPoints[0].position = { 1.0f, 0.0, 0.0f };
@@ -520,6 +519,12 @@ void Level::Destroy()
 		delete container;
 	}
 	this->GetCheckpoints()->clear();
+
+	for each (Light* container in *this->GetLights())
+	{
+		delete container;
+	}
+	this->GetLights()->clear();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)

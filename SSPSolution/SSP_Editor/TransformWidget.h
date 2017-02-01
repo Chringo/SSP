@@ -63,7 +63,7 @@ public:
 
 	void UpdateOBB()
 	{
-		if (this->m_selectedContainer->type == CHECKPOINT)
+		if (this->m_selectedContainer->type == CHECKPOINT || this->m_selectedContainer->type == LIGHT)
 		{
 			m_obbCenterPosition = this->m_selectedContainer->position;
 		}

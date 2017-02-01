@@ -743,17 +743,17 @@ struct Point : Light
 	Sphere pickSphere;
 	Sphere rangeSphere;
 
-	LIGHT::Point data;
+	LIGHTING::Point data;
 	
 	Point()
 	{
-		data.color = { 0.8, 0.6, 0.6 };
-		data.falloff = { 1.0, 0.07, 0.017 };
-		data.intensity = 0.7;
+		data.color = { 0.8f, 0.6f, 0.6f };
+		data.falloff = { 1.0f, 0.07f, 0.017f };
+		data.intensity = 0.7f;
 		data.radius = 3.0f;
-		data.position = { 0.0,0.0,0.0 };
+		data.position = { 0.0f,0.0f,0.0f };
 
-		pickSphere.radius = 0.25;
+		pickSphere.radius = 0.25f;
 		rangeSphere.radius = data.radius;
 	}
 

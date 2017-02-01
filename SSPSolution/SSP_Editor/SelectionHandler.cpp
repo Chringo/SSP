@@ -44,7 +44,7 @@ void SelectionHandler::Initialize(Camera * camera,
 
 	Point * pointlight2 = new Point();
 	pointlight2->type = LIGHT;
-	pointlight1->position = { 3.0, 0.0, 0.0 };
+	pointlight2->position = { 3.0, 0.0, 0.0 };
 	pointlight2->component.worldMatrix = DirectX::XMMatrixIdentity();
 	pointlight2->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 
@@ -58,6 +58,9 @@ void SelectionHandler::Initialize(Camera * camera,
 	//testcheckbox2->internalID = 2;
 	//testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
 
+
+	//currentLevel->GetLights()->push_back(pointlight1);
+	//currentLevel->GetLights()->push_back(pointlight2);
 	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
 	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
 	//currentLevel->GetCheckpoints()->push_back(testcheckbox);
