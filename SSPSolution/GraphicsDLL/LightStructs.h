@@ -1,4 +1,4 @@
-#pragma once
+
 #ifndef GRAPHICSDLL_LIGHTSTRUCTS_H
 #define GRAPHICSDLL_LIGHTSTRUCTS_H
 #include <DirectXMath.h>
@@ -7,17 +7,8 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
-namespace LIGHT
+namespace LIGHTING
 {
-
-	enum LIGHT_BUFFER_SLOTS
-	{
-		POINTLIGHT_BUFFER = 5,
-		DIRECTIONALLIGHT_BUFFER,
-		AREALIGHT_BUFFER,
-		SPOTLIGHT_BUFFER
-
-	};
 	enum GRAPHICSDLL_API LIGHT_TYPE
 	{
 		LT_POINT,
