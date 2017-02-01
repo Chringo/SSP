@@ -15,7 +15,7 @@ DebugHandler::DebugHandler()
 
 #endif
 
-	this->ClearConsole();
+	this->m_displayDebug = false;
 	for (int i = 0; i < this->m_FRAMES_FOR_AVG; i++)
 	{
 		this->m_frameTimes[i] = 40;

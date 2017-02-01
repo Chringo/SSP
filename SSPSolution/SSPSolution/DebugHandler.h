@@ -22,6 +22,7 @@
 //Some guidelines to use the debug handler
 // -Create timers before custom values
 // -Create timer returns the id used to start and stop the timer
+// -ComponentHandler needs to be set before usage!
 
 class DebugHandler
 {
