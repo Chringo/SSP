@@ -38,6 +38,9 @@ public:
 	void SetAiming(bool isAming);
 	void SetBall(Entity* ball);
 
+	bool stateExists(int animationState);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType);
+
 	float GetSpeed();
 	DirectX::XMVECTOR GetLookDir();
 	DirectX::XMVECTOR GetUpDir();

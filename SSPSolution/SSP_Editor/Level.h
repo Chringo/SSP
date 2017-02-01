@@ -71,9 +71,13 @@ public:
 	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
 
 	const std::vector<Container*>* GetPuzzleElements(ContainerType type);
-	Button*    ConvertToButton(Container*& object);
-	Door*      ConvertToDoor  (Container*& object);
-	Container* ConvertToContainer(Container*& object); //polymorphism 
+	AiContainer* ConvertToAI(Container*& object);
+	Container*   ConvertToContainer(Container*& object); //polymorphism 
+	Button*      ConvertToButton(Container*& object);
+	Wheel*		 ConvertToWheel (Container*& object);
+	Lever*		 ConvertToLever (Container*& object);
+	Door*        ConvertToDoor  (Container*& object);
+	
 
 	
 };

@@ -20,12 +20,20 @@ struct AnimationComponent
 	/*System variables.*/
 	int active = 0;
 
+	/*Used to check if a state is either new or old.*/
+	int previousState = 1;
+
 	/*Used to play one or two animations, for blending.*/
 	Resources::Animation::AnimationState* source_State; // Always available
 	Resources::Animation::AnimationState* target_State;
 	/*The source and target local times.*/
 	float source_Time = 0.f;
 	float target_Time = 0.f;
+
+	float m_TransitionDuration = 0.f;
+	float m_TransitionTimeLeft = 0.f;
+
+	bool m_TransitionComplete = false;
 
 	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
@@ -47,14 +55,13 @@ private:
 	int m_nrOfAnimComps;
 	int m_maxAnimComps;
 
+	int m_AnimCompIndex;
+
 	/*List with animations components*/
 	std::vector<AnimationComponent*> m_AnimComponentList;
 
-	bool m_TransitionComplete;
-	float m_TransitionDuration;
-	float m_TransitionTimeLeft;
-
 	int * m_nrOfGraphicsAnimationComponents;
+
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 
 public: 
@@ -64,22 +71,19 @@ public:
 	GRAPHICSDLL_API void ShutDown();
 	GRAPHICSDLL_API void Initialize(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents);
 	GRAPHICSDLL_API void Update(float dt);
-
 	GRAPHICSDLL_API AnimationComponent* CreateAnimationComponent();
 	GRAPHICSDLL_API AnimationComponent* GetNextAvailableComponent();
-
 	GRAPHICSDLL_API void UpdateAnimationComponents(float dt);
 	
 private:
 	//Functions only used in class.
-
-	//void Push(AnimStateData animState);
-	//void Pop();
+	void SetAnimCompIndex(int animCompIndex);
 	void CalculateFinalTransform(std::vector<DirectX::XMMATRIX> localMatrices);
 	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
-	//void Blend(float secondsElapsed);
-	//void ExtractBlendingKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, AnimStateData animStateData, float globalTimeElapsed, int animIndex);
-	//void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+	void Blend(float secondsElapsed);
+	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
+	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
+	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
 };
 
 #endif
