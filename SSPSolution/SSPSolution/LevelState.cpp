@@ -1040,7 +1040,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
 		this->soundComponent2->sound = Sounds3D::MENU1_3D;
-		this->soundComponent2->pos = DirectX::XMFLOAT3(10,0,0);
+		DirectX::XMStoreFloat3(&this->soundComponent2->pos, this->m_player2.GetPhysicsComponent()->PC_pos);
 	}
 
 
@@ -1079,6 +1079,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_Key_events
 	this->m_cameraRef->Update(dt);
+
+	//Update the listner pos and direction for sound
+	DirectX::XMFLOAT3 dir;
+	DirectX::XMStoreFloat3(&dir, this->m_cameraRef->GetDirection());
+	DirectX::XMFLOAT3 up;
+	this->m_cameraRef->GetCameraUp(up);
+	this->m_cHandler->UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+	
 	return result;
 }
 

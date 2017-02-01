@@ -45,7 +45,6 @@ private:
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 	std::list<irrklang::ISound*> m_activeSounds;
-	//SoundEndReciver* endListner;
 	
 	void LoadSounds();
 
@@ -60,6 +59,7 @@ public:
 	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
 	
 	void UpdateSoundHandler();
+	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);
 	SoundComponent2D* GetSoundComponent2D();
 	SoundComponent3D* GetSoundComponent3D();
 

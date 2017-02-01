@@ -108,7 +108,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(30);
+		sp->setDefaultMinDistance(20);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -213,6 +213,17 @@ void SoundHandler::UpdateSoundHandler()
 	}
 
 #pragma endregion 3D_COMPONENT_UPDATER
+}
+
+void SoundHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
+{
+	irrklang::vec3df position(newPos.x, newPos.y, newPos.z);        // position of the listener
+	irrklang::vec3df lookDirection(newLookDir.x, newLookDir.y, newLookDir.z); // the direction the listener looks into
+	irrklang::vec3df velPerSecond(0, 0, 0);    // only relevant for doppler effects
+	irrklang::vec3df upVector(newUpVector.x, newUpVector.y, newUpVector.z);        // where 'up' is in your 3D scene
+
+	this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
+
 }
 
 SoundComponent2D * SoundHandler::GetSoundComponent2D()

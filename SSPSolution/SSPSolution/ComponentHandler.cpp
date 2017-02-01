@@ -120,6 +120,11 @@ void ComponentHandler::UpdateSoundHandler()
 {
 }
 
+void ComponentHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
+{
+	this->m_soundHandler->UpdateListnerPos(newPos, newLookDir, newUpVector);
+}
+
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
