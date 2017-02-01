@@ -61,7 +61,12 @@ void SoundHandler::Shutdown()
 	{
 		(*itr)->drop();
 	}
-	this->m_soundEngine->drop();
+
+	if (this->m_soundEngine)
+	{
+		this->m_soundEngine->drop();
+	}
+
 }
 
 void SoundHandler::LoadSounds()
