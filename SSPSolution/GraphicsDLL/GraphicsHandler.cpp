@@ -1028,6 +1028,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 					{
 						//Split this node
 						int xSplit = -1, ySplit = -1, zSplit = -1;
+						//For every contained component
 						for (int index = 0; index < containedCount; index++)
 						{
 							float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
@@ -1047,6 +1048,8 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 								zSplit = 0;
 							else
 								zSplit += (distance > 0) * 2;
+							//We have now checked the splitting of entities
+
 						}
 
 
