@@ -379,13 +379,13 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
 	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
 	SIZE_T peakPhysMemUsedByMe = pmc.PeakWorkingSetSize;
-	this->m_physRamTextComp->text = L"Physical RAM usage(current/peak): " + std::to_wstring(physMemUsedByMe / 1024 / 1024)
+	this->m_physRamTextComp->text = L"RAM usage(current/peak): " + std::to_wstring(physMemUsedByMe / 1024 / 1024)
 		+ L"/" + std::to_wstring(peakPhysMemUsedByMe / 1024 / 1024) + L" MB";
 
 	//virtual ram(pagefile) used
 	SIZE_T virtMemUsedByMe = pmc.PagefileUsage;
 	SIZE_T peakVirtMemUsedByMe = pmc.PeakPagefileUsage;
-	this->m_virtRamTextComp->text = L"Virtual RAM usage(current/peak): " + std::to_wstring(virtMemUsedByMe / 1024 / 1024)
+	this->m_virtRamTextComp->text = L"Pagefile usage(current/peak): " + std::to_wstring(virtMemUsedByMe / 1024 / 1024)
 		+ L"/" + std::to_wstring(peakVirtMemUsedByMe / 1024 / 1024) + L" MB";
 
 	//vram used
