@@ -19,25 +19,37 @@ namespace LIGHTING
 		NUM_LT
 	};
 
+	struct LightBufferData 
+	{
+		UINT NUM_POINTLIGHTS;
+		UINT NUM_AREALIGHTS;
+		UINT NUM_DIRECTIONALLIGHTS;
+		UINT NUM_SPOTLIGHTS;
+		DirectX::XMVECTOR AMBIENT_COLOR;
+
+	};
+
 	struct LightColor 
 	{
-		float b, g, r;
+		float r = 1.0f,g = 1.0f,b = 1.0f ;
+		
 	};
 	struct LightFalloff
 	{
-		float constant, linear, quadratic;
+		float constant = 1.0f, linear  =1.0f, quadratic = 1.0f;
 	};
 
 	struct GRAPHICSDLL_API Light // Any changes to these structs need to be made in the shader
 	{
+		BOOL isActive = TRUE; //This bool is 16 bit aligned
 		LightColor color;
-		float intensity;
+		float intensity = 1.0f;
 	};
 
 	struct GRAPHICSDLL_API Point : Light
 	{
 		DirectX::XMVECTOR position;
-		float radius;
+		float radius = 10.0f;
 		LightFalloff falloff;
 	};
 

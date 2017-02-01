@@ -13,7 +13,6 @@ class ConstantBufferHandler
 		CB_MATERIAL_B2,
 		CB_LIGHT_B3, 
 		CB_SKELETON_B4,
-		CB_LIGHT_B5,
 
 		CB_TYPE_COUNT
 	};
@@ -138,6 +137,7 @@ public:
 				UINT NUM_AREALIGHTS;
 				UINT NUM_DIRECTIONALLIGHTS;
 				UINT NUM_SPOTLIGHTS;
+				DirectX::XMVECTOR AMBIENT_COLOR;
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
@@ -148,11 +148,11 @@ public:
 			template <typename T>
 			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
 			{
-				p = *(cbData*)data;
+				p = *(pData*)data;
 
 
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				memcpy(mappedResource.pData, &p, sizeof(pData));
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
 
 				return 0;
