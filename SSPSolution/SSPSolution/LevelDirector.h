@@ -10,6 +10,8 @@ namespace FSMEnvironment
 	class LevelDirector
 	{
 	private:	// Variables
+		unsigned int m_directorID;
+
 		State* m_currentState;	// Current logical behaviour on the level
 		State* m_defaultState;	// Default logical behaviour for the level
 		State* m_goalState;		// A state which is the current goal for the FSM
@@ -25,6 +27,8 @@ namespace FSMEnvironment
 
 		int React(int entityID, EVENT event);//TODO: Might be moved to state
 		// Add function to attach either state or LD to an entity
+
+		unsigned int GetID() const { return this->m_directorID; }
 
 	private:	// Helper functions
 		// TODO: 

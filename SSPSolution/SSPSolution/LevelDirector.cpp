@@ -2,7 +2,10 @@
 #define SUCCESS 1
 #define FAIL 0
 
-FSMEnvironment::LevelDirector::LevelDirector(){}
+FSMEnvironment::LevelDirector::LevelDirector()
+{
+	this->m_directorID = UINT_MAX;
+}
 FSMEnvironment::LevelDirector::~LevelDirector(){}
 int FSMEnvironment::LevelDirector::Shutdown()
 {
@@ -22,6 +25,7 @@ int FSMEnvironment::LevelDirector::Initialize()
 	// TODO: Import new states from new LevelState
 #pragma region temp
 	State test;
+	test.Initialize();
 	test.stateID = 0;
 	test.timeDelay = 10;
 	test.hint1 = Hint::EXAMPLE;
@@ -39,6 +43,7 @@ int FSMEnvironment::LevelDirector::Initialize()
 		printf("%d\n", m_states[i].stateID);
 	}
 	SetDefaultState(&m_states[0]);
+	test.Initialize();
 #pragma endregion
 
 	return SUCCESS;
