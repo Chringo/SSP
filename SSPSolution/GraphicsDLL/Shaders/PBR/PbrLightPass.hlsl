@@ -28,6 +28,7 @@ cbuffer LightInfo : register(b3)
 struct PointLight //Must be 16 bit aligned!
 {
     bool isActive;
+    float3 isActivePADDING;
     float3 color;
     float intensity;
     float4 position;
@@ -187,10 +188,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++)
     {
-        if (pointlights[i].isActive == false)
-        {
-            continue;
-        }
+     // if (pointlights[i].isActive == false)
+     // {
+     //     continue;
+     // }
         //PBR variables 
        //float3 L = normalize((wPosSamp.xyz) - light[i].lightPos);
         float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));

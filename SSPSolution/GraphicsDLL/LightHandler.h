@@ -13,6 +13,19 @@
 #include "LightStructs.h"
 #include "ConstantBufferHandler.h"
 
+#ifdef _DEBUG
+#include <iostream>
+#endif
+/*
+	Author:Martin Clementson
+
+	This class handles the interaction of lights and the shaders
+
+	This assumes that the individual light data is stored elsewhere.
+	It holds pointers to arrays of each individual light type.
+	If an update to the gpu is desired. Call UpdateStructuredBuffer()
+
+*/
 namespace LIGHTING
 {
 	class GRAPHICSDLL_API LightHandler
@@ -31,15 +44,17 @@ namespace LIGHTING
 			MAX_AREALIGHT	= 11,
 			MAX_SPOTLIGHT	= 10
 		};
-
+		struct LightArray {
+			Light* dataPtr = nullptr;
+			unsigned int numItems = 0;
+		};
 		const int MAX_NUM_LIGHTS[NUM_LT]	  = { MAX_POINTLIGHTS,   MAX_DIRECTIONAL,          MAX_AREALIGHT,     MAX_SPOTLIGHT };
 		const int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
 	private:
 		LightHandler();
 		~LightHandler();
 		LightBufferData m_constBufferData;
-		std::vector<Light*> m_LightVector[NUM_LT];
-
+		LightArray m_lightData[NUM_LT];
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
 
@@ -52,9 +67,10 @@ namespace LIGHTING
 		static LightHandler* GetInstance();
 
 	public: //dataFlow
-		std::vector<LIGHTING::Light*>* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &this->m_LightVector[type]); };
+		LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };
 		bool UpdateStructuredBuffer (LIGHT_TYPE type);
 		bool SetBuffersAsActive();
+		bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 	private:
 		bool CreateStructuredBuffer (LIGHT_TYPE type);
 		bool ReleaseStructuredBuffer(LIGHT_TYPE type);

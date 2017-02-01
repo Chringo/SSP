@@ -7,20 +7,14 @@ LIGHTING::LightHandler::LightHandler()
 LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(NUM_LT); //Release all buffers
-	for (size_t i = 0; i < NUM_LT; i++)
-	{
-		for each(Light* light in m_LightVector[i]) {
-			delete light;
-		}
-	}
+	delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr;
 }
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	for (size_t i = 0; i < NUM_LT; i++)
-	{
-		m_LightVector[i].reserve(MAX_NUM_LIGHTS[i]);
-	}
+	
+	
+
 
 	this->m_gDevice			 = device;
 	this->m_gDeviceContext	 = deviceContext;
@@ -44,22 +38,24 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	pointArray[0].color.b = 0.0f;
 	pointArray[0].position = { 10.0, -9.0, -3.0 };
 	pointArray[0].intensity = 5.0f;
+	//pointArray[0].isActive = TRUE;
 
 	pointArray[1].color.r = 0.0f;
 	pointArray[1].color.g = 1.0f;
 	pointArray[1].color.b = 0.0f;
 	pointArray[1].position = { 14.0, -9.0, -3.0 };
 	pointArray[1].intensity = 5.0f;
+	//pointArray[1].isActive = TRUE;
 
 	pointArray[2].color.r = 0.0f;
 	pointArray[2].color.g = 0.0f;
 	pointArray[2].color.b = 1.0f;
 	pointArray[2].position = { 18.0, -9.0,  -3.0 };
 	pointArray[2].intensity = 5.0f;
-	for (size_t i = 0; i < 3; i++)
-	{
-		m_LightVector[LT_POINT].push_back(&pointArray[i]);
-	}
+	//pointArray[2].isActive = TRUE;
+	
+	this->SetLightData(pointArray, 3, LT_POINT);
+	
 
 	this->UpdateStructuredBuffer(LT_POINT);
 	//////////////
@@ -146,7 +142,8 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 	{
 		return false;
 	}
-
+	if (m_lightData[type].dataPtr == nullptr)
+		return false;
 	D3D11_MAPPED_SUBRESOURCE mapRes;
 	HRESULT hr = S_OK;
 
@@ -158,7 +155,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 		return false;
 	}
 
-	memcpy(mapRes.pData, (void*)m_LightVector[type].at(0), GetStructByteSize(type)*m_LightVector[type].size());
+	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
 	m_gDeviceContext->Unmap(lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
 
@@ -172,6 +169,28 @@ bool LIGHTING::LightHandler::SetBuffersAsActive()
 		m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[i], 1, &m_structuredBuffers[i]);
 	}
 	return true;
+}
+
+bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLights, LIGHT_TYPE type)
+{
+
+	if (type >= NUM_LT)
+		return false;
+	m_lightData[type].dataPtr = lightArray;
+	if (numLights > this->MAX_NUM_LIGHTS[type])
+	{
+		m_lightData[type].numItems = this->MAX_NUM_LIGHTS[type];
+#ifdef _DEBUG
+		std::cout << "The maximum lightamount has been reached for type :" << type << std::endl;
+		std::cout << "Current limit is : " << this->MAX_NUM_LIGHTS[type] << "| Your amount : " << numLights << std::endl;
+		std::cout << "Increase the maximum amount of lights available in LightHandler" << std::endl;
+#endif // _DEBUG
+		return false;
+	}
+	else {
+		m_lightData[type].numItems = numLights;
+		return true;
+	}
 }
 
 size_t LIGHTING::LightHandler::GetStructByteSize(LIGHT_TYPE type)

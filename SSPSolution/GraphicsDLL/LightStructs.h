@@ -41,7 +41,9 @@ namespace LIGHTING
 
 	struct GRAPHICSDLL_API Light // Any changes to these structs need to be made in the shader
 	{
-		BOOL isActive = TRUE; //This bool is 16 bit aligned
+		BOOL isActive = TRUE; //16 bit aligned
+
+		float padding[3];	  //16 bit aligned
 		LightColor color;
 		float intensity = 1.0f;
 	};
