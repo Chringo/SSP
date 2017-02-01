@@ -2413,6 +2413,16 @@ Header- color:rgb(48, 48, 48);
              </item>
             </widget>
            </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="ADD_Light_Button">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(129, 129, 129);</string>
+             </property>
+             <property name="text">
+              <string>ADD NEW LIGHT</string>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="0" colspan="2">
             <widget class="QStackedWidget" name="LightWindows">
              <property name="currentIndex">
@@ -2421,10 +2431,34 @@ Header- color:rgb(48, 48, 48);
              <widget class="QWidget" name="None"/>
              <widget class="QWidget" name="Point">
               <layout class="QGridLayout" name="gridLayout_9">
-               <item row="5" column="0" colspan="2">
+               <item row="11" column="0" colspan="3">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Intensity</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="2" colspan="3">
+                <widget class="QSlider" name="IntensitySlider">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
                 <widget class="QLabel" name="label_12">
                  <property name="text">
                   <string>Falloff</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>R</string>
                  </property>
                 </widget>
                </item>
@@ -2441,14 +2475,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>R</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
+               <item row="13" column="3">
                 <spacer name="verticalSpacer_6">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -2488,7 +2515,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="4" column="2" colspan="2">
+               <item row="4" column="3" colspan="2">
                 <widget class="QDoubleSpinBox" name="RadiusValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
@@ -2498,7 +2525,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="2" column="2" colspan="2">
+               <item row="2" column="3" colspan="2">
                 <widget class="QSlider" name="G_Slider">
                  <property name="maximum">
                   <number>255</number>
@@ -2511,7 +2538,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2" colspan="2">
+               <item row="1" column="3" colspan="2">
                 <widget class="QSlider" name="R_Slider">
                  <property name="maximum">
                   <number>255</number>
@@ -2524,7 +2551,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="3" column="2" colspan="2">
+               <item row="3" column="3" colspan="2">
                 <widget class="QSlider" name="B_Slider">
                  <property name="maximum">
                   <number>255</number>
@@ -2534,6 +2561,13 @@ Header- color:rgb(48, 48, 48);
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" colspan="2">
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Linear</string>
                  </property>
                 </widget>
                </item>
@@ -2550,7 +2584,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0" colspan="2">
+               <item row="9" column="0" colspan="2">
                 <widget class="QLabel" name="label_14">
                  <property name="text">
                   <string>Quadratic</string>
@@ -2558,13 +2592,6 @@ Header- color:rgb(48, 48, 48);
                 </widget>
                </item>
                <item row="7" column="0" colspan="2">
-                <widget class="QLabel" name="label_13">
-                 <property name="text">
-                  <string>Linear</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0" colspan="2">
                 <widget class="QLabel" name="label_7">
                  <property name="text">
                   <string>Constant</string>
@@ -2578,7 +2605,7 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="8" column="2">
+               <item row="9" column="3">
                 <widget class="QDoubleSpinBox" name="QuadValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
@@ -2594,7 +2621,36 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="7" column="2">
+               <item row="7" column="3">
+                <widget class="QDoubleSpinBox" name="ConstantValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="4">
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="8" column="3">
                 <widget class="QDoubleSpinBox" name="LinearValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
@@ -2613,8 +2669,34 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="6" column="2">
-                <widget class="QDoubleSpinBox" name="ConstantValue">
+               <item row="10" column="3">
+                <spacer name="verticalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="5" column="3">
+                <spacer name="verticalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="12" column="0" colspan="2">
+                <widget class="QSpinBox" name="IntensityValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
@@ -2622,38 +2704,12 @@ Header- color:rgb(48, 48, 48);
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
+                  <number>100</number>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="3">
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
               </layout>
              </widget>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QPushButton" name="ADD_Light_Button">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(129, 129, 129);</string>
-             </property>
-             <property name="text">
-              <string>ADD NEW LIGHT</string>
-             </property>
             </widget>
            </item>
           </layout>
@@ -3016,8 +3072,8 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1003</x>
-     <y>425</y>
+     <x>1132</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>992</x>
@@ -3054,6 +3110,38 @@ Header- color:rgb(48, 48, 48);
     <hint type="destinationlabel">
      <x>975</x>
      <y>395</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IntensityValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IntensitySlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>969</x>
+     <y>649</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1010</x>
+     <y>645</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IntensitySlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IntensityValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1080</x>
+     <y>647</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>974</x>
+     <y>650</y>
     </hint>
    </hints>
   </connection>

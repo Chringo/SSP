@@ -90,6 +90,35 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_wheel_resetTime,		 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_resetTime_changed(double)));
 
 #pragma endregion
+
+#pragma region Light ui elements
+
+	m_AddLightButton = ui->ADD_Light_Button;
+
+	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
+
+	m_LightIntSpinBoxes[LIntSpin::R] = ui->R_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::G] = ui->G_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::B] = ui->B_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::INTENSITY] = ui->IntensityValue;
+
+	connect(m_LightIntSpinBoxes[LIntSpin::R], SIGNAL(valueChanged(int)), this, SLOT(on_R_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::G], SIGNAL(valueChanged(int)), this, SLOT(on_G_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_B_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Intensity_changed(int)));
+
+	m_LightDoubleSpinBoxes[LFloatSpin::RADIUS] = ui->RadiusValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT] = ui->ConstantValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::LINEAR] = ui->LinearValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC] = ui->QuadValue;
+
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::RADIUS], SIGNAL(valueChanged(double)), this, SLOT(on_Radius_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT], SIGNAL(valueChanged(double)), this, SLOT(on_Constant_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::LINEAR], SIGNAL(valueChanged(double)), this, SLOT(on_Linear_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC], SIGNAL(valueChanged(double)), this, SLOT(on_Quadratic_changed(double)));
+
+
+#pragma endregion
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -646,8 +675,10 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 	((Lever*)m_selection)->interactionDistance = (float)val;
 
 }
+
 #pragma endregion
 #pragma region Trigger Functions
+
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
 	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
@@ -823,5 +854,50 @@ void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * it
 	}
 	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
 	m_eventBox->setCurrentText(hej);
+}
+#pragma endregion
+
+#pragma region Light callbacks
+void Ui::BehaviourTypeHandler::on_Light_Add_changed()
+{
+	//LevelHandler::GetInstance()->GetCurrentLevel()
+
+}
+void Ui::BehaviourTypeHandler::on_R_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val / dpi); // float value
+
+}
+void Ui::BehaviourTypeHandler::on_G_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val / dpi); // float value
+
+}
+void Ui::BehaviourTypeHandler::on_B_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val / dpi); // float value
+	
+}
+void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
+{
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val / dpi); // float value
+
+
+}
+void Ui::BehaviourTypeHandler::on_Radius_changed(double val)
+{
+}
+void Ui::BehaviourTypeHandler::on_Constant_changed(double val)
+{
+}
+void Ui::BehaviourTypeHandler::on_Linear_changed(double val)
+{
+}
+void Ui::BehaviourTypeHandler::on_Quadratic_changed(double val)
+{
 }
 #pragma endregion
