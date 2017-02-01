@@ -354,7 +354,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		//this->m_graphicsComponents[i] = nullptr;
 		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
 	}
-	this->m_LightHandler = new LightHandler;
+	this->m_LightHandler = LIGHT::LightHandler::GetInstance();
 	this->m_LightHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_shaderControl = new ShaderControl;

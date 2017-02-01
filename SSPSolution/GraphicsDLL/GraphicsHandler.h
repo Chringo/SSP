@@ -63,7 +63,7 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	UIHandler*				m_uiHandler;
-	LightHandler*			m_LightHandler;
+	LIGHT::LightHandler*			m_LightHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
 	
