@@ -4,9 +4,9 @@
 #include "Subject.h"
 #include "InputHandler.h"
 //Subject includes this for the events
-#include "../GraphicsDLL/GraphicsHandler.h"
+#include "../GraphicsDLL/GraphicsComponent.h"
 #include "../physicsDLL/PhysicsHandler.h"
-#include "../AIDLL/AIHandler.h"
+#include "../AIDLL/AIComponent.h"
 #include "ComponentHandler.h"
 class Entity :
 	public Observer
