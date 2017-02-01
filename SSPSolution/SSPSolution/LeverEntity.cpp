@@ -11,13 +11,13 @@ LeverEntity::~LeverEntity()
 {
 }
 
-int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
 	this->m_isActive = 0;
 	this->m_needSync = false;
-	this->m_range = 5.0f;
+	this->m_range = interactionDistance;
 	this->SyncComponents();
 	return result;
 }
