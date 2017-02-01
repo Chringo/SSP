@@ -47,12 +47,12 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 {
 	// Return if there are no states
 	if (this->m_states.size() == 0)
-		return SUCCESS;
+		return FAIL;
 	// Return if there are no current state or default state
 	if ( !(this->m_currentState) )
 		this->m_currentState = this->m_defaultState;
 	if ( !(this->m_currentState) )
-		return SUCCESS;
+		return FAIL;
 	
 	int oldStateID = this->m_currentState->stateID;
 	this->m_goalID = this->m_currentState->CheckTransitions();
