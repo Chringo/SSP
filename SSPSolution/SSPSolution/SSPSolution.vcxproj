@@ -180,6 +180,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Progression.cpp" />
     <ClCompile Include="StartState.cpp" />
+    <ClCompile Include="DirectorState.cpp" />
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="System.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Progression.h" />
     <ClInclude Include="StartState.h" />
+    <ClInclude Include="DirectorState.h" />
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="System.h" />
