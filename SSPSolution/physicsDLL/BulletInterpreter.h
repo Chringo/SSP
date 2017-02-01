@@ -73,6 +73,8 @@ struct PhysicsComponent
 	bool PC_NotExistInBulletWorld;
 	int PC_IndexRigidBody = -1;
 	bool PC_Bullet_AffectedByGravity = true;
+	bool PC_GotGrabbedByP1 = false;
+	bool PC_GotGrabbedByP2 = false;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -90,6 +92,7 @@ struct PhysicsComponent
 			this->PC_ApplyImpulse = true;
 			this->PC_ForceDir = dir;
 			this->PC_Power = strength;
+			this->PC_Bullet_AffectedByGravity = true;
 		}
 	}
 };
@@ -153,6 +156,8 @@ private:
 	//player specifics
 	PHYSICSDLL_API void ApplyMovementPlayer1(float dt);
 	PHYSICSDLL_API void ApplyMovementPlayer2();
+
+	PHYSICSDLL_API void ApplyImpulseOnPC(PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -174,15 +179,15 @@ public:
 	PHYSICSDLL_API void RegisterBox(int index);
 
 	//type of rigidBodies
-	void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
-	void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
-	void CreateOBB(PhysicsComponent* src,int index);
-	void CreateAABB(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
+	PHYSICSDLL_API void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
+	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src,int index);
+	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 
-	btRigidBody* GetRigidBody(int index);
+	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 
-	void SetPlayer1(PhysicsComponent* p1);
-	void SetPlayer2(PhysicsComponent* p2);
+	PHYSICSDLL_API void SetPlayer1(PhysicsComponent* p1);
+	PHYSICSDLL_API void SetPlayer2(PhysicsComponent* p2);
 
 
 };
