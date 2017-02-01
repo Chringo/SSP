@@ -662,16 +662,23 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
 					{
-						ent = this->m_dynamicEntitys.at(i);
-						break;
+						if (this->m_dynamicEntitys.at(i)->GetEntityID() == 3 || this->m_dynamicEntitys.at(i)->GetEntityID() == 4)
+						{
+							ent = this->m_dynamicEntitys.at(i);
+							break;
+						}
 					}
 
 				}
 
-				if (!ent->IsGrabbed())
+
+				if (ent != nullptr)
 				{
-					this->m_player1.SetGrabbed(ent);
-					this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+					if (!ent->IsGrabbed())
+					{
+						this->m_player1.SetGrabbed(ent);
+						this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+					}
 				}
 			}
 
@@ -827,15 +834,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
 					{
-						ent = this->m_dynamicEntitys.at(i);
-						break;
+						if (this->m_dynamicEntitys.at(i)->GetEntityID() == 3 || this->m_dynamicEntitys.at(i)->GetEntityID() == 4)
+						{
+							ent = this->m_dynamicEntitys.at(i);
+							break;
+						}
 					}
-
 				}
 
-				if (!ent->IsGrabbed())
+				if (ent != nullptr)
 				{
-					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+					if (!ent->IsGrabbed())
+						this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
 				}
 			}
 		}
