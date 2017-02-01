@@ -57,7 +57,7 @@ int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 	//init the ram usage text component
 	this->m_ramTextComp = this->compHandler->GetTextComponent();
 	this->m_ramTextComp->active = false;
-	this->m_ramTextComp->position = DirectX::XMFLOAT2(900.f, 20.f);
+	this->m_ramTextComp->position = DirectX::XMFLOAT2(1000.f, 20.f);
 	this->m_ramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	return 0;
