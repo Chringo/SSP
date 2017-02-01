@@ -20,7 +20,7 @@ public:
 	LeverEntity();
 	virtual ~LeverEntity();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);

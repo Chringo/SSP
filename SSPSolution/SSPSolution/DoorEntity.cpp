@@ -17,7 +17,10 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->m_rotateTime = rotateTime;
 	this->m_minRotation = minRotation;
 	this->m_maxRotation = maxRotation;
-	this->m_rotatePerSec = this->m_maxRotation / this->m_rotateTime;
+	float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+	this->m_minRotation += currentYRotation;
+	this->m_maxRotation += currentYRotation;
+	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
 	this->SyncComponents();
 
 	this->m_subjectStates = subjectStates;
@@ -129,4 +132,22 @@ bool DoorEntity::SetIsOpened(bool isOpened)
 bool DoorEntity::GetIsOpened()
 {
 	return this->m_isOpened;
+}
+
+bool DoorEntity::AddSubjectState(ElementState subjectState)
+{
+	bool result = true;
+	this->m_subjectStates.push_back(subjectState);
+	return result;
+}
+
+bool DoorEntity::AddSubjectState(unsigned int entityID, EVENT requiredEvent)
+{
+	bool result = true;
+	ElementState newElementState;
+	newElementState.entityID = entityID;
+	newElementState.desiredState = requiredEvent;
+	newElementState.desiredStateReached = false;
+	this->m_subjectStates.push_back(newElementState);
+	return result;
 }
