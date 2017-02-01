@@ -5,8 +5,7 @@
 DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
-	this->m_displayFPS = true;
-	this->m_displayRAM = true;
+
 	this->ClearConsole();
 	for (int i = 0; i < this->m_FRAMES_FOR_AVG; i++)
 	{
@@ -58,7 +57,7 @@ int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 	//init the ram usage text component
 	this->m_ramTextComp = this->compHandler->GetTextComponent();
 	this->m_ramTextComp->active = false;
-	this->m_ramTextComp->position = DirectX::XMFLOAT2(650.f, 20.f);
+	this->m_ramTextComp->position = DirectX::XMFLOAT2(900.f, 20.f);
 	this->m_ramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	return 0;
@@ -103,8 +102,6 @@ int DebugHandler::CreateTimer(std::wstring label)
 	}
 	timer.textComp = this->compHandler->GetTextComponent();
 	timer.label = label;
-	timer.textComp->text = label + L": [" + L"0" + L"] "
-		+ L"0" + L" [" + L"0" + L"] us, " + L"0.0" + L"%";
 	timer.textComp->active = false;
 	timer.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (this->m_timers.size() * 20.f));
 	timer.textComp->scale = DirectX::XMFLOAT2(.3f, .3f);
@@ -128,13 +125,6 @@ int DebugHandler::EndProgram()
 	return 0;
 }
 
-int DebugHandler::ShowFPS(bool show)
-{
-	this->m_displayFPS = show;
-
-	return 0;
-}
-
 int DebugHandler::ToggleDebugInfo()
 {
 	if (this->m_displayDebug)
@@ -150,6 +140,7 @@ int DebugHandler::ToggleDebugInfo()
 			iter->textComp->active = false;
 		}
 		this->m_fpsTextComp->active = false;
+		this->m_ramTextComp->active = false;
 	}
 	else 
 	{
@@ -164,6 +155,7 @@ int DebugHandler::ToggleDebugInfo()
 			iter->textComp->active = true;
 		}
 		this->m_fpsTextComp->active = true;
+		this->m_ramTextComp->active = true;
 	}
 
 	this->ClearConsole();
@@ -287,27 +279,23 @@ int DebugHandler::DisplayConsole(float dTime)
 		std::cout << std::endl;
 	}
 
-	if (this->m_displayFPS)
+	int sum = 0, avgFPS;
+	this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
+	this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
+	for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
 	{
-		int sum = 0, avgFPS;
-		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
-		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
-		for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
-		{
-			sum += this->m_frameTimes[k];
-		}
-		avgFPS = sum / this->m_FRAMES_FOR_AVG;
-		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		SetConsoleCursorPosition(console, FPSLocation);
-		std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
-		GetConsoleScreenBufferInfo(console, &screen);
-		FillConsoleOutputCharacterA(
-			console, ' ', 8, screen.dwCursorPosition, &written
-		);
-		this->m_currFrameTimesPtr++;
-		
+		sum += this->m_frameTimes[k];
 	}
+	avgFPS = sum / this->m_FRAMES_FOR_AVG;
+	this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+	this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+	SetConsoleCursorPosition(console, FPSLocation);
+	std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
+	GetConsoleScreenBufferInfo(console, &screen);
+	FillConsoleOutputCharacterA(
+		console, ' ', 8, screen.dwCursorPosition, &written
+	);
+	this->m_currFrameTimesPtr++;
 
 	COORD finishedCursonLoc = { (SHORT)0, (SHORT)(this->m_timers.size() + (size_t)nrOfCustomLabels + 1) };
 	SetConsoleCursorPosition(console, finishedCursonLoc);
@@ -347,25 +335,29 @@ int DebugHandler::DisplayOnScreen(float dTime)
 			+ std::to_wstring(this->m_values.at(j).value);
 	}
 
-	if (this->m_displayFPS)
-	{
-		int sum = 0, avgFPS;
-		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
-		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
-		for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
-		{
-			sum += this->m_frameTimes[k];
-		}
-		avgFPS = sum / this->m_FRAMES_FOR_AVG;
-		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		
-		this->m_fpsTextComp->text = L"FPS: " + std::to_wstring(avgFPS) + L" ["
-			+ std::to_wstring(this->m_minFPS) + L"] (" + std::to_wstring(this->m_frameTimes[this->m_currFrameTimesPtr])
-			+ L") [" + std::to_wstring(this->m_maxFPS) + L"]";
 
-		this->m_currFrameTimesPtr++;
+	int sum = 0, avgFPS;
+	this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
+	this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
+	for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
+	{
+		sum += this->m_frameTimes[k];
 	}
+	avgFPS = sum / this->m_FRAMES_FOR_AVG;
+	this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+	this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+		
+	this->m_fpsTextComp->text = L"FPS: " + std::to_wstring(avgFPS) + L" ["
+		+ std::to_wstring(this->m_minFPS) + L"] (" + std::to_wstring(this->m_frameTimes[this->m_currFrameTimesPtr])
+		+ L") [" + std::to_wstring(this->m_maxFPS) + L"]";
+
+	this->m_currFrameTimesPtr++;
+
+	PROCESS_MEMORY_COUNTERS pmc;
+	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+	this->m_ramTextComp->text = L"RAM usage: " + std::to_wstring(physMemUsedByMe / 1000000)
+		+ L" MB";
 
 	return 1;
 }

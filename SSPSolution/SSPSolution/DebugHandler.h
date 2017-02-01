@@ -61,11 +61,10 @@ private:
 	TextComponent* m_fpsTextComp;
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
-	bool m_displayFPS;
-	bool m_displayRAM;
 	bool m_displayDebug;
 	ComponentHandler* compHandler;
 	TextComponent* m_ramTextComp;
+	DWORDLONG m_totalPhysMem;
 
 	//int lol; //Needed to prevent heap corruption, don't ask why
 
@@ -92,7 +91,6 @@ public:
 
 	int StartProgram(); // Needed at start of program to show timer %
 	int EndProgram(); // Needed at end of program to show timer %
-	int ShowFPS(bool show);
 	int ToggleDebugInfo();
 
 	int CreateCustomLabel(std::wstring label, float value); //returns label ID, -1 fail
