@@ -9,6 +9,10 @@
 #include <string>
 #include "ComponentHandler.h"
 
+//Some guidelines to use the debug handler
+// -Create timers before custom values
+// -Create timer returns the id used to start and stop the timer
+
 class DebugHandler
 {
 private:
