@@ -40,9 +40,9 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 	return &m_ModelMap;
 }
 
-std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
+std::vector<Light*>* Level::GetLights()
 {
-	return &m_LightMap;
+	return &m_lights;
 }
 
 std::vector<CheckpointContainer*>* Level::GetCheckpoints()

@@ -69,6 +69,8 @@ private:
 	PhysicsHandler* m_PhysicsHandler;
 	std::vector<Resources::Model*>* m_modelPtr;
 	std::vector<CheckpointContainer*>* m_checkpointPtr;
+	std::vector<Light*>* m_lightPtr;
+
 
 	bool m_IsDirty = true;
 	PickRay m_ray;

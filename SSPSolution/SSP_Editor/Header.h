@@ -732,9 +732,33 @@ public:
 		this->isDirty = true;
 	}
 };
-struct SelectionLists
+
+struct Light : Container
 {
-	std::vector<Resources::Model*>* modelPtr;
-	std::vector<CheckpointContainer*>* checkpointPtr;
-	//std::vector<Lights*>* lightsPtr;
+
+};
+
+struct Point : Light
+{
+	Sphere pickSphere;
+	Sphere rangeSphere;
+
+	LIGHT::Point data;
+	
+	Point()
+	{
+		data.color = { 0.8, 0.6, 0.6 };
+		data.falloff = { 1.0, 0.07, 0.017 };
+		data.intensity = 0.7;
+		data.radius = 3.0f;
+		data.position = { 0.0,0.0,0.0 };
+
+		pickSphere.radius = 0.25;
+		rangeSphere.radius = data.radius;
+	}
+
+	void Update()
+	{
+		
+	};
 };

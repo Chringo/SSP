@@ -2811,6 +2811,23 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 	return true;
 }
 
+PHYSICSDLL_API bool PhysicsHandler::IntersectRaySphere(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const Sphere & obj, const DirectX::XMVECTOR & pos, float & distanceToOBB)
+{
+	DirectX::XMVECTOR p = DirectX::XMVectorSubtract(rayOrigin, pos);
+	float r2 = obj.radius * obj.radius;
+	float PDotD = DirectX::XMVector3Dot(p, rayDir).m128_f32[0];
+	float PDotP = DirectX::XMVector3Dot(p, p).m128_f32[0];
+
+	if (PDotD > 0 || PDotP < r2)
+		return false;
+
+
+
+
+
+	return PHYSICSDLL_API bool();
+}
+
 Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB* & obb)
 {
 	this->m_fields.push_back(Field());
