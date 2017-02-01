@@ -65,6 +65,12 @@ int LevelState::ShutDown()
 		this->m_buttonEntities[i] = nullptr;
 	}
 	this->m_buttonEntities.clear();
+	for (size_t i = 0; i < this->m_leverEntities.size(); i++)
+	{
+		delete this->m_leverEntities[i];
+		this->m_leverEntities[i] = nullptr;
+	}
+	this->m_leverEntities.clear();
 	for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
 	{
 		delete this->m_wheelEntities[i];
@@ -1004,25 +1010,31 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	for (int i = 0; i < this->m_leverEntities.size(); i++)
 	{
 		LeverEntity* lP = this->m_leverEntities.at(i);
-		if (lP->GetSyncState() != nullptr)
+		LeverSyncState* leverSync = lP->GetSyncState();
+		if (leverSync != nullptr)
 		{
-			this->m_networkModule->SendStateLeverPacket(lP->GetEntityID(), lP->GetSyncState()->isActive);
+			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
+			delete leverSync;
 		}
 	}
 	for (int i = 0; i < this->m_buttonEntities.size(); i++)
 	{
 		ButtonEntity* bP = this->m_buttonEntities.at(i);
-		if (bP->GetSyncState() != nullptr)
+		ButtonSyncState* buttonSync = bP->GetSyncState();
+		if (buttonSync != nullptr)
 		{
-			this->m_networkModule->SendStateButtonPacket(bP->GetEntityID(), bP->GetSyncState()->isActive);
+			this->m_networkModule->SendStateButtonPacket(buttonSync->entityID, buttonSync->isActive);
+			delete buttonSync;
 		}
 	}
 	for (int i = 0; i < this->m_wheelEntities.size(); i++)
 	{
 		WheelEntity* wP = this->m_wheelEntities.at(i);
-		if (wP->GetSyncState() != nullptr)
+		WheelSyncState* wheelSync = wP->GetSyncState();
+		if (wheelSync != nullptr)
 		{
-			this->m_networkModule->SendStateWheelPacket(wP->GetEntityID(), wP->GetSyncState()->rotationState, wP->GetSyncState()->rotationAmount);
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
 		}
 	}
 
@@ -1322,6 +1334,7 @@ m_dynamicEntitys.push_back(tde);
 	}
 
 	//Create the PuzzleElements
+#pragma region
 	//Create the Buttons
 	for (size_t i = 0; i < data->numButton; i++)
 	{
@@ -1331,10 +1344,14 @@ m_dynamicEntitys.push_back(tde);
 		//Create world matrix from data
 		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		//Convert the useless values into proper system supported radians. Glorious.
+		rot = DirectX::XMVectorSet(DirectX::XMConvertToRadians(DirectX::XMVectorGetX(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetY(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetZ(rot)), 1.0f);
 		translate = DirectX::XMMatrixTranslationFromVector(pos);
-		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
-		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
-		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(rot.m128_f32[1]);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(rot.m128_f32[0]);
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(rot.m128_f32[2]);
+		//Should just use this function instead of a bunch
+		//DirectX::waa(rot);
 		//Create the rotation matrix
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
@@ -1348,25 +1365,30 @@ m_dynamicEntitys.push_back(tde);
 		PhysicsComponent* button1P = m_cHandler->GetPhysicsComponent();
 		button1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
 		button1P->PC_pos = pos;														//Set Position
-		button1P->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);					//Set Rotation
+		button1P->PC_rotation = rot;												//Set Rotation
 		button1P->PC_is_Static = true;												//Set IsStatic
 		button1P->PC_active = true;													//Set Active
 		button1P->PC_gravityInfluence = 1.0f;
 		button1P->PC_mass = 5;
-
-
-
-		st = Resources::ResourceHandler::GetInstance()->GetModel(tempHeader.modelID, modelPtr);
+		button1P->PC_friction = 0.00f;
+		button1P->PC_collides = true;
+		button1P->PC_elasticity = 0.2f;
+		button1P->PC_steadfast = true;
+		//DirectX::XMQuaternionRotationMatrix
 
 		//Copy the bounding volume data from the model into the physics component for reference
-		button1P->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
-		button1P->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
-		button1P->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
+		button1P->PC_AABB.ext[0] = button1G->modelPtr->GetOBBData().extension[0];
+		button1P->PC_AABB.ext[1] = button1G->modelPtr->GetOBBData().extension[1];
+		button1P->PC_AABB.ext[2] = button1G->modelPtr->GetOBBData().extension[2];
+		button1P->PC_OBB.ext[0] = button1P->PC_AABB.ext[0] * 2.0f;
+		button1P->PC_OBB.ext[1] = button1P->PC_AABB.ext[1] * 2.0f;
+		button1P->PC_OBB.ext[2] = button1P->PC_AABB.ext[2] * 2.0f;
 
 
-		button1P->PC_BVtype = BV_AABB;
+		button1P->PC_BVtype = BV_OBB;
 		//Check for rotation, if found then set the bounding volume to OBB
-		if (abs(tempHeader.rotation[0]) > 0.00000000001f && abs(tempHeader.rotation[1]) > 0.00000000001f && abs(tempHeader.rotation[2]) > 0.00000000001f)
+		float ignoreIfLess = 0.0000000001f;
+		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
 		{
 			//There is a rotation
 			button1P->PC_BVtype = BV_OBB;
@@ -1375,19 +1397,458 @@ m_dynamicEntitys.push_back(tde);
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
 			button1P->PC_AABB.ext[1] , button1P->PC_AABB.ext[2] }, rotate);
+		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
+		button1P->PC_OBB.ort = rotate;
 
-		button1P->PC_OBB.ext[0] = 0.5f;
-		button1P->PC_OBB.ext[1] = 0.5f;
-		button1P->PC_OBB.ext[2] = 0.5f;
+
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		button1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		tempEntity->Initialize(616, button1P, button1G, 2.0f);
+		tempEntity->Initialize(tempHeader.EntityID, button1P, button1G, tempHeader.interactionDistance + 2.0f);
 		this->m_buttonEntities.push_back(tempEntity);
 	}
 	//Create the levers
+	for (size_t i = 0; i < data->numLever; i++)
+	{
+		LevelData::LeverHeader tempHeader = data->levers[i];
+		LeverEntity* tempEntity = new LeverEntity();
+
+		//Create world matrix from data
+		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+																		  //Convert the useless values into proper system supported radians. Glorious.
+		rot = DirectX::XMVectorSet(DirectX::XMConvertToRadians(DirectX::XMVectorGetX(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetY(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetZ(rot)), 1.0f);
+		translate = DirectX::XMMatrixTranslationFromVector(pos);
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(rot.m128_f32[1]);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(rot.m128_f32[0]);
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(rot.m128_f32[2]);
+		//Should just use this function instead of a bunch
+		//DirectX::waa(rot);
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+
+		GraphicsComponent* lever1G = m_cHandler->GetGraphicsComponent();
+		lever1G->active = true;
+		lever1G->modelID = tempHeader.modelID;
+		lever1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+		resHandler->GetModel(lever1G->modelID, lever1G->modelPtr);
+		PhysicsComponent* lever1P = m_cHandler->GetPhysicsComponent();
+		lever1P->PC_entityID = tempHeader.EntityID;									//Set Entity ID
+		lever1P->PC_pos = pos;														//Set Position
+		lever1P->PC_rotation = rot;													//Set Rotation
+		lever1P->PC_is_Static = true;												//Set IsStatic
+		lever1P->PC_active = true;													//Set Active
+		lever1P->PC_gravityInfluence = 1.0f;
+		lever1P->PC_mass = 5;
+		lever1P->PC_friction = 0.00f;
+		lever1P->PC_collides = true;
+		lever1P->PC_elasticity = 0.2f;
+		lever1P->PC_steadfast = true;
+		//DirectX::XMQuaternionRotationMatrix
+
+		//Copy the bounding volume data from the model into the physics component for reference
+		lever1P->PC_AABB.ext[0] = lever1G->modelPtr->GetOBBData().extension[0];
+		lever1P->PC_AABB.ext[1] = lever1G->modelPtr->GetOBBData().extension[1];
+		lever1P->PC_AABB.ext[2] = lever1G->modelPtr->GetOBBData().extension[2];
+		lever1P->PC_OBB.ext[0] = lever1P->PC_AABB.ext[0] * 2.0f;
+		lever1P->PC_OBB.ext[1] = lever1P->PC_AABB.ext[1] * 2.0f;
+		lever1P->PC_OBB.ext[2] = lever1P->PC_AABB.ext[2] * 2.0f;
+
+
+		lever1P->PC_BVtype = BV_OBB;
+
+		//Calculate the actual OBB extension
+		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ lever1P->PC_AABB.ext[0],
+			lever1P->PC_AABB.ext[1] , lever1P->PC_AABB.ext[2] }, rotate);
+		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
+		lever1P->PC_OBB.ort = rotate;
+
+
+		lever1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+		lever1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		lever1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+		tempEntity->Initialize(tempHeader.EntityID, lever1P, lever1G, tempHeader.interactionDistance);
+		this->m_leverEntities.push_back(tempEntity);
+	}
 	//Create the Wheels
+	for (size_t i = 0; i < data->numWheel; i++)
+	{
+		LevelData::WheelHeader tempHeader = data->wheels[i];
+		WheelEntity* tempEntity = new WheelEntity();
+
+		//Create world matrix from data
+		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+																		  //Convert the useless values into proper system supported radians. Glorious.
+		rot = DirectX::XMVectorSet(DirectX::XMConvertToRadians(DirectX::XMVectorGetX(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetY(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetZ(rot)), 1.0f);
+		translate = DirectX::XMMatrixTranslationFromVector(pos);
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(rot.m128_f32[1]);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(rot.m128_f32[0]);
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(rot.m128_f32[2]);
+		//Should just use this function instead of a bunch
+		//DirectX::waa(rot);
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+
+		GraphicsComponent* wheel1G = m_cHandler->GetGraphicsComponent();
+		wheel1G->active = true;
+		wheel1G->modelID = tempHeader.modelID;
+		wheel1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+		resHandler->GetModel(wheel1G->modelID, wheel1G->modelPtr);
+		PhysicsComponent* wheel1P = m_cHandler->GetPhysicsComponent();
+		wheel1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
+		wheel1P->PC_pos = pos;														//Set Position
+		wheel1P->PC_rotation = rot;												//Set Rotation
+		wheel1P->PC_is_Static = true;												//Set IsStatic
+		wheel1P->PC_active = true;													//Set Active
+		wheel1P->PC_gravityInfluence = 1.0f;
+		wheel1P->PC_mass = 5;
+		wheel1P->PC_friction = 0.00f;
+		wheel1P->PC_collides = true;
+		wheel1P->PC_elasticity = 0.2f;
+		wheel1P->PC_steadfast = true;
+		//DirectX::XMQuaternionRotationMatrix
+
+		//Copy the bounding volume data from the model into the physics component for reference
+		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+
+
+		wheel1P->PC_BVtype = BV_OBB;
+		//Check for rotation, if found then set the bounding volume to OBB
+		float ignoreIfLess = 0.0000000001f;
+		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
+		{
+			//There is a rotation
+			wheel1P->PC_BVtype = BV_OBB;
+		}
+
+		//Calculate the actual OBB extension
+		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ wheel1P->PC_AABB.ext[0],
+			wheel1P->PC_AABB.ext[1] , wheel1P->PC_AABB.ext[2] }, rotate);
+		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
+		wheel1P->PC_OBB.ort = rotate;
+
+
+		wheel1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+		wheel1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		wheel1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime < 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
+		this->m_wheelEntities.push_back(tempEntity);
+	}
 	//Create the doors
+	for (size_t i = 0; i < data->numDoor; i++)
+	{
+		LevelData::DoorHeader tempHeader = data->doors[i];
+		DoorEntity* tempEntity = new DoorEntity();
+
+		//Create world matrix from data
+		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+		memcpy(rot.m128_f32, tempHeader.rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
+																		  //Convert the useless values into proper system supported radians. Glorious.
+		//Convert the useless values into proper system supported radians. Glorious.
+		rot = DirectX::XMVectorSet(DirectX::XMConvertToRadians(DirectX::XMVectorGetX(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetY(rot)), DirectX::XMConvertToRadians(DirectX::XMVectorGetZ(rot)), 1.0f);
+		translate = DirectX::XMMatrixTranslationFromVector(pos);
+		/*DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(rot.m128_f32[1]);
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(rot.m128_f32[0]);
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(rot.m128_f32[2]);*/
+		//Should just use this function instead of a bunch
+		
+		//Create the rotation matrix
+		/*DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);*/
+		rotate = DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMVectorSet(DirectX::XMVectorGetX(rot), DirectX::XMVectorGetY(rot), DirectX::XMVectorGetZ(rot), 1.0f));
+		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+
+		GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
+		door1G->active = true;
+		door1G->modelID = tempHeader.modelID;
+		door1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+		resHandler->GetModel(door1G->modelID, door1G->modelPtr);
+		PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
+		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
+		door1P->PC_pos = pos;														//Set Position
+		door1P->PC_rotation = rot;												//Set Rotation
+		door1P->PC_is_Static = true;												//Set IsStatic
+		door1P->PC_active = true;													//Set Active
+		door1P->PC_gravityInfluence = 1.0f;
+		door1P->PC_mass = 5;
+		door1P->PC_friction = 0.00f;
+		door1P->PC_collides = true;
+		door1P->PC_elasticity = 0.2f;
+		door1P->PC_steadfast = true;
+		//DirectX::XMQuaternionRotationMatrix
+
+		//Copy the bounding volume data from the model into the physics component for reference
+		door1P->PC_AABB.ext[0] = door1G->modelPtr->GetOBBData().extension[0];
+		door1P->PC_AABB.ext[1] = door1G->modelPtr->GetOBBData().extension[1];
+		door1P->PC_AABB.ext[2] = door1G->modelPtr->GetOBBData().extension[2];
+		door1P->PC_OBB.ext[0] = door1P->PC_AABB.ext[0] * 2.0f;
+		door1P->PC_OBB.ext[1] = door1P->PC_AABB.ext[1] * 2.0f;
+		door1P->PC_OBB.ext[2] = door1P->PC_AABB.ext[2] * 2.0f;
+
+		door1P->PC_BVtype = BV_OBB;
+
+		door1P->PC_OBB.ort = rotate;
+
+		std::vector<ElementState> subjectStates;
+		tempEntity->Initialize(tempHeader.EntityID, door1P, door1G, subjectStates, tempHeader.rotateTime);
+		this->m_doorEntities.push_back(tempEntity);
+	}
+#pragma endregion Create puzzle entities
+
+	//Connect puzzle entities
+#pragma region
+	//Connect Doors to other things
+	for (size_t i = 0; i < data->numDoor; i++)
+	{
+		LevelData::DoorHeader tempHeader = data->doors[i];
+		DoorEntity* toConnect = nullptr;
+		//Find our door and save it in doorToConnect
+		for (std::vector<DoorEntity*>::iterator observer = this->m_doorEntities.begin(); observer != this->m_doorEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == tempHeader.EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			//If we found our connection, add it to the doors list
+			if (foundConnection)
+			{
+				toConnect->AddSubjectState(connectionID, EVENT(tempHeader.Listener.Event[connectionIndex]));
+			}
+		}
+	}
+	//Connect Buttons to other things
+	for (size_t i = 0; i < data->numButton; i++)
+	{
+		LevelData::ButtonHeader tempHeader = data->buttons[i];
+		ButtonEntity* toConnect = nullptr;
+		//Find our door and save it in doorToConnect
+		for (std::vector<ButtonEntity*>::iterator observer = this->m_buttonEntities.begin(); observer != this->m_buttonEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == tempHeader.EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+		}
+	}
+	//Connect Levers to other things
+	for (size_t i = 0; i < data->numLever; i++)
+	{
+		LevelData::LeverHeader tempHeader = data->levers[i];
+		LeverEntity* toConnect = nullptr;
+		//Find our door and save it in doorToConnect
+		for (std::vector<LeverEntity*>::iterator observer = this->m_leverEntities.begin(); observer != this->m_leverEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == tempHeader.EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+		}
+	}
+	//Connect Wheels to other things
+	for (size_t i = 0; i < data->numLever; i++)
+	{
+		LevelData::WheelHeader tempHeader = data->wheels[i];
+		WheelEntity* toConnect = nullptr;
+		//Find our door and save it in doorToConnect
+		for (std::vector<WheelEntity*>::iterator observer = this->m_wheelEntities.begin(); observer != this->m_wheelEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == tempHeader.EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+		}
+	}
+#pragma endregion Connect puzzle entities
 
 	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
