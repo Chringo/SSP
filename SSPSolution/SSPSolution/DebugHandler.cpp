@@ -308,6 +308,10 @@ int DebugHandler::DisplayConsole(float dTime)
 
 int DebugHandler::DisplayOnScreen(float dTime)
 {
+	if (!this->m_displayDebug)
+	{
+		return 0;
+	}
 	std::vector<Timer>::iterator iter;
 	unsigned int time;
 	int i;
@@ -324,7 +328,7 @@ int DebugHandler::DisplayOnScreen(float dTime)
 
 		iter->textComp->text = iter->label + L": [" + std::to_wstring(iter->minTime) + L"] "
 			+ std::to_wstring(time) + L" [" + std::to_wstring(iter->maxTime) + L"] us, "
-			+ std::to_wstring((float)((time / (float)elapsedTime.QuadPart) * 100)) + L"%";
+			+ std::to_wstring((int)((time / (float)elapsedTime.QuadPart) * 100)) + L"%";
 	}
 
 	int nrOfCustomLabels = this->m_values.size();
@@ -354,7 +358,7 @@ int DebugHandler::DisplayOnScreen(float dTime)
 		this->m_currFrameTimesPtr++;
 	}
 
-	return 0;
+	return 1;
 }
 
 void DebugHandler::Shutdown()

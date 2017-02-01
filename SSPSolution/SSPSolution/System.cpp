@@ -30,9 +30,9 @@ int System::Shutdown()
 	this->m_AIHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
-#ifdef _DEBUG
+
 	DebugHandler::instance()->Shutdown();
-#endif
+
 	/*Delete animation class ptr here.*/
 	//delete this->m_Anim;
 
@@ -99,12 +99,12 @@ int System::Initialize()
 
 
 	//this->m_Anim = new Animation();
-#ifdef _DEBUG
+
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
 	DebugHandler::instance()->CreateTimer(L"Update");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
-#endif
+
 
 	return result;
 }
@@ -119,9 +119,8 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
-#ifdef _DEBUG
 		DebugHandler::instance()->StartProgram();
-#endif
+
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -147,7 +146,6 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
-#ifdef _DEBUG
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
 		{
 			DebugHandler::instance()->ToggleDebugInfo();
@@ -160,7 +158,6 @@ int System::Run()
 
 		DebugHandler::instance()->EndProgram();
 		DebugHandler::instance()->DisplayOnScreen((float)elapsedTime.QuadPart);
-#endif
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();
@@ -173,9 +170,9 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-#ifdef _DEBUG
+
 	DebugHandler::instance()->StartTimer(0);
-#endif
+
 	int result = 1;
 
 
@@ -263,16 +260,16 @@ int System::Update(float deltaTime)
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 
 
-#ifdef _DEBUG
+
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance()->EndTimer(0);
 	//Render
 	DebugHandler::instance()->StartTimer(1);
-#endif
+
 	this->m_graphicsHandler->Render(deltaTime);
-#ifdef _DEBUG
+
 	DebugHandler::instance()->EndTimer(1);
-#endif
+
 	return result;
 }
 
