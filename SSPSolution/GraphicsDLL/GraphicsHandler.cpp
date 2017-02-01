@@ -343,6 +343,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -361,7 +362,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
-	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 
 	//this->m_CreateTempsTestComponents();
@@ -390,6 +390,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render(float deltaTime)
 {
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+
 	this->m_d3dHandler->ClearBlendState();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
@@ -423,7 +424,7 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 		
 	}
-	
+	m_LightHandler->SetBuffersAsActive();
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
