@@ -1,6 +1,5 @@
 #ifndef SSPAPPLICATION_AI_LEVELDIRECTOR_H
 #define SSPAPPLICATION_AI_LEVELDIRECTOR_H
-#include "ComponentStructs.h" // EVENT Handling in the function LevelDirector::React
 #include "Observer.h"
 #include <vector>
 //INCLUDE sound component or handler 
