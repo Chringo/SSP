@@ -158,6 +158,7 @@ private:
 	PHYSICSDLL_API void ApplyMovementPlayer2();
 
 	PHYSICSDLL_API void ApplyImpulseOnPC(PhysicsComponent* src);
+	PHYSICSDLL_API void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	

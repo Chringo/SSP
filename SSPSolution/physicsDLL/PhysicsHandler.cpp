@@ -1749,7 +1749,10 @@ void PhysicsHandler::Update(float deltaTime)
 
 	//sync positions with bullet world
 
+
+	this->m_bullet.UpdateBulletEngine(dt);
 	int size = this->m_physicsComponents.size();
+	
 	for (int i = 0; i < size; i++)
 	{
 		this->m_bullet.Update(this->GetDynamicComponentAt(i), i, dt);
@@ -1757,12 +1760,10 @@ void PhysicsHandler::Update(float deltaTime)
 
 	int nrOfChainLinks = this->m_links.size();
 	
-	for (int i = 0; i < nrOfChainLinks; i++)
-	{
-		this->DoChainPhysics(&this->m_links.at(i), dt);
-	}
-
-	this->m_bullet.UpdateBulletEngine(dt);
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->DoChainPhysics(&this->m_links.at(i), dt);
+	//}
 
 	//for (int i = 0; i < nrOfChainLinks; i++)
 	//{

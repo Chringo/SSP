@@ -43,8 +43,15 @@ PHYSICSDLL_API void BulletInterpreter::ApplyMovementPlayer1(float dt)
 	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
 	btVector3 OldVelocity = rb->getLinearVelocity();
 	btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
+	int active = rb->getActivationState();
+
 	//newVel /= 100;
-	
+	if (active != 1)
+	{
+		//sleep is for the weak
+		rb->setActivationState(1);
+	}
+
 	if (newVel.isZero() == false)
 	{
 		newVel = OldVelocity + newVel;
@@ -61,12 +68,13 @@ PHYSICSDLL_API void BulletInterpreter::ApplyImpulseOnPC(PhysicsComponent * src)
 {
 	this->SyncPosWithBullet(src);
 
+
 	btVector3 force;
 	btVector3 posAffectedByForce;
 
 
 	force = this->crt_xmvecVec3(src->PC_ForceDir);
-	force.normalize();
+	force = force.normalize();
 	//force = btVector3(0, 1, 1);
 
 	force *= src->PC_Power;
@@ -74,12 +82,38 @@ PHYSICSDLL_API void BulletInterpreter::ApplyImpulseOnPC(PhysicsComponent * src)
 
 	btRigidBody* holder = nullptr;
 	holder = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+
+	holder->setActivationState(1);
+	
+	//holder->clearForces();
 	holder->applyImpulse(force, posAffectedByForce);
 
 	src->PC_ForceDir = DirectX::XMVectorSet(0, 0, 0, 0);
 	src->PC_Power = 0;
 	src->PC_ApplyImpulse = false;
 	src->PC_Bullet_AffectedByGravity = true;
+}
+
+PHYSICSDLL_API void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsComponent * src)
+{
+	btTransform trans;
+
+	//get the position in the Bullet world
+	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
+	btVector3 origin = trans.getOrigin();
+
+	//update PhysicsComponent
+	src->PC_pos = this->crt_Vec3XMVEc(origin);
+
+
+	if (src->PC_BVtype == BV_OBB)
+	{
+		//convert the position to xmvector 
+		btQuaternion rotation = trans.getRotation();
+		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
+
+		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
+	}
 }
 
 BulletInterpreter::BulletInterpreter()
@@ -133,7 +167,11 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 {
 	//time will act on the objects
 
-	this->m_dynamicsWorld->stepSimulation(1.0f/30.0f);
+	this->m_dynamicsWorld->stepSimulation(dt);
+
+	//update positions
+	this->ApplyMovementPlayer1(dt);
+	//this->ApplyMovementPlayer2();
 	
 }
 
@@ -141,57 +179,40 @@ void BulletInterpreter::Update(PhysicsComponent * src, int index, float dt)
 {
 	DirectX::XMVECTOR result;
 
-	btTransform trans;
 
 	if (src->PC_ApplyImpulse == true)
 	{
+		//not here
 		this->ApplyImpulseOnPC(src);
 	}
 
-	//update positions
-	this->ApplyMovementPlayer1(dt);
-	this->ApplyMovementPlayer2();
-
 	if (src->PC_IndexRigidBody != -1)
 	{
-
-		//get the position in the Bullet world
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
-		btVector3 origin = trans.getOrigin();
-
-		//update PhysicsComponent
-		src->PC_pos = this->crt_Vec3XMVEc(origin);
-
-
-		if (src->PC_BVtype == BV_OBB)
-		{
-			//convert the position to xmvector 
-			btQuaternion rotation = trans.getRotation();
-			DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
-
-			src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
-
-			//do graphics component update aswell atleast try it and see result
-		}
-		
+		this->UpdatePhysicsComponentTransformWithBullet(src);
 	}
 
-	//}
 	if (src->PC_Bullet_AffectedByGravity == false)
 	{
 		this->SyncPosWithBullet(src);
 		//if the gravity influence is zero, the component will not be affected by gravity
 		//this->m_rigidBodies.at(index)->clearForces();
-		this->m_rigidBodies.at(index)->setGravity(btVector3(0,0,0));
-		this->m_rigidBodies.at(index)->setCollisionFlags(1);
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setAngularVelocity(btVector3(0, 0, 0));
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(btVector3(0,0,0));
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(1);
 		
+		src->PC_active = false;
 	}
 	else
 	{
-		btRigidBody* debug = this->m_rigidBodies.at(index);
-		this->m_rigidBodies.at(index)->setCollisionFlags(0);
+		if (src->PC_IndexRigidBody == 2)
+		{
+			btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+		}
+		src->PC_active = true;
+		btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(0);
 		
-		this->m_rigidBodies.at(index)->setGravity(this->m_GravityAcc);
+		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(this->m_GravityAcc);
 	}
 
 	//player movement
