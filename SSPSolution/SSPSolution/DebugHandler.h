@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <Windows.h>
+#include <Psapi.h>
 #include <string>
 #include "ComponentHandler.h"
 
@@ -44,7 +45,7 @@ private:
 	};
 
 	// How many frames to use for average fps
-	const static int m_FRAMES_FOR_AVG = 100;
+	const static int m_FRAMES_FOR_AVG = 50;
 
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
@@ -57,8 +58,10 @@ private:
 	LARGE_INTEGER m_programStart;
 	LARGE_INTEGER m_programEnd;
 	bool m_displayFPS;
+	bool m_displayRAM;
 	bool m_displayDebug;
 	ComponentHandler* compHandler;
+	TextComponent* m_ramTextComp;
 
 	//int lol; //Needed to prevent heap corruption, don't ask why
 

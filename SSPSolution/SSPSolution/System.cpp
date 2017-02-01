@@ -102,6 +102,7 @@ int System::Initialize()
 
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
 	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 
@@ -175,8 +176,11 @@ int System::Update(float deltaTime)
 
 	int result = 1;
 
+	DebugHandler::instance()->StartTimer(1);
 
 	this->m_physicsHandler.Update(deltaTime);
+
+	DebugHandler::instance()->EndTimer(1);
 
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
@@ -264,11 +268,11 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance()->EndTimer(0);
 	//Render
-	DebugHandler::instance()->StartTimer(1);
+	DebugHandler::instance()->StartTimer(2);
 
 	this->m_graphicsHandler->Render(deltaTime);
 
-	DebugHandler::instance()->EndTimer(1);
+	DebugHandler::instance()->EndTimer(2);
 
 	return result;
 }

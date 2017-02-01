@@ -6,6 +6,7 @@ DebugHandler::DebugHandler()
 {
 	QueryPerformanceFrequency(&this->m_frequency);
 	this->m_displayFPS = true;
+	this->m_displayRAM = true;
 	this->ClearConsole();
 	for (int i = 0; i < this->m_FRAMES_FOR_AVG; i++)
 	{
@@ -47,10 +48,18 @@ DebugHandler* DebugHandler::instance()
 int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 {
 	this->compHandler = compHandler;
+
+	//Init the fps text component
 	this->m_fpsTextComp = this->compHandler->GetTextComponent();
 	this->m_fpsTextComp->active = false;
 	this->m_fpsTextComp->position = DirectX::XMFLOAT2(500.f, 20.f);
 	this->m_fpsTextComp->scale = DirectX::XMFLOAT2(.4f, .4f);
+
+	//init the ram usage text component
+	this->m_ramTextComp = this->compHandler->GetTextComponent();
+	this->m_ramTextComp->active = false;
+	this->m_ramTextComp->position = DirectX::XMFLOAT2(650.f, 20.f);
+	this->m_ramTextComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	return 0;
 }
