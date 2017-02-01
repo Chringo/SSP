@@ -48,6 +48,9 @@ int DebugHandler::SetComponentHandler(ComponentHandler * compHandler)
 {
 	this->compHandler = compHandler;
 	this->m_fpsTextComp = this->compHandler->GetTextComponent();
+	this->m_fpsTextComp->active = false;
+	this->m_fpsTextComp->position = DirectX::XMFLOAT2(500.f, 20.f);
+	this->m_fpsTextComp->scale = DirectX::XMFLOAT2(.4f, .4f);
 
 	return 0;
 }
@@ -94,8 +97,8 @@ int DebugHandler::CreateTimer(std::wstring label)
 	timer.textComp->text = label + L": [" + L"0" + L"] "
 		+ L"0" + L" [" + L"0" + L"] us, " + L"0.0" + L"%";
 	timer.textComp->active = false;
-	timer.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (this->m_timers.size() * 30.f));
-	timer.textComp->scale = DirectX::XMFLOAT2(.4f, .4f);
+	timer.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + (this->m_timers.size() * 20.f));
+	timer.textComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 
 	this->m_timers.push_back(timer);
 
@@ -137,7 +140,7 @@ int DebugHandler::ToggleDebugInfo()
 		{
 			iter->textComp->active = false;
 		}
-
+		this->m_fpsTextComp->active = false;
 	}
 	else 
 	{
@@ -151,6 +154,7 @@ int DebugHandler::ToggleDebugInfo()
 		{
 			iter->textComp->active = true;
 		}
+		this->m_fpsTextComp->active = true;
 	}
 
 	this->ClearConsole();
@@ -164,8 +168,8 @@ int DebugHandler::CreateCustomLabel(std::wstring label, float value)
 	TextComponent* textComp = this->compHandler->GetTextComponent();
 	textComp->active = false;
 	tempValue.textComp = textComp;
-	tempValue.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + ((this->m_timers.size() + this->m_values.size()) * 30.f));
-	tempValue.textComp->scale = DirectX::XMFLOAT2(.4f, .4f);
+	tempValue.textComp->position = DirectX::XMFLOAT2(20.f, 20.f + ((this->m_timers.size() + this->m_values.size()) * 20.f));
+	tempValue.textComp->scale = DirectX::XMFLOAT2(.3f, .3f);
 	tempValue.label = label;
 	tempValue.value = value;
 	this->m_values.push_back(tempValue);

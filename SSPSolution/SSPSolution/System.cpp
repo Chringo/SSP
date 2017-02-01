@@ -101,9 +101,9 @@ int System::Initialize()
 	//this->m_Anim = new Animation();
 #ifdef _DEBUG
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
-	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 	DebugHandler::instance()->CreateTimer(L"Update");
 	DebugHandler::instance()->CreateTimer(L"Render");
+	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 #endif
 
 	return result;
@@ -159,7 +159,7 @@ int System::Run()
 		}
 
 		DebugHandler::instance()->EndProgram();
-		DebugHandler::instance()->DisplayConsole((float)elapsedTime.QuadPart);
+		DebugHandler::instance()->DisplayOnScreen((float)elapsedTime.QuadPart);
 #endif
 	}
 	if (this->m_fullscreen)
