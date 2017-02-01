@@ -7,7 +7,7 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
-namespace LIGHT
+namespace LIGHTING
 {
 	enum GRAPHICSDLL_API LIGHT_TYPE
 	{

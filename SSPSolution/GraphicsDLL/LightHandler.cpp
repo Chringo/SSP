@@ -1,15 +1,15 @@
 #include "LightHandler.h"
-LIGHT::LightHandler::LightHandler()
+LIGHTING::LightHandler::LightHandler()
 {
 
 }
 
-LIGHT::LightHandler::~LightHandler()
+LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(NUM_LT); //Release all buffers
 }
 
-void LIGHT::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	this->m_LightVector.reserve(10);
 
@@ -23,13 +23,13 @@ void LIGHT::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* 
 	}
 }
 
-LIGHT::LightHandler* LIGHT::LightHandler::GetInstance()
+LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
 {
 	static LightHandler instance;
 	return &instance;
 }
 
-LIGHT::Light* LIGHT::LightHandler::Get_Light(unsigned int id)
+LIGHTING::Light* LIGHTING::LightHandler::Get_Light(unsigned int id)
 {
 	for (size_t i = 0; i < this->m_LightVector.size(); i++)
 	{
@@ -41,12 +41,12 @@ LIGHT::Light* LIGHT::LightHandler::Get_Light(unsigned int id)
 	}
 }
 
-void LIGHT::LightHandler::Add_Light(LIGHT::Light* light)
+void LIGHTING::LightHandler::Add_Light(LIGHTING::Light* light)
 {
 	this->m_LightVector.push_back(light);
 }
 
-void LIGHT::LightHandler::Remove_Light(unsigned int id)
+void LIGHTING::LightHandler::Remove_Light(unsigned int id)
 {
 	for (size_t i = 0; i < this->m_LightVector.size(); i++)
 	{
@@ -57,7 +57,7 @@ void LIGHT::LightHandler::Remove_Light(unsigned int id)
 	}
 }
 
-bool LIGHT::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
+bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 {
 	if (lightBuffers[type] != nullptr || m_structuredBuffers[type] != nullptr) //if the buffers are already created, Release them
 	{
@@ -91,7 +91,7 @@ bool LIGHT::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.CPUAccessFlags	    = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags		    = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	lightBufferDesc.ByteWidth		    = structSize;
+	lightBufferDesc.ByteWidth		    = structSize * MAX_NUM_LIGHTS[type]; //total size of the buffer
 	lightBufferDesc.StructureByteStride = structSize;
 
 	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffers[type]))) {
@@ -120,7 +120,7 @@ bool LIGHT::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	return true;
 }
 
-bool LIGHT::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
+bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 {
 	if (type == LIGHT_TYPE::NUM_LT) // if type == NUM_LIGHTS, relase all buffers
 	{

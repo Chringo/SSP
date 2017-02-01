@@ -12,7 +12,7 @@
 #include <vector>
 #include "LightStructs.h"
 
-namespace LIGHT
+namespace LIGHTING
 {
 	class GRAPHICSDLL_API LightHandler
 	{
@@ -36,7 +36,7 @@ namespace LIGHT
 		LightHandler();
 		~LightHandler();
 
-		std::vector<LIGHT::Light*> m_LightVector;
+		std::vector<LIGHTING::Light*> m_LightVector;
 
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
@@ -50,9 +50,9 @@ namespace LIGHT
 		static LightHandler* GetInstance();
 
 	public: //dataFlow
-		std::vector<LIGHT::Light*>* Get_Light_List() { return &this->m_LightVector; };
-		LIGHT::Light* Get_Light(unsigned int id);
-		void Add_Light(LIGHT::Light* light);
+		std::vector<LIGHTING::Light*>* Get_Light_List() { return &this->m_LightVector; };
+		LIGHTING::Light* Get_Light(unsigned int id);
+		void Add_Light(LIGHTING::Light* light);
 		void Remove_Light(unsigned int id);
 
 	private:
