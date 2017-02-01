@@ -2,7 +2,7 @@
 #define	SSPAPPLICATION_SOUND_SOUNDHANDLER_H
 
 #include <vector>
-#include <list>
+#include <unordered_map>
 #include <DirectXMath.h>
 #include "../irrKlang/Include/irrKlang.h"
 #pragma comment (lib, "../irrKlang/lib/irrKlang")
@@ -46,7 +46,7 @@ private:
 	std::vector<SoundComponent3D*> sound3DComponents;
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
-	std::list<irrklang::ISound*> m_activeSounds;
+	std::unordered_map<unsigned int, irrklang::ISound*> m_activeSounds;
 	
 	unsigned int componentID;
 
@@ -60,8 +60,8 @@ public:
 	int Initialize();
 	void Shutdown();
 
-	int PlaySound2D(Sounds2D soundEnum, bool loop);
-	int PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
+	int PlaySound2D(unsigned int componentID, Sounds2D soundEnum, bool loop);
+	int PlaySound3D(unsigned int componentID, Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
 	
 	void UpdateSoundHandler();
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);

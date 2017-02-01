@@ -100,11 +100,15 @@ void SoundHandler::LoadSounds()
 
 void SoundHandler::DropSounds()
 {
-	std::list<irrklang::ISound*>::iterator itrS;
+	std::unordered_map<unsigned int, irrklang::ISound*>::iterator itrS;
 	//Active sounds
 	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
 	{
-		(*itrS)->drop();
+		if (itrS->second != nullptr)
+		{
+			itrS->second->drop();
+		}
+		
 	}
 
 	std::vector<irrklang::ISoundSource*>::iterator itr;
@@ -121,7 +125,7 @@ void SoundHandler::DropSounds()
 	}
 }
 
-int SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop)
+int SoundHandler::PlaySound2D(unsigned int componentID, Sounds2D soundEnum, bool loop)
 {
 	//Check if the enum will fit as an index
 	if (soundEnum < this->m_sounds2D.size() && soundEnum != Sounds2D::NO_SOUND2D)
@@ -133,7 +137,17 @@ int SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop)
 		{
 			newActiveSound->setSoundStopEventReceiver(this);
 			newActiveSound->grab();
-			this->m_activeSounds.push_back(newActiveSound);
+
+			std::unordered_map<unsigned int, irrklang::ISound*>::iterator itr = this->m_activeSounds.find(componentID);
+			
+			if (itr->second != nullptr)
+			{
+				itr->second->stop();	//Stop the sound already playing
+				itr->second->drop();	// Drop it
+			}
+
+			itr->second = newActiveSound;	//Assaign new sound
+
 		}
 
 		return 1;
@@ -142,7 +156,7 @@ int SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop)
 	return 0;
 }
 
-int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop)
+int SoundHandler::PlaySound3D(unsigned int componentID, Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop)
 {
 	//Check if the enum will fit as an index
 	if (soundEnum < this->m_sounds3D.size() && soundEnum != Sounds3D::NO_SOUND3D)
@@ -155,7 +169,17 @@ int SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool lo
 		{
 			newActiveSound->setSoundStopEventReceiver(this);
 			newActiveSound->grab();
-			this->m_activeSounds.push_back(newActiveSound);
+			
+			std::unordered_map<unsigned int, irrklang::ISound*>::iterator itr = this->m_activeSounds.find(componentID);
+
+			if (itr->second != nullptr)
+			{
+				itr->second->stop();	//Stop the sound already playing
+				itr->second->drop();	// Drop it
+			}
+
+			itr->second = newActiveSound;	//Assaign new sound
+			
 		}
 		
 		return 1;
@@ -184,7 +208,7 @@ void SoundHandler::UpdateSoundHandler()
 				if ((*itr)->sound != Sounds2D::NO_SOUND2D)
 				{
 					//Play the sound
-					this->PlaySound2D((*itr)->sound, (*itr)->loop);
+					this->PlaySound2D((*itr)->componentID, (*itr)->sound, (*itr)->loop);
 					//Reset the comopnent to play no sound
 					(*itr)->sound = Sounds2D::NO_SOUND2D;
 				 }
@@ -206,7 +230,7 @@ void SoundHandler::UpdateSoundHandler()
 				if ((*itr3)->sound != Sounds3D::NO_SOUND3D)
 				{
 					//Play the sound
-					this->PlaySound3D( (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
+					this->PlaySound3D((*itr3)->componentID, (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
 					//Reset the comopnent to play no sound
 					(*itr3)->sound = Sounds3D::NO_SOUND3D;
 				}
@@ -234,6 +258,10 @@ SoundComponent2D * SoundHandler::GetSoundComponent2D()
 {
 	SoundComponent2D* scp = new SoundComponent2D();
 	scp->componentID = this->componentID;	//Set the Id of the component
+	
+	std::pair<unsigned int, irrklang::ISound*> pair(this->componentID, nullptr);
+	this->m_activeSounds.insert(pair);
+
 	this->componentID++;
 	this->sound2DComponents.push_back(scp);
 	
@@ -244,6 +272,10 @@ SoundComponent3D * SoundHandler::GetSoundComponent3D()
 {
 	SoundComponent3D* scp = new SoundComponent3D();
 	scp->componentID = this->componentID;
+
+	std::pair<unsigned int, irrklang::ISound*> pair(this->componentID, nullptr);
+	this->m_activeSounds.insert(pair);
+
 	this->componentID++;
 	this->sound3DComponents.push_back(scp);
 
@@ -253,16 +285,20 @@ SoundComponent3D * SoundHandler::GetSoundComponent3D()
 void SoundHandler::OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData)
 {
 	//Remove sounds that has finnished playing
-	std::list<irrklang::ISound*>::iterator itrS;
-	for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
-	{
-		if ((*itrS) == sound)
-		{
-			(*itrS)->drop();
-			itrS = this->m_activeSounds.erase(itrS);
-			break;
-		}
-	}
+	//this->m_activeSounds.find(sound);
+
+
+
+	//std::list<irrklang::ISound*>::iterator itrS;
+	//for (itrS = this->m_activeSounds.begin(); itrS != this->m_activeSounds.end(); itrS++)
+	//{
+	//	if ((*itrS) == sound)
+	//	{
+	//		(*itrS)->drop();
+	//		itrS = this->m_activeSounds.erase(itrS);
+	//		break;
+	//	}
+	//}
 
 }
 
