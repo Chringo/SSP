@@ -4,7 +4,7 @@
 #include <vector>
 
 struct ElementState {
-	int entityID;
+	unsigned int entityID;
 	EVENT desiredState;
 	bool desiredStateReached;
 };
@@ -34,6 +34,9 @@ public:
 
 	bool SetIsOpened(bool isOpened);
 	bool GetIsOpened();
+
+	bool AddSubjectState(ElementState subjectState);
+	bool AddSubjectState(unsigned int entityID, EVENT requiredEvent);
 };
 
 #endif

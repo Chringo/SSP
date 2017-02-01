@@ -130,3 +130,21 @@ bool DoorEntity::GetIsOpened()
 {
 	return this->m_isOpened;
 }
+
+bool DoorEntity::AddSubjectState(ElementState subjectState)
+{
+	bool result = true;
+	this->m_subjectStates.push_back(subjectState);
+	return result;
+}
+
+bool DoorEntity::AddSubjectState(unsigned int entityID, EVENT requiredEvent)
+{
+	bool result = true;
+	ElementState newElementState;
+	newElementState.entityID = entityID;
+	newElementState.desiredState = requiredEvent;
+	newElementState.desiredStateReached = false;
+	this->m_subjectStates.push_back(newElementState);
+	return result;
+}
