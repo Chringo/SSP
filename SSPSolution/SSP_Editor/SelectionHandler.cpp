@@ -73,14 +73,12 @@ void SelectionHandler::SetSelection(bool selection)
 
 void SelectionHandler::SetSelectedContainer(Container *& selection)
 {
+	if (selection == nullptr)
+		return;
 	if (selection->type != LIGHT)
 	{
 		OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
 		this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
-
-	}
-	else
-	{
 
 	}
 	
