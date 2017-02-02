@@ -116,9 +116,9 @@ PS_OUT PS_main(GS_OUT input)
     float3 normalSamp = normalTex.Sample(linearSampler, input.UV).rgb;
 
     output.color = albedoTex.Sample(linearSampler, input.UV).rgb;
-    output.metal = metalTex.Sample(linearSampler, input.UV);
-    output.rough = roughTex.Sample(linearSampler, input.UV);
-    output.AO = aoTex.Sample(linearSampler, input.UV);
+    output.metal = metalTex.Sample(linearSampler, input.UV).rgb;
+    output.rough = roughTex.Sample(linearSampler, input.UV).rgb;
+    output.AO = aoTex.Sample(linearSampler, input.UV).rgb;
     output.normal = normalToWorldSpace(normalSamp, input.Normal, input.tangent);
     output.wPosition = input.wPos;
    
