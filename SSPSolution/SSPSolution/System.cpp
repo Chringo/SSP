@@ -33,8 +33,12 @@ int System::Shutdown()
 	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
-	DebugHandler::instance().Shutdown();
-	
+
+	DebugHandler::instance()->Shutdown();
+
+	/*Delete animation class ptr here.*/
+	//delete this->m_Anim;
+
 	return result;
 }
 
@@ -106,9 +110,13 @@ int System::Initialize()
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
 
 	//this->m_Anim = new Animation();
-#ifdef _DEBUG
-	DebugHandler::instance().CreateCustomLabel("Frame counter", 0);
-#endif
+
+	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
+	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"Physics");
+	DebugHandler::instance()->CreateTimer(L"Render");
+	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+
 
 	return result;
 }
@@ -123,9 +131,8 @@ int System::Run()
 	QueryPerformanceCounter(&currTime);
 	while (this->m_running)
 	{
-#ifdef _DEBUG
-		DebugHandler::instance().StartProgram();
-#endif
+		DebugHandler::instance()->StartProgram();
+
 		prevTime = currTime;
 		QueryPerformanceCounter(&currTime);
 		elapsedTime.QuadPart = currTime.QuadPart - prevTime.QuadPart;
@@ -151,15 +158,18 @@ int System::Run()
 		{
 			this->FullscreenToggle();
 		}
+		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
+		{
+			DebugHandler::instance()->ToggleDebugInfo();
+		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
-			DebugHandler::instance().ResetMinMax();
+			DebugHandler::instance()->ResetMinMax();
 			printf("Reseted min max on timers\n");
 		}
-#ifdef _DEBUG
-		DebugHandler::instance().EndProgram();
-		DebugHandler::instance().Display((float)elapsedTime.QuadPart);
-#endif
+
+		DebugHandler::instance()->EndProgram();
+		DebugHandler::instance()->DisplayOnScreen((float)elapsedTime.QuadPart);
 	}
 	if (this->m_fullscreen)
 		this->FullscreenToggle();
@@ -172,13 +182,16 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-#ifdef _DEBUG
-	DebugHandler::instance().StartTimer("Update");
-#endif
+
+	DebugHandler::instance()->StartTimer(0);
+
 	int result = 1;
 
+	DebugHandler::instance()->StartTimer(1);
 
 	this->m_physicsHandler.Update(deltaTime);
+
+	DebugHandler::instance()->EndTimer(1);
 
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
@@ -265,16 +278,16 @@ int System::Update(float deltaTime)
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 
 
-#ifdef _DEBUG
-	DebugHandler::instance().UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance().EndTimer();
+
+	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
+	DebugHandler::instance()->EndTimer(0);
 	//Render
-	DebugHandler::instance().StartTimer("Render");
-#endif
+	DebugHandler::instance()->StartTimer(2);
+
 	this->m_graphicsHandler->Render(deltaTime);
-#ifdef _DEBUG
-	DebugHandler::instance().EndTimer();
-#endif
+
+	DebugHandler::instance()->EndTimer(2);
+
 	return result;
 }
 
