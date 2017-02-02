@@ -7,6 +7,7 @@
 #include "AiHandler.h"
 #include "GlobalIDHandler.h"
 #include "Checkpointhandler.h"
+#include "LightController.h"
 //#include "UiControlHandler.h"
 #define PLAYER1 2215164276 
 #define PLAYER2 3255160373
@@ -27,8 +28,7 @@ private:
 	std::string levelName = "untitled_level";
 	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
-	std::vector<std::vector<Container*>> m_puzzleElements;				 //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access
-	std::vector<Light*> m_lights;										 //all ze lightz
+	std::vector<std::vector<Container*>> m_puzzleElements;				 //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access									 //all ze lightz
 
 public:
 	Level();

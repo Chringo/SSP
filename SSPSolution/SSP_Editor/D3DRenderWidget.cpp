@@ -187,7 +187,6 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (light->isDirty)
 		{
 			light->Update();
-			LIGHTING::LightHandler::GetInstance()->SetLightData(&light->data, 1, LIGHTING::LT_POINT);
 			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
 			if (SelectionHandler::GetInstance()->HasSelection())
 				SelectionHandler::GetInstance()->Update();

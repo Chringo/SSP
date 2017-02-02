@@ -42,7 +42,7 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 
 std::vector<Light*>* Level::GetLights()
 {
-	return &m_lights;
+	return LightController::GetInstance()->GetLights();
 }
 
 std::vector<CheckpointContainer*>* Level::GetCheckpoints()
@@ -336,12 +336,8 @@ Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVE
 
 Resources::Status Level::AddPointLight()
 {
-	Point * container = new Point();
-	
-	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-	container->isDirty = true;
-	this->m_lights.push_back(container);
 
+	LightController::GetInstance()->AddLight(LIGHTING::LT_POINT);
 	return Resources::Status::ST_OK;
 }
 

@@ -763,6 +763,7 @@ struct Point : Light
 		this->position = data.position;
 		pickSphere.radius = 0.25f;
 		rangeSphere.radius = data.radius;
+		data.isActive = true;
 	}
 
 	void Update()

@@ -194,6 +194,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="LightController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ResourceLibExporter.cpp" />
     <ClCompile Include="SelectionHandler.cpp" />
@@ -309,6 +310,7 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelHandler.h" />
     <ClInclude Include="LevelHeaders.h" />
+    <ClInclude Include="LightController.h" />
     <ClInclude Include="ResourceLibExporter.h" />
     <ClInclude Include="ResourceLibHeaders.h" />
     <ClInclude Include="SelectionHandler.h" />
