@@ -14,6 +14,9 @@ public:
 	int Initialize(int entityID, Field* field);
 	int Update(float deltaTime, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
+
+	Field* GetField();
+	//void SetField(Field* field);//Probably useless
 private:
 
 };

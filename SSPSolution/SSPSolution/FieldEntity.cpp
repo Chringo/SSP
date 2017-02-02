@@ -26,3 +26,12 @@ int FieldEntity::React(int entityID, EVENT reactEvent)
 
 	return 1;
 }
+
+Field * FieldEntity::GetField()
+{
+	return this->m_field;
+}
+//void FieldEntity::SetField(Field * field)
+//{
+//	this->m_field = field;
+//}
