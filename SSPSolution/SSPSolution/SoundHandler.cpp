@@ -157,58 +157,6 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 	return nullptr;
 }
 
-//void SoundHandler::UpdateSoundHandler()
-//{
-//	if (this->m_soundEngine)
-//	{
-//	//Check 2D components
-//	#pragma region
-//		std::vector<SoundComponent2D*>::iterator itr;
-//		for (itr = this->sound2DComponents.begin(); itr != this->sound2DComponents.end(); itr++) 
-//		{
-//			if (!(*itr)->isActive)
-//			{
-//				delete (*itr);
-//				itr = this->sound2DComponents.erase(itr);
-//			}
-//			else
-//			{
-//				if ((*itr)->sound != Sounds2D::NO_SOUND2D)
-//				{
-//					//Play the sound
-//					this->PlaySound2D((*itr)->componentID, (*itr)->sound, (*itr)->loop);
-//					//Reset the comopnent to play no sound
-//					(*itr)->sound = Sounds2D::NO_SOUND2D;
-//				 }
-//			}
-//		}
-//	#pragma endregion 2D_COMPONENT_UPDATE
-//	//Check 3D components
-//	#pragma region
-//		std::vector<SoundComponent3D*>::iterator itr3;
-//		for (itr3 = this->sound3DComponents.begin(); itr3 != this->sound3DComponents.end(); itr3++)
-//		{
-//			if (!(*itr3)->isActive)
-//			{
-//				delete (*itr3);
-//				itr3 = this->sound3DComponents.erase(itr3);
-//			}
-//			else
-//			{
-//				if ((*itr3)->sound != Sounds3D::NO_SOUND3D)
-//				{
-//					//Play the sound
-//					this->PlaySound3D((*itr3)->componentID, (*itr3)->sound, (*itr3)->pos, (*itr3)->loop);
-//					//Reset the comopnent to play no sound
-//					(*itr3)->sound = Sounds3D::NO_SOUND3D;
-//				}
-//			}
-//		}
-//
-//#pragma endregion 3D_COMPONENT_UPDATER
-//	}
-//}
-
 void SoundHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
 {
 	if (this->m_soundEngine)
@@ -221,28 +169,6 @@ void SoundHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 
 		this->m_soundEngine->setListenerPosition(position, lookDirection, velPerSecond, upVector);
 	}
 }
-
-//SoundComponent2D * SoundHandler::GetSoundComponent2D()
-//{
-//	SoundComponent2D* scp = new SoundComponent2D();
-//	scp->componentID = this->componentID;	//Set the Id of the component
-//	
-//	std::pair<unsigned int, irrklang::ISound*> pair(this->componentID, nullptr);
-//	this->m_activeSounds.insert(pair);
-//
-//	this->componentID++;
-//	this->sound2DComponents.push_back(scp);
-//	
-//	return scp;
-//}
-//
-//SoundComponent3D * SoundHandler::GetSoundComponent3D()
-//{
-//	SoundComponent3D* scp = new SoundComponent3D();
-//	this->sound3DComponents.push_back(scp);
-//
-//	return scp;
-//}
 
 void SoundHandler::OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData)
 {
