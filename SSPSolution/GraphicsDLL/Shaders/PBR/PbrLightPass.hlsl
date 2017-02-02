@@ -18,11 +18,12 @@ cbuffer camera : register(b1)
 }
 cbuffer LightInfo : register(b3)
 {
-    uint NUM_POINTLIGHTS;
-    uint NUM_AREALIGHTS;
-    uint NUM_DIRECTIONALLIGHTS;
-    uint NUM_SPOTLIGHTS;
-    float4 AMBIENT_COLOR;
+    uint   NUM_POINTLIGHTS;
+    uint   NUM_AREALIGHTS;
+    uint   NUM_DIRECTIONALLIGHTS;
+    uint   NUM_SPOTLIGHTS;
+    float3 AMBIENT_COLOR;
+    float  AMBIENT_INTENSITY;
 }
 
 struct PointLight //Must be 16 bit aligned!
@@ -71,9 +72,9 @@ LIGHT initLight()
 LIGHT initCustomLight(float3 pos, float3 color)
 {
     LIGHT light;
-    light.lightPos = pos;
-	light.lightDir = float3(0.0f, 0.5f, 1.0f);
-    light.lightColor = color;
+    light.lightPos     = pos;
+	light.lightDir     = float3(0.0f, 0.5f, 1.0f);
+    light.lightColor   = color;
     light.lightAmbient = AMBIENT_COLOR.rrr;
     return light;
 }
@@ -238,6 +239,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
+    finalColor.rgb += saturate(AMBIENT_COLOR * AMBIENT_INTENSITY);
 
 
     

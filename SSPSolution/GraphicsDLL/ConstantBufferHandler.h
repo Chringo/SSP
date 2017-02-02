@@ -137,7 +137,8 @@ public:
 				UINT NUM_AREALIGHTS;
 				UINT NUM_DIRECTIONALLIGHTS;
 				UINT NUM_SPOTLIGHTS;
-				DirectX::XMVECTOR AMBIENT_COLOR;
+				float AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
+				float AMBIENT_INTENSITY = 0.2f;
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

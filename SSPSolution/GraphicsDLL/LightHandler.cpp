@@ -12,10 +12,6 @@ LIGHTING::LightHandler::~LightHandler()
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-
-
-
-
 	this->m_gDevice = device;
 	this->m_gDeviceContext = deviceContext;
 
@@ -24,39 +20,39 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 		assert(this->CreateStructuredBuffer(LIGHT_TYPE(i),3) == true); //Create all the structured buffers  and update the constant buffer
 	}
 
-	/* TEMPORARY*/
-	Point* pointArray = new Point[3];
-	pointArray[0].color.r = 1.0f;
-	pointArray[0].color.g = 0.0f;
-	pointArray[0].color.b = 0.0f;
-	pointArray[0].position.m128_f32[0] = 10.0f;
-	pointArray[0].position.m128_f32[1] = -9.0f;
-	pointArray[0].position.m128_f32[2] = -3.0f;
-	pointArray[0].intensity = 5.0f;
-	//pointArray[0].isActive = TRUE;
-
-	pointArray[1].color.r = 0.0f;
-	pointArray[1].color.g = 1.0f;
-	pointArray[1].color.b = 0.0f;
-	pointArray[1].position.m128_f32[0] = 14.0f;
-	pointArray[1].position.m128_f32[1] = -9.0f;
-	pointArray[1].position.m128_f32[2] = -3.0f;
-	pointArray[1].intensity = 5.0f;
-	pointArray[1].isActive = TRUE;
-
-	pointArray[2].color.r = 0.0f;
-	pointArray[2].color.g = 0.0f;
-	pointArray[2].color.b = 1.0f;
-	pointArray[2].position.m128_f32[0] = 18.0f;
-	pointArray[2].position.m128_f32[1] = -9.0f;
-	pointArray[2].position.m128_f32[2] = -3.0f;
-	pointArray[2].intensity = 5.0f;
-	pointArray[2].isActive = TRUE;
-	
-	this->SetLightData(pointArray, 3, LT_POINT);
-	
-
-	this->UpdateStructuredBuffer(LT_POINT);
+///* TEMPORARY*/
+//Point* pointArray = new Point[3];
+//pointArray[0].color.r = 1.0f;
+//pointArray[0].color.g = 0.0f;
+//pointArray[0].color.b = 0.0f;
+//pointArray[0].position.m128_f32[0] = 10.0f;
+//pointArray[0].position.m128_f32[1] = -9.0f;
+//pointArray[0].position.m128_f32[2] = -3.0f;
+//pointArray[0].intensity = 5.0f;
+////pointArray[0].isActive = TRUE;
+//
+//pointArray[1].color.r = 0.0f;
+//pointArray[1].color.g = 1.0f;
+//pointArray[1].color.b = 0.0f;
+//pointArray[1].position.m128_f32[0] = 14.0f;
+//pointArray[1].position.m128_f32[1] = -9.0f;
+//pointArray[1].position.m128_f32[2] = -3.0f;
+//pointArray[1].intensity = 5.0f;
+//pointArray[1].isActive = TRUE;
+//
+//pointArray[2].color.r = 0.0f;
+//pointArray[2].color.g = 0.0f;
+//pointArray[2].color.b = 1.0f;
+//pointArray[2].position.m128_f32[0] = 18.0f;
+//pointArray[2].position.m128_f32[1] = -9.0f;
+//pointArray[2].position.m128_f32[2] = -3.0f;
+//pointArray[2].intensity = 5.0f;
+//pointArray[2].isActive = TRUE;
+//
+//this->SetLightData(pointArray, 3, LT_POINT);
+//
+//
+//this->UpdateStructuredBuffer(LT_POINT);
 	//////////////
 	
 }
@@ -223,6 +219,19 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 		ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 		return true;
 	}
+}
+
+void LIGHTING::LightHandler::SetAmbientLight(float r, float g, float b, float intensity)
+{
+
+	 m_constBufferData.AMBIENT_COLOR[0]  = r;
+	 m_constBufferData.AMBIENT_COLOR[1]  = g;
+	 m_constBufferData.AMBIENT_COLOR[2]  = b;
+	 m_constBufferData.AMBIENT_INTENSITY = intensity;
+
+	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
+
+	
 }
 
 
