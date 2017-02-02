@@ -333,21 +333,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	this->m_dynamicEntitys.push_back(plat);  
 #pragma endregion AIComponent tests
 
-#pragma region
-	this->soundComponent = cHandler->GetSoundComponent2D();
-	this->soundComponent->isActive = true;
-	this->soundComponent->loop = false;
-	this->soundComponent->sound = Sounds2D::NO_SOUND2D;
-
-	this->soundComponent2 = cHandler->GetSoundComponent3D();
-	this->soundComponent2->isActive = true;
-	this->soundComponent2->loop = false;
-	this->soundComponent2->pos = DirectX::XMFLOAT3(0,0,0);
-	this->soundComponent2->sound = Sounds3D::NO_SOUND3D;
-
-#pragma endregion SOUND_TEST
-
-
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
@@ -1056,13 +1041,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		this->soundComponent->sound = Sounds2D::MENU1;
-		//this->soundComponent->loop = true;
+		this->m_cHandler->GetSoundHandler()->PlaySound2D(Sounds2D::MENU1, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
-		this->soundComponent2->sound = Sounds3D::MENU1_3D;
-		DirectX::XMStoreFloat3(&this->soundComponent2->pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::MENU1_3D, pos, false, false);
 	}
 
 
