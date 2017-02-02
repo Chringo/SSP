@@ -21,34 +21,31 @@ enum Sounds3D
 	MENU1_3D,
 };
 
-struct SoundComponent2D
-{
-	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
-	Sounds2D			sound;
-	bool				loop;
-	bool				isActive;
-};
-
-struct SoundComponent3D
-{
-	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
-	Sounds3D			sound;
-	bool				loop;
-	bool				isActive;
-	DirectX::XMFLOAT3	pos;
-};
+//struct SoundComponent2D
+//{
+//	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
+//	Sounds2D			sound;
+//	bool				loop;
+//	bool				isActive;
+//};
+//
+//struct SoundComponent3D
+//{
+//	unsigned int		componentID;	//DONT EVER CHANGE, IS ASSIGNED ON CREATION
+//	Sounds3D			sound;
+//	bool				loop;
+//	bool				isActive;
+//	DirectX::XMFLOAT3	pos;
+//};
 
 class SoundHandler : public irrklang::ISoundStopEventReceiver
 {
 private:
 	irrklang::ISoundEngine* m_soundEngine;
-	std::vector<SoundComponent2D*> sound2DComponents;
-	std::vector<SoundComponent3D*> sound3DComponents;
+	//std::vector<SoundComponent2D*> sound2DComponents;
+	//std::vector<SoundComponent3D*> sound3DComponents;
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
-	std::unordered_map<unsigned int, irrklang::ISound*> m_activeSounds;
-	
-	unsigned int componentID;
 
 	void LoadSounds();
 	void DropSounds();	//Drop irrKlang resources that is keept outside of the Sound engine
@@ -60,13 +57,13 @@ public:
 	int Initialize();
 	void Shutdown();
 
-	int PlaySound2D(unsigned int componentID, Sounds2D soundEnum, bool loop);
-	int PlaySound3D(unsigned int componentID, Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop);
+	irrklang::ISound* PlaySound2D(Sounds2D soundEnum, bool loop, bool track);
+	irrklang::ISound* PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track);
 	
-	void UpdateSoundHandler();
+	//void UpdateSoundHandler();
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);
-	SoundComponent2D* GetSoundComponent2D();
-	SoundComponent3D* GetSoundComponent3D();
+	//SoundComponent2D* GetSoundComponent2D();
+	//SoundComponent3D* GetSoundComponent3D();
 
 	void OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData);
 	bool ReInitSoundEngine();	//Try to reload the irrKlang engine and loaded sounds
