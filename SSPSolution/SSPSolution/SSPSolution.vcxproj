@@ -167,6 +167,7 @@
     <ClCompile Include="DoorEntity.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FieldEntity.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="DoorEntity.h" />
     <ClInclude Include="DynamicEntity.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FieldEntity.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
     <ClInclude Include="InputHandler.h" />
