@@ -122,6 +122,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 		m_constBufferData.NUM_DIRECTIONALLIGHTS = amount;
 		break;
 	}
+	
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 
 	return true;
@@ -170,7 +171,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 		return false;
 	}
 	memset(mapRes.pData, 0, GetStructByteSize(type) * NUM_LIGHTS[type]);
-	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
+	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*NUM_LIGHTS[type]);
 	m_gDeviceContext->Unmap(lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
 
@@ -192,15 +193,17 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 	if (type >= NUM_LT || numLights < 1)
 		return false;
 	m_lightData[type].dataPtr = lightArray;
+	m_lightData[type].numItems = numLights;
 	if (numLights > this->NUM_LIGHTS[type] || numLights < this->NUM_LIGHTS[type])
 	{
 		ReleaseStructuredBuffer(type);
-		CreateStructuredBuffer(type, numLights);
+		assert (CreateStructuredBuffer(type, numLights) == true);
 		
 		return true;
 	}
 	else {
-		m_lightData[type].numItems = numLights;
+		NUM_LIGHTS[type] = numLights;
+		
 		switch (type)
 		{
 		case LIGHT_TYPE::LT_POINT:
