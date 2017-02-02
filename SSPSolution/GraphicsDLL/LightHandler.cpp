@@ -154,7 +154,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 #endif // _DEBUG
 		return false;
 	}
-	memset(mapRes.pData, 0, GetStructByteSize(type)*m_lightData[type].numItems);
+	memset(mapRes.pData, 0, GetStructByteSize(type) * MAX_NUM_LIGHTS[type]);
 	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
 	m_gDeviceContext->Unmap(lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
@@ -191,6 +191,17 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 		m_lightData[type].numItems = numLights;
 		return true;
 	}
+}
+
+bool LIGHTING::LightHandler::UpdateLight( unsigned int index, LIGHT_TYPE type)
+{
+
+	if (index >= this->MAX_NUM_LIGHTS[type])
+		return false;
+
+	//m_lightData->dataPtr->
+
+	return true;
 }
 
 size_t LIGHTING::LightHandler::GetStructByteSize(LIGHT_TYPE type)
