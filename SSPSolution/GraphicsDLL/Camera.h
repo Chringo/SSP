@@ -10,6 +10,16 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+struct Plane {
+	DirectX::XMVECTOR normal;
+	float distance;
+};
+
+struct ViewFrustrum {
+	//Left, Right, Bottom, Top, Near, Far
+	Plane myPlanes[6];
+};
+
 struct cameraFrameData
 {
 	DirectX::XMMATRIX pView;
@@ -63,6 +73,9 @@ public:
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	//	0/1 = failed(succeeded to create the view frustrum.
+	int GetViewFrustrum(ViewFrustrum& storeIn);
+
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	GRAPHICSDLL_API DirectX::XMFLOAT4X4 * GetViewMatrix();
@@ -124,8 +137,8 @@ public:
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters
 private:
-	DirectX::XMVECTOR conjugate(DirectX::XMVECTOR quat);
-	DirectX::XMVECTOR mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+	DirectX::XMVECTOR Conjugate(DirectX::XMVECTOR quat);
+	DirectX::XMVECTOR Mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
 	DirectX::XMVECTOR m_Dir();
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
