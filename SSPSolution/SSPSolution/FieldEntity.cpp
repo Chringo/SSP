@@ -17,7 +17,13 @@ int FieldEntity::Initialize(int entityID, Field* field)
 
 int FieldEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
-
+	if (this->m_field->F_first_inside && this->m_field->F_second_inside)
+	{
+		// TODO: Proper notify and reaction in director!
+		//this->m_subject.Notify(this->m_entityID, FIELD_CONTAINS);
+		this->m_subject.Notify(1, FIELD_CONTAINS);
+		this->m_subject.Notify(3, FIELD_CONTAINS);
+	}
 	return 1;
 }
 
