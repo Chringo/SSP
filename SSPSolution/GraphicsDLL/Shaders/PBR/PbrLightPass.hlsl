@@ -8,20 +8,38 @@ Texture2D wPosTex		: register(t5);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-//cbuffer worldMatrix : register(b0)
-//{
-//	matrix worldMatrix;
-//}
-
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
 
     float4 camPos;
-	// do not need padding here. float4 = 16bit
 
 }
+cbuffer LightInfo : register(b3)
+{
+    uint NUM_POINTLIGHTS;
+    uint NUM_AREALIGHTS;
+    uint NUM_DIRECTIONALLIGHTS;
+    uint NUM_SPOTLIGHTS;
+    float4 AMBIENT_COLOR;
+}
+
+struct PointLight //Must be 16 bit aligned!
+{
+    bool isActive;
+    float3 isActivePADDING;
+    float3 color;
+    float intensity;
+    float4 position;
+    float radius;
+    float constantFalloff;
+    float linearFalloff;
+    float quadraticFalloff;
+};
+
+
+StructuredBuffer<PointLight> pointlights : register(t8);
 
 struct VS_OUT
 {
@@ -42,9 +60,9 @@ struct LIGHT
 LIGHT initLight()
 {
     LIGHT light;
-    light.lightPos = float3(0.0f, 0.0f, -1.5f);
-	light.lightDir = float3(0.0f, 0.5f, 1.0f);
-    light.lightColor = float3(1.0f, 1.0f, 1.0f);
+    light.lightPos     = float3(0.0f, 0.0f, -1.5f);
+	light.lightDir     = float3(0.0f, 0.5f, 1.0f);
+    light.lightColor   = float3(1.0f, 1.0f, 1.0f);
     light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
 
     return light;
@@ -56,8 +74,7 @@ LIGHT initCustomLight(float3 pos, float3 color)
     light.lightPos = pos;
 	light.lightDir = float3(0.0f, 0.5f, 1.0f);
     light.lightColor = color;
-    light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
-
+    light.lightAmbient = AMBIENT_COLOR.rrr;
     return light;
 }
 
@@ -128,21 +145,21 @@ float4 PS_main(VS_OUT input) : SV_Target
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 
-    float4 diffuseLight = float4(0, 0, 0, 0);
+    float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
 
     LIGHT light[3]; 
-    light[0] = initCustomLight(float3(0.0, 0.0, -3.0), float3(1., 1., 1.));
-    light[1] = initCustomLight(float3(0.0, 0.0, -3.5), float3(1., 1., 1.));
-    light[2] = initCustomLight(float3(0.5, 1.2, -2.0), float3(1., 1., 1.));
+    light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
+    //light[1] = initCustomLight(float3(14.0, -9.0, -3.0), pointlights[1].color); //float3(0.0, 0.0, -3.5), float3(1., 1., 1.));   pointlights[1].position.xyz
+    //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
-    float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
-    float3 metalSamp = (metal.Sample(pointSampler, input.UV));
-    float3 roughSamp = (rough.Sample(pointSampler, input.UV));
-    float3 AOSamp = (AO.Sample(pointSampler, input.UV)).rgb;
-    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV));
-    float3 N = (normalTex.Sample(pointSampler, input.UV));
+    float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
+    float3 metalSamp = (metal.Sample(pointSampler, input.UV)).rgb;
+    float3 roughSamp = (rough.Sample(pointSampler, input.UV)).rgb;
+    float3 AOSamp    = (AO.Sample(pointSampler, input.UV)).rgb;
+    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
+    float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
 
 
 
@@ -171,9 +188,13 @@ float4 PS_main(VS_OUT input) : SV_Target
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++)
     {
+     // if (pointlights[i].isActive == false)
+     // {
+     //     continue;
+     // }
         //PBR variables 
        //float3 L = normalize((wPosSamp.xyz) - light[i].lightPos);
-		float3 L = normalize(light[i].lightPos - (wPosSamp.xyz));
+        float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
         float3 H = normalize(V + L);
         float lightPower = 0;
 
@@ -189,13 +210,13 @@ float4 PS_main(VS_OUT input) : SV_Target
         //else //lights with no direction
 
 
-        lightPower = 1.00f; //could add falloff factor
+        lightPower = pointlights[i].intensity; //could add falloff factor
         
         //DO SHADOW STUFF HERE
 
         //DIFFUSE
         float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
-        diffuseLight += float4(fd.xxx * light[i].lightColor * lightPower * diffuseColor.rgb, 1);
+        diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
 
         //SPECULAR
         float3 f = schlick(f0, f90, LdotH);
@@ -204,9 +225,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         float3 fr = d * f * vis / Pi;
 
-        specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
+        specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
-        //return N.rgbr;
+       // return diffuseLight;
     }
 
 
