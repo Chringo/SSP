@@ -196,10 +196,24 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 bool LIGHTING::LightHandler::UpdateLight( unsigned int index, LIGHT_TYPE type)
 {
 
-	if (index >= this->MAX_NUM_LIGHTS[type])
+	if (index >= this->MAX_NUM_LIGHTS[type] || m_lightData[type].dataPtr == nullptr || index >= m_lightData[type].numItems)
 		return false;
 
-	//m_lightData->dataPtr->
+
+	D3D11_MAPPED_SUBRESOURCE mapRes;
+	HRESULT hr = S_OK;
+
+	hr = m_gDeviceContext->Map(lightBuffers[type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+	if (FAILED(hr)) {
+#ifdef _DEBUG
+		MessageBox(NULL, L"Failed to update lights buffer", L"Error", MB_ICONERROR | MB_OK);
+#endif // _DEBUG
+		return false;
+	}
+	memset(mapRes.pData, 0, GetStructByteSize(type) * MAX_NUM_LIGHTS[type]);
+	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
+	m_gDeviceContext->Unmap(lightBuffers[type], 0);
+	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
 
 	return true;
 }

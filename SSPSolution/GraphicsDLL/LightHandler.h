@@ -71,7 +71,6 @@ namespace LIGHTING
 		bool UpdateStructuredBuffer (LIGHT_TYPE type);
 		bool SetBuffersAsActive();
 		bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
-		bool UpdateLight( unsigned int index, LIGHT_TYPE type);
 	private:
 		bool CreateStructuredBuffer (LIGHT_TYPE type);
 		bool ReleaseStructuredBuffer(LIGHT_TYPE type);
