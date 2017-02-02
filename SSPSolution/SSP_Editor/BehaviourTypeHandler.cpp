@@ -226,6 +226,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_LightDoubleSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant);
 			m_LightDoubleSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear);
 			m_LightDoubleSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic);
+			m_attributes_widget->setCurrentIndex(3);
 			break;
 #pragma endregion
 		default:
@@ -243,6 +244,8 @@ void Ui::BehaviourTypeHandler::Deselect()
 	m_currentEventType = ContainerType::NONE;
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_BehaviourType->setCurrentIndex(NONE); //Close the window
+	m_attributes_widget->setCurrentIndex(0);
+	
 	ClearTriggerList();
 	ClearEventList();
 	m_availableTriggers->clear();

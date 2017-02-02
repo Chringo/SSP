@@ -432,12 +432,19 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 			if (source->internalID == light->internalID)
 			{
 				Point * point = new Point;
-				point->pickSphere = ((Point *)source)->pickSphere;
-				point->rangeSphere = ((Point *)source)->rangeSphere;
+				point->pickSphere = ((Point *)light)->pickSphere;
+				point->rangeSphere = ((Point *)light)->rangeSphere;
+				point->position = ((Point *)light)->data->position;
+				point->type = LIGHT;
+
 				LIGHTING::Point * data = ((Point*)source)->data;
 
 				LightController::GetInstance()->AddLight(point, data, LIGHTING::LT_POINT);
-				destination = point;
+				LightController::GetInstance()->GetLights()->back()->position = light->position;
+				LightController::GetInstance()->GetLights()->back()->type = LIGHT;
+
+				destination = LightController::GetInstance()->GetLights()->back();
+				destination->type = LIGHT;
 			}
 			return Resources::Status::ST_OK;
 		}
