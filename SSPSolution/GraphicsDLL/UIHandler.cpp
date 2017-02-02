@@ -18,7 +18,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		this->m_UIComponents.push_back(newUIComp);
 	}
 
-	this->m_maxTextComponents = 10;
+	this->m_maxTextComponents = 20;
 	this->m_nrOfTextComponents = 0;
 	for (unsigned int i = 0; i < this->m_maxTextComponents; i++)
 	{

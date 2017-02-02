@@ -794,7 +794,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	}
 
-#pragma endregion Send_Updates
+#pragma endregion Network_Send_Updates
 
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
