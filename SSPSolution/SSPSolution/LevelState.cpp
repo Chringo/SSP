@@ -998,14 +998,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_director.Update(dt);
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 
-	if (m_fieldEntities[0] != nullptr)
-	{
-		if (m_fieldEntities[0]->GetField()->F_first_inside && m_fieldEntities[0]->GetField()->F_second_inside)
-		{
-			this->m_director.React(1, FIELD_CONTAINS);
-			this->m_director.React(3, FIELD_CONTAINS);
-		}
-	}
+	//if (m_fieldEntities[0] != nullptr)
+	//{
+	//	if (m_fieldEntities[0]->GetField()->F_first_inside && m_fieldEntities[0]->GetField()->F_second_inside)
+	//	{
+	//		this->m_director.React(1, FIELD_CONTAINS);
+	//		this->m_director.React(3, FIELD_CONTAINS);
+	//	}
+	//}
+	m_fieldEntities[0]->Update(dt, inputHandler);
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
