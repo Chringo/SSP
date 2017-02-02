@@ -1080,12 +1080,9 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 				}
 				else
 				{
+					//Do the same algorithm for the child branches that are not culled
 					this->OctreeExtend(curNode->branches[i], depth + 1);
 				}
-			}
-			//Do the same algorithm for the child branches
-			for (int i = 0; i < 8; i++)
-			{
 			}
 		}
 	}
