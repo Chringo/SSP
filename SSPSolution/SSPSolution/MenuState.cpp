@@ -144,7 +144,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_gsh->PushStateToStack(levelSelect);
 
 
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TestingLevel.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Intro Level.level"));
 			}
 			else
 			{
