@@ -22,7 +22,7 @@ namespace Resources
 		
 		DLL_OPERATION Resources::Status SetTexture(Texture* texture, TextureType type);
 		DLL_OPERATION Texture** GetAllTextures() { return m_Textures; };
-		DLL_OPERATION Texture* GetTexture(TextureType type) { return (type == TextureType::TEXTURE_UNKNOWN ? nullptr : m_Textures[type]); }
+		DLL_OPERATION Texture*  GetTexture(TextureType type) { return (type == TextureType::TEXTURE_UNKNOWN ? nullptr : m_Textures[type]); }
 		
 		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);
 

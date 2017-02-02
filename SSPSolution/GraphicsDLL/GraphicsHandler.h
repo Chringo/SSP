@@ -10,6 +10,7 @@
 #include "ShaderControl.h"
 #include "DebugRenderer.h"
 #include "UIHandler.h"
+#include "LightHandler.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -62,6 +63,7 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	UIHandler*				m_uiHandler;
+	LIGHTING::LightHandler*			m_LightHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
 

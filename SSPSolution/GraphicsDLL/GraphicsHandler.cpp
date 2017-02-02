@@ -313,6 +313,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_graphicsComponents	   = nullptr;
 	this->m_shaderControl		   = nullptr;
 	this->m_uiHandler			   = nullptr;
+	this->m_LightHandler		   = nullptr;
 	this->m_nrOfGraphicsComponents = 0;
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
@@ -342,6 +343,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		//Resources::ResourceHandler::GetInstance()->LoadLevel(UINT(1337)); //placeholder id
 		//this->m_CreateTempsTestComponents();
 	}
+	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 	this->m_graphicsComponents = new GraphicsComponent*[this->m_maxGraphicsComponents];
 	for (int i = 0; i < this->m_maxGraphicsComponents; i++) {
 		//this->m_graphicsComponents[i] = nullptr;
@@ -353,14 +355,12 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		//this->m_graphicsComponents[i] = nullptr;
 		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
 	}
-
+	this->m_LightHandler = LIGHTING::LightHandler::GetInstance();
+	this->m_LightHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
 
 	this->m_shaderControl = new ShaderControl;
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
-
-	ConstantBufferHandler::GetInstance()->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
-
 
 
 
@@ -390,6 +390,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 int GraphicsHandler::Render(float deltaTime)
 {
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+
 	this->m_d3dHandler->ClearBlendState();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
@@ -423,7 +424,7 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 		
 	}
-	
+	m_LightHandler->SetBuffersAsActive();
 	m_shaderControl->DrawFinal();
 
 	/*TEMP CBUFFER STUFF*/
@@ -504,6 +505,7 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
+	m_LightHandler->SetBuffersAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
 	RenderBoundingBoxes();

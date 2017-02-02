@@ -31,8 +31,7 @@ public:
 	TextComponent* GetTextComponent();
 	AIComponent* GetAIComponent();
 	AnimationComponent* GetAnimationComponent();
-	SoundComponent2D* GetSoundComponent2D();
-	SoundComponent3D* GetSoundComponent3D();
+	SoundHandler* GetSoundHandler();
 
 	void UpdateGraphicsComponents();
 	void UpdateGraphicsAnimationComponents();
