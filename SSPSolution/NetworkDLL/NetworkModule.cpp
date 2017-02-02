@@ -471,8 +471,7 @@ void NetworkModule::ReadMessagesFromClients()
 		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
 		int data_read = 0;
-		printf("\n\n\n\n\n %d \n",data_length);
-		printf("\n\n\n\n\n\n\n %d, %d \n", sizeof(AnimationPacket), sizeof(EntityPacket));
+
 		// If there was data
 		if (data_length <= 0)
 		{
