@@ -68,7 +68,7 @@ namespace LevelData {
 	{
 		int numConnections;
 		int Event[20];
-		int SenderID[20];
+		unsigned int SenderID[20];
 	};
 
 	//struct AiHeader{
