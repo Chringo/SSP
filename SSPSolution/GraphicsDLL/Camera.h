@@ -9,40 +9,12 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
-namespace Culling {
-	enum CullingResult {
-		FRUSTRUM_OUTSIDE	=  0,
-		FRUSTRUM_INTERSECT		,
-		FRUSTRUM_INSIDE					
-	};
-struct Plane {
-	DirectX::XMVECTOR normal;
-};
-struct C_AABB {
-	DirectX::XMVECTOR pos;
-	DirectX::XMVECTOR ext;
-	DirectX::XMVECTOR GetPositiveVertex(const DirectX::XMVECTOR &normal);
-	DirectX::XMVECTOR GetNegativeVertex(const DirectX::XMVECTOR &normal);
-};
-struct C_OBB {
-	DirectX::XMVECTOR pos;
-	DirectX::XMVECTOR ext;
-	DirectX::XMVECTOR ort;
-};
 
-struct ViewFrustrum {
-	//Left, Right, Bottom, Top, Near, Far
-	Plane myPlanes[6];
-	int TestAgainstAABB(C_AABB box) const;
-	//An conservative test is fast but may not cull all things that could be culled
-	int TestAgainstOBBConservative(C_OBB box) const;
-	//An exact test will always cull all things perfectly but is slow
-	int TestAgainstOBBExact(C_OBB box) const;
-};
-}
 
 struct cameraFrameData
 {
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 	DirectX::XMMATRIX pView;
 	DirectX::XMMATRIX pProjection;
 	DirectX::XMVECTOR pPos;
@@ -80,6 +52,44 @@ private:
 	float m_fieldOfView;
 
 	Sphere m_collisionSphere;
+
+	enum CullingResult {
+		FRUSTRUM_OUTSIDE = 0,
+		FRUSTRUM_INTERSECT,
+		FRUSTRUM_INSIDE
+	};
+	struct Plane {
+		DirectX::XMFLOAT4 normal;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+	struct C_AABB {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+		DirectX::XMVECTOR GetPositiveVertex(const DirectX::XMVECTOR &normal);
+		DirectX::XMVECTOR GetNegativeVertex(const DirectX::XMVECTOR &normal);
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+	struct C_OBB {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+		DirectX::XMFLOAT3 ort;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+
+	struct ViewFrustrum {
+		//Left, Right, Bottom, Top, Near, Far
+		Plane myPlanes[6];
+		int TestAgainstAABB(C_AABB box);
+		//An conservative test is fast but may not cull all things that could be culled
+		int TestAgainstOBBConservative(C_OBB box);
+		//An exact test will always cull all things perfectly but is slow
+		int TestAgainstOBBExact(C_OBB box);
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
 	
 public:
 	GRAPHICSDLL_API Camera();
@@ -95,7 +105,7 @@ public:
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//	0/1 = failed(succeeded to create the view frustrum.
-	GRAPHICSDLL_API int GetViewFrustrum(Culling::ViewFrustrum& storeIn);
+	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
