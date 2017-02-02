@@ -28,6 +28,7 @@ int System::Shutdown()
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
+	this->m_soundHandler.Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
@@ -99,11 +100,14 @@ int System::Initialize()
 	this->m_AnimationHandler = new AnimationHandler();
 	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
 
+
+	//Initialize the SoundHandler
+	this->m_soundHandler = SoundHandler();
+	this->m_soundHandler.Initialize();
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler, &this->m_soundHandler);
 	//Initialize the GameStateHandler
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera);
-
 
 	//this->m_Anim = new Animation();
 
@@ -233,6 +237,8 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+	this->m_soundHandler.UpdateSoundHandler();
+
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -260,6 +266,11 @@ int System::Update(float deltaTime)
 		{
 			printf("Loaded from file\n");
 		}
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+	{
+		this->m_soundHandler.ReInitSoundEngine();
 	}
 
 	this->m_AnimationHandler->Update(deltaTime);
