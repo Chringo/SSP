@@ -998,9 +998,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_director.Update(dt);
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 
-	if (directorTestField != nullptr)
+	if (m_fieldEntities[0] != nullptr)
 	{
-		if (this->directorTestField->F_first_inside && this->directorTestField->F_second_inside)
+		if (m_fieldEntities[0]->GetField()->F_first_inside && m_fieldEntities[0]->GetField()->F_second_inside)
 		{
 			this->m_director.React(1, FIELD_CONTAINS);
 			this->m_director.React(3, FIELD_CONTAINS);
@@ -1279,19 +1279,32 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 #pragma region Creating Field
 
-	OBB* checkPointOBB = nullptr;
-	for (size_t i = 0; i < m_checkpoints.size(); i++)
-	{
-		checkPointOBB = &m_checkpoints[i]->obb;
+	//OBB* checkPointOBB = nullptr;
+	//for (size_t i = 0; i < m_checkpoints.size(); i++)
+	//{
+	//	checkPointOBB = &m_checkpoints[i]->obb;
+	//	//this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+	//	//	m_checkpoints[i]->pos,
+	//	//	1,	//EntityID Player1
+	//	//	3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+	//	//	checkPointOBB
+	//	//);
+	//}
+	//checkPointOBB = nullptr;
 
-		this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+	for (size_t i = 0; i < data->numCheckpoints; i++)
+	{
+		OBB* checkPointOBB = &m_checkpoints[i]->obb;
+		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			m_checkpoints[i]->pos,
 			1,	//EntityID Player1
 			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
 			checkPointOBB
 		);
+		FieldEntity* tempFE = new FieldEntity();
+		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		this->m_fieldEntities.push_back(tempFE);
 	}
-	checkPointOBB = nullptr;
 
 #pragma endregion
 
