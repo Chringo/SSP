@@ -259,8 +259,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight).rgb;
+    float3 diffuse = saturate(diffuseLight.rgb + (colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY));
     float3 specular = specularLight.rgb;
+    
 
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4(saturate(diffuse), 1);
