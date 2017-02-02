@@ -584,7 +584,7 @@ void Camera::m_updatePos()
 }
 #pragma endregion setters
 
-int Camera::ViewFrustrum::TestAgainstAABB(C_AABB box) 
+CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 {
 	CullingResult result = FRUSTRUM_INSIDE;
 	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };

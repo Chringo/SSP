@@ -407,6 +407,8 @@ int GraphicsHandler::Render(float deltaTime)
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
+
+
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
@@ -656,26 +658,26 @@ int GraphicsHandler::GenerateOctree()
 	this->m_octreeRoot.containedComponents.resize(componentCount);
 	for (size_t i = 0; i < componentCount; i++)
 	{
-		this->m_octreeRoot.containedComponents[i].ext.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[0];
-		this->m_octreeRoot.containedComponents[i].ext.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[1];
-		this->m_octreeRoot.containedComponents[i].ext.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[2];
-		this->m_octreeRoot.containedComponents[i].pos.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.x;
-		this->m_octreeRoot.containedComponents[i].pos.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.y;
-		this->m_octreeRoot.containedComponents[i].pos.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.z;
+		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[0];
+		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[1];
+		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.x;
+		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.y;
+		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.z;
 
 		//Check for the lowest and highest values
-		if (this->m_octreeRoot.containedComponents[i].ext.x < minX)
-			minX = this->m_octreeRoot.containedComponents[i].ext.x;
-		else if (this->m_octreeRoot.containedComponents[i].ext.x > maxX)
-			maxX = this->m_octreeRoot.containedComponents[i].ext.x;
-		if (this->m_octreeRoot.containedComponents[i].ext.y < minY)
-			minY = this->m_octreeRoot.containedComponents[i].ext.y;
-		else if (this->m_octreeRoot.containedComponents[i].ext.y > maxY)
-			maxY = this->m_octreeRoot.containedComponents[i].ext.y;
-		if (this->m_octreeRoot.containedComponents[i].ext.z < minZ)
-			minZ = this->m_octreeRoot.containedComponents[i].ext.z;
-		else if (this->m_octreeRoot.containedComponents[i].ext.z > maxZ)
-			maxZ = this->m_octreeRoot.containedComponents[i].ext.z;
+		if (this->m_octreeRoot.containedComponents[i]->ext.x < minX)
+			minX = this->m_octreeRoot.containedComponents[i]->ext.x;
+		else if (this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
+			maxX = this->m_octreeRoot.containedComponents[i]->ext.x;
+		if (this->m_octreeRoot.containedComponents[i]->ext.y < minY)
+			minY = this->m_octreeRoot.containedComponents[i]->ext.y;
+		else if (this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
+			maxY = this->m_octreeRoot.containedComponents[i]->ext.y;
+		if (this->m_octreeRoot.containedComponents[i]->ext.z < minZ)
+			minZ = this->m_octreeRoot.containedComponents[i]->ext.z;
+		else if (this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
+			maxZ = this->m_octreeRoot.containedComponents[i]->ext.z;
 	}
 
 	//Initialize the octree root
@@ -689,6 +691,15 @@ int GraphicsHandler::GenerateOctree()
 
 	//Build the tree
 	this->OctreeExtend(&this->m_octreeRoot, 0);
+
+	return result;
+}
+
+GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
+{
+	int result = 0;
+
+
 
 	return result;
 }
@@ -1056,7 +1067,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 							//For all 8 branches: check if they intersect with the entity
 							for (int j = 0; j < 8; j++)
 							{
-								if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index].pos, curNode->containedComponents[index].ext))
+								if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index]->pos, curNode->containedComponents[index]->ext))
 								{
 									//The component is within the branch
 									curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
@@ -1090,6 +1101,44 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 	}
 	
 
+}
+
+void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum)
+{
+	//Enum
+	enum {MAX_BRANCHING = 8};
+	//Safety check
+	if (curNode != nullptr)
+	{
+		if (curNode->containedComponents.size() <= 0)
+		{
+			//Branch
+			for (int i = 0; i < 8; i++)
+			{
+				//For all non-culled branches
+				if (curNode->branches[i] != nullptr)
+				{
+					//Do the check to see if the branch is within the view frustrum
+					Camera::C_AABB branchBounds;
+					branchBounds.pos = curNode->pos;
+					branchBounds.ext = curNode->ext;
+					CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+					if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+					{
+						TraverseOctree(curNode->branches[i], cullingFrustrum);
+					}
+				}
+			}
+		}
+		else
+		{
+			//Leaf
+			for each (OctreeBV* entityComponent in curNode->containedComponents)
+			{
+				entityComponent->isRendered = true;
+			}
+		}
+	}
 }
 
 int GraphicsHandler::AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2)
