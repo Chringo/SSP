@@ -78,6 +78,7 @@ namespace Ui {
 
 		QLabel*			m_uniqueID;
 		Container*		m_selection = nullptr;
+	
 
 #pragma region Button behaviour elements
 		QSpinBox	   * m_button_tagBox;
@@ -153,6 +154,7 @@ namespace Ui {
 		void on_Add();
 		void on_Del();
 
+		void on_availableTriggers_index_Changed(int index);
 		void on_triggerSelection_Changed(QTableWidgetItem * item);
 		void on_eventSelection_Changed(int val);
 		void on_Add_Trigger();
@@ -195,6 +197,7 @@ namespace Ui {
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
 		void ClearTriggerList();
 		void ClearEventList();
+		EVENT SetEventListByType(ContainerType type); //Return the first event in the list
 	};
 }
 #endif

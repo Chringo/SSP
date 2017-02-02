@@ -38,18 +38,13 @@ namespace LIGHTING
 			AREALIGHT_BUFFER		 = 10,
 			SPOTLIGHT_BUFFER		 = 11
 		};
-		enum MAX_LIGHTS {				//The max amount of any light type. Needed for the buffers.
-			MAX_POINTLIGHTS = 15,		//Can be changed without problem
-			MAX_DIRECTIONAL = 2,
-			MAX_AREALIGHT	= 11,
-			MAX_SPOTLIGHT	= 10
-		};
+		
 		struct LightArray {
 			Light* dataPtr = nullptr;
 			unsigned int numItems = 0;
 		};
-		const int MAX_NUM_LIGHTS[NUM_LT]	  = { MAX_POINTLIGHTS,   MAX_DIRECTIONAL,          MAX_AREALIGHT,     MAX_SPOTLIGHT };
-		const int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
+		unsigned int NUM_LIGHTS[NUM_LT]	   = { 0, 0, 0, 0};
+		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
 	private:
 		LightHandler();
 		~LightHandler();
@@ -67,12 +62,13 @@ namespace LIGHTING
 		GRAPHICSDLL_API static LightHandler* GetInstance();
 
 	public: //dataFlow
-		LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };
+		GRAPHICSDLL_API LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };
 		GRAPHICSDLL_API bool UpdateStructuredBuffer (LIGHT_TYPE type);
 		GRAPHICSDLL_API bool SetBuffersAsActive();
 		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
+		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
 	private:
-		bool CreateStructuredBuffer (LIGHT_TYPE type);
+		bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
 		bool ReleaseStructuredBuffer(LIGHT_TYPE type);
 		size_t GetStructByteSize    (LIGHT_TYPE type);
 	};
