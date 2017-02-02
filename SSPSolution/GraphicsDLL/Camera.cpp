@@ -129,47 +129,47 @@ int Camera::UpdateProjection(float screenAspect, float fieldOfView, float nearPl
 	return 1;
 }
 
-int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
+int Camera::GetViewFrustrum(Culling::ViewFrustrum & storeIn)
 {
 	int result = 0;
 	//Constants for descriptive code
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
-
+	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_INWARDS};
 	DirectX::XMMATRIX clipSpaceMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&this->m_viewMatrix), DirectX::XMLoadFloat4x4(&this->m_projectionMatrix));
 	DirectX::XMFLOAT4X4 M;
 	DirectX::XMStoreFloat4x4(&M, clipSpaceMatrix);
 	//Extract clipping planes
 	//RIGHT
 	
-	storeIn.myPlanes[LEFT].normal.m128_f32[X] = -(M._14 + M._11);
-	storeIn.myPlanes[LEFT].normal.m128_f32[Y] = -(M._24 + M._21);
-	storeIn.myPlanes[LEFT].normal.m128_f32[Z] = -(M._34 + M._31);
-	storeIn.myPlanes[LEFT].distance = -(M._44 + M._41);
+	storeIn.myPlanes[LEFT].normal.m128_f32[X] = (M._14 + M._11) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.m128_f32[Y] = (M._24 + M._21) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.m128_f32[Z] = (M._34 + M._31) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.m128_f32[W] = (M._44 + M._41) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//LEFT
-	storeIn.myPlanes[RIGHT].normal.m128_f32[X] = -(M._14 - M._11);
-	storeIn.myPlanes[RIGHT].normal.m128_f32[Y] = -(M._24 - M._21);
-	storeIn.myPlanes[RIGHT].normal.m128_f32[Z] = -(M._34 - M._31);
-	storeIn.myPlanes[RIGHT].distance = -(M._44 - M._41);
+	storeIn.myPlanes[RIGHT].normal.m128_f32[X] = (M._14 - M._11) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.m128_f32[Y] = (M._24 - M._21) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.m128_f32[Z] = (M._34 - M._31) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.m128_f32[W] = (M._44 - M._41) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//BOTTOM
-	storeIn.myPlanes[BOTTOM].normal.m128_f32[X] = -(M._14 + M._12);
-	storeIn.myPlanes[BOTTOM].normal.m128_f32[Y] = -(M._24 + M._22);
-	storeIn.myPlanes[BOTTOM].normal.m128_f32[Z] = -(M._34 + M._32);
-	storeIn.myPlanes[BOTTOM].distance = -(M._44 + M._42);
+	storeIn.myPlanes[BOTTOM].normal.m128_f32[X] = (M._14 + M._12) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.m128_f32[Y] = (M._24 + M._22) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.m128_f32[Z] = (M._34 + M._32) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.m128_f32[W] = (M._44 + M._42) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//TOP
-	storeIn.myPlanes[TOP].normal.m128_f32[X] = -(M._14 - M._12);
-	storeIn.myPlanes[TOP].normal.m128_f32[Y] = -(M._24 - M._22);
-	storeIn.myPlanes[TOP].normal.m128_f32[Z] = -(M._34 - M._32);
-	storeIn.myPlanes[TOP].distance = -(M._44 - M._42);
+	storeIn.myPlanes[TOP].normal.m128_f32[X] = (M._14 - M._12) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.m128_f32[Y] = (M._24 - M._22) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.m128_f32[Z] = (M._34 - M._32) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.m128_f32[W] = (M._44 - M._42) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//NEAR
-	storeIn.myPlanes[NEAR].normal.m128_f32[X] = -(M._14 + M._13);
-	storeIn.myPlanes[NEAR].normal.m128_f32[Y] = -(M._24 + M._23);
-	storeIn.myPlanes[NEAR].normal.m128_f32[Z] = -(M._34 + M._33);
-	storeIn.myPlanes[NEAR].distance = -(M._44 + M._43);
+	storeIn.myPlanes[NEAR].normal.m128_f32[X] = (M._14 + M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.m128_f32[Y] = (M._24 + M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.m128_f32[Z] = (M._34 + M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.m128_f32[W] = (M._44 + M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//FAR
-	storeIn.myPlanes[FAR].normal.m128_f32[X] = -(M._14 - M._13);
-	storeIn.myPlanes[FAR].normal.m128_f32[Y] = -(M._24 - M._23);
-	storeIn.myPlanes[FAR].normal.m128_f32[Z] = -(M._34 - M._33);
-	storeIn.myPlanes[FAR].distance = -(M._44 - M._43);
+	storeIn.myPlanes[FAR].normal.m128_f32[X] = (M._14 - M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.m128_f32[Y] = (M._24 - M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.m128_f32[Z] = (M._34 - M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.m128_f32[W] = (M._44 - M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
 
 	//Normalize the planes
 	for (int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
@@ -178,7 +178,7 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 		storeIn.myPlanes[planeIndex].normal.m128_f32[X] *= denominator;
 		storeIn.myPlanes[planeIndex].normal.m128_f32[Y] *= denominator;
 		storeIn.myPlanes[planeIndex].normal.m128_f32[Z] *= denominator;
-		storeIn.myPlanes[planeIndex].distance *= denominator;
+		storeIn.myPlanes[planeIndex].normal.m128_f32[W] *= denominator;
 		//storeIn.myPlanes[planeIndex].normal = DirectX::XMVector3Normalize(storeIn.myPlanes[planeIndex].normal);
 	}
 
@@ -582,3 +582,64 @@ void Camera::m_updatePos()
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 }
 #pragma endregion setters
+
+int Culling::ViewFrustrum::TestAgainstAABB(C_AABB box) const
+{
+	CullingResult result = FRUSTRUM_INSIDE;
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		float pos = this->myPlanes[i].normal.m128_f32[DISTANCE];
+		DirectX::XMVECTOR normal = this->myPlanes[i].normal;
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetPositiveVertex(normal))) + pos < 0.0f)
+		{
+			return FRUSTRUM_OUTSIDE;
+		}
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetNegativeVertex(normal))) + pos < 0.0f)
+		{
+			return FRUSTRUM_INTERSECT;
+		}
+	}
+	return result;
+}
+
+int Culling::ViewFrustrum::TestAgainstOBBConservative(C_OBB box) const
+{
+	int result = 0;
+	return result;
+}
+
+int Culling::ViewFrustrum::TestAgainstOBBExact(C_OBB box) const
+{
+	int result = 0;
+	return result;
+}
+
+
+DirectX::XMVECTOR Culling::C_AABB::GetPositiveVertex(const DirectX::XMVECTOR & normal)
+{
+	DirectX::XMVECTOR result = DirectX::XMVectorSubtract(this->pos, this->ext);
+
+	if (DirectX::XMVectorGetX(normal) >= 0)
+		result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(DirectX::XMVectorAdd(this->pos, this->ext)));
+	if (DirectX::XMVectorGetY(normal) >= 0)
+		result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(DirectX::XMVectorAdd(this->pos, this->ext)));
+	if (DirectX::XMVectorGetZ(normal) >= 0)
+		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorAdd(this->pos, this->ext)));
+
+	return DirectX::XMVectorAdd(this->pos, result);
+}
+
+DirectX::XMVECTOR Culling::C_AABB::GetNegativeVertex(const DirectX::XMVECTOR & normal)
+{
+	DirectX::XMVECTOR result = DirectX::XMVectorAdd(this->pos, this->ext);
+
+	if (DirectX::XMVectorGetX(normal) >= 0)
+		result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(DirectX::XMVectorSubtract(this->pos, this->ext)));
+	if (DirectX::XMVectorGetY(normal) >= 0)											  
+		result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(DirectX::XMVectorSubtract(this->pos, this->ext)));
+	if (DirectX::XMVectorGetZ(normal) >= 0)											  
+		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorSubtract(this->pos, this->ext)));
+
+	return DirectX::XMVectorAdd(this->pos, result);
+}

@@ -9,16 +9,37 @@
 #else
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
-
+namespace Culling {
+	enum CullingResult {
+		FRUSTRUM_OUTSIDE	=  0,
+		FRUSTRUM_INTERSECT		,
+		FRUSTRUM_INSIDE					
+	};
 struct Plane {
 	DirectX::XMVECTOR normal;
-	float distance;
+};
+struct C_AABB {
+	DirectX::XMVECTOR pos;
+	DirectX::XMVECTOR ext;
+	DirectX::XMVECTOR GetPositiveVertex(const DirectX::XMVECTOR &normal);
+	DirectX::XMVECTOR GetNegativeVertex(const DirectX::XMVECTOR &normal);
+};
+struct C_OBB {
+	DirectX::XMVECTOR pos;
+	DirectX::XMVECTOR ext;
+	DirectX::XMVECTOR ort;
 };
 
 struct ViewFrustrum {
 	//Left, Right, Bottom, Top, Near, Far
 	Plane myPlanes[6];
+	int TestAgainstAABB(C_AABB box) const;
+	//An conservative test is fast but may not cull all things that could be culled
+	int TestAgainstOBBConservative(C_OBB box) const;
+	//An exact test will always cull all things perfectly but is slow
+	int TestAgainstOBBExact(C_OBB box) const;
 };
+}
 
 struct cameraFrameData
 {
@@ -74,7 +95,7 @@ public:
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//	0/1 = failed(succeeded to create the view frustrum.
-	int GetViewFrustrum(ViewFrustrum& storeIn);
+	GRAPHICSDLL_API int GetViewFrustrum(Culling::ViewFrustrum& storeIn);
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
