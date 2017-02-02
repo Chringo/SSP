@@ -74,7 +74,7 @@ LIGHT initCustomLight(float3 pos, float3 color)
     light.lightPos = pos;
 	light.lightDir = float3(0.0f, 0.5f, 1.0f);
     light.lightColor = color;
-    light.lightAmbient = AMBIENT_COLOR;
+    light.lightAmbient = AMBIENT_COLOR.rrr;
     return light;
 }
 
@@ -155,11 +155,11 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
-    float3 metalSamp = (metal.Sample(pointSampler, input.UV));
-    float3 roughSamp = (rough.Sample(pointSampler, input.UV));
+    float3 metalSamp = (metal.Sample(pointSampler, input.UV)).rgb;
+    float3 roughSamp = (rough.Sample(pointSampler, input.UV)).rgb;
     float3 AOSamp    = (AO.Sample(pointSampler, input.UV)).rgb;
-    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV));
-    float3 N = (normalTex.Sample(pointSampler, input.UV));
+    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
+    float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
 
 
 
