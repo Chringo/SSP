@@ -23,6 +23,7 @@ private:
 		OBB obb;
 	};
 	FSMEnvironment::LevelDirector m_director;
+	Field* directorTestField;
 	Player m_player1;
 	Player m_player2;
 	int counter = 0;

@@ -1001,6 +1001,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+
+	if (this->directorTestField->F_first_inside && this->directorTestField->F_second_inside)
+		int i = 0;
 
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
@@ -1251,6 +1255,21 @@ m_dynamicEntitys.push_back(tde);
 
 		m_checkpoints.push_back(CB);
 	}
+
+#pragma region Creating Field
+
+	OBB* checkPointOBB = &m_checkpoints[0]->obb;
+	
+	this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+		m_checkpoints[0]->pos,
+		1,
+		3,
+		checkPointOBB
+	);
+
+	checkPointOBB = nullptr;
+
+#pragma endregion
 
 	//Create the PuzzleElements
 #pragma region
@@ -1773,9 +1792,9 @@ m_dynamicEntitys.push_back(tde);
 	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
-
-
+	
 	m_cHandler->GetPhysicsHandler()->SortComponents();
+
 	return 1;
 }
 
