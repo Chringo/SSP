@@ -186,7 +186,6 @@ public:
     QLabel *label_9;
     QLabel *label_10;
     QSpinBox *G_Colorvalue;
-    QDoubleSpinBox *RadiusValue;
     QSlider *G_Slider;
     QSlider *R_Slider;
     QSlider *B_Slider;
@@ -195,13 +194,17 @@ public:
     QLabel *label_14;
     QLabel *label_7;
     QLabel *label_11;
-    QDoubleSpinBox *QuadValue;
-    QDoubleSpinBox *ConstantValue;
-    QSpacerItem *horizontalSpacer;
-    QDoubleSpinBox *LinearValue;
     QSpacerItem *verticalSpacer_7;
     QSpacerItem *verticalSpacer_8;
     QSpinBox *IntensityValue;
+    QSlider *horizontalSlider;
+    QSlider *horizontalSlider_2;
+    QSlider *horizontalSlider_3;
+    QSlider *horizontalSlider_4;
+    QSpinBox *RadiusValue;
+    QSpinBox *ConstantValue;
+    QSpinBox *LinearValue;
+    QSpinBox *QuadValue;
     QWidget *RenderWidget;
     QLabel *label_2;
     QPushButton *pushButton;
@@ -1304,7 +1307,7 @@ public:
 
         IntensitySlider = new QSlider(Point);
         IntensitySlider->setObjectName(QStringLiteral("IntensitySlider"));
-        IntensitySlider->setMaximum(100);
+        IntensitySlider->setMaximum(250);
         IntensitySlider->setOrientation(Qt::Horizontal);
 
         gridLayout_9->addWidget(IntensitySlider, 12, 2, 1, 3);
@@ -1348,13 +1351,6 @@ public:
         G_Colorvalue->setMaximum(255);
 
         gridLayout_9->addWidget(G_Colorvalue, 2, 1, 1, 1);
-
-        RadiusValue = new QDoubleSpinBox(Point);
-        RadiusValue->setObjectName(QStringLiteral("RadiusValue"));
-        RadiusValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        RadiusValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
-
-        gridLayout_9->addWidget(RadiusValue, 4, 3, 1, 2);
 
         G_Slider = new QSlider(Point);
         G_Slider->setObjectName(QStringLiteral("G_Slider"));
@@ -1408,38 +1404,6 @@ public:
 
         gridLayout_9->addWidget(label_11, 4, 0, 1, 2);
 
-        QuadValue = new QDoubleSpinBox(Point);
-        QuadValue->setObjectName(QStringLiteral("QuadValue"));
-        QuadValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        QuadValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        QuadValue->setMaximum(1);
-        QuadValue->setSingleStep(0.01);
-
-        gridLayout_9->addWidget(QuadValue, 9, 3, 1, 1);
-
-        ConstantValue = new QDoubleSpinBox(Point);
-        ConstantValue->setObjectName(QStringLiteral("ConstantValue"));
-        ConstantValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        ConstantValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        ConstantValue->setMaximum(1);
-        ConstantValue->setSingleStep(0.01);
-
-        gridLayout_9->addWidget(ConstantValue, 7, 3, 1, 1);
-
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout_9->addItem(horizontalSpacer, 7, 4, 1, 1);
-
-        LinearValue = new QDoubleSpinBox(Point);
-        LinearValue->setObjectName(QStringLiteral("LinearValue"));
-        LinearValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
-        LinearValue->setFrame(true);
-        LinearValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        LinearValue->setMaximum(1);
-        LinearValue->setSingleStep(0.01);
-
-        gridLayout_9->addWidget(LinearValue, 8, 3, 1, 1);
-
         verticalSpacer_7 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         gridLayout_9->addItem(verticalSpacer_7, 10, 3, 1, 1);
@@ -1452,9 +1416,70 @@ public:
         IntensityValue->setObjectName(QStringLiteral("IntensityValue"));
         IntensityValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
         IntensityValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        IntensityValue->setMaximum(100);
+        IntensityValue->setMaximum(250);
 
         gridLayout_9->addWidget(IntensityValue, 12, 0, 1, 2);
+
+        horizontalSlider = new QSlider(Point);
+        horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
+        horizontalSlider->setMaximum(100);
+        horizontalSlider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider, 8, 4, 1, 1);
+
+        horizontalSlider_2 = new QSlider(Point);
+        horizontalSlider_2->setObjectName(QStringLiteral("horizontalSlider_2"));
+        horizontalSlider_2->setMaximum(100);
+        horizontalSlider_2->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_2, 9, 4, 1, 1);
+
+        horizontalSlider_3 = new QSlider(Point);
+        horizontalSlider_3->setObjectName(QStringLiteral("horizontalSlider_3"));
+        horizontalSlider_3->setMaximum(100);
+        horizontalSlider_3->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_3, 7, 4, 1, 1);
+
+        horizontalSlider_4 = new QSlider(Point);
+        horizontalSlider_4->setObjectName(QStringLiteral("horizontalSlider_4"));
+        horizontalSlider_4->setMaximum(1000);
+        horizontalSlider_4->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_4, 4, 4, 1, 1);
+
+        RadiusValue = new QSpinBox(Point);
+        RadiusValue->setObjectName(QStringLiteral("RadiusValue"));
+        RadiusValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        RadiusValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        RadiusValue->setMaximum(1000);
+
+        gridLayout_9->addWidget(RadiusValue, 4, 3, 1, 1);
+
+        ConstantValue = new QSpinBox(Point);
+        ConstantValue->setObjectName(QStringLiteral("ConstantValue"));
+        ConstantValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        ConstantValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        ConstantValue->setMaximum(100);
+
+        gridLayout_9->addWidget(ConstantValue, 7, 3, 1, 1);
+
+        LinearValue = new QSpinBox(Point);
+        LinearValue->setObjectName(QStringLiteral("LinearValue"));
+        LinearValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        LinearValue->setFrame(true);
+        LinearValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        LinearValue->setMaximum(100);
+
+        gridLayout_9->addWidget(LinearValue, 8, 3, 1, 1);
+
+        QuadValue = new QSpinBox(Point);
+        QuadValue->setObjectName(QStringLiteral("QuadValue"));
+        QuadValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        QuadValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        QuadValue->setMaximum(100);
+
+        gridLayout_9->addWidget(QuadValue, 9, 3, 1, 1);
 
         LightWindows->addWidget(Point);
 
@@ -1571,10 +1596,18 @@ public:
         QObject::connect(R_Slider, SIGNAL(valueChanged(int)), R_Colorvalue, SLOT(setValue(int)));
         QObject::connect(IntensityValue, SIGNAL(valueChanged(int)), IntensitySlider, SLOT(setValue(int)));
         QObject::connect(IntensitySlider, SIGNAL(valueChanged(int)), IntensityValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_4, SIGNAL(sliderMoved(int)), RadiusValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_3, SIGNAL(sliderMoved(int)), ConstantValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider, SIGNAL(sliderMoved(int)), LinearValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_2, SIGNAL(sliderMoved(int)), QuadValue, SLOT(setValue(int)));
+        QObject::connect(QuadValue, SIGNAL(valueChanged(int)), horizontalSlider_2, SLOT(setValue(int)));
+        QObject::connect(LinearValue, SIGNAL(valueChanged(int)), horizontalSlider, SLOT(setValue(int)));
+        QObject::connect(ConstantValue, SIGNAL(valueChanged(int)), horizontalSlider_3, SLOT(setValue(int)));
+        QObject::connect(RadiusValue, SIGNAL(valueChanged(int)), horizontalSlider_4, SLOT(setValue(int)));
 
         CustomBehaviourTabWidget->setCurrentIndex(3);
         BehaviourStackWidget->setCurrentIndex(0);
-        LightWindows->setCurrentIndex(0);
+        LightWindows->setCurrentIndex(1);
         tabWidget->setCurrentIndex(0);
 
 

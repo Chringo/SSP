@@ -2426,7 +2426,7 @@ Header- color:rgb(48, 48, 48);
            <item row="4" column="0" colspan="2">
             <widget class="QStackedWidget" name="LightWindows">
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="None"/>
              <widget class="QWidget" name="Point">
@@ -2441,7 +2441,7 @@ Header- color:rgb(48, 48, 48);
                <item row="12" column="2" colspan="3">
                 <widget class="QSlider" name="IntensitySlider">
                  <property name="maximum">
-                  <number>100</number>
+                  <number>250</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -2512,16 +2512,6 @@ Header- color:rgb(48, 48, 48);
                  </property>
                  <property name="maximum">
                   <number>255</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="3" colspan="2">
-                <widget class="QDoubleSpinBox" name="RadiusValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                 </widget>
                </item>
@@ -2605,70 +2595,6 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="9" column="3">
-                <widget class="QDoubleSpinBox" name="QuadValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="3">
-                <widget class="QDoubleSpinBox" name="ConstantValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="4">
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="8" column="3">
-                <widget class="QDoubleSpinBox" name="LinearValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="frame">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                </widget>
-               </item>
                <item row="10" column="3">
                 <spacer name="verticalSpacer_7">
                  <property name="orientation">
@@ -2697,6 +2623,101 @@ Header- color:rgb(48, 48, 48);
                </item>
                <item row="12" column="0" colspan="2">
                 <widget class="QSpinBox" name="IntensityValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>250</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QSlider" name="horizontalSlider">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="4">
+                <widget class="QSlider" name="horizontalSlider_2">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="4">
+                <widget class="QSlider" name="horizontalSlider_3">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="4">
+                <widget class="QSlider" name="horizontalSlider_4">
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="3">
+                <widget class="QSpinBox" name="RadiusValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="3">
+                <widget class="QSpinBox" name="ConstantValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="3">
+                <widget class="QSpinBox" name="LinearValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="frame">
+                  <bool>true</bool>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="3">
+                <widget class="QSpinBox" name="QuadValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
@@ -2944,12 +2965,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1039</x>
-     <y>350</y>
+     <x>1013</x>
+     <y>323</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1039</x>
-     <y>531</y>
+     <x>1013</x>
+     <y>335</y>
     </hint>
    </hints>
   </connection>
@@ -3142,6 +3163,134 @@ Header- color:rgb(48, 48, 48);
     <hint type="destinationlabel">
      <x>974</x>
      <y>650</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_4</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>RadiusValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1058</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1019</x>
+     <y>477</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_3</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>ConstantValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1049</x>
+     <y>537</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1023</x>
+     <y>533</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>LinearValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1048</x>
+     <y>558</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1016</x>
+     <y>559</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>QuadValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1060</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1016</x>
+     <y>588</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>QuadValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1029</x>
+     <y>594</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1071</x>
+     <y>596</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LinearValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1023</x>
+     <y>570</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1064</x>
+     <y>571</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ConstantValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1036</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1070</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>RadiusValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1019</x>
+     <y>468</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1072</x>
+     <y>477</y>
     </hint>
    </hints>
   </connection>

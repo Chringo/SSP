@@ -175,10 +175,10 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Int,    3,
-    QMetaType::Void, QMetaType::Double,    3,
-    QMetaType::Void, QMetaType::Double,    3,
-    QMetaType::Void, QMetaType::Double,    3,
-    QMetaType::Void, QMetaType::Double,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Double,    3,
 
        0        // eod
@@ -219,10 +219,10 @@ void Ui::BehaviourTypeHandler::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 26: _t->on_G_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 27: _t->on_B_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 28: _t->on_Intensity_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 29: _t->on_Radius_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 30: _t->on_Constant_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 31: _t->on_Linear_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 32: _t->on_Quadratic_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 29: _t->on_Radius_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 30: _t->on_Constant_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 31: _t->on_Linear_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 32: _t->on_Quadratic_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 33: _t->on_lever_distance_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
         default: ;
         }

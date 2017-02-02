@@ -45,16 +45,11 @@ namespace Ui {
 	{
 		R, G, B,
 		INTENSITY,
-		NUM_LINTSPIN
-	};
-	enum LFloatSpin
-	{
 		RADIUS,
 		CONSTANT,
 		LINEAR,
 		QUADRATIC,
-
-		NUM_LFLOATSPIN
+		NUM_LINTSPIN
 	};
 	class BehaviourTypeHandler : QObject
 	{
@@ -105,7 +100,6 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_rotationTime	  ;
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
-		QDoubleSpinBox*		m_LightDoubleSpinBoxes[NUM_LFLOATSPIN];
 		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
 #pragma endregion
 
@@ -186,10 +180,10 @@ namespace Ui {
 		void on_B_changed(int val);
 		void on_Intensity_changed(int val);
 
-		void on_Radius_changed(double val);
-		void on_Constant_changed(double val);
-		void on_Linear_changed(double val);
-		void on_Quadratic_changed(double val);
+		void on_Radius_changed(int val);
+		void on_Constant_changed(int val);
+		void on_Linear_changed(int val);
+		void on_Quadratic_changed(int val);
 #pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);

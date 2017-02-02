@@ -104,15 +104,15 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_LightIntSpinBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_B_changed(int)));
 	connect(m_LightIntSpinBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Intensity_changed(int)));
 
-	m_LightDoubleSpinBoxes[LFloatSpin::RADIUS] = ui->RadiusValue;
-	m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT] = ui->ConstantValue;
-	m_LightDoubleSpinBoxes[LFloatSpin::LINEAR] = ui->LinearValue;
-	m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC] = ui->QuadValue;
+	m_LightIntSpinBoxes[LIntSpin::RADIUS] = ui->RadiusValue;
+	m_LightIntSpinBoxes[LIntSpin::CONSTANT] = ui->ConstantValue;
+	m_LightIntSpinBoxes[LIntSpin::LINEAR] = ui->LinearValue;
+	m_LightIntSpinBoxes[LIntSpin::QUADRATIC] = ui->QuadValue;
 
-	connect(m_LightDoubleSpinBoxes[LFloatSpin::RADIUS], SIGNAL(valueChanged(double)), this, SLOT(on_Radius_changed(double)));
-	connect(m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT], SIGNAL(valueChanged(double)), this, SLOT(on_Constant_changed(double)));
-	connect(m_LightDoubleSpinBoxes[LFloatSpin::LINEAR], SIGNAL(valueChanged(double)), this, SLOT(on_Linear_changed(double)));
-	connect(m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC], SIGNAL(valueChanged(double)), this, SLOT(on_Quadratic_changed(double)));
+	connect(m_LightIntSpinBoxes[LIntSpin::RADIUS], SIGNAL(valueChanged(int)), this, SLOT(on_Radius_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::CONSTANT], SIGNAL(valueChanged(int)), this, SLOT(on_Constant_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::LINEAR], SIGNAL(valueChanged(int)), this, SLOT(on_Linear_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::QUADRATIC], SIGNAL(valueChanged(int)), this, SLOT(on_Quadratic_changed(int)));
 	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
 
 
@@ -219,12 +219,12 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_LightIntSpinBoxes[R]->setValue(((Point*)m_selection)->data->color.r * 255);
 			m_LightIntSpinBoxes[G]->setValue(((Point*)m_selection)->data->color.g * 255);
 			m_LightIntSpinBoxes[B]->setValue(((Point*)m_selection)->data->color.b * 255);
-			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 10);
+			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 25);
 
-			m_LightDoubleSpinBoxes[RADIUS]->setValue(((Point*)m_selection)->data->radius);
-			m_LightDoubleSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant);
-			m_LightDoubleSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear);
-			m_LightDoubleSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic);
+			m_LightIntSpinBoxes[RADIUS]->setValue(((Point*)m_selection)->data->radius * 100);
+			m_LightIntSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant * 100);
+			m_LightIntSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear * 100);
+			m_LightIntSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic * 100);
 			m_attributes_widget->setCurrentIndex(3);
 			break;
 #pragma endregion
@@ -256,10 +256,10 @@ void Ui::BehaviourTypeHandler::Deselect()
 	m_LightIntSpinBoxes[B]->setValue(0);
 	m_LightIntSpinBoxes[INTENSITY]->setValue(0);
 
-	m_LightDoubleSpinBoxes[RADIUS]->setValue(0);
-	m_LightDoubleSpinBoxes[CONSTANT]->setValue(0);
-	m_LightDoubleSpinBoxes[LINEAR]->setValue(0);
-	m_LightDoubleSpinBoxes[QUADRATIC]->setValue(0);
+	m_LightIntSpinBoxes[RADIUS]->setValue(0);
+	m_LightIntSpinBoxes[CONSTANT]->setValue(0);
+	m_LightIntSpinBoxes[LINEAR]->setValue(0);
+	m_LightIntSpinBoxes[QUADRATIC]->setValue(0);
 
 }
 
@@ -934,7 +934,7 @@ void Ui::BehaviourTypeHandler::on_B_changed(int val)
 }
 void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
 {
-	const int dpi = 10; // Any constant 10^n
+	const int dpi = 25; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
 
 	if (m_selection != nullptr) {
@@ -944,38 +944,50 @@ void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
 		}
 	}
 }
-void Ui::BehaviourTypeHandler::on_Radius_changed(double val)
+void Ui::BehaviourTypeHandler::on_Radius_changed(int val)
 {
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
 	if (m_selection != nullptr) {
-		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->radius != val) {
-			((Point*)m_selection)->data->radius = val;
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->radius != realVal) {
+			((Point*)m_selection)->data->radius = realVal;
 			this->m_selection->isDirty = true;
 		}
 	}
 }
-void Ui::BehaviourTypeHandler::on_Constant_changed(double val)
+void Ui::BehaviourTypeHandler::on_Constant_changed(int val)
 {
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
 	if (m_selection != nullptr) {
-		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.constant != val) {
-			((Point*)m_selection)->data->falloff.constant = val;
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.constant != realVal) {
+			((Point*)m_selection)->data->falloff.constant = realVal;
 			this->m_selection->isDirty = true;
 		}
 	}
 }
-void Ui::BehaviourTypeHandler::on_Linear_changed(double val)
+void Ui::BehaviourTypeHandler::on_Linear_changed(int val)
 {
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
 	if (m_selection != nullptr) {
-		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.linear != val) {
-			((Point*)m_selection)->data->falloff.linear = val;
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.linear != realVal) {
+			((Point*)m_selection)->data->falloff.linear = realVal;
 			this->m_selection->isDirty = true;
 		}
 	}
 }
-void Ui::BehaviourTypeHandler::on_Quadratic_changed(double val)
+void Ui::BehaviourTypeHandler::on_Quadratic_changed(int val)
 {
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
 	if (m_selection != nullptr) {
-		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.quadratic != val) {
-			((Point*)m_selection)->data->falloff.quadratic = val;
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.quadratic != realVal) {
+			((Point*)m_selection)->data->falloff.quadratic = realVal;
 			this->m_selection->isDirty = true;
 		}
 	}

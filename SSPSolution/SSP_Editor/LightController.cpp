@@ -55,7 +55,7 @@ void LightController::AddLight(Light* light, LIGHTING::Light * data, LIGHTING::L
 		this->pointLightData.push_back(*(LIGHTING::Point*)data);
 		p->Initialize(&this->pointLightData.back());
 		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), type);
-		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
+		//LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
 		break;
 	}
 	case LIGHTING::LT_DIRECTIONAL:

@@ -139,6 +139,19 @@ float GGX(float NdotH, float m)
     return m2 / (f * f);
 }
 
+float pointIllumination(float3 P, float3 N, float3 lightCentre, float r, float c, float l, float q, float cutoff)
+{
+    float3 L = lightCentre - P;
+    float distance = length(L);
+    float d = max(distance, 0);
+    L /= distance;
+
+    float df = (1 / r);
+
+    float attenuation =  1 / ((c * df) + (l * d * df) + (q * q * d * df));
+    return max(attenuation, cutoff);
+}
+
 float DirectIllumination(float3 P, float3 N, float3 lightCentre, float r, float cutoff)
 {
     // calculate normalized light vector and distance to sphere light surface
@@ -229,10 +242,13 @@ float4 PS_main(VS_OUT input) : SV_Target
         
         if (dot(normalize(wPosSamp.xyz - pointlights[i].position.xyz), N) < 0.0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
         {
-
-            lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
+            lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.005);
+            //lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
 
             lightPower *= pointlights[i].intensity; //could add falloff factor
+
+            //return lightPower;
+
         }
         //else //lights with no direction
 
