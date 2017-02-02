@@ -1000,7 +1000,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 
 	if (this->directorTestField->F_first_inside && this->directorTestField->F_second_inside)
-		int i = 0;
+	{
+		this->m_director.React(1, FIELD_CONTAINS);
+		this->m_director.React(3, FIELD_CONTAINS);
+	}
 
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
