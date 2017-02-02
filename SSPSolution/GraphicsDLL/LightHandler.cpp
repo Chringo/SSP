@@ -7,7 +7,7 @@ LIGHTING::LightHandler::LightHandler()
 LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(NUM_LT); //Release all buffers
-	delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr;
+	delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr; //TEMP
 }
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
@@ -21,15 +21,8 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 
 	for (size_t i = 0; i < NUM_LT; i++)
 	{
-		this->CreateStructuredBuffer(LIGHT_TYPE(i)); //Create all the structured buffers
+		assert(this->CreateStructuredBuffer(LIGHT_TYPE(i),3) == true); //Create all the structured buffers  and update the constant buffer
 	}
-
-	m_constBufferData.NUM_POINTLIGHTS = MAX_POINTLIGHTS;
-	m_constBufferData.NUM_AREALIGHTS = MAX_AREALIGHT;
-	m_constBufferData.NUM_SPOTLIGHTS = MAX_SPOTLIGHT;
-	m_constBufferData.NUM_DIRECTIONALLIGHTS = MAX_DIRECTIONAL;
-	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
-
 
 	/* TEMPORARY*/
 	Point* pointArray = new Point[3];
@@ -49,7 +42,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	pointArray[1].position.m128_f32[1] = -9.0f;
 	pointArray[1].position.m128_f32[2] = -3.0f;
 	pointArray[1].intensity = 5.0f;
-	//pointArray[1].isActive = TRUE;
+	pointArray[1].isActive = TRUE;
 
 	pointArray[2].color.r = 0.0f;
 	pointArray[2].color.g = 0.0f;
@@ -58,7 +51,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	pointArray[2].position.m128_f32[1] = -9.0f;
 	pointArray[2].position.m128_f32[2] = -3.0f;
 	pointArray[2].intensity = 5.0f;
-	//pointArray[2].isActive = TRUE;
+	pointArray[2].isActive = TRUE;
 	
 	this->SetLightData(pointArray, 3, LT_POINT);
 	
@@ -75,9 +68,9 @@ LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
 }
 
 
-bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
+bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 {
-	if (type >= LIGHT_TYPE::NUM_LT)
+	if (type >= LIGHT_TYPE::NUM_LT || amount <= NUM_LIGHTS[type])
 		return false;
 
 	if (lightBuffers[type] != nullptr || m_structuredBuffers[type] != nullptr) //if the buffers are already created, Release them
@@ -86,7 +79,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	}
 
 	size_t structSize = GetStructByteSize(type);
-
+	NUM_LIGHTS[type] = amount;
 	
 	HRESULT hr;
 	D3D11_BUFFER_DESC lightBufferDesc;
@@ -95,7 +88,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.CPUAccessFlags	    = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags		    = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	lightBufferDesc.ByteWidth		    = structSize * MAX_NUM_LIGHTS[type]; //total size of the buffer
+	lightBufferDesc.ByteWidth		    = structSize * amount; //total size of the buffer
 	lightBufferDesc.StructureByteStride = structSize;
 
 	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffers[type]))) {
@@ -108,7 +101,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 	srvDesc.Format					 = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension			 = D3D11_SRV_DIMENSION_BUFFEREX;
 	srvDesc.Buffer.ElementOffset	 = 0;
-	srvDesc.Buffer.NumElements	     = MAX_NUM_LIGHTS[type];
+	srvDesc.Buffer.NumElements	     = amount; 
 	if (FAILED(hr = m_gDevice->CreateShaderResourceView(lightBuffers[type], &srvDesc, &m_structuredBuffers[type]))) {
 #ifdef  _DEBUG
 		MessageBox(NULL, L"Failed to create light buffer", L"Error", MB_ICONERROR | MB_OK);
@@ -116,6 +109,24 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type)
 		return false;
 	}
 	this->m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
+
+
+	switch (type)
+	{
+	case LIGHT_TYPE::LT_POINT:
+		m_constBufferData.NUM_POINTLIGHTS = amount;
+		break;
+	case LIGHT_TYPE::LT_SPOT:
+		m_constBufferData.NUM_SPOTLIGHTS = amount;
+		break;
+	case LIGHT_TYPE::LT_AREA:
+		m_constBufferData.NUM_AREALIGHTS = amount;
+		break;
+	case LIGHT_TYPE::LT_DIRECTIONAL:
+		m_constBufferData.NUM_DIRECTIONALLIGHTS = amount;
+		break;
+	}
+	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 
 	return true;
 }
@@ -137,8 +148,10 @@ bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 	lightBuffers[type]		 ->Release();
 	m_structuredBuffers[type]->Release();
 
-	lightBuffers[type]		 = nullptr;
-	m_structuredBuffers[type]= nullptr;
+	lightBuffers[type]		  = nullptr;
+	m_structuredBuffers[type] = nullptr;
+
+	NUM_LIGHTS[type] = 0;
 	return true;
 }
 
@@ -160,7 +173,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 #endif // _DEBUG
 		return false;
 	}
-	memset(mapRes.pData, 0, GetStructByteSize(type) * MAX_NUM_LIGHTS[type]);
+	memset(mapRes.pData, 0, GetStructByteSize(type) * NUM_LIGHTS[type]);
 	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
 	m_gDeviceContext->Unmap(lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
@@ -183,18 +196,31 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 	if (type >= NUM_LT)
 		return false;
 	m_lightData[type].dataPtr = lightArray;
-	if (numLights > this->MAX_NUM_LIGHTS[type])
+	if (numLights > this->NUM_LIGHTS[type])
 	{
-		m_lightData[type].numItems = this->MAX_NUM_LIGHTS[type];
-#ifdef _DEBUG
-		std::cout << "The maximum lightamount has been reached for type :" << type << std::endl;
-		std::cout << "Current limit is : " << this->MAX_NUM_LIGHTS[type] << "| Your amount : " << numLights << std::endl;
-		std::cout << "Increase the maximum amount of lights available in LightHandler" << std::endl;
-#endif // _DEBUG
-		return false;
+		ReleaseStructuredBuffer(type);
+		CreateStructuredBuffer(type, numLights);
+		
+		return true;
 	}
 	else {
 		m_lightData[type].numItems = numLights;
+		switch (type)
+		{
+		case LIGHT_TYPE::LT_POINT:
+			m_constBufferData.NUM_POINTLIGHTS = numLights;
+			break;
+		case LIGHT_TYPE::LT_SPOT:
+			m_constBufferData.NUM_SPOTLIGHTS = numLights;
+			break;
+		case LIGHT_TYPE::LT_AREA:
+			m_constBufferData.NUM_AREALIGHTS = numLights;
+			break;
+		case LIGHT_TYPE::LT_DIRECTIONAL:
+			m_constBufferData.NUM_DIRECTIONALLIGHTS = numLights;
+			break;
+		}
+		ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 		return true;
 	}
 }
