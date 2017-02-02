@@ -1257,15 +1257,18 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 #pragma region Creating Field
 
-	OBB* checkPointOBB = &m_checkpoints[0]->obb;
-	
-	this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-		m_checkpoints[0]->pos,
-		1,
-		3,
-		checkPointOBB
-	);
+	OBB* checkPointOBB = nullptr;
+	for (size_t i = 0; i < m_checkpoints.size(); i++)
+	{
+		checkPointOBB = &m_checkpoints[i]->obb;
 
+		this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+			m_checkpoints[i]->pos,
+			1,	//EntityID Player1
+			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+			checkPointOBB
+		);
+	}
 	checkPointOBB = nullptr;
 
 #pragma endregion
