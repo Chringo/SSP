@@ -369,8 +369,8 @@ public:
 
 		//fill unique data
 		data.interactionDistance = this->interactionDistance;
-		data.min = this->minRotation;
-		data.max = this->maxRotation;
+		data.min = this->minRotation / 360.f;
+		data.max = this->maxRotation / 360.f;
 		data.resetTime = this->resetTime;
 		data.resetDelay = this->timeToReset;	  //Sekunder
 		data.time = this->rotateTime;	  //Sekunder
@@ -417,8 +417,8 @@ public:
 
 		//unique data load
 		this->interactionDistance = dataPtr->interactionDistance;
-		this->minRotation		  = dataPtr->min;
-		this->maxRotation		  = dataPtr->max;
+		this->minRotation		  = dataPtr->min * 360.f;
+		this->maxRotation		  = dataPtr->max * 360.f;
 		this->resetTime			  = dataPtr->resetTime;
 		this->timeToReset		  = dataPtr->resetDelay;
 		this->rotateTime		  = dataPtr->time;
@@ -734,9 +734,66 @@ public:
 		this->isDirty = true;
 	}
 };
-struct SelectionLists
+
+struct Light : Container
 {
-	std::vector<Resources::Model*>* modelPtr;
-	std::vector<CheckpointContainer*>* checkpointPtr;
-	//std::vector<Lights*>* lightsPtr;
+
+};
+
+struct Point : Light
+{
+	Sphere pickSphere;
+	Sphere rangeSphere;
+
+	LIGHTING::Point * data;
+	
+	Point()
+	{
+		this->type = LIGHT;
+	}
+
+	void Initialize(LIGHTING::Point * data)
+	{
+		this->data = data;
+
+		this->type = LIGHT;
+
+		this->data->color.r = 0.8f;
+		this->data->color.g = 0.6f;
+		this->data->color.b = 0.6f;
+
+		this->data->falloff.constant = 1.0f; //0.07f, 0.017f };
+		this->data->falloff.linear = 0.07f;
+		this->data->falloff.quadratic = 0.017f;
+		this->data->intensity = 3.0f;
+		this->data->radius = 3.0f;
+		this->data->position = { 0.0f,0.0f,0.0f };
+		this->data->isActive = true;
+		rangeSphere.radius = this->data->radius;
+
+		this->position = this->data->position;
+		pickSphere.radius = 0.25f;
+	}
+
+	void Update()
+	{
+		this->data->position = this->position;
+		this->rangeSphere.radius = this->data->radius;
+		isDirty = false;
+	};
+
+	Point& operator=(Point const& obj)
+	{
+		this->internalID = obj.internalID;
+		this->position = obj.position;
+		this->rotation = obj.rotation;
+		this->component = obj.component;
+		this->isDirty = obj.isDirty;
+		this->isStatic = obj.isStatic;
+		this->type = LIGHT;
+
+		this->rangeSphere = obj.rangeSphere;
+		this->pickSphere = obj.rangeSphere;
+		return *this;
+	}
 };

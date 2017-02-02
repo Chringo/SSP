@@ -91,6 +91,35 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_wheel_resetTime,		 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_resetTime_changed(double)));
 
 #pragma endregion
+
+#pragma region Light ui elements
+
+	m_AddLightButton = ui->ADD_Light_Button;
+	m_LightIntSpinBoxes[LIntSpin::R] = ui->R_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::G] = ui->G_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::B] = ui->B_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::INTENSITY] = ui->IntensityValue;
+
+	connect(m_LightIntSpinBoxes[LIntSpin::R], SIGNAL(valueChanged(int)), this, SLOT(on_R_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::G], SIGNAL(valueChanged(int)), this, SLOT(on_G_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_B_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Intensity_changed(int)));
+
+	m_LightDoubleSpinBoxes[LFloatSpin::RADIUS] = ui->RadiusValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT] = ui->ConstantValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::LINEAR] = ui->LinearValue;
+	m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC] = ui->QuadValue;
+
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::RADIUS], SIGNAL(valueChanged(double)), this, SLOT(on_Radius_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::CONSTANT], SIGNAL(valueChanged(double)), this, SLOT(on_Constant_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::LINEAR], SIGNAL(valueChanged(double)), this, SLOT(on_Linear_changed(double)));
+	connect(m_LightDoubleSpinBoxes[LFloatSpin::QUADRATIC], SIGNAL(valueChanged(double)), this, SLOT(on_Quadratic_changed(double)));
+	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
+
+
+
+
+#pragma endregion
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -184,6 +213,21 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			break;
 #pragma endregion
 /////////
+
+#pragma region LIGHT
+		case ContainerType::LIGHT:
+		
+			m_LightIntSpinBoxes[R]->setValue(((Point*)m_selection)->data->color.r * 255);
+			m_LightIntSpinBoxes[G]->setValue(((Point*)m_selection)->data->color.g * 255);
+			m_LightIntSpinBoxes[B]->setValue(((Point*)m_selection)->data->color.b * 255);
+			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 10);
+
+			m_LightDoubleSpinBoxes[RADIUS]->setValue(((Point*)m_selection)->data->radius);
+			m_LightDoubleSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant);
+			m_LightDoubleSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear);
+			m_LightDoubleSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic);
+			break;
+#pragma endregion
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
@@ -205,6 +249,17 @@ void Ui::BehaviourTypeHandler::Deselect()
 	m_availableTriggers->addItem(QString("None"));
 	m_Current_Type = NONE; //Update current type
 	this->m_CheckpointValue->setValue(0);
+
+	m_LightIntSpinBoxes[R]->setValue(0);
+	m_LightIntSpinBoxes[G]->setValue(0);
+	m_LightIntSpinBoxes[B]->setValue(0);
+	m_LightIntSpinBoxes[INTENSITY]->setValue(0);
+
+	m_LightDoubleSpinBoxes[RADIUS]->setValue(0);
+	m_LightDoubleSpinBoxes[CONSTANT]->setValue(0);
+	m_LightDoubleSpinBoxes[LINEAR]->setValue(0);
+	m_LightDoubleSpinBoxes[QUADRATIC]->setValue(0);
+
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -648,8 +703,10 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 	((Lever*)m_selection)->interactionDistance = (float)val;
 
 }
+
 #pragma endregion
 #pragma region Trigger Functions
+
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
 	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
@@ -842,5 +899,101 @@ void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * it
 	}
 	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
 	m_eventBox->setCurrentText(hej);
+}
+#pragma endregion
+void Ui::BehaviourTypeHandler::on_Light_Add_changed()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddPointLight();
+
+}
+
+#pragma region Light callbacks
+
+void Ui::BehaviourTypeHandler::on_R_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.r != realVal) {
+			((Point*)m_selection)->data->color.r = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_G_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.g != realVal) {
+			((Point*)m_selection)->data->color.g = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_B_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.b != realVal) {
+			((Point*)m_selection)->data->color.b = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
+{
+	const int dpi = 10; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->intensity != realVal) {
+			((Point*)m_selection)->data->intensity = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Radius_changed(double val)
+{
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->radius != val) {
+			((Point*)m_selection)->data->radius = val;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Constant_changed(double val)
+{
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.constant != val) {
+			((Point*)m_selection)->data->falloff.constant = val;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Linear_changed(double val)
+{
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.linear != val) {
+			((Point*)m_selection)->data->falloff.linear = val;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Quadratic_changed(double val)
+{
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.quadratic != val) {
+			((Point*)m_selection)->data->falloff.quadratic = val;
+			this->m_selection->isDirty = true;
+		}
+	}
 }
 #pragma endregion

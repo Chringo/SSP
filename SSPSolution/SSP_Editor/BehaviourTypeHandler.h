@@ -40,6 +40,22 @@ namespace Ui {
 		WAYPOINT8,
 		NUM_WAYPOINTS
 	};
+
+	enum LIntSpin
+	{
+		R, G, B,
+		INTENSITY,
+		NUM_LINTSPIN
+	};
+	enum LFloatSpin
+	{
+		RADIUS,
+		CONSTANT,
+		LINEAR,
+		QUADRATIC,
+
+		NUM_LFLOATSPIN
+	};
 	class BehaviourTypeHandler : QObject
 	{
 
@@ -62,6 +78,7 @@ namespace Ui {
 		QPushButton*		m_Up;
 		QPushButton*		m_Down;
 		QPushButton*		m_AddCheckpoint;
+		QPushButton*		m_AddLightButton;
 		QSpinBox*			m_CheckpointValue;
 
 		QLabel*			m_uniqueID;
@@ -89,6 +106,8 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_rotationTime	  ;
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
+		QDoubleSpinBox*		m_LightDoubleSpinBoxes[NUM_LFLOATSPIN];
+		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
 #pragma endregion
 
 
@@ -159,10 +178,26 @@ namespace Ui {
 		void on_Wheel_resetTime_changed(double val);
 #pragma endregion
 
+		void on_Light_Add_changed();
 
+#pragma region Light callbacks
+
+
+		void on_R_changed(int val);
+		void on_G_changed(int val);
+		void on_B_changed(int val);
+		void on_Intensity_changed(int val);
+
+		void on_Radius_changed(double val);
+		void on_Constant_changed(double val);
+		void on_Linear_changed(double val);
+		void on_Quadratic_changed(double val);
+#pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);
 #pragma endregion
+
+
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
