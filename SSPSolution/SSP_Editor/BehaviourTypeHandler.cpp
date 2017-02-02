@@ -219,7 +219,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_LightIntSpinBoxes[R]->setValue(((Point*)m_selection)->data->color.r * 255);
 			m_LightIntSpinBoxes[G]->setValue(((Point*)m_selection)->data->color.g * 255);
 			m_LightIntSpinBoxes[B]->setValue(((Point*)m_selection)->data->color.b * 255);
-			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 100);
+			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 10);
 
 			m_LightDoubleSpinBoxes[RADIUS]->setValue(((Point*)m_selection)->data->radius);
 			m_LightDoubleSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant);
@@ -931,7 +931,7 @@ void Ui::BehaviourTypeHandler::on_B_changed(int val)
 }
 void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
 {
-	const int dpi = 100; // Any constant 10^n
+	const int dpi = 10; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
 
 	if (m_selection != nullptr) {

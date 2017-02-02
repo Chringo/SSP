@@ -359,7 +359,13 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 				return  Resources::Status::ST_OK;
 			}
 		}
-	
+		for (size_t i = 0; i < LightController::GetInstance()->GetLights()->size(); i++)
+		{
+			if (LightController::GetInstance()->GetLights()->at(i)->internalID == instanceID)
+			{
+				LightController::GetInstance()->RemoveLight(i, LIGHTING::LT_POINT);
+			}
+		}
 
 	}
 	else {
@@ -420,6 +426,22 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 
 			}
 		}
+		std::vector<Light*> *lvec = LightController::GetInstance()->GetLights();
+		for each (Light* light in *lvec)
+		{
+			if (source->internalID == light->internalID)
+			{
+				Point * point = new Point;
+				point->pickSphere = ((Point *)source)->pickSphere;
+				point->rangeSphere = ((Point *)source)->rangeSphere;
+				LIGHTING::Point * data = ((Point*)source)->data;
+
+				LightController::GetInstance()->AddLight(point, data, LIGHTING::LT_POINT);
+				destination = point;
+			}
+			return Resources::Status::ST_OK;
+		}
+
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
@@ -527,11 +549,8 @@ void Level::Destroy()
 	}
 	this->GetCheckpoints()->clear();
 
-	for each (Light* container in *this->GetLights())
-	{
-		delete container;
-	}
-	this->GetLights()->clear();
+
+	LightController::GetInstance()->Destroy();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)

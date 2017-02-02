@@ -11,7 +11,10 @@ public:
 	std::vector<Light*> * GetLights() { return &m_lights; };
 	void synchData(LIGHTING::LIGHT_TYPE type);
 	void AddLight(LIGHTING::LIGHT_TYPE type);
+	void AddLight(Light* light, LIGHTING::Light * data, LIGHTING::LIGHT_TYPE type);
 	void UpdateLights(LIGHTING::LIGHT_TYPE type);
+	void RemoveLight(int index, LIGHTING::LIGHT_TYPE type);
+	void Destroy();
 private:
 	LightController();
 	std::vector<Light*> m_lights;

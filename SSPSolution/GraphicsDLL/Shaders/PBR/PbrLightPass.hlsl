@@ -141,7 +141,7 @@ float GGX(float NdotH, float m)
 
 float4 PS_main(VS_OUT input) : SV_Target
 {
-    uint lightCount = 3;
+    uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 

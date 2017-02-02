@@ -756,25 +756,42 @@ struct Point : Light
 
 		this->type = LIGHT;
 
-		data->color.r = 0.8f;
-		data->color.g = 0.6f;
-		data->color.b = 0.6f;
+		this->data->color.r = 0.8f;
+		this->data->color.g = 0.6f;
+		this->data->color.b = 0.6f;
 
-		data->falloff.constant = 1.0f; //0.07f, 0.017f };
-		data->falloff.linear = 0.07f;
-		data->falloff.quadratic = 0.017f;
-		data->intensity = 0.7f;
-		data->radius = 3.0f;
-		data->position = { 0.0f,0.0f,0.0f };
-		data->isActive = true;
-		rangeSphere.radius = data->radius;
+		this->data->falloff.constant = 1.0f; //0.07f, 0.017f };
+		this->data->falloff.linear = 0.07f;
+		this->data->falloff.quadratic = 0.017f;
+		this->data->intensity = 3.0f;
+		this->data->radius = 3.0f;
+		this->data->position = { 0.0f,0.0f,0.0f };
+		this->data->isActive = true;
+		rangeSphere.radius = this->data->radius;
 
-		this->position = data->position;
+		this->position = this->data->position;
 		pickSphere.radius = 0.25f;
 	}
 
 	void Update()
 	{
+		this->data->position = this->position;
+		this->rangeSphere.radius = this->data->radius;
 		isDirty = false;
 	};
+
+	Point& operator=(Point const& obj)
+	{
+		this->internalID = obj.internalID;
+		this->position = obj.position;
+		this->rotation = obj.rotation;
+		this->component = obj.component;
+		this->isDirty = obj.isDirty;
+		this->isStatic = obj.isStatic;
+		this->type = LIGHT;
+
+		this->rangeSphere = obj.rangeSphere;
+		this->pickSphere = obj.rangeSphere;
+		return *this;
+	}
 };
