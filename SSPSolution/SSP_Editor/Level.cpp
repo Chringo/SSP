@@ -339,6 +339,7 @@ Resources::Status Level::AddPointLight()
 	Point * container = new Point();
 	
 	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	container->isDirty = true;
 	this->m_lights.push_back(container);
 
 	return Resources::Status::ST_OK;

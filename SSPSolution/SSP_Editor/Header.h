@@ -749,8 +749,13 @@ struct Point : Light
 	{
 		this->type = LIGHT;
 
-		data.color = { 0.8f, 0.6f, 0.6f };
-		data.falloff = { 1.0f, 0.07f, 0.017f };
+		data.color.r = 0.8f;
+		data.color.g = 0.6f;
+		data.color.b = 0.6f;
+
+		data.falloff.constant = 1.0f; //0.07f, 0.017f };
+		data.falloff.linear = 0.07f;
+		data.falloff.quadratic = 0.017f;
 		data.intensity = 0.7f;
 		data.radius = 3.0f;
 		data.position = { 0.0f,0.0f,0.0f };
@@ -762,6 +767,6 @@ struct Point : Light
 
 	void Update()
 	{
-		
+		isDirty = false;
 	};
 };

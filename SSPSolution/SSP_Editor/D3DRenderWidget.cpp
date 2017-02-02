@@ -187,7 +187,10 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (light->isDirty)
 		{
 			light->Update();
-			SelectionHandler::GetInstance()->Update();
+			LIGHTING::LightHandler::GetInstance()->SetLightData(&light->data, 1, LIGHTING::LT_POINT);
+			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+			if (SelectionHandler::GetInstance()->HasSelection())
+				SelectionHandler::GetInstance()->Update();
 		}
 		GraphicsHptr->RenderBoundingVolume(light->position, light->pickSphere, { 1.0,1.0,1.0 });
 		GraphicsHptr->RenderBoundingVolume(light->position, light->rangeSphere, { light->data.color.r, light->data.color.g, light->data.color.b, });

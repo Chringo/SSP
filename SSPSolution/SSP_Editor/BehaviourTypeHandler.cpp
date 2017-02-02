@@ -898,6 +898,7 @@ void Ui::BehaviourTypeHandler::on_R_changed(int val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.color.r != realVal) {
 			((Point*)m_selection)->data.color.r = float(realVal);
+			this->m_selection->isDirty = true;
 		}
 	}
 
@@ -910,6 +911,7 @@ void Ui::BehaviourTypeHandler::on_G_changed(int val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.color.g != realVal) {
 			((Point*)m_selection)->data.color.g = float(realVal);
+			this->m_selection->isDirty = true;
 		}
 	}
 
@@ -922,6 +924,7 @@ void Ui::BehaviourTypeHandler::on_B_changed(int val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.color.b != realVal) {
 			((Point*)m_selection)->data.color.b = float(realVal);
+			this->m_selection->isDirty = true;
 		}
 	}
 
@@ -934,6 +937,7 @@ void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.intensity != realVal) {
 			((Point*)m_selection)->data.intensity = float(realVal);
+			this->m_selection->isDirty = true;
 		}
 	}
 }
@@ -942,6 +946,7 @@ void Ui::BehaviourTypeHandler::on_Radius_changed(double val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.radius != val) {
 			((Point*)m_selection)->data.radius = val;
+			this->m_selection->isDirty = true;
 		}
 	}
 }
@@ -950,6 +955,7 @@ void Ui::BehaviourTypeHandler::on_Constant_changed(double val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.falloff.constant != val) {
 			((Point*)m_selection)->data.falloff.constant = val;
+			this->m_selection->isDirty = true;
 		}
 	}
 }
@@ -958,6 +964,7 @@ void Ui::BehaviourTypeHandler::on_Linear_changed(double val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.falloff.linear != val) {
 			((Point*)m_selection)->data.falloff.linear = val;
+			this->m_selection->isDirty = true;
 		}
 	}
 }
@@ -966,6 +973,7 @@ void Ui::BehaviourTypeHandler::on_Quadratic_changed(double val)
 	if (m_selection != nullptr) {
 		if (m_selection->type == LIGHT && ((Point*)m_selection)->data.falloff.quadratic != val) {
 			((Point*)m_selection)->data.falloff.quadratic = val;
+			this->m_selection->isDirty = true;
 		}
 	}
 }
