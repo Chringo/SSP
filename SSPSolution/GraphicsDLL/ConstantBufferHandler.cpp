@@ -20,12 +20,12 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 	//Creating world constant buffer																 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.ByteWidth = sizeof(ConstantBuffer::world::p);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
+	bufferDesc.ByteWidth			= sizeof(ConstantBuffer::world::p);
+	bufferDesc.BindFlags			= D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
+	bufferDesc.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags			= 0;
+	bufferDesc.StructureByteStride  = 0;
 	
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &world.D3DBuffer);
 	if (SUCCEEDED(hResult))
@@ -35,11 +35,11 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.ByteWidth = sizeof(ConstantBuffer::frame::p);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
+	bufferDesc.ByteWidth		 = sizeof(ConstantBuffer::frame::p);
+	bufferDesc.BindFlags		 = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.Usage			 = D3D11_USAGE_DYNAMIC;
+	bufferDesc.CPUAccessFlags	 = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags		 = 0;
 	bufferDesc.StructureByteStride = 0;
 
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &frame.D3DBuffer);
@@ -52,11 +52,11 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 		return 1;
 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.ByteWidth = sizeof(ConstantBuffer::material::p);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
+	bufferDesc.ByteWidth		= sizeof(ConstantBuffer::material::p);
+	bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
+	bufferDesc.CPUAccessFlags   = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags		= 0;
 	bufferDesc.StructureByteStride = 0;
 
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &material.D3DBuffer);
@@ -66,16 +66,16 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 		return	1;
 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.ByteWidth = sizeof(ConstantBuffer::light::p);
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
+	bufferDesc.ByteWidth		= sizeof(ConstantBuffer::light::p);
+	bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
+	bufferDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags		= 0;
 	bufferDesc.StructureByteStride = 0;
 
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &light.D3DBuffer);
 	if (SUCCEEDED(hResult))
-		deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &light.D3DBuffer);
+		deviceContext->PSSetConstantBuffers(CB_LIGHT_B3, 1, &light.D3DBuffer);
 	else
 		return	1;
 

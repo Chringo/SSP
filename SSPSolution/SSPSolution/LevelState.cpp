@@ -294,7 +294,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	plat->Initialize(5, platP, platG, nullptr, platA);
 #pragma endregion AIComponent tests
 
-
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
@@ -1002,6 +1001,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->directorTestField->F_first_inside && this->directorTestField->F_second_inside)
 		int i = 0;
 
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		this->m_cHandler->GetSoundHandler()->PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::MENU1_3D, pos, false, false);
+	}
+
+
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
 	{
@@ -1037,6 +1048,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Network_Key_events
 	this->m_cameraRef->Update(dt);
+
+	//Update the listner pos and direction for sound
+	DirectX::XMFLOAT3 dir;
+	DirectX::XMStoreFloat3(&dir, this->m_cameraRef->GetDirection());
+	DirectX::XMFLOAT3 up;
+	this->m_cameraRef->GetCameraUp(up);
+	this->m_cHandler->UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+	
 	return result;
 }
 
@@ -1091,7 +1110,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			t_gc = m_cHandler->GetGraphicsAnimationComponent();
 		}
-
+		else
 		{
 			t_gc = m_cHandler->GetGraphicsComponent();
 		}
@@ -1724,7 +1743,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 	}
 	//Connect Wheels to other things
-	for (size_t i = 0; i < data->numLever; i++)
+	for (size_t i = 0; i < data->numWheel; i++)
 	{
 		LevelData::WheelHeader tempHeader = data->wheels[i];
 		WheelEntity* toConnect = nullptr;
