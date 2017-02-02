@@ -79,6 +79,15 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 
 int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 {
+	if (entityID == 1 && event == FIELD_CONTAINS)
+		this->m_currentState->playerOne = true;
+	else
+		this->m_currentState->playerOne = false;
+
+	if (entityID == 3 && event == FIELD_CONTAINS)
+		this->m_currentState->playerTwo = true;
+	else
+		this->m_currentState->playerTwo = false;
 
 	return SUCCESS;
 }
