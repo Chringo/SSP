@@ -1047,7 +1047,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::MENU1_3D, pos, false, false);
+		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::ABBINGTON_FLYING_1, pos, false, false);
 	}
 
 
