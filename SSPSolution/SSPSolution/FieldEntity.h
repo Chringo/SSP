@@ -5,6 +5,7 @@ class FieldEntity :
 	public Entity
 {
 private:
+	//unsigned int m_checkpointNumber;// Should be a pointer, see checkpointNumber?
 	Field* m_field;
 public:
 	FieldEntity();

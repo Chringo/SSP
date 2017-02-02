@@ -11,7 +11,7 @@ FieldEntity::~FieldEntity()
 int FieldEntity::Initialize(int entityID, Field* field)
 {
 	this->InitializeBase(entityID, nullptr, nullptr, nullptr);
-	this->m_field = nullptr;
+	this->m_field = field;
 	return 1;
 }
 
