@@ -4,10 +4,15 @@
 class FieldEntity :
 	public Entity
 {
+private:
+	Field* m_field;
 public:
 	FieldEntity();
 	~FieldEntity();
 
+	int Initialize(int entityID, Field* field);
+	int Update(float deltaTime, InputHandler* inputHandler);
+	int React(int entityID, EVENT reactEvent);
 private:
 
 };

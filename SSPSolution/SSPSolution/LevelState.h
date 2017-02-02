@@ -11,6 +11,7 @@
 #include "ButtonEntity.h"
 #include "WheelEntity.h"
 #include "LeverEntity.h"
+#include "FieldEntity.h"
 
 class LevelState :
 	public GameState
@@ -38,6 +39,7 @@ private:
 	std::vector<ButtonEntity*> m_buttonEntities;
 	std::vector<WheelEntity*> m_wheelEntities;
 	std::vector<LeverEntity*> m_leverEntities;
+	std::vector<FieldEntity*> m_fieldEntities;
 	std::vector<Checkpoint*> m_checkpoints;
 	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
 	std::list<StatePacket> m_statePacketList;	//List with all updates for entities from the network
