@@ -457,8 +457,28 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = nullptr;
 			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
-				counter++;
-				if ((int)itr->entityID == 1)
+				/*
+				Every packet that we recived with the entityID 1 will be sent to player2 object since
+				we know that on the other computer will also play on his/her local player1 object.
+				This way we know that all packets with ID 1 is sent for the "self" player object (m_player2) and Id 2
+				for out local "self" player object (m_player1).	
+				To compensate for this we will have to switch places for m_player1 and m_player2 position on the 
+				connecting player so they still have the same start position relative to eachother.
+				*/
+
+				if ((int)itr->entityID == 1)	//Packets for player2
+				{
+					
+
+					pp = this->m_player2.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
+				}
+				else if ((int)itr->entityID == 2)	//Packets for player1
 				{
 					pp = this->m_player1.GetPhysicsComponent();
 
@@ -466,19 +486,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-
-					//printf("Player1");
 				}
-				else if ((int)itr->entityID == 2)
-				{
-					pp = this->m_player2.GetPhysicsComponent();
-
-					// Update the component
-					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-				}
-				else
+				else //For every other entity
 				{
 					// Find the entity
 					std::vector<DynamicEntity*>::iterator Ditr;
