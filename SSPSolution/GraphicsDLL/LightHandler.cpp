@@ -12,21 +12,21 @@ LIGHTING::LightHandler::~LightHandler()
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	
-	
 
 
-	this->m_gDevice			 = device;
-	this->m_gDeviceContext	 = deviceContext;
+
+
+	this->m_gDevice = device;
+	this->m_gDeviceContext = deviceContext;
 
 	for (size_t i = 0; i < NUM_LT; i++)
 	{
 		this->CreateStructuredBuffer(LIGHT_TYPE(i)); //Create all the structured buffers
 	}
 
-	m_constBufferData.NUM_POINTLIGHTS		= MAX_POINTLIGHTS;
-	m_constBufferData.NUM_AREALIGHTS		= MAX_AREALIGHT;
-	m_constBufferData.NUM_SPOTLIGHTS		= MAX_SPOTLIGHT;
+	m_constBufferData.NUM_POINTLIGHTS = MAX_POINTLIGHTS;
+	m_constBufferData.NUM_AREALIGHTS = MAX_AREALIGHT;
+	m_constBufferData.NUM_SPOTLIGHTS = MAX_SPOTLIGHT;
 	m_constBufferData.NUM_DIRECTIONALLIGHTS = MAX_DIRECTIONAL;
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 
@@ -36,21 +36,27 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	pointArray[0].color.r = 1.0f;
 	pointArray[0].color.g = 0.0f;
 	pointArray[0].color.b = 0.0f;
-	pointArray[0].position = { 10.0, -9.0, -3.0 };
+	pointArray[0].position.m128_f32[0] = 10.0f;
+	pointArray[0].position.m128_f32[1] = -9.0f;
+	pointArray[0].position.m128_f32[2] = -3.0f;
 	pointArray[0].intensity = 5.0f;
 	//pointArray[0].isActive = TRUE;
 
 	pointArray[1].color.r = 0.0f;
 	pointArray[1].color.g = 1.0f;
 	pointArray[1].color.b = 0.0f;
-	pointArray[1].position = { 14.0, -9.0, -3.0 };
+	pointArray[1].position.m128_f32[0] = 14.0f;
+	pointArray[1].position.m128_f32[1] = -9.0f;
+	pointArray[1].position.m128_f32[2] = -3.0f;
 	pointArray[1].intensity = 5.0f;
 	//pointArray[1].isActive = TRUE;
 
 	pointArray[2].color.r = 0.0f;
 	pointArray[2].color.g = 0.0f;
 	pointArray[2].color.b = 1.0f;
-	pointArray[2].position = { 18.0, -9.0,  -3.0 };
+	pointArray[2].position.m128_f32[0] = 18.0f;
+	pointArray[2].position.m128_f32[1] = -9.0f;
+	pointArray[2].position.m128_f32[2] = -3.0f;
 	pointArray[2].intensity = 5.0f;
 	//pointArray[2].isActive = TRUE;
 	

@@ -29,12 +29,12 @@ namespace LIGHTING
 
 	};
 
-	struct LightColor 
+	struct GRAPHICSDLL_API LightColor
 	{
 		float r = 1.0f,g = 1.0f,b = 1.0f ;
 		
 	};
-	struct LightFalloff
+	struct GRAPHICSDLL_API LightFalloff
 	{
 		float constant = 1.0f, linear  =1.0f, quadratic = 1.0f;
 	};
@@ -46,6 +46,11 @@ namespace LIGHTING
 		float padding[3];	  //16 bit aligned
 		LightColor color;
 		float intensity = 1.0f;
+
+		 void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		 void* operator new[](size_t i) { return _aligned_malloc(i, 16); };
+		 void operator delete[](void* p) { _aligned_free(p); };
+		 void operator delete(void* p) { _aligned_free(p); };
 	};
 
 	struct GRAPHICSDLL_API Point : Light
@@ -53,6 +58,7 @@ namespace LIGHTING
 		DirectX::XMVECTOR position;
 		float radius = 10.0f;
 		LightFalloff falloff;
+		
 	};
 
 	struct GRAPHICSDLL_API Area : Light
@@ -66,11 +72,15 @@ namespace LIGHTING
 
 		float width;
 		float height;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	};
 
 	struct GRAPHICSDLL_API Directional : Light
 	{
 		DirectX::XMVECTOR direction;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	};
 
 	struct GRAPHICSDLL_API Spot : Light
@@ -80,6 +90,8 @@ namespace LIGHTING
 		LightFalloff falloff;
 		//cone stuff here
 		float range, cone, pad;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	};
 
 }
