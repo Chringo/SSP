@@ -407,7 +407,60 @@ int GraphicsHandler::Render(float deltaTime)
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
+	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
+	int amountOfModelsToRender = 0;
+	int componentsInTree = this->m_octreeRoot.containedComponents.size();
+	struct InstanceData {
+		int modelID;
+		int amountOfInstances;
+		DirectX::XMFLOAT4X4* componentSpecific;
+	};
+	std::vector<InstanceData> instancedRenderingList;
+	unsigned int lastModelID = 0;
+	if (this->m_nrOfGraphicsComponents > 0)
+		lastModelID = this->m_octreeRoot.containedComponents[0]->modelID;
+	int amountOfModelOccurrencees = 0;
+	for (int i = 0; i < componentsInTree; i++)
+	{
+		//If the component is to be rendered, increase the counter
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+			if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
+			{
+				//Create the array
+				InstanceData instanceData;
+				instanceData.modelID = lastModelID;
+				instanceData.amountOfInstances = amountOfModelOccurrencees;
+				instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+
+				amountOfModelOccurrencees = 0;
+			}
+			amountOfModelOccurrencees++;
+		}
+	}
+	//Fill the array with valuable data
+	int instancedRenderingIndex = 0;
+	int instancedModelCount = 0;
+	for (int i = 0; i < componentsInTree; i++)
+	{
+		//reset the 'isRendered' bool
+		if (this->m_octreeRoot.containedComponents[i]->isRendered != false)
+		{
+			//If it is time to change 
+			if (this->m_octreeRoot.containedComponents[i]->modelID != lastModelID)
+			{
+				instancedRenderingIndex++;
+				instancedModelCount = 0;
+			}
+			//Store the data
+			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_graphicsComponents[i]->worldMatrix);
+			
+			this->m_octreeRoot.containedComponents[i]->isRendered = false;
+		}
+	}
+	//By all means it should be done by now
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
@@ -656,6 +709,7 @@ int GraphicsHandler::GenerateOctree()
 
 	std::vector<OctreeBV> listOfComponentBV;
 	this->m_octreeRoot.containedComponents.resize(componentCount);
+	//Fill the octree with the data
 	for (size_t i = 0; i < componentCount; i++)
 	{
 		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[0];
@@ -664,6 +718,7 @@ int GraphicsHandler::GenerateOctree()
 		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.x;
 		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.y;
 		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.z;
+		this->m_octreeRoot.containedComponents[i]->modelID = this->m_graphicsComponents[i]->modelID;
 
 		//Check for the lowest and highest values
 		if (this->m_octreeRoot.containedComponents[i]->ext.x < minX)
@@ -679,7 +734,9 @@ int GraphicsHandler::GenerateOctree()
 		else if (this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
 			maxZ = this->m_octreeRoot.containedComponents[i]->ext.z;
 	}
-
+	//After having finished filling the octree with data, sort it
+	std::sort(this->m_octreeRoot.containedComponents.begin(), this->m_octreeRoot.containedComponents.end(), Sorting_on_modelID());
+	
 	//Initialize the octree root
 	for (int i = 0; i < 8; i++)
 	{
@@ -698,8 +755,9 @@ int GraphicsHandler::GenerateOctree()
 GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 {
 	int result = 0;
-
-
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	this->TraverseOctree(&this->m_octreeRoot, &currentFrustrum);
 
 	return result;
 }

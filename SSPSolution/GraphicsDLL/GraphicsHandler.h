@@ -11,6 +11,7 @@
 #include "DebugRenderer.h"
 #include "UIHandler.h"
 #include "LightHandler.h"
+#include <algorithm>
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -105,6 +106,7 @@ private:
 	//We want to keep splittin the nodes until the time it takes to check if the nodes that contain the components becomes larger than the time gained by culling away the contained components
 	struct OctreeBV {
 		unsigned int componentIndex;
+		unsigned int modelID;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
@@ -116,6 +118,15 @@ private:
 		DirectX::XMFLOAT3 ext;
 	};
 	OctreeNode m_octreeRoot;
+	
+	struct Sorting_on_modelID
+	{
+		inline bool operator() (const OctreeBV& first, const OctreeBV& second)
+		{
+			
+			return (first.modelID < second.componentIndex);
+		}
+	};
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
