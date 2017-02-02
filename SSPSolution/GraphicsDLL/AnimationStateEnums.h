@@ -31,8 +31,8 @@ enum AnimationStates : int
 enum Blending
 {
 	NO_TRANSITION = 0,
-	SMOOTH_TRANSITION = 1
-	//FROZEN_TRANSITION	=	2
+	SMOOTH_TRANSITION = 1,
+	FROZEN_TRANSITION =	2
 };
 
 #endif
