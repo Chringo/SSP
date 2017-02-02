@@ -175,7 +175,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 5;
-	playerP->PC_BVtype = BV_AABB;
+	playerP->PC_BVtype = BV_Sphere;
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
