@@ -743,27 +743,34 @@ struct Point : Light
 	Sphere pickSphere;
 	Sphere rangeSphere;
 
-	LIGHTING::Point data;
+	LIGHTING::Point * data;
 	
 	Point()
 	{
 		this->type = LIGHT;
+	}
 
-		data.color.r = 0.8f;
-		data.color.g = 0.6f;
-		data.color.b = 0.6f;
+	void Initialize(LIGHTING::Point * data)
+	{
+		this->data = data;
 
-		data.falloff.constant = 1.0f; //0.07f, 0.017f };
-		data.falloff.linear = 0.07f;
-		data.falloff.quadratic = 0.017f;
-		data.intensity = 0.7f;
-		data.radius = 3.0f;
-		data.position = { 0.0f,0.0f,0.0f };
+		this->type = LIGHT;
 
-		this->position = data.position;
+		data->color.r = 0.8f;
+		data->color.g = 0.6f;
+		data->color.b = 0.6f;
+
+		data->falloff.constant = 1.0f; //0.07f, 0.017f };
+		data->falloff.linear = 0.07f;
+		data->falloff.quadratic = 0.017f;
+		data->intensity = 0.7f;
+		data->radius = 3.0f;
+		data->position = { 0.0f,0.0f,0.0f };
+		data->isActive = true;
+		rangeSphere.radius = data->radius;
+
+		this->position = data->position;
 		pickSphere.radius = 0.25f;
-		rangeSphere.radius = data.radius;
-		data.isActive = true;
 	}
 
 	void Update()

@@ -28,7 +28,7 @@
 */
 namespace LIGHTING
 {
-	class GRAPHICSDLL_API LightHandler
+	class LightHandler
 	{
 	private:
 		enum LIGHT_BUFFER_SLOTS // Determines the slots that the buffers are set in the shader
@@ -63,14 +63,14 @@ namespace LIGHTING
 
 	public: //inits etc
 
-		void Initialize(ID3D11Device*, ID3D11DeviceContext*);
-		static LightHandler* GetInstance();
+		GRAPHICSDLL_API void Initialize(ID3D11Device*, ID3D11DeviceContext*);
+		GRAPHICSDLL_API static LightHandler* GetInstance();
 
 	public: //dataFlow
 		LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };
-		bool UpdateStructuredBuffer (LIGHT_TYPE type);
-		bool SetBuffersAsActive();
-		bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
+		GRAPHICSDLL_API bool UpdateStructuredBuffer (LIGHT_TYPE type);
+		GRAPHICSDLL_API bool SetBuffersAsActive();
+		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 	private:
 		bool CreateStructuredBuffer (LIGHT_TYPE type);
 		bool ReleaseStructuredBuffer(LIGHT_TYPE type);

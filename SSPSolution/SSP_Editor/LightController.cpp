@@ -26,13 +26,6 @@ void LightController::synchData(LIGHTING::LIGHT_TYPE type)
 	switch (type)
 	{
 	case LIGHTING::LT_POINT:
-		pointLightData.clear();
-		for each (Point* var in m_lights)
-		{
-			pointLightData.push_back(var->data);
-		}
-		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), LIGHTING::LT_POINT);
-		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
 		break;
 	case LIGHTING::LT_DIRECTIONAL:
 		break;
@@ -50,6 +43,9 @@ void LightController::synchData(LIGHTING::LIGHT_TYPE type)
 void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 {
 	Point * container = new Point();
+	LIGHTING::Point data;
+
+	container->Initialize(&data);
 	switch (type)
 	{
 	case LIGHTING::LT_POINT:
@@ -57,7 +53,8 @@ void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 		container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 		container->isDirty = true;
 		this->m_lights.push_back(container);
-		synchData(type);
+		this->pointLightData.push_back(data);
+
 		break;
 	case LIGHTING::LT_DIRECTIONAL:
 		break;

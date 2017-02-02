@@ -1,7 +1,6 @@
 #ifndef SSPEDITOR_LIGHTCONTROLLER_H
 #define SSPEDITOR_LIGHTCONTROLLER_H
 #include "Header.h"
-#include "../GraphicsDLL/LightHandler.h"
 #include "GlobalIDHandler.h"
 class LightController
 {
