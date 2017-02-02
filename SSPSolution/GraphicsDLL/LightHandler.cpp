@@ -70,7 +70,7 @@ LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
 
 bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 {
-	if (type >= LIGHT_TYPE::NUM_LT || amount <= NUM_LIGHTS[type])
+	if (type >= LIGHT_TYPE::NUM_LT)
 		return false;
 
 	if (lightBuffers[type] != nullptr || m_structuredBuffers[type] != nullptr) //if the buffers are already created, Release them
@@ -196,7 +196,7 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 	if (type >= NUM_LT)
 		return false;
 	m_lightData[type].dataPtr = lightArray;
-	if (numLights > this->NUM_LIGHTS[type])
+	if (numLights > this->NUM_LIGHTS[type] || numLights < this->NUM_LIGHTS[type])
 	{
 		ReleaseStructuredBuffer(type);
 		CreateStructuredBuffer(type, numLights);
