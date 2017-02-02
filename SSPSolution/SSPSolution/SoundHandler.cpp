@@ -43,7 +43,7 @@ void SoundHandler::LoadSounds()
 	//Load 2D sounds
 #pragma region
 	//Menu1
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu1.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Menu_Music_stereo1.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
@@ -55,7 +55,7 @@ void SoundHandler::LoadSounds()
 	}
 
 	//Menu2
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu2.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Menu_Music_stereo2.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
@@ -71,7 +71,7 @@ void SoundHandler::LoadSounds()
 	//Load 3D sounds
 #pragma region
 	//Menu1 for 3D
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/menu1_3D.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_flying1.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
@@ -82,6 +82,188 @@ void SoundHandler::LoadSounds()
 	{
 		printf("Failed to load sound");
 	}
+
+	//Menu1 for 3D
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_flying2.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_flying3.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_landing.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_throw1_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_throw2_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_throw3_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Abbington_Walk_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_flying1_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_flying2_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_flying3_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_landing_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_throw1_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_throw2_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_throw3_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Studley_walk_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(20);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
 #pragma endregion 3D_Sounds
 	
 	sp = nullptr;
