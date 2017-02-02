@@ -40,7 +40,6 @@ public:
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);
 	void SetGraphicsComponentListSize(int gCompSize);
 	void SetGraphicsAnimationComponentListSize(int gCompSize);
-	PhysicsComponent* GetClosestPhysicsComponent(PhysicsComponent* component, int minDistance);
 
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;

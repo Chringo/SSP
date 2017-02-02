@@ -3004,53 +3004,6 @@ void PhysicsHandler::SortComponents()
 	}
 }
 
-PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * component, int minDistance)
-{
-	PhysicsComponent* pp = nullptr;
-	PhysicsComponent* closest = nullptr;
-	float distance = 0.0f;
-	float closestDistance = 999999999.0f;	//Gotta be big
-	DirectX::XMVECTOR vec;
-
-	for(size_t i = 0; i < this->m_dynamicComponents.size(); i++)	//We know the dynamics are in the front of the array
-	{
-		pp = this->m_dynamicComponents.at(i);
-
-		if (pp->PC_entityID != 0 && pp->PC_entityID != 1 && pp->PC_entityID != 2)	//Check so we sont find our own component we compare to
-		{
-			
-			//Calc the distance
-			vec = DirectX::XMVectorSubtract(pp->PC_pos, component->PC_pos);
-			distance = DirectX::XMVectorGetX( DirectX::XMVector3Length(vec) );
-
-			if (distance <= minDistance)	// Check its close enoughe 
-			{
-
-				if (closest != nullptr)		// If we already found a component
-				{
-
-					if (distance < closestDistance)	//The new one is closer
-					{
-						closest = pp;
-						closestDistance = distance;
-					}
-
-				}
-				else
-				{
-					closest = pp;
-					closestDistance = distance;
-				}
-				
-			}
-
-		}
-
-	}
-
-	return closest;
-}
-
 #ifdef _DEBUG
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
