@@ -24,6 +24,44 @@ inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader
 }
 
 
+Entity* LevelState::GetClosestBall(float minDist)
+{
+	Entity* closest = nullptr;
+	float closestDistance = 9999999999;
+	PhysicsComponent* pc = this->m_player1.GetPhysicsComponent();
+	
+	//Calc the distance for play1 ball;
+	DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+	if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+	{
+		closest = this->m_player1.GetBall();
+		closestDistance = distance;
+		
+		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+		if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+		{
+			closest = this->m_player2.GetBall();
+		}
+	}
+	else //If ball1 is already grabbed
+	{
+		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+		if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+		{
+			closest = this->m_player2.GetBall();
+		}
+	}
+
+
+	return closest;
+}
+
 LevelState::LevelState()
 {
 }
@@ -468,8 +506,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 				if ((int)itr->entityID == 1)	//Packets for player2
 				{
-					
-
 					pp = this->m_player2.GetPhysicsComponent();
 
 					// Update the component
@@ -525,7 +561,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_statePacketList.size() > 0)
 		{
-
 			// Apply each packet to the right entity
 			std::list<StatePacket>::iterator itr;
 
@@ -579,13 +614,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_wheelStatePacketList.size() > 0)
 		{
-
 			// Apply each packet to the right entity
 			std::list<StateWheelPacket>::iterator itr;
 
 			for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
 			{
-
 				for (int i = 0; i < this->m_wheelEntities.size(); i++)
 				{
 					WheelEntity* wP = this->m_wheelEntities.at(i);
@@ -636,62 +669,42 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_player1.SetUpDir(upDir);
 		this->m_player1.SetLookDir(playerLookDir);
 		this->m_player1.Update(dt, inputHandler);
-		//update all dynamic (moving) entities
-		Entity* ent = nullptr;
-
-		if (wasGrabbed != this->m_player1.GetGrabbed())
+		
+		//Check if we released a grabbed object in player Update
+		if (wasGrabbed != this->m_player1.GetGrabbed() && wasGrabbed != nullptr)
 		{
-			wasGrabbed->SyncComponents();
-
-			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+			wasGrabbed->SyncComponents();	//Update the component
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
 		}
 
+#pragma region
+		//update all dynamic (moving) entities
+		Entity* ent = nullptr;
 		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
 			ent = this->m_dynamicEntitys.at(i);
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
-				ent->SyncComponents();
+				ent->SyncComponents();	//Just sync the component and wait for the update package
 			}
 			else
 			{
-				ent->Update(dt, inputHandler);
+				ent->Update(dt, inputHandler);	//Update the entity normaly
 			}
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
+#pragma endregion Update/Syncing
 
+#pragma region
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
 		{
-			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
-
-			if (epp != nullptr)	//If a component was found
-			{
-				Entity* ent = nullptr;
-				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-				{
-
-					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
-					{
-						if (this->m_dynamicEntitys.at(i)->GetEntityID() == 3 || this->m_dynamicEntitys.at(i)->GetEntityID() == 4)
-						{
-							ent = this->m_dynamicEntitys.at(i);
-							break;
-						}
-					}
-
-				}
-
-
-				if (ent != nullptr)
-				{
-					if (!ent->IsGrabbed())
-					{
-						this->m_player1.SetGrabbed(ent);
-						this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
-					}
-				}
+			Entity* closestBall = this->GetClosestBall(3);
+			
+			if (closestBall != nullptr)	//If a ball was found
+			{				
+				this->m_player1.SetGrabbed(closestBall);
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
 			}
 
 		}
@@ -700,7 +713,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 		}
-
+#pragma endregion Grab/Release
 		//Check for grabb requests
 #pragma region
 		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();	//This removes the entity packets from the list in NetworkModule
@@ -797,159 +810,162 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 #pragma endregion Host/Player1 Specifics
 
-#pragma region
-	if (this->m_networkModule->IsHost() == false)
-	{
-		Entity* wasGrabbed = this->m_player2.GetGrabbed();
+	//OLD PLAYER 2
 
-		this->m_player2.SetRightDir(rightDir);
-		this->m_player2.SetUpDir(upDir);
-		this->m_player2.SetLookDir(playerLookDir);
-		this->m_player2.Update(dt, inputHandler);
-
-		//Other half of the components
-		this->m_player1.SyncComponents();
-
-		Entity* ent = nullptr;
-
-		if (wasGrabbed != this->m_player2.GetGrabbed())
-		{
-			wasGrabbed->SyncComponents();
-
-			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
-		}
-
-		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-		{
-			ent = this->m_dynamicEntitys.at(i);
-			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
-			{
-				ent->Update(dt, inputHandler);
-			}
-			else
-			{
-				ent->SyncComponents();
-			}
-		}
-
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
-		{
-
-			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
-
-			if (epp != nullptr)	//If a component was found
-			{
-				Entity* ent = nullptr;
-				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-				{
-
-					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
-					{
-						if (this->m_dynamicEntitys.at(i)->GetEntityID() == 3 || this->m_dynamicEntitys.at(i)->GetEntityID() == 4)
-						{
-							ent = this->m_dynamicEntitys.at(i);
-							break;
-						}
-					}
-				}
-
-				if (ent != nullptr)
-				{
-					if (!ent->IsGrabbed())
-						this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
-				}
-			}
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
-		{
-			//this->m_player2.SetGrabbed(nullptr);
-			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);	//Send a request to drop the grabed entity (-1 is for drop)
-		}
-
-#pragma region
-
-		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();
-
-		if (this->m_grabPacketList.size() > 0)
-		{
-			std::list<GrabPacket>::iterator itr;
-			Entity* ep = nullptr;
-
-			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
-			{
-				//We know that we can grab the entity recived since it was accepted by the host
-				if (itr->grabbedID >= 0) //Grab
-				{
-					//Find the entity to grab
-					for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-					{
-						ep = this->m_dynamicEntitys.at(i);
-
-						if (ep->GetEntityID() == itr->grabbedID)
-						{
-							this->m_player2.SetGrabbed(ep);
-							break;
-						}
-
-					}
-
-				}
-				else //Drop
-				{
-
-					if (itr->entityID == this->m_player2.GetEntityID())
-					{
-						this->m_player2.SetGrabbed(nullptr);
-					}
-					else
-					{
-						this->m_player1.SetGrabbed(nullptr);
-					}
-
-				}
-			}
-
-			this->m_grabPacketList.clear();
-		}
-
-#pragma endregion GrabPacket
-
-		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
-		{
-			this->m_player2.SetAiming(true);
-			this->m_cameraRef->SetDistance(2);
-		}
-
-		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player2.GetIsAming())
-		{
-			this->m_player2.SetAiming(false);
-			this->m_cameraRef->SetDistance(10);
-		}
-
-		if (this->m_player2.GetIsAming())
-		{
-			this->m_player2.SetLookDir(this->m_cameraRef->GetDirection());
-		}
-
-		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
-		{
-
-			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
-
-			if (wasGrabbed != nullptr)	//If player2 has grabbed something
-			{
-				pp = wasGrabbed->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
-			}
-
-		}
-	}
-
-#pragma endregion Client/Player2 Specifics
+//#pragma region
+//	if (this->m_networkModule->IsHost() == false)
+//	{
+//		Entity* wasGrabbed = this->m_player2.GetGrabbed();
+//
+//		this->m_player2.SetRightDir(rightDir);
+//		this->m_player2.SetUpDir(upDir);
+//		this->m_player2.SetLookDir(playerLookDir);
+//		this->m_player2.Update(dt, inputHandler);
+//
+//		//Other half of the components
+//		this->m_player1.SyncComponents();
+//
+//		Entity* ent = nullptr;
+//
+//		if (wasGrabbed != this->m_player2.GetGrabbed())
+//		{
+//			wasGrabbed->SyncComponents();
+//
+//			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+//		}
+//
+//		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+//		{
+//			ent = this->m_dynamicEntitys.at(i);
+//			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is not grabbed, if it is there will be an update packet for it
+//			{
+//				ent->Update(dt, inputHandler);
+//			}
+//			else
+//			{
+//				ent->SyncComponents();
+//			}
+//		}
+//
+//		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+//		{
+//
+//			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+//			PhysicsComponent* epp = this->m_cHandler->GetClosestPhysicsComponent(pp, 3);	//Get the closest component of 2 meters
+//
+//			if (epp != nullptr)	//If a component was found
+//			{
+//				Entity* ent = nullptr;
+//				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+//				{
+//
+//					if (this->m_dynamicEntitys.at(i)->GetEntityID() == epp->PC_entityID)	//If the IDs match
+//					{
+//						if (this->m_dynamicEntitys.at(i)->GetEntityID() == 3 || this->m_dynamicEntitys.at(i)->GetEntityID() == 4)
+//						{
+//							ent = this->m_dynamicEntitys.at(i);
+//							break;
+//						}
+//					}
+//				}
+//
+//				if (ent != nullptr)
+//				{
+//					if (!ent->IsGrabbed())
+//						this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), ent->GetEntityID());	//Send a request to pick up dynamic entity with ID 2 (ball)
+//				}
+//			}
+//		}
+//		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+//		{
+//			//this->m_player2.SetGrabbed(nullptr);
+//			this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);	//Send a request to drop the grabed entity (-1 is for drop)
+//		}
+//
+//#pragma region
+//
+//		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();
+//
+//		if (this->m_grabPacketList.size() > 0)
+//		{
+//			std::list<GrabPacket>::iterator itr;
+//			Entity* ep = nullptr;
+//
+//			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+//			{
+//				//We know that we can grab the entity recived since it was accepted by the host
+//				if (itr->grabbedID >= 0) //Grab
+//				{
+//					//Find the entity to grab
+//					for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+//					{
+//						ep = this->m_dynamicEntitys.at(i);
+//
+//						if (ep->GetEntityID() == itr->grabbedID)
+//						{
+//							this->m_player2.SetGrabbed(ep);
+//							break;
+//						}
+//
+//					}
+//
+//				}
+//				else //Drop
+//				{
+//
+//					if (itr->entityID == this->m_player2.GetEntityID())
+//					{
+//						this->m_player2.SetGrabbed(nullptr);
+//					}
+//					else
+//					{
+//						this->m_player1.SetGrabbed(nullptr);
+//					}
+//
+//				}
+//			}
+//
+//			this->m_grabPacketList.clear();
+//		}
+//
+//#pragma endregion GrabPacket
+//
+//		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+//		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player2.GetIsAming())
+//		{
+//			this->m_player2.SetAiming(true);
+//			this->m_cameraRef->SetDistance(2);
+//		}
+//
+//		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player2.GetIsAming())
+//		{
+//			this->m_player2.SetAiming(false);
+//			this->m_cameraRef->SetDistance(10);
+//		}
+//
+//		if (this->m_player2.GetIsAming())
+//		{
+//			this->m_player2.SetLookDir(this->m_cameraRef->GetDirection());
+//		}
+//
+//		//SEND THE UPDATES THAT IS CONTROLED BY PLAYER2
+//		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Player is a client has a connection
+//		{
+//
+//			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
+//			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for only player
+//
+//			if (wasGrabbed != nullptr)	//If player2 has grabbed something
+//			{
+//				pp = wasGrabbed->GetPhysicsComponent();
+//				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
+//			}
+//
+//		}
+//	}
+//
+//#pragma endregion Client/Player2 Specifics
+//
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	{

@@ -42,6 +42,8 @@ private:
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 	
+	Entity* GetClosestBall(float minDist);
+
 public:
 	LevelState();
 	virtual ~LevelState();
