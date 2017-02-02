@@ -16,9 +16,10 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_availableTriggers = ui->availableTriggers;
 	m_triggerList		= ui->TriggerTableWidget;
 	m_triggerList->horizontalHeader()->show();
-	connect(m_triggerList, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(on_triggerSelection_Changed(QTableWidgetItem *)));
 	m_eventBox = ui->EventSignalBox;
+	connect(m_triggerList, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(on_triggerSelection_Changed(QTableWidgetItem *)));
 	connect(m_eventBox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_eventSelection_Changed(int)));
+	connect(m_availableTriggers, SIGNAL(currentIndexChanged(int)), this, SLOT(on_availableTriggers_index_Changed(int)));
 
 	m_add_trigger = ui->AddTriggerButton;
 	connect(m_add_trigger, SIGNAL(clicked()), this, SLOT(on_Add_Trigger()));
@@ -195,6 +196,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 void Ui::BehaviourTypeHandler::Deselect()
 {
 	m_selection = nullptr;
+	m_currentEventType = ContainerType::NONE;
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_BehaviourType->setCurrentIndex(NONE); //Close the window
 	ClearTriggerList();
@@ -661,11 +663,7 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 	ClearTriggerList();
 	if (((ListenerContainer*)selection)->numTriggers > 0) // if the selected container has any triggers
 	{
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
-		for (size_t i = 0; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i + 1, strings->at(i));
-		}
+		
 	
 	
 		for (size_t i = 0; i < ((ListenerContainer*)selection)->numTriggers; i++)
@@ -687,6 +685,8 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
 		}
 		m_triggerList->selectRow(0);
+		m_currentEventType = ((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()]->type;
+		SetEventListByType(m_currentEventType);
 		QString string = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]); //Get the string of the EVENT enum
 		m_eventBox->setCurrentText(string); //Set the correct string item in the event box
 		
@@ -743,7 +743,20 @@ void Ui::BehaviourTypeHandler::ClearTriggerList()
 void Ui::BehaviourTypeHandler::ClearEventList()
 {
 	m_eventBox->clear();
-	//m_eventBox->insertItem(0, "None");
+
+}
+
+EVENT Ui::BehaviourTypeHandler::SetEventListByType(ContainerType type)
+{
+	if (type == NONE)
+		return EVENT::WHEEL_RESET;
+	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
+	m_eventBox->clear();
+	for (size_t i = 0; i < strings->size(); i++)
+	{
+		m_eventBox->insertItem(i, strings->at(i));
+	}
+	return  EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
 }
 
 void Ui::BehaviourTypeHandler::on_Delete_Trigger()
@@ -763,26 +776,21 @@ void Ui::BehaviourTypeHandler::on_Add_Trigger()
 	if (m_availableTriggers->currentIndex() <= 0 || m_triggerList->rowCount() >= 20)
 		return;
 	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
-
-	m_currentEventType = selection->type;
-	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
-	EVENT triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
-
-	//QString hej = m_eventBox->currentText();
-	//triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())); //Get the right EVENT enum integer.
-	//	m_eventStrings.GetEventStringsFromType(selection->type)->at(0);
-	if (((ListenerContainer*)m_selection)->AddTrigger(selection, triggerEvent)) //add the trigger to the selected component
+	//EVENT triggerEvent = EVENT(-1);
+	int eventSignal = -1;
+	if (m_currentEventType != selection->type){
+		m_currentEventType = selection->type;
+		eventSignal = (int) SetEventListByType(selection->type); //Get a standard value
+	}
+	else{
+		
+		eventSignal =m_eventStrings.GetEnumIdFromString(m_eventBox->currentText());
+	}
+	
+	if (((ListenerContainer*)m_selection)->AddTrigger(selection, EVENT(eventSignal))) //add the trigger to the selected component
 	{
-		//m_triggerList->setCurrentCell(-1, -1);
-		m_eventBox->clear();
-		;
-		m_eventBox->insertItem(0, "None");
-		for (size_t i = 1; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i, strings->at(i));
-		}
 
-		AddTriggerItemToList(selection, selection->type, -1); // if successfull, add it to the ui list
+		AddTriggerItemToList(selection, selection->type, eventSignal); // if successfull, add it to the ui list
 	}
 
 
@@ -805,6 +813,22 @@ void Ui::BehaviourTypeHandler::on_eventSelection_Changed(int val)
 
 }
 
+void Ui::BehaviourTypeHandler::on_availableTriggers_index_Changed(int index)
+{
+	if (m_availableTriggers->currentIndex() <= 0)
+		return;
+	Container* selected = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
+	if (selected == nullptr)
+		return;
+	if (m_currentEventType != selected->type)
+	{
+		m_currentEventType = selected->type;
+		SetEventListByType(selected->type);
+	}
+
+
+}
+
 void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * item)
 {
 	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
@@ -814,12 +838,7 @@ void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * it
 	if (m_currentEventType != selected->type)
 	{
 		m_currentEventType = selected->type;
-		ClearEventList();
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(selected->type);
-		for (size_t i = 0; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i + 1, strings->at(i));
-		}
+		SetEventListByType(selected->type);
 	}
 	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
 	m_eventBox->setCurrentText(hej);
