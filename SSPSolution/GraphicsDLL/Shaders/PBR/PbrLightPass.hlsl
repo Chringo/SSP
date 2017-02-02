@@ -149,8 +149,11 @@ float pointIllumination(float3 P, float3 N, float3 lightCentre, float r, float c
 
     float df = (1 / r);
 
-    float attenuation =  1 / ((c * df) + (l * d * df) + (q * q * d * df));
-    return max(attenuation, cutoff);
+    float attenuation = ((c * distance) + (l * distance) + (q * distance * distance));
+
+
+
+    return attenuation;
 }
 
 float DirectIllumination(float3 P, float3 N, float3 lightCentre, float r, float cutoff)
@@ -241,16 +244,16 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
         
-        if (dot(normalize(wPosSamp.xyz - pointlights[i].position.xyz), N) < 0.0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
-        {
-            lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.005);
-            //lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
+        //if (dot(normalize(wPosSamp.xyz - pointlights[i].position.xyz), N) < 0.0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
+        //{
+        lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.05);
+        //lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
 
-            lightPower *= pointlights[i].intensity; //could add falloff factor
+        lightPower *= pointlights[i].intensity; //could add falloff factor
 
-            //return lightPower;
-
-        }
+        //return lightPower;
+        return lightPower.rrrr;
+        //}
         //else //lights with no direction
 
 
@@ -275,7 +278,8 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight.rgb + (colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY));
+    float3 diffuse = saturate(diffuseLight.rgb);
+    //(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY));
     float3 specular = specularLight.rgb;
     
 
