@@ -7,7 +7,8 @@
 namespace FSMEnvironment
 {
 #define State DirectorState
-	class LevelDirector
+	class LevelDirector :
+		public Observer
 	{
 	private:	// Variables
 		unsigned int m_directorID;
