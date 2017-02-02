@@ -7,7 +7,7 @@ LIGHTING::LightHandler::LightHandler()
 LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(NUM_LT); //Release all buffers
-	delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr; //TEMP
+	//delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr; //TEMP
 }
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
@@ -193,7 +193,7 @@ bool LIGHTING::LightHandler::SetBuffersAsActive()
 bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLights, LIGHT_TYPE type)
 {
 
-	if (type >= NUM_LT)
+	if (type >= NUM_LT || numLights < 1)
 		return false;
 	m_lightData[type].dataPtr = lightArray;
 	if (numLights > this->NUM_LIGHTS[type] || numLights < this->NUM_LIGHTS[type])
