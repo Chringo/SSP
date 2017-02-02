@@ -1766,7 +1766,7 @@ m_dynamicEntitys.push_back(tde);
 		}
 	}
 	//Connect Wheels to other things
-	for (size_t i = 0; i < data->numLever; i++)
+	for (size_t i = 0; i < data->numWheel; i++)
 	{
 		LevelData::WheelHeader tempHeader = data->wheels[i];
 		WheelEntity* toConnect = nullptr;
