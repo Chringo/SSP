@@ -154,7 +154,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 #endif // _DEBUG
 		return false;
 	}
-
+	memset(mapRes.pData, 0, GetStructByteSize(type)*m_lightData[type].numItems);
 	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*m_lightData[type].numItems);
 	m_gDeviceContext->Unmap(lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
