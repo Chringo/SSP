@@ -31,13 +31,11 @@ public:
 	TextComponent* GetTextComponent();
 	AIComponent* GetAIComponent();
 	AnimationComponent* GetAnimationComponent();
-	SoundComponent2D* GetSoundComponent2D();
-	SoundComponent3D* GetSoundComponent3D();
+	SoundHandler* GetSoundHandler();
 
 	void UpdateGraphicsComponents();
 	void UpdateGraphicsAnimationComponents();
 	void UpdateAIComponents();
-	void UpdateSoundHandler();
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);
 	void SetGraphicsComponentListSize(int gCompSize);
 	void SetGraphicsAnimationComponentListSize(int gCompSize);

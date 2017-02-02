@@ -91,14 +91,9 @@ AnimationComponent * ComponentHandler::GetAnimationComponent()
 	return animComp;
 }
 
-SoundComponent2D * ComponentHandler::GetSoundComponent2D()
+SoundHandler * ComponentHandler::GetSoundHandler()
 {
-	return this->m_soundHandler->GetSoundComponent2D();
-}
-
-SoundComponent3D * ComponentHandler::GetSoundComponent3D()
-{
-	return this->m_soundHandler->GetSoundComponent3D();
+	return this->m_soundHandler;
 }
 
 void ComponentHandler::UpdateGraphicsComponents()
@@ -113,11 +108,7 @@ void ComponentHandler::UpdateGraphicsAnimationComponents()
 
 void ComponentHandler::UpdateAIComponents()
 {
-	this->m_soundHandler->UpdateSoundHandler();
-}
-
-void ComponentHandler::UpdateSoundHandler()
-{
+	
 }
 
 void ComponentHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
