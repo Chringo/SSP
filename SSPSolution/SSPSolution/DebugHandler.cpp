@@ -185,8 +185,6 @@ int DebugHandler::ToggleDebugInfo()
 		this->m_vramTextComp->active = true;
 	}
 
-	this->ClearConsole();
-
 	return 0;
 }
 
