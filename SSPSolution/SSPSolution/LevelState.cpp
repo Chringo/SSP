@@ -116,9 +116,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = 0.5f;
+	playerP->PC_OBB.ext[0] = 0.25f;
 	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.25f;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -1132,7 +1132,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 12, 0));
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
@@ -1276,6 +1276,7 @@ t_pc->PC_entityID = data->aiComponents[i].EntityID;
 t_pc->PC_is_Static = false;
 t_pc->PC_steadfast = true;
 t_pc->PC_gravityInfluence = 0;
+t_pc->PC_mass = 0;
 t_pc->PC_friction = 0.7f;
 t_pc->PC_elasticity = 0.1f;
 t_pc->PC_BVtype = BV_AABB;
@@ -1343,7 +1344,7 @@ m_dynamicEntitys.push_back(tde);
 		button1P->PC_is_Static = true;												//Set IsStatic
 		button1P->PC_active = true;													//Set Active
 		button1P->PC_gravityInfluence = 1.0f;
-		button1P->PC_mass = 5;
+		button1P->PC_mass = 0;
 		button1P->PC_friction = 0.00f;
 		button1P->PC_collides = true;
 		button1P->PC_elasticity = 0.2f;
@@ -1523,6 +1524,7 @@ m_dynamicEntitys.push_back(tde);
 	{
 		LevelData::DoorHeader tempHeader = data->doors[i];
 		DoorEntity* tempEntity = new DoorEntity();
+		DynamicEntity* doorDE = new DynamicEntity();
 
 		//Create world matrix from data
 		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
@@ -1549,12 +1551,12 @@ m_dynamicEntitys.push_back(tde);
 		resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 		PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
 		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
-		door1P->PC_pos = pos;														//Set Position
+		door1P->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0,2,2,1));														//Set Position
 		door1P->PC_rotation = rot;												//Set Rotation
 		door1P->PC_is_Static = true;												//Set IsStatic
 		door1P->PC_active = true;													//Set Active
 		door1P->PC_gravityInfluence = 1.0f;
-		door1P->PC_mass = 5;
+		door1P->PC_mass = 0;
 		door1P->PC_friction = 0.00f;
 		door1P->PC_collides = true;
 		door1P->PC_elasticity = 0.2f;
@@ -1565,16 +1567,28 @@ m_dynamicEntitys.push_back(tde);
 		door1P->PC_AABB.ext[0] = door1G->modelPtr->GetOBBData().extension[0];
 		door1P->PC_AABB.ext[1] = door1G->modelPtr->GetOBBData().extension[1];
 		door1P->PC_AABB.ext[2] = door1G->modelPtr->GetOBBData().extension[2];
-		door1P->PC_OBB.ext[0] = door1P->PC_AABB.ext[0] * 2.0f;
-		door1P->PC_OBB.ext[1] = door1P->PC_AABB.ext[1] * 2.0f;
-		door1P->PC_OBB.ext[2] = door1P->PC_AABB.ext[2] * 2.0f;
+		
+		door1P->PC_OBB.ext[0] = door1P->PC_AABB.ext[0];
+		door1P->PC_OBB.ext[1] = door1P->PC_AABB.ext[1];
+		door1P->PC_OBB.ext[2] = door1P->PC_AABB.ext[2];
 
 		door1P->PC_BVtype = BV_OBB;
+		door1P->PC_Power = 1338;
 
+		Resources::Model* modelPtr = nullptr;
+		modelPtr = door1G->modelPtr;
+
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
+			, modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, door1G->worldMatrix);
+		door1P->PC_pos = tempOBBPos.r[3];
+		
 		door1P->PC_OBB.ort = rotate;
 
 		std::vector<ElementState> subjectStates;
 		tempEntity->Initialize(tempHeader.EntityID, door1P, door1G, subjectStates, tempHeader.rotateTime);
+		//doorDE->Initialize(tempHeader.EntityID, door1P, door1G);
+		this->m_dynamicEntitys.push_back(doorDE);
 		this->m_doorEntities.push_back(tempEntity);
 	}
 #pragma endregion Create puzzle entities
@@ -1835,11 +1849,32 @@ m_dynamicEntitys.push_back(tde);
 	PhysicsHandler* ptr = nullptr;
 	ptr = m_cHandler->GetPhysicsHandler();
 	int size = m_cHandler->GetPhysicsHandler()->GetNrOfComponents();
+	int index = 0;
 
-	for (int i = 0; i < size; i++)
+
+	for (index; index < size; index++)
 	{
-		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(i), i);
+		if (index == 6)
+		{
+			int i = 0;
+		}
+		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(index), index);
 	}
+	
+	size = this->m_doorEntities.size();
+	//for (int i = 0; i < size; i++)
+	//{
+	//	PhysicsComponent* door;
+	//	
+
+	//	//this->m_dynamicEntitys.push_back
+
+	//	door = this->m_doorEntities.at(i)->GetPhysicsComponent();
+	//	ptr->TransferBoxesToBullet(door, index);
+
+	//	//this->m_player1.GetPhysicsComponent()->PC_pos = door->PC_pos;
+	//}
+
 
 	return 1;
 }

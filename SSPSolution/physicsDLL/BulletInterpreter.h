@@ -160,6 +160,8 @@ private:
 
 	PHYSICSDLL_API void ApplyImpulseOnPC(PhysicsComponent* src);
 	PHYSICSDLL_API void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
+
+	PHYSICSDLL_API void applyLinearVelocityOnSrc(PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -172,6 +174,8 @@ public:
 	PHYSICSDLL_API void Update(PhysicsComponent* src, int index, float dt);	//this function call and add forces on player and components during events
 
 	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);	//forces updates in bullet world, when the ball is grabed, the ball needs a new position in bullet
+	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src);
+
 	PHYSICSDLL_API void Shutdown();
 
 	PHYSICSDLL_API void CreateRigidBody(PhysicsComponent* fromGame);

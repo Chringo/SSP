@@ -34,68 +34,85 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
 		{
-			DirectX::XMVECTOR rotationX = this->m_pComp->PC_OBB.ort.r[0];
-			DirectX::XMVECTOR rotationY = this->m_pComp->PC_OBB.ort.r[1];
-			DirectX::XMVECTOR rotationZ = this->m_pComp->PC_OBB.ort.r[2];
+			//this->m_pComp->PC_rotationVelocity = DirectX::XMVectorSet(0, -0.2, 0, 0);
+			//DirectX::XMVECTOR rotationX = this->m_pComp->PC_OBB.ort.r[0];
+			//DirectX::XMVECTOR rotationY = this->m_pComp->PC_OBB.ort.r[1];
+			//DirectX::XMVECTOR rotationZ = this->m_pComp->PC_OBB.ort.r[2];
 
-			float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+			//float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
 
-			float rotationValue = this->m_rotatePerSec * dT;
-			if (rotationValue + currentYRotation > this->m_maxRotation)
-			{
-				rotationValue = this->m_maxRotation - currentYRotation;
-			}
-			
+			//float rotationValue = this->m_rotatePerSec * dT;
+			//if (rotationValue + currentYRotation > this->m_maxRotation)
+			//{
+			//	rotationValue = this->m_maxRotation - currentYRotation;
+			//}
+			//
 
-			//We do not need to rotate the Y-axis
-			DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(rotationValue);
+			////We do not need to rotate the Y-axis
+			DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(3.14 / 2);
 			//We need to limit the rotation so it doesn't go over the limits
 
-			rotationX = DirectX::XMVector3Transform(rotationX, yRotationMatrix);
-			rotationZ = DirectX::XMVector3Transform(rotationZ, yRotationMatrix);
-			this->m_pComp->PC_OBB.ort.r[0] = rotationX;
-			this->m_pComp->PC_OBB.ort.r[2] = rotationZ;
+			this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, -3.14 / 2, 1);
+			this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, yRotationMatrix);
+			this->m_isOpened = false;
+			//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), yRotationMatrix);
 
-			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + rotationValue);
-			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
-			{
-				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
-			}
+			//rotationX = DirectX::XMVector3Transform(rotationX, yRotationMatrix);
+			//rotationZ = DirectX::XMVector3Transform(rotationZ, yRotationMatrix);
+			//this->m_pComp->PC_OBB.ort.r[0] = rotationX;
+			//this->m_pComp->PC_OBB.ort.r[2] = rotationZ;
+
+			//this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + rotationValue);
+			//if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
+			//{
+			//	this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
+			//}
 			this->SyncComponents();
+			DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
+			DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
 		}
 	}
 	else
 	{
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
 		{
-			DirectX::XMVECTOR rotationX = this->m_pComp->PC_OBB.ort.r[0];
-			DirectX::XMVECTOR rotationY = this->m_pComp->PC_OBB.ort.r[1];
-			DirectX::XMVECTOR rotationZ = this->m_pComp->PC_OBB.ort.r[2];
+			//this->m_pComp->PC_rotationVelocity = DirectX::XMVectorSet(0, 0.2, 0, 0);
+			//DirectX::XMVECTOR rotationX = this->m_pComp->PC_OBB.ort.r[0];
+			//DirectX::XMVECTOR rotationY = this->m_pComp->PC_OBB.ort.r[1];
+			////DirectX::XMVECTOR rotationZ = this->m_pComp->PC_OBB.ort.r[2];
 
-			float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+			//float currentYRotation = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
 
-			float rotationValue = this->m_rotatePerSec * dT * -1;
-			if (rotationValue + currentYRotation < this->m_minRotation)
-			{
-				rotationValue = this->m_minRotation - currentYRotation;
-			}
+			////float rotationValue = this->m_rotatePerSec * dT * -1;
+			////if (rotationValue + currentYRotation < this->m_minRotation)
+			////{
+			////	rotationValue = this->m_minRotation - currentYRotation;
+			////	this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 0, 1);
+			////}
 
 
-			//We do not need to rotate the Y-axis
-			DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(rotationValue);
-			//We need to limit the rotation so it doesn't go over the limits
+			//////We do not need to rotate the Y-axis
+			//DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(-3.14 / 2);
+			////We need to limit the rotation so it doesn't go over the limits
 
-			rotationX = DirectX::XMVector3Transform(rotationX, yRotationMatrix);
-			rotationZ = DirectX::XMVector3Transform(rotationZ, yRotationMatrix);
-			this->m_pComp->PC_OBB.ort.r[0] = rotationX;
-			this->m_pComp->PC_OBB.ort.r[2] = rotationZ;
+			//this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 0, 1);
+			//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), yRotationMatrix);
+			//this->m_isOpened = false;
+			//rotationX = DirectX::XMVector3Transform(rotationX, yRotationMatrix);
+			//rotationZ = DirectX::XMVector3Transform(rotationZ, yRotationMatrix);
+			//this->m_pComp->PC_OBB.ort.r[0] = rotationX;
+			//this->m_pComp->PC_OBB.ort.r[2] = rotationZ;
 
-			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + rotationValue);
-			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
-			{
-				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
-			}
+			//this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + rotationValue);
+			//if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
+			//{
+			//	this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
+			//}
 			this->SyncComponents();
+			DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
+			DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
 		}
 	}
 	
