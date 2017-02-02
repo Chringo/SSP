@@ -1304,6 +1304,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		FieldEntity* tempFE = new FieldEntity();
 		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
 		this->m_fieldEntities.push_back(tempFE);
+		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
 	}
 
 #pragma endregion
