@@ -1270,6 +1270,18 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_fieldEntities.push_back(tempFE);
 		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
 	}
+
+	// TODO: Field Data for States in Level Director
+	/*for (size_t k = 0; k < this->m_director.GetNrOfStates(); k++)
+	{
+		for (size_t i = 0; i < this->m_currentState->nrOfFields; i++)
+		{
+			this->m_currentState->fieldMap[i].FD_entityID = nullptr;
+			this->m_currentState->fieldMap[i].FD_first_inside = nullptr;
+			this->m_currentState->fieldMap[i].FD_second_inside = nullptr;
+		}
+	}*/
+
 #pragma endregion
 
 	//Create the PuzzleElements

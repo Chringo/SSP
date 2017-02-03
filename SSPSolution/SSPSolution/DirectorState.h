@@ -32,21 +32,21 @@ class DirectorState
 {
 public:
 	int stateID = -1;
-	int goalStateID = 0; // all states go back to idle before entering other states
+	int goalStateID = 0;	// all states go back to idle before entering other states
+	static const int nrOfFields = 1;		// number of fields for this state (FieldData)
+
 	// TODO: Data that allows the functions to be generic
 
 	// State - Data
 	/* both players outside the "checkpoint" (bounding box) would trigger the idle state */
-	bool playerOne = false;
-	bool playerTwo = false;
 	int timeDelay = -1;
 
-	Condition subjects[5];
-	FieldData fieldMap[3];// Locate players in which field they are
+	FieldData fieldMap[1];	// Locate players in which field they are
 
 	Hint hint1 = Hint::NONE;
 	Hint hint2 = Hint::NONE;
 	Hint hint3 = Hint::NONE;
+
 public:
 	DirectorState();
 	~DirectorState();
