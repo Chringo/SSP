@@ -26,6 +26,7 @@ public:
 
 	GraphicsComponent* GetStaticGraphicsComponent();
 	GraphicsComponent* GetDynamicGraphicsComponent();
+	GraphicsComponent* GetPersistentGraphicsComponent();
 	GraphicsAnimationComponent * GetGraphicsAnimationComponent();
 	PhysicsComponent* GetPhysicsComponent();
 	UIComponent* GetUIComponent();
@@ -45,6 +46,7 @@ public:
 
 	int ResizeGraphicsStatic(size_t newCap);
 	int ResizeGraphicsDynamic(size_t newCap);
+	int ResizeGraphicsPersistent(size_t newCap);
 
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;

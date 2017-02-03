@@ -77,6 +77,7 @@ private:
 	//New way of saving graphics components which is not used yet
 	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
 	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
+	std::vector<GraphicsComponent*> m_persistantGraphicsComponents;
 	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
 
 
@@ -191,6 +192,7 @@ public:
 	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableStaticComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableDynamicComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailablePersistentComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
 	GRAPHICSDLL_API int UpdateAnimComponentList();
 
@@ -217,6 +219,7 @@ public:
 	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
 
 
 	//TEMP STUFF

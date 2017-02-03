@@ -484,12 +484,23 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
 		}
-		
+
 		/*if (this->m_staticGraphicsComponents[i]->active == false)
 		continue;
 		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
+	for (int i = 0; i < this->m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_persistantGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+		}
 
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
+		continue;
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
+	}
+	
 	//for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
 	//{
 	//	if (this->m_staticGraphicsComponents[i]->active == false)
@@ -680,9 +691,18 @@ void GraphicsHandler::Shutdown()
 			this->m_animationGraphicsComponents[i] = nullptr;
 		}
 	}
+	for (size_t i = 0; i < this->m_persistantGraphicsComponents.size(); i++)
+	{
+		if (this->m_persistantGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_persistantGraphicsComponents[i];
+			this->m_persistantGraphicsComponents[i] = nullptr;
+		}
+	}
 	this->m_animationGraphicsComponents.clear();
 	this->m_staticGraphicsComponents.clear();
 	this->m_dynamicGraphicsComponents.clear();
+	this->m_persistantGraphicsComponents.clear();
 
 
 #ifdef _DEBUG
@@ -841,6 +861,28 @@ int GraphicsHandler::ResizeAnimationComponents(size_t new_cap)
 	return  result;
 }
 
+int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
+{
+	int result = 1;
+	result = this->m_persistantGraphicsComponents.size();
+	//Delete all old components
+	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(), this->m_persistantGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_persistantGraphicsComponents.clear();
+
+	//Set size for the vector
+	this->m_persistantGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_persistantGraphicsComponents[i] = new GraphicsComponent();
+	}
+	return  result;
+}
+
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
 	if (this->m_maxGraphicsComponents < newSize)
@@ -928,6 +970,19 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
 	GraphicsComponent* result = nullptr;
 	//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
 	result = *std::find_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(),
+		[](GraphicsComponent* comp) { return (comp->active == 0); });
+	if (result != nullptr && result->active)
+	{
+		result = nullptr;
+	}
+	return result;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailablePersistentComponent()
+{
+	GraphicsComponent* result = nullptr;
+	//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+	result = *std::find_if(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(),
 		[](GraphicsComponent* comp) { return (comp->active == 0); });
 	if (result != nullptr && result->active)
 	{

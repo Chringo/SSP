@@ -42,6 +42,16 @@ GraphicsComponent * ComponentHandler::GetDynamicGraphicsComponent()
 	return graphicsComponent;
 }
 
+GraphicsComponent * ComponentHandler::GetPersistentGraphicsComponent()
+{
+	GraphicsComponent* graphicsComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailablePersistentComponent();
+	}
+	return graphicsComponent;
+}
+
 //GraphicsComponent * ComponentHandler::GetGraphicsComponent()
 //{
 //	GraphicsComponent* graphicsComponent = nullptr;
@@ -167,6 +177,13 @@ int ComponentHandler::ResizeGraphicsDynamic(size_t newCap)
 {
 	int size = 0;
 	size = this->m_graphicsHandler->ResizeDynamicComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizePersistentComponents(newCap);
 	return size;
 }
 
