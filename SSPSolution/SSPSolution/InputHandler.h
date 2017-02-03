@@ -33,7 +33,7 @@ private:
 	int m_mouseWheelX;
 	int m_mouseWheelY;
 	SDL_bool m_mouseCaptured;
-	bool m_inMenu;
+	bool m_mouseLocked;
 
 public:
 	InputHandler();
@@ -70,7 +70,7 @@ public:
 	DirectX::XMFLOAT2 GetMouseDelta();
 	DirectX::XMFLOAT2 GetMouseWheel();
 
-	void SetInMenu(bool inMenu);
+	void SetMouseLocked(bool lockMouse);
 
 private:
 	void ReadKeyboard();
