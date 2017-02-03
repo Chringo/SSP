@@ -222,12 +222,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
-	ballP->PC_BVtype = BV_Sphere;
+	ballP->PC_BVtype = BV_OBB;
 
-	//ballP->PC_OBB.ext[0] = 0.5f;
-	//ballP->PC_OBB.ext[1] = 0.5f;
-	//ballP->PC_OBB.ext[2] = 0.5f;
-	ballP->PC_Sphere.radius = 1;
+	ballP->PC_OBB.ext[0] = 0.5f;
+	ballP->PC_OBB.ext[1] = 0.5f;
+	ballP->PC_OBB.ext[2] = 0.5f;
+	//ballP->PC_Sphere.radius = 1;
 
 
 	ballP->PC_mass = 10;
