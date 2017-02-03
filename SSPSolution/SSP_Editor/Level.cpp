@@ -169,10 +169,10 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 Resources::Status Level::AddCheckpointEntity()
 {
 	CheckpointContainer * container = new CheckpointContainer();
-	container->checkpointNumber = 0;
-	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
 
+	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
+	this->m_checkpointHandler.GetAllCheckpoints()->back()->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	this->m_checkpointHandler.GetAllCheckpoints()->back()->checkpointNumber = 0;
 	return Resources::Status::ST_OK;
 }
 

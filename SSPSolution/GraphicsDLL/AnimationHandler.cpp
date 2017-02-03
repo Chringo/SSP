@@ -141,10 +141,10 @@ AnimationComponent * AnimationHandler::GetNextAvailableComponent()
 void AnimationHandler::UpdateAnimationComponents(float dt)
 {
 	/*Iterate each animation component to check if their active or not.*/
-	for (int compIndex = 0; compIndex < this->m_AnimComponentList.size(); compIndex++)
+	for (size_t compIndex = 0; compIndex < this->m_AnimComponentList.size(); compIndex++)
 	{
 		/*If the current iterating component is active, update component and data.*/
-		if (this->m_AnimComponentList[compIndex]->active == true)
+		if (this->m_AnimComponentList[compIndex]->active >= 1)  // if active == true
 		{
 
 		}
@@ -158,7 +158,7 @@ void AnimationHandler::UpdateAnimationComponents(float dt)
 
 void AnimationHandler::ShutDown()
 {
-	for (int i = 0; i < this->m_AnimComponentList.size(); i++)
+	for (size_t i = 0; i < this->m_AnimComponentList.size(); i++)
 	{
 		delete this->m_AnimComponentList[i];
 	}
@@ -177,7 +177,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 
 	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimComponentList[m_AnimCompIndex]->animation_States->at(animState->stateIndex)->GetAllJoints();
 
-	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for ( int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
 
@@ -321,7 +321,7 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
 
-	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for ( int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
 		BlendKeyframe blendKey;
 
@@ -411,7 +411,7 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
 
-	for (unsigned int jointIndex = 0; jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; (int)jointIndex < jointCount; jointIndex++)
 	{
 		BlendKeyframe blendKey;
 

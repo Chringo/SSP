@@ -2,11 +2,17 @@
 #define SUCCESS 1
 #define FAIL 0
 
-FSMEnvironment::LevelDirector::LevelDirector(){}
+FSMEnvironment::LevelDirector::LevelDirector()
+{
+	this->m_directorID = UINT_MAX;
+}
 FSMEnvironment::LevelDirector::~LevelDirector(){}
 int FSMEnvironment::LevelDirector::Shutdown()
 {
 	this->m_states.clear();
+	this->m_defaultState = nullptr;
+	this->m_currentState = nullptr;
+	this->m_goalState = nullptr;
 	return SUCCESS;
 }
 
@@ -14,7 +20,6 @@ int FSMEnvironment::LevelDirector::Initialize()
 {
 	// Reset values
 	this->m_states.clear();
-
 	this->m_defaultState = nullptr;
 	this->m_currentState = nullptr;
 	this->m_goalState = nullptr;
@@ -22,23 +27,25 @@ int FSMEnvironment::LevelDirector::Initialize()
 	// TODO: Import new states from new LevelState
 #pragma region temp
 	State test;
+	test.Initialize();
 	test.stateID = 0;
 	test.timeDelay = 10;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	test.stateID = 1;
 	test.timeDelay = 15;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	test.stateID = 2;
 	test.timeDelay = 20;
-	test.hint = Hint::EXAMPLE;
+	test.hint1 = Hint::EXAMPLE;
 	AddState(&test);
 	for (int i = 0; i < 3; i++)
 	{
 		printf("%d\n", m_states[i].stateID);
 	}
 	SetDefaultState(&m_states[0]);
+	test.Initialize();
 #pragma endregion
 
 	return SUCCESS;
@@ -47,12 +54,12 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 {
 	// Return if there are no states
 	if (this->m_states.size() == 0)
-		return SUCCESS;
+		return FAIL;
 	// Return if there are no current state or default state
 	if ( !(this->m_currentState) )
 		this->m_currentState = this->m_defaultState;
 	if ( !(this->m_currentState) )
-		return SUCCESS;
+		return FAIL;
 	
 	int oldStateID = this->m_currentState->stateID;
 	this->m_goalID = this->m_currentState->CheckTransitions();
@@ -72,6 +79,15 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 
 int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 {
+	if (entityID == 1 && event == FIELD_CONTAINS)
+		this->m_currentState->playerOne = true;
+	else
+		this->m_currentState->playerOne = false;
+
+	if (entityID == 3 && event == FIELD_CONTAINS)
+		this->m_currentState->playerTwo = true;
+	else
+		this->m_currentState->playerTwo = false;
 
 	return SUCCESS;
 }
@@ -91,6 +107,7 @@ void FSMEnvironment::LevelDirector::SetGoalID(int goal)
 bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 {
 	bool change = false;
+
 	// Query list of states to see if the state exists
 	for (unsigned int i = 0; i < m_states.size(); i++)
 	{
@@ -101,30 +118,6 @@ bool FSMEnvironment::LevelDirector::ChangeState(int newState)
 			break;
 		}
 	}
+
 	return change;
 }
-
-#pragma region temp
-void FSMEnvironment::State::Initialize()
-{
-
-}
-int FSMEnvironment::State::CheckTransitions()
-{
-
-	return 1;// TODO: Return ID
-}
-void FSMEnvironment::State::Enter()
-{
-
-}
-void FSMEnvironment::State::Exit()
-{
-
-}
-void FSMEnvironment::State::Update(float dt)
-{
-
-}
-#pragma endregion
-

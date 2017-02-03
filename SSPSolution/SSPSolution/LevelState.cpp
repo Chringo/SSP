@@ -210,8 +210,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player2.SetSpeed(0.5f);
 
 
-	////this->m_dynamicEntitys.push_back();
-	//
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
@@ -237,7 +235,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 	m_player1.SetBall(ball);
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
 
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
@@ -262,41 +259,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	m_player2.SetBall(ball2);
 
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), ballP, 5, 1.0);	//Note that 'ballP' is temporary
-
 #pragma region
-				//	DynamicEntity* platform = new DynamicEntity();
-//	GraphicsComponent* platformG = m_cHandler->GetGraphicsComponent();
-//	platformG->modelID = 1337;
-//	platformG->active = true;
-//	resHandler->GetModel(platformG->modelID, platformG->modelPtr);
-//	PhysicsComponent* platformP = m_cHandler->GetPhysicsComponent();
-//	platformP->PC_pos = DirectX::XMVectorSet(-3, -3, -40, 0);
-//	platformP->PC_is_Static = false;
-//	platformP->PC_steadfast = true;
-//	platformP->PC_AABB.ext[0] = 5;
-//	platformP->PC_AABB.ext[1] = 0.1f;
-//	platformP->PC_AABB.ext[2] = 5;
-//	platformP->PC_elasticity = 0;
-//	platformP->PC_friction = 1.0f;
-//	platformG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platformP->PC_pos);
-//	AIComponent* platformTERMINATOR = m_cHandler->GetAIComponent();
-//#pragma region AIComp variables
-//	platformTERMINATOR->AC_triggered = true;
-//	platformTERMINATOR->AC_speed = 0.25f;
-//	platformTERMINATOR->AC_position = platformP->PC_pos;
-//	platformTERMINATOR->AC_pattern = AI_CIRCULAR;
-//	platformTERMINATOR->AC_nrOfWaypoint = 4;
-//	platformTERMINATOR->AC_waypoints[0] = platformP->PC_pos;
-//	platformTERMINATOR->AC_waypoints[1] = DirectX::XMVectorSet(-3, -3, 0, 0);
-//	platformTERMINATOR->AC_waypoints[2] = DirectX::XMVectorSet(-3, 15, 0, 0);
-//	platformTERMINATOR->AC_waypoints[3] = DirectX::XMVectorSet(-3, 15, -40, 0);
-//#pragma endregion
-//	platform->Initialize(4, platformP, platformG, platformTERMINATOR);
-//	platformP->PC_entityID = platform->GetEntityID();
-//	platformTERMINATOR->AC_entityID = platform->GetEntityID();
-//	this->m_dynamicEntitys.push_back(platform);
-//
 //	DynamicEntity* plat = new DynamicEntity();
 //	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
 //	platG->modelID = 1337;
@@ -324,26 +287,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
 //	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
 //#pragma endregion
-//	plat->Initialize(5, platP, platG, platA);
 //	platP->PC_entityID = plat->GetEntityID();
 //	platA->AC_entityID = plat->GetEntityID();
-//	this->m_dynamicEntitys.push_back(plat);  
+//	this->m_dynamicEntitys.push_back(plat);
+//	plat->Initialize(5, platP, platG, nullptr, platA);
 #pragma endregion AIComponent tests
-
-#pragma region
-	this->soundComponent = cHandler->GetSoundComponent2D();
-	this->soundComponent->isActive = true;
-	this->soundComponent->loop = false;
-	this->soundComponent->sound = Sounds2D::NO_SOUND2D;
-
-	this->soundComponent2 = cHandler->GetSoundComponent3D();
-	this->soundComponent2->isActive = true;
-	this->soundComponent2->loop = false;
-	this->soundComponent2->pos = DirectX::XMFLOAT3(0,0,0);
-	this->soundComponent2->sound = Sounds3D::NO_SOUND3D;
-
-#pragma endregion SOUND_TEST
-
 
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
@@ -371,7 +319,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//WheelEntity* wheel1 = new WheelEntity();
 	//ButtonEntity* button1 = new ButtonEntity();
 	//DoorEntity* door1 = new DoorEntity();
-
 	////DOOR
 	//GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
 	//door1G->modelID = 1337;
@@ -393,7 +340,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//subjectStates.push_back(ElementState{ 616, EVENT::BUTTON_ACTIVE, false });
 	//subjectStates.push_back(ElementState{ 617, EVENT::WHEEL_100, false });
 	//door1->Initialize(666, door1P, door1G, subjectStates, 0.4f);
-
 	////BUTTON
 	//GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
 	//button1G->modelID = 1337;
@@ -442,7 +388,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//wheel1->Initialize(617, wheel1P, wheel1G, 2.0f, -0.5f, 0.5f, 2.0f, true, 0.5f, 1.0f);
 	//wheel1->AddObserver(door1, door1->GetEntityID());
 	//this->m_wheelEntities.push_back(wheel1);
-
 	//this->m_doorEntities.push_back(door1);
 
 	return result;
@@ -963,7 +908,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
-	
+
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
@@ -1050,16 +995,30 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+
+	//if (m_fieldEntities[0] != nullptr)
+	//{
+	//	if (m_fieldEntities[0]->GetField()->F_first_inside && m_fieldEntities[0]->GetField()->F_second_inside)
+	//	{
+	//		this->m_director.React(1, FIELD_CONTAINS);
+	//		this->m_director.React(3, FIELD_CONTAINS);
+	//	}
+	//}
+	for (size_t i = 0; i < m_fieldEntities.size(); i++)
+	{
+		m_fieldEntities[i]->Update(dt, inputHandler);
+	}
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		this->soundComponent->sound = Sounds2D::MENU1;
-		//this->soundComponent->loop = true;
+		this->m_cHandler->GetSoundHandler()->PlaySound2D(Sounds2D::MENU1, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
-		this->soundComponent2->sound = Sounds3D::MENU1_3D;
-		DirectX::XMStoreFloat3(&this->soundComponent2->pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::ABBINGTON_FLYING_1, pos, false, false);
 	}
 
 
@@ -1160,7 +1119,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			t_gc = m_cHandler->GetGraphicsAnimationComponent();
 		}
-		
+		else
 		{
 			t_gc = m_cHandler->GetGraphicsComponent();
 		}
@@ -1223,7 +1182,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_staticEntitys.push_back(tse); //Push new entity to list
 		}
 		else {
-			
+
 			DynamicEntity* tde = new DynamicEntity();
 			tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr);// Entity needs its ID
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
@@ -1255,48 +1214,47 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_gc->modelPtr = modelPtr;
 		//Create world matrix from data
 		//memcpy(pos.m128_f32, data->aiComponents[i].position, sizeof(float) * 3);//Convert from POD to DirectX Vector
-memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
-translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
-DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
-DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
-//Create the rotation matrix
-DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
-rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
-t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
+		memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
+		translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
+		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
+		//Create the rotation matrix
+		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
+		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 
-st = Resources::ResourceHandler::GetInstance()->GetModel(data->aiComponents[i].modelID, modelPtr);
+		st = Resources::ResourceHandler::GetInstance()->GetModel(data->aiComponents[i].modelID, modelPtr);
 #ifdef _DEBUG
-if (st != Resources::ST_OK)
-std::cout << "Model could not be found when loading level data,  ID: " << data->aiComponents[i].modelID << std::endl;
+		if (st != Resources::ST_OK)
+			std::cout << "Model could not be found when loading level data,  ID: " << data->aiComponents[i].modelID << std::endl;
 #endif // _DEBUG
 #pragma endregion
 #pragma region Physics
-PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-t_pc->PC_pos = t_ac->AC_position;
-t_pc->PC_entityID = data->aiComponents[i].EntityID;
-t_pc->PC_is_Static = false;
-t_pc->PC_steadfast = true;
-t_pc->PC_gravityInfluence = 0;
-t_pc->PC_mass = 0;
-t_pc->PC_friction = 0.7f;
-t_pc->PC_elasticity = 0.1f;
-t_pc->PC_BVtype = BV_AABB;
-t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
-t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
-t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
-DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
-	t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
-t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
-t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
-t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
+		t_pc->PC_pos = t_ac->AC_position;
+		t_pc->PC_entityID = data->aiComponents[i].EntityID;
+		t_pc->PC_is_Static = false;
+		t_pc->PC_steadfast = true;
+		t_pc->PC_gravityInfluence = 0;
+		t_pc->PC_friction = 0.7f;
+		t_pc->PC_elasticity = 0.1f;
+		t_pc->PC_BVtype = BV_AABB;
+		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
+		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
+		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
+		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
+			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
+		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
+		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
+		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 #pragma endregion
 
 
-DynamicEntity* tde = new DynamicEntity();
-tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-m_dynamicEntitys.push_back(tde);
+		DynamicEntity* tde = new DynamicEntity();
+		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
+		m_dynamicEntitys.push_back(tde);
 	}
 
 	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
@@ -1309,6 +1267,38 @@ m_dynamicEntitys.push_back(tde);
 
 		m_checkpoints.push_back(CB);
 	}
+
+#pragma region Creating Field
+
+	//OBB* checkPointOBB = nullptr;
+	//for (size_t i = 0; i < m_checkpoints.size(); i++)
+	//{
+	//	checkPointOBB = &m_checkpoints[i]->obb;
+	//	//this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+	//	//	m_checkpoints[i]->pos,
+	//	//	1,	//EntityID Player1
+	//	//	3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+	//	//	checkPointOBB
+	//	//);
+	//}
+	//checkPointOBB = nullptr;
+
+	for (size_t i = 0; i < data->numCheckpoints; i++)
+	{
+		OBB* checkPointOBB = &m_checkpoints[i]->obb;
+		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+			m_checkpoints[i]->pos,
+			1,	//EntityID Player1
+			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+			checkPointOBB
+		);
+		FieldEntity* tempFE = new FieldEntity();
+		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		this->m_fieldEntities.push_back(tempFE);
+		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+	}
+
+#pragma endregion
 
 	//Create the PuzzleElements
 #pragma region
@@ -1539,7 +1529,7 @@ m_dynamicEntitys.push_back(tde);
 		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(rot.m128_f32[0]);
 		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(rot.m128_f32[2]);*/
 		//Should just use this function instead of a bunch
-		
+
 		//Create the rotation matrix
 		/*DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);*/
@@ -1780,7 +1770,7 @@ m_dynamicEntitys.push_back(tde);
 		}
 	}
 	//Connect Wheels to other things
-	for (size_t i = 0; i < data->numLever; i++)
+	for (size_t i = 0; i < data->numWheel; i++)
 	{
 		LevelData::WheelHeader tempHeader = data->wheels[i];
 		WheelEntity* toConnect = nullptr;
@@ -1844,9 +1834,7 @@ m_dynamicEntitys.push_back(tde);
 	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
-
-
-
+	
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 	PhysicsHandler* ptr = nullptr;
 	ptr = m_cHandler->GetPhysicsHandler();

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Ui__BehaviourTypeHandler_t {
-    QByteArrayData data[30];
-    char stringdata0[632];
+    QByteArrayData data[32];
+    char stringdata0[673];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -45,20 +45,22 @@ QT_MOC_LITERAL(12, 227, 26), // "on_CheckpointIndex_changed"
 QT_MOC_LITERAL(13, 254, 25), // "on_Attributes_tab_changed"
 QT_MOC_LITERAL(14, 280, 6), // "on_Add"
 QT_MOC_LITERAL(15, 287, 6), // "on_Del"
-QT_MOC_LITERAL(16, 294, 27), // "on_triggerSelection_Changed"
-QT_MOC_LITERAL(17, 322, 17), // "QTableWidgetItem*"
-QT_MOC_LITERAL(18, 340, 4), // "item"
-QT_MOC_LITERAL(19, 345, 25), // "on_eventSelection_Changed"
-QT_MOC_LITERAL(20, 371, 14), // "on_Add_Trigger"
-QT_MOC_LITERAL(21, 386, 17), // "on_Delete_Trigger"
-QT_MOC_LITERAL(22, 404, 23), // "on_RotationTime_changed"
-QT_MOC_LITERAL(23, 428, 28), // "on_Wheel_minRotation_changed"
-QT_MOC_LITERAL(24, 457, 28), // "on_Wheel_maxRotation_changed"
-QT_MOC_LITERAL(25, 486, 32), // "on_Wheel_interactionDist_changed"
-QT_MOC_LITERAL(26, 519, 29), // "on_Wheel_rotationTime_changed"
-QT_MOC_LITERAL(27, 549, 29), // "on_Wheel_timeTilReset_changed"
-QT_MOC_LITERAL(28, 579, 26), // "on_Wheel_resetTime_changed"
-QT_MOC_LITERAL(29, 606, 25) // "on_lever_distance_changed"
+QT_MOC_LITERAL(16, 294, 34), // "on_availableTriggers_index_Ch..."
+QT_MOC_LITERAL(17, 329, 5), // "index"
+QT_MOC_LITERAL(18, 335, 27), // "on_triggerSelection_Changed"
+QT_MOC_LITERAL(19, 363, 17), // "QTableWidgetItem*"
+QT_MOC_LITERAL(20, 381, 4), // "item"
+QT_MOC_LITERAL(21, 386, 25), // "on_eventSelection_Changed"
+QT_MOC_LITERAL(22, 412, 14), // "on_Add_Trigger"
+QT_MOC_LITERAL(23, 427, 17), // "on_Delete_Trigger"
+QT_MOC_LITERAL(24, 445, 23), // "on_RotationTime_changed"
+QT_MOC_LITERAL(25, 469, 28), // "on_Wheel_minRotation_changed"
+QT_MOC_LITERAL(26, 498, 28), // "on_Wheel_maxRotation_changed"
+QT_MOC_LITERAL(27, 527, 32), // "on_Wheel_interactionDist_changed"
+QT_MOC_LITERAL(28, 560, 29), // "on_Wheel_rotationTime_changed"
+QT_MOC_LITERAL(29, 590, 29), // "on_Wheel_timeTilReset_changed"
+QT_MOC_LITERAL(30, 620, 26), // "on_Wheel_resetTime_changed"
+QT_MOC_LITERAL(31, 647, 25) // "on_lever_distance_changed"
 
     },
     "Ui::BehaviourTypeHandler\0on_Speed_changed\0"
@@ -69,7 +71,8 @@ QT_MOC_LITERAL(29, 606, 25) // "on_lever_distance_changed"
     "on_button_timer_Changed\0on_CheckpointAdd\0"
     "on_CheckpointIndex_changed\0"
     "on_Attributes_tab_changed\0on_Add\0"
-    "on_Del\0on_triggerSelection_Changed\0"
+    "on_Del\0on_availableTriggers_index_Changed\0"
+    "index\0on_triggerSelection_Changed\0"
     "QTableWidgetItem*\0item\0on_eventSelection_Changed\0"
     "on_Add_Trigger\0on_Delete_Trigger\0"
     "on_RotationTime_changed\0"
@@ -89,7 +92,7 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      25,   14, // methods
+      26,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -97,31 +100,32 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,  139,    2, 0x0a /* Public */,
-       4,    1,  142,    2, 0x0a /* Public */,
-       5,    1,  145,    2, 0x0a /* Public */,
-       6,    1,  148,    2, 0x0a /* Public */,
-       7,    1,  151,    2, 0x0a /* Public */,
-       8,    1,  154,    2, 0x0a /* Public */,
-       9,    1,  157,    2, 0x0a /* Public */,
-      10,    1,  160,    2, 0x0a /* Public */,
-      11,    0,  163,    2, 0x0a /* Public */,
-      12,    1,  164,    2, 0x0a /* Public */,
-      13,    1,  167,    2, 0x0a /* Public */,
-      14,    0,  170,    2, 0x0a /* Public */,
-      15,    0,  171,    2, 0x0a /* Public */,
-      16,    1,  172,    2, 0x0a /* Public */,
-      19,    1,  175,    2, 0x0a /* Public */,
-      20,    0,  178,    2, 0x0a /* Public */,
-      21,    0,  179,    2, 0x0a /* Public */,
-      22,    1,  180,    2, 0x0a /* Public */,
-      23,    1,  183,    2, 0x0a /* Public */,
-      24,    1,  186,    2, 0x0a /* Public */,
-      25,    1,  189,    2, 0x0a /* Public */,
-      26,    1,  192,    2, 0x0a /* Public */,
-      27,    1,  195,    2, 0x0a /* Public */,
-      28,    1,  198,    2, 0x0a /* Public */,
-      29,    1,  201,    2, 0x0a /* Public */,
+       1,    1,  144,    2, 0x0a /* Public */,
+       4,    1,  147,    2, 0x0a /* Public */,
+       5,    1,  150,    2, 0x0a /* Public */,
+       6,    1,  153,    2, 0x0a /* Public */,
+       7,    1,  156,    2, 0x0a /* Public */,
+       8,    1,  159,    2, 0x0a /* Public */,
+       9,    1,  162,    2, 0x0a /* Public */,
+      10,    1,  165,    2, 0x0a /* Public */,
+      11,    0,  168,    2, 0x0a /* Public */,
+      12,    1,  169,    2, 0x0a /* Public */,
+      13,    1,  172,    2, 0x0a /* Public */,
+      14,    0,  175,    2, 0x0a /* Public */,
+      15,    0,  176,    2, 0x0a /* Public */,
+      16,    1,  177,    2, 0x0a /* Public */,
+      18,    1,  180,    2, 0x0a /* Public */,
+      21,    1,  183,    2, 0x0a /* Public */,
+      22,    0,  186,    2, 0x0a /* Public */,
+      23,    0,  187,    2, 0x0a /* Public */,
+      24,    1,  188,    2, 0x0a /* Public */,
+      25,    1,  191,    2, 0x0a /* Public */,
+      26,    1,  194,    2, 0x0a /* Public */,
+      27,    1,  197,    2, 0x0a /* Public */,
+      28,    1,  200,    2, 0x0a /* Public */,
+      29,    1,  203,    2, 0x0a /* Public */,
+      30,    1,  206,    2, 0x0a /* Public */,
+      31,    1,  209,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Double,    3,
@@ -137,7 +141,8 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 17,   18,
+    QMetaType::Void, QMetaType::Int,   17,
+    QMetaType::Void, 0x80000000 | 19,   20,
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void,
     QMetaType::Void,
@@ -172,18 +177,19 @@ void Ui::BehaviourTypeHandler::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 10: _t->on_Attributes_tab_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 11: _t->on_Add(); break;
         case 12: _t->on_Del(); break;
-        case 13: _t->on_triggerSelection_Changed((*reinterpret_cast< QTableWidgetItem*(*)>(_a[1]))); break;
-        case 14: _t->on_eventSelection_Changed((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 15: _t->on_Add_Trigger(); break;
-        case 16: _t->on_Delete_Trigger(); break;
-        case 17: _t->on_RotationTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 18: _t->on_Wheel_minRotation_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 19: _t->on_Wheel_maxRotation_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 20: _t->on_Wheel_interactionDist_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 21: _t->on_Wheel_rotationTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 22: _t->on_Wheel_timeTilReset_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 23: _t->on_Wheel_resetTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 24: _t->on_lever_distance_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 13: _t->on_availableTriggers_index_Changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 14: _t->on_triggerSelection_Changed((*reinterpret_cast< QTableWidgetItem*(*)>(_a[1]))); break;
+        case 15: _t->on_eventSelection_Changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 16: _t->on_Add_Trigger(); break;
+        case 17: _t->on_Delete_Trigger(); break;
+        case 18: _t->on_RotationTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 19: _t->on_Wheel_minRotation_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 20: _t->on_Wheel_maxRotation_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 21: _t->on_Wheel_interactionDist_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 22: _t->on_Wheel_rotationTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 23: _t->on_Wheel_timeTilReset_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 24: _t->on_Wheel_resetTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 25: _t->on_lever_distance_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -214,13 +220,13 @@ int Ui::BehaviourTypeHandler::qt_metacall(QMetaObject::Call _c, int _id, void **
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 25)
+        if (_id < 26)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 25;
+        _id -= 26;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 25)
+        if (_id < 26)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 25;
+        _id -= 26;
     }
     return _id;
 }

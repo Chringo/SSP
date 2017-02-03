@@ -19,7 +19,9 @@ enum ContainerType
 	AIWAYPOINT,
 	CHECKPOINT,
 	AI,
-	NUM_TYPES
+	NUM_TYPES,
+	NONE //important for ui stuff
+
 };
 struct Container
 {
@@ -528,10 +530,10 @@ struct CheckpointContainer : Container
 private:
 	LevelData::CheckpointHeader checkpointHeader;
 public:
-	CheckpointContainer()
+	CheckpointContainer() : Container()
 	{
 		type = CHECKPOINT;
-		internalID = UINT_MAX;
+		//internalID = 4;
 		position = { 0.0,0.0,0.0 };
 		rotation = { 0.0,0.0,0.0 };
 		scale = { 1.0, 1.0, 1.0 };

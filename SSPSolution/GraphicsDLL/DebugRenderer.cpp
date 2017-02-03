@@ -308,12 +308,12 @@ void DebugRenderer::Render(DirectX::XMVECTOR & pos, Sphere & sphere, DirectX::XM
 void DebugRenderer::Render(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color)
 {
 
-	for (size_t i = 0; i < numWaypoints; i++)
+	for (int i = 0; i < numWaypoints; i++)
 	{
 		AABB pointBox;
-		pointBox.ext[0] = 0.2;
-		pointBox.ext[1] = 0.2;
-		pointBox.ext[2] = 0.2;
+		pointBox.ext[0] = 0.2f;
+		pointBox.ext[1] = 0.2f;
+		pointBox.ext[2] = 0.2f;
 		DirectX::XMVECTOR boxColor = { 0.5f,0.0f,0.5f };
 		this->Render(wayPoints[i], pointBox, boxColor);
 
