@@ -37,16 +37,14 @@ public:
 
 	// State - Data
 	/* both players outside the "checkpoint" (bounding box) would trigger the idle state */
-	bool playerOne = false;
-	bool playerTwo = false;
 	int timeDelay = -1;
-
-	Condition subjects[5];
+	
 	FieldData fieldMap[3];// Locate players in which field they are
 
 	Hint hint1 = Hint::NONE;
 	Hint hint2 = Hint::NONE;
 	Hint hint3 = Hint::NONE;
+
 public:
 	DirectorState();
 	~DirectorState();
