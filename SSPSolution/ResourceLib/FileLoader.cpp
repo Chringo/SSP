@@ -189,7 +189,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	size_t size;
 	size = static_cast<size_t>(fsize);
 
-	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, size); //get memorychunk
+	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, size - sizeof(LevelData::MainLevelHeader)); //get memorychunk
 	file.seekg(0, std::ios::beg); //go back to the beginning of file
 
 	LevelData::MainLevelHeader header;
@@ -285,7 +285,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	//Point lights
 	size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader->numPointLights;	  //memsize
 	file.read(data + offset , pointlightSize);
-	level.pointLights = (LevelData::PointLightHeader*) data + offset;
+	level.pointLights = (LevelData::PointLightHeader*) (data + offset);
 	offset += pointlightSize;
 
 	//More lights

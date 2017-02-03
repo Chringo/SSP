@@ -232,9 +232,25 @@ void LIGHTING::LightHandler::SetAmbientLight(float r, float g, float b, float in
 	 m_constBufferData.AMBIENT_COLOR[2]  = b;
 	 m_constBufferData.AMBIENT_INTENSITY = intensity;
 
-	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
+	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);	
+}
 
-	
+bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
+{
+	if (level->numPointLights > 0)
+	{
+		if (m_lightData[LT_POINT].dataPtr != nullptr)
+			delete m_lightData[LT_POINT].dataPtr;
+
+
+		for (size_t i = 0; i < level->numPointLights; i++)
+		{
+
+		}
+		//SetLightData(level->pointLights,) //DIFFERENT LIGHT TYPES; SHIT
+
+	}
+	return true;
 }
 
 

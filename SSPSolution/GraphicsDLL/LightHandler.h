@@ -12,7 +12,7 @@
 #include <vector>
 #include "LightStructs.h"
 #include "ConstantBufferHandler.h"
-
+#include "../SSP_Editor/LevelHeaders.h"
 #ifdef _DEBUG
 #include <iostream>
 #endif
@@ -67,6 +67,7 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool SetBuffersAsActive();
 		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
+		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
 	private:
 		bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
 		bool ReleaseStructuredBuffer(LIGHT_TYPE type);
