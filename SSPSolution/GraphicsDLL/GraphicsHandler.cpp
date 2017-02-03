@@ -719,8 +719,8 @@ int GraphicsHandler::GenerateOctree()
 	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[2];
 
 	float minX, maxX, minY, maxY, minZ, maxZ;
-	minX = minY = minZ = INT_MAX;
-	maxX = maxY = maxZ = INT_MIN;
+	minX = minY = minZ = D3D11_FLOAT32_MAX;
+	maxX = maxY = maxZ = -D3D11_FLOAT32_MAX;
 
 	std::vector<OctreeBV> listOfComponentBV;
 	this->m_octreeRoot.containedComponents.resize(componentCount);
