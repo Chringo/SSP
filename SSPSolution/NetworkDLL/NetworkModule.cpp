@@ -126,6 +126,12 @@ int NetworkModule::Shutdown()
 	this->connectedClients.clear();	// Remove all connected clients
 	printf("%d Clients has been removed on server shutdown\n", i);
 
+	closesocket(this->listenSocket);
+	WSACleanup();
+
+	closesocket(this->connectSocket);
+	WSACleanup();
+
 	return 1;
 }
 

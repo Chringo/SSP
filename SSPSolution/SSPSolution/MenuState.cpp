@@ -4,8 +4,9 @@
 
 MenuState::MenuState()
 {
+	this->timeoutTime = 0;
+	this->isHosting;
 }
-
 
 MenuState::~MenuState()
 {
@@ -176,7 +177,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->m_ipTextBox.SetActive(true); 
 			//Get the saved IP
-			Progression::instance().ReadFromFile("save1");
+			Progression::instance().ReadFromFile("Save1");
 			std::wstring ipString = Progression::instance().GetIPString();
 			if (ipString.length() > 0)
 			{
@@ -352,34 +353,24 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_startMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Host Game was clicked
-			inputHandler->SetMouseLocked(true);
-
-			//Hide buttons
-			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+		
+			if (isHosting == false)
 			{
-				this->m_startMenuButtons[i].SetActive(false);
+				inputHandler->SetMouseLocked(true);
+
+				#pragma region
+				//Hide buttons
+				for (size_t i = 0; i < nrOfStartMenuitems; i++)
+				{
+					this->m_startMenuButtons[i].SetActive(false);
+				}
+				this->m_ipTextBox.SetActive(false);
+
+				#pragma endregion Hide Menu
+		
+				this->isHosting = true;
 			}
-			this->m_ipTextBox.SetActive(false);
 
-			//Create, Initialize and push a LevelSelectState
-			LevelSelectState* levelSelect = new LevelSelectState();
-			result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-
-			//If the initialization was successful
-			if (result > 0)
-			{
-				//Push it to the gamestate stack/vector
-				this->m_gsh->PushStateToStack(levelSelect);
-
-
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
-			}
-			else
-			{
-				//Delete it
-				delete levelSelect;
-				levelSelect = nullptr;
-			}
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
 		{
@@ -394,7 +385,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (!this->m_ipTextBox.firstChar)
 			{
 				Progression::instance().SetIPString(this->m_ipTextBox.m_textComp->text);
-				Progression::instance().WriteToFile("save1");
+				Progression::instance().WriteToFile("Save1");
 			}
 		}
 		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
@@ -477,6 +468,12 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_ipTextBox.AddChar(L".");
 			}
 		}
+		
+		if (isHosting)	//If we have pressed the host button
+		{
+			this->Hosting(dt);	//Do the Host update
+		}
+
 
 		break;
 	default:
@@ -485,4 +482,74 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	
 
 	return result;
+}
+
+void MenuState::Hosting(float dt)
+{
+#pragma region
+
+	if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
+	{
+		this->m_networkModule = new NetworkModule();	//Create a new networkModule
+		int result = this->m_networkModule->Initialize();	// Try to init the networkModule
+
+		if (result != 1)	//If failed
+		{
+			this->m_networkModule = nullptr;	//Set the module pointer to nullptr
+		}
+	}
+#pragma endregion Network_INIT
+
+#pragma region
+
+	//Wait for someone to connect
+	if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If noone has connected
+	{
+		this->timeoutTime += dt / 1000000;	//Increase the timeout timer
+
+		if (this->timeoutTime > 10)	//If the timer is to high
+		{
+			//Shut down the networkModule
+			this->m_networkModule->Shutdown();
+			delete this->m_networkModule;
+			this->m_networkModule = nullptr;
+
+			this->timeoutTime = 0;
+			this->isHosting = false;
+			
+			//Show buttons
+			for (size_t i = 0; i < this->m_startMenuButtons.size(); i++)
+			{
+				this->m_startMenuButtons[i].SetActive(true);
+			}
+			this->m_ipTextBox.SetActive(true);
+		}
+	}
+	else
+	{
+#pragma region
+		//Create, Initialize and push a LevelSelectState
+		LevelSelectState* levelSelect = new LevelSelectState();
+		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+
+		//If the initialization was successful
+		if (result > 0)
+		{
+			//Push it to the gamestate stack/vector
+			this->m_gsh->PushStateToStack(levelSelect);
+
+
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+		}
+		else
+		{
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
+		}
+#pragma endregion Load_Level
+	}
+
+#pragma endregion Network_Sync
+
 }

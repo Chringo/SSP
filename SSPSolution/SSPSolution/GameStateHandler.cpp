@@ -33,9 +33,13 @@ int GameStateHandler::ShutDown()
 	}
 
 	//Shutdown the NetworkModule that is shared with all GameStates
-	GameState::m_networkModule->Shutdown();
-	delete GameState::m_networkModule;
-	GameState::m_networkModule = nullptr;
+	if (GameState::m_networkModule)	//If it is active
+	{
+		GameState::m_networkModule->Shutdown();
+		delete GameState::m_networkModule;
+		GameState::m_networkModule = nullptr;
+	}
+
 
 	return 1;
 }

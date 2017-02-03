@@ -39,6 +39,9 @@ private:
 				m_textComp->active = 0;
 			}
 		}
+
+
+
 	};
 	struct TextBox {
 		UIComponent* m_uiComp;
@@ -105,6 +108,12 @@ private:
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
+	
+	bool isHosting;
+	float timeoutTime;
+
+	void Hosting(float dt);
+
 public:
 	MenuState();
 	~MenuState();
