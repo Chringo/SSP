@@ -29,6 +29,8 @@ struct OBB
 {
 	float ext[3];
 	DirectX::XMMATRIX ort;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 struct Ray
@@ -89,6 +91,8 @@ struct Field
 	unsigned int F_entitityID2;
 	bool F_first_inside;
 	bool F_second_inside;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 class PhysicsHandler
