@@ -52,8 +52,18 @@ public:
 
 	int Initialize();
 	void Shutdown();
-
+	/*
+	Enum: is sound alias,
+	Loop: is for looping,
+	Track: if true returns the sound that can be used for edeting the sound
+	*/
 	irrklang::ISound* PlaySound2D(Sounds2D soundEnum, bool loop, bool track);
+	/*
+	Enum: is sound alias, 
+	Pos: is the position of the sound in 3D space, 
+	Loop: is for looping, 
+	Track: if true returns the sound that can be used for edeting the sound
+	*/
 	irrklang::ISound* PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track);
 	
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);

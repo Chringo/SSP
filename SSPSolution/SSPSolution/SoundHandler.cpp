@@ -286,6 +286,7 @@ void SoundHandler::DropSounds()
 	}
 }
 
+
 irrklang::ISound* SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop, bool track)
 {
 	//Check if the enum will fit as an index
