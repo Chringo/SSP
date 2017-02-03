@@ -81,17 +81,18 @@ void Ui::AttributesHandler::SetSelection(Container *& selection)
 			m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
 			m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
 			m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+			m_uniqueID->setText(QString::number(((CheckpointContainer*)selection)->internalID));
 		}
 		else
 		{
 			m_numericBoxes[SCALE][X]->setValue(1.0f);
 			m_numericBoxes[SCALE][Y]->setValue(1.0f);
 			m_numericBoxes[SCALE][Z]->setValue(1.0f);
+			m_uniqueID->setText(QString::number(selection->internalID));
 		}
 
 		m_nameBox->setText("oops");
 		
-		m_uniqueID->setText(QString::number(selection->internalID));
 	
 		m_isStaticBox->setChecked(m_selection->isStatic);
 		m_BehaviourHandler->SetSelection(selection);
