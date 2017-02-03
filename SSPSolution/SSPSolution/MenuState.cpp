@@ -173,6 +173,12 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(true);
 			}
 			this->m_ipTextBox.SetActive(true);
+			Progression::instance().ReadFromFile("save1");
+			std::wstring ipString = Progression::instance().GetIPString();
+			if (ipString.length() > 0)
+			{
+				this->m_ipTextBox.m_textComp->text = ipString;
+			}
 		}
 		else if (this->m_mainMenuButtons[1].m_uiComp->CheckClicked())
 		{
@@ -381,6 +387,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
+			if (!this->m_ipTextBox.firstChar)
+			{
+				Progression::instance().SetIPString(this->m_ipTextBox.m_textComp->text);
+				Progression::instance().WriteToFile("save1");
+			}
 		}
 		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
 		{

@@ -11,12 +11,12 @@ Progression::Progression()
 
 Progression::~Progression()
 {
-
+	this->WriteToFile("save1");
 }
 
 bool Progression::WriteToFile(std::string filename)
 {
-	std::ofstream saveFile;
+	std::wofstream saveFile;
 
 	saveFile.open("..\\Debug\\Saves\\" + filename + ".txt");
 
@@ -29,6 +29,7 @@ bool Progression::WriteToFile(std::string filename)
 		saveFile << this->m_currentLevel << "\r\n";
 		saveFile << this->m_currentCheckpoint << "\r\n";
 		saveFile << this->m_unlockedLevels << "\r\n";
+		saveFile << this->m_ipString << "\r\n";
 		saveFile.close();
 	}
 	return true;
@@ -36,7 +37,7 @@ bool Progression::WriteToFile(std::string filename)
 
 bool Progression::ReadFromFile(std::string filename)
 {
-	std::ifstream loadFile;
+	std::wifstream loadFile;
 	std::string path = "..\\Debug\\Saves\\" + filename + ".txt";
 	loadFile.open(path);
 
@@ -46,10 +47,10 @@ bool Progression::ReadFromFile(std::string filename)
 	}
 	else
 	{
-
 		loadFile >> this->m_currentLevel;
 		loadFile >> this->m_currentCheckpoint;
 		loadFile >> this->m_unlockedLevels;
+		loadFile >> this->m_ipString;
 
 		loadFile.close();
 	}
@@ -72,6 +73,11 @@ unsigned int Progression::GetUnlockedLevels()
 	return this->m_unlockedLevels;
 }
 
+std::wstring Progression::GetIPString()
+{
+	return this->m_ipString;
+}
+
 void Progression::SetCurrentLevel(unsigned int levelID)
 {
 	this->m_currentLevel = levelID;
@@ -85,4 +91,9 @@ void Progression::SetCurrentCheckpoint(unsigned int checkpointID)
 void Progression::SetUnlockedLevels(unsigned int newLevels)
 {
 	this->m_unlockedLevels = newLevels;
+}
+
+void Progression::SetIPString(std::wstring ipString)
+{
+	this->m_ipString = ipString;
 }
