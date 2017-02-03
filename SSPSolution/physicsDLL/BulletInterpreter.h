@@ -250,13 +250,13 @@ private:
 	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
 
 	//player specifics
-	PHYSICSDLL_API void ApplyMovementPlayer1(float dt);
-	PHYSICSDLL_API void ApplyMovementPlayer2();
+	void ApplyMovementPlayer1(float dt);
+	void ApplyMovementPlayer2();
 
-	PHYSICSDLL_API void ApplyImpulseOnPC(PhysicsComponent* src);
-	PHYSICSDLL_API void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
+	void ApplyImpulseOnPC(PhysicsComponent* src);
+	void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
 
-	PHYSICSDLL_API void applyLinearVelocityOnSrc(PhysicsComponent* src);
+	void applyLinearVelocityOnSrc(PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
