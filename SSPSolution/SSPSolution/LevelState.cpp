@@ -1304,7 +1304,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			tPos,
 			1,	//EntityID Player1
 			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-			checkPointOBB
+			tOBB
 		);
 		FieldEntity* tempFE = new FieldEntity();
 		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
