@@ -1,5 +1,16 @@
 #include "LightController.h"
 
+void LightController::m_updateAmbient()
+{
+	LIGHTING::LightHandler::GetInstance()->SetAmbientLight
+	(
+		this->m_levelAmbience.r,
+		this->m_levelAmbience.g,
+		this->m_levelAmbience.b,
+		this->m_levelAmbience.intensity
+	);
+}
+
 LightController::LightController()
 {
 
@@ -130,6 +141,36 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 	default:
 		break;
 	}
+}
+
+void LightController::SetAmbientR(float r)
+{
+	this->m_levelAmbience.r = r;
+	m_updateAmbient();
+}
+
+void LightController::SetAmbientG(float g)
+{
+	this->m_levelAmbience.g = g;
+	m_updateAmbient();
+}
+
+void LightController::SetAmbientB(float b)
+{
+	this->m_levelAmbience.b = b;
+	m_updateAmbient();
+}
+
+void LightController::SetAmbientIntensity(float intensity)
+{
+	this->m_levelAmbience.intensity = intensity;
+	m_updateAmbient();
+}
+
+void LightController::SetLevelAmbient(Ambient ambient)
+{
+	this->m_levelAmbience = ambient;
+	m_updateAmbient();
 }
 
 void LightController::Destroy()

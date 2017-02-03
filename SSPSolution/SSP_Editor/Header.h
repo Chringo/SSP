@@ -797,3 +797,19 @@ struct Point : Light
 		return *this;
 	}
 };
+
+struct Ambient
+{
+	float r;
+	float g;
+	float b;
+	float intensity;
+
+	Ambient()
+	{
+		this->r = 1.0f;
+		this->g = 1.0f;
+		this->b = 1.0f;
+		this->intensity = 0.2f;
+	}
+};

@@ -978,21 +978,25 @@ void Ui::BehaviourTypeHandler::on_Ambience_R_changed(int val)
 {
 	const int dpi = 255; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientR(realVal);
 }
 void Ui::BehaviourTypeHandler::on_Ambience_G_changed(int val)
 {
 	const int dpi = 255; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientG(realVal);
 }
 void Ui::BehaviourTypeHandler::on_Ambience_B_changed(int val)
 {
 	const int dpi = 255; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientB(realVal);
 }
 void Ui::BehaviourTypeHandler::on_Ambience_Intensity_changed(int val)
 {
 	const int dpi = 25; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientIntensity(realVal);
 }
 void Ui::BehaviourTypeHandler::on_Radius_changed(int val)
 {

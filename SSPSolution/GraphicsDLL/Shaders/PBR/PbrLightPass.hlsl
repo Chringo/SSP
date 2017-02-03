@@ -160,7 +160,6 @@ float smoothAttenuation(float3 P, float3 lightCentre, float range, float c, floa
 {
     float3 L = lightCentre - P;
     float distance = length(L);
-    float smoothness = 0.75;
 
     
     float la = l * distance;
@@ -175,7 +174,7 @@ float smoothAttenuation(float3 P, float3 lightCentre, float range, float c, floa
     float final = 1.0f - smoothstep(range * attenuation, range, distance);
    // attenuation += 1.0f - smoothstep(range * qa, range, distance);
 
-    return final;
+    return max(final, 0);
 
 }
 
@@ -310,14 +309,14 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
-    //(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY));
+    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
     float3 specular = specularLight.rgb;
     
 
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
-    //finalColor.rgb += ;
+    finalColor.rgb += ambient;
 
 
     
