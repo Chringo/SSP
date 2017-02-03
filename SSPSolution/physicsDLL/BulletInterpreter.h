@@ -30,6 +30,7 @@ struct OBB
 {
 	float ext[3];
 	DirectX::XMMATRIX ort;
+	//DirectX::XMVECTOR quat;
 };
 
 struct Ray

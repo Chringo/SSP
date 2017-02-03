@@ -113,7 +113,39 @@ void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsCompone
 		btQuaternion rotation = trans.getRotation();
 		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
 
-		//src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
+		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
+		//src->PC_OBB.quat = rot;
+
+		//if (src->PC_Power == 1338)
+		//{
+		//	
+		//	btMatrix3x3 test = trans.getBasis();
+		//	int i = 0;
+
+		//	btQuaternion tesQ = btQuaternion();
+		//	
+		//}
+		//float x = rotation.getX();
+		//float y = rotation.getY();
+		//float z = rotation.getZ();
+		//float w = rotation.getW();
+
+		//
+		//float roll = atan2f(2 * y*w - 2 * x*z, 1 - 2 * y * y - 2 * z*z);
+		//float pitch = atan2f(2 * x*w - 2 * y*z, 1 - 2 * x*x - 2 * z*z);
+		//float yaw = asinf(2 * x*y + 2 * z*w);
+
+		////float roll = atan2f(2.0 *(x*y + z*w), 1.0 - 2.0 * (y * y  * z*z));
+		////float pitch = asinf(2.0 * (x*z - w*y));
+		////float yaw = atan2f(2.0 * (x*w + y*z), 1.0 - 2.0 * (y*y + z*z));
+
+		//src->PC_rotation = DirectX::XMVectorSet(roll, pitch, yaw , 0);
+
+		//DirectX::XMMATRIX test2 = DirectX::XMMatrixRotationRollPitchYawFromVector(src->PC_rotation);
+
+
+		//int a = 0;
+		////src->PC_rotation = 
 
 		//btVector3 rotVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
 		//if (rotVel.isZero() != true)
@@ -469,9 +501,13 @@ void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float 
 
 void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 {
+	
+
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* box = new btBoxShape(extends);
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
+
+	//src->PC_OBB.quat = DirectX::XMQuaternionRotationMatrix(src->PC_OBB.ort);
 
 	//creating a mothion state
 	btVector3 startTrans = this->crt_xmvecVec3(src->PC_pos);
@@ -509,7 +545,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
 	rigidBody->setFriction(src->PC_friction);
-
+	
 
 
 	btVector3 rotation = btVector3(1,1,1);

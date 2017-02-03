@@ -29,10 +29,15 @@ int Entity::SyncComponents()
 			//rotate and translate the obb in the game
 			if (this->m_pComp->PC_BVtype == BV_OBB)
 			{
+
+				//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationQuaternion(this->m_pComp->PC_OBB.quat), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+				//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos);
 				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+				//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 			}
 			else
 			{
+
 				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 			}
 
@@ -67,6 +72,7 @@ void Entity::UnsafeSyncComponents()
 	//rotate and translate the obb in the game
 	if (this->m_pComp->PC_BVtype == BV_OBB)
 	{
+		//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationQuaternion(this->m_pComp->PC_OBB.quat), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 	}
 	else

@@ -2551,6 +2551,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_friction = 0.9f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
+	//newObject->PC_OBB.quat = DirectX::XMVectorSet(0, 0, 0, 1);
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_physicsComponents.push_back(newObject);

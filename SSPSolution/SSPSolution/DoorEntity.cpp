@@ -13,6 +13,8 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 {
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
 
+	this->m_closed_pos = pComp->PC_pos;
+	this->m_originalOrto = pComp->PC_OBB.ort;
 	this->m_isOpened = false;
 	this->m_rotateTime = rotateTime;
 	this->m_minRotation = minRotation;
@@ -32,6 +34,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 {
 	if (this->m_isOpened)
 	{
+		this->m_pComp->PC_pos = this->m_closed_pos;
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_maxRotation)
 		{
 			//this->m_pComp->PC_rotationVelocity = DirectX::XMVectorSet(0, -0.2, 0, 0);
@@ -49,12 +52,11 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 			//
 
 			////We do not need to rotate the Y-axis
-			DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(3.14 / 2);
 			//We need to limit the rotation so it doesn't go over the limits
+			
+			//this->m_gComp->modelPtr->GetOBBData().
 
-			this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, -3.14 / 2, 1);
-			this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, yRotationMatrix);
-			this->m_isOpened = false;
+
 			//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), yRotationMatrix);
 
 			//rotationX = DirectX::XMVector3Transform(rotationX, yRotationMatrix);
@@ -67,14 +69,34 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 			//{
 			//	this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
 			//}
-			this->SyncComponents();
-			DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
-			DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
-			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
+
+			//DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
+			//DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
+			//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
 		}
+
+		this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 3.14 /2, 1);
+		this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_originalOrto, DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionRotationRollPitchYawFromVector(this->m_pComp->PC_rotation)));
+
+		this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorScale(this->m_originalOrto.r[2], -1));
+		this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorScale(this->m_originalOrto.r[0], 1));
+
+
+		this->SyncComponents();
+		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_originalOrto.r[1], -1.5);
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[2], -0.2));
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[0], -1.2));
+		DirectX::XMMATRIX offSet_matrix = DirectX::XMMatrixTranslationFromVector(offSet);
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, offSet_matrix);
+
+
+
 	}
 	else
 	{
+
+		this->m_pComp->PC_pos = this->m_closed_pos;
+
 		if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_minRotation)
 		{
 			//this->m_pComp->PC_rotationVelocity = DirectX::XMVectorSet(0, 0.2, 0, 0);
@@ -109,13 +131,23 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 			//{
 			//	this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
 			//}
-			this->SyncComponents();
-			DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
-			DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
-			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
+
+
+			//DirectX::XMVECTOR test = DirectX::XMVectorSet(1.2, -1.5, 0, 0);
+			//DirectX::XMMATRIX matrix = DirectX::XMMatrixTranslationFromVector(test);
+			//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
 		}
+		this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 0, 1);
+		this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_originalOrto, DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionRotationRollPitchYawFromVector(this->m_pComp->PC_rotation)));
+		
+		this->SyncComponents();
+		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5);
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2));
+		DirectX::XMMATRIX offSet_matrix = DirectX::XMMatrixTranslationFromVector(offSet);
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, offSet_matrix);
+
 	}
-	
+
 
 	return 0;
 }
