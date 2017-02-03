@@ -80,16 +80,15 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 {
 	// TODO: Proper reaction in director!
-
-	if (entityID == 1 && event == FIELD_CONTAINS)
-		this->m_currentState->playerOne = true;
-	else
-		this->m_currentState->playerOne = false;
-
-	if (entityID == 3 && event == FIELD_CONTAINS)
-		this->m_currentState->playerTwo = true;
-	else
-		this->m_currentState->playerTwo = false;
+	
+	for (size_t i = 0; i < 3; i++)
+	{
+		if (entityID == *this->m_currentState->fieldMap[i].FD_entityID && event == FIELD_CONTAINS)
+		{
+			*this->m_currentState->fieldMap[i].FD_first_inside = true;
+			*this->m_currentState->fieldMap[i].FD_second_inside = true;
+		}
+	}
 
 	return SUCCESS;
 }
