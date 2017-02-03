@@ -1006,7 +1006,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//		this->m_director.React(3, FIELD_CONTAINS);
 	//	}
 	//}
-	m_fieldEntities[0]->Update(dt, inputHandler);
+	for (size_t i = 0; i < m_fieldEntities.size(); i++)
+	{
+		m_fieldEntities[i]->Update(dt, inputHandler);
+	}
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
