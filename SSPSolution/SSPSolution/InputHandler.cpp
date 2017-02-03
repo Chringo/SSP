@@ -16,6 +16,7 @@ InputHandler::InputHandler()
 	this->m_mouseButtonState.x1 = 0;
 	this->m_mouseButtonState.x2 = 0;
 	this->m_oldMouseButtonState = this->m_mouseButtonState;
+	this->m_mouseLocked = true;
 }
 
 InputHandler::~InputHandler()
@@ -254,13 +255,24 @@ void InputHandler::mouseMovement(SDL_Window * window)
 		int midy = this->m_screenHeight / 2;
 
 		
-		SDL_ShowCursor(SDL_DISABLE);
 		SDL_GetMouseState(&tmpx, &tmpy);
+
+		this->m_mouseX = tmpx;
+		this->m_mouseY = tmpy;
 
 		m_mouseDX = (midx - tmpx);
 		m_mouseDY = (midy - tmpy);
+
+		if (this->m_mouseLocked)
+		{
+			SDL_ShowCursor(SDL_DISABLE);
+			SDL_WarpMouseInWindow(window, midx, midy);
+		}
+		else
+		{	
+			SDL_ShowCursor(SDL_ENABLE);
+		}
 		
-		SDL_WarpMouseInWindow(window, midx, midy);
 		//SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 }
@@ -280,4 +292,9 @@ DirectX::XMFLOAT2 InputHandler::GetMouseDelta()
 DirectX::XMFLOAT2 InputHandler::GetMouseWheel()
 {
 	return DirectX::XMFLOAT2(float(this->m_mouseWheelX), float(this->m_mouseWheelY));
+}
+
+void InputHandler::SetMouseLocked(bool lockMouse)
+{
+	this->m_mouseLocked = lockMouse;
 }
