@@ -328,6 +328,12 @@ LevelData::SceneLightHeader LevelHandler::GetSceneLightHeader()
 
 	data.numPointLights = LightController::GetInstance()->GetPointLightData()->size();
 	
+	const Ambient* amb = LightController::GetInstance()->GetLevelAmbient();
+
+	data.ambientIntensity = amb->intensity;
+	data.ambientColor[0] = amb->r;
+	data.ambientColor[1] = amb->g;
+	data.ambientColor[2] = amb->b;
 	//TODO: Add ambientColor and ambient Intesity
 	return data;
 }
