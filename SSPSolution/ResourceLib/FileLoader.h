@@ -29,7 +29,6 @@ namespace Resources
 		enum Files
 		{
 			BPF_FILE,
-
 			NUM_FILES
 		};
 		enum FileState

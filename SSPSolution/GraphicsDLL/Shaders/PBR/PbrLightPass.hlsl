@@ -253,7 +253,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
-    for (uint i = 0; i < lightCount; i++)
+    for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
      // if (pointlights[i].isActive == false)
      // {

@@ -737,7 +737,7 @@ public:
 
 struct Light : Container
 {
-
+	Light() : Container() {};
 };
 
 struct Point : Light
@@ -747,7 +747,7 @@ struct Point : Light
 
 	LIGHTING::Point * data;
 	
-	Point()
+	Point() : Light()
 	{
 		this->type = LIGHT;
 	}

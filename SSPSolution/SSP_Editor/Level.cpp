@@ -436,6 +436,7 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 				point->rangeSphere = ((Point *)light)->rangeSphere;
 				point->position = ((Point *)light)->data->position;
 				point->type = LIGHT;
+				//point->internalID = GlobalIDHandler::GetInstance()->GetNewId();
 
 				LIGHTING::Point * data = ((Point*)source)->data;
 

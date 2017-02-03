@@ -56,11 +56,15 @@ namespace LevelData {
 		float rotation[3];
 	};
 	
-	struct LightHeader 
+	struct SceneLightHeader 
 	{
-		int lightType;
-		float position[3];
-		float rotation[3];
+		unsigned int numPointLights		  = 0;
+		unsigned int numAreaLights		  = 0;
+		unsigned int numSpotLights		  = 0;
+		unsigned int numDirectionalLights = 0;
+
+		float ambientColor[3]  = { 1.0f,1.0f,1.0f };
+		float ambientIntensity = 0.2f; 
 	};
 	//different lights will be added later
 
@@ -70,26 +74,6 @@ namespace LevelData {
 		int Event[20];
 		unsigned int SenderID[20];
 	};
-
-	//struct AiHeader{
-	//	unsigned int entityID = -1;
-	//	int time			  = 0;
-	//	float speed			  = 0;
-	//	int pattern			  = 0;
-	//	int nrOfWaypoints     = 0;
-	//	float wayPoints[8][3];
-	//	//ListenerHeader Listener;
-	//};
-
-	//struct AiHeader {
-	//	unsigned int entityID = -1;
-	//	int time = 0;
-	//	float speed = 0;
-	//	int pattern = 0;
-	//	int nrOfWaypoints = 0;
-	//	float wayPoints[8][3];
-	//	ListenerHeader Listener;
-	//};
 
 	struct AiHeader : EntityHeader {
 		int time = 0;
@@ -146,6 +130,16 @@ namespace LevelData {
 		L_FILE_SAVE_CANCELLED
 	};
 
+	struct PointLightHeader {
+		float position[3]		= { 0.0f,0.0f,0.0f };
+		float color[3]			= { 1.0f,1.0f,1.0f };
+		float radius			= 10.0f;
+		float intensity			=  1.0f;
+		float falloff_constant  =  1.0f;
+		float falloff_linear    =  1.0f;
+		float falloff_quadratic =  1.0f;
+	};
+
 	struct Level {
 		SpawnHeader  spawns[2];
 		unsigned int numResources;
@@ -153,9 +147,6 @@ namespace LevelData {
 
 		unsigned int numEntities;
 		EntityHeader* entities;
-
-		unsigned int numLights;
-		LightHeader* lights;
 
 		unsigned int numAI;
 		AiHeader* aiComponents;
@@ -174,6 +165,13 @@ namespace LevelData {
 
 		unsigned int numWheel;
 		WheelHeader * wheels;
+		
+		float  ambientColor[3];
+		float  ambientIntensity;
+
+		unsigned int numPointLights;
+		PointLightHeader* pointLights;
+
 		
 	};
 }

@@ -3,6 +3,7 @@
 //
 #include "LevelState.h"
 #include "../ResourceLib/FileLoader.h"
+#include "../GraphicsDLL/LightHandler.h"
 class LevelSelectState :
 	public GameState
 {
