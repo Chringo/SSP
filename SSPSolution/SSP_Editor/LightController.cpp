@@ -71,6 +71,24 @@ void LightController::AddLight(Light* light, LIGHTING::Light * data, LIGHTING::L
 	}
 }
 
+void LightController::AddLight(LIGHTING::Point * light)
+{
+	Point* p			  = new Point();
+	p->Initialize(light);
+	p->internalID		  = GlobalIDHandler::GetInstance()->GetNewId();
+	p->isDirty			  = true;
+	p->position		      = light->position;
+	p->rangeSphere.radius = light->radius;
+	this->m_lights.push_back(p);
+	m_lights.back()->position = light->position;
+	((Point*)m_lights.back())->rangeSphere.radius = light->radius;
+	this->pointLightData.push_back(*light);
+	p->data = &this->pointLightData.back();
+	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), LIGHTING::LT_POINT);
+	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+
+}
+
 void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 {
 	Point * container = new Point();
@@ -81,7 +99,7 @@ void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 	case LIGHTING::LT_POINT:
 
 		container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-		container->isDirty = true;
+		container->isDirty    = true;
 		this->m_lights.push_back(container);
 		this->pointLightData.push_back(data);
 		container->Initialize(&this->pointLightData.back());

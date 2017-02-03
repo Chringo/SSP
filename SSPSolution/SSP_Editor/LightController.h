@@ -13,6 +13,7 @@ public:
 	void synchData(LIGHTING::LIGHT_TYPE type);
 	void AddLight(LIGHTING::LIGHT_TYPE type);
 	void AddLight(Light* light, LIGHTING::Light * data, LIGHTING::LIGHT_TYPE type);
+	void AddLight(LIGHTING::Point* light);
 	void UpdateLights(LIGHTING::LIGHT_TYPE type);
 	void RemoveLight(int index, LIGHTING::LIGHT_TYPE type);
 	void Destroy();
