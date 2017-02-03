@@ -762,17 +762,40 @@ struct Point : Light
 		this->data->color.g = 0.6f;
 		this->data->color.b = 0.6f;
 
-		this->data->falloff.constant = 1.0f; //0.07f, 0.017f };
-		this->data->falloff.linear = 0.07f;
+		this->data->falloff.constant  = 1.0f;
+		this->data->falloff.linear	  = 0.07f;
 		this->data->falloff.quadratic = 0.017f;
-		this->data->intensity = 3.0f;
-		this->data->radius = 3.0f;
-		this->data->position = { 0.0f,0.0f,0.0f };
-		this->data->isActive = true;
-		rangeSphere.radius = this->data->radius;
+		this->data->intensity		  = 3.0f;
+		this->data->radius			  = 3.0f;
+		this->data->position		  = { 0.0f,0.0f,0.0f };
+		this->data->isActive		  = true;
+		rangeSphere.radius			  = this->data->radius;
 
 		this->position = this->data->position;
 		pickSphere.radius = 0.25f;
+	}
+
+	void CreateFromExisting(LIGHTING::Point * data)
+	{
+
+		this->type = LIGHT;
+
+		this->data->color.r  = data->color.r;
+		this->data->color.g  = data->color.g;
+		this->data->color.b  = data->color.b;
+		this->data->position = data->position;
+
+		this->data->falloff.constant  = data->falloff.constant;
+		this->data->falloff.linear    = data->falloff.linear;
+		this->data->falloff.quadratic = data->falloff.quadratic;
+		this->data->intensity		  = data->intensity;
+		this->data->radius			  = data->radius;
+		this->data->isActive = true;
+		rangeSphere.radius = data->radius;
+
+		this->position = this->data->position;
+		pickSphere.radius = 0.25f;
+
 	}
 
 	void Update()

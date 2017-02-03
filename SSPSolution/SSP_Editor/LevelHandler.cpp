@@ -221,7 +221,30 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadTriggerComponents((LevelData::WheelHeader*)wheelData, header.wheelAmount);
 		delete wheelData;
 	}
+	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
 
+	//Light header
+		
+		LevelData::SceneLightHeader lightHeader;
+		file.read((char*)&lightHeader, sizeof(LevelData::SceneLightHeader));
+		LIGHTING::LightHandler::GetInstance()->SetAmbientLight(
+			lightHeader.ambientColor[0],
+			lightHeader.ambientColor[1],
+			lightHeader.ambientColor[2],
+			lightHeader.ambientIntensity
+			);
+		//Point lights
+		if (lightHeader.numPointLights > 0) {
+
+		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader.numPointLights;	  //memsize
+		char* pointData = new char[pointlightSize];
+		file.read(pointData, pointlightSize);
+		LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
+		delete pointData;
+		}
+
+
+	}
 	file.close();
 	delete modelData; //Cleanup
 	QFileInfo info(QString::fromStdString(path));
@@ -536,6 +559,27 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 		m_currentLevel.GetCheckpoints()->push_back(checkpoint);
 	}
 
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadPointLightComponents(LevelData::PointLightHeader * dataPtr, size_t numComponents)
+{
+
+
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		LIGHTING::Point point;
+		memcpy(&point.color, dataPtr[i].color, sizeof(float) * 3);
+		memcpy(&point.position.m128_f32, dataPtr[i].position, sizeof(float) * 3);
+
+		point.falloff.quadratic = dataPtr[i].falloff_quadratic;
+		point.falloff.constant  = dataPtr[i].falloff_constant;
+		point.falloff.linear	= dataPtr[i].falloff_linear;
+		point.intensity			= dataPtr[i].intensity;
+		point.radius			= dataPtr[i].radius;
+
+		LightController::GetInstance()->AddLight(&point);
+	}
 	return LevelData::LevelStatus::L_OK;
 }
 

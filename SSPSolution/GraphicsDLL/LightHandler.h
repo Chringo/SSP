@@ -53,9 +53,13 @@ namespace LIGHTING
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
 
-		ID3D11Buffer* lightBuffers[NUM_LT]					   = { nullptr,nullptr,nullptr,nullptr }; //Light constBuffers
+		ID3D11Buffer* m_lightBuffers[NUM_LT]					   = { nullptr,nullptr,nullptr,nullptr }; //Light constBuffers
 		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT] = { nullptr,nullptr,nullptr,nullptr }; //Data is handled in shader resource views
 
+	private:
+		GRAPHICSDLL_API bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
+		GRAPHICSDLL_API bool ReleaseStructuredBuffer(LIGHT_TYPE type);
+		GRAPHICSDLL_API size_t GetStructByteSize    (LIGHT_TYPE type);
 	public: //inits etc
 
 		GRAPHICSDLL_API void Initialize(ID3D11Device*, ID3D11DeviceContext*);
@@ -68,10 +72,6 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
-	private:
-		bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
-		bool ReleaseStructuredBuffer(LIGHT_TYPE type);
-		size_t GetStructByteSize    (LIGHT_TYPE type);
 	};
 }
 #endif

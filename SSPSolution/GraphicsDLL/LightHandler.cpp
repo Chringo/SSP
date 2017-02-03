@@ -7,17 +7,16 @@ LIGHTING::LightHandler::LightHandler()
 LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(NUM_LT); //Release all buffers
-	//delete[] m_lightData[LIGHT_TYPE::LT_POINT].dataPtr; //TEMP
+	delete m_lightData[LIGHT_TYPE::LT_POINT].dataPtr; 
 }
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	this->m_gDevice = device;
 	this->m_gDeviceContext = deviceContext;
-
 	for (size_t i = 0; i < NUM_LT; i++)
 	{
-		assert(this->CreateStructuredBuffer(LIGHT_TYPE(i),3) == true); //Create all the structured buffers  and update the constant buffer
+		this->CreateStructuredBuffer(LIGHT_TYPE(i),3); //Create all the structured buffers  and update the constant buffer
 	}
 
 ///* TEMPORARY*/
@@ -69,7 +68,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 	if (type >= LIGHT_TYPE::NUM_LT)
 		return false;
 
-	if (lightBuffers[type] != nullptr || m_structuredBuffers[type] != nullptr) //if the buffers are already created, Release them
+	if (m_lightBuffers[type] != nullptr || m_structuredBuffers[type] != nullptr) //if the buffers are already created, Release them
 	{
 		ReleaseStructuredBuffer(type);
 	}
@@ -87,18 +86,18 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 	lightBufferDesc.ByteWidth		    = structSize * amount; //total size of the buffer
 	lightBufferDesc.StructureByteStride = structSize;
 
-	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffers[type]))) {
+	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &m_lightBuffers[type]))) {
 #ifdef  _DEBUG
 		MessageBox(NULL, L"Failed to create light buffer", L"Error", MB_ICONERROR | MB_OK);
-#endif //  _DEBUG
-		return false;
+#endif //  _DEBUG	return false;
 	}
+	
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format					 = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension			 = D3D11_SRV_DIMENSION_BUFFEREX;
 	srvDesc.Buffer.ElementOffset	 = 0;
 	srvDesc.Buffer.NumElements	     = amount; 
-	if (FAILED(hr = m_gDevice->CreateShaderResourceView(lightBuffers[type], &srvDesc, &m_structuredBuffers[type]))) {
+	if (FAILED(hr = m_gDevice->CreateShaderResourceView(m_lightBuffers[type], &srvDesc, &m_structuredBuffers[type]))) {
 #ifdef  _DEBUG
 		MessageBox(NULL, L"Failed to create light buffer", L"Error", MB_ICONERROR | MB_OK);
 #endif //  _DEBUG
@@ -134,18 +133,28 @@ bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 	{
 		for (size_t i = 0; i < NUM_LT; i++)
 		{
-			lightBuffers[i]->Release();
-			lightBuffers[i]		  = nullptr;
-			m_structuredBuffers[i]->Release();
-			m_structuredBuffers[i] = nullptr;
+			if (m_lightBuffers[i] != nullptr)
+			{
+				m_lightBuffers[i]->Release();
+				m_lightBuffers[i]		  = nullptr;
+			}
+
+
+			if (m_structuredBuffers[i] != nullptr)
+			{
+				m_structuredBuffers[i]->Release();
+				m_structuredBuffers[i] = nullptr;
+
+			}
 		}
 		return true;
 	}
-	
-	lightBuffers[type]		 ->Release();
-	m_structuredBuffers[type]->Release();
+	if(m_lightBuffers[type] != nullptr)
+		m_lightBuffers[type]->Release();
+	if (m_structuredBuffers[type] != nullptr)
+		m_structuredBuffers[type]->Release();
 
-	lightBuffers[type]		  = nullptr;
+	m_lightBuffers[type]		  = nullptr;
 	m_structuredBuffers[type] = nullptr;
 
 	NUM_LIGHTS[type] = 0;
@@ -154,7 +163,7 @@ bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 
 bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 {
-	if (type >= LIGHT_TYPE::NUM_LT)
+	if (type >= LIGHT_TYPE::NUM_LT || m_lightBuffers[type] == nullptr)
 	{
 		return false;
 	}
@@ -162,19 +171,18 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 		return false;
 	D3D11_MAPPED_SUBRESOURCE mapRes;
 	HRESULT hr = S_OK;
-
-	hr = m_gDeviceContext->Map(lightBuffers[type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+	
+	hr = m_gDeviceContext->Map(m_lightBuffers[type], 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
 	if (FAILED(hr)) {
 #ifdef _DEBUG
 		MessageBox(NULL, L"Failed to update lights buffer", L"Error", MB_ICONERROR | MB_OK);
-#endif // _DEBUG
+#endif // _DEBUG	
 		return false;
 	}
 	memset(mapRes.pData, 0, GetStructByteSize(type) * NUM_LIGHTS[type]);
 	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*NUM_LIGHTS[type]);
-	m_gDeviceContext->Unmap(lightBuffers[type], 0);
+	m_gDeviceContext->Unmap(m_lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
-
 	return true;
 }
 
@@ -197,7 +205,7 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 	if (numLights > this->NUM_LIGHTS[type] || numLights < this->NUM_LIGHTS[type])
 	{
 		ReleaseStructuredBuffer(type);
-		assert (CreateStructuredBuffer(type, numLights) == true);
+		CreateStructuredBuffer(type, numLights);
 		
 		return true;
 	}
@@ -237,18 +245,31 @@ void LIGHTING::LightHandler::SetAmbientLight(float r, float g, float b, float in
 
 bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 {
+	this->m_constBufferData.AMBIENT_COLOR[0] = level->ambientColor[0];
+	this->m_constBufferData.AMBIENT_COLOR[1] = level->ambientColor[1];
+	this->m_constBufferData.AMBIENT_COLOR[2] = level->ambientColor[2];
+
+	this->m_constBufferData.AMBIENT_INTENSITY = level->ambientIntensity;
 	if (level->numPointLights > 0)
 	{
 		if (m_lightData[LT_POINT].dataPtr != nullptr)
 			delete m_lightData[LT_POINT].dataPtr;
 
+		m_lightData[LT_POINT].dataPtr = new LIGHTING::Point[level->numPointLights];
 
-		for (size_t i = 0; i < level->numPointLights; i++)
+		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
+			memcpy(&((Point*)m_lightData[LT_POINT].dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
+			memcpy(((Point*)m_lightData[LT_POINT].dataPtr)[i].position.m128_f32, level->pointLights[i].position, sizeof(float) * 3);
 
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].intensity		 = level->pointLights[i].intensity;
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.quadratic = level->pointLights[i].falloff_quadratic;
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.constant  = level->pointLights[i].falloff_constant;
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.linear	 = level->pointLights[i].falloff_linear;
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].radius			 = level->pointLights[i].radius;
 		}
-		//SetLightData(level->pointLights,) //DIFFERENT LIGHT TYPES; SHIT
-
+		SetLightData(m_lightData[LT_POINT].dataPtr, level->numPointLights, LT_POINT);
+		UpdateStructuredBuffer(LT_POINT);
 	}
 	return true;
 }
