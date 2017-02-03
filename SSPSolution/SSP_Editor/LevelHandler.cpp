@@ -227,7 +227,12 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		
 		LevelData::SceneLightHeader lightHeader;
 		file.read((char*)&lightHeader, sizeof(LevelData::SceneLightHeader));
-
+		LIGHTING::LightHandler::GetInstance()->SetAmbientLight(
+			lightHeader.ambientColor[0],
+			lightHeader.ambientColor[1],
+			lightHeader.ambientColor[2],
+			lightHeader.ambientIntensity
+			);
 		//Point lights
 		if (lightHeader.numPointLights > 0) {
 

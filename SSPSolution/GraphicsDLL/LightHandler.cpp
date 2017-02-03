@@ -205,7 +205,7 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 	if (numLights > this->NUM_LIGHTS[type] || numLights < this->NUM_LIGHTS[type])
 	{
 		ReleaseStructuredBuffer(type);
-		assert (CreateStructuredBuffer(type, numLights) == true);
+		CreateStructuredBuffer(type, numLights);
 		
 		return true;
 	}
@@ -259,10 +259,10 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
-			memcpy(&m_lightData[LT_POINT].dataPtr[i].color, level->pointLights[i].color, sizeof(float) * 3);
+			memcpy(&((Point*)m_lightData[LT_POINT].dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
 			memcpy(((Point*)m_lightData[LT_POINT].dataPtr)[i].position.m128_f32, level->pointLights[i].position, sizeof(float) * 3);
 
-			m_lightData[LT_POINT].dataPtr[i].intensity					 = level->pointLights[i].intensity;
+			((Point*)m_lightData[LT_POINT].dataPtr)[i].intensity		 = level->pointLights[i].intensity;
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.quadratic = level->pointLights[i].falloff_quadratic;
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.constant  = level->pointLights[i].falloff_constant;
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.linear	 = level->pointLights[i].falloff_linear;

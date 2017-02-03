@@ -73,17 +73,12 @@ void LightController::AddLight(Light* light, LIGHTING::Light * data, LIGHTING::L
 
 void LightController::AddLight(LIGHTING::Point * light)
 {
-	Point* p			  = new Point();
-	p->Initialize(light);
-	p->internalID		  = GlobalIDHandler::GetInstance()->GetNewId();
-	p->isDirty			  = true;
-	p->position		      = light->position;
-	p->rangeSphere.radius = light->radius;
-	this->m_lights.push_back(p);
-	m_lights.back()->position = light->position;
-	((Point*)m_lights.back())->rangeSphere.radius = light->radius;
 	this->pointLightData.push_back(*light);
+	Point* p			  = new Point();
 	p->data = &this->pointLightData.back();
+	p->CreateFromExisting(light);
+	p->internalID		  = GlobalIDHandler::GetInstance()->GetNewId();
+	this->m_lights.push_back(p);
 	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), LIGHTING::LT_POINT);
 	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
 

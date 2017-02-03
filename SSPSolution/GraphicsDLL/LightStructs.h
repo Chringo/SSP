@@ -32,7 +32,9 @@ namespace LIGHTING
 
 	struct GRAPHICSDLL_API LightColor
 	{
-		float r = 1.0f,g = 1.0f,b = 1.0f ;
+		float r = 1.0f;
+		float g = 1.0f; 
+		float b = 1.0f;
 		
 	};
 	struct GRAPHICSDLL_API LightFalloff
