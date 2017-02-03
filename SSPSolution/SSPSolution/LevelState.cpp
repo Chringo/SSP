@@ -101,7 +101,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
-
+	this->m_cHandler->ResizeGraphicsPersistent(2);
 	// creating the player
 	this->m_player1 = Player();
 #ifdef _DEBUG
@@ -220,7 +220,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
-	GraphicsComponent* ballG = m_cHandler->GetDynamicGraphicsComponent();
+	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
 	ballG->modelID = 1337;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
@@ -243,7 +243,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
-	ballG = m_cHandler->GetDynamicGraphicsComponent();
+	ballG = m_cHandler->GetPersistentGraphicsComponent();
 	ballG->modelID = 1337;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);

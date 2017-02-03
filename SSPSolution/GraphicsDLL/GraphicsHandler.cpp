@@ -318,6 +318,10 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
 	this->m_maxGraphicsAnimationComponents = 5;
+	this->m_maxDepth = 4;
+	this->m_minDepth = 1;
+	this->m_minContainment = 3;
+	this->m_minSize = 0.5f;
 }
 
 
@@ -440,9 +444,9 @@ int GraphicsHandler::Render(float deltaTime)
 	//		++amountOfModelOccurrencees;
 	//	}
 	//}
-	//Fill the array with valuable data
-	int instancedRenderingIndex = 0;
-	int instancedModelCount = 0;
+	////Fill the array with valuable data
+	//int instancedRenderingIndex = 0;
+	//int instancedModelCount = 0;
 	//for (int i = 0; i < componentsInTree; i++)
 	//{
 	//	//reset the 'isRendered' bool
@@ -457,7 +461,6 @@ int GraphicsHandler::Render(float deltaTime)
 	//		//Store the data
 	//		DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i]->worldMatrix);
 	//		
-	//		this->m_octreeRoot.containedComponents[i]->isRendered = false;
 	//	}
 	//}
 	//By all means it should be done by now
@@ -465,31 +468,34 @@ int GraphicsHandler::Render(float deltaTime)
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
-	for (int i = 0; i < componentsInTree; i++) //FOR EACH NORMAL GEOMETRY
+	int renderCap = this->m_staticGraphicsComponents.size();
+	for (int i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_octreeRoot.containedComponents[i]->isRendered)
 		{
 			if (this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->active)
 			{
 				m_shaderControl->Draw(this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->modelPtr, this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]);
+				this->m_octreeRoot.containedComponents[i]->isRendered = false;
 			}
 		}
 		/*if (this->m_staticGraphicsComponents[i]->active == false)
 		continue;
 		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
-	for (int i = 0; i < this->m_dynamicGraphicsComponents.size(); i++) //FOR EACH NORMAL GEOMETRY
+	renderCap = this->m_dynamicGraphicsComponents.size();
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_dynamicGraphicsComponents[i]->active)
 		{
 			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
 		}
-
 		/*if (this->m_staticGraphicsComponents[i]->active == false)
 		continue;
 		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
-	for (int i = 0; i < this->m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL GEOMETRY
+	renderCap = this->m_persistantGraphicsComponents.size();
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)
 		{
@@ -704,6 +710,17 @@ void GraphicsHandler::Shutdown()
 	this->m_dynamicGraphicsComponents.clear();
 	this->m_persistantGraphicsComponents.clear();
 
+	//Clear the Octree of contained components
+	for (size_t i = 0; i < this->m_octreeRoot.containedComponents.size(); i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i] != nullptr)
+		{
+			delete this->m_octreeRoot.containedComponents[i];
+			this->m_octreeRoot.containedComponents[i] = nullptr;
+		}
+	}
+	//Delete the octree branches
+	this->DeleteOctree(&this->m_octreeRoot);
 
 #ifdef _DEBUG
 	if (!editorMode)
@@ -743,7 +760,7 @@ int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
-	int componentCount = this->m_nrOfGraphicsComponents;
+	int componentCount = this->m_staticGraphicsComponents.size();
 
 
 	//Create the BoundingVolume we cull against
@@ -757,36 +774,43 @@ int GraphicsHandler::GenerateOctree()
 
 	std::vector<OctreeBV> listOfComponentBV;
 	this->m_octreeRoot.containedComponents.resize(componentCount);
-	//Fill the octree with the data
+	//Fill the Octree with empty structs
 	for (size_t i = 0; i < componentCount; i++)
+	{
+		this->m_octreeRoot.containedComponents[i] = new OctreeBV();
+	}
+	//Fill the octree with the data
+	size_t i = 0;
+	for ( i = 0; i < componentCount; i++)
 	{
 		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
 		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
 		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
-		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.x;
-		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.y;
-		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.z;
+		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[0]; // x
+		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[1]; // y
+		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[2]; // z
 		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i]->modelID;
+		this->m_octreeRoot.containedComponents[i]->componentIndex = i;
 
 		//Check for the lowest and highest values
-		if (this->m_octreeRoot.containedComponents[i]->ext.x < minX)
-			minX = this->m_octreeRoot.containedComponents[i]->ext.x;
-		else if (this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
-			maxX = this->m_octreeRoot.containedComponents[i]->ext.x;
-		if (this->m_octreeRoot.containedComponents[i]->ext.y < minY)
-			minY = this->m_octreeRoot.containedComponents[i]->ext.y;
-		else if (this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
-			maxY = this->m_octreeRoot.containedComponents[i]->ext.y;
-		if (this->m_octreeRoot.containedComponents[i]->ext.z < minZ)
-			minZ = this->m_octreeRoot.containedComponents[i]->ext.z;
-		else if (this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
-			maxZ = this->m_octreeRoot.containedComponents[i]->ext.z;
+		if (this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x < minX)
+			minX = this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
+			maxX = this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x;
+		if (this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y < minY)
+			minY = this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
+			maxY = this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y;
+		if (this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z < minZ)
+			minZ = this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
+			maxZ = this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z;
 	}
 	//After having finished filling the octree with data, sort it
 	std::sort(this->m_octreeRoot.containedComponents.begin(), this->m_octreeRoot.containedComponents.end(), Sorting_on_modelID());
 	
 	//Initialize the octree root
-	for (int i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		this->m_octreeRoot.branches[i] = nullptr;
 	}
@@ -805,8 +829,21 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 	int result = 0;
 	Camera::ViewFrustrum currentFrustrum;
 	this->m_camera->GetViewFrustrum(currentFrustrum);
-	this->TraverseOctree(&this->m_octreeRoot, &currentFrustrum);
-
+	for (int i = 0; i < 8; i++)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
+	int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}
 	return result;
 }
 
@@ -948,14 +985,17 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 	GraphicsComponent* result = nullptr;
 	//Yea
 	//result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_Component);
-	result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
-		[](GraphicsComponent* comp) { return (comp->active == 0); });
-	
-	/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
-		return arg.first == new_id; }) != ...)*/
-	if (result != nullptr && result->active)
+	if (this->m_staticGraphicsComponents.size() > 0)
 	{
-		result = nullptr;
+		result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+
+		/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
+		return arg.first == new_id; }) != ...)*/
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
 	}
 	return result;
 	//Yea that happened
@@ -968,12 +1008,16 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
 {
 	GraphicsComponent* result = nullptr;
-	//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
-	result = *std::find_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(),
-		[](GraphicsComponent* comp) { return (comp->active == 0); });
-	if (result != nullptr && result->active)
+	if (this->m_dynamicGraphicsComponents.size() > 0)
 	{
-		result = nullptr;
+		//If the list is empty it crashed, have fun
+		//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+		result = *std::find_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
 	}
 	return result;
 }
@@ -981,12 +1025,16 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
 GraphicsComponent * GraphicsHandler::GetNextAvailablePersistentComponent()
 {
 	GraphicsComponent* result = nullptr;
-	//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
-	result = *std::find_if(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(),
-		[](GraphicsComponent* comp) { return (comp->active == 0); });
-	if (result != nullptr && result->active)
+	if (this->m_persistantGraphicsComponents.size() > 0)
 	{
-		result = nullptr;
+		//If the list is empty it crashed, have fun
+		//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+		result = *std::find_if(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
 	}
 	return result;
 }
@@ -1309,6 +1357,19 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 			{
 				entityComponent->isRendered = true;
 			}
+		}
+	}
+}
+
+void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (curNode->branches[i] != nullptr)
+		{
+			this->DeleteOctree(curNode->branches[i]);
+			delete curNode->branches[i];
+			curNode->branches[i];
 		}
 	}
 }

@@ -282,8 +282,9 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance()->EndTimer(0);
 	//Render
+	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+	printf("%d\n", renderedItems);
 	DebugHandler::instance()->StartTimer(2);
-
 	this->m_graphicsHandler->Render(deltaTime);
 
 	DebugHandler::instance()->EndTimer(2);

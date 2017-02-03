@@ -124,7 +124,8 @@ private:
 	{
 		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
 		{
-			return (first->modelID < second->modelID);
+			bool statementTrue = first->modelID < second->modelID;
+			return statementTrue;
 		}
 	};
 
@@ -232,6 +233,7 @@ private:
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
+	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
 };
 
