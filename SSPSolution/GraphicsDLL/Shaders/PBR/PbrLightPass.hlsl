@@ -320,7 +320,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
     
-    return finalColor;
+    return saturate(finalColor);
 
 
 

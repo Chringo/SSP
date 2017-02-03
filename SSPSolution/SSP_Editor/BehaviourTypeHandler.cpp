@@ -126,9 +126,6 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_LightIntSpinBoxes[LIntSpin::QUADRATIC], SIGNAL(valueChanged(int)), this, SLOT(on_Quadratic_changed(int)));
 	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
 
-
-
-
 #pragma endregion
 }
 
@@ -994,7 +991,7 @@ void Ui::BehaviourTypeHandler::on_Ambience_B_changed(int val)
 }
 void Ui::BehaviourTypeHandler::on_Ambience_Intensity_changed(int val)
 {
-	const int dpi = 25; // Any constant 10^n
+	const int dpi = 250; // Any constant 10^n
 	double realVal = double(val) / double(dpi); // float value
 	LightController::GetInstance()->SetAmbientIntensity(realVal);
 }

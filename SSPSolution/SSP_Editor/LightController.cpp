@@ -25,6 +25,8 @@ void LightController::Initialize()
 {
 	m_lights.reserve(100);
 	pointLightData.reserve(100);
+
+	m_updateAmbient();
 }
 
 LightController * LightController::GetInstance()
