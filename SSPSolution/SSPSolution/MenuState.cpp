@@ -106,6 +106,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 
+	inputHandler->SetInMenu(true);
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 	int nrOfMainMenuItems = this->m_mainMenuButtons.size();
 	int nrOfOptionMenuitems = this->m_optionsMenuButtons.size();
@@ -351,6 +352,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_startMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Host Game was clicked
+			inputHandler->SetInMenu(false);
 
 			//Hide buttons
 			for (size_t i = 0; i < nrOfStartMenuitems; i++)
@@ -416,6 +418,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_ipTextBox.m_uiComp->CheckClicked())
 		{
 			//IP text box was clicked
+			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_ipTextBox.SetFocused(true);
 		}
 
