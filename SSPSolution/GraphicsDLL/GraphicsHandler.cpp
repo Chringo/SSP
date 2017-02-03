@@ -865,14 +865,19 @@ GraphicsAnimationComponent* GraphicsHandler::GetNextAvailableAnimationComponent(
 GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 {
 	GraphicsComponent* result = nullptr;
-	//
-	result = *std::find(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_gComponent());
+	//Yea
+	//result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_Component);
+	result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
+		[](GraphicsComponent* comp) { return (comp->active == 0); });
+	
+	/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
+		return arg.first == new_id; }) != ...)*/
 	if (result != nullptr && result->active)
 	{
 		result = nullptr;
 	}
 	return result;
-
+	//Yea that happened
 	/*if ((result = *std::find(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_gComponent()))->active == true)
 		return result;
 	else
@@ -882,7 +887,9 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
 {
 	GraphicsComponent* result = nullptr;
-	result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+	//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+	result = *std::find_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(),
+		[](GraphicsComponent* comp) { return (comp->active == 0); });
 	if (result != nullptr && result->active)
 	{
 		result = nullptr;

@@ -123,7 +123,6 @@ private:
 	{
 		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
 		{
-			
 			return (first->modelID < second->modelID);
 		}
 	};
@@ -132,10 +131,13 @@ private:
 	{
 		inline bool operator() (const GraphicsComponent* comp)
 		{
-
-			return comp->active;
+			return comp->active == 0;
 		}
 	};
+	bool Find_Available_Component(const GraphicsComponent* comp) {
+		return !comp->active;
+	}
+
 	//INACTIVE
 	struct GraphicsComponent_Remove_Inactive_Predicate {
 		inline bool operator()(GraphicsComponent* component) {
