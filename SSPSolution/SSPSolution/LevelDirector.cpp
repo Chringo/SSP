@@ -6,7 +6,7 @@ FSMEnvironment::LevelDirector::LevelDirector()
 {
 	this->m_directorID = UINT_MAX;
 }
-FSMEnvironment::LevelDirector::~LevelDirector(){}
+FSMEnvironment::LevelDirector::~LevelDirector() {}
 int FSMEnvironment::LevelDirector::Shutdown()
 {
 	this->m_states.clear();
@@ -26,7 +26,7 @@ int FSMEnvironment::LevelDirector::Initialize()
 
 	// TODO: Import new states from new LevelState
 #pragma region temp
-	State test;
+	/*State test;
 	test.Initialize();
 	test.stateID = 0;
 	test.timeDelay = 10;
@@ -45,7 +45,7 @@ int FSMEnvironment::LevelDirector::Initialize()
 		printf("%d\n", m_states[i].stateID);
 	}
 	SetDefaultState(&m_states[0]);
-	test.Initialize();
+	test.Initialize();*/
 #pragma endregion
 
 	return SUCCESS;
@@ -56,16 +56,16 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 	if (this->m_states.size() == 0)
 		return FAIL;
 	// Return if there are no current state or default state
-	if ( !(this->m_currentState) )
+	if (!(this->m_currentState))
 		this->m_currentState = this->m_defaultState;
-	if ( !(this->m_currentState) )
+	if (!(this->m_currentState))
 		return FAIL;
-	
+
 	int oldStateID = this->m_currentState->stateID;
 	this->m_goalID = this->m_currentState->CheckTransitions();
-	if ( this->m_goalID != oldStateID )
+	if (this->m_goalID != oldStateID)
 	{
-		if ( this->ChangeState(this->m_goalID) )
+		if (this->ChangeState(this->m_goalID))
 		{
 			this->m_currentState->Exit();
 			this->m_currentState = this->m_goalState;
@@ -79,15 +79,15 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 
 int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 {
-	if (entityID == 1 && event == FIELD_CONTAINS)
-		this->m_currentState->playerOne = true;
-	else
-		this->m_currentState->playerOne = false;
+	// TODO: Proper reaction in director!
 
-	if (entityID == 3 && event == FIELD_CONTAINS)
-		this->m_currentState->playerTwo = true;
-	else
-		this->m_currentState->playerTwo = false;
+
+	//if (entityID == *this->m_currentState->fieldMap[0].FD_entityID && event == FIELD_CONTAINS)
+	//{
+	//	int i = 0;
+	//	/**this->m_currentState->fieldMap[i].FD_first_inside = true;
+	//	*this->m_currentState->fieldMap[i].FD_second_inside = true;*/
+	//}
 
 	return SUCCESS;
 }
