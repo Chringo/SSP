@@ -59,11 +59,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\lib\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LinearMath.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LinearMath_Debug</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\lib\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LinearMath.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LinearMath</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
@@ -78,7 +78,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)physicsDLL\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -114,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)physicsDLL\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)physicsDLL\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
@@ -186,7 +186,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)physicsDLL\bullet3-2.85.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -220,107 +220,53 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1" "-BC:/Users/Sebastian Lundgren/Documents/bulletTest" --check-stamp-file "C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp"
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1" "-BC:/Users/Sebastian Lundgren/Documents/bulletTest" --check-stamp-file "C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp"
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1" "-BC:/Users/Sebastian Lundgren/Documents/bulletTest" --check-stamp-file "C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp"
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-HC:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1" "-BC:/Users/Sebastian Lundgren/Documents/bulletTest" --check-stamp-file "C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp"
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Users/Sebastian Lundgren/Documents/Bullet3/bullet3-2.85.1/src/LinearMath/CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\Sebastian Lundgren\Documents\bulletTest\src\LinearMath\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btAabbUtil2.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btAlignedObjectArray.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btConvexHull.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btDefaultMotionState.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btGeometryUtil.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btGrahamScan2dConvexHull.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btHashMap.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btIDebugDraw.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btList.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btMatrix3x3.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btMinMax.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btMotionState.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btPoolAllocator.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btQuadWord.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btQuaternion.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btQuickprof.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btRandom.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btScalar.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btSerializer.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btStackAlloc.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btTransform.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btTransformUtil.h" />
-    <ClInclude Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btVector3.h" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btConvexHull.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btGeometryUtil.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btQuickprof.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btSerializer.cpp" />
-    <ClCompile Include="C:\Users\Sebastian Lundgren\Documents\Bullet3\bullet3-2.85.1\src\LinearMath\btVector3.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BulletCollision\BulletCollision.vcxproj">
       <Project>{252cc6f5-f2ac-3e6f-879b-c5240c03bd7f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\BulletDynamics\BulletDynamics.vcxproj">
       <Project>{38c7869d-07a6-3749-b19b-480c69741102}</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/Users/Sebastian Lundgren/Documents/bulletTest/ZERO_CHECK.vcxproj">
-      <Project>EF257EA6-5244-323F-8D7E-84B333E0889D</Project>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAabbUtil2.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedObjectArray.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHull.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btCpuFeatureUtility.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btDefaultMotionState.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGeometryUtil.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGrahamScan2dConvexHull.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btHashMap.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btIDebugDraw.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btList.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMatrix3x3.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMatrixX.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMinMax.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMotionState.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPoolAllocator.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuadWord.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuaternion.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuickprof.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btRandom.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btScalar.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSerializer.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSpatialAlgebra.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btStackAlloc.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btTransform.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btTransformUtil.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btVector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHull.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGeometryUtil.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuickprof.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSerializer.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btVector3.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
