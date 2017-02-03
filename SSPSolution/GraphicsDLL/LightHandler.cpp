@@ -250,6 +250,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	this->m_constBufferData.AMBIENT_COLOR[2] = level->ambientColor[2];
 
 	this->m_constBufferData.AMBIENT_INTENSITY = level->ambientIntensity;
+	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 	if (level->numPointLights > 0)
 	{
 		if (m_lightData[LT_POINT].dataPtr != nullptr)

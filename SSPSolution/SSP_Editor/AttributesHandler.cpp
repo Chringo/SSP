@@ -135,6 +135,11 @@ void Ui::AttributesHandler::UpdateSelection()
 	SetSelection(m_selection); // This function updates. no need to rewrite
 }
 
+void Ui::AttributesHandler::SetAmbientLight(Ambient amb)
+{
+	m_BehaviourHandler->SetAmbientLight(amb);
+}
+
 void Ui::AttributesHandler::on_translate_X_changed(double val)
 {
 	if (m_selection != nullptr) {

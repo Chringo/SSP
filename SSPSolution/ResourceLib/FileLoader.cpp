@@ -274,20 +274,32 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	}
 	//Lights
 
-	//Light header
-	file.read(data + offset, sizeof(LevelData::SceneLightHeader));
-	LevelData::SceneLightHeader* lightHeader = (LevelData::SceneLightHeader*) (data + offset);
-	level.numPointLights   = lightHeader->numPointLights;
-	memcpy(level.ambientColor, lightHeader->ambientColor, sizeof(float) * 3);
-	level.ambientIntensity = lightHeader->ambientIntensity;
-	offset += sizeof(LevelData::SceneLightHeader);
+	
+		//Light header
+		file.read(data + offset, sizeof(LevelData::SceneLightHeader));
+		LevelData::SceneLightHeader* lightHeader = (LevelData::SceneLightHeader*) (data + offset);
+		level.numPointLights = lightHeader->numPointLights;
+		memcpy(level.ambientColor, lightHeader->ambientColor, sizeof(float) * 3);
+		level.ambientIntensity = lightHeader->ambientIntensity;
+		offset += sizeof(LevelData::SceneLightHeader);
+	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
 
-	//Point lights
-	size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader->numPointLights;	  //memsize
-	file.read(data + offset , pointlightSize);
-	level.pointLights = (LevelData::PointLightHeader*) (data + offset);
-	offset += pointlightSize;
+		//Point lights
+		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader->numPointLights;	  //memsize
+		file.read(data + offset, pointlightSize);
+		level.pointLights = (LevelData::PointLightHeader*) (data + offset);
+		offset += pointlightSize;
+	}
+	else
+	{
+		level.numPointLights = 0;
+		level.ambientIntensity = 1.0f;
+		level.ambientColor[0] = 1.0f;
+		level.ambientColor[1] = 1.0f;
+		level.ambientColor[2] = 1.0f;
+		
 
+	}
 	//More lights
 	
 	file.close();

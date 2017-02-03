@@ -337,6 +337,15 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 	}
 }
 
+void Ui::BehaviourTypeHandler::SetAmbientLight(Ambient amb)
+{
+
+	m_AmbientLightBoxes[R]->setValue(amb.r * 255);
+	m_AmbientLightBoxes[G]->setValue(amb.g * 255) ;
+	m_AmbientLightBoxes[B]->setValue(amb.b * 255) ;
+	m_AmbientLightBoxes[INTENSITY]->setValue(amb.intensity * 250);
+}
+
 void Ui::BehaviourTypeHandler::on_Time_changed(double val)
 {
 	if (m_selection == nullptr)

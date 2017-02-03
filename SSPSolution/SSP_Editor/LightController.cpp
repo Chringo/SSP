@@ -185,6 +185,7 @@ void LightController::SetAmbientIntensity(float intensity)
 void LightController::SetLevelAmbient(Ambient ambient)
 {
 	this->m_levelAmbience = ambient;
+	´//Ui::AttributesHandler::GetInstance()->SetAmbientLight(ambient);
 	m_updateAmbient();
 }
 

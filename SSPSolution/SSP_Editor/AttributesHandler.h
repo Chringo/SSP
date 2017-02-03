@@ -5,6 +5,7 @@
 #include <qobject.h>
 #include "Header.h"
 
+
 #pragma region Description
 /*
 	Author: Martin Clementson
@@ -58,6 +59,7 @@ namespace Ui {
 		void SetSelection(Container*& selection);
 		void Deselect();
 		void UpdateSelection();
+		void SetAmbientLight(Ambient amb);
 
 	public slots:
 		void on_translate_X_changed(double val);

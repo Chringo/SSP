@@ -138,6 +138,7 @@ namespace Ui {
 		void Deselect();
 		void UpdateSelection();
 		void ResetType(BehaviourType);
+		void SetAmbientLight(Ambient amb);
 
 		public slots:
 		void on_Speed_changed(double val);
