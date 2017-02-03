@@ -486,7 +486,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 void MenuState::Hosting(float dt)
 {
-#pragma region
+	#pragma region
 
 	if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
 	{
@@ -498,9 +498,10 @@ void MenuState::Hosting(float dt)
 			this->m_networkModule = nullptr;	//Set the module pointer to nullptr
 		}
 	}
-#pragma endregion Network_INIT
 
-#pragma region
+	#pragma endregion Network_INIT
+
+	#pragma region
 
 	//Wait for someone to connect
 	if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If noone has connected
@@ -527,7 +528,10 @@ void MenuState::Hosting(float dt)
 	}
 	else
 	{
-#pragma region
+		//Wait for the physics sync packet to determine responsibilities
+
+
+		#pragma region
 		//Create, Initialize and push a LevelSelectState
 		LevelSelectState* levelSelect = new LevelSelectState();
 		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
@@ -547,7 +551,8 @@ void MenuState::Hosting(float dt)
 			delete levelSelect;
 			levelSelect = nullptr;
 		}
-#pragma endregion Load_Level
+		#pragma endregion Load_Level
+	
 	}
 
 #pragma endregion Network_Sync
