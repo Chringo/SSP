@@ -94,6 +94,16 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 #pragma region Light ui elements
 
+	m_AmbientLightBoxes[LIntSpin::R] = ui->Amb_R;
+	m_AmbientLightBoxes[LIntSpin::G] = ui->Amb_G;
+	m_AmbientLightBoxes[LIntSpin::B] = ui->Amb_B;
+	m_AmbientLightBoxes[LIntSpin::INTENSITY] = ui->Amb_Intensity;
+
+	connect(m_AmbientLightBoxes[LIntSpin::R], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_R_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::G], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_G_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_B_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_Intensity_changed(int)));
+
 	m_AddLightButton = ui->ADD_Light_Button;
 	m_LightIntSpinBoxes[LIntSpin::R] = ui->R_Colorvalue;
 	m_LightIntSpinBoxes[LIntSpin::G] = ui->G_Colorvalue;
@@ -962,6 +972,26 @@ void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
 			this->m_selection->isDirty = true;
 		}
 	}
+}
+void Ui::BehaviourTypeHandler::on_Ambience_R_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+}
+void Ui::BehaviourTypeHandler::on_Ambience_G_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+}
+void Ui::BehaviourTypeHandler::on_Ambience_B_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+}
+void Ui::BehaviourTypeHandler::on_Ambience_Intensity_changed(int val)
+{
+	const int dpi = 25; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
 }
 void Ui::BehaviourTypeHandler::on_Radius_changed(int val)
 {

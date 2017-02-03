@@ -102,6 +102,7 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
 		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
+		QSpinBox*		  m_AmbientLightBoxes[4];
 #pragma endregion
 
 
@@ -181,6 +182,11 @@ namespace Ui {
 		void on_G_changed(int val);
 		void on_B_changed(int val);
 		void on_Intensity_changed(int val);
+
+		void on_Ambience_R_changed(int val);
+		void on_Ambience_G_changed(int val);
+		void on_Ambience_B_changed(int val);
+		void on_Ambience_Intensity_changed(int val);
 
 		void on_Radius_changed(int val);
 		void on_Constant_changed(int val);
