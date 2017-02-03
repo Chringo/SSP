@@ -7,8 +7,9 @@ class LightController
 public:
 	~LightController();
 	void Initialize();
-	static LightController * GetInstance();
-	std::vector<Light*> * GetLights() { return &m_lights; };
+	static LightController *	  GetInstance();
+	std::vector<Light*> *		  GetLights() { return &m_lights; };
+	std::vector<LIGHTING::Point>* GetPointLightData() { return &pointLightData; };
 	void synchData(LIGHTING::LIGHT_TYPE type);
 	void AddLight(LIGHTING::LIGHT_TYPE type);
 	void AddLight(Light* light, LIGHTING::Light * data, LIGHTING::LIGHT_TYPE type);
