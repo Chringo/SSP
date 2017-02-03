@@ -375,8 +375,8 @@ border: black;</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="yValue_translate">
+          <item row="1" column="3">
+           <widget class="QDoubleSpinBox" name="zValue_translate">
             <property name="wrapping">
              <bool>true</bool>
             </property>
@@ -394,8 +394,8 @@ border: black;</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QDoubleSpinBox" name="zValue_translate">
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="yValue_translate">
             <property name="wrapping">
              <bool>true</bool>
             </property>
@@ -420,15 +420,18 @@ border: black;</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
-           <widget class="QDoubleSpinBox" name="yValue_scale">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
+          <item row="4" column="1">
+           <widget class="QDoubleSpinBox" name="xValue_rot">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
             <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="frame">
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
@@ -445,18 +448,15 @@ border: black;</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="xValue_rot">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="5" column="2">
+           <widget class="QDoubleSpinBox" name="yValue_scale">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="frame">
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
@@ -2369,14 +2369,51 @@ Header- color:rgb(48, 48, 48);
            <string>Lights</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_8">
-           <item row="1" column="0">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Ambience</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
             <widget class="QLabel" name="label_6">
              <property name="text">
               <string>Light Type</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="Amb_Intensity">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="maximum">
+              <number>250</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>Intensity</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="4">
+            <widget class="QPushButton" name="ADD_Light_Button">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(129, 129, 129);</string>
+             </property>
+             <property name="text">
+              <string>ADD NEW LIGHT</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1" colspan="3">
             <widget class="QComboBox" name="LightDropDown">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(48, 48, 48);</string>
@@ -2406,27 +2443,12 @@ Header- color:rgb(48, 48, 48);
                <string>Spot</string>
               </property>
              </item>
-             <item>
-              <property name="text">
-               <string>Ambient</string>
-              </property>
-             </item>
             </widget>
            </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QPushButton" name="ADD_Light_Button">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(129, 129, 129);</string>
-             </property>
-             <property name="text">
-              <string>ADD NEW LIGHT</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
+           <item row="9" column="0" colspan="4">
             <widget class="QStackedWidget" name="LightWindows">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="None"/>
              <widget class="QWidget" name="Point">
@@ -2733,6 +2755,55 @@ Header- color:rgb(48, 48, 48);
              </widget>
             </widget>
            </item>
+           <item row="3" column="2" colspan="2">
+            <widget class="QSlider" name="Amb_Intensityslider">
+             <property name="maximum">
+              <number>250</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QSpinBox" name="Amb_G">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="Amb_R">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QSpinBox" name="Amb_B">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </widget>
@@ -2965,12 +3036,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1013</x>
-     <y>323</y>
+     <x>1141</x>
+     <y>358</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1013</x>
-     <y>335</y>
+     <x>1141</x>
+     <y>685</y>
     </hint>
    </hints>
   </connection>
@@ -2981,8 +3052,8 @@ Header- color:rgb(48, 48, 48);
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1090</x>
-     <y>354</y>
+     <x>1141</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>1036</x>
@@ -2997,12 +3068,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>970</x>
-     <y>388</y>
+     <x>992</x>
+     <y>444</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1068</x>
-     <y>388</y>
+     <x>1132</x>
+     <y>446</y>
     </hint>
    </hints>
   </connection>
@@ -3013,12 +3084,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1068</x>
-     <y>388</y>
+     <x>1132</x>
+     <y>446</y>
     </hint>
     <hint type="destinationlabel">
-     <x>970</x>
-     <y>388</y>
+     <x>992</x>
+     <y>444</y>
     </hint>
    </hints>
   </connection>
@@ -3029,12 +3100,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>973</x>
-     <y>416</y>
+     <x>992</x>
+     <y>469</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1065</x>
-     <y>416</y>
+     <x>1132</x>
+     <y>471</y>
     </hint>
    </hints>
   </connection>
@@ -3045,12 +3116,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1065</x>
-     <y>416</y>
+     <x>1132</x>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
-     <x>973</x>
-     <y>416</y>
+     <x>992</x>
+     <y>469</y>
     </hint>
    </hints>
   </connection>
@@ -3061,12 +3132,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>973</x>
-     <y>444</y>
+     <x>992</x>
+     <y>494</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1065</x>
-     <y>444</y>
+     <x>1132</x>
+     <y>496</y>
     </hint>
    </hints>
   </connection>
@@ -3077,12 +3148,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1065</x>
-     <y>444</y>
+     <x>1132</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
-     <x>973</x>
-     <y>444</y>
+     <x>992</x>
+     <y>494</y>
     </hint>
    </hints>
   </connection>
@@ -3094,11 +3165,11 @@ Header- color:rgb(48, 48, 48);
    <hints>
     <hint type="sourcelabel">
      <x>1132</x>
-     <y>427</y>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
      <x>992</x>
-     <y>414</y>
+     <y>469</y>
     </hint>
    </hints>
   </connection>
@@ -3109,12 +3180,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1090</x>
-     <y>454</y>
+     <x>1132</x>
+     <y>496</y>
     </hint>
     <hint type="destinationlabel">
-     <x>989</x>
-     <y>452</y>
+     <x>992</x>
+     <y>494</y>
     </hint>
    </hints>
   </connection>
@@ -3125,12 +3196,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1087</x>
-     <y>398</y>
+     <x>1132</x>
+     <y>446</y>
     </hint>
     <hint type="destinationlabel">
-     <x>975</x>
-     <y>395</y>
+     <x>992</x>
+     <y>444</y>
     </hint>
    </hints>
   </connection>
@@ -3141,12 +3212,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>969</x>
-     <y>649</y>
+     <x>992</x>
+     <y>669</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1010</x>
-     <y>645</y>
+     <x>1132</x>
+     <y>671</y>
     </hint>
    </hints>
   </connection>
@@ -3157,12 +3228,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1080</x>
-     <y>647</y>
+     <x>1132</x>
+     <y>671</y>
     </hint>
     <hint type="destinationlabel">
-     <x>974</x>
-     <y>650</y>
+     <x>992</x>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -3173,12 +3244,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1058</x>
-     <y>473</y>
+     <x>1132</x>
+     <y>521</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1019</x>
-     <y>477</y>
+     <x>1049</x>
+     <y>519</y>
     </hint>
    </hints>
   </connection>
@@ -3189,12 +3260,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1049</x>
-     <y>537</y>
+     <x>1132</x>
+     <y>571</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1023</x>
-     <y>533</y>
+     <x>1049</x>
+     <y>569</y>
     </hint>
    </hints>
   </connection>
@@ -3205,12 +3276,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1048</x>
-     <y>558</y>
+     <x>1132</x>
+     <y>596</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1016</x>
-     <y>559</y>
+     <x>1049</x>
+     <y>594</y>
     </hint>
    </hints>
   </connection>
@@ -3221,12 +3292,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1060</x>
-     <y>588</y>
+     <x>1132</x>
+     <y>621</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1016</x>
-     <y>588</y>
+     <x>1049</x>
+     <y>619</y>
     </hint>
    </hints>
   </connection>
@@ -3237,12 +3308,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1029</x>
-     <y>594</y>
+     <x>1049</x>
+     <y>619</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1071</x>
-     <y>596</y>
+     <x>1132</x>
+     <y>621</y>
     </hint>
    </hints>
   </connection>
@@ -3253,12 +3324,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1023</x>
-     <y>570</y>
+     <x>1049</x>
+     <y>594</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1064</x>
-     <y>571</y>
+     <x>1132</x>
+     <y>596</y>
     </hint>
    </hints>
   </connection>
@@ -3269,12 +3340,12 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1036</x>
-     <y>542</y>
+     <x>1049</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1070</x>
-     <y>545</y>
+     <x>1132</x>
+     <y>571</y>
     </hint>
    </hints>
   </connection>
@@ -3285,12 +3356,44 @@ Header- color:rgb(48, 48, 48);
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1019</x>
-     <y>468</y>
+     <x>1049</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1072</x>
-     <y>477</y>
+     <x>1132</x>
+     <y>521</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Amb_Intensity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Amb_Intensityslider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1021</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Amb_Intensityslider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>Amb_Intensity</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1118</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1017</x>
+     <y>356</y>
     </hint>
    </hints>
   </connection>
