@@ -2097,11 +2097,13 @@ void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 50000);
 	int size = this->m_physicsComponents.size();
-	std::vector<PhysicsComponent*>::iterator toProcess = this->m_dynamicComponents.begin();
+	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 	int i = 0;
 
-	for (toProcess; toProcess != this->m_dynamicComponents.end(); toProcess++)
+	for (toProcess; toProcess != this->m_physicsComponents.end(); toProcess++)
 	{
+		PhysicsComponent* temp = nullptr;
+		temp = *(toProcess);
 		this->m_bullet.SyncBulletWithGame((*(toProcess)));
 	}
 

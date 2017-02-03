@@ -113,7 +113,7 @@ void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsCompone
 		btQuaternion rotation = trans.getRotation();
 		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
 
-		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
+		//src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
 
 		//btVector3 rotVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
 		//if (rotVel.isZero() != true)
