@@ -23,12 +23,7 @@ inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader
 	return obj;
 }
 
-
-LevelState::LevelState()
-{
-}
-
-
+LevelState::LevelState(){}
 LevelState::~LevelState()
 {
 	ShutDown();
@@ -36,7 +31,6 @@ LevelState::~LevelState()
 
 int LevelState::ShutDown()
 {
-
 	int result = 1;
 	// Clear the dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
@@ -78,11 +72,6 @@ int LevelState::ShutDown()
 	}
 	this->m_wheelEntities.clear();
 
-	for each (Checkpoint* cp in this->m_checkpoints)
-	{
-		delete cp;
-	}
-	this->m_checkpoints.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 
@@ -522,7 +511,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		this->m_statePacketList.clear();
 		// LEVERS AND BUTTONS END//
-
 
 		// WHEELS //
 		this->m_wheelStatePacketList = this->m_networkModule->PacketBuffer_GetWheelStatePackets();	//This removes the entity packets from the list in NetworkModule
@@ -998,14 +986,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_director.Update(dt);
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 
-	//if (m_fieldEntities[0] != nullptr)
-	//{
-	//	if (m_fieldEntities[0]->GetField()->F_first_inside && m_fieldEntities[0]->GetField()->F_second_inside)
-	//	{
-	//		this->m_director.React(1, FIELD_CONTAINS);
-	//		this->m_director.React(3, FIELD_CONTAINS);
-	//	}
-	//}
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
 		m_fieldEntities[i]->Update(dt, inputHandler);
@@ -1065,7 +1045,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	this->m_cHandler->UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
-	
+
 	return result;
 }
 
@@ -1102,7 +1082,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(m_player1.GetBall()->GetPhysicsComponent(), this->m_player1.GetPhysicsComponent(), 5, 1.0);
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 
@@ -1269,41 +1248,23 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
 		m_dynamicEntitys.push_back(tde);
 	}
-
-	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
-	for (size_t i = 0; i < data->numCheckpoints; i++)
-	{
-		CB->index = data->checkpoints[i].entityID;
-		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float) * 3);
-		memcpy(&CB->obb.ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
-		memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
-
-		m_checkpoints.push_back(CB);
-	}
-
+	
 #pragma region Creating Field
-
-	//OBB* checkPointOBB = nullptr;
-	//for (size_t i = 0; i < m_checkpoints.size(); i++)
-	//{
-	//	checkPointOBB = &m_checkpoints[i]->obb;
-	//	//this->directorTestField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-	//	//	m_checkpoints[i]->pos,
-	//	//	1,	//EntityID Player1
-	//	//	3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-	//	//	checkPointOBB
-	//	//);
-	//}
-	//checkPointOBB = nullptr;
-
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
-		OBB* checkPointOBB = &m_checkpoints[i]->obb;
+		OBB* tOBB = new OBB();
+		memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
+		memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
+		DirectX::XMVECTOR tPos = {
+			data->checkpoints[i].position[0],
+			data->checkpoints[i].position[1],
+			data->checkpoints[i].position[2]
+		};
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-			m_checkpoints[i]->pos,
+			tPos,
 			1,	//EntityID Player1
 			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-			checkPointOBB
+			tOBB
 		);
 		FieldEntity* tempFE = new FieldEntity();
 		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
@@ -1845,7 +1806,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
-	
+
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 
 	return 1;

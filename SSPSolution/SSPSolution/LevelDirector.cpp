@@ -82,12 +82,12 @@ int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
 	// TODO: Proper reaction in director!
 
 
-	if (entityID == *this->m_currentState->fieldMap[0].FD_entityID && event == FIELD_CONTAINS)
-	{
-		int i = 0;
-		/**this->m_currentState->fieldMap[i].FD_first_inside = true;
-		*this->m_currentState->fieldMap[i].FD_second_inside = true;*/
-	}
+	//if (entityID == *this->m_currentState->fieldMap[0].FD_entityID && event == FIELD_CONTAINS)
+	//{
+	//	int i = 0;
+	//	/**this->m_currentState->fieldMap[i].FD_first_inside = true;
+	//	*this->m_currentState->fieldMap[i].FD_second_inside = true;*/
+	//}
 
 	return SUCCESS;
 }
