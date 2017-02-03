@@ -298,7 +298,6 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
-
 	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG
