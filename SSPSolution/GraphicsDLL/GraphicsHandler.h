@@ -121,10 +121,10 @@ private:
 	
 	struct Sorting_on_modelID
 	{
-		inline bool operator() (const OctreeBV& first, const OctreeBV& second)
+		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
 		{
 			
-			return (first.modelID < second.componentIndex);
+			return (first->modelID < second->componentIndex);
 		}
 	};
 public:
