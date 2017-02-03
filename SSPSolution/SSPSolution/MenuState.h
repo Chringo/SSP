@@ -111,10 +111,12 @@ private:
 	
 	//Network related functions and variables
 	bool isHosting;
+	bool isJoining;
 	float timeoutTime;
 	bool sentSyncPacket;
 
 	void Hosting(float dt);
+	void Joining();
 
 public:
 	MenuState();

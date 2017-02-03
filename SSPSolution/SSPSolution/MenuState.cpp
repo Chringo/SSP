@@ -5,7 +5,8 @@
 MenuState::MenuState()
 {
 	this->timeoutTime = 0;
-	this->isHosting;
+	this->isHosting = false;
+	this->isJoining = false;
 	this->sentSyncPacket = false;
 }
 
@@ -383,11 +384,18 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
+			//Update the IP stored in Progression
 			if (!this->m_ipTextBox.firstChar)
 			{
 				Progression::instance().SetIPString(this->m_ipTextBox.m_textComp->text);
 				Progression::instance().WriteToFile("Save1");
 			}
+
+			if (this->isJoining == false)
+			{
+				this->isJoining = true;
+			}
+
 		}
 		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -475,6 +483,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->Hosting(dt);	//Do the Host update
 		}
 
+		if (isJoining)
+		{
+			this->Joining();
+		}
 
 		break;
 	default:
@@ -572,6 +584,100 @@ void MenuState::Hosting(float dt)
 			}
 			#pragma endregion Load_Level
 		}
+	}
+
+#pragma endregion Network_Sync
+
+}
+
+void MenuState::Joining()
+{
+#pragma region
+
+	if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
+	{
+		this->m_networkModule = new NetworkModule();	//Create a new networkModule
+		int result = this->m_networkModule->Initialize();	// Try to init the networkModule
+
+		if (result != 1)	//If failed
+		{
+			this->m_networkModule = nullptr;	//Set the module pointer to nullptr
+		}
+	}
+
+#pragma endregion Network_INIT
+
+#pragma region
+
+	//size_t count;
+	//char* ip = (char*)malloc(20);
+	//wchar_t* buffer2 = Progression::instance().GetIPString().c_str;
+
+	//count = wcstombs(ip, buffer2, 20);
+
+	char* ip = new char[255];
+	sprintf(ip, "%ls", Progression::instance().GetIPString().c_str());
+
+	int result = this->m_networkModule->Join(ip);
+
+	if (result <= 0)	//If failed to connect
+	{
+		//Shut down the networkModule
+		this->m_networkModule->Shutdown();
+		delete this->m_networkModule;
+		this->m_networkModule = nullptr;
+
+		this->isJoining = false;
+
+		//Show buttons
+		for (size_t i = 0; i < this->m_startMenuButtons.size(); i++)
+		{
+			this->m_startMenuButtons[i].SetActive(true);
+		}
+		this->m_ipTextBox.SetActive(true);
+	}
+	else //Succeded to connect
+	{
+		//Listen for syncPacket
+		std::list<SyncPhysicPacket> packets = this->m_networkModule->PacketBuffer_GetPhysicPacket();
+		
+		if (packets.size() != 0)	//We recive the syncpacket
+		{
+			std::list<SyncPhysicPacket>::iterator packet = packets.begin();
+
+			//Send Ready packet
+			this->m_networkModule->SendFlagPacket(PacketTypes::SYNC_READY);
+
+			//Load level with correct values
+			unsigned int	startIndex = packet->startIndex;
+			unsigned int	nrOfDynamics = packet->nrOfDynamics;
+			bool			isHost = packet->isHost;
+			std::string		levelName = packet->levelName;
+			unsigned int	checkpointID = packet->checkpointID;
+
+			#pragma region
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				this->m_gsh->PushStateToStack(levelSelect);
+
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/" + levelName));
+			}
+			else
+			{
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			#pragma endregion Load_Level
+		}
+
 	}
 
 #pragma endregion Network_Sync
