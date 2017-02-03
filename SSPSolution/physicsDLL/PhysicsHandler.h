@@ -87,9 +87,10 @@ struct Field
 
 	unsigned int F_entitityID1;
 	unsigned int F_entitityID2;
-	bool F_first_inide;
+	bool F_first_inside;
 	bool F_second_inside;
-
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 class PhysicsHandler

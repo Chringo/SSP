@@ -15,7 +15,7 @@ namespace Ui {
 		PATH,
 		LEVER,
 		WHEEL,
-		PRESSURE_PLATE
+		PRESSURE_PLATE,
 	};
 	enum Pattern {
 		AI_LINEAR = 1,

@@ -48,7 +48,13 @@ private:
 	}
 
 public:
-	unsigned int GetInstanceID() { return m_selectedContainer->internalID; };
+	unsigned int GetInstanceID()
+	{
+		if (m_selectedContainer->type == ContainerType::CHECKPOINT)
+			return ((CheckpointContainer*)m_selectedContainer)->internalID;
+		else
+			return m_selectedContainer->internalID;
+	};
 	unsigned int GetModelID() { return m_modelID; };
 	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };

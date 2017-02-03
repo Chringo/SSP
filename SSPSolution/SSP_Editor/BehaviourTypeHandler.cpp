@@ -142,7 +142,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 	{
 		Deselect(); //reset values
 		m_selection = selection;
-		if (m_selection->internalID == 0 || m_selection->internalID == 1 || m_selection->type == ContainerType::CHECKPOINT) { // if any of the spawnpoints are selected
+		if (m_selection->internalID == 0 || m_selection->internalID == 1 ) { // if any of the spawnpoints are selected
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
 			m_BehaviourType->setEnabled(false);
@@ -521,6 +521,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					m_lever_distance->setValue(((Lever*)m_selection)->interactionDistance);
 					break;
 				}
+					
 				}
 			}
 		}
