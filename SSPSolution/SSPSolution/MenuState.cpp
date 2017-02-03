@@ -159,6 +159,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_mainMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Start game was clicked
+			//Switch visable buttons
 			this->m_mainMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;
 			this->m_startMenuButtons[0].SetHovered(true);
@@ -176,6 +177,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_mainMenuButtons[1].m_uiComp->CheckClicked())
 		{
 			//Options was clicked
+			//Switch visable buttons
 			this->m_mainMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;
 			this->m_optionsMenuButtons[0].SetHovered(true);
@@ -251,6 +253,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Return to main menu was clicked
 			inputHandler->SetKeyState(SDL_SCANCODE_F, false); //Temporary cheat
+			//Switch visable buttons
 			this->m_optionsMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;
 			this->m_mainMenuButtons[0].SetHovered(true);
@@ -340,6 +343,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_startMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Host Game was clicked
+
+			//Hide buttons
 			for (size_t i = 0; i < nrOfStartMenuitems; i++)
 			{
 				this->m_startMenuButtons[i].SetActive(false);
@@ -369,11 +374,18 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
 		{
 			//Join Game was clicked
-			
+
+			//Hide buttons
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(false);
+			}
+			this->m_ipTextBox.SetActive(false);
 		}
 		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
 		{
 			//Go Back was clicked
+			//Switch visable buttons
 			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;
 			this->m_mainMenuButtons[0].SetHovered(true);
