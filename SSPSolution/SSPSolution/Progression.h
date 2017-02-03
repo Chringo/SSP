@@ -23,6 +23,9 @@ private:
 	// UNLOCK DATA
 	unsigned int m_unlockedLevels;		// How many levels are unlocked
 
+	// IP DATA
+	std::wstring m_ipString;
+
 	Progression();
 
 public:
@@ -43,10 +46,12 @@ public:
 	unsigned int GetCurrentLevel();
 	unsigned int GetCurrentCheckpoint();
 	unsigned int GetUnlockedLevels();
+	std::wstring GetIPString();
 
 	void SetCurrentLevel(unsigned int levelID);
 	void SetCurrentCheckpoint(unsigned int checkpointID);
 	void SetUnlockedLevels(unsigned int newLevels);
+	void SetIPString(std::wstring ipString);
 };
 
 #endif
