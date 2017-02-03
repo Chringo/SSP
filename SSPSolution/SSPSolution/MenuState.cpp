@@ -6,6 +6,7 @@ MenuState::MenuState()
 {
 	this->timeoutTime = 0;
 	this->isHosting;
+	this->sentSyncPacket = false;
 }
 
 MenuState::~MenuState()
@@ -357,7 +358,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (isHosting == false)
 			{
 				inputHandler->SetMouseLocked(true);
-
+				printf("Hosting..\n");
 				#pragma region
 				//Hide buttons
 				for (size_t i = 0; i < nrOfStartMenuitems; i++)
@@ -524,35 +525,53 @@ void MenuState::Hosting(float dt)
 				this->m_startMenuButtons[i].SetActive(true);
 			}
 			this->m_ipTextBox.SetActive(true);
+
+			printf("Timed-out becuase no one connected\n");
 		}
 	}
 	else
 	{
-		//Wait for the physics sync packet to determine responsibilities
+		printf("Someone connected\n");
+		/*
+		Now when someone has connected we want to send a physics sync packet
+		before we continue. When we recive the ready packet we will load our level.
+		*/
+		unsigned int	startIndex = 0;
+		unsigned int	nrOfDynamics = 0;
+		bool			isHost = false;
+		std::string		levelName = "forKim.level";	//CHANGE LEVEL HERE NOW
+		unsigned int	checkpointID = 0;
 
-
-		#pragma region
-		//Create, Initialize and push a LevelSelectState
-		LevelSelectState* levelSelect = new LevelSelectState();
-		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-
-		//If the initialization was successful
-		if (result > 0)
+		if (this->sentSyncPacket == false)	//If we havent already sent the sync packet
 		{
-			//Push it to the gamestate stack/vector
-			this->m_gsh->PushStateToStack(levelSelect);
-
-
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+			this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelName, checkpointID);
+			this->sentSyncPacket = true;
 		}
-		else
+
+		if (this->m_networkModule->IsClientReady())	//When we recive the readyPacket from the client we start the level
 		{
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
+			#pragma region
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				this->m_gsh->PushStateToStack(levelSelect);
+
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/" + levelName));
+			}
+			else
+			{
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			#pragma endregion Load_Level
 		}
-		#pragma endregion Load_Level
-	
 	}
 
 #pragma endregion Network_Sync

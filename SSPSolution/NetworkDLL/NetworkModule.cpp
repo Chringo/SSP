@@ -377,7 +377,7 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, std::string levelName, unsigned int checkpointID)
 {
 	const unsigned int packet_size = sizeof(SyncPhysicPacket);
 	char packet_data[packet_size];
@@ -389,6 +389,8 @@ void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int n
 	packet.startIndex = startIndex;
 	packet.nrOfDynamics = nrOfDynamics;
 	packet.isHost = isHost;
+	packet.levelName = levelName;
+	packet.checkpointID = checkpointID;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -626,6 +628,18 @@ void NetworkModule::ReadMessagesFromClients()
 
 				this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
 				data_read += sizeof(SyncPhysicPacket);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
+			case SYNC_READY:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				
+				this->clientIsReady = true;
+
+				data_read += sizeof(Packet);
 				//DEBUG
 				//printf("Recived SYNC_PHYSICS packet\n");
 
@@ -919,4 +933,9 @@ int NetworkModule::GetNrOfConnectedClients()
 bool NetworkModule::IsHost()
 {
 	return  this->isHost;
+}
+
+bool NetworkModule::IsClientReady()
+{
+	return this->clientIsReady;
 }

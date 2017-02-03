@@ -109,8 +109,10 @@ private:
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
 	
+	//Network related functions and variables
 	bool isHosting;
 	float timeoutTime;
+	bool sentSyncPacket;
 
 	void Hosting(float dt);
 
