@@ -2827,19 +2827,39 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 
 Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB* & obb)
 {
-	this->m_fields.push_back(Field());
-	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
-	field->F_pos = pos;
-	field->F_BV.ext[0]	= obb->ext[0];
-	field->F_BV.ext[1]	= obb->ext[1];
-	field->F_BV.ext[2]	= obb->ext[2];
-	field->F_BV.ort		= obb->ort;
-	field->F_entitityID1 = entityID1;
-	field->F_entitityID2 = entityID2;
-	field->F_first_inside = false;
-	field->F_second_inside = false;
+	//this->m_fields.push_back(Field());
+	//Field* field = &this->m_fields.at(this->m_fields.size() - 1);
+	//DirectX::XMStoreFloat3(&field->F_pos, pos);
+	//field->F_BV.ext[0] = obb->ext[0];
+	//field->F_BV.ext[1] = obb->ext[1];
+	//field->F_BV.ext[2] = obb->ext[2];
+	//field->F_BV.ort = obb->ort;
+	//field->F_entitityID1 = entityID1;
+	//field->F_entitityID2 = entityID2;
+	//field->F_first_inside = false;
+	//field->F_second_inside = false;
+	//return field;
+	printf("A");
+	Field temp;
+	printf("B");
+	temp.F_BV.ort = obb->ort;
+	temp.F_BV.ext[0] = obb->ext[0];
+	temp.F_BV.ext[1] = obb->ext[1];
+	temp.F_BV.ext[2] = obb->ext[2];
+	printf("C");
+	DirectX::XMStoreFloat3(&temp.F_pos, pos);
+	//temp.F_pos = pos;
+	printf("D");
 
-	return field;
+	temp.F_entitityID1 = entityID1;
+	temp.F_entitityID2 = entityID2;
+	temp.F_first_inside = false;
+	temp.F_second_inside = false;
+	printf("E");
+
+	this->m_fields.push_back(temp);
+	printf("F");
+	return &this->m_fields.back();
 }
 
 void PhysicsHandler::SimpleCollition(float dt)
