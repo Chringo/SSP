@@ -494,6 +494,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	}
 	
 
+	if (this->m_networkModule)
+	{
+		this->m_networkModule->Update();
+	}
+
 	return result;
 }
 
@@ -521,7 +526,7 @@ void MenuState::Hosting(float dt)
 	{
 		this->timeoutTime += dt / 1000000;	//Increase the timeout timer
 
-		if (this->timeoutTime > 10)	//If the timer is to high
+		if (this->timeoutTime > 20)	//If the timer is to high
 		{
 			//Shut down the networkModule
 			this->m_networkModule->Shutdown();
@@ -676,6 +681,8 @@ void MenuState::Joining()
 				levelSelect = nullptr;
 			}
 			#pragma endregion Load_Level
+
+			this->isJoining = false;
 		}
 
 	}
