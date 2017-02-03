@@ -1833,6 +1833,7 @@ m_dynamicEntitys.push_back(tde);
 
 
 	m_cHandler->GetPhysicsHandler()->SortComponents();
+	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 	return 1;
 }
 
