@@ -246,13 +246,13 @@ float4 PS_main(VS_OUT input) : SV_Target
         
         //if (dot(normalize(wPosSamp.xyz - pointlights[i].position.xyz), N) < 0.0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
         //{
-        lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.05);
-        //lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
+        //lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.05);
+        lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
 
         lightPower *= pointlights[i].intensity; //could add falloff factor
 
         //return lightPower;
-        return lightPower.rrrr;
+        //return lightPower.rrrr;
         //}
         //else //lights with no direction
 
