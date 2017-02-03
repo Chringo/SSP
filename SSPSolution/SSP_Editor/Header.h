@@ -19,7 +19,9 @@ enum ContainerType
 	AIWAYPOINT,
 	CHECKPOINT,
 	AI,
-	NUM_TYPES
+	NUM_TYPES,
+	NONE //important for ui stuff
+
 };
 struct Container
 {

@@ -79,7 +79,7 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	int animsloaded = 0;
 	std::vector<unsigned int> animIDs;
-	for (int i = 0; i < *animCount; ++i)
+	for (unsigned int i = 0; i < *animCount; ++i)
 	{
 		animIDs.push_back(((LayerIdHeader*)data)->id);
 		data += sizeof(LayerIdHeader);
