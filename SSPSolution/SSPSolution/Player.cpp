@@ -140,7 +140,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 
-			float strength = 1.5f;		
+			float strength = 15.0f;		
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Relsease the entity
 		}

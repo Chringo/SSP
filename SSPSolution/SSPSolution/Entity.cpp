@@ -21,6 +21,7 @@ int Entity::SyncComponents()
 		{
 			// Assuming m_pComp->PC_is_Static is true
 			// Works for now since we're only handling platforms
+
 			this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
 			this->m_aiComp->AC_position = this->m_pComp->PC_pos;
 		}
@@ -123,9 +124,13 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 
 	}
 	else {
+		if (this->m_entityID == 3)
+		{
+			int a = 0;
+		}
 		this->m_isGrabbed = false;
 		this->m_pComp->PC_Bullet_AffectedByGravity = true;
-		this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	
 	return lastValue;

@@ -211,13 +211,13 @@ int System::Update(float deltaTime)
 		{
 			Sphere* sphereHolder = nullptr;
 			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-			AABB test;
-			test.ext[0] = sphereHolder->radius;
-			test.ext[1] = sphereHolder->radius;
-			test.ext[2] = sphereHolder->radius;
-			AABB* ptr = &test;
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+			//AABB test;
+			//test.ext[0] = sphereHolder->radius;
+			//test.ext[1] = sphereHolder->radius;
+			//test.ext[2] = sphereHolder->radius;
+			//AABB* ptr = &test;
+			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 		}
 	}
 #endif // _DEBUG

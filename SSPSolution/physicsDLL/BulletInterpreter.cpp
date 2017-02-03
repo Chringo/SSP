@@ -48,10 +48,11 @@ void BulletInterpreter::ApplyMovementPlayer1(float dt)
 
 
 	//newVel /= 100;
-	if (active != 1)
+	if (active != ACTIVE_TAG)
 	{
 		//sleep is for the weak
-		rb->setActivationState(1);
+		rb->activate();
+		//this->m_rigidBodies.at(this->player1->inde)
 	}
 
 	if (newVel.isZero() == false)
@@ -85,7 +86,7 @@ void BulletInterpreter::ApplyImpulseOnPC(PhysicsComponent * src)
 	btRigidBody* holder = nullptr;
 	holder = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
-	holder->setActivationState(1);
+	holder->setActivationState(ACTIVE_TAG);
 	
 	//holder->clearForces();
 	holder->applyImpulse(force, posAffectedByForce);
@@ -247,45 +248,48 @@ void BulletInterpreter::Update(PhysicsComponent * src, int index, float dt)
 {
 	DirectX::XMVECTOR result;
 
-
-	if (src->PC_ApplyImpulse == true)
+	if(src->PC_IndexRigidBody != -1 && src->PC_BVtype != BV_Sphere)
 	{
-		//not here
-		this->ApplyImpulseOnPC(src);
-	}
-
-	if (src->PC_IndexRigidBody != -1)
-	{
-		this->UpdatePhysicsComponentTransformWithBullet(src);
-	}
-
-	if (src->PC_Bullet_AffectedByGravity == false)
-	{
-		this->SyncPosWithBullet(src);
-		//if the gravity influence is zero, the component will not be affected by gravity
-		//this->m_rigidBodies.at(index)->clearForces();
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setAngularVelocity(btVector3(0, 0, 0));
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(btVector3(0,0,0));
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(1);
-		
-		PhysicsComponent* playor = this->player1;
-
-
-		src->PC_active = false;
-	}
-	else
-	{
-		if (src->PC_IndexRigidBody == 2)
+		if (src->PC_ApplyImpulse == true)
 		{
-			btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+			//not here
+			this->ApplyImpulseOnPC(src);
 		}
-		src->PC_active = true;
-		btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(0);
-		
-		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(this->m_GravityAcc);
-	}
 
+		if (src->PC_IndexRigidBody != -1)
+		{
+			this->UpdatePhysicsComponentTransformWithBullet(src);
+		}
+
+		if (src->PC_Bullet_AffectedByGravity == false)
+		{
+			this->SyncPosWithBullet(src);
+			//if the gravity influence is zero, the component will not be affected by gravity
+			//this->m_rigidBodies.at(index)->clearForces();
+			this->m_rigidBodies.at(src->PC_IndexRigidBody)->setAngularVelocity(btVector3(0, 0, 0));
+			this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(btVector3(0, 0, 0));
+			this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(1);
+
+			//PhysicsComponent* playor = this->player1;
+
+
+			src->PC_active = false;
+		}
+		else
+		{
+			if (src->PC_IndexRigidBody == 2)
+			{
+				btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+			}
+			src->PC_active = true;
+			btRigidBody* debug = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+			this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(0);
+
+			this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(this->m_GravityAcc);
+		}
+
+	}
+	
 	
 	//player movement
 }
@@ -405,8 +409,8 @@ void BulletInterpreter::CreateRigidBody(PhysicsComponent* fromGame)
 
 		if (fromGame->PC_BVtype == BV_Sphere)
 		{
-			btSphereShape* sphereShape = nullptr;
-			sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
+			//btSphereShape* sphereShape = nullptr;
+			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
 		}
 		
 	}
@@ -425,8 +429,8 @@ void BulletInterpreter::CreateRigidBody(PhysicsComponent* fromGame)
 
 		if (fromGame->PC_BVtype == BV_Sphere)
 		{
-			btSphereShape* sphereShape = nullptr;
-			sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
+			//btSphereShape* sphereShape = nullptr;
+			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
 		}
 
 		if (fromGame->PC_BVtype == BV_AABB)
@@ -583,7 +587,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	int pos = this->m_rigidBodies.size() - 1;
-	src->PC_IndexRigidBody = index;
+	src->PC_IndexRigidBody = pos;
 }
 
 void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)

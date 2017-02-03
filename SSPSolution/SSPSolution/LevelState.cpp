@@ -224,11 +224,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
-	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_BVtype = BV_Sphere;
 
-	ballP->PC_OBB.ext[0] = 0.5f;
-	ballP->PC_OBB.ext[1] = 0.5f;
-	ballP->PC_OBB.ext[2] = 0.5f;
+	//ballP->PC_OBB.ext[0] = 0.5f;
+	//ballP->PC_OBB.ext[1] = 0.5f;
+	//ballP->PC_OBB.ext[2] = 0.5f;
+	ballP->PC_Sphere.radius = 1;
+
 
 	ballP->PC_mass = 10;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
@@ -1132,7 +1134,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 12, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
