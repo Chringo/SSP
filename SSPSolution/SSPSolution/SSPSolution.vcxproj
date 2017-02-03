@@ -167,6 +167,7 @@
     <ClCompile Include="DoorEntity.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FieldEntity.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Progression.cpp" />
     <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="StartState.cpp" />
+    <ClCompile Include="DirectorState.cpp" />
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="System.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="DoorEntity.h" />
     <ClInclude Include="DynamicEntity.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FieldEntity.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
     <ClInclude Include="InputHandler.h" />
@@ -208,6 +211,7 @@
     <ClInclude Include="Progression.h" />
     <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="StartState.h" />
+    <ClInclude Include="DirectorState.h" />
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="System.h" />
