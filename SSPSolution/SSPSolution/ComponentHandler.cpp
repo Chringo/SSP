@@ -141,3 +141,8 @@ PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
 	return this->m_physicsHandler;
 }
 
+GraphicsHandler * ComponentHandler::GetGraphicsHandler() const
+{
+	return this->m_graphicsHandler;
+}
+

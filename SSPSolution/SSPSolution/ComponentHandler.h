@@ -44,6 +44,7 @@ public:
 
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;
+	GraphicsHandler* GetGraphicsHandler() const;
 };
 
 #endif
