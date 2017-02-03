@@ -762,45 +762,44 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 	return result;
 }
 
-int GraphicsHandler::ReserveDynamicComponents(size_t new_cap)
+int GraphicsHandler::ResizeDynamicComponents(size_t new_cap)
 {
-	int result = 0;
-	this->m_dynamicGraphicsComponents.reserve(new_cap);
+
+	int result = 1;
+	//Delete all old components
+	this->m_dynamicGraphicsComponents.erase(std::remove_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate()), this->m_dynamicGraphicsComponents.end());
+	//Set size for the vector
+	this->m_dynamicGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_dynamicGraphicsComponents[i] = new GraphicsComponent();
+	}
 	return  result;
 }
 
-int GraphicsHandler::ReserveStaticComponents(size_t new_cap)
+int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 {
-	int result = 0;
-	this->m_staticGraphicsComponents.reserve(new_cap);
+	int result = 1;
+	//Delete all old components
+	this->m_staticGraphicsComponents.erase(std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate()), this->m_staticGraphicsComponents.end());
+	//Set size for the vector
+	this->m_staticGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
+	}
 	return  result;
 }
 
-int GraphicsHandler::ReserveAnimationComponents(size_t new_cap)
+int GraphicsHandler::ResizeAnimationComponents(size_t new_cap)
 {
 	int result = 0;
-	this->m_animationGraphicsComponents.reserve(new_cap);
+	this->m_animationGraphicsComponents.resize(new_cap);
 	return  result;
-}
-int GraphicsHandler::ReserveAdditionalDynamicComponents(size_t addition)
-{
-	int result = 0;
-	this->m_dynamicGraphicsComponents.reserve(this->m_dynamicGraphicsComponents.capacity() + addition);
-	return result;
-}
-
-int GraphicsHandler::ReserveAdditionalStaticComponents(size_t addition)
-{
-	int result = 0;
-	this->m_staticGraphicsComponents.reserve(this->m_staticGraphicsComponents.capacity() + addition);
-	return result;
-}
-
-int GraphicsHandler::ReserveAdditionalAnimationComponents(size_t addition)
-{
-	int result = 0;
-	this->m_animationGraphicsComponents.reserve(this->m_animationGraphicsComponents.capacity() + addition);
-	return result;
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
@@ -865,16 +864,30 @@ GraphicsAnimationComponent* GraphicsHandler::GetNextAvailableAnimationComponent(
 
 GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 {
-	GraphicsComponent* newComponent = new GraphicsComponent();
-	this->m_staticGraphicsComponents.push_back(newComponent);
-	return newComponent;
+	GraphicsComponent* result = nullptr;
+	//
+	result = *std::find(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_gComponent());
+	if (result != nullptr && result->active)
+	{
+		result = nullptr;
+	}
+	return result;
+
+	/*if ((result = *std::find(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_gComponent()))->active == true)
+		return result;
+	else
+		return nullptr;*/
 }
 
 GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
 {
-	GraphicsComponent* newComponent = new GraphicsComponent();
-	this->m_dynamicGraphicsComponents.push_back(newComponent);
-	return newComponent;
+	GraphicsComponent* result = nullptr;
+	result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+	if (result != nullptr && result->active)
+	{
+		result = nullptr;
+	}
+	return result;
 }
 
 //GraphicsAnimationComponent * GraphicsHandler::GetNextAvailableAnimationComponent()

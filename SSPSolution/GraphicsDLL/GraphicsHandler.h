@@ -124,9 +124,53 @@ private:
 		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
 		{
 			
-			return (first->modelID < second->componentIndex);
+			return (first->modelID < second->modelID);
 		}
 	};
+
+	struct Find_Available_gComponent
+	{
+		inline bool operator() (const GraphicsComponent* comp)
+		{
+
+			return comp->active;
+		}
+	};
+	//INACTIVE
+	struct GraphicsComponent_Remove_Inactive_Predicate {
+		inline bool operator()(GraphicsComponent* component) {
+			bool result = false;
+			if (component != nullptr)
+			{
+				if (component->active == false)
+				{
+					delete component;
+					component = nullptr;
+					result = true;
+				}
+			}
+			else
+				result = true;
+			return result;
+		}
+	};
+
+	//USE AT CREATION OF A NEW LEVEL TO DELETE OLD COMPONENTS
+	struct GraphicsComponent_Remove_All_Predicate {
+		inline bool operator()(GraphicsComponent* component) {
+			bool result = false;
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+				result = true;
+			}
+			else
+				result = true;
+			return result;
+		}
+	};
+
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
@@ -164,16 +208,11 @@ public:
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
 	GRAPHICSDLL_API int GenerateOctree();
 	GRAPHICSDLL_API int FrustrumCullOctreeNode();
-	//Increase the capacity of the container to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(), new storage is allocated, otherwise the method does nothing.
-	GRAPHICSDLL_API int ReserveDynamicComponents(size_t new_cap);
-	GRAPHICSDLL_API int ReserveStaticComponents(size_t new_cap);
-	GRAPHICSDLL_API int ReserveAnimationComponents(size_t new_cap);
-	//Does the same as above but adds the containers capacity to the new cap thus inreasing the capacity by 'addition'
-	GRAPHICSDLL_API int ReserveAdditionalDynamicComponents(size_t addition);
-	GRAPHICSDLL_API int ReserveAdditionalStaticComponents(size_t addition);
-	GRAPHICSDLL_API int ReserveAdditionalAnimationComponents(size_t addition);
+	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
+	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
 
-	
 
 	//TEMP STUFF
 public:
