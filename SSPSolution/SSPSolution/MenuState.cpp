@@ -60,7 +60,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_optionsMenuButtons.push_back(button);
 	}
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 3; i++) //Create the start game menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
@@ -75,6 +75,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		this->m_startMenuButtons.push_back(button);
 	}
 
+	//Init the ip text box
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
@@ -126,18 +127,18 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
-		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT)) //Mouse click
 		{
 			for (size_t i = 0; i < nrOfMainMenuItems; i++)
 			{
 				this->m_mainMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN)) //Select item with keyboard
 		{
 			this->m_mainMenuButtons[m_markedItem].m_uiComp->wasClicked = true;
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN)) //Hover down
 		{
 			if (this->m_markedItem < nrOfMainMenuItems - 1)
 			{
@@ -146,7 +147,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_mainMenuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP)) //Hover up
 		{
 			if (this->m_markedItem > 0)
 			{
@@ -172,7 +173,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_startMenuButtons[i].SetActive(true);
 			}
-			this->m_ipTextBox.SetActive(true);
+			this->m_ipTextBox.SetActive(true); 
+			//Get the saved IP
 			Progression::instance().ReadFromFile("save1");
 			std::wstring ipString = Progression::instance().GetIPString();
 			if (ipString.length() > 0)
@@ -205,7 +207,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		break;
 
 	case 1: /*/ Options menu /*/
-		for (size_t i = 0; i < nrOfOptionMenuitems; i++)
+		for (size_t i = 0; i < nrOfOptionMenuitems; i++) //Mouse hover
 		{
 			this->m_optionsMenuButtons[i].m_uiComp->UpdateHover(mousePos);
 			if (this->m_optionsMenuButtons[i].m_uiComp->isHovered)
@@ -277,7 +279,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		break;
 
 	case 2: /*/ Start game menu /*/
-		for (size_t i = 0; i < nrOfStartMenuitems; i++)
+		for (size_t i = 0; i < nrOfStartMenuitems; i++) //Mouse hover
 		{
 			this->m_startMenuButtons[i].m_uiComp->UpdateHover(mousePos);
 			if (this->m_startMenuButtons[i].m_uiComp->isHovered)
