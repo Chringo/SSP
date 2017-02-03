@@ -43,6 +43,9 @@ public:
 	void SetGraphicsAnimationComponentListSize(int gCompSize);
 	PhysicsComponent* GetClosestPhysicsComponent(PhysicsComponent* component, int minDistance);
 
+	int ResizeGraphicsStatic(size_t newCap);
+	int ResizeGraphicsDynamic(size_t newCap);
+
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;
 	GraphicsHandler* GetGraphicsHandler() const;

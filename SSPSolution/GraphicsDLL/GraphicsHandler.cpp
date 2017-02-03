@@ -421,25 +421,25 @@ int GraphicsHandler::Render(float deltaTime)
 	if (componentsInTree > 0)
 		lastModelID = this->m_octreeRoot.containedComponents[0]->modelID;
 	int amountOfModelOccurrencees = 0;
-	for (int i = 0; i < componentsInTree; i++)
-	{
-		//If the component is to be rendered, increase the counter
-		if (this->m_octreeRoot.containedComponents[i]->isRendered)
-		{
-			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
-			{
-				//Create the array
-				InstanceData instanceData;
-				instanceData.modelID = lastModelID;
-				instanceData.amountOfInstances = amountOfModelOccurrencees;
-				instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+	//for (int i = 0; i < componentsInTree; i++)
+	//{
+	//	//If the component is to be rendered, increase the counter
+	//	if (this->m_octreeRoot.containedComponents[i]->isRendered)
+	//	{
+	//		//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+	//		if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
+	//		{
+	//			//Create the array
+	//			InstanceData instanceData;
+	//			instanceData.modelID = lastModelID;
+	//			instanceData.amountOfInstances = amountOfModelOccurrencees;
+	//			instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 
-				amountOfModelOccurrencees = 0;
-			}
-			++amountOfModelOccurrencees;
-		}
-	}
+	//			amountOfModelOccurrencees = 0;
+	//		}
+	//		++amountOfModelOccurrencees;
+	//	}
+	//}
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
@@ -475,7 +475,18 @@ int GraphicsHandler::Render(float deltaTime)
 			}
 		}
 		/*if (this->m_staticGraphicsComponents[i]->active == false)
-			continue;
+		continue;
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
+	}
+	for (int i = 0; i < this->m_dynamicGraphicsComponents.size(); i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_dynamicGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+		}
+		
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
+		continue;
 		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
 
@@ -655,18 +666,18 @@ void GraphicsHandler::Shutdown()
 	}
 	for (size_t i = 0; i < this->m_dynamicGraphicsComponents.size(); i++)
 	{
-		if (this->m_staticGraphicsComponents[i] != nullptr)
+		if (this->m_dynamicGraphicsComponents[i] != nullptr)
 		{
-			delete this->m_staticGraphicsComponents[i];
-			this->m_staticGraphicsComponents[i] = nullptr;
+			delete this->m_dynamicGraphicsComponents[i];
+			this->m_dynamicGraphicsComponents[i] = nullptr;
 		}
 	}
 	for (size_t i = 0; i < this->m_animationGraphicsComponents.size(); i++)
 	{
-		if (this->m_staticGraphicsComponents[i] != nullptr)
+		if (this->m_animationGraphicsComponents[i] != nullptr)
 		{
-			delete this->m_staticGraphicsComponents[i];
-			this->m_staticGraphicsComponents[i] = nullptr;
+			delete this->m_animationGraphicsComponents[i];
+			this->m_animationGraphicsComponents[i] = nullptr;
 		}
 	}
 	this->m_animationGraphicsComponents.clear();
@@ -695,6 +706,8 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 	}
+
+	
 #endif // _DEBUG
 
 	
@@ -779,10 +792,15 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 
 int GraphicsHandler::ResizeDynamicComponents(size_t new_cap)
 {
-
 	int result = 1;
+	result = this->m_dynamicGraphicsComponents.size();
 	//Delete all old components
-	this->m_dynamicGraphicsComponents.erase(std::remove_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate()), this->m_dynamicGraphicsComponents.end());
+	//std::remove_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), this->m_dynamicGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_dynamicGraphicsComponents.clear();
+
 	//Set size for the vector
 	this->m_dynamicGraphicsComponents.resize(new_cap, nullptr);
 	//Go through vector and make pointers point to a structure
@@ -797,8 +815,14 @@ int GraphicsHandler::ResizeDynamicComponents(size_t new_cap)
 int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 {
 	int result = 1;
+	result = this->m_staticGraphicsComponents.size();
 	//Delete all old components
-	this->m_staticGraphicsComponents.erase(std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate()), this->m_staticGraphicsComponents.end());
+	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_staticGraphicsComponents.clear();
+
 	//Set size for the vector
 	this->m_staticGraphicsComponents.resize(new_cap, nullptr);
 	//Go through vector and make pointers point to a structure

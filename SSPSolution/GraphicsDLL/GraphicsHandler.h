@@ -157,17 +157,22 @@ private:
 
 	//USE AT CREATION OF A NEW LEVEL TO DELETE OLD COMPONENTS
 	struct GraphicsComponent_Remove_All_Predicate {
-		inline bool operator()(GraphicsComponent* component) {
-			bool result = false;
+		inline void operator()(GraphicsComponent* component) {
 			if (component != nullptr)
 			{
 				delete component;
 				component = nullptr;
-				result = true;
 			}
-			else
-				result = true;
-			return result;
+		}
+	};
+	struct GraphicsComponent_Remove_All_Unary {
+		inline GraphicsComponent* operator()(GraphicsComponent*& component) {
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+			}
+			return component;
 		}
 	};
 

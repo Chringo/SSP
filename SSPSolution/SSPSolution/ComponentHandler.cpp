@@ -156,6 +156,20 @@ PhysicsComponent * ComponentHandler::GetClosestPhysicsComponent(PhysicsComponent
 	return this->m_physicsHandler->GetClosestComponent(component, minDistance);
 }
 
+int ComponentHandler::ResizeGraphicsStatic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeStaticComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsDynamic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeDynamicComponents(newCap);
+	return size;
+}
+
 PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
 {
 	return this->m_physicsHandler;

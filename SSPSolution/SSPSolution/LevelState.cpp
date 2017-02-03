@@ -94,7 +94,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-
+	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 
 	// creating the player
 	this->m_player1 = Player();
@@ -214,7 +214,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
-	GraphicsComponent* ballG = m_cHandler->GetGraphicsComponent();
+	GraphicsComponent* ballG = m_cHandler->GetDynamicGraphicsComponent();
 	ballG->modelID = 1337;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
@@ -237,7 +237,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
-	ballG = m_cHandler->GetGraphicsComponent();
+	ballG = m_cHandler->GetDynamicGraphicsComponent();
 	ballG->modelID = 1337;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
@@ -1071,6 +1071,30 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 int LevelState::CreateLevel(LevelData::Level * data)
 {
+	//Get how many static and dynamic components that will be needed in the level
+	int staticEntityCount = 0;
+	int dynamicEntityCount = 0;
+	//Normal entities
+	for (size_t i = 0; i < data->numEntities; i++)
+	{
+		staticEntityCount += data->entities[i].isStatic;
+		dynamicEntityCount += !data->entities[i].isStatic;
+	}
+	//AI entities
+	dynamicEntityCount += data->numAI;
+	//Puzzle elements
+	staticEntityCount += data->numButton;
+	staticEntityCount += data->numLever;
+	staticEntityCount += data->numWheel;
+	dynamicEntityCount += data->numDoor;
+
+	this->m_cHandler->ResizeGraphicsStatic(staticEntityCount);
+	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
+
+
+
+
+
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
 	rot.m128_f32[3] = 0.0f;	//Set w to 0
@@ -1122,10 +1146,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 		else
 		{
-			t_gc = m_cHandler->GetGraphicsComponent();
+			if (currEntity->isStatic)
+				t_gc = m_cHandler->GetStaticGraphicsComponent();
+			else
+				t_gc = m_cHandler->GetDynamicGraphicsComponent();
 		}
 
-		t_gc = m_cHandler->GetGraphicsComponent();
 		t_gc->modelID = currEntity->modelID;
 		t_gc->active = true;
 		t_gc->modelPtr = modelPtr; //Get and apply a pointer to the model
@@ -1221,7 +1247,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_ac->AC_position = t_ac->AC_waypoints[0];
 #pragma region Graphics
 		resHandler->GetModel(data->aiComponents[i].modelID, modelPtr);
-		GraphicsComponent* t_gc = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* t_gc = m_cHandler->GetDynamicGraphicsComponent();
 		t_gc->active = 1;
 		t_gc->modelID = data->aiComponents[i].modelID;
 		t_gc->modelPtr = modelPtr;
@@ -1337,7 +1363,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* button1G = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* button1G = m_cHandler->GetStaticGraphicsComponent();
 		button1G->active = true;
 		button1G->modelID = tempHeader.modelID;
 		button1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1409,7 +1435,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* lever1G = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* lever1G = m_cHandler->GetStaticGraphicsComponent();
 		lever1G->active = true;
 		lever1G->modelID = tempHeader.modelID;
 		lever1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1474,7 +1500,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* wheel1G = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* wheel1G = m_cHandler->GetStaticGraphicsComponent();
 		wheel1G->active = true;
 		wheel1G->modelID = tempHeader.modelID;
 		wheel1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1548,7 +1574,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixRotationRollPitchYawFromVector(DirectX::XMVectorSet(DirectX::XMVectorGetX(rot), DirectX::XMVectorGetY(rot), DirectX::XMVectorGetZ(rot), 1.0f));
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* door1G = m_cHandler->GetGraphicsComponent();
+		GraphicsComponent* door1G = m_cHandler->GetDynamicGraphicsComponent();
 		door1G->active = true;
 		door1G->modelID = tempHeader.modelID;
 		door1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
