@@ -182,8 +182,19 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		}
 	}
 
+	for each (Point* light in *m_Communicator->GetCurrentLevel()->GetLights())
+	{
+		if (light->isDirty)
+		{
+			light->Update();
+			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+			if (SelectionHandler::GetInstance()->HasSelection())
+				SelectionHandler::GetInstance()->Update();
+		}
+		GraphicsHptr->RenderBoundingVolume(light->position, light->pickSphere, { 1.0,1.0,1.0 });
+		GraphicsHptr->RenderBoundingVolume(light->position, light->rangeSphere, { light->data->color.r, light->data->color.g, light->data->color.b, });
+	}
 
-	/*TEMP TO TEST CHECKPOINTS*/
 	for each(CheckpointContainer * checkpoint in *m_Communicator->GetCurrentLevel()->GetCheckpoints())
 	{
 		if (checkpoint->isDirty)
@@ -198,7 +209,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	GraphicsHptr->renderFinalEditor();
 	this->update();
 	
-	//std::cout << "FPS: " << this->m_fps << std::endl;
+
 }
 
 void D3DRenderWidget::resizeEvent(QResizeEvent * event)

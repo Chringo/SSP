@@ -179,34 +179,32 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 	
 	static LevelData::Level level;
 	std::fstream file;
-	file.open(path, std::fstream::in | std::fstream::binary);
+	file.open(path, std::fstream::in | std::fstream::binary | std::ios::ate); //Open, at end of file, to get the total size
 	if (!file.is_open())
 		return Resources::Status::ST_ERROR_OPENING_FILE;
 
-	mem_manager.Clear(Resources::Memory::MEM_LEVEL);
+	mem_manager.Clear(Resources::Memory::MEM_LEVEL);//Clear level memory chunk
+
+	std::streampos fsize = file.tellg(); //Get the size of the file
+	size_t size;
+	size = static_cast<size_t>(fsize);
+
+	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, size - sizeof(LevelData::MainLevelHeader)); //get memorychunk
+	file.seekg(0, std::ios::beg); //go back to the beginning of file
 
 	LevelData::MainLevelHeader header;
 	file.read((char*)&header, sizeof(LevelData::MainLevelHeader)); //Read file header
-
-	size_t totalMem = 
-		sizeof(LevelData::SpawnHeader) * 2 +
-		header.resAmount * sizeof(LevelData::ResourceHeader) +		 //Calculate file size
-		header.entityAmount		 * sizeof(LevelData::EntityHeader) +
-		header.lightAmount       * sizeof(LevelData::LightHeader)  + 
-		header.AiComponentAmount * sizeof(LevelData::AiHeader);
-
-	char* data = mem_manager.Store(Resources::Memory::MEM_LEVEL, totalMem); //get memorychunk
+	
 	size_t offset = 0;
 	
 	level.numResources  = header.resAmount; 
-	level.numLights		= header.lightAmount;
-	level.numEntities   = header.entityAmount;
-	level.numAI			= header.AiComponentAmount;
+	level.numEntities    = header.entityAmount;
+	level.numAI			 = header.AiComponentAmount;
 	level.numCheckpoints = header.checkpointAmount;
-	level.numButton = header.buttonAmount;
-	level.numDoor = header.doorAmount;
-	level.numLever = header.leverAmount;
-	level.numWheel = header.wheelAmount;
+	level.numButton      = header.buttonAmount;
+	level.numDoor        = header.doorAmount;
+	level.numLever       = header.leverAmount;
+	level.numWheel       = header.wheelAmount;
 
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount; //size of resource data
@@ -275,11 +273,34 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		offset += wheelSize;
 	}
 	//Lights
-	/*
-		size_t lightSize = sizeof(LevelData::LightHeader) * header.lightAmount;	  //memsize
-		file.read(data + offset , lightSize);
-		level.lights = (LevelData::LightHeader*) data + offset;
-	*/
+
+	
+		//Light header
+		file.read(data + offset, sizeof(LevelData::SceneLightHeader));
+		LevelData::SceneLightHeader* lightHeader = (LevelData::SceneLightHeader*) (data + offset);
+		level.numPointLights = lightHeader->numPointLights;
+		memcpy(level.ambientColor, lightHeader->ambientColor, sizeof(float) * 3);
+		level.ambientIntensity = lightHeader->ambientIntensity;
+		offset += sizeof(LevelData::SceneLightHeader);
+	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
+
+		//Point lights
+		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader->numPointLights;	  //memsize
+		file.read(data + offset, pointlightSize);
+		level.pointLights = (LevelData::PointLightHeader*) (data + offset);
+		offset += pointlightSize;
+	}
+	else
+	{
+		level.numPointLights = 0;
+		level.ambientIntensity = 1.0f;
+		level.ambientColor[0] = 1.0f;
+		level.ambientColor[1] = 1.0f;
+		level.ambientColor[2] = 1.0f;
+		
+
+	}
+	//More lights
 	
 	file.close();
 
@@ -289,7 +310,6 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 
 Resources::Status Resources::FileLoader::LoadRegistryFile()
 {
-
 	if (!OpenFile(Files::BPF_FILE)) //open BPF file
 	{	
 #ifdef _DEBUG

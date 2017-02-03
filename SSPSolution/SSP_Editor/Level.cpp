@@ -40,9 +40,9 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 	return &m_ModelMap;
 }
 
-std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
+std::vector<Light*>* Level::GetLights()
 {
-	return &m_LightMap;
+	return LightController::GetInstance()->GetLights();
 }
 
 std::vector<CheckpointContainer*>* Level::GetCheckpoints()
@@ -334,6 +334,13 @@ Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVE
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::AddPointLight()
+{
+
+	LightController::GetInstance()->AddLight(LIGHTING::LT_POINT);
+	return Resources::Status::ST_OK;
+}
+
 
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
@@ -352,7 +359,13 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 				return  Resources::Status::ST_OK;
 			}
 		}
-	
+		for (size_t i = 0; i < LightController::GetInstance()->GetLights()->size(); i++)
+		{
+			if (LightController::GetInstance()->GetLights()->at(i)->internalID == instanceID)
+			{
+				LightController::GetInstance()->RemoveLight(i, LIGHTING::LT_POINT);
+			}
+		}
 
 	}
 	else {
@@ -413,6 +426,30 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 
 			}
 		}
+		std::vector<Light*> *lvec = LightController::GetInstance()->GetLights();
+		for each (Light* light in *lvec)
+		{
+			if (source->internalID == light->internalID)
+			{
+				Point * point = new Point;
+				point->pickSphere = ((Point *)light)->pickSphere;
+				point->rangeSphere = ((Point *)light)->rangeSphere;
+				point->position = ((Point *)light)->data->position;
+				point->type = LIGHT;
+				//point->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+
+				LIGHTING::Point * data = ((Point*)source)->data;
+
+				LightController::GetInstance()->AddLight(point, data, LIGHTING::LT_POINT);
+				LightController::GetInstance()->GetLights()->back()->position = light->position;
+				LightController::GetInstance()->GetLights()->back()->type = LIGHT;
+
+				destination = LightController::GetInstance()->GetLights()->back();
+				destination->type = LIGHT;
+			}
+			return Resources::Status::ST_OK;
+		}
+
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
@@ -485,7 +522,6 @@ void Level::Destroy()
 {
 	m_uniqueModels.clear();
 	m_ModelMap.clear();
-	m_LightMap.clear();
 	levelName = "untitled_level";
 
 	m_SpawnPoints[0].position = { 1.0f, 0.0, 0.0f };
@@ -520,6 +556,9 @@ void Level::Destroy()
 		delete container;
 	}
 	this->GetCheckpoints()->clear();
+
+
+	LightController::GetInstance()->Destroy();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
