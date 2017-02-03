@@ -127,6 +127,7 @@ private:
 		}
 	};
 
+	//INACTIVE
 	struct Find_Available_gComponent
 	{
 		inline bool operator() (const GraphicsComponent* comp)
@@ -134,9 +135,6 @@ private:
 			return comp->active == 0;
 		}
 	};
-	bool Find_Available_Component(const GraphicsComponent* comp) {
-		return !comp->active;
-	}
 
 	//INACTIVE
 	struct GraphicsComponent_Remove_Inactive_Predicate {

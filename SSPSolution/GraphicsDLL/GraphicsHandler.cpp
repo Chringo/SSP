@@ -418,7 +418,7 @@ int GraphicsHandler::Render(float deltaTime)
 	};
 	std::vector<InstanceData> instancedRenderingList;
 	unsigned int lastModelID = 0;
-	if (this->m_nrOfGraphicsComponents > 0)
+	if (componentsInTree > 0)
 		lastModelID = this->m_octreeRoot.containedComponents[0]->modelID;
 	int amountOfModelOccurrencees = 0;
 	for (int i = 0; i < componentsInTree; i++)
@@ -437,39 +437,54 @@ int GraphicsHandler::Render(float deltaTime)
 
 				amountOfModelOccurrencees = 0;
 			}
-			amountOfModelOccurrencees++;
+			++amountOfModelOccurrencees;
 		}
 	}
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	for (int i = 0; i < componentsInTree; i++)
-	{
-		//reset the 'isRendered' bool
-		if (this->m_octreeRoot.containedComponents[i]->isRendered != false)
-		{
-			//If it is time to change 
-			if (this->m_octreeRoot.containedComponents[i]->modelID != lastModelID)
-			{
-				instancedRenderingIndex++;
-				instancedModelCount = 0;
-			}
-			//Store the data
-			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_graphicsComponents[i]->worldMatrix);
-			
-			this->m_octreeRoot.containedComponents[i]->isRendered = false;
-		}
-	}
+	//for (int i = 0; i < componentsInTree; i++)
+	//{
+	//	//reset the 'isRendered' bool
+	//	if (this->m_octreeRoot.containedComponents[i]->isRendered != false)
+	//	{
+	//		//If it is time to change 
+	//		if (this->m_octreeRoot.containedComponents[i]->modelID != lastModelID)
+	//		{
+	//			instancedRenderingIndex++;
+	//			instancedModelCount = 0;
+	//		}
+	//		//Store the data
+	//		DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i]->worldMatrix);
+	//		
+	//		this->m_octreeRoot.containedComponents[i]->isRendered = false;
+	//	}
+	//}
 	//By all means it should be done by now
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
+	//Go through all components in the root node and render the ones that should be rendered
+	for (int i = 0; i < componentsInTree; i++) //FOR EACH NORMAL GEOMETRY
 	{
-		if (this->m_graphicsComponents[i]->active == false)
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			if (this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->active)
+			{
+				m_shaderControl->Draw(this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->modelPtr, this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]);
+			}
+		}
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
 			continue;
-		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
+
+	//for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
+	//{
+	//	if (this->m_staticGraphicsComponents[i]->active == false)
+	//		continue;
+	//	m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);
+	//}
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
@@ -712,13 +727,13 @@ int GraphicsHandler::GenerateOctree()
 	//Fill the octree with the data
 	for (size_t i = 0; i < componentCount; i++)
 	{
-		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[0];
-		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[1];
-		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().extension[2];
-		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.x;
-		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.y;
-		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_graphicsComponents[i]->modelPtr->GetOBBData().position.z;
-		this->m_octreeRoot.containedComponents[i]->modelID = this->m_graphicsComponents[i]->modelID;
+		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
+		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
+		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.x;
+		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.y;
+		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().position.z;
+		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i]->modelID;
 
 		//Check for the lowest and highest values
 		if (this->m_octreeRoot.containedComponents[i]->ext.x < minX)
