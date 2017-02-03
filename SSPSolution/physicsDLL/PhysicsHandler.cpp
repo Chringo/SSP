@@ -2319,7 +2319,7 @@ void PhysicsHandler::CheckFieldIntersection()
 	for (int i = 0; i < nrOfFields; i++)
 	{
 		field = &this->m_fields.at(i);
-
+		DirectX::XMVECTOR fieldPos = DirectX::XMLoadFloat3(&field->F_pos);
 		PhysicsComponent* ptr = nullptr;
 		int nrOfPhysicsComponents = this->m_dynamicComponents.size();
 		for (int y = 0; y < nrOfPhysicsComponents; y++)
@@ -2332,21 +2332,21 @@ void PhysicsHandler::CheckFieldIntersection()
 				{
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
-					result = this->OBBAABBIntersectionTest(obb_ptr, field->F_pos, aabb_ptr, ptr->PC_pos);
+					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
-					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, field->F_pos, ptr->PC_rotation);
+					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, fieldPos, ptr->PC_rotation);
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
-					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, field->F_pos, PC_obb_ptr, ptr->PC_pos);
+					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, fieldPos, PC_obb_ptr, ptr->PC_pos);
 				}
 				if (result)
 				{

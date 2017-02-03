@@ -85,7 +85,7 @@ struct Field
 {
 	OBB F_BV;
 
-	DirectX::XMVECTOR F_pos;
+	DirectX::XMFLOAT3 F_pos;
 
 	unsigned int F_entitityID1;
 	unsigned int F_entitityID2;
