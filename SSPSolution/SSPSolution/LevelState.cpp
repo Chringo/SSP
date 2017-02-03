@@ -1292,9 +1292,16 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
-		OBB* checkPointOBB = &m_checkpoints[i]->obb;
+		OBB* tOBB = new OBB();
+		memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
+		memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
+		DirectX::XMVECTOR tPos = {
+			data->checkpoints[i].position[0],
+			data->checkpoints[i].position[1],
+			data->checkpoints[i].position[2]
+		};
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-			m_checkpoints[i]->pos,
+			tPos,
 			1,	//EntityID Player1
 			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
 			checkPointOBB
