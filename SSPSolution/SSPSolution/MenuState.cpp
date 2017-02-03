@@ -60,20 +60,20 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_optionsMenuButtons.push_back(button);
 	}
-	//for (size_t i = 0; i < 3; i++)
-	//{
-	//	UIComponent* tempUIComp = cHandler->GetUIComponent();
-	//	tempUIComp->active = 1;
-	//	tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-	//	tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	//	TextComponent* tempTextComp = cHandler->GetTextComponent();
-	//	tempTextComp->active = 1;
-	//	tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
-	//	MenuButton button;
-	//	button.m_uiComp = tempUIComp;
-	//	button.m_textComp = tempTextComp;
-	//	this->m_startMenuButtons.push_back(button);
-	//}
+	for (size_t i = 0; i < 3; i++)
+	{
+		UIComponent* tempUIComp = cHandler->GetUIComponent();
+		tempUIComp->active = 0;
+		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		TextComponent* tempTextComp = cHandler->GetTextComponent();
+		tempTextComp->active = 0;
+		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		MenuButton button;
+		button.m_uiComp = tempUIComp;
+		button.m_textComp = tempTextComp;
+		this->m_startMenuButtons.push_back(button);
+	}
 
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
 	this->m_ipTextBox.m_uiComp->active = 0;
@@ -91,9 +91,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_optionsMenuButtons[0].m_textComp->text = L"Toggle Fullscreen";
 	this->m_optionsMenuButtons[1].m_textComp->text = L"Go Back";
 
-	/*this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
-	this->m_startMenuButtons[2].m_textComp->text = L"Join Game";
-	this->m_startMenuButtons[1].m_textComp->text = L"Go Back";*/
+	this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
+	this->m_startMenuButtons[1].m_textComp->text = L"Join Game";
+	this->m_startMenuButtons[2].m_textComp->text = L"Go Back";
 
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
@@ -108,9 +108,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
 	int nrOfMainMenuItems = this->m_mainMenuButtons.size();
 	int nrOfOptionMenuitems = this->m_optionsMenuButtons.size();
+	int nrOfStartMenuitems = this->m_startMenuButtons.size();
 	switch (this->m_menuState)
 	{
-	case 0: //Main menu
+	case 0: /*/ Main menu /*/
 		for (size_t i = 0; i < nrOfMainMenuItems; i++) //Mouse hover
 		{
 			this->m_mainMenuButtons[i].m_uiComp->UpdateHover(mousePos);
@@ -138,7 +139,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
 		{
-			if (this->m_markedItem < nrOfMainMenuItems)
+			if (this->m_markedItem < nrOfMainMenuItems - 1)
 			{
 				this->m_mainMenuButtons[this->m_markedItem].SetHovered(false);
 				this->m_markedItem++;
@@ -158,31 +159,19 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_mainMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Start game was clicked
-
-			//Create, Initialize and push a LevelSelectState
-			LevelSelectState* levelSelect = new LevelSelectState();
-			result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-
-			//If the initialization was successful
-			if (result > 0)
-			{
-				//Push it to the gamestate stack/vector
-				this->m_gsh->PushStateToStack(levelSelect);
-
-
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
-			}
-			else
-			{
-				//Delete it
-				delete levelSelect;
-				levelSelect = nullptr;
-			}
-
+			this->m_mainMenuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = 0;
+			this->m_startMenuButtons[0].SetHovered(true);
+			this->m_menuState = 2;
 			for (size_t i = 0; i < nrOfMainMenuItems; i++)
 			{
 				this->m_mainMenuButtons[i].SetActive(false);
 			}
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(true);
+			}
+			this->m_ipTextBox.SetActive(true);
 		}
 		else if (this->m_mainMenuButtons[1].m_uiComp->CheckClicked())
 		{
@@ -199,7 +188,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(true);
 			}
-			this->m_ipTextBox.SetActive(true);
 		}
 		else if (this->m_mainMenuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -208,7 +196,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		}
 		break;
 
-	case 1: //Options Menu
+	case 1: /*/ Options menu /*/
 		for (size_t i = 0; i < nrOfOptionMenuitems; i++)
 		{
 			this->m_optionsMenuButtons[i].m_uiComp->UpdateHover(mousePos);
@@ -216,7 +204,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetHovered(true);
 				this->m_markedItem = i;
-				this->m_ipTextBox.SetFocused(false);
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -230,49 +217,25 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
 			}
-			this->m_ipTextBox.m_uiComp->UpdateClicked(mousePos);
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
 		{
-			if (!this->m_ipTextBox.m_focused)
-			{
 				this->m_optionsMenuButtons[m_markedItem].m_uiComp->wasClicked = true;
-			}
-			else 
-			{
-				this->m_ipTextBox.SetFocused(false);
-				this->m_markedItem--;
-				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
-			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
 		{
-			if (this->m_markedItem < nrOfOptionMenuitems)
+			if (this->m_markedItem < nrOfOptionMenuitems - 1)
 			{
 				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(false);
 				this->m_markedItem++;
-				if (this->m_markedItem != nrOfOptionMenuitems)
-				{
-					this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
-				}
-				else
-				{
-					this->m_ipTextBox.SetFocused(true);
-				}
+				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
 		{
 			if (this->m_markedItem > 0)
 			{
-				if (this->m_markedItem < nrOfOptionMenuitems)
-				{
-					this->m_optionsMenuButtons[this->m_markedItem].SetHovered(false);
-				}
-				else
-				{
-					this->m_ipTextBox.SetFocused(false);
-				}
+				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(false);
 				this->m_markedItem--;
 				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
 			}
@@ -299,6 +262,129 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			for (size_t i = 0; i < nrOfOptionMenuitems; i++)
 			{
 				this->m_optionsMenuButtons[i].SetActive(false);
+			}
+			this->m_ipTextBox.SetActive(false);
+		}
+		break;
+
+	case 2: /*/ Start game menu /*/
+		for (size_t i = 0; i < nrOfStartMenuitems; i++)
+		{
+			this->m_startMenuButtons[i].m_uiComp->UpdateHover(mousePos);
+			if (this->m_startMenuButtons[i].m_uiComp->isHovered)
+			{
+				this->m_startMenuButtons[i].SetHovered(true);
+				this->m_markedItem = i;
+				this->m_ipTextBox.SetFocused(false);
+			}
+			else if (i != this->m_markedItem)
+			{
+				this->m_startMenuButtons[i].SetHovered(false);
+			}
+		}
+
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		{
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
+			}
+			this->m_ipTextBox.m_uiComp->UpdateClicked(mousePos);
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
+		{
+			if (!this->m_ipTextBox.m_focused)
+			{
+				this->m_startMenuButtons[this->m_markedItem].m_uiComp->wasClicked = true;
+			}
+			else
+			{
+				this->m_ipTextBox.SetFocused(false);
+				this->m_markedItem = 1;
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(true);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		{
+			if (this->m_markedItem < nrOfStartMenuitems)
+			{
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem++;
+				if (this->m_markedItem != nrOfStartMenuitems)
+				{
+					this->m_startMenuButtons[this->m_markedItem].SetHovered(true);
+				}
+				else
+				{
+					this->m_ipTextBox.SetFocused(true);
+				}
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		{
+			if (this->m_markedItem > 0)
+			{
+				if (this->m_markedItem < nrOfStartMenuitems)
+				{
+					this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+				}
+				else
+				{
+					this->m_ipTextBox.SetFocused(false);
+				}
+				this->m_markedItem--;
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(true);
+			}
+		}
+
+		if (this->m_startMenuButtons[0].m_uiComp->CheckClicked())
+		{
+			//Host Game was clicked
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(false);
+			}
+			this->m_ipTextBox.SetActive(false);
+
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				this->m_gsh->PushStateToStack(levelSelect);
+
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+			}
+			else
+			{
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+		}
+		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
+		{
+			//Join Game was clicked
+			
+		}
+		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
+		{
+			//Go Back was clicked
+			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = 0;
+			this->m_mainMenuButtons[0].SetHovered(true);
+			this->m_menuState = 0;
+			for (size_t i = 0; i < nrOfMainMenuItems; i++)
+			{
+				this->m_mainMenuButtons[i].SetActive(true);
+			}
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
 		}
