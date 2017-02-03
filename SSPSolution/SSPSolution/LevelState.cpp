@@ -116,9 +116,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = 0.25f;
+	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.25f;
+	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -1204,7 +1204,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 0.85f;
+		t_pc->PC_friction = 0.5f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
@@ -1852,13 +1852,11 @@ m_dynamicEntitys.push_back(tde);
 	int index = 0;
 
 
+
 	for (index; index < size; index++)
 	{
-		if (index == 6)
-		{
-			int i = 0;
-		}
-		ptr->TransferBoxesToBullet(ptr->GetDynamicComponentAt(index), index);
+		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
+		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	
 	size = this->m_doorEntities.size();

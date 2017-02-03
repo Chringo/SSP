@@ -69,7 +69,7 @@ struct PhysicsComponent
 	float PC_friction;
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
-	bool PC_steadfast;
+	bool PC_steadfast = false;
 	bool PC_ApplyImpulse = false;
 	bool PC_NotExistInBulletWorld;
 	int PC_IndexRigidBody = -1;

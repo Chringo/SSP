@@ -2095,7 +2095,7 @@ void PhysicsHandler::ShutDown()
 
 void PhysicsHandler::Update(float deltaTime)
 {
-	float dt = (deltaTime / 50000);
+	float dt = (deltaTime / 1000000);
 	int size = this->m_physicsComponents.size();
 	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 	int i = 0;
@@ -2116,6 +2116,18 @@ void PhysicsHandler::Update(float deltaTime)
 		this->m_bullet.Update(this->GetDynamicComponentAt(i), i, dt);
 	}
 
+
+	for (int i = 0; i < this->m_physicsComponents.size(); i++)
+	{
+		PhysicsComponent* ptr = this->m_physicsComponents.at(i);
+		if (this->m_physicsComponents.at(i)->PC_steadfast == true)
+		{
+			DirectX::XMVECTOR velocity = ptr->PC_velocity;
+			velocity = DirectX::XMVectorScale(velocity, dt);
+
+			ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, velocity);
+		}
+	}
 
 	int nrOfChainLinks = this->m_links.size();
 	
@@ -3094,7 +3106,6 @@ PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src
 	}
 	else if(src->PC_BVtype == BV_OBB)
 	{
-		
 		this->m_bullet.CreateOBB(src,index);
 	}
 }

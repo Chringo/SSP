@@ -43,7 +43,9 @@ void BulletInterpreter::ApplyMovementPlayer1(float dt)
 	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
 	btVector3 OldVelocity = rb->getLinearVelocity();
 	btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
+
 	int active = rb->getActivationState();
+
 
 	//newVel /= 100;
 	if (active != 1)
@@ -106,8 +108,25 @@ void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsCompone
 	//update PhysicsComponent
 	src->PC_pos = this->crt_Vec3XMVEc(origin);
 
+	if (src->PC_steadfast == true)
+	{
+		btRigidBody* rigid = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
-	if (src->PC_BVtype == BV_OBB)
+		btVector3 vel = this->crt_xmvecVec3(src->PC_velocity);
+		rigid->setLinearVelocity(vel);
+		rigid->setGravity(btVector3(0,0,0));
+
+		trans = rigid->getWorldTransform();
+		trans.setOrigin(this->crt_xmvecVec3(src->PC_pos));
+
+		btMotionState* ms = nullptr;
+		ms = rigid->getMotionState();
+
+		ms->setWorldTransform(trans);
+
+		rigid->setMotionState(ms);
+	}
+	else if (src->PC_BVtype == BV_OBB)
 	{
 		//convert the position to xmvector 
 		btQuaternion rotation = trans.getRotation();
@@ -153,7 +172,6 @@ void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsCompone
 		//	this->m_rigidBodies.at(src->PC_IndexRigidBody)->setAngularVelocity(rotVel);
 		//}
 	}
-
 
 }
 
@@ -212,8 +230,12 @@ void BulletInterpreter::Initialize()
 void BulletInterpreter::UpdateBulletEngine(const float& dt)
 {
 	//time will act on the objects
+	btScalar timeStep = dt;
+	int maxSubSteps = 3;
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(60); 
 
-	this->m_dynamicsWorld->stepSimulation(dt);
+	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
+	//this->m_dynamicsWorld->stepSimulation(,);
 
 	//update positions
 	this->ApplyMovementPlayer1(dt);
@@ -246,6 +268,9 @@ void BulletInterpreter::Update(PhysicsComponent * src, int index, float dt)
 		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setGravity(btVector3(0,0,0));
 		this->m_rigidBodies.at(src->PC_IndexRigidBody)->setCollisionFlags(1);
 		
+		PhysicsComponent* playor = this->player1;
+
+
 		src->PC_active = false;
 	}
 	else
@@ -550,6 +575,11 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	btVector3 rotation = btVector3(1,1,1);
 	//rigidBody->setAngularVelocity(rotation);
+	if (index == 0 || index == 1)
+	{
+		rigidBody->setAngularFactor(btVector3(0, 0, 0));
+	}
+
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	int pos = this->m_rigidBodies.size() - 1;
