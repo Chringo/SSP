@@ -21,6 +21,13 @@ struct Condition
 	bool used = true;	// Have the players used the entity
 };
 
+struct FieldData
+{
+	int* FD_entityID;
+	bool* FD_first_inside;
+	bool* FD_second_inside;
+};
+
 class DirectorState
 {
 public:
@@ -35,6 +42,7 @@ public:
 	int timeDelay = -1;
 
 	Condition subjects[5];
+	FieldData fieldMap[3];// Locate players in which field they are
 
 	Hint hint1 = Hint::NONE;
 	Hint hint2 = Hint::NONE;
