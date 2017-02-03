@@ -2353,7 +2353,7 @@ void PhysicsHandler::CheckFieldIntersection()
 					//intersection found
 					if (ptr->PC_entityID == field->F_entitityID1)
 					{
-						field->F_first_inide = true;
+						field->F_first_inside = true;
 					}
 					if (ptr->PC_entityID == field->F_entitityID2)
 					{
@@ -2365,7 +2365,7 @@ void PhysicsHandler::CheckFieldIntersection()
 					//no intersection found
 					if (ptr->PC_entityID == field->F_entitityID1)
 					{
-						field->F_first_inide = false;
+						field->F_first_inside = false;
 					}
 					if (ptr->PC_entityID == field->F_entitityID2)
 					{
@@ -2836,10 +2836,10 @@ Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entity
 	field->F_BV.ort		= obb->ort;
 	field->F_entitityID1 = entityID1;
 	field->F_entitityID2 = entityID2;
-	field->F_first_inide = false;
+	field->F_first_inside = false;
 	field->F_second_inside = false;
 
-	return nullptr;
+	return field;
 }
 
 void PhysicsHandler::SimpleCollition(float dt)
