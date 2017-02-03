@@ -78,11 +78,6 @@ int LevelState::ShutDown()
 	}
 	this->m_wheelEntities.clear();
 
-	for each (Checkpoint* cp in this->m_checkpoints)
-	{
-		delete cp;
-	}
-	this->m_checkpoints.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 
@@ -1065,7 +1060,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	this->m_cHandler->UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
-	
+
 	return result;
 }
 
@@ -1270,16 +1265,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		m_dynamicEntitys.push_back(tde);
 	}
 
-	Checkpoint* CB = new Checkpoint[data->numCheckpoints];
-	for (size_t i = 0; i < data->numCheckpoints; i++)
-	{
-		CB->index = data->checkpoints[i].entityID;
-		memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float) * 3);
-		memcpy(&CB->obb.ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
-		memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
-
-		m_checkpoints.push_back(CB);
-	}
+	//Checkpoint* CB = new Checkpoint[data->numCheckpoints];
+	//for (size_t i = 0; i < data->numCheckpoints; i++)
+	//{
+	//	CB->index = data->checkpoints[i].entityID;
+	//	memcpy(&CB->pos.m128_f32, data->checkpoints[i].position, sizeof(float) * 3);
+	//	memcpy(&CB->obb.ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
+	//	memcpy(&CB->obb.ext, data->checkpoints[i].ext, sizeof(float) * 3);
+	//	m_checkpoints.push_back(CB);
+	//}
 
 #pragma region Creating Field
 
@@ -1834,7 +1828,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
 	m_player1.GetGraphicComponent()->modelID = 2759249725;
 	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
-	
+
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 
 	return 1;
