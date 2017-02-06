@@ -71,7 +71,12 @@ int LevelState::ShutDown()
 		this->m_wheelEntities[i] = nullptr;
 	}
 	this->m_wheelEntities.clear();
-
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		delete this->m_platformEntities[i];
+		this->m_platformEntities[i] = nullptr;
+	}
+	this->m_platformEntities.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 
@@ -1242,10 +1247,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 #pragma endregion
 
-
-		DynamicEntity* tde = new DynamicEntity();
-		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-		m_dynamicEntitys.push_back(tde);
+		//DynamicEntity* tde = new DynamicEntity();
+		//tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
+		//m_dynamicEntitys.push_back(tde);
+		PlatformEntity* tpe = new PlatformEntity();
+		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
+		this->m_platformEntities.push_back(tpe);
 	}
 	
 #pragma region Creating Field
