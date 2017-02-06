@@ -15,11 +15,11 @@ private:
 	{
 		IL_NORMAL,
 		IL_ANIMATED,
-
+		IL_INSTANCED_NORMAL,
 		IL_TYPE_COUNT
 	};
 
-	ID3D11VertexShader*   m_vertexShader[4];
+	ID3D11VertexShader*   m_vertexShader[IL_TYPE_COUNT];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];
