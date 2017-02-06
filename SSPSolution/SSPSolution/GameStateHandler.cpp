@@ -72,7 +72,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		this->PushStateToStack(levelSelect);
 
 
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forSebbe.level"));
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/LIGHT_TEST.level"));
 	}
 	else
 	{

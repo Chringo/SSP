@@ -75,7 +75,13 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 
 	Status st = FileLoader::GetInstance()->LoadResource(id ,data, &dataSize);
 	if (st != ST_OK)
+	{
+#ifdef _DEBUG
+		std::cout << "Failed to load  Mesh | ID : " << id << std::endl;
+#endif // DEBUG
 		return st;
+
+	}
 	
 	//additional headers could be added here,
 	Resource::RawResourceData* resData  = (Resource::RawResourceData*)data;
@@ -90,15 +96,18 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 	MeshHeader* meshData = (MeshHeader*)(data + sizeof(Resource::RawResourceData));
 	unsigned int*			   indices  = nullptr;
 	
-#ifdef _DEBUG
-	std::cout << "Loading new Mesh | ID : " << resData->m_id << std::endl;
-#endif // DEBUG
+
 
 	Mesh* newMesh = GetEmptyContainer();		//Get an empty container
 	st = newMesh->Create(resData); //Initialize it with data
 
-	if (st != ST_OK)
+	if (st != ST_OK) {
+
+#ifdef _DEBUG
+		std::cout << "Failed to create  Mesh | ID : " << id << std::endl;
+#endif // DEBUG
 		return st;
+	}
 	BoundingBoxHeader* obbdataPtr;
 	if (meshData->skeleton)
 	{
@@ -163,8 +172,13 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 	char* data = nullptr;
 	size_t dataSize = 0;
 	Status st = FileLoader::GetInstance()->LoadPlaceHolderMesh(path, data, &dataSize);
-	if (st != ST_OK)
+	if (st != ST_OK) {
+
+#ifdef _DEBUG
+		std::cout << "Failed to load placeHolder mesh" << std::endl;
+#endif // DEBUG
 		return st;
+	}
 
 	//additional headers could be added here,
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
@@ -176,9 +190,7 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 	MeshHeader* meshData = (MeshHeader*)(data + sizeof(Resource::RawResourceData));
 	unsigned int*			   indices = nullptr;
 
-#ifdef _DEBUG
-	std::cout << "Loading placeHolder mesh" << std::endl;
-#endif // DEBUG
+
 	st = m_placeHolder->Create((Resource::RawResourceData*)data); //Initialize it with data
 
 	if (st != ST_OK)
