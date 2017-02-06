@@ -376,7 +376,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxDepth = 5;
 	this->m_minDepth = 1;
 	this->m_minContainment = 3;
-	this->m_minSize = 0.5f;
+	this->m_minSize = 2.0f;
 }
 
 
