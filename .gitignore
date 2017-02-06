@@ -5,17 +5,16 @@ SSPSolution/physicsDLL/Release/**
 SSPSolution/SSPSolution/Debug/**
 SSPSolution/SSPSolution/Release/**
 
-
 # Other databases
 *.bsc
 *.sbr
-
 
 # Temporary compiled files
 *.idb
 *.tlog
 *.log
 *.lastbuildstate
+*.cache
 
 # Compiled Object files
 *.slo
