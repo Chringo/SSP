@@ -109,7 +109,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
 	{
-		std::cout << "Could not open resource file" << std::endl;
+		std::cout << "Could not open BPF file" << std::endl;
 		return ST_ERROR_OPENING_FILE;
 	}
 
@@ -133,7 +133,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 		case Resources::Status::ST_RES_MISSING:
 		{
 #ifdef _DEBUG
-			std::cout << "Model missing, loading" << std::endl;
+			//std::cout << "Model not loaded, loading" << std::endl;
 #endif // _DEBUG
 			//Load the model
 			Status modelSt = m_modelHandler->LoadModel(id, modelPtr); //if this fails, placeholder will take the place

@@ -546,7 +546,6 @@ ID3D11Buffer * DebugRenderer::GenerateLinelist(DirectX::XMVECTOR & pos, Sphere &
 {
 	box.radius;
 
-
 	float step = DirectX::XM_PI*2 / NUM_POINTS[M_SPHERE];
 	float theta = 0.0f;
 

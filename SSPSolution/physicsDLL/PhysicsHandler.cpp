@@ -2314,6 +2314,7 @@ void PhysicsHandler::CheckFieldIntersection()
 	{
 		field = &this->m_fields.at(i);
 
+		DirectX::XMVECTOR fieldPos = DirectX::XMLoadFloat3(&field->F_pos);
 		PhysicsComponent* ptr = nullptr;
 		int nrOfPhysicsComponents = this->m_dynamicComponents.size();
 		for (int y = 0; y < nrOfPhysicsComponents; y++)
@@ -2326,21 +2327,21 @@ void PhysicsHandler::CheckFieldIntersection()
 				{
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
-					result = this->OBBAABBIntersectionTest(obb_ptr, field->F_pos, aabb_ptr, ptr->PC_pos);
+					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
-					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, field->F_pos, ptr->PC_rotation);
+					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, fieldPos, ptr->PC_rotation);
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
-					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, field->F_pos, PC_obb_ptr, ptr->PC_pos);
+					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, fieldPos, PC_obb_ptr, ptr->PC_pos);
 				}
 				if (result)
 				{
@@ -2823,21 +2824,67 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 	return true;
 }
 
+bool PhysicsHandler::IntersectRaySphere(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const Sphere & obj, const DirectX::XMVECTOR & pos, float & distance)
+{
+	DirectX::XMVECTOR p = DirectX::XMVectorSubtract(rayOrigin, pos);
+	float r2 = obj.radius * obj.radius;
+	float PDotD = DirectX::XMVector3Dot(p, rayDir).m128_f32[0];
+	float PDotP = DirectX::XMVector3Dot(p, p).m128_f32[0];
+
+	if (PDotD > 0 || PDotP < r2)
+		return false;
+
+	DirectX::XMVECTOR a = DirectX::XMVectorSubtract(p, DirectX::XMVectorScale(rayDir, PDotD));
+	float ADotA = DirectX::XMVector3Dot(a, a).m128_f32[0];
+
+	if (ADotA > r2)
+		return false;
+
+	float h = sqrt(r2 - ADotA);
+	DirectX::XMVECTOR i = DirectX::XMVectorSubtract(a, DirectX::XMVectorScale(rayDir, h));
+
+	DirectX::XMVECTOR intersection = DirectX::XMVectorAdd(pos, i);
+
+	distance = abs(DirectX::XMVector3Length(DirectX::XMVectorSubtract(intersection, rayOrigin)).m128_f32[0]);
+
+	return true;
+}
+
 Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB* & obb)
 {
-	this->m_fields.push_back(Field());
-	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
-	field->F_pos = pos;
-	field->F_BV.ext[0]	= obb->ext[0];
-	field->F_BV.ext[1]	= obb->ext[1];
-	field->F_BV.ext[2]	= obb->ext[2];
-	field->F_BV.ort		= obb->ort;
-	field->F_entitityID1 = entityID1;
-	field->F_entitityID2 = entityID2;
-	field->F_first_inside = false;
-	field->F_second_inside = false;
+	//this->m_fields.push_back(Field());
+	//Field* field = &this->m_fields.at(this->m_fields.size() - 1);
+	//DirectX::XMStoreFloat3(&field->F_pos, pos);
+	//field->F_BV.ext[0] = obb->ext[0];
+	//field->F_BV.ext[1] = obb->ext[1];
+	//field->F_BV.ext[2] = obb->ext[2];
+	//field->F_BV.ort = obb->ort;
+	//field->F_entitityID1 = entityID1;
+	//field->F_entitityID2 = entityID2;
+	//field->F_first_inside = false;
+	//field->F_second_inside = false;
+	//return field;
+	printf("A");
+	Field temp;
+	printf("B");
+	temp.F_BV.ort = obb->ort;
+	temp.F_BV.ext[0] = obb->ext[0];
+	temp.F_BV.ext[1] = obb->ext[1];
+	temp.F_BV.ext[2] = obb->ext[2];
+	printf("C");
+	DirectX::XMStoreFloat3(&temp.F_pos, pos);
+	//temp.F_pos = pos;
+	printf("D");
 
-	return field;
+	temp.F_entitityID1 = entityID1;
+	temp.F_entitityID2 = entityID2;
+	temp.F_first_inside = false;
+	temp.F_second_inside = false;
+	printf("E");
+
+	this->m_fields.push_back(temp);
+	printf("F");
+	return &this->m_fields.back();
 }
 
 void PhysicsHandler::SimpleCollition(float dt)

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Ui__BehaviourTypeHandler_t {
-    QByteArrayData data[32];
-    char stringdata0[673];
+    QByteArrayData data[45];
+    char stringdata0[927];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -60,7 +60,20 @@ QT_MOC_LITERAL(27, 527, 32), // "on_Wheel_interactionDist_changed"
 QT_MOC_LITERAL(28, 560, 29), // "on_Wheel_rotationTime_changed"
 QT_MOC_LITERAL(29, 590, 29), // "on_Wheel_timeTilReset_changed"
 QT_MOC_LITERAL(30, 620, 26), // "on_Wheel_resetTime_changed"
-QT_MOC_LITERAL(31, 647, 25) // "on_lever_distance_changed"
+QT_MOC_LITERAL(31, 647, 20), // "on_Light_Add_changed"
+QT_MOC_LITERAL(32, 668, 12), // "on_R_changed"
+QT_MOC_LITERAL(33, 681, 12), // "on_G_changed"
+QT_MOC_LITERAL(34, 694, 12), // "on_B_changed"
+QT_MOC_LITERAL(35, 707, 20), // "on_Intensity_changed"
+QT_MOC_LITERAL(36, 728, 21), // "on_Ambience_R_changed"
+QT_MOC_LITERAL(37, 750, 21), // "on_Ambience_G_changed"
+QT_MOC_LITERAL(38, 772, 21), // "on_Ambience_B_changed"
+QT_MOC_LITERAL(39, 794, 29), // "on_Ambience_Intensity_changed"
+QT_MOC_LITERAL(40, 824, 17), // "on_Radius_changed"
+QT_MOC_LITERAL(41, 842, 19), // "on_Constant_changed"
+QT_MOC_LITERAL(42, 862, 17), // "on_Linear_changed"
+QT_MOC_LITERAL(43, 880, 20), // "on_Quadratic_changed"
+QT_MOC_LITERAL(44, 901, 25) // "on_lever_distance_changed"
 
     },
     "Ui::BehaviourTypeHandler\0on_Speed_changed\0"
@@ -82,6 +95,13 @@ QT_MOC_LITERAL(31, 647, 25) // "on_lever_distance_changed"
     "on_Wheel_rotationTime_changed\0"
     "on_Wheel_timeTilReset_changed\0"
     "on_Wheel_resetTime_changed\0"
+    "on_Light_Add_changed\0on_R_changed\0"
+    "on_G_changed\0on_B_changed\0"
+    "on_Intensity_changed\0on_Ambience_R_changed\0"
+    "on_Ambience_G_changed\0on_Ambience_B_changed\0"
+    "on_Ambience_Intensity_changed\0"
+    "on_Radius_changed\0on_Constant_changed\0"
+    "on_Linear_changed\0on_Quadratic_changed\0"
     "on_lever_distance_changed"
 };
 #undef QT_MOC_LITERAL
@@ -92,7 +112,7 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      26,   14, // methods
+      39,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -100,32 +120,45 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,  144,    2, 0x0a /* Public */,
-       4,    1,  147,    2, 0x0a /* Public */,
-       5,    1,  150,    2, 0x0a /* Public */,
-       6,    1,  153,    2, 0x0a /* Public */,
-       7,    1,  156,    2, 0x0a /* Public */,
-       8,    1,  159,    2, 0x0a /* Public */,
-       9,    1,  162,    2, 0x0a /* Public */,
-      10,    1,  165,    2, 0x0a /* Public */,
-      11,    0,  168,    2, 0x0a /* Public */,
-      12,    1,  169,    2, 0x0a /* Public */,
-      13,    1,  172,    2, 0x0a /* Public */,
-      14,    0,  175,    2, 0x0a /* Public */,
-      15,    0,  176,    2, 0x0a /* Public */,
-      16,    1,  177,    2, 0x0a /* Public */,
-      18,    1,  180,    2, 0x0a /* Public */,
-      21,    1,  183,    2, 0x0a /* Public */,
-      22,    0,  186,    2, 0x0a /* Public */,
-      23,    0,  187,    2, 0x0a /* Public */,
-      24,    1,  188,    2, 0x0a /* Public */,
-      25,    1,  191,    2, 0x0a /* Public */,
-      26,    1,  194,    2, 0x0a /* Public */,
-      27,    1,  197,    2, 0x0a /* Public */,
-      28,    1,  200,    2, 0x0a /* Public */,
-      29,    1,  203,    2, 0x0a /* Public */,
-      30,    1,  206,    2, 0x0a /* Public */,
-      31,    1,  209,    2, 0x0a /* Public */,
+       1,    1,  209,    2, 0x0a /* Public */,
+       4,    1,  212,    2, 0x0a /* Public */,
+       5,    1,  215,    2, 0x0a /* Public */,
+       6,    1,  218,    2, 0x0a /* Public */,
+       7,    1,  221,    2, 0x0a /* Public */,
+       8,    1,  224,    2, 0x0a /* Public */,
+       9,    1,  227,    2, 0x0a /* Public */,
+      10,    1,  230,    2, 0x0a /* Public */,
+      11,    0,  233,    2, 0x0a /* Public */,
+      12,    1,  234,    2, 0x0a /* Public */,
+      13,    1,  237,    2, 0x0a /* Public */,
+      14,    0,  240,    2, 0x0a /* Public */,
+      15,    0,  241,    2, 0x0a /* Public */,
+      16,    1,  242,    2, 0x0a /* Public */,
+      18,    1,  245,    2, 0x0a /* Public */,
+      21,    1,  248,    2, 0x0a /* Public */,
+      22,    0,  251,    2, 0x0a /* Public */,
+      23,    0,  252,    2, 0x0a /* Public */,
+      24,    1,  253,    2, 0x0a /* Public */,
+      25,    1,  256,    2, 0x0a /* Public */,
+      26,    1,  259,    2, 0x0a /* Public */,
+      27,    1,  262,    2, 0x0a /* Public */,
+      28,    1,  265,    2, 0x0a /* Public */,
+      29,    1,  268,    2, 0x0a /* Public */,
+      30,    1,  271,    2, 0x0a /* Public */,
+      31,    0,  274,    2, 0x0a /* Public */,
+      32,    1,  275,    2, 0x0a /* Public */,
+      33,    1,  278,    2, 0x0a /* Public */,
+      34,    1,  281,    2, 0x0a /* Public */,
+      35,    1,  284,    2, 0x0a /* Public */,
+      36,    1,  287,    2, 0x0a /* Public */,
+      37,    1,  290,    2, 0x0a /* Public */,
+      38,    1,  293,    2, 0x0a /* Public */,
+      39,    1,  296,    2, 0x0a /* Public */,
+      40,    1,  299,    2, 0x0a /* Public */,
+      41,    1,  302,    2, 0x0a /* Public */,
+      42,    1,  305,    2, 0x0a /* Public */,
+      43,    1,  308,    2, 0x0a /* Public */,
+      44,    1,  311,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Double,    3,
@@ -153,6 +186,19 @@ static const uint qt_meta_data_Ui__BehaviourTypeHandler[] = {
     QMetaType::Void, QMetaType::Double,    3,
     QMetaType::Void, QMetaType::Double,    3,
     QMetaType::Void, QMetaType::Double,    3,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Double,    3,
 
        0        // eod
@@ -189,7 +235,20 @@ void Ui::BehaviourTypeHandler::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 22: _t->on_Wheel_rotationTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
         case 23: _t->on_Wheel_timeTilReset_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
         case 24: _t->on_Wheel_resetTime_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 25: _t->on_lever_distance_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 25: _t->on_Light_Add_changed(); break;
+        case 26: _t->on_R_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 27: _t->on_G_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 28: _t->on_B_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 29: _t->on_Intensity_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 30: _t->on_Ambience_R_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 31: _t->on_Ambience_G_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 32: _t->on_Ambience_B_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 33: _t->on_Ambience_Intensity_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 34: _t->on_Radius_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 35: _t->on_Constant_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 36: _t->on_Linear_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 37: _t->on_Quadratic_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 38: _t->on_lever_distance_changed((*reinterpret_cast< double(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -220,13 +279,13 @@ int Ui::BehaviourTypeHandler::qt_metacall(QMetaObject::Call _c, int _id, void **
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 26)
+        if (_id < 39)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 26;
+        _id -= 39;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 26)
+        if (_id < 39)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 26;
+        _id -= 39;
     }
     return _id;
 }

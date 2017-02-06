@@ -40,6 +40,17 @@ namespace Ui {
 		WAYPOINT8,
 		NUM_WAYPOINTS
 	};
+
+	enum LIntSpin
+	{
+		R, G, B,
+		INTENSITY,
+		RADIUS,
+		CONSTANT,
+		LINEAR,
+		QUADRATIC,
+		NUM_LINTSPIN
+	};
 	class BehaviourTypeHandler : QObject
 	{
 
@@ -62,6 +73,7 @@ namespace Ui {
 		QPushButton*		m_Up;
 		QPushButton*		m_Down;
 		QPushButton*		m_AddCheckpoint;
+		QPushButton*		m_AddLightButton;
 		QSpinBox*			m_CheckpointValue;
 
 		QLabel*			m_uniqueID;
@@ -89,6 +101,8 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_rotationTime	  ;
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
+		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
+		QSpinBox*		  m_AmbientLightBoxes[4];
 #pragma endregion
 
 
@@ -124,6 +138,7 @@ namespace Ui {
 		void Deselect();
 		void UpdateSelection();
 		void ResetType(BehaviourType);
+		void SetAmbientLight(Ambient amb);
 
 		public slots:
 		void on_Speed_changed(double val);
@@ -159,10 +174,31 @@ namespace Ui {
 		void on_Wheel_resetTime_changed(double val);
 #pragma endregion
 
+		void on_Light_Add_changed();
 
+#pragma region Light callbacks
+
+
+		void on_R_changed(int val);
+		void on_G_changed(int val);
+		void on_B_changed(int val);
+		void on_Intensity_changed(int val);
+
+		void on_Ambience_R_changed(int val);
+		void on_Ambience_G_changed(int val);
+		void on_Ambience_B_changed(int val);
+		void on_Ambience_Intensity_changed(int val);
+
+		void on_Radius_changed(int val);
+		void on_Constant_changed(int val);
+		void on_Linear_changed(int val);
+		void on_Quadratic_changed(int val);
+#pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);
 #pragma endregion
+
+
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);

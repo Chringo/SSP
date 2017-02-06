@@ -29,6 +29,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStackedWidget>
@@ -51,15 +52,6 @@ public:
     QAction *actionBuild_BPF;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QVBoxLayout *verticalLayout;
-    QTreeWidget *assetTree;
-    QWidget *tab_2;
-    QVBoxLayout *verticalLayout_2;
-    QTreeWidget *scene_tree;
-    QPushButton *pushButton;
-    QLabel *label_2;
     QGroupBox *Values;
     QVBoxLayout *verticalLayout_3;
     QFrame *nameQFrame;
@@ -75,11 +67,11 @@ public:
     QLabel *scalelabel;
     QLabel *rotationlabel;
     QDoubleSpinBox *zValue_rot;
-    QDoubleSpinBox *yValue_translate;
     QDoubleSpinBox *zValue_translate;
+    QDoubleSpinBox *yValue_translate;
     QLabel *translateLabel;
-    QDoubleSpinBox *yValue_scale;
     QDoubleSpinBox *xValue_rot;
+    QDoubleSpinBox *yValue_scale;
     QFrame *variousOptionsframe;
     QFormLayout *formLayout;
     QLabel *UIDTEXT;
@@ -176,7 +168,60 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QPushButton *CheckPointADD;
     QLabel *label_4;
+    QWidget *Lights;
+    QGridLayout *gridLayout_8;
+    QLabel *label_16;
+    QLabel *label_6;
+    QSpinBox *Amb_Intensity;
+    QLabel *label_17;
+    QPushButton *ADD_Light_Button;
+    QComboBox *LightDropDown;
+    QStackedWidget *LightWindows;
+    QWidget *None;
+    QWidget *Point;
+    QGridLayout *gridLayout_9;
+    QLabel *label_15;
+    QSlider *IntensitySlider;
+    QLabel *label_12;
+    QLabel *label_8;
+    QSpinBox *R_Colorvalue;
+    QSpacerItem *verticalSpacer_6;
+    QLabel *label_9;
+    QLabel *label_10;
+    QSpinBox *G_Colorvalue;
+    QSlider *G_Slider;
+    QSlider *R_Slider;
+    QSlider *B_Slider;
+    QLabel *label_13;
+    QSpinBox *B_Colorvalue;
+    QLabel *label_14;
+    QLabel *label_7;
+    QLabel *label_11;
+    QSpacerItem *verticalSpacer_7;
+    QSpacerItem *verticalSpacer_8;
+    QSpinBox *IntensityValue;
+    QSlider *horizontalSlider;
+    QSlider *horizontalSlider_2;
+    QSlider *horizontalSlider_3;
+    QSlider *horizontalSlider_4;
+    QSpinBox *RadiusValue;
+    QSpinBox *ConstantValue;
+    QSpinBox *LinearValue;
+    QSpinBox *QuadValue;
+    QSlider *Amb_Intensityslider;
+    QSpinBox *Amb_G;
+    QSpinBox *Amb_R;
+    QSpinBox *Amb_B;
     QWidget *RenderWidget;
+    QLabel *label_2;
+    QPushButton *pushButton;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QVBoxLayout *verticalLayout;
+    QTreeWidget *assetTree;
+    QWidget *tab_2;
+    QVBoxLayout *verticalLayout_2;
+    QTreeWidget *scene_tree;
     QMenuBar *menuBar;
     QMenu *menuEditor;
     QToolBar *mainToolBar;
@@ -355,65 +400,11 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        Values = new QGroupBox(centralWidget);
+        Values->setObjectName(QStringLiteral("Values"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy);
-        tabWidget->setMinimumSize(QSize(200, 0));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        verticalLayout = new QVBoxLayout(tab);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        assetTree = new QTreeWidget(tab);
-        assetTree->setObjectName(QStringLiteral("assetTree"));
-        assetTree->setLayoutDirection(Qt::LeftToRight);
-        assetTree->setTextElideMode(Qt::ElideNone);
-        assetTree->setSortingEnabled(true);
-        assetTree->setHeaderHidden(true);
-        assetTree->header()->setCascadingSectionResizes(false);
-
-        verticalLayout->addWidget(assetTree);
-
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
-        verticalLayout_2 = new QVBoxLayout(tab_2);
-        verticalLayout_2->setSpacing(0);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        scene_tree = new QTreeWidget(tab_2);
-        scene_tree->setObjectName(QStringLiteral("scene_tree"));
-        scene_tree->setLayoutDirection(Qt::LeftToRight);
-        scene_tree->setTextElideMode(Qt::ElideNone);
-        scene_tree->setSortingEnabled(true);
-        scene_tree->setHeaderHidden(true);
-        scene_tree->header()->setCascadingSectionResizes(false);
-
-        verticalLayout_2->addWidget(scene_tree);
-
-        tabWidget->addTab(tab_2, QString());
-
-        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
-
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 2, 1, 1);
-
-        Values = new QGroupBox(centralWidget);
-        Values->setObjectName(QStringLiteral("Values"));
         sizePolicy.setHeightForWidth(Values->sizePolicy().hasHeightForWidth());
         Values->setSizePolicy(sizePolicy);
         Values->setMinimumSize(QSize(250, 571));
@@ -520,16 +511,6 @@ public:
 
         gridLayout_3->addWidget(zValue_rot, 4, 3, 1, 1);
 
-        yValue_translate = new QDoubleSpinBox(transformFrame);
-        yValue_translate->setObjectName(QStringLiteral("yValue_translate"));
-        yValue_translate->setWrapping(true);
-        yValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_translate->setDecimals(2);
-        yValue_translate->setMinimum(-10000);
-        yValue_translate->setMaximum(10000);
-
-        gridLayout_3->addWidget(yValue_translate, 1, 2, 1, 1);
-
         zValue_translate = new QDoubleSpinBox(transformFrame);
         zValue_translate->setObjectName(QStringLiteral("zValue_translate"));
         zValue_translate->setWrapping(true);
@@ -540,21 +521,20 @@ public:
 
         gridLayout_3->addWidget(zValue_translate, 1, 3, 1, 1);
 
+        yValue_translate = new QDoubleSpinBox(transformFrame);
+        yValue_translate->setObjectName(QStringLiteral("yValue_translate"));
+        yValue_translate->setWrapping(true);
+        yValue_translate->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_translate->setDecimals(2);
+        yValue_translate->setMinimum(-10000);
+        yValue_translate->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_translate, 1, 2, 1, 1);
+
         translateLabel = new QLabel(transformFrame);
         translateLabel->setObjectName(QStringLiteral("translateLabel"));
 
         gridLayout_3->addWidget(translateLabel, 1, 0, 1, 1);
-
-        yValue_scale = new QDoubleSpinBox(transformFrame);
-        yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
-        yValue_scale->setMinimumSize(QSize(0, 0));
-        yValue_scale->setWrapping(true);
-        yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        yValue_scale->setDecimals(2);
-        yValue_scale->setMinimum(-10000);
-        yValue_scale->setMaximum(10000);
-
-        gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
 
         xValue_rot = new QDoubleSpinBox(transformFrame);
         xValue_rot->setObjectName(QStringLiteral("xValue_rot"));
@@ -571,6 +551,17 @@ public:
         xValue_rot->setMaximum(10000);
 
         gridLayout_3->addWidget(xValue_rot, 4, 1, 1, 1);
+
+        yValue_scale = new QDoubleSpinBox(transformFrame);
+        yValue_scale->setObjectName(QStringLiteral("yValue_scale"));
+        yValue_scale->setMinimumSize(QSize(0, 0));
+        yValue_scale->setWrapping(true);
+        yValue_scale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        yValue_scale->setDecimals(2);
+        yValue_scale->setMinimum(-10000);
+        yValue_scale->setMaximum(10000);
+
+        gridLayout_3->addWidget(yValue_scale, 5, 2, 1, 1);
 
 
         verticalLayout_3->addWidget(transformFrame);
@@ -1282,6 +1273,275 @@ public:
         gridLayout_6->addWidget(label_4, 2, 1, 1, 1);
 
         CustomBehaviourTabWidget->addTab(CheckPoint, QString());
+        Lights = new QWidget();
+        Lights->setObjectName(QStringLiteral("Lights"));
+        gridLayout_8 = new QGridLayout(Lights);
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setContentsMargins(11, 11, 11, 11);
+        gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
+        label_16 = new QLabel(Lights);
+        label_16->setObjectName(QStringLiteral("label_16"));
+
+        gridLayout_8->addWidget(label_16, 0, 0, 1, 1);
+
+        label_6 = new QLabel(Lights);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        gridLayout_8->addWidget(label_6, 6, 0, 1, 1);
+
+        Amb_Intensity = new QSpinBox(Lights);
+        Amb_Intensity->setObjectName(QStringLiteral("Amb_Intensity"));
+        Amb_Intensity->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        Amb_Intensity->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        Amb_Intensity->setMaximum(250);
+
+        gridLayout_8->addWidget(Amb_Intensity, 3, 1, 1, 1);
+
+        label_17 = new QLabel(Lights);
+        label_17->setObjectName(QStringLiteral("label_17"));
+
+        gridLayout_8->addWidget(label_17, 3, 0, 1, 1);
+
+        ADD_Light_Button = new QPushButton(Lights);
+        ADD_Light_Button->setObjectName(QStringLiteral("ADD_Light_Button"));
+        ADD_Light_Button->setStyleSheet(QStringLiteral("background-color: rgb(129, 129, 129);"));
+
+        gridLayout_8->addWidget(ADD_Light_Button, 5, 0, 1, 4);
+
+        LightDropDown = new QComboBox(Lights);
+        LightDropDown->setObjectName(QStringLiteral("LightDropDown"));
+        LightDropDown->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+
+        gridLayout_8->addWidget(LightDropDown, 6, 1, 1, 3);
+
+        LightWindows = new QStackedWidget(Lights);
+        LightWindows->setObjectName(QStringLiteral("LightWindows"));
+        None = new QWidget();
+        None->setObjectName(QStringLiteral("None"));
+        LightWindows->addWidget(None);
+        Point = new QWidget();
+        Point->setObjectName(QStringLiteral("Point"));
+        gridLayout_9 = new QGridLayout(Point);
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setContentsMargins(11, 11, 11, 11);
+        gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
+        label_15 = new QLabel(Point);
+        label_15->setObjectName(QStringLiteral("label_15"));
+
+        gridLayout_9->addWidget(label_15, 11, 0, 1, 3);
+
+        IntensitySlider = new QSlider(Point);
+        IntensitySlider->setObjectName(QStringLiteral("IntensitySlider"));
+        IntensitySlider->setMaximum(250);
+        IntensitySlider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(IntensitySlider, 12, 2, 1, 3);
+
+        label_12 = new QLabel(Point);
+        label_12->setObjectName(QStringLiteral("label_12"));
+
+        gridLayout_9->addWidget(label_12, 6, 0, 1, 2);
+
+        label_8 = new QLabel(Point);
+        label_8->setObjectName(QStringLiteral("label_8"));
+
+        gridLayout_9->addWidget(label_8, 1, 0, 1, 1);
+
+        R_Colorvalue = new QSpinBox(Point);
+        R_Colorvalue->setObjectName(QStringLiteral("R_Colorvalue"));
+        R_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        R_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        R_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(R_Colorvalue, 1, 1, 1, 1);
+
+        verticalSpacer_6 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_9->addItem(verticalSpacer_6, 13, 3, 1, 1);
+
+        label_9 = new QLabel(Point);
+        label_9->setObjectName(QStringLiteral("label_9"));
+
+        gridLayout_9->addWidget(label_9, 2, 0, 1, 1);
+
+        label_10 = new QLabel(Point);
+        label_10->setObjectName(QStringLiteral("label_10"));
+
+        gridLayout_9->addWidget(label_10, 3, 0, 1, 1);
+
+        G_Colorvalue = new QSpinBox(Point);
+        G_Colorvalue->setObjectName(QStringLiteral("G_Colorvalue"));
+        G_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        G_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        G_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(G_Colorvalue, 2, 1, 1, 1);
+
+        G_Slider = new QSlider(Point);
+        G_Slider->setObjectName(QStringLiteral("G_Slider"));
+        G_Slider->setMaximum(255);
+        G_Slider->setPageStep(25);
+        G_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(G_Slider, 2, 3, 1, 2);
+
+        R_Slider = new QSlider(Point);
+        R_Slider->setObjectName(QStringLiteral("R_Slider"));
+        R_Slider->setMaximum(255);
+        R_Slider->setPageStep(25);
+        R_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(R_Slider, 1, 3, 1, 2);
+
+        B_Slider = new QSlider(Point);
+        B_Slider->setObjectName(QStringLiteral("B_Slider"));
+        B_Slider->setMaximum(255);
+        B_Slider->setPageStep(25);
+        B_Slider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(B_Slider, 3, 3, 1, 2);
+
+        label_13 = new QLabel(Point);
+        label_13->setObjectName(QStringLiteral("label_13"));
+
+        gridLayout_9->addWidget(label_13, 8, 0, 1, 2);
+
+        B_Colorvalue = new QSpinBox(Point);
+        B_Colorvalue->setObjectName(QStringLiteral("B_Colorvalue"));
+        B_Colorvalue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        B_Colorvalue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        B_Colorvalue->setMaximum(255);
+
+        gridLayout_9->addWidget(B_Colorvalue, 3, 1, 1, 1);
+
+        label_14 = new QLabel(Point);
+        label_14->setObjectName(QStringLiteral("label_14"));
+
+        gridLayout_9->addWidget(label_14, 9, 0, 1, 2);
+
+        label_7 = new QLabel(Point);
+        label_7->setObjectName(QStringLiteral("label_7"));
+
+        gridLayout_9->addWidget(label_7, 7, 0, 1, 2);
+
+        label_11 = new QLabel(Point);
+        label_11->setObjectName(QStringLiteral("label_11"));
+
+        gridLayout_9->addWidget(label_11, 4, 0, 1, 2);
+
+        verticalSpacer_7 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_9->addItem(verticalSpacer_7, 10, 3, 1, 1);
+
+        verticalSpacer_8 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_9->addItem(verticalSpacer_8, 5, 3, 1, 1);
+
+        IntensityValue = new QSpinBox(Point);
+        IntensityValue->setObjectName(QStringLiteral("IntensityValue"));
+        IntensityValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        IntensityValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        IntensityValue->setMaximum(250);
+
+        gridLayout_9->addWidget(IntensityValue, 12, 0, 1, 2);
+
+        horizontalSlider = new QSlider(Point);
+        horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
+        horizontalSlider->setMaximum(100);
+        horizontalSlider->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider, 8, 4, 1, 1);
+
+        horizontalSlider_2 = new QSlider(Point);
+        horizontalSlider_2->setObjectName(QStringLiteral("horizontalSlider_2"));
+        horizontalSlider_2->setMaximum(100);
+        horizontalSlider_2->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_2, 9, 4, 1, 1);
+
+        horizontalSlider_3 = new QSlider(Point);
+        horizontalSlider_3->setObjectName(QStringLiteral("horizontalSlider_3"));
+        horizontalSlider_3->setMaximum(100);
+        horizontalSlider_3->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_3, 7, 4, 1, 1);
+
+        horizontalSlider_4 = new QSlider(Point);
+        horizontalSlider_4->setObjectName(QStringLiteral("horizontalSlider_4"));
+        horizontalSlider_4->setMaximum(1000);
+        horizontalSlider_4->setOrientation(Qt::Horizontal);
+
+        gridLayout_9->addWidget(horizontalSlider_4, 4, 4, 1, 1);
+
+        RadiusValue = new QSpinBox(Point);
+        RadiusValue->setObjectName(QStringLiteral("RadiusValue"));
+        RadiusValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        RadiusValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        RadiusValue->setMaximum(1000);
+
+        gridLayout_9->addWidget(RadiusValue, 4, 3, 1, 1);
+
+        ConstantValue = new QSpinBox(Point);
+        ConstantValue->setObjectName(QStringLiteral("ConstantValue"));
+        ConstantValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        ConstantValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        ConstantValue->setMaximum(100);
+
+        gridLayout_9->addWidget(ConstantValue, 7, 3, 1, 1);
+
+        LinearValue = new QSpinBox(Point);
+        LinearValue->setObjectName(QStringLiteral("LinearValue"));
+        LinearValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        LinearValue->setFrame(true);
+        LinearValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        LinearValue->setMaximum(100);
+
+        gridLayout_9->addWidget(LinearValue, 8, 3, 1, 1);
+
+        QuadValue = new QSpinBox(Point);
+        QuadValue->setObjectName(QStringLiteral("QuadValue"));
+        QuadValue->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        QuadValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        QuadValue->setMaximum(100);
+
+        gridLayout_9->addWidget(QuadValue, 9, 3, 1, 1);
+
+        LightWindows->addWidget(Point);
+
+        gridLayout_8->addWidget(LightWindows, 9, 0, 1, 4);
+
+        Amb_Intensityslider = new QSlider(Lights);
+        Amb_Intensityslider->setObjectName(QStringLiteral("Amb_Intensityslider"));
+        Amb_Intensityslider->setMaximum(250);
+        Amb_Intensityslider->setOrientation(Qt::Horizontal);
+
+        gridLayout_8->addWidget(Amb_Intensityslider, 3, 2, 1, 2);
+
+        Amb_G = new QSpinBox(Lights);
+        Amb_G->setObjectName(QStringLiteral("Amb_G"));
+        Amb_G->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        Amb_G->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        Amb_G->setMaximum(255);
+
+        gridLayout_8->addWidget(Amb_G, 0, 2, 1, 1);
+
+        Amb_R = new QSpinBox(Lights);
+        Amb_R->setObjectName(QStringLiteral("Amb_R"));
+        Amb_R->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        Amb_R->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        Amb_R->setMaximum(255);
+
+        gridLayout_8->addWidget(Amb_R, 0, 1, 1, 1);
+
+        Amb_B = new QSpinBox(Lights);
+        Amb_B->setObjectName(QStringLiteral("Amb_B"));
+        Amb_B->setStyleSheet(QStringLiteral("background-color: rgb(48, 48, 48);"));
+        Amb_B->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        Amb_B->setMaximum(255);
+
+        gridLayout_8->addWidget(Amb_B, 0, 3, 1, 1);
+
+        CustomBehaviourTabWidget->addTab(Lights, QString());
 
         verticalLayout_3->addWidget(CustomBehaviourTabWidget);
 
@@ -1300,6 +1560,60 @@ public:
         RenderWidget->setAutoFillBackground(false);
 
         gridLayout->addWidget(RenderWidget, 2, 2, 1, 1);
+
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 0, 2, 1, 1);
+
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        gridLayout->addWidget(pushButton, 4, 1, 1, 1);
+
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy);
+        tabWidget->setMinimumSize(QSize(200, 0));
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        verticalLayout = new QVBoxLayout(tab);
+        verticalLayout->setSpacing(0);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        assetTree = new QTreeWidget(tab);
+        assetTree->setObjectName(QStringLiteral("assetTree"));
+        assetTree->setLayoutDirection(Qt::LeftToRight);
+        assetTree->setTextElideMode(Qt::ElideNone);
+        assetTree->setSortingEnabled(true);
+        assetTree->setHeaderHidden(true);
+        assetTree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout->addWidget(assetTree);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        verticalLayout_2 = new QVBoxLayout(tab_2);
+        verticalLayout_2->setSpacing(0);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        scene_tree = new QTreeWidget(tab_2);
+        scene_tree->setObjectName(QStringLiteral("scene_tree"));
+        scene_tree->setLayoutDirection(Qt::LeftToRight);
+        scene_tree->setTextElideMode(Qt::ElideNone);
+        scene_tree->setSortingEnabled(true);
+        scene_tree->setHeaderHidden(true);
+        scene_tree->header()->setCascadingSectionResizes(false);
+
+        verticalLayout_2->addWidget(scene_tree);
+
+        tabWidget->addTab(tab_2, QString());
+
+        gridLayout->addWidget(tabWidget, 2, 1, 1, 1);
 
         SSP_EditorClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SSP_EditorClass);
@@ -1326,10 +1640,33 @@ public:
 
         retranslateUi(SSP_EditorClass);
         QObject::connect(BehaviourDropDown, SIGNAL(currentIndexChanged(int)), BehaviourStackWidget, SLOT(setCurrentIndex(int)));
+        QObject::connect(LightDropDown, SIGNAL(currentIndexChanged(int)), LightWindows, SLOT(setCurrentIndex(int)));
+        QObject::connect(R_Colorvalue, SIGNAL(valueChanged(int)), R_Slider, SLOT(setValue(int)));
+        QObject::connect(R_Slider, SIGNAL(sliderMoved(int)), R_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(G_Colorvalue, SIGNAL(valueChanged(int)), G_Slider, SLOT(setValue(int)));
+        QObject::connect(G_Slider, SIGNAL(sliderMoved(int)), G_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(B_Colorvalue, SIGNAL(valueChanged(int)), B_Slider, SLOT(setValue(int)));
+        QObject::connect(B_Slider, SIGNAL(sliderMoved(int)), B_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(G_Slider, SIGNAL(valueChanged(int)), G_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(B_Slider, SIGNAL(valueChanged(int)), B_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(R_Slider, SIGNAL(valueChanged(int)), R_Colorvalue, SLOT(setValue(int)));
+        QObject::connect(IntensityValue, SIGNAL(valueChanged(int)), IntensitySlider, SLOT(setValue(int)));
+        QObject::connect(IntensitySlider, SIGNAL(valueChanged(int)), IntensityValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_4, SIGNAL(sliderMoved(int)), RadiusValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_3, SIGNAL(sliderMoved(int)), ConstantValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider, SIGNAL(sliderMoved(int)), LinearValue, SLOT(setValue(int)));
+        QObject::connect(horizontalSlider_2, SIGNAL(sliderMoved(int)), QuadValue, SLOT(setValue(int)));
+        QObject::connect(QuadValue, SIGNAL(valueChanged(int)), horizontalSlider_2, SLOT(setValue(int)));
+        QObject::connect(LinearValue, SIGNAL(valueChanged(int)), horizontalSlider, SLOT(setValue(int)));
+        QObject::connect(ConstantValue, SIGNAL(valueChanged(int)), horizontalSlider_3, SLOT(setValue(int)));
+        QObject::connect(RadiusValue, SIGNAL(valueChanged(int)), horizontalSlider_4, SLOT(setValue(int)));
+        QObject::connect(Amb_Intensity, SIGNAL(valueChanged(int)), Amb_Intensityslider, SLOT(setValue(int)));
+        QObject::connect(Amb_Intensityslider, SIGNAL(sliderMoved(int)), Amb_Intensity, SLOT(setValue(int)));
 
-        tabWidget->setCurrentIndex(0);
-        CustomBehaviourTabWidget->setCurrentIndex(0);
+        CustomBehaviourTabWidget->setCurrentIndex(3);
         BehaviourStackWidget->setCurrentIndex(0);
+        LightWindows->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SSP_EditorClass);
@@ -1342,14 +1679,6 @@ public:
         actionLoad_scene->setText(QApplication::translate("SSP_EditorClass", "Load scene", Q_NULLPTR));
         actionSave_scene->setText(QApplication::translate("SSP_EditorClass", "Save scene", Q_NULLPTR));
         actionBuild_BPF->setText(QApplication::translate("SSP_EditorClass", "Build .BPF", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
-        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
-        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
-        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
-        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
         Values->setTitle(QApplication::translate("SSP_EditorClass", "Attributes", Q_NULLPTR));
         nameLabel->setText(QApplication::translate("SSP_EditorClass", "Level Name", Q_NULLPTR));
         scalelabel->setText(QApplication::translate("SSP_EditorClass", "Scale", Q_NULLPTR));
@@ -1422,6 +1751,36 @@ public:
         CheckPointADD->setText(QApplication::translate("SSP_EditorClass", "Add CheckPoint", Q_NULLPTR));
         label_4->setText(QApplication::translate("SSP_EditorClass", "Empty Space", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(CheckPoint), QApplication::translate("SSP_EditorClass", "Checkpoints", Q_NULLPTR));
+        label_16->setText(QApplication::translate("SSP_EditorClass", "Ambience", Q_NULLPTR));
+        label_6->setText(QApplication::translate("SSP_EditorClass", "Light Type", Q_NULLPTR));
+        label_17->setText(QApplication::translate("SSP_EditorClass", "Intensity", Q_NULLPTR));
+        ADD_Light_Button->setText(QApplication::translate("SSP_EditorClass", "ADD NEW LIGHT", Q_NULLPTR));
+        LightDropDown->clear();
+        LightDropDown->insertItems(0, QStringList()
+         << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Point", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Directional", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Area", Q_NULLPTR)
+         << QApplication::translate("SSP_EditorClass", "Spot", Q_NULLPTR)
+        );
+        label_15->setText(QApplication::translate("SSP_EditorClass", "Intensity", Q_NULLPTR));
+        label_12->setText(QApplication::translate("SSP_EditorClass", "Falloff", Q_NULLPTR));
+        label_8->setText(QApplication::translate("SSP_EditorClass", "R", Q_NULLPTR));
+        label_9->setText(QApplication::translate("SSP_EditorClass", "G", Q_NULLPTR));
+        label_10->setText(QApplication::translate("SSP_EditorClass", "B", Q_NULLPTR));
+        label_13->setText(QApplication::translate("SSP_EditorClass", "Linear", Q_NULLPTR));
+        label_14->setText(QApplication::translate("SSP_EditorClass", "Quadratic", Q_NULLPTR));
+        label_7->setText(QApplication::translate("SSP_EditorClass", "Constant", Q_NULLPTR));
+        label_11->setText(QApplication::translate("SSP_EditorClass", "Radius", Q_NULLPTR));
+        CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Lights), QApplication::translate("SSP_EditorClass", "Lights", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));
+        QTreeWidgetItem *___qtreewidgetitem1 = scene_tree->headerItem();
+        ___qtreewidgetitem1->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("SSP_EditorClass", "Scene info", Q_NULLPTR));
         menuEditor->setTitle(QApplication::translate("SSP_EditorClass", "Editor", Q_NULLPTR));
     } // retranslateUi
 
