@@ -7,6 +7,7 @@ Player::Player()
 	this->m_speed = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
+	this->m_twoButtonsDown = false;
 }
 
 Player::~Player()
@@ -34,6 +35,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 
+	/*Run forward.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
 		forwards++;
@@ -45,7 +47,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
 				}
 			}
@@ -53,30 +55,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
 				}
 			}
 		}
 	}
-	/*If the player is not walking, go to idle.*/
-	else if(inputHandler->IsKeyReleased(SDL_SCANCODE_W))
-	{
-		if (m_aComp->lockAnimation != true)
-		{
-			if (m_grabbed != nullptr)
-			{
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_BALL_IDLE;
-			}
-			else
-			{
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_IDLE;
-			}
-		}
-	}
-
+	/*Run backwards.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
 		forwards--;
@@ -87,7 +72,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
 				}
 			}
@@ -95,29 +80,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 				}
 			}
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_S))
-	{
-		if (this->m_aComp->lockAnimation != true)
-		{
-			if (m_grabbed != nullptr)
-			{
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_BALL_IDLE;
-			}
-			else
-			{
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_IDLE;
-			}
-		}
-
-	}
+	/*Strafe run to the right.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
 	{
 		sideways++;
@@ -128,7 +97,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_RIGHT_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
 				}
 			}
@@ -136,29 +105,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_RIGHT))
 				{
-					SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 				}
 			}
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_D))
-	{
-		if (this->m_aComp->lockAnimation != true)
-		{
-			if (m_grabbed != nullptr)
-			{
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_BALL_IDLE;
-			}
-			else
-			{
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
-				this->m_aComp->previousState = PLAYER_IDLE;
-			}
-		}
-	}
-
+	/*Strafe run to the left.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
 	{
 		sideways--;
@@ -169,7 +122,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_LEFT_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
 				}
 			}
@@ -177,15 +130,17 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_LEFT))
 				{
-					SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
 					this->m_aComp->previousState = PLAYER_RUN_LEFT;
 				}
 			}
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_A))
+	/*Releasing the any button for running with player will blend back to idle state with ball or not.*/
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_W) || inputHandler->IsKeyReleased(SDL_SCANCODE_D)
+		|| inputHandler->IsKeyReleased(SDL_SCANCODE_S) || inputHandler->IsKeyReleased(SDL_SCANCODE_A))
 	{
-		if (this->m_aComp->lockAnimation != true)
+		if (m_aComp->lockAnimation != true)
 		{
 			if (m_grabbed != nullptr)
 			{
