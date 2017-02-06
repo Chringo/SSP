@@ -33,7 +33,7 @@ DeferredShader::~DeferredShader()
 int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
-	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
+	ID3D10Blob* vertexShaderBuffer[IL_TYPE_COUNT] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
@@ -43,6 +43,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	//Insert shader path here
 	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsInstFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
 	WCHAR* vsAnimFilename = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
 	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
@@ -71,6 +72,19 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 		return 1;
 	}
+
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, vsInstFilename);
+
+		return 1;
+	}
+
 #ifdef _DEBUG
 	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 #else
@@ -100,6 +114,11 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Animated]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Instanced]);
 	if (FAILED(hResult))
 	{
 		return 1;
