@@ -69,6 +69,10 @@ int LevelSelectState::LoadLevel(std::string path)
 	if (st != Resources::ST_OK)
 		return 0;
 	
+	//Load Lights of the level
+
+	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+		return 0;
 	//Create level
 	result = this->currentLevel->CreateLevel(level); 
 

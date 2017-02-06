@@ -50,6 +50,7 @@ Resources::Status Communicator::Initialize(
 			this->m_Width,
 			this->m_Height
 		);
+		LightController::GetInstance()->Initialize();
 	}
 
 

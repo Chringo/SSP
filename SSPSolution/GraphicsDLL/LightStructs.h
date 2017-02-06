@@ -25,13 +25,16 @@ namespace LIGHTING
 		UINT NUM_AREALIGHTS;
 		UINT NUM_DIRECTIONALLIGHTS;
 		UINT NUM_SPOTLIGHTS;
-		DirectX::XMVECTOR AMBIENT_COLOR;
+		float AMBIENT_COLOR[3]  = { 1.0f,1.0f,1.0f };
+		float AMBIENT_INTENSITY = 0.2f;
 
 	};
 
 	struct GRAPHICSDLL_API LightColor
 	{
-		float r = 1.0f,g = 1.0f,b = 1.0f ;
+		float r = 1.0f;
+		float g = 1.0f; 
+		float b = 1.0f;
 		
 	};
 	struct GRAPHICSDLL_API LightFalloff

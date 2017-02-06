@@ -27,9 +27,15 @@
     <ClInclude Include="PhysicsHandler.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
+    <ClInclude Include="BulletInterpreter.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsHandler.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletInterpreter.cpp">
       <Filter>Source Files\physics</Filter>
     </ClCompile>
   </ItemGroup>

@@ -167,6 +167,7 @@
     <ClCompile Include="DoorEntity.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FieldEntity.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateHandler.cpp" />
     <ClCompile Include="InputHandler.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Progression.cpp" />
     <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="StartState.cpp" />
+    <ClCompile Include="DirectorState.cpp" />
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="System.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="DoorEntity.h" />
     <ClInclude Include="DynamicEntity.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FieldEntity.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateHandler.h" />
     <ClInclude Include="InputHandler.h" />
@@ -208,10 +211,22 @@
     <ClInclude Include="Progression.h" />
     <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="StartState.h" />
+    <ClInclude Include="DirectorState.h" />
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="WheelEntity.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\physicsDLL\Bulletphysics\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{252cc6f5-f2ac-3e6f-879b-c5240c03bd7f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\physicsDLL\Bulletphysics\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{38c7869d-07a6-3749-b19b-480c69741102}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\physicsDLL\Bulletphysics\src\LinearMath\LinearMath.vcxproj">
+      <Project>{8a3efc55-1401-3a7d-83ec-aee8420239c6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

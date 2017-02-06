@@ -18,11 +18,12 @@ cbuffer camera : register(b1)
 }
 cbuffer LightInfo : register(b3)
 {
-    uint NUM_POINTLIGHTS;
-    uint NUM_AREALIGHTS;
-    uint NUM_DIRECTIONALLIGHTS;
-    uint NUM_SPOTLIGHTS;
-    float4 AMBIENT_COLOR;
+    uint   NUM_POINTLIGHTS;
+    uint   NUM_AREALIGHTS;
+    uint   NUM_DIRECTIONALLIGHTS;
+    uint   NUM_SPOTLIGHTS;
+    float3 AMBIENT_COLOR;
+    float  AMBIENT_INTENSITY;
 }
 
 struct PointLight //Must be 16 bit aligned!
@@ -71,9 +72,9 @@ LIGHT initLight()
 LIGHT initCustomLight(float3 pos, float3 color)
 {
     LIGHT light;
-    light.lightPos = pos;
-	light.lightDir = float3(0.0f, 0.5f, 1.0f);
-    light.lightColor = color;
+    light.lightPos     = pos;
+	light.lightDir     = float3(0.0f, 0.5f, 1.0f);
+    light.lightColor   = color;
     light.lightAmbient = AMBIENT_COLOR.rrr;
     return light;
 }
@@ -139,9 +140,74 @@ float GGX(float NdotH, float m)
     return m2 / (f * f);
 }
 
+float pointIllumination(float3 P, float3 N, float3 lightCentre, float r, float c, float l, float q, float cutoff)
+{
+    float3 L = P-lightCentre;
+    float distance = length(L);
+    float d = max(distance, 0);
+    L /= distance;
+
+    float df = (1 / r);
+
+    float attenuation = 1 / ((c * distance) + (l * distance) + (q * distance * distance));
+
+
+
+    return attenuation;
+}
+
+float smoothAttenuation(float3 P, float3 lightCentre, float range, float c, float l, float q)
+{
+    float3 L = lightCentre - P;
+    float distance = length(L);
+
+    
+    float la = l * distance;
+    float qa = q * distance * distance;
+
+    
+
+    float attenuation = 1 / (c + la + qa);
+    //attenuation += 1.0f - smoothstep(range * c, range, distance);
+
+
+    float final = 1.0f - smoothstep(range * attenuation, range, distance);
+   // attenuation += 1.0f - smoothstep(range * qa, range, distance);
+
+    return max(final, 0);
+
+}
+
+float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float cutoff)
+{
+
+    float innerRadius = 0.25;
+    // calculate normalized light vector and distance to sphere light surface
+    float3 L = lightCentre - P;
+    float distance = length(L);
+    float d = max(distance - innerRadius, 0);
+    L /= distance;
+
+    // calculate basic attenuation
+    float denom = d / innerRadius + 1;
+    float attenuation = 1 / (denom * denom);
+
+    // scale and bias attenuation such that:
+    //   attenuation == 0 at extent of max influence
+    //   attenuation == 1 when d == 0
+    attenuation = (attenuation - cutoff) / (1 - cutoff);
+    attenuation = max(attenuation, 0);
+
+    float DOT = max(dot(L, N), 0);
+    attenuation *= DOT;
+    attenuation *= saturate (d / (r - innerRadius));
+
+    return attenuation;
+}
+
 float4 PS_main(VS_OUT input) : SV_Target
 {
-    uint lightCount = 3;
+    uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 
@@ -186,7 +252,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
-    for (uint i = 0; i < lightCount; i++)
+    for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
      // if (pointlights[i].isActive == false)
      // {
@@ -205,12 +271,22 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
         
-        //if (dot(camPos - light.lightPos, normalize(light.lightDir)) > 0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
+        //if (dot(normalize(wPosSamp.xyz - pointlights[i].position.xyz), N) < 0.0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
+        //{
+        //lightPower = pointIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff, 0.05);
+        //lightPower = DirectIllumination(wPosSamp.xyz, N, pointlights[i].position.xyz, pointlights[i].radius, 0.01);
+        lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
 
+        lightPower *= pointlights[i].intensity; //could add falloff factor
+
+        //pointlights[i].color /= lightPower;
+
+        //return lightPower;
+        //return lightPower.rrrr;
+        //}
         //else //lights with no direction
+       
 
-
-        lightPower = pointlights[i].intensity; //could add falloff factor
         
         //DO SHADOW STUFF HERE
 
@@ -232,16 +308,19 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight).rgb;
+    float3 diffuse = saturate(diffuseLight.rgb);
+    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
     float3 specular = specularLight.rgb;
+    
 
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
+    finalColor.rgb += ambient;
 
 
     
-    return finalColor;
+    return saturate(finalColor);
 
 
 
