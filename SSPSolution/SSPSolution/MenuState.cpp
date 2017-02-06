@@ -594,7 +594,6 @@ void MenuState::Hosting(float dt)
 	}
 	else
 	{
-		printf("Someone connected\n");
 		/*
 		Now when someone has connected we want to send a physics sync packet
 		before we continue. When we recive the ready packet we will load our level.
@@ -609,10 +608,12 @@ void MenuState::Hosting(float dt)
 		{
 			this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
 			this->sentSyncPacket = true;
+			printf("Sent SyncPhysicsPacket to client\n");
 		}
 
 		if (this->m_networkModule->IsClientReady())	//When we recive the readyPacket from the client we start the level
 		{
+			printf("Client is Ready");
 			#pragma region
 			//Create, Initialize and push a LevelSelectState
 			LevelSelectState* levelSelect = new LevelSelectState();
@@ -628,10 +629,12 @@ void MenuState::Hosting(float dt)
 				switch (levelID)
 				{
 				case 1:
+					printf("LOAD LEVEL 1\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
 					break;
 
 				default:
+					printf("LOAD DEFUALT\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
 					break;
 
@@ -660,6 +663,7 @@ void MenuState::Joining()
 		
 	if (packets.size() != 0)	//We recive the syncpacket
 	{
+		printf("Recived SyncPhysicsPacket");
 		std::list<SyncPhysicPacket>::iterator packet = packets.begin();
 
 		//Send Ready packet
@@ -687,10 +691,12 @@ void MenuState::Joining()
 			switch (levelID)
 			{
 			case 1:
+				printf("LOAD LEVEL 1\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
 				break;
 
 			default:
+				printf("LOAD DEFUALT\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
 				break;
 
