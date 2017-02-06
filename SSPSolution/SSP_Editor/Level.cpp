@@ -185,23 +185,23 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 	switch (type)
 	{
 	case BUTTON:
-		m_puzzleElements.at(BUTTON).push_back((Button*)element);
+		m_puzzleElements.at(BUTTON).push_back(((Button*)element));
 		break;
 	case LEVER:
-		m_puzzleElements.at(LEVER).push_back((Button*)element);
+		m_puzzleElements.at(LEVER).push_back(((Button*)element));
 		break;
 	case WHEEL:
-		m_puzzleElements.at(WHEEL).push_back((Button*)element);
+		m_puzzleElements.at(WHEEL).push_back(((Button*)element));
 		break;
 	case DOOR:
-		m_puzzleElements.at(DOOR).push_back((Door*)element);
+		m_puzzleElements.at(DOOR).push_back(((Door*)element));
 		break;
 	case MAGNET:
 		break;
 	case PRESSUREPLATE:
 		break;
 	case AI:
-		m_LevelAi.GetAllPathComponents()->push_back((AiContainer*)element);
+		m_LevelAi.GetAllPathComponents()->push_back(((AiContainer*)element));
 		break;
 	default:
 		break;
