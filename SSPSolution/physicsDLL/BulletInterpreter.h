@@ -141,6 +141,10 @@ private:
 	void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
 
 	void applyLinearVelocityOnSrc(PhysicsComponent* src);
+
+	//apply stuff to bullet
+	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
+	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -150,10 +154,10 @@ public:
 	PHYSICSDLL_API void Initialize();
 
 	PHYSICSDLL_API void UpdateBulletEngine(const float& dt); //lets time pass in the bullet engine, letting forces move and apply on the rigid bodies
-	PHYSICSDLL_API void Update(PhysicsComponent* src, int index, float dt);	//this function call and add forces on player and components during events
+	PHYSICSDLL_API void SyncGameWithBullet(PhysicsComponent* src, float dt);	//this function call and add forces on player and components during events
 
 	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);	//forces updates in bullet world, when the ball is grabed, the ball needs a new position in bullet
-	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src);
+	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src, float dt);
 
 	PHYSICSDLL_API void Shutdown();
 

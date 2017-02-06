@@ -100,7 +100,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_entityID = 1;								//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
 	
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0); //Set Rotation
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.72, 0, 0); //Set Rotation
 	
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
@@ -1072,7 +1072,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(-32, 0, 12, 0));
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
@@ -1082,6 +1082,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
+
+	//m_player1.GetPhysicsComponent()->PC_OBB = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), DirectX::XMMatrixRotationY(1.52));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{

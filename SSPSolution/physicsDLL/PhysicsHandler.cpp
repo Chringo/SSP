@@ -65,8 +65,6 @@ bool PhysicsHandler::IntersectAABB()
 	return result;
 }
 
-//---
-
 bool PhysicsHandler::OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Pos, OBB* &obb2, DirectX::XMVECTOR obb2Pos)
 {
 	DirectX::XMFLOAT3 transPF_v;
@@ -283,6 +281,7 @@ bool PhysicsHandler::OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Po
 
 	return true;
 }
+
 bool PhysicsHandler::OBBAABBIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, AABB* &AABB, DirectX::XMVECTOR aabbPos)
 {
 	//this function just convertes the AABB in current and makes a temporary OBB that is the same size 
@@ -307,6 +306,7 @@ bool PhysicsHandler::OBBAABBIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos
 
 	return result;
 }
+
 bool PhysicsHandler::SphereAABBIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, AABB* &AABB, DirectX::XMVECTOR aabbPos)
 {
 	//this section of the code found on http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=4
@@ -344,6 +344,7 @@ bool PhysicsHandler::SphereAABBIntersectionTest(Sphere* &sphere, DirectX::XMVECT
 
 	return result;
 }
+
 bool PhysicsHandler::SphereOBBIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, OBB* &obb, DirectX::XMVECTOR obbPos, DirectX::XMVECTOR obbRotation)
 {
 	float radX = DirectX::XMVectorGetX(obbRotation);
@@ -381,6 +382,7 @@ bool PhysicsHandler::SphereOBBIntersectionTest(Sphere* &sphere, DirectX::XMVECTO
 
 	return result;
 }
+
 bool PhysicsHandler::SphereSphereIntersectionTest(Sphere* &sphere1, DirectX::XMVECTOR sphere1Pos, Sphere* &sphere2, DirectX::XMVECTOR sphere2Pos)
 {
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(sphere1Pos, sphere2Pos);
@@ -392,6 +394,7 @@ bool PhysicsHandler::SphereSphereIntersectionTest(Sphere* &sphere1, DirectX::XMV
 
 	return result;
 }
+
 bool PhysicsHandler::SpherePlaneIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, Plane* &plane, DirectX::XMVECTOR planePos)
 {
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(spherePos, planePos);
@@ -407,6 +410,7 @@ bool PhysicsHandler::SpherePlaneIntersectionTest(Sphere* &sphere, DirectX::XMVEC
 
 	return result;
 }
+
 bool PhysicsHandler::AABBPlaneIntersectionTest(AABB* &aabb, DirectX::XMVECTOR aabbPos, Plane* &plane, DirectX::XMVECTOR planePos)
 {
 	//this section of the code taken from http://www.gamasutra.com/view/feature/131790/simple_intersection_tests_for_games.php?page=7
@@ -443,6 +447,7 @@ bool PhysicsHandler::AABBPlaneIntersectionTest(AABB* &aabb, DirectX::XMVECTOR aa
 
 	return result;
 }
+
 bool PhysicsHandler::OBBPlaneIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, Plane* &plane, DirectX::XMVECTOR planePos)
 {
 	float a1 = obb->ext[0];
@@ -472,6 +477,7 @@ bool PhysicsHandler::OBBPlaneIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPo
 
 	return result;
 }
+
 bool PhysicsHandler::AABBAABBIntersectionTest(AABB* &aabb1, DirectX::XMVECTOR aabb1Pos, AABB* &aabb2, DirectX::XMVECTOR aabb2Pos)
 {
 	bool possibleCollitionX = false;
@@ -531,8 +537,6 @@ bool PhysicsHandler::AABBAABBIntersectionTest(AABB* &aabb1, DirectX::XMVECTOR aa
 	}
 	return result;
 }
-
-//---
 
 bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt)
 {
@@ -2095,30 +2099,28 @@ void PhysicsHandler::ShutDown()
 
 void PhysicsHandler::Update(float deltaTime)
 {
-
-
 	float dt = (deltaTime / 1000000);
 	//dt = (deltaTime / 50000);
 	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 	int i = 0;
 
 	int size = this->m_physicsComponents.size();
+
 	for (toProcess; toProcess != this->m_physicsComponents.end(); toProcess++)
 	{
 		PhysicsComponent* temp = nullptr;
 		temp = *(toProcess);
-		this->m_bullet.SyncBulletWithGame((*(toProcess)));
+		this->m_bullet.SyncBulletWithGame((*(toProcess)), deltaTime);
 	}
 
-	//sync positions with bullet world
+	//Update the bullet world
 	this->m_bullet.UpdateBulletEngine(dt);
 
 	//
 	for (int i = 0; i < size; i++)
 	{
 		PhysicsComponent* ptr = this->GetDynamicComponentAt(i);
-
-		this->m_bullet.Update(ptr, i, dt);
+		this->m_bullet.SyncGameWithBullet(ptr, dt);
 	}
 
 
@@ -2150,11 +2152,11 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->DoChainPhysics(&this->m_links.at(i), dt);
 	}
-	for (int i = 0; i < nrOfChainLinks; i++)
+	/*for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->AdjustChainLinkPosition(&this->m_links.at(i));
 	}
-	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
+	*///this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
 	
 	// DYNAMIC VS DYNAMIC
 	if (this->m_isHost)
@@ -3121,7 +3123,6 @@ PHYSICSDLL_API void PhysicsHandler::ApplyPlayer2ToBullet(PhysicsComponent * play
 {
 	this->m_bullet.SetPlayer2(player2);
 }
-
 
 PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)
 {
