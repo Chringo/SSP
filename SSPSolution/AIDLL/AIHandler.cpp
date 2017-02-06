@@ -37,7 +37,8 @@ int AIHandler::Update(float deltaTime)
 {
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
-		if (this->m_AIComponents[i]->AC_active)
+		//TODO: Remove active from this statement
+		if (this->m_AIComponents[i]->AC_active && this->m_AIComponents[i]->AC_triggered)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
 			if (this->m_AIComponents[i]->AC_pattern == AI_ONEWAY)
