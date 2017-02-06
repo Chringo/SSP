@@ -1057,5 +1057,6 @@ void Ui::BehaviourTypeHandler::on_Quadratic_changed(int val)
 }
 void Ui::BehaviourTypeHandler::on_HideLight_changed(bool val)
 {
+	LightController::GetInstance()->DisplayLightRadius(val);
 }
 #pragma endregion

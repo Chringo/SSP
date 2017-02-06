@@ -22,6 +22,8 @@ public:
 	void SetAmbientIntensity(float intensity);
 	void SetLevelAmbient(Ambient ambient);
 	const Ambient * GetLevelAmbient() { return &this->m_levelAmbience; };
+	void DisplayLightRadius(bool display);
+	bool DisplayLightRadius();
 	void Destroy();
 private:
 	void m_updateAmbient();
@@ -29,6 +31,7 @@ private:
 	Ambient m_levelAmbience = Ambient();
 	std::vector<Light*> m_lights;
 	std::vector<LIGHTING::Point> pointLightData;
+	bool m_displayLightRadius;
 
 
 };
