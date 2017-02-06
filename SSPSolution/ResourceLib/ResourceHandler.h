@@ -49,7 +49,7 @@ namespace Resources
 
 
 	private:
-		Resources::Status UnloadLevel(LevelResources* levelRes); //this will be private later (public for tests)
+		Resources::Status UnloadLevel(LevelResources* levelRes); 
 	};
 }
 
