@@ -157,7 +157,7 @@ struct SyncPhysicPacket : public Packet
 	unsigned int	startIndex;
 	unsigned int	nrOfDynamics;
 	bool			isHost;
-	std::string		levelName;
+	unsigned int	levelID;
 	unsigned int	checkpointID;
 
 	void serialize(char * data)

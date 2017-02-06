@@ -602,12 +602,12 @@ void MenuState::Hosting(float dt)
 		unsigned int	startIndex = 0;
 		unsigned int	nrOfDynamics = 0;
 		bool			isHost = false;
-		std::string		levelName = "forKim.level";	//CHANGE LEVEL HERE NOW
+		unsigned int	levelID = 1;	//CHANGE LEVEL HERE NOW
 		unsigned int	checkpointID = 0;
 
 		if (this->sentSyncPacket == false)	//If we havent already sent the sync packet
 		{
-			this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelName, checkpointID);
+			this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
 			this->sentSyncPacket = true;
 		}
 
@@ -624,8 +624,20 @@ void MenuState::Hosting(float dt)
 				//Push it to the gamestate stack/vector
 				this->m_gsh->PushStateToStack(levelSelect);
 
+				#pragma region
+				switch (levelID)
+				{
+				case 1:
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+					break;
 
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/" + levelName));
+				default:
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+					break;
+
+				}
+				#pragma endregion Level_To_Load
+
 			}
 			else
 			{
@@ -657,7 +669,7 @@ void MenuState::Joining()
 		unsigned int	startIndex = packet->startIndex;
 		unsigned int	nrOfDynamics = packet->nrOfDynamics;
 		bool			isHost = packet->isHost;
-		std::string		levelName = packet->levelName;
+		unsigned int	levelID = packet->levelID;
 		unsigned int	checkpointID = packet->checkpointID;
 
 		#pragma region
@@ -671,8 +683,20 @@ void MenuState::Joining()
 			//Push it to the gamestate stack/vector
 			this->m_gsh->PushStateToStack(levelSelect);
 
+			#pragma region
+			switch (levelID)
+			{
+			case 1:
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+				break;
 
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/" + levelName));
+			default:
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+				break;
+
+			}
+			#pragma endregion Level_To_Load
+
 		}
 		else
 		{

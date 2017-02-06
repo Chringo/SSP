@@ -378,7 +378,7 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, std::string levelName, unsigned int checkpointID)
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID)
 {
 	const unsigned int packet_size = sizeof(SyncPhysicPacket);
 	char packet_data[packet_size];
@@ -390,7 +390,7 @@ void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int n
 	packet.startIndex = startIndex;
 	packet.nrOfDynamics = nrOfDynamics;
 	packet.isHost = isHost;
-	packet.levelName = levelName;
+	packet.levelID = levelID;
 	packet.checkpointID = checkpointID;
 
 	packet.serialize(packet_data);

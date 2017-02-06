@@ -82,7 +82,7 @@ public:
 	NETWORKDLL_API void SendStateButtonPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendStateLeverPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);
-	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, std::string levelName, unsigned int checkpointID);
+	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID);
 	NETWORKDLL_API void SendGrabPacket(unsigned int entityID, unsigned int grabbedID);
 
 	// Mutex functions
