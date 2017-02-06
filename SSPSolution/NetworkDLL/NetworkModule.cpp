@@ -624,7 +624,7 @@ void NetworkModule::ReadMessagesFromClients()
 
 			case SYNC_PHYSICS:
 
-				//sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
 				//this->packet_Buffer_Physic.push_back(sPP);	// Push the packet to the correct buffer
 				data_read += sizeof(SyncPhysicPacket);
