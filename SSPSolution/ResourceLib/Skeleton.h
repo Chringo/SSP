@@ -37,7 +37,7 @@ namespace Resources
 		};
 
 	private:
-		const static int	       MAX_ANIMATIONS = 6;
+		const static int	       MAX_ANIMATIONS = 12;
 		RawSkeletonData		       m_skelData;
 		unsigned int		       m_numAnimations = 0;
 		std::vector<Animation*>    m_animations;
