@@ -555,7 +555,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		break;
 	}
 	
-
 	if (this->m_networkModule)
 	{
 		this->m_networkModule->Update();

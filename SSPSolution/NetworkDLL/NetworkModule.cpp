@@ -493,7 +493,7 @@ void NetworkModule::ReadMessagesFromClients()
 			//Read the header (skip the first 4 bytes since it is virtual function information)
 			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
 
-#pragma region
+			#pragma region
 		
 			switch (header)
 			{
@@ -660,7 +660,7 @@ void NetworkModule::ReadMessagesFromClients()
 				printf("Unkown packet type %d\n", header);
 				data_read = data_length;	//Break
 			}
-#pragma endregion ALL_PACKETS
+			#pragma endregion ALL_PACKETS
 		}
 
 		if (iter != this->connectedClients.end()) 
