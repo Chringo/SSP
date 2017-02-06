@@ -7,7 +7,11 @@
 
 // Named Shader Control because we had to remake shader handler 
 // and we did not want to use the same name since that would generate huge merge conflicts.
-
+struct InstanceData {
+	int modelID;
+	int amountOfInstances;
+	DirectX::XMFLOAT4X4* componentSpecific;
+};
 class ShaderControl
 {
 public:
@@ -43,6 +47,7 @@ public:
 	void Draw(Resources::Model* model);
 	void Draw(Resources::Model * model, GraphicsComponent * component);
 	void Draw(Resources::Model * model, GraphicsAnimationComponent * component);
+	void DrawInstanced(InstanceData* data);
 	ID3D11DepthStencilView* GetBackBufferDSV() const {return((DeferredShader*)m_shaders[DEFERRED])->GetDepthStencilView();}
 
 	void DrawFinal();

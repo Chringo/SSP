@@ -137,6 +137,11 @@ void ShaderControl::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 
 }
 
+void ShaderControl::DrawInstanced(InstanceData * data)
+{
+
+}
+
 
 void ShaderControl::DrawFinal()
 {
