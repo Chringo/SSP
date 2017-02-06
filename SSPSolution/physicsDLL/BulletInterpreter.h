@@ -31,6 +31,8 @@ struct OBB
 	float ext[3];
 	DirectX::XMMATRIX ort;
 	//DirectX::XMVECTOR quat;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 struct Ray
@@ -120,7 +122,6 @@ struct Field
 	bool F_second_inside;
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
 };
 
 #pragma endregion
