@@ -296,7 +296,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
     finalColor.rgb += ambient;
-    finalColor.rgb *= AOSamp;
+    //finalColor.rgb *= AOSamp;
 
     
     return saturate(finalColor);
