@@ -64,9 +64,7 @@ void AnimationHandler::Update(float dt)
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
-							//SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true);
-							//m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true);
+							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true);
 							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
 						}
 						else
