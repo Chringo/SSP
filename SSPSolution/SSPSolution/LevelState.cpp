@@ -1583,6 +1583,65 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	//Connect puzzle entities
 #pragma region
+	//Connect Platforms to other things
+	for (size_t i = 0; i < data->numAI; i++)
+	{
+		//LevelData::AiHeader tempHeader = data->aiComponents[i];
+		PlatformEntity* toConnect = nullptr;
+		//Find our platform and save it to our pointer(toConnect)
+		for (std::vector<PlatformEntity*>::iterator observer = this->m_platformEntities.begin(); observer != this->m_platformEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == data->aiComponents[i].EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < data->aiComponents[i].Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = data->aiComponents[i].Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+				}
+			}
+		}
+	}
 	//Connect Doors to other things
 	for (size_t i = 0; i < data->numDoor; i++)
 	{
