@@ -64,6 +64,7 @@ namespace Ui {
 		QComboBox* 			m_BehaviourType;
 		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
 		QCheckBox*			m_Path_Trigger_Box;
+		QCheckBox*			m_HideLights;
 		QSpinBox*			m_PATH_TRIGGER;
 		QComboBox*			m_Pattern;
 		QListWidget*		m_WaypointList;
@@ -193,6 +194,7 @@ namespace Ui {
 		void on_Constant_changed(int val);
 		void on_Linear_changed(int val);
 		void on_Quadratic_changed(int val);
+		void on_HideLight_changed(bool val);
 #pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);
