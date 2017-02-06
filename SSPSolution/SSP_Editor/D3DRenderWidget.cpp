@@ -192,7 +192,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 				SelectionHandler::GetInstance()->Update();
 		}
 		GraphicsHptr->RenderBoundingVolume(light->position, light->pickSphere, { 1.0,1.0,1.0 });
-		GraphicsHptr->RenderBoundingVolume(light->position, light->rangeSphere, { light->data->color.r, light->data->color.g, light->data->color.b, });
+		if(!LightController::GetInstance()->DisplayLightRadius())
+			GraphicsHptr->RenderBoundingVolume(light->position, light->rangeSphere, { light->data->color.r, light->data->color.g, light->data->color.b, });
 	}
 
 	for each(CheckpointContainer * checkpoint in *m_Communicator->GetCurrentLevel()->GetCheckpoints())

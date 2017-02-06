@@ -16,6 +16,9 @@ private:
 
 	std::vector<ElementState> m_subjectStates;
 	
+	DirectX::XMMATRIX m_originalOrto;
+	DirectX::XMVECTOR m_closed_pos;
+
 	bool m_isOpened;
 	float m_minRotation;
 	float m_maxRotation;

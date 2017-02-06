@@ -189,6 +189,16 @@ void LightController::SetLevelAmbient(Ambient ambient)
 	m_updateAmbient();
 }
 
+void LightController::DisplayLightRadius(bool display)
+{
+	m_displayLightRadius = display;
+}
+
+bool LightController::DisplayLightRadius()
+{
+	return m_displayLightRadius;
+}
+
 void LightController::Destroy()
 {
 	for each (Light* container in m_lights)

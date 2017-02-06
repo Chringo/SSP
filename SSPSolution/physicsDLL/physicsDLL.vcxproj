@@ -91,6 +91,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PHYSICSDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,6 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PHYSICSDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,10 +150,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BulletInterpreter.h" />
     <ClInclude Include="PhysicsHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BulletInterpreter.cpp" />
     <ClCompile Include="PhysicsHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Bulletphysics\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{252cc6f5-f2ac-3e6f-879b-c5240c03bd7f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Bulletphysics\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{38c7869d-07a6-3749-b19b-480c69741102}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Bulletphysics\src\LinearMath\LinearMath.vcxproj">
+      <Project>{8a3efc55-1401-3a7d-83ec-aee8420239c6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
