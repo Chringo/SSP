@@ -913,6 +913,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
 		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
+	{
+		//TODO: NOCLIP BOOOOIS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+		}
+		else
+		{
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+		}
+		//Result: Sloppy teleport :(
+		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos,
+			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+	}
 
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
