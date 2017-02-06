@@ -87,6 +87,50 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	spheres.clear();
 
 }
+
+
+int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum)
+{
+	int result = 0;
+	//Enum
+	enum { MAX_BRANCHING = 8 };
+	//Safety check
+	if (curNode != nullptr)
+	{
+
+		AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
+		result += 1;
+		DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+		//Branch
+		for (int i = 0; i < 8; i++)
+		{
+			//For all non-culled branches
+			if (curNode->branches[i] != nullptr)
+			{
+				//Do the check to see if the branch is within the view frustrum
+				Camera::C_AABB branchBounds;
+				branchBounds.pos = curNode->pos;
+				branchBounds.ext = curNode->ext;
+				CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+				if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+				{
+					renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+					myAABB.ext[0] *= 0.9999f;
+					myAABB.ext[1] *= 0.9999f;
+					myAABB.ext[2] *= 0.9999f;
+				}
+			}
+			if (curNode->branches[i] != nullptr)
+			{
+				//Enter your branch
+				result += RenderOctree(curNode->branches[i], cullingFrustrum);
+			}
+		}
+		this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
+
+	}
+	return result;
+}
 #endif // _DEBUG
 
 int GraphicsHandler::IncreaseArraySize()
@@ -318,7 +362,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
 	this->m_maxGraphicsAnimationComponents = 5;
-	this->m_maxDepth = 4;
+	this->m_maxDepth = 2;
 	this->m_minDepth = 1;
 	this->m_minContainment = 3;
 	this->m_minSize = 0.5f;
@@ -545,6 +589,15 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 
 #ifdef _DEBUG
+	Camera::ViewFrustrum renderTest;
+	this->m_camera->GetViewFrustrum(renderTest);
+
+	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	context->OMSetRenderTargets(1, &temp, this->dsv);
+	m_debugRender.SetActive();
+
+	this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 #endif // _DEBUG
 
@@ -836,6 +889,7 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
+	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
@@ -1179,10 +1233,127 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 {
 	//Check if this node we are currently working on can split
-	if (depth < this->m_maxDepth)
+	int containedCount = curNode->containedComponents.size();
+	int shouldBranch = 0;
+	//Determin if we should branch this node
+	//Big enough to branch
+	shouldBranch += !(curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize);
+	//Contains enough for branching to be worth it
+	shouldBranch += !(containedCount > this->m_minContainment);
+	//Has not yet reached the maximum allowed depth
+	shouldBranch += !(depth < this->m_maxDepth);
+	//If should branch equals zero
+	if (shouldBranch == 0 || (depth < this->m_minDepth))
 	{
-		int containedCount = curNode->containedComponents.size();
-		if (containedCount> 0)
+		//Create the branches, we cull them later if not needed
+		for (int i = 0; i < 8; i++)
+		{
+			curNode->branches[i] = new OctreeNode();
+		}
+		//For the 8 new branches
+#pragma region
+		 //MIN	MIN		MIN
+		curNode->branches[0]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[0]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[0]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[0]->ext.x = curNode->ext.x / 2;
+		curNode->branches[0]->ext.y = curNode->ext.y / 2;
+		curNode->branches[0]->ext.z = curNode->ext.z / 2;
+		//MIN	MIN		MAX											 
+		curNode->branches[1]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[1]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[1]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[1]->ext.x = curNode->ext.x / 2;
+		curNode->branches[1]->ext.y = curNode->ext.y / 2;
+		curNode->branches[1]->ext.z = curNode->ext.z / 2;
+		//MAX	MIN		MAX											  
+		curNode->branches[2]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[2]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[2]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[2]->ext.x = curNode->ext.x / 2;
+		curNode->branches[2]->ext.y = curNode->ext.y / 2;
+		curNode->branches[2]->ext.z = curNode->ext.z / 2;
+		//MAX	MIN		MIN											  
+		curNode->branches[3]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[3]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[3]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[3]->ext.x = curNode->ext.x / 2;
+		curNode->branches[3]->ext.y = curNode->ext.y / 2;
+		curNode->branches[3]->ext.z = curNode->ext.z / 2;
+
+		//MIN	MAX		MIN											  
+		curNode->branches[4]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[4]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[4]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[4]->ext.x = curNode->ext.x / 2;
+		curNode->branches[4]->ext.y = curNode->ext.y / 2;
+		curNode->branches[4]->ext.z = curNode->ext.z / 2;
+		//MIN	MAX		MAX											  
+		curNode->branches[5]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[5]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[5]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[5]->ext.x = curNode->ext.x / 2;
+		curNode->branches[5]->ext.y = curNode->ext.y / 2;
+		curNode->branches[5]->ext.z = curNode->ext.z / 2;
+		//MAX	MAX		MAX											  
+		curNode->branches[6]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[6]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[6]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[6]->ext.x = curNode->ext.x / 2;
+		curNode->branches[6]->ext.y = curNode->ext.y / 2;
+		curNode->branches[6]->ext.z = curNode->ext.z / 2;
+		//MAX	MAX		MIN											  
+		curNode->branches[7]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[7]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[7]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[7]->ext.x = curNode->ext.x / 2;
+		curNode->branches[7]->ext.y = curNode->ext.y / 2;
+		curNode->branches[7]->ext.z = curNode->ext.z / 2;
+
+#pragma endregion Creating the branches
+
+		//Fill the branches
+		for (int index = 0; index < containedCount; index++)
+		{
+			//For all 8 branches: check if they intersect with the entity
+			for (int j = 0; j < 8; j++)
+			{
+				int withinCount = 0;
+				if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index]->pos, curNode->containedComponents[index]->ext))
+				{
+					//The component is within the branch
+					curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
+					++withinCount;
+				}
+			}
+		}
+
+		//If we are not in the root which should contain the master list of components
+		if (depth > 0)
+		{
+			//Empty this branch because we gave the brances our components
+			curNode->containedComponents.clear();
+		}
+
+		//Cull the branches without components
+		for (int i = 0; i < 8; i++)
+		{
+			if (curNode->branches[i]->containedComponents.size() == 0)
+			{
+				delete curNode->branches[i];
+				curNode->branches[i] = nullptr;
+			}
+			else
+			{
+				//Do the same algorithm for the child branches that are not culled
+				this->OctreeExtend(curNode->branches[i], depth + 1);
+			}
+		}
+	}
+
+/*	if (depth < this->m_maxDepth)
+	{
+		if (containedCount > 0)
 		{
 			if (curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize)
 			{
@@ -1190,11 +1361,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 				{
 					if (containedCount > this->m_minContainment)
 					{
-						//Create the extensions, we cull them if not needed later
-						for (int i = 0; i < 8; i++)
-						{
-							curNode->branches[i] = new OctreeNode();
-						}
+						
 						//For the 8 new branches
 #pragma region
 						//MIN	MIN		MIN
@@ -1264,23 +1431,23 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 						//For every contained component
 						for (int index = 0; index < containedCount; index++)
 						{
-							/*float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
-							if (abs(distance) < curNode->containedComponents[index].ext.x)
-								xSplit = 0;
-							else
-								xSplit += (distance > 0) * 2;
-
-							distance = curNode->containedComponents[index].pos.y - curNode->pos.y;
-							if (abs(distance) < curNode->containedComponents[index].ext.y)
-								ySplit = 0;
-							else
-								ySplit += (distance > 0) * 2;
-
-							distance = curNode->containedComponents[index].pos.z - curNode->pos.z;
-							if (abs(distance) < curNode->containedComponents[index].ext.z)
-								zSplit = 0;
-							else
-								zSplit += (distance > 0) * 2;*/
+							//float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
+							//if (abs(distance) < curNode->containedComponents[index].ext.x)
+							//	xSplit = 0;
+							//else
+							//	xSplit += (distance > 0) * 2;
+							//
+							//distance = curNode->containedComponents[index].pos.y - curNode->pos.y;
+							//if (abs(distance) < curNode->containedComponents[index].ext.y)
+							//	ySplit = 0;
+							//else
+							//	ySplit += (distance > 0) * 2;
+							//
+							//distance = curNode->containedComponents[index].pos.z - curNode->pos.z;
+							//if (abs(distance) < curNode->containedComponents[index].ext.z)
+							//	zSplit = 0;
+							//else
+							//	zSplit += (distance > 0) * 2;
 
 
 							
@@ -1318,10 +1485,11 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 				}
 			}
 		}
-	}
+	}*/
 	
 
 }
+
 
 void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum)
 {

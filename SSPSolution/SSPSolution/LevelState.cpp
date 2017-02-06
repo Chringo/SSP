@@ -101,14 +101,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
-	this->m_cHandler->ResizeGraphicsPersistent(2);
+	this->m_cHandler->ResizeGraphicsPersistent(4);
 	// creating the player
 	this->m_player1 = Player();
 #ifdef _DEBUG
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 2759249725;
 #else
-	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
+	GraphicsComponent* playerG = m_cHandler->GetPersistentGraphicsComponent();
 	playerG->modelID = 1337;
 #endif // _DEBUG
 	playerG->active = true;
@@ -169,7 +169,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 2759249725;
 #else
-	playerG = m_cHandler->GetGraphicsComponent();
+	playerG = m_cHandler->GetPersistentGraphicsComponent();
 	playerG->modelID = 1337;
 #endif // DEBUG
 
@@ -1328,20 +1328,20 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	//}
 	//checkPointOBB = nullptr;
 
-	for (size_t i = 0; i < data->numCheckpoints; i++)
-	{
-		OBB* checkPointOBB = &m_checkpoints[i]->obb;
-		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-			m_checkpoints[i]->pos,
-			1,	//EntityID Player1
-			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-			checkPointOBB
-		);
-		FieldEntity* tempFE = new FieldEntity();
-		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
-		this->m_fieldEntities.push_back(tempFE);
-		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
-	}
+	//for (size_t i = 0; i < data->numCheckpoints; i++)
+	//{
+	//	OBB* checkPointOBB = &m_checkpoints[i]->obb;
+	//	Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+	//		m_checkpoints[i]->pos,
+	//		1,	//EntityID Player1
+	//		3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+	//		checkPointOBB
+	//	);
+	//	FieldEntity* tempFE = new FieldEntity();
+	//	tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+	//	this->m_fieldEntities.push_back(tempFE);
+	//	this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+	//}
 
 #pragma endregion
 

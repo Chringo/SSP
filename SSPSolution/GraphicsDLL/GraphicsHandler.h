@@ -120,6 +120,9 @@ private:
 	};
 	OctreeNode m_octreeRoot;
 	
+#ifdef _DEBUG
+	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
+#endif
 	struct Sorting_on_modelID
 	{
 		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
