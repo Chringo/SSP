@@ -30,6 +30,8 @@ public:
 	//dT should be in seconds
 	virtual int Update(float dT, InputHandler* inputHandler) = 0;
 	virtual int React(int entityID, EVENT reactEvent) = 0;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 
 	//Returns 1 if synchronization was needed, -1 if physicscomponent was missing, -2 if graphicscomponent was missing, -3 if both components were missing.
 	int SyncComponents();

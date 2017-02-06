@@ -15,7 +15,7 @@ cbuffer frame : register(b1)
 }
 cbuffer skeleton : register(b4)
 {
-	float4x4 joints[18];
+	float4x4 joints[22];
 }
 
 
@@ -71,8 +71,8 @@ VS_OUT VS_main(VS_IN input)
     output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
     output.Pos = mul(float4(skinnedPos, 1), WVP);
 
-    output.Normal = mul(float4(skinnedNormal, 1), worldMatrix).rgb;
-    output.Tangent = mul(float4(skinnedTan, 1), worldMatrix).rgb;
+    output.Normal = mul(float4(skinnedNormal, 0), worldMatrix).rgb;
+    output.Tangent = mul(float4(skinnedTan, 0), worldMatrix).rgb;
 
 	output.UV = input.UV;
 

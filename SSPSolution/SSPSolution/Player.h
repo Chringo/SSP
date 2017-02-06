@@ -41,7 +41,7 @@ public:
 	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation);
 
 	float GetMaxSpeed();
 	float GetAcceleration();
