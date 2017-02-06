@@ -15,7 +15,7 @@ cbuffer frame : register(b1)
 }
 cbuffer skeleton : register(b4)
 {
-	float4x4 joints[18];
+	float4x4 joints[22];
 }
 
 
