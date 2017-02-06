@@ -998,6 +998,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	//Lock the camera to the player
 
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		this->m_platformEntities[i]->Update(dt, inputHandler);
+	}
+
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{

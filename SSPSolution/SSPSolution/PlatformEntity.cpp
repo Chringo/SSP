@@ -4,7 +4,7 @@ PlatformEntity::~PlatformEntity(){}
 
 int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
-
+	this->SyncComponents();
 	return 1;
 }
 
