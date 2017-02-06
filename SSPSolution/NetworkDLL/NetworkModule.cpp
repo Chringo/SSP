@@ -884,7 +884,7 @@ std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 
 	for (iter = this->packet_Buffer_Physic.begin(); iter != this->packet_Buffer_Physic.end();)
 	{
-		if (iter->packet_type == UPDATE_CAMERA)
+		if (iter->packet_type == SYNC_PHYSICS)
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Physic.erase(iter);	//Returns the next element after the errased element
