@@ -748,8 +748,19 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 	
 		for (size_t i = 0; i < ((ListenerContainer*)selection)->numTriggers; i++)
 		{
-			Container* trigger = ((ListenerContainer*)selection)->triggerContainers[i];
-			if (trigger == nullptr) {
+			//This is a quick and ugly fix. Basically, ask the level if the trigger exists. So that it wont crash if a connected trigger has been
+			//deleted. Unfortunately this is done for every trigger
+
+			Container* trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
+			if (trigger == nullptr) { //this means it has been deleted completely
+				((ListenerContainer*)selection)->DeleteTrigger(((ListenerContainer*)selection)->triggerEntityIds[i]);
+				if (((ListenerContainer*)selection)->numTriggers < 1)//if there are no other triggers
+					continue;
+				
+			}
+
+			 trigger = ((ListenerContainer*)selection)->triggerContainers[i];
+			if (trigger == nullptr) { // Try to get the entity, (if it has been converted)
 				trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
 			}
 
@@ -765,13 +776,16 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
 		}
 		m_triggerList->selectRow(0);
-		if (((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] == nullptr)
-			((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] = currentLevel->GetInstanceEntity(((ListenerContainer*)m_selection)->triggerEntityIds[m_triggerList->currentRow()]);
-
-		m_currentEventType = ((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()]->type;
-		SetEventListByType(m_currentEventType);
-		QString string = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]); //Get the string of the EVENT enum
-		m_eventBox->setCurrentText(string); //Set the correct string item in the event box
+		if (((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] == nullptr) {
+			((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] = currentLevel->GetInstanceEntity(((ListenerContainer*)m_selection)->triggerEntityIds[m_triggerList->currentRow()]);	
+		}
+		if (((ListenerContainer*)m_selection)->numTriggers > 0) //Make sure that there are any triggers
+		{
+			m_currentEventType = ((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()]->type;
+			SetEventListByType(m_currentEventType);
+			QString string = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]); //Get the string of the EVENT enum
+			m_eventBox->setCurrentText(string); //Set the correct string item in the event box
+		}
 		
 	}
 	
