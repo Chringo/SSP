@@ -362,7 +362,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
 	this->m_maxGraphicsAnimationComponents = 5;
-	this->m_maxDepth = 2;
+	this->m_maxDepth = 5;
 	this->m_minDepth = 1;
 	this->m_minContainment = 3;
 	this->m_minSize = 0.5f;

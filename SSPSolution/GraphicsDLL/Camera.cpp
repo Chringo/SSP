@@ -134,7 +134,7 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 	int result = 0;
 	//Constants for descriptive code
 	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
-	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS};
+	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_INWARDS};
 	DirectX::XMMATRIX clipSpaceMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&this->m_viewMatrix), DirectX::XMLoadFloat4x4(&this->m_projectionMatrix));
 	DirectX::XMFLOAT4X4 M;
 	DirectX::XMStoreFloat4x4(&M, clipSpaceMatrix);
@@ -587,7 +587,7 @@ void Camera::m_updatePos()
 CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 {
 	CullingResult result = FRUSTRUM_INSIDE;
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	/*enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -600,7 +600,56 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 		{
 			return FRUSTRUM_INTERSECT;
 		}
+	}*/
+	for (int i = 0; i < 6; i++)
+	{
+		DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
+		DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
+		//+Y
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		//-Y
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+
+		return FRUSTRUM_OUTSIDE;
 	}
+	return FRUSTRUM_INSIDE;
 	return result;
 }
 
