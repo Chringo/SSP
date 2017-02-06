@@ -279,6 +279,18 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				//Add the velocity to our physicsComponent
 				this->m_pComp->PC_velocity = velocity;
+				//this->m_pComp->dir
+				
+
+				//stoopid john maths right here bitches
+				//DirectX::XMVECTOR walkDir = DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 });
+				//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+				//	-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+				//	0.f, 1.f, 0.f, 0.0f,
+				//	-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
+				//	this->m_pComp->PC_OBB.ort.r[2].m128_f32[0], this->m_pComp->PC_OBB.ort.r[2].m128_f32[1], this->m_pComp->PC_OBB.ort.r[2].m128_f32[2], 1.0f
+				//);
+
 			}
 
 		//}

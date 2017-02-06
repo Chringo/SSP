@@ -51,7 +51,7 @@ VS_OUT VS_main(VS_IN input)
     output.Normal = mul(float4(input.Normal, 0.0f), worldMatrix).rgb;
 	//output.Normal = input.Normal.rgb;
     output.UV = input.UV;
-    output.Tangent = mul(float4(input.Tangent.x, input.Tangent.y, -input.Tangent.z, 0.0f), worldMatrix).rgb;
+    output.Tangent = mul(float4(input.Tangent, 0.0f), worldMatrix).rgb;
     //output.wPos = mul(float4(input.Pos, 1), worldMatrix);
 
     return output;

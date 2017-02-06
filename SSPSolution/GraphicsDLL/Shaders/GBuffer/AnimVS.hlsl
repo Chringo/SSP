@@ -60,8 +60,8 @@ VS_OUT VS_main(VS_IN input)
 			weight = input.weights[i];
 
             skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences])).xyz;
-            skinnedNormal += mul(weight, mul(float4(input.Normal, 1.0f), joints[influences])).xyz;
-            skinnedTan += mul(weight, mul(float4(input.Tangent, 1.0f), joints[influences])).xyz;
+            skinnedNormal += mul(weight, mul(float4(input.Normal, 0.0f), joints[influences])).xyz;
+            skinnedTan += mul(weight, mul(float4(input.Tangent, 0.0f), joints[influences])).xyz;
         }
     }
 
