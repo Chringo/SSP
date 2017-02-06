@@ -6,7 +6,11 @@
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
-
+struct InstanceData {
+	int modelID;
+	int amountOfInstances;
+	DirectX::XMFLOAT4X4* componentSpecific;
+};
 class DeferredShader :
 	public Shader
 {
@@ -47,10 +51,11 @@ public:
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
 	void Release();
 
-
+	
 	int Draw(Resources::Model* model);
 	int Draw(Resources::Model* model, GraphicsComponent * component);
 	int Draw(Resources::Model* model, GraphicsAnimationComponent * component);
+	int DrawInstanced(InstanceData* data);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
@@ -59,7 +64,6 @@ public:
 	int DrawFromEditor(Resources::Model * model1);
 	ID3D11DepthStencilView*  GetDepthStencilView() const { return this->m_DSV; };
 private:
-	int DrawInstanced();
 };
 
 #endif

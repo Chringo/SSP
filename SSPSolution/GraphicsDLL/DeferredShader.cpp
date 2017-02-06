@@ -42,11 +42,11 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
-	WCHAR* vsInstFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
-	WCHAR* vsAnimFilename = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
-	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* vsFilename       = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsInstFilename   = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
+	WCHAR* vsAnimFilename   = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
+	WCHAR* gsFilename		= L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* psFilename	    = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 
 	// Compile the shaders \\
 
@@ -174,6 +174,62 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
+
+	
+	// Create the input layout  for instancing \\
+
+	D3D11_INPUT_ELEMENT_DESC inputDescInstanced[8];
+	inputDescInstanced[0].SemanticName		    = "POSITION";
+	inputDescInstanced[0].SemanticIndex			= 0;
+	inputDescInstanced[0].InputSlot				= 0;
+	inputDescInstanced[0].AlignedByteOffset     = 0;
+	inputDescInstanced[0].InstanceDataStepRate  = 0;
+	inputDescInstanced[0].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[0].InputSlotClass	    = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[1].SemanticName		    = "NORMAL";
+	inputDescInstanced[1].SemanticIndex			= 0;
+	inputDescInstanced[1].InputSlot				= 0;
+	inputDescInstanced[1].InstanceDataStepRate  = 0;
+	inputDescInstanced[1].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[1].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[1].InputSlotClass	    = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[2].SemanticName		    = "TANGENT";
+	inputDescInstanced[2].SemanticIndex	        = 0;
+	inputDescInstanced[2].InputSlot		        = 0;
+	inputDescInstanced[2].InstanceDataStepRate  = 0;
+	inputDescInstanced[2].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[2].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[2].InputSlotClass        = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[3].SemanticName			= "TEXCOORD";
+	inputDescInstanced[3].SemanticIndex		    = 0;
+	inputDescInstanced[3].InputSlot			    = 0;
+	inputDescInstanced[3].InstanceDataStepRate  = 0;
+	inputDescInstanced[3].Format				= DXGI_FORMAT_R32G32_FLOAT;
+	inputDescInstanced[3].AlignedByteOffset		= D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[3].InputSlotClass		= D3D11_INPUT_PER_VERTEX_DATA;
+
+	for (size_t i = 4; i < 8; i++)
+	{
+		//Create 4 vectors for the world data per instance
+		inputDescInstanced[i].SemanticName          = "WORLD";
+		inputDescInstanced[i].SemanticIndex         = i-4;
+		inputDescInstanced[i].InputSlot				= 1;
+		inputDescInstanced[i].InstanceDataStepRate  = 0;
+		inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		inputDescInstanced[i].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
+		inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
+
+	}
+
+	 numElements = sizeof(inputDescInstanced) / sizeof(inputDescInstanced[0]);
+	//Create the vertex input layout.
+	hResult = device->CreateInputLayout(inputDescInstanced, numElements, vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), &this->m_layout[IL_INSTANCED_NORMAL]);
+	if (FAILED(hResult)) {
+		return 1;
+	}
 	// Create the input layout \\
 
 	D3D11_INPUT_ELEMENT_DESC inputDescAnim[6];
@@ -431,6 +487,11 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		break;
 	}
 	case ShaderLib::Instanced:
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Instanced], NULL, 0);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
 		break;
 	case ShaderLib::Animated:
 	{
@@ -621,6 +682,14 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	return 0;
 }
 
+int DeferredShader::DrawInstanced(Resources::Model * model)
+{
+
+
+
+	return 0;
+}
+
 
 int DeferredShader::Clear() //clears RTVs and DSV
 {
@@ -648,10 +717,6 @@ ID3D11ShaderResourceView ** DeferredShader::GetShaderResourceViews()
 }
 
 
-int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
-{
-	return 0;
-}
 
 int DeferredShader::DrawGrid(Resources::Model * model) //depricated
 {
