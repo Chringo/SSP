@@ -2,6 +2,8 @@
 #define	SSPAPPLICATION_SOUND_SOUNDHANDLER_H
 
 #include <vector>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "../irrKlang/Include/irrKlang.h"
@@ -57,6 +59,8 @@ private:
 	std::vector<irrklang::ISoundSource*> m_sounds2D;
 	std::vector<irrklang::ISoundSource*> m_sounds3D;
 
+	unsigned m_randomSeed;
+
 	void LoadSounds();
 	void DropSounds();	//Drop irrKlang resources that is keept outside of the Sound engine
 
@@ -70,10 +74,16 @@ public:
 	irrklang::ISound* PlaySound2D(Sounds2D soundEnum, bool loop, bool track);
 	irrklang::ISound* PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track);
 	
+	irrklang::ISound* PlayRandomSound2D(Sounds2D start_soundEnum, Sounds2D end_soundEnum, bool loop, bool track);
+	irrklang::ISound* PlayRandomSound3D(Sounds3D start_soundEnum, Sounds3D end_soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track);
+
+
+
 	void UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector);
 
 	void OnSoundStopped(irrklang::ISound * sound, irrklang::E_STOP_EVENT_CAUSE reason, void * userData);
 	bool ReInitSoundEngine();	//Try to reload the irrKlang engine and loaded sounds
+
 
 };
 

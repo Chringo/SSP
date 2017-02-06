@@ -60,8 +60,8 @@ VS_OUT VS_main(VS_IN input)
 			weight = input.weights[i];
 
             skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences])).xyz;
-            skinnedNormal += mul(weight, mul(float4(input.Normal, 1.0f), joints[influences])).xyz;
-            skinnedTan += mul(weight, mul(float4(input.Tangent, 1.0f), joints[influences])).xyz;
+            skinnedNormal += mul(weight, mul(float4(input.Normal, 0.0f), joints[influences])).xyz;
+            skinnedTan += mul(weight, mul(float4(input.Tangent, 0.0f), joints[influences])).xyz;
         }
     }
 
@@ -71,6 +71,7 @@ VS_OUT VS_main(VS_IN input)
     output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
     output.Pos = mul(float4(skinnedPos, 1), WVP);
 
+	/*Always handle the normal and tangents as DIRECTIONS, otherwise no good PBR shading for dynamic meshes.*/
     output.Normal = mul(float4(skinnedNormal, 0), worldMatrix).rgb;
     output.Tangent = mul(float4(skinnedTan, 0), worldMatrix).rgb;
 
