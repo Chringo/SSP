@@ -1967,6 +1967,7 @@ DirectX::XMMATRIX PhysicsHandler::RotateBB_X(PhysicsComponent* src, const float 
 {
 	DirectX::XMMATRIX xMatrix;
 	DirectX::XMMATRIX test = src->PC_OBB.ort;
+
 	src->PC_rotation = DirectX::XMVectorSetByIndex(src->PC_rotation, radian, 0);
 	//read the value of PC_rotation
 	//DirectX::XMStoreFloat3(&rot,src->PC_rotation);
@@ -2073,12 +2074,12 @@ PhysicsHandler::~PhysicsHandler()
 
 bool PhysicsHandler::Initialize()
 {
-	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.009f, 0.0f, 0.0f);
+	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.01f, 0.0f, 0.0f);
 
 	this->m_startIndex = 0;
 	this->m_nrOfStaticObjects = this->m_physicsComponents.size();
 	this->m_isHost = true;
-
+	this->m_bullet.Initialize();
 
 	return true;
 }
@@ -2094,9 +2095,57 @@ void PhysicsHandler::ShutDown()
 
 void PhysicsHandler::Update(float deltaTime)
 {
-	float dt = (deltaTime / 50000);
+
+
+	float dt = (deltaTime / 1000000);
+	//dt = (deltaTime / 50000);
+	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
+	int i = 0;
+
+	int size = this->m_physicsComponents.size();
+	for (toProcess; toProcess != this->m_physicsComponents.end(); toProcess++)
+	{
+		PhysicsComponent* temp = nullptr;
+		temp = *(toProcess);
+		this->m_bullet.SyncBulletWithGame((*(toProcess)));
+	}
+
+	//sync positions with bullet world
+	this->m_bullet.UpdateBulletEngine(dt);
+
+	//
+	for (int i = 0; i < size; i++)
+	{
+		PhysicsComponent* ptr = this->GetDynamicComponentAt(i);
+
+		this->m_bullet.Update(ptr, i, dt);
+	}
+
+
+	for (int i = 0; i < this->m_physicsComponents.size(); i++)
+	{
+		PhysicsComponent* ptr = this->m_physicsComponents.at(i);
+		if (this->m_physicsComponents.at(i)->PC_steadfast == true)
+		{
+			DirectX::XMVECTOR velocity = ptr->PC_velocity;
+			velocity = DirectX::XMVectorScale(velocity, dt);
+
+			ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, velocity);
+		}
+	}
 
 	int nrOfChainLinks = this->m_links.size();
+	
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->DoChainPhysics(&this->m_links.at(i), dt);
+	//}
+
+	//for (int i = 0; i < nrOfChainLinks; i++)
+	//{
+	//	this->AdjustChainLinkPosition(&this->m_links.at(i));
+	//}
+	
 	for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->DoChainPhysics(&this->m_links.at(i), dt);
@@ -2107,8 +2156,6 @@ void PhysicsHandler::Update(float deltaTime)
 	}
 	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
 	
-	this->CheckFieldIntersection();
-
 	// DYNAMIC VS DYNAMIC
 	if (this->m_isHost)
 	{
@@ -2117,6 +2164,11 @@ void PhysicsHandler::Update(float deltaTime)
 		for (unsigned int i = 0; i < this->m_numberOfDynamics; i++)	// 
 		{
 			PhysicsComponent* current = this->m_dynamicComponents.at(i);
+			if (current->PC_BVtype == BV_Sphere)
+			{
+				int a = 0;
+			}
+			int currentIndex = i;
 			if (current->PC_collides)
 			{
 				for (unsigned int j = i + 1; j < this->m_numberOfDynamics; j++)
@@ -2146,21 +2198,6 @@ void PhysicsHandler::Update(float deltaTime)
 								this->SphereSphereIntersectionTest(current, toCompare, dt);
 							}
 						}
-						if (current->PC_BVtype == BV_OBB)
-						{
-							if (toCompare->PC_BVtype == BV_OBB)
-							{
-								this->ObbObbIntersectionTest(current, toCompare, dt);
-							}
-							if (toCompare->PC_BVtype == BV_Sphere)
-							{
-								this->SphereOBBIntersectionTest(toCompare, current, dt);
-							}
-							if (toCompare->PC_BVtype == BV_Sphere)
-							{
-								this->SphereOBBIntersectionTest(toCompare, current, dt);
-							}
-						}
 					}
 
 				}
@@ -2174,7 +2211,7 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		PhysicsComponent* current = this->m_dynamicComponents.at(i);
 		current->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
-
+		int currentIndex = i;
 
 		int loopsNeeded = 1;
 		float speed = DirectX::XMVectorGetX(DirectX::XMVector3Length(current->PC_velocity));
@@ -2183,7 +2220,7 @@ void PhysicsHandler::Update(float deltaTime)
 		{
 			//if speed is to great increase number of loops to insure 
 			//hit detection/correction is done correctly
-			loopsNeeded = 3; // 3 or 4 seems to work fine when speed is above 0.3f
+			loopsNeeded = 1; // 3 or 4 seems to work fine when speed is above 0.3f
 		}
 		this->m_nrOfStaticObjects = this->m_staticComponents.size();
 		for (int i = 0; i < loopsNeeded; i++)
@@ -2198,25 +2235,13 @@ void PhysicsHandler::Update(float deltaTime)
 						{
 							PhysicsComponent* toCompare = nullptr;
 							toCompare = this->m_staticComponents.at(j);
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
-							{
-								this->AABBAABBIntersectionTest(current, toCompare, newDT);
-							}
-
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
 							{
 								this->AABBPlaneIntersectionTest(current, toCompare, newDT);
 							}
 
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
-							{
-								//to be continued
-
-							}
-
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
 							{
-								//
 							}
 
 						}
@@ -2230,7 +2255,7 @@ void PhysicsHandler::Update(float deltaTime)
 							toCompare = this->m_staticComponents.at(j);
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
 							{
-								this->SphereAABBIntersectionTest(current, toCompare, true, newDT);
+								//this->SphereAABBIntersectionTest(current, toCompare, newDT);
 							}
 
 							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
@@ -2249,66 +2274,35 @@ void PhysicsHandler::Update(float deltaTime)
 							}
 						}
 					}
-				if (current->PC_BVtype == BoundingVolumeType::BV_OBB)
-					{
-						//only collide with static environment for starters
-						for (int j = 0; j < this->m_nrOfStaticObjects; j++)
-						{
-							PhysicsComponent* toCompare = nullptr;
-							toCompare = this->m_staticComponents.at(j);
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_AABB)
-							{
-								//toCompare has to be AABB or bad peaople will take you in the night
-								this->OBBAABBIntersectionTest(current, toCompare, newDT);
-							}
-
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Plane)
-							{
-								this->OBBPlaneIntersectionTest(current, toCompare, newDT);
-							}
-
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_OBB)
-							{
-								//to be continued
-								this->ObbObbIntersectionTest(current, toCompare, newDT);
-							}
-
-							if (toCompare->PC_BVtype == BoundingVolumeType::BV_Sphere)
-							{
-								this->SphereSphereIntersectionTest(current, toCompare, newDT);
-							}
-						}
-					}
 
 			}
-			DirectX::XMVECTOR pParallel;
-			DirectX::XMVECTOR pPerpendicular;
-
-			DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
-
-			DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, (float)current->PC_gravityInfluence), current->PC_mass), 1.0f);
-
-			this->ApplyForceToComponent(current, gravityForce, newDT);
-
-			if (!current->PC_is_Static)
+			
+			if (current->PC_BVtype != BV_OBB)
 			{
-				current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, newDT));
-				DirectX::XMFLOAT3 temp;
-				DirectX::XMStoreFloat3(&temp, current->PC_pos);
-				if (temp.y < -20)
+				DirectX::XMVECTOR pParallel;
+				DirectX::XMVECTOR pPerpendicular;
+
+				DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular, this->m_gravity, current->PC_normalForce);
+
+				DirectX::XMVECTOR gravityForce = DirectX::XMVectorScale(DirectX::XMVectorScale(DirectX::XMVectorScale(pPerpendicular, (float)current->PC_gravityInfluence), current->PC_mass), 1.0f);
+
+				this->ApplyForceToComponent(current, gravityForce, newDT);
+
+				if (!current->PC_is_Static)
 				{
-					current->PC_pos = DirectX::XMVectorSet(temp.x, -5, temp.z, 0);
-					current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+					current->PC_pos = DirectX::XMVectorAdd(current->PC_pos, DirectX::XMVectorScale(current->PC_velocity, newDT));
+					DirectX::XMFLOAT3 temp;
+					DirectX::XMStoreFloat3(&temp, current->PC_pos);
+					if (temp.y < -20)
+					{
+						current->PC_pos = DirectX::XMVectorSet(temp.x, -5, temp.z, 0);
+						current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+					}
 				}
-			}
-			else
-			{
-				current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			}
 		}
 
 	}
-
 
 }
 
@@ -2320,6 +2314,7 @@ void PhysicsHandler::CheckFieldIntersection()
 	{
 		field = &this->m_fields.at(i);
 
+		DirectX::XMVECTOR fieldPos = DirectX::XMLoadFloat3(&field->F_pos);
 		PhysicsComponent* ptr = nullptr;
 		int nrOfPhysicsComponents = this->m_dynamicComponents.size();
 		for (int y = 0; y < nrOfPhysicsComponents; y++)
@@ -2332,28 +2327,28 @@ void PhysicsHandler::CheckFieldIntersection()
 				{
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
-					result = this->OBBAABBIntersectionTest(obb_ptr, field->F_pos, aabb_ptr, ptr->PC_pos);
+					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
-					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, field->F_pos, ptr->PC_rotation);
+					result = this->SphereOBBIntersectionTest(sphere_ptr, ptr->PC_pos, obb_ptr, fieldPos, ptr->PC_rotation);
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
-					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, field->F_pos, PC_obb_ptr, ptr->PC_pos);
+					result = this->OBBOBBIntersectionTest(FIELD_obb_ptr, fieldPos, PC_obb_ptr, ptr->PC_pos);
 				}
 				if (result)
 				{
 					//intersection found
 					if (ptr->PC_entityID == field->F_entitityID1)
 					{
-						field->F_first_inide = true;
+						field->F_first_inside = true;
 					}
 					if (ptr->PC_entityID == field->F_entitityID2)
 					{
@@ -2365,7 +2360,7 @@ void PhysicsHandler::CheckFieldIntersection()
 					//no intersection found
 					if (ptr->PC_entityID == field->F_entitityID1)
 					{
-						field->F_first_inide = false;
+						field->F_first_inside = false;
 					}
 					if (ptr->PC_entityID == field->F_entitityID2)
 					{
@@ -2520,6 +2515,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_friction = 0.9f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
+	//newObject->PC_OBB.quat = DirectX::XMVectorSet(0, 0, 0, 1);
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_physicsComponents.push_back(newObject);
@@ -2538,7 +2534,6 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 
 	return newObject;
 }
-
 
 void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght)
 {
@@ -2565,15 +2560,19 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 
 		//next = this->CreatePhysicsComponent(DirectX::XMVectorAdd(ptr->PC_pos, DirectX::XMVectorScale(diffVec, i)));
 		next = this->CreatePhysicsComponent(nextPos, false);
+		int indexBullet = this->m_physicsComponents.size() - 1;
 		
-		next->PC_BVtype = BV_AABB;
+		next->PC_BVtype = BV_OBB;
 		next->PC_collides = false;
-		next->PC_Sphere.radius = 0.35f;
-		next->PC_friction = 0.0;
+		next->PC_active = true;
+		//next->PC_Sphere.radius = 0.35f;
+		//next->PC_friction = 0;
 
-		next->PC_AABB.ext[0] = 0.25f;
-		next->PC_AABB.ext[1] = 0.25f;
-		next->PC_AABB.ext[2] = 0.25f;
+		this->TransferBoxesToBullet(next, indexBullet);
+
+		next->PC_OBB.ext[0] = 0.15f;
+		next->PC_OBB.ext[1] = 0.15f;
+		next->PC_OBB.ext[2] = 0.15f;
 		next->PC_gravityInfluence = 1.0f;
 
 		link.CL_previous = previous;
@@ -2825,21 +2824,67 @@ bool PhysicsHandler::IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const 
 	return true;
 }
 
+bool PhysicsHandler::IntersectRaySphere(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const Sphere & obj, const DirectX::XMVECTOR & pos, float & distance)
+{
+	DirectX::XMVECTOR p = DirectX::XMVectorSubtract(rayOrigin, pos);
+	float r2 = obj.radius * obj.radius;
+	float PDotD = DirectX::XMVector3Dot(p, rayDir).m128_f32[0];
+	float PDotP = DirectX::XMVector3Dot(p, p).m128_f32[0];
+
+	if (PDotD > 0 || PDotP < r2)
+		return false;
+
+	DirectX::XMVECTOR a = DirectX::XMVectorSubtract(p, DirectX::XMVectorScale(rayDir, PDotD));
+	float ADotA = DirectX::XMVector3Dot(a, a).m128_f32[0];
+
+	if (ADotA > r2)
+		return false;
+
+	float h = sqrt(r2 - ADotA);
+	DirectX::XMVECTOR i = DirectX::XMVectorSubtract(a, DirectX::XMVectorScale(rayDir, h));
+
+	DirectX::XMVECTOR intersection = DirectX::XMVectorAdd(pos, i);
+
+	distance = abs(DirectX::XMVector3Length(DirectX::XMVectorSubtract(intersection, rayOrigin)).m128_f32[0]);
+
+	return true;
+}
+
 Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB* & obb)
 {
-	this->m_fields.push_back(Field());
-	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
-	field->F_pos = pos;
-	field->F_BV.ext[0]	= obb->ext[0];
-	field->F_BV.ext[1]	= obb->ext[1];
-	field->F_BV.ext[2]	= obb->ext[2];
-	field->F_BV.ort		= obb->ort;
-	field->F_entitityID1 = entityID1;
-	field->F_entitityID2 = entityID2;
-	field->F_first_inide = false;
-	field->F_second_inside = false;
+	//this->m_fields.push_back(Field());
+	//Field* field = &this->m_fields.at(this->m_fields.size() - 1);
+	//DirectX::XMStoreFloat3(&field->F_pos, pos);
+	//field->F_BV.ext[0] = obb->ext[0];
+	//field->F_BV.ext[1] = obb->ext[1];
+	//field->F_BV.ext[2] = obb->ext[2];
+	//field->F_BV.ort = obb->ort;
+	//field->F_entitityID1 = entityID1;
+	//field->F_entitityID2 = entityID2;
+	//field->F_first_inside = false;
+	//field->F_second_inside = false;
+	//return field;
+	printf("A");
+	Field temp;
+	printf("B");
+	temp.F_BV.ort = obb->ort;
+	temp.F_BV.ext[0] = obb->ext[0];
+	temp.F_BV.ext[1] = obb->ext[1];
+	temp.F_BV.ext[2] = obb->ext[2];
+	printf("C");
+	DirectX::XMStoreFloat3(&temp.F_pos, pos);
+	//temp.F_pos = pos;
+	printf("D");
 
-	return nullptr;
+	temp.F_entitityID1 = entityID1;
+	temp.F_entitityID2 = entityID2;
+	temp.F_first_inside = false;
+	temp.F_second_inside = false;
+	printf("E");
+
+	this->m_fields.push_back(temp);
+	printf("F");
+	return &this->m_fields.back();
 }
 
 void PhysicsHandler::SimpleCollition(float dt)
@@ -2892,7 +2937,7 @@ int PhysicsHandler::GetNrOfComponents()const
 	return this->m_physicsComponents.size();
 }
 
-PhysicsComponent* PhysicsHandler::GetDynamicComponentAt(int index)const
+PhysicsComponent* PhysicsHandler::GetDynamicComponentAt(int index) const
 {
 	if (index >= 0 && index < (signed int)this->m_physicsComponents.size())
 	{
@@ -3049,6 +3094,38 @@ PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * compon
 	}
 
 	return closest;
+}
+
+PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
+{	
+	if (src->PC_BVtype == BV_AABB)
+	{
+		this->m_bullet.CreateAABB(src, index);
+	}
+	else if(src->PC_BVtype == BV_OBB)
+	{
+		this->m_bullet.CreateOBB(src,index);
+	}
+	else
+	{
+		int i = 0;
+	}
+}
+
+PHYSICSDLL_API void PhysicsHandler::ApplyPlayer1ToBullet(PhysicsComponent * player1)
+{
+	this->m_bullet.SetPlayer1(player1);
+}
+
+PHYSICSDLL_API void PhysicsHandler::ApplyPlayer2ToBullet(PhysicsComponent * player2)
+{
+	this->m_bullet.SetPlayer2(player2);
+}
+
+
+PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)
+{
+	return this->m_bullet.GetRigidBody(index);
 }
 
 #ifdef _DEBUG

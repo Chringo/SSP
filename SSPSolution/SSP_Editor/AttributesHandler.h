@@ -5,6 +5,7 @@
 #include <qobject.h>
 #include "Header.h"
 
+
 #pragma region Description
 /*
 	Author: Martin Clementson
@@ -35,6 +36,7 @@ namespace Ui {
 		Z,
 		NUM_VECTOR_INDICES
 	};
+
 	class AttributesHandler : QObject
 	{
 		
@@ -47,6 +49,8 @@ namespace Ui {
 		QCheckBox*		m_isStaticBox;
 		Container*		m_selection = nullptr;
 		BehaviourTypeHandler* m_BehaviourHandler = nullptr;
+
+
 	public:
 		static AttributesHandler* GetInstance(); // Singleton
 		AttributesHandler(const Ui::SSP_EditorClass* ui);
@@ -55,6 +59,7 @@ namespace Ui {
 		void SetSelection(Container*& selection);
 		void Deselect();
 		void UpdateSelection();
+		void SetAmbientLight(Ambient amb);
 
 	public slots:
 		void on_translate_X_changed(double val);
@@ -69,6 +74,7 @@ namespace Ui {
 		void on_scale_Y_changed(double val);
 		void on_scale_Z_changed(double val);
 		void on_isStatic_changed(int state);
+
 	};
 }
 

@@ -4,7 +4,7 @@
 #include <vector>
 
 struct ElementState {
-	int entityID;
+	unsigned int entityID;
 	EVENT desiredState;
 	bool desiredStateReached;
 };
@@ -16,6 +16,9 @@ private:
 
 	std::vector<ElementState> m_subjectStates;
 	
+	DirectX::XMMATRIX m_originalOrto;
+	DirectX::XMVECTOR m_closed_pos;
+
 	bool m_isOpened;
 	float m_minRotation;
 	float m_maxRotation;
@@ -34,6 +37,9 @@ public:
 
 	bool SetIsOpened(bool isOpened);
 	bool GetIsOpened();
+
+	bool AddSubjectState(ElementState subjectState);
+	bool AddSubjectState(unsigned int entityID, EVENT requiredEvent);
 };
 
 #endif

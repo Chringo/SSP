@@ -17,6 +17,7 @@ Ui::AttributesHandler::AttributesHandler(const Ui::SSP_EditorClass * ui)
 {
 	this->Initialize(ui);
 
+
 }
 
 void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
@@ -52,6 +53,9 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_BehaviourHandler = new BehaviourTypeHandler(ui);
 	m_BehaviourHandler->Initialize(ui);
 
+
+
+
 	Deselect();
 }
 
@@ -81,21 +85,23 @@ void Ui::AttributesHandler::SetSelection(Container *& selection)
 			m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
 			m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
 			m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+			m_uniqueID->setText(QString::number(((CheckpointContainer*)selection)->internalID));
 		}
 		else
 		{
 			m_numericBoxes[SCALE][X]->setValue(1.0f);
 			m_numericBoxes[SCALE][Y]->setValue(1.0f);
 			m_numericBoxes[SCALE][Z]->setValue(1.0f);
+			m_uniqueID->setText(QString::number(selection->internalID));
 		}
 
 		m_nameBox->setText("oops");
 		
-		m_uniqueID->setText(QString::number(selection->internalID));
 	
 		m_isStaticBox->setChecked(m_selection->isStatic);
 		m_BehaviourHandler->SetSelection(selection);
-	
+		
+
 	}
 
 }
@@ -117,6 +123,9 @@ void Ui::AttributesHandler::Deselect()
 	m_numericBoxes[SCALE][Z]->setValue(0);
 
 	m_uniqueID->setText(QString::number(0));
+
+
+
 	m_BehaviourHandler->Deselect();
 
 }
@@ -124,6 +133,11 @@ void Ui::AttributesHandler::Deselect()
 void Ui::AttributesHandler::UpdateSelection()
 {
 	SetSelection(m_selection); // This function updates. no need to rewrite
+}
+
+void Ui::AttributesHandler::SetAmbientLight(Ambient amb)
+{
+	m_BehaviourHandler->SetAmbientLight(amb);
 }
 
 void Ui::AttributesHandler::on_translate_X_changed(double val)
@@ -233,3 +247,6 @@ void Ui::AttributesHandler::on_isStatic_changed(int state)
 		}
 	}
 }
+
+
+

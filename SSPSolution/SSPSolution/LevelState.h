@@ -11,17 +11,13 @@
 #include "ButtonEntity.h"
 #include "WheelEntity.h"
 #include "LeverEntity.h"
+#include "FieldEntity.h"
 
 class LevelState :
 	public GameState
 {
 private:
-	struct Checkpoint
-	{
-		unsigned int index;
-		DirectX::XMVECTOR pos;
-		OBB obb;
-	};
+
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
 	Player m_player2;
@@ -37,11 +33,12 @@ private:
 	std::vector<ButtonEntity*> m_buttonEntities;
 	std::vector<WheelEntity*> m_wheelEntities;
 	std::vector<LeverEntity*> m_leverEntities;
-	std::vector<Checkpoint*> m_checkpoints;
+	std::vector<FieldEntity*> m_fieldEntities;
 	std::list<EntityPacket> m_entityPacketList;	//List with all updates for entities from the network
 	std::list<StatePacket> m_statePacketList;	//List with all updates for entities from the network
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
+	
 public:
 	LevelState();
 	virtual ~LevelState();
