@@ -87,13 +87,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	// creating the player
 	this->m_player1 = Player();
-#ifdef _DEBUG
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 2759249725;
-#else
-	GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
-	playerG->modelID = 1337;
-#endif // _DEBUG
+	//playerG->modelID = 2759249725; 
+	playerG->modelID = 1117267500;
+
+	//GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
+	//playerG->modelID = 1337;
+
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -114,7 +114,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//this->m_player1.Initialize(1, playerP, playerG, nullptr);
 	/*TEMP ANIM STUFF*/
 	AnimationComponent* playerAnim1 = nullptr;
-#ifdef _DEBUG
+
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
 	playerAnim1 = m_cHandler->GetAnimationComponent();
@@ -135,8 +135,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
 		playerAnim1->source_State->isLooping = true; // TEMP TEST
 	}
-#endif // _DEBUG
-
 
 	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
 
@@ -147,13 +145,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//Player 2
 	this->m_player2 = Player();
-#ifdef _DEBUG
+
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 2759249725;
-#else
-	playerG = m_cHandler->GetGraphicsComponent();
-	playerG->modelID = 1337;
-#endif // DEBUG
+	//playerG->modelID = 2759249725;
+	playerG->modelID = 1117267500;
+
+	//playerG = m_cHandler->GetGraphicsComponent();
+	//playerG->modelID = 1337;
 
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
@@ -171,7 +169,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	/*TEMP ANIM STUFF*/
 	AnimationComponent* playerAnim2 = nullptr;
-#ifdef _DEBUG
+
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer2ToBullet(playerP);
@@ -193,7 +191,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
 		playerAnim2->source_State->isLooping = true; // TEMP TEST
 	}
-#endif // _DEBUG
+
 	this->m_player2.Initialize(2, playerP, playerG, playerAnim2);
 	//this->m_player2.Initialize(2, playerP, playerG);
 	this->m_player2.SetSpeed(0.5f);
@@ -620,13 +618,19 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 				}
 
-
 				if (ent != nullptr)
 				{
 					if (!ent->IsGrabbed())
 					{
 						this->m_player1.SetGrabbed(ent);
 						this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), ent->GetGrabbed());	//Send the grabbing ID and the grabbed ID
+
+						if (!this->m_player1.stateExists(PLAYER_PICKUP))
+						{
+							/*Player animation for picking up ball is set here.*/
+							this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.3f, FROZEN_TRANSITION, false, true);
+						}
+
 					}
 				}
 			}
@@ -1801,11 +1805,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 	}
 #pragma endregion Connect puzzle entities
-
-	Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
-	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
-	m_player1.GetGraphicComponent()->modelID = 2759249725;
-	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
 
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 	PhysicsHandler* ptr = nullptr;

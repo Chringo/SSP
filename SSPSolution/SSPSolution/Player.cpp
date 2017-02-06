@@ -9,11 +9,9 @@ Player::Player()
 	this->m_isAiming = false;
 }
 
-
 Player::~Player()
 {
 }
-
 
 int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
@@ -40,78 +38,166 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		forwards++;
 
-#ifdef _DEBUG
-		/*If the player is currently walking, dont update any information from here.*/
-		if (!stateExists(PLAYER_RUN_FORWARD))
+		if (this->m_aComp->lockAnimation != true)
 		{
-			SetAnimationComponent(PLAYER_RUN_FORWARD, 0.25f, Blending::SMOOTH_TRANSITION);
-			this->m_aComp->previousState = PLAYER_RUN_FORWARD;
+			/*If the player is currently walking, dont update any information from here.*/
+			if (m_grabbed != nullptr)
+			{
+				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
+				{
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_FORWARD))
+				{
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
+				}
+			}
 		}
-
 	}
 	/*If the player is not walking, go to idle.*/
 	else if(inputHandler->IsKeyReleased(SDL_SCANCODE_W))
 	{
-		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
-		this->m_aComp->previousState = PLAYER_IDLE;
-#endif // _DEBUG
+		if (m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_BALL_IDLE;
+			}
+			else
+			{
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_IDLE;
+			}
+		}
 	}
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
 	{
 		forwards--;
 
-#ifdef _DEBUG
-		if (!stateExists(PLAYER_RUN_BACKWARD))
+		if (this->m_aComp->lockAnimation != true)
 		{
-			SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION);
-			this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
+			if (m_grabbed != nullptr)
+			{
+				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
+				{
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_BACKWARD))
+				{
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
+				}
+			}
 		}
 	}
-
 	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_S))
 	{
-		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
-		this->m_aComp->previousState = PLAYER_IDLE;
-#endif // _DEBUG
+		if (this->m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_BALL_IDLE;
+			}
+			else
+			{
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_IDLE;
+			}
+		}
 
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
 	{
 		sideways++;
-#ifdef _DEBUG
-		if (!stateExists(PLAYER_RUN_RIGHT))
+
+		if (this->m_aComp->lockAnimation != true)
 		{
-			SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION);
-			this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+			if (m_grabbed != nullptr)
+			{
+				if (!stateExists(PLAYER_RUN_RIGHT_BALL))
+				{
+					SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_RIGHT))
+				{
+					SetAnimationComponent(PLAYER_RUN_RIGHT, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+				}
+			}
 		}
 	}
-
 	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_D))
 	{
-		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
-		this->m_aComp->previousState = PLAYER_IDLE;
-#endif
+		if (this->m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_BALL_IDLE;
+			}
+			else
+			{
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_IDLE;
+			}
+		}
 	}
 
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
 	{
 		sideways--;
 
-#ifdef _DEBUG
-		if (!stateExists(PLAYER_RUN_LEFT))
+		if (this->m_aComp->lockAnimation != true)
 		{
-			SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION);
-			this->m_aComp->previousState = PLAYER_RUN_LEFT;
+			if (m_grabbed != nullptr)
+			{
+				if (!stateExists(PLAYER_RUN_LEFT_BALL))
+				{
+					SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_LEFT))
+				{
+					SetAnimationComponent(PLAYER_RUN_LEFT, 0.25f, Blending::SMOOTH_TRANSITION, true, false);
+					this->m_aComp->previousState = PLAYER_RUN_LEFT;
+				}
+			}
 		}
 	}
-
 	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_A))
 	{
-		SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION);
-		this->m_aComp->previousState = PLAYER_IDLE;
-#endif // _DEBUG
-
+		if (this->m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_BALL_IDLE;
+			}
+			else
+			{
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				this->m_aComp->previousState = PLAYER_IDLE;
+			}
+		}
 	}
 
 	if (this->m_grabbed != nullptr)
@@ -120,13 +206,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//sync with bullet
 	}
 
-
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 	{
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			
+			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true);
+			this->m_aComp->previousState = PLAYER_THROW;
+
 			float strength = 50.0f;
 			//this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
 			this->m_grabbed->GetPhysicsComponent()->ApplyForce(this->m_lookDir, strength);
@@ -139,6 +226,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
+			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true);
+			this->m_aComp->previousState = PLAYER_THROW;
 
 			float strength = 15.0f;		
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
@@ -268,12 +357,14 @@ bool Player::stateExists(int animationState)
 	}
 }
 
-void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType)
+void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation)
 {
 	this->m_aComp->m_TransitionDuration = transitionDuration;
 	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 	this->m_aComp->target_State->stateIndex = animationState;
 	this->m_aComp->blendFlag = blendingType;
+	this->m_aComp->target_State->isLooping = isLooping;
+	this->m_aComp->lockAnimation = lockAnimation;
 }
 
 void Player::SetBall(Entity * ball)
