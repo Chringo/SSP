@@ -441,6 +441,30 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	}
 
 	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+
+	//-----------------------------------------------------------------------------------------------------------------------------------
+	//Instanced geometry BUFFER
+	//-----------------------------------------------------------------------------------------------------------------------------------
+
+	D3D11_BUFFER_DESC bufferInstancedDesc;
+	ZeroMemory(&bufferInstancedDesc, sizeof(bufferInstancedDesc));
+
+	//InstancedObject buffer
+	bufferInstancedDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferInstancedDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferInstancedDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferInstancedDesc.ByteWidth = sizeof(InstanceData) * MAX_INSTANCED_GEOMETRY;
+	HRESULT hr;
+	if (FAILED(hr = device->CreateBuffer(&bufferInstancedDesc, nullptr, &m_instanceBuffer))) {
+#ifdef _DEBUG
+		MessageBox(NULL, L"Failed to create Instance buffer", L"Init Error", MB_ICONERROR | MB_OK);
+#endif // _DEBUG
+		return 1;
+	}
+
+
+
+
 	return 0;
 }
 
@@ -547,6 +571,11 @@ void DeferredShader::Release()
 			this->m_layout[i]->Release();
 			this->m_layout[i] = nullptr;
 		}
+	}
+	if (m_instanceBuffer)
+	{
+		m_instanceBuffer->Release();
+		m_instanceBuffer = nullptr;
 	}
 
 	//Release the sampler state
@@ -682,11 +711,55 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	return 0;
 }
 
-int DeferredShader::DrawInstanced(Resources::Model * model)
+int DeferredShader::DrawInstanced(InstanceData* data)
 {
+	Resources::Model* model;
 
+	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
+	DirectX::XMFLOAT4X4* matrixData = data->componentSpecific;
+	int numInstances				= data->amountOfInstances;  // can be changed if the limit is exceeded
+	if (data->amountOfInstances > MAX_INSTANCED_GEOMETRY) //if we've reached the limit, split it up into multiple render passes
+	{
+		numInstances = MAX_INSTANCED_GEOMETRY; //Change the amount for the current pass to MAX_INSTANCED_GEOMETRY
 
+		InstanceData newBatch;
+		newBatch.modelID		   = data->modelID;
+		newBatch.componentSpecific = data->componentSpecific + MAX_INSTANCED_GEOMETRY; // Get a pointer to where it stopped rendering
+		newBatch.amountOfInstances = data->amountOfInstances - MAX_INSTANCED_GEOMETRY; // Discount the amount that has been rendered
+		DrawInstanced(&newBatch); 
+#ifdef _DEBUG
+		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call" << std::endl;
+#endif // _DEBUG
+	}
 
+#pragma region
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	
+	m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	DirectX::XMFLOAT4X4* tempStructMatrices = (DirectX::XMFLOAT4X4*)mappedResource.pData;
+
+	memcpy(tempStructMatrices, (void*)matrixData, sizeof(DirectX::XMFLOAT4X4)* numInstances);
+
+	m_deviceContext->Unmap(m_instanceBuffer, 0);
+#pragma endregion Map the data to the instance buffer
+
+	ID3D11Buffer* vertBuffer  = model->GetMesh()->GetVerticesBuffer();
+	ID3D11Buffer* indexBuffer = model->GetMesh()->GetIndicesBuffer();
+	
+
+	UINT32 offset[2]     = { 0,0 };
+	UINT32 size[2];
+	size[0] = sizeof(Resources::Mesh::Vertex); //Size of each vertex
+	size[1] = sizeof(DirectX::XMFLOAT4X4);	  //size of each instance
+
+	ID3D11Buffer* vbs[2] = { vertBuffer,m_instanceBuffer};
+		
+	this->m_deviceContext->IASetVertexBuffers(0, 2, vbs, size, offset);
+	this->m_deviceContext->IASetIndexBuffer(indexBuffer ,DXGI_FORMAT_R32_UINT, 0);
+	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->m_deviceContext->DrawIndexedInstanced(model->GetMesh()->GetNumIndices(), numInstances, 0, 0, 0);
 	return 0;
 }
 

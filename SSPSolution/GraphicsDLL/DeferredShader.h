@@ -6,6 +6,7 @@
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
+
 struct InstanceData {
 	int modelID;
 	int amountOfInstances;
@@ -15,6 +16,7 @@ class DeferredShader :
 	public Shader
 {
 private:
+	static const int MAX_INSTANCED_GEOMETRY = 50;
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,
@@ -39,6 +41,7 @@ private:
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
 
+	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;
 public:
 	DeferredShader();
