@@ -765,6 +765,9 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
 		}
 		m_triggerList->selectRow(0);
+		if (((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] == nullptr)
+			((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] = currentLevel->GetInstanceEntity(((ListenerContainer*)m_selection)->triggerEntityIds[m_triggerList->currentRow()]);
+
 		m_currentEventType = ((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()]->type;
 		SetEventListByType(m_currentEventType);
 		QString string = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]); //Get the string of the EVENT enum
