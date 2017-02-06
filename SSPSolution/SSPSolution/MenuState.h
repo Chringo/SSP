@@ -3,6 +3,9 @@
 #include "GameState.h"
 #include "LevelSelectState.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
+
+const float TIMEOUT_TIME = 200;
+
 class MenuState :
 	public GameState
 {

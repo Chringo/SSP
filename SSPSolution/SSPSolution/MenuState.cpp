@@ -526,7 +526,7 @@ void MenuState::Hosting(float dt)
 	{
 		this->timeoutTime += dt / 1000000;	//Increase the timeout timer
 
-		if (this->timeoutTime > 20)	//If the timer is to high
+		if (this->timeoutTime > TIMEOUT_TIME)	//If the timer is to high
 		{
 			//Shut down the networkModule
 			this->m_networkModule->Shutdown();
