@@ -92,7 +92,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	// creating the player
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 2759249725;
+	//playerG->modelID = 2759249725; 
+	playerG->modelID = 1117267500;
 
 	//GraphicsComponent* playerG = m_cHandler->GetGraphicsComponent();
 	//playerG->modelID = 1337;
@@ -114,7 +115,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_AABB.ext[0] = 0.5f;
-	playerP->PC_AABB.ext[1] = 3.75f;
+	playerP->PC_AABB.ext[1] = 0.5f;
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	//this->m_player1.Initialize(1, playerP, playerG, nullptr);
@@ -151,7 +152,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player2 = Player();
 
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 2759249725;
+	//playerG->modelID = 2759249725;
+	playerG->modelID = 1117267500;
 
 	//playerG = m_cHandler->GetGraphicsComponent();
 	//playerG->modelID = 1337;
@@ -169,7 +171,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_AABB.ext[0] = 0.5f;
-	playerP->PC_AABB.ext[1] = 3.6f;
+	playerP->PC_AABB.ext[1] = 0.5f;
 	playerP->PC_AABB.ext[2] = 0.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	/*TEMP ANIM STUFF*/
@@ -1269,10 +1271,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		m_checkpoints.push_back(CB);
 	}
-
-	/*Resources::Model* model = m_player1.GetGraphicComponent()->modelPtr;
-	m_player1.GetGraphicComponent()->modelID = 2759249725;
-	Resources::ResourceHandler::GetInstance()->GetModel(2759249725, model);*/
 
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 
