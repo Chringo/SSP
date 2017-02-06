@@ -30,7 +30,9 @@ void AnimationHandler::Update(float dt)
 {
 	/*Convert the delta-time to be in seconds unit format.*/
 
-	float seconds = dt / 1000000.f;
+	float speed = 2.0f;
+
+	float seconds = (dt / 1000000.f) * speed;
 
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
@@ -62,7 +64,9 @@ void AnimationHandler::Update(float dt)
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true);
+							//SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true);
+							//m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true);
 							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
 						}
 						else
@@ -203,6 +207,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 		}
@@ -224,6 +229,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
 		}
@@ -267,6 +273,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
+					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 					/*Update the local transform for each joint in the skeleton.*/
 					DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
@@ -568,8 +575,11 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 	std::vector<DirectX::XMFLOAT4X4> toRootTransform(jointCount);
 
 	/*The root joint does not have a parent, which means it's local transform is not changed with a parent/child relation.*/
-	if(m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[0].parentIndex == -1)
+	if (m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[0].parentIndex == -1)
+	{
 		toRootTransform[0] = localTransforms[0];
+		//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
+	}
 
 	for (int i = 1; i < jointCount; i++)
 	{
