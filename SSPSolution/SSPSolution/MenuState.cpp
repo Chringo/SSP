@@ -409,12 +409,13 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 			if (this->isJoining == false)
 			{
+				int result;
 				#pragma region
 
 				if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
 				{
 					this->m_networkModule = new NetworkModule();	//Create a new networkModule
-					int result = this->m_networkModule->Initialize();	// Try to init the networkModule
+					 result = this->m_networkModule->Initialize();	// Try to init the networkModule
 
 					if (result != 1)	//If failed
 					{
@@ -422,34 +423,38 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 					}
 				}
 
-#pragma endregion Network_INIT
+				#pragma endregion Network_INIT
 				
 				#pragma region
-				char* ip = new char[255];
-				sprintf(ip, "%ls", Progression::instance().GetIPString().c_str());
-
-				int result = this->m_networkModule->Join(ip);
-
-				if (result <= 0)	//If failed to connect
+				if (this->m_networkModule != nullptr)
 				{
-					//Shut down the networkModule
-					this->m_networkModule->Shutdown();
-					delete this->m_networkModule;
-					this->m_networkModule = nullptr;
+					char* ip = new char[255];
+					sprintf(ip, "%ls", Progression::instance().GetIPString().c_str());
 
-					this->isJoining = false;
+					int result = this->m_networkModule->Join(ip);
 
-					//Show buttons
-					for (size_t i = 0; i < this->m_startMenuButtons.size(); i++)
+					if (result <= 0)	//If failed to connect
 					{
-						this->m_startMenuButtons[i].SetActive(true);
+						//Shut down the networkModule
+						this->m_networkModule->Shutdown();
+						delete this->m_networkModule;
+						this->m_networkModule = nullptr;
+
+						this->isJoining = false;
+
+						//Show buttons
+						for (size_t i = 0; i < this->m_startMenuButtons.size(); i++)
+						{
+							this->m_startMenuButtons[i].SetActive(true);
+						}
+						this->m_ipTextBox.SetActive(true);
 					}
-					this->m_ipTextBox.SetActive(true);
+					else //If succeded to connect
+					{
+						this->isJoining = true;
+					}
 				}
-				else //If succeded to connect
-				{
-					this->isJoining = true;
-				}
+
 				#pragma endregion Try to connect
 			}
 

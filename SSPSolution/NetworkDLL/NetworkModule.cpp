@@ -5,6 +5,7 @@ NetworkModule::NetworkModule()
 	this->isLocked = false;
 	this->client_id = 0;
 	this->packet_ID = 0;
+	this->clientIsReady = false;
 }
 
 NetworkModule::~NetworkModule()
