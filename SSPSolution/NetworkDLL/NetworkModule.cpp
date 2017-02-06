@@ -474,7 +474,7 @@ void NetworkModule::ReadMessagesFromClients()
 	std::map<unsigned int, SOCKET>::iterator iter;
 	
 	// Go through all clients
-	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end();)
+	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end(); iter++)
 	{
 		
 		// Load the incoming data
@@ -485,7 +485,6 @@ void NetworkModule::ReadMessagesFromClients()
 		if (data_length <= 0)
 		{
 			//No data recieved, go to the next client
-			iter++;
 			continue;
 		}
 		while( data_read != data_length)
@@ -663,11 +662,6 @@ void NetworkModule::ReadMessagesFromClients()
 			#pragma endregion ALL_PACKETS
 		}
 
-		if (iter != this->connectedClients.end()) 
-		{
-			iter++;
-		}
-		
 	}
 
 }
