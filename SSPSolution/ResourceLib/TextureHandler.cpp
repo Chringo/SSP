@@ -182,9 +182,7 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 	if (placeHolder != nullptr)
 		return false;
 
-#ifdef _DEBUG
-	std::cout << "Loading Placeholder Texture" << std::endl;
-#endif // _DEBUG
+
 
 	
 	/*T E M P*/
@@ -259,16 +257,16 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 
 			if (FAILED(hr)) //If it still doesent work, there  is a problem
 			{
-#ifdef _DEBUG
-				std::cout << "Could not open texture file : " << path_str[i] << std::endl;
-#endif // _DEBUG
+			#ifdef _DEBUG
+							std::cout << "Could not open texture file : " << path_str[i] << std::endl;
+			#endif // _DEBUG
 				return false;
 			}
 		}
 		
-#ifdef _DEBUG
-			std::cout << "Opened file : " << path_str[i] << std::endl;
-#endif // _DEBUG
+//#ifdef _DEBUG
+//			std::cout << "Opened file : " << path_str[i] << std::endl;
+//#endif // _DEBUG
 		
 
 

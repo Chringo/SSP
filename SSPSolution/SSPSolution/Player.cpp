@@ -20,7 +20,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	int result = 0;
 
 	this->InitializeBase(entityID, pComp, gComp, aComp);
-	this->m_speed = 0.01f;
+	this->m_speed = 0.1f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
@@ -117,6 +117,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (this->m_grabbed != nullptr)
 	{
 		this->m_grabbed->GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
+		//sync with bullet
 	}
 
 
@@ -126,8 +127,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 			
-			float strength = 1.0f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 1.5f, 0, 0)), strength);
+			float strength = 50.0f;
+			//this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
+			this->m_grabbed->GetPhysicsComponent()->ApplyForce(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Release the entity
 		}
 
@@ -138,7 +140,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 
-			float strength = 1.5f;
+			float strength = 15.0f;		
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->SetGrabbed(nullptr);	//Relsease the entity
 		}
@@ -156,7 +158,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				//Use those values for the player behaviour calculations
 				//Get the rotation around the Y-axis, also called the Yaw axis
-				//float yaw = this->m_pComp->rotation.y;
+				//float yaw = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
 
 				//Define a quaternion rotation so we can rotate the velocity vector
 				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
@@ -164,14 +166,19 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
 				DirectX::XMVECTOR lookAtDir = this->m_lookDir;
 				lookAtDir.m128_f32[1] = 0.0f;
-				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT);
-				//velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
+
+				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT * 10);
+				//velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * sideways * dT * 10);
+				
+				velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT *10));
+				
+				//this deltatime is added to the bullet
 				//Rotate the velocity vector
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 				//Add the velocity to our physicsComponent
-
-				this->m_pComp->PC_velocity = DirectX::XMVectorAdd(this->m_pComp->PC_velocity, velocity);
+				this->m_pComp->PC_velocity = velocity;
+				//this->m_pComp->dir
 			}
 
 		//}
