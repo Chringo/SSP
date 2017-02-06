@@ -897,8 +897,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		// Reset player-position to spawn
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
 		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
-		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 
 	//Update all puzzle entities
