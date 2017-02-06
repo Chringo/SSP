@@ -24,31 +24,8 @@ void SelectionHandler::Initialize(Camera * camera,
 	this->m_ray.origin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_ray.localOrigin = DirectX::XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	this->m_checkpointPtr = currentLevel->GetCheckpoints();
+	this->m_lightPtr = currentLevel->GetLights();
 
-	//CheckpointContainer * testcheckbox = new CheckpointContainer;
-	//testcheckbox->obb.ext[0] = 1.0;
-	//testcheckbox->obb.ext[1] = 1.0;
-	//testcheckbox->obb.ext[2] = 1.0;
-	//testcheckbox->obb.ort = DirectX::XMMatrixIdentity();
-	//testcheckbox->position = { 0.0 };
-	//testcheckbox->scale = { 1.0, 1.0, 1.0 };
-	//testcheckbox->internalID = 1;
-	//testcheckbox->component.worldMatrix = DirectX::XMMatrixIdentity();
-
-	//CheckpointContainer * testcheckbox2 = new CheckpointContainer;
-	//testcheckbox2->obb.ext[0] = 1.0;
-	//testcheckbox2->obb.ext[1] = 1.0;
-	//testcheckbox2->obb.ext[2] = 1.0;
-	//testcheckbox2->obb.ort = DirectX::XMMatrixIdentity();
-	//testcheckbox2->position = { 1.0 };
-	//testcheckbox2->scale = { 1.0, 1.0, 1.0 };
-	//testcheckbox2->internalID = 2;
-	//testcheckbox2->component.worldMatrix = DirectX::XMMatrixIdentity();
-
-	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox);
-	//currentLevel->GetCheckpointHandler()->GetAllCheckpoints()->push_back(testcheckbox2);
-	//currentLevel->GetCheckpoints()->push_back(testcheckbox);
-	//currentLevel->GetCheckpoints()->push_back(testcheckbox2);
 }
 
 void SelectionHandler::updateWindowSize(int winHeight, int winWidth)
@@ -96,9 +73,17 @@ void SelectionHandler::SetSelection(bool selection)
 
 void SelectionHandler::SetSelectedContainer(Container *& selection)
 {
-	OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
+	if (selection == nullptr)
+		return;
+	if (selection->type != LIGHT)
+	{
+		OBB box = this->m_ConvertOBB(selection->component.modelPtr->GetOBBData(), selection);
+		this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
+
+	}
 	
-	this->m_transformWidget.Select(box, selection, selection->internalID, selection->component.modelID);
+
+
 	m_attributesHandler->SetSelection(selection);
 	//m_transformWidget.Select()
 }
@@ -255,6 +240,23 @@ bool SelectionHandler::PickObjectSelection()
 					//this->transformWidget.DeSelect();
 				}
 			}
+		}
+	}
+
+	for each (Point* light in *m_lightPtr)
+	{
+		bool result = false;
+		//result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, container->obb, container->position, hitDistance);
+		result = this->m_PhysicsHandler->IntersectRaySphere(m_ray.localOrigin, this->m_ray.direction, light->pickSphere, light->position, hitDistance);
+		if (result && hitDistance < minHitDistance)
+		{
+			minHitDistance = hitDistance;
+			//update widget with the intersected obb
+			this->m_transformWidget.Select(light->pickSphere, light); //OVERLOAD AND HANLDE THIS
+			Container* cont = (Container*)light;
+			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
+
+			gotHit = result;
 		}
 	}
 

@@ -102,26 +102,37 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		result += 1;
 		DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 		//Branch
+		//If I am culled
+		Camera::C_AABB branchBounds;
+		branchBounds.pos = curNode->pos;
+		branchBounds.ext = curNode->ext;
+		CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+		{
+			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+			myAABB.ext[0] *= 0.9999f;
+			myAABB.ext[1] *= 0.9999f;
+			myAABB.ext[2] *= 0.9999f;
+		}
+
 		for (int i = 0; i < 8; i++)
 		{
 			//For all non-culled branches
 			if (curNode->branches[i] != nullptr)
 			{
-				//Do the check to see if the branch is within the view frustrum
-				Camera::C_AABB branchBounds;
-				branchBounds.pos = curNode->pos;
-				branchBounds.ext = curNode->ext;
-				CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
-				if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-				{
-					renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-					myAABB.ext[0] *= 0.9999f;
-					myAABB.ext[1] *= 0.9999f;
-					myAABB.ext[2] *= 0.9999f;
-				}
-			}
-			if (curNode->branches[i] != nullptr)
-			{
+				////Do the check to see if the branch is within the view frustrum
+				//Camera::C_AABB branchBounds;
+				//branchBounds.pos = curNode->pos;
+				//branchBounds.ext = curNode->ext;
+				//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+				//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+				//{
+				//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+				//	myAABB.ext[0] *= 0.9999f;
+				//	myAABB.ext[1] *= 0.9999f;
+				//	myAABB.ext[2] *= 0.9999f;
+				//}
+
 				//Enter your branch
 				result += RenderOctree(curNode->branches[i], cullingFrustrum);
 			}
@@ -365,7 +376,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxDepth = 5;
 	this->m_minDepth = 1;
 	this->m_minContainment = 3;
-	this->m_minSize = 0.5f;
+	this->m_minSize = 2.0f;
 }
 
 
