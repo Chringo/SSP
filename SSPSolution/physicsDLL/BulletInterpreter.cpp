@@ -531,8 +531,6 @@ void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float 
 
 void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 {
-	
-
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* box = new btBoxShape(extends);
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
@@ -575,10 +573,10 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
 	rigidBody->setFriction(src->PC_friction);
-	
 
 
-	btVector3 rotation = btVector3(1,1,1);
+
+	btVector3 rotation = btVector3(1, 1, 1);
 	//rigidBody->setAngularVelocity(rotation);
 	if (index == 0 || index == 1)
 	{
@@ -593,12 +591,13 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 {
+	//this is always static
 	DirectX::XMVECTOR pos = src->PC_pos;
 	DirectX::XMVECTOR ext = DirectX::XMVectorSet(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2], 0);
 
 	btVector3 extends = this->crt_xmvecVec3(ext);
 	btCollisionShape* box = new btBoxShape(extends);
-	
+
 	//creating a mothion state
 	btVector3 startTrans = this->crt_xmvecVec3(pos);
 
@@ -610,16 +609,17 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
-		src->PC_mass,  //mass
+		0,  //mass
 		boxMotionState,
 		box,
 		btVector3(0, 0, 0)
 	);
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
-	
+
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	
 	this->m_physicsHandlerIndex.push_back(index);
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }

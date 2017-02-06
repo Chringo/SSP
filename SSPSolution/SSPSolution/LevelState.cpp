@@ -1093,7 +1093,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 10, 0));
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
@@ -1240,6 +1240,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
 		t_pc->PC_BVtype = BV_AABB;
+		t_pc->PC_mass = 0;
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
 		t_pc->PC_AABB.ext[2] = modelPtr->GetOBBData().extension[2];
@@ -1408,7 +1409,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		lever1P->PC_is_Static = true;												//Set IsStatic
 		lever1P->PC_active = true;													//Set Active
 		lever1P->PC_gravityInfluence = 1.0f;
-		lever1P->PC_mass = 5;
+		lever1P->PC_mass = 0;
 		lever1P->PC_friction = 0.00f;
 		lever1P->PC_collides = true;
 		lever1P->PC_elasticity = 0.2f;
@@ -1473,7 +1474,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_is_Static = true;												//Set IsStatic
 		wheel1P->PC_active = true;													//Set Active
 		wheel1P->PC_gravityInfluence = 1.0f;
-		wheel1P->PC_mass = 5;
+		wheel1P->PC_mass = 0;
 		wheel1P->PC_friction = 0.00f;
 		wheel1P->PC_collides = true;
 		wheel1P->PC_elasticity = 0.2f;

@@ -2127,10 +2127,10 @@ void PhysicsHandler::Update(float deltaTime)
 		PhysicsComponent* ptr = this->m_physicsComponents.at(i);
 		if (this->m_physicsComponents.at(i)->PC_steadfast == true)
 		{
-			//DirectX::XMVECTOR velocity = ptr->PC_velocity;
-			//velocity = DirectX::XMVectorScale(velocity, dt);
+			DirectX::XMVECTOR velocity = ptr->PC_velocity;
+			velocity = DirectX::XMVectorScale(velocity, dt);
 
-			//ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, velocity);
+			ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, velocity);
 		}
 	}
 
