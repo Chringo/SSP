@@ -22,15 +22,45 @@ int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandl
 	return result;
 }
 
-GraphicsComponent * ComponentHandler::GetGraphicsComponent()
+GraphicsComponent * ComponentHandler::GetStaticGraphicsComponent()
 {
 	GraphicsComponent* graphicsComponent = nullptr;
 	if (this->m_graphicsHandler != nullptr)
 	{
-		graphicsComponent = this->m_graphicsHandler->GetNextAvailableComponent();
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailableStaticComponent();
 	}
 	return graphicsComponent;
 }
+
+GraphicsComponent * ComponentHandler::GetDynamicGraphicsComponent()
+{
+	GraphicsComponent* graphicsComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailableDynamicComponent();
+	}
+	return graphicsComponent;
+}
+
+GraphicsComponent * ComponentHandler::GetPersistentGraphicsComponent()
+{
+	GraphicsComponent* graphicsComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailablePersistentComponent();
+	}
+	return graphicsComponent;
+}
+
+//GraphicsComponent * ComponentHandler::GetGraphicsComponent()
+//{
+//	GraphicsComponent* graphicsComponent = nullptr;
+//	if (this->m_graphicsHandler != nullptr)
+//	{
+//		graphicsComponent = this->m_graphicsHandler->GetNextAvailableComponent();
+//	}
+//	return graphicsComponent;
+//}
 GraphicsAnimationComponent * ComponentHandler::GetGraphicsAnimationComponent()
 {
 	GraphicsAnimationComponent * graphicsAnimComponent = nullptr;
@@ -134,6 +164,27 @@ void ComponentHandler::SetGraphicsAnimationComponentListSize(int gCompSize)
 PhysicsComponent * ComponentHandler::GetClosestPhysicsComponent(PhysicsComponent * component, int minDistance)
 {
 	return this->m_physicsHandler->GetClosestComponent(component, minDistance);
+}
+
+int ComponentHandler::ResizeGraphicsStatic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeStaticComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsDynamic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeDynamicComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizePersistentComponents(newCap);
+	return size;
 }
 
 PhysicsHandler * ComponentHandler::GetPhysicsHandler() const

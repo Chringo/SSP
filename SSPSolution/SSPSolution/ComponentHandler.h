@@ -24,7 +24,9 @@ public:
 	//Returns 0 if the graphicsHandler or physicshandler is a nullptr
 	int Initialize(GraphicsHandler* graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler, SoundHandler* soundHandler);
 
-	GraphicsComponent* GetGraphicsComponent();
+	GraphicsComponent* GetStaticGraphicsComponent();
+	GraphicsComponent* GetDynamicGraphicsComponent();
+	GraphicsComponent* GetPersistentGraphicsComponent();
 	GraphicsAnimationComponent * GetGraphicsAnimationComponent();
 	PhysicsComponent* GetPhysicsComponent();
 	UIComponent* GetUIComponent();
@@ -41,6 +43,10 @@ public:
 	void SetGraphicsComponentListSize(int gCompSize);
 	void SetGraphicsAnimationComponentListSize(int gCompSize);
 	PhysicsComponent* GetClosestPhysicsComponent(PhysicsComponent* component, int minDistance);
+
+	int ResizeGraphicsStatic(size_t newCap);
+	int ResizeGraphicsDynamic(size_t newCap);
+	int ResizeGraphicsPersistent(size_t newCap);
 
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;

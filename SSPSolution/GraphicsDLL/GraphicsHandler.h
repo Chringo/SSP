@@ -77,6 +77,7 @@ private:
 	//New way of saving graphics components which is not used yet
 	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
 	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
+	std::vector<GraphicsComponent*> m_persistantGraphicsComponents;
 	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
 
 
@@ -119,14 +120,67 @@ private:
 	};
 	OctreeNode m_octreeRoot;
 	
+#ifdef _DEBUG
+	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
+#endif
 	struct Sorting_on_modelID
 	{
 		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
 		{
-			
-			return (first->modelID < second->componentIndex);
+			bool statementTrue = first->modelID < second->modelID;
+			return statementTrue;
 		}
 	};
+
+	//INACTIVE
+	struct Find_Available_gComponent
+	{
+		inline bool operator() (const GraphicsComponent* comp)
+		{
+			return comp->active == 0;
+		}
+	};
+
+	//INACTIVE
+	struct GraphicsComponent_Remove_Inactive_Predicate {
+		inline bool operator()(GraphicsComponent* component) {
+			bool result = false;
+			if (component != nullptr)
+			{
+				if (component->active == false)
+				{
+					delete component;
+					component = nullptr;
+					result = true;
+				}
+			}
+			else
+				result = true;
+			return result;
+		}
+	};
+
+	//USE AT CREATION OF A NEW LEVEL TO DELETE OLD COMPONENTS
+	struct GraphicsComponent_Remove_All_Predicate {
+		inline void operator()(GraphicsComponent* component) {
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+			}
+		}
+	};
+	struct GraphicsComponent_Remove_All_Unary {
+		inline GraphicsComponent* operator()(GraphicsComponent*& component) {
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+			}
+			return component;
+		}
+	};
+
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
@@ -142,6 +196,7 @@ public:
 	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableStaticComponent();
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableDynamicComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailablePersistentComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
 	GRAPHICSDLL_API int UpdateAnimComponentList();
 
@@ -164,16 +219,12 @@ public:
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
 	GRAPHICSDLL_API int GenerateOctree();
 	GRAPHICSDLL_API int FrustrumCullOctreeNode();
-	//Increase the capacity of the container to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(), new storage is allocated, otherwise the method does nothing.
-	GRAPHICSDLL_API int ReserveDynamicComponents(size_t new_cap);
-	GRAPHICSDLL_API int ReserveStaticComponents(size_t new_cap);
-	GRAPHICSDLL_API int ReserveAnimationComponents(size_t new_cap);
-	//Does the same as above but adds the containers capacity to the new cap thus inreasing the capacity by 'addition'
-	GRAPHICSDLL_API int ReserveAdditionalDynamicComponents(size_t addition);
-	GRAPHICSDLL_API int ReserveAdditionalStaticComponents(size_t addition);
-	GRAPHICSDLL_API int ReserveAdditionalAnimationComponents(size_t addition);
+	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
+	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
 
-	
 
 	//TEMP STUFF
 public:
@@ -185,6 +236,7 @@ private:
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
+	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
 };
 
