@@ -7,7 +7,6 @@ Player::Player()
 	this->m_speed = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
-	this->m_twoButtonsDown = false;
 }
 
 Player::~Player()
@@ -93,20 +92,24 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 		if (this->m_aComp->lockAnimation != true)
 		{
-			if (m_grabbed != nullptr)
+			if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_D) & 
+				!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_D))
 			{
-				if (!stateExists(PLAYER_RUN_RIGHT_BALL))
+				if (m_grabbed != nullptr)
 				{
-					SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
-					this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
+					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
+					{
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
+					}
 				}
-			}
-			else
-			{
-				if (!stateExists(PLAYER_RUN_RIGHT))
+				else
 				{
-					SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
-					this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+					if (!stateExists(PLAYER_RUN_RIGHT))
+					{
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+					}
 				}
 			}
 		}
@@ -116,26 +119,31 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		sideways--;
 
-		if (this->m_aComp->lockAnimation != true)
+		if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_A) &
+			!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_A))
 		{
-			if (m_grabbed != nullptr)
+			if (this->m_aComp->lockAnimation != true)
 			{
-				if (!stateExists(PLAYER_RUN_LEFT_BALL))
+				if (m_grabbed != nullptr)
 				{
-					SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
-					this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
+					if (!stateExists(PLAYER_RUN_LEFT_BALL))
+					{
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
+					}
 				}
-			}
-			else
-			{
-				if (!stateExists(PLAYER_RUN_LEFT))
+				else
 				{
-					SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
-					this->m_aComp->previousState = PLAYER_RUN_LEFT;
+					if (!stateExists(PLAYER_RUN_LEFT))
+					{
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						this->m_aComp->previousState = PLAYER_RUN_LEFT;
+					}
 				}
 			}
 		}
 	}
+
 	/*Releasing the any button for running with player will blend back to idle state with ball or not.*/
 	if (inputHandler->IsKeyReleased(SDL_SCANCODE_W) || inputHandler->IsKeyReleased(SDL_SCANCODE_D)
 		|| inputHandler->IsKeyReleased(SDL_SCANCODE_S) || inputHandler->IsKeyReleased(SDL_SCANCODE_A))
