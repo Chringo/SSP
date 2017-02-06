@@ -1611,6 +1611,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 					entityToObserve = (*other);
 					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
 					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp - have to test the platforms to make this right
 				}
 			}
 			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
@@ -1620,6 +1621,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 					entityToObserve = (*other);
 					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
 					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
 				}
 			}
 			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
@@ -1629,6 +1631,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 					entityToObserve = (*other);
 					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
 					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
 				}
 			}
 			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
@@ -1638,6 +1641,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 					entityToObserve = (*other);
 					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
 					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
 				}
 			}
 		}
