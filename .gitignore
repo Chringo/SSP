@@ -1,6 +1,10 @@
 # Paths
 SSPSolution/packages/**
+SSPSolution/physicsDLL/Debug/**
+SSPSolution/physicsDLL/Release/**
 SSPSolution/SSPSolution/Debug/**
+SSPSolution/SSPSolution/Release/**
+
 
 # Other databases
 *.bsc
