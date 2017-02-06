@@ -80,6 +80,7 @@ public:
     QCheckBox *isStaticCheck;
     QComboBox *animationBox;
     QLabel *ANIMTEXT;
+    QCheckBox *HideLight;
     QTabWidget *CustomBehaviourTabWidget;
     QWidget *Behaviour;
     QFormLayout *formLayout_3;
@@ -605,12 +606,18 @@ public:
         animationBox->setObjectName(QStringLiteral("animationBox"));
         animationBox->setEnabled(false);
 
-        formLayout->setWidget(2, QFormLayout::FieldRole, animationBox);
+        formLayout->setWidget(4, QFormLayout::FieldRole, animationBox);
 
         ANIMTEXT = new QLabel(variousOptionsframe);
         ANIMTEXT->setObjectName(QStringLiteral("ANIMTEXT"));
 
-        formLayout->setWidget(2, QFormLayout::LabelRole, ANIMTEXT);
+        formLayout->setWidget(4, QFormLayout::LabelRole, ANIMTEXT);
+
+        HideLight = new QCheckBox(variousOptionsframe);
+        HideLight->setObjectName(QStringLiteral("HideLight"));
+        HideLight->setLayoutDirection(Qt::RightToLeft);
+
+        formLayout->setWidget(3, QFormLayout::SpanningRole, HideLight);
 
 
         verticalLayout_3->addWidget(variousOptionsframe);
@@ -1693,6 +1700,7 @@ public:
          << QApplication::translate("SSP_EditorClass", "None", Q_NULLPTR)
         );
         ANIMTEXT->setText(QApplication::translate("SSP_EditorClass", "Animation:", Q_NULLPTR));
+        HideLight->setText(QApplication::translate("SSP_EditorClass", "Hide Light AoI", Q_NULLPTR));
         BEHAVIOURTEXT->setText(QApplication::translate("SSP_EditorClass", "Behaviour Type", Q_NULLPTR));
         BehaviourDropDown->clear();
         BehaviourDropDown->insertItems(0, QStringList()

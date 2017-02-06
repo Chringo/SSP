@@ -126,6 +126,9 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_LightIntSpinBoxes[LIntSpin::QUADRATIC], SIGNAL(valueChanged(int)), this, SLOT(on_Quadratic_changed(int)));
 	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
 
+	m_HideLights = ui->HideLight;
+	connect(m_HideLights, SIGNAL(toggled(bool)), this, SLOT(on_HideLight_changed(bool)));
+
 #pragma endregion
 }
 
@@ -1051,5 +1054,9 @@ void Ui::BehaviourTypeHandler::on_Quadratic_changed(int val)
 			this->m_selection->isDirty = true;
 		}
 	}
+}
+void Ui::BehaviourTypeHandler::on_HideLight_changed(bool val)
+{
+	LightController::GetInstance()->DisplayLightRadius(val);
 }
 #pragma endregion
