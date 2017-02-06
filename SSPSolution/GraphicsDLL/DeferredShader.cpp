@@ -58,7 +58,6 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	if (FAILED(hResult)) 
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
-
 		return 1;
 	}
 #ifdef _DEBUG
