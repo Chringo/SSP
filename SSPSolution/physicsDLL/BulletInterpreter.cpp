@@ -42,6 +42,7 @@ void BulletInterpreter::ApplyMovementPlayer1(float dt)
 {
 	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
 	btVector3 OldVelocity = rb->getLinearVelocity();
+
 	btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
 
 	int active = rb->getActivationState();

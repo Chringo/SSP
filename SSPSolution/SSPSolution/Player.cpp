@@ -158,7 +158,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				//Use those values for the player behaviour calculations
 				//Get the rotation around the Y-axis, also called the Yaw axis
-				//float yaw = this->m_pComp->rotation.y;
+				//float yaw = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
 
 				//Define a quaternion rotation so we can rotate the velocity vector
 				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
@@ -166,15 +166,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
 				DirectX::XMVECTOR lookAtDir = this->m_lookDir;
 				lookAtDir.m128_f32[1] = 0.0f;
-				//velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT);
+
+				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT * 10);
+				//velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * sideways * dT * 10);
 				
-				//this delta time is added in bullet
-				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards);
-				//velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT));
+				velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT *10));
 				
 				//this deltatime is added to the bullet
-				//velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways));
 				//Rotate the velocity vector
 				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
 				//Add the velocity to our physicsComponent
