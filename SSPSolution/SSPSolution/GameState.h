@@ -5,6 +5,7 @@
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"
+#include "Progression.h"
 
 class GameStateHandler;
 class GameState

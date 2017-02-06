@@ -16,9 +16,10 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_availableTriggers = ui->availableTriggers;
 	m_triggerList		= ui->TriggerTableWidget;
 	m_triggerList->horizontalHeader()->show();
-	connect(m_triggerList, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(on_triggerSelection_Changed(QTableWidgetItem *)));
 	m_eventBox = ui->EventSignalBox;
+	connect(m_triggerList, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(on_triggerSelection_Changed(QTableWidgetItem *)));
 	connect(m_eventBox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_eventSelection_Changed(int)));
+	connect(m_availableTriggers, SIGNAL(currentIndexChanged(int)), this, SLOT(on_availableTriggers_index_Changed(int)));
 
 	m_add_trigger = ui->AddTriggerButton;
 	connect(m_add_trigger, SIGNAL(clicked()), this, SLOT(on_Add_Trigger()));
@@ -90,6 +91,45 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_wheel_resetTime,		 SIGNAL(valueChanged(double)), this, SLOT(on_Wheel_resetTime_changed(double)));
 
 #pragma endregion
+
+#pragma region Light ui elements
+
+	m_AmbientLightBoxes[LIntSpin::R] = ui->Amb_R;
+	m_AmbientLightBoxes[LIntSpin::G] = ui->Amb_G;
+	m_AmbientLightBoxes[LIntSpin::B] = ui->Amb_B;
+	m_AmbientLightBoxes[LIntSpin::INTENSITY] = ui->Amb_Intensity;
+
+	connect(m_AmbientLightBoxes[LIntSpin::R], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_R_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::G], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_G_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_B_changed(int)));
+	connect(m_AmbientLightBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Ambience_Intensity_changed(int)));
+
+	m_AddLightButton = ui->ADD_Light_Button;
+	m_LightIntSpinBoxes[LIntSpin::R] = ui->R_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::G] = ui->G_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::B] = ui->B_Colorvalue;
+	m_LightIntSpinBoxes[LIntSpin::INTENSITY] = ui->IntensityValue;
+
+	connect(m_LightIntSpinBoxes[LIntSpin::R], SIGNAL(valueChanged(int)), this, SLOT(on_R_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::G], SIGNAL(valueChanged(int)), this, SLOT(on_G_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::B], SIGNAL(valueChanged(int)), this, SLOT(on_B_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::INTENSITY], SIGNAL(valueChanged(int)), this, SLOT(on_Intensity_changed(int)));
+
+	m_LightIntSpinBoxes[LIntSpin::RADIUS] = ui->RadiusValue;
+	m_LightIntSpinBoxes[LIntSpin::CONSTANT] = ui->ConstantValue;
+	m_LightIntSpinBoxes[LIntSpin::LINEAR] = ui->LinearValue;
+	m_LightIntSpinBoxes[LIntSpin::QUADRATIC] = ui->QuadValue;
+
+	connect(m_LightIntSpinBoxes[LIntSpin::RADIUS], SIGNAL(valueChanged(int)), this, SLOT(on_Radius_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::CONSTANT], SIGNAL(valueChanged(int)), this, SLOT(on_Constant_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::LINEAR], SIGNAL(valueChanged(int)), this, SLOT(on_Linear_changed(int)));
+	connect(m_LightIntSpinBoxes[LIntSpin::QUADRATIC], SIGNAL(valueChanged(int)), this, SLOT(on_Quadratic_changed(int)));
+	connect(m_AddLightButton, SIGNAL(clicked()), this, SLOT(on_Light_Add_changed()));
+
+	m_HideLights = ui->HideLight;
+	connect(m_HideLights, SIGNAL(toggled(bool)), this, SLOT(on_HideLight_changed(bool)));
+
+#pragma endregion
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -102,7 +142,7 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 	{
 		Deselect(); //reset values
 		m_selection = selection;
-		if (m_selection->internalID == 0 || m_selection->internalID == 1 || m_selection->type == ContainerType::CHECKPOINT) { // if any of the spawnpoints are selected
+		if (m_selection->internalID == 0 || m_selection->internalID == 1 ) { // if any of the spawnpoints are selected
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
 			m_BehaviourType->setEnabled(false);
@@ -183,6 +223,22 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			break;
 #pragma endregion
 /////////
+
+#pragma region LIGHT
+		case ContainerType::LIGHT:
+		
+			m_LightIntSpinBoxes[R]->setValue(((Point*)m_selection)->data->color.r * 255);
+			m_LightIntSpinBoxes[G]->setValue(((Point*)m_selection)->data->color.g * 255);
+			m_LightIntSpinBoxes[B]->setValue(((Point*)m_selection)->data->color.b * 255);
+			m_LightIntSpinBoxes[INTENSITY]->setValue(((Point*)m_selection)->data->intensity * 25);
+
+			m_LightIntSpinBoxes[RADIUS]->setValue(((Point*)m_selection)->data->radius * 100);
+			m_LightIntSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant * 100);
+			m_LightIntSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear * 100);
+			m_LightIntSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic * 100);
+			m_attributes_widget->setCurrentIndex(3);
+			break;
+#pragma endregion
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
@@ -195,14 +251,28 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 void Ui::BehaviourTypeHandler::Deselect()
 {
 	m_selection = nullptr;
+	m_currentEventType = ContainerType::NONE;
 	ResetType(this->m_Current_Type); //SHOULD RESET EVERYTHING
 	m_BehaviourType->setCurrentIndex(NONE); //Close the window
+	m_attributes_widget->setCurrentIndex(0);
+	
 	ClearTriggerList();
 	ClearEventList();
 	m_availableTriggers->clear();
 	m_availableTriggers->addItem(QString("None"));
 	m_Current_Type = NONE; //Update current type
 	this->m_CheckpointValue->setValue(0);
+
+	m_LightIntSpinBoxes[R]->setValue(0);
+	m_LightIntSpinBoxes[G]->setValue(0);
+	m_LightIntSpinBoxes[B]->setValue(0);
+	m_LightIntSpinBoxes[INTENSITY]->setValue(0);
+
+	m_LightIntSpinBoxes[RADIUS]->setValue(0);
+	m_LightIntSpinBoxes[CONSTANT]->setValue(0);
+	m_LightIntSpinBoxes[LINEAR]->setValue(0);
+	m_LightIntSpinBoxes[QUADRATIC]->setValue(0);
+
 }
 
 void Ui::BehaviourTypeHandler::UpdateSelection()
@@ -268,6 +338,15 @@ void Ui::BehaviourTypeHandler::ResetType(BehaviourType val)
 	default:
 		break;
 	}
+}
+
+void Ui::BehaviourTypeHandler::SetAmbientLight(Ambient amb)
+{
+
+	m_AmbientLightBoxes[R]->setValue(amb.r * 255);
+	m_AmbientLightBoxes[G]->setValue(amb.g * 255) ;
+	m_AmbientLightBoxes[B]->setValue(amb.b * 255) ;
+	m_AmbientLightBoxes[INTENSITY]->setValue(amb.intensity * 250);
 }
 
 void Ui::BehaviourTypeHandler::on_Time_changed(double val)
@@ -451,6 +530,7 @@ void Ui::BehaviourTypeHandler::on_BehaviourType_changed(int val)
 					m_lever_distance->setValue(((Lever*)m_selection)->interactionDistance);
 					break;
 				}
+					
 				}
 			}
 		}
@@ -646,8 +726,10 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 	((Lever*)m_selection)->interactionDistance = (float)val;
 
 }
+
 #pragma endregion
 #pragma region Trigger Functions
+
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
 	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
@@ -661,11 +743,7 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 	ClearTriggerList();
 	if (((ListenerContainer*)selection)->numTriggers > 0) // if the selected container has any triggers
 	{
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
-		for (size_t i = 0; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i + 1, strings->at(i));
-		}
+		
 	
 	
 		for (size_t i = 0; i < ((ListenerContainer*)selection)->numTriggers; i++)
@@ -687,6 +765,8 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
 		}
 		m_triggerList->selectRow(0);
+		m_currentEventType = ((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()]->type;
+		SetEventListByType(m_currentEventType);
 		QString string = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]); //Get the string of the EVENT enum
 		m_eventBox->setCurrentText(string); //Set the correct string item in the event box
 		
@@ -743,7 +823,20 @@ void Ui::BehaviourTypeHandler::ClearTriggerList()
 void Ui::BehaviourTypeHandler::ClearEventList()
 {
 	m_eventBox->clear();
-	//m_eventBox->insertItem(0, "None");
+
+}
+
+EVENT Ui::BehaviourTypeHandler::SetEventListByType(ContainerType type)
+{
+	if (type == NONE)
+		return EVENT::WHEEL_RESET;
+	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
+	m_eventBox->clear();
+	for (size_t i = 0; i < strings->size(); i++)
+	{
+		m_eventBox->insertItem(i, strings->at(i));
+	}
+	return  EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
 }
 
 void Ui::BehaviourTypeHandler::on_Delete_Trigger()
@@ -763,26 +856,21 @@ void Ui::BehaviourTypeHandler::on_Add_Trigger()
 	if (m_availableTriggers->currentIndex() <= 0 || m_triggerList->rowCount() >= 20)
 		return;
 	Container* selection = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
-
-	m_currentEventType = selection->type;
-	std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(m_currentEventType);
-	EVENT triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(strings->at(0)));
-
-	//QString hej = m_eventBox->currentText();
-	//triggerEvent = EVENT(m_eventStrings.GetEnumIdFromString(m_eventBox->currentText())); //Get the right EVENT enum integer.
-	//	m_eventStrings.GetEventStringsFromType(selection->type)->at(0);
-	if (((ListenerContainer*)m_selection)->AddTrigger(selection, triggerEvent)) //add the trigger to the selected component
+	//EVENT triggerEvent = EVENT(-1);
+	int eventSignal = -1;
+	if (m_currentEventType != selection->type){
+		m_currentEventType = selection->type;
+		eventSignal = (int) SetEventListByType(selection->type); //Get a standard value
+	}
+	else{
+		
+		eventSignal =m_eventStrings.GetEnumIdFromString(m_eventBox->currentText());
+	}
+	
+	if (((ListenerContainer*)m_selection)->AddTrigger(selection, EVENT(eventSignal))) //add the trigger to the selected component
 	{
-		//m_triggerList->setCurrentCell(-1, -1);
-		m_eventBox->clear();
-		;
-		m_eventBox->insertItem(0, "None");
-		for (size_t i = 1; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i, strings->at(i));
-		}
 
-		AddTriggerItemToList(selection, selection->type, -1); // if successfull, add it to the ui list
+		AddTriggerItemToList(selection, selection->type, eventSignal); // if successfull, add it to the ui list
 	}
 
 
@@ -805,6 +893,22 @@ void Ui::BehaviourTypeHandler::on_eventSelection_Changed(int val)
 
 }
 
+void Ui::BehaviourTypeHandler::on_availableTriggers_index_Changed(int index)
+{
+	if (m_availableTriggers->currentIndex() <= 0)
+		return;
+	Container* selected = (Container*)m_availableTriggers->currentData(Qt::UserRole).value<void*>(); // get the pointer to the selected container
+	if (selected == nullptr)
+		return;
+	if (m_currentEventType != selected->type)
+	{
+		m_currentEventType = selected->type;
+		SetEventListByType(selected->type);
+	}
+
+
+}
+
 void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * item)
 {
 	Container* selected = (Container*)m_triggerList->selectedItems().at(0)->data(Qt::UserRole).value<void*>();
@@ -814,14 +918,145 @@ void Ui::BehaviourTypeHandler::on_triggerSelection_Changed(QTableWidgetItem * it
 	if (m_currentEventType != selected->type)
 	{
 		m_currentEventType = selected->type;
-		ClearEventList();
-		std::vector<QString>*  strings = m_eventStrings.GetEventStringsFromType(selected->type);
-		for (size_t i = 0; i < strings->size(); i++)
-		{
-			m_eventBox->insertItem(i + 1, strings->at(i));
-		}
+		SetEventListByType(selected->type);
 	}
 	QString hej = m_eventStrings.GetStringFromEnumID(((ListenerContainer*)m_selection)->listenEvent[m_triggerList->currentRow()]);
 	m_eventBox->setCurrentText(hej);
+}
+#pragma endregion
+void Ui::BehaviourTypeHandler::on_Light_Add_changed()
+{
+	LevelHandler::GetInstance()->GetCurrentLevel()->AddPointLight();
+
+}
+
+#pragma region Light callbacks
+
+void Ui::BehaviourTypeHandler::on_R_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.r != realVal) {
+			((Point*)m_selection)->data->color.r = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_G_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.g != realVal) {
+			((Point*)m_selection)->data->color.g = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_B_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->color.b != realVal) {
+			((Point*)m_selection)->data->color.b = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+
+}
+void Ui::BehaviourTypeHandler::on_Intensity_changed(int val)
+{
+	const int dpi = 25; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->intensity != realVal) {
+			((Point*)m_selection)->data->intensity = float(realVal);
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Ambience_R_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientR(realVal);
+}
+void Ui::BehaviourTypeHandler::on_Ambience_G_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientG(realVal);
+}
+void Ui::BehaviourTypeHandler::on_Ambience_B_changed(int val)
+{
+	const int dpi = 255; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientB(realVal);
+}
+void Ui::BehaviourTypeHandler::on_Ambience_Intensity_changed(int val)
+{
+	const int dpi = 250; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+	LightController::GetInstance()->SetAmbientIntensity(realVal);
+}
+void Ui::BehaviourTypeHandler::on_Radius_changed(int val)
+{
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->radius != realVal) {
+			((Point*)m_selection)->data->radius = realVal;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Constant_changed(int val)
+{
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.constant != realVal) {
+			((Point*)m_selection)->data->falloff.constant = realVal;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Linear_changed(int val)
+{
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.linear != realVal) {
+			((Point*)m_selection)->data->falloff.linear = realVal;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_Quadratic_changed(int val)
+{
+	const int dpi = 100; // Any constant 10^n
+	double realVal = double(val) / double(dpi); // float value
+
+	if (m_selection != nullptr) {
+		if (m_selection->type == LIGHT && ((Point*)m_selection)->data->falloff.quadratic != realVal) {
+			((Point*)m_selection)->data->falloff.quadratic = realVal;
+			this->m_selection->isDirty = true;
+		}
+	}
+}
+void Ui::BehaviourTypeHandler::on_HideLight_changed(bool val)
+{
+	LightController::GetInstance()->DisplayLightRadius(val);
 }
 #pragma endregion

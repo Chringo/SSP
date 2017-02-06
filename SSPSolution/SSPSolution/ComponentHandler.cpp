@@ -1,7 +1,7 @@
 #include "ComponentHandler.h"
 
 ComponentHandler::ComponentHandler()
-{
+{	
 }
 
 
@@ -9,14 +9,15 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler, SoundHandler* soundHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
 	this->m_aHandler = aHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr)
+	this->m_soundHandler = soundHandler;
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr || soundHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -90,6 +91,11 @@ AnimationComponent * ComponentHandler::GetAnimationComponent()
 	return animComp;
 }
 
+SoundHandler * ComponentHandler::GetSoundHandler()
+{
+	return this->m_soundHandler;
+}
+
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
@@ -102,7 +108,15 @@ void ComponentHandler::UpdateGraphicsAnimationComponents()
 
 void ComponentHandler::UpdateAIComponents()
 {
+}
 
+void ComponentHandler::UpdateSoundHandler()
+{
+}
+
+void ComponentHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
+{
+	this->m_soundHandler->UpdateListnerPos(newPos, newLookDir, newUpVector);
 }
 
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)

@@ -15,7 +15,7 @@ namespace Ui {
 		PATH,
 		LEVER,
 		WHEEL,
-		PRESSURE_PLATE
+		PRESSURE_PLATE,
 	};
 	enum Pattern {
 		AI_LINEAR = 1,
@@ -40,6 +40,17 @@ namespace Ui {
 		WAYPOINT8,
 		NUM_WAYPOINTS
 	};
+
+	enum LIntSpin
+	{
+		R, G, B,
+		INTENSITY,
+		RADIUS,
+		CONSTANT,
+		LINEAR,
+		QUADRATIC,
+		NUM_LINTSPIN
+	};
 	class BehaviourTypeHandler : QObject
 	{
 
@@ -53,6 +64,7 @@ namespace Ui {
 		QComboBox* 			m_BehaviourType;
 		QDoubleSpinBox*		m_Numerics[NUM_NUMERICS];
 		QCheckBox*			m_Path_Trigger_Box;
+		QCheckBox*			m_HideLights;
 		QSpinBox*			m_PATH_TRIGGER;
 		QComboBox*			m_Pattern;
 		QListWidget*		m_WaypointList;
@@ -62,10 +74,12 @@ namespace Ui {
 		QPushButton*		m_Up;
 		QPushButton*		m_Down;
 		QPushButton*		m_AddCheckpoint;
+		QPushButton*		m_AddLightButton;
 		QSpinBox*			m_CheckpointValue;
 
 		QLabel*			m_uniqueID;
 		Container*		m_selection = nullptr;
+	
 
 #pragma region Button behaviour elements
 		QSpinBox	   * m_button_tagBox;
@@ -88,6 +102,8 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_rotationTime	  ;
 		QDoubleSpinBox *  m_wheel_timeTilReset	  ;
 		QDoubleSpinBox *  m_wheel_resetTime;
+		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
+		QSpinBox*		  m_AmbientLightBoxes[4];
 #pragma endregion
 
 
@@ -123,6 +139,7 @@ namespace Ui {
 		void Deselect();
 		void UpdateSelection();
 		void ResetType(BehaviourType);
+		void SetAmbientLight(Ambient amb);
 
 		public slots:
 		void on_Speed_changed(double val);
@@ -140,6 +157,7 @@ namespace Ui {
 		void on_Add();
 		void on_Del();
 
+		void on_availableTriggers_index_Changed(int index);
 		void on_triggerSelection_Changed(QTableWidgetItem * item);
 		void on_eventSelection_Changed(int val);
 		void on_Add_Trigger();
@@ -157,15 +175,38 @@ namespace Ui {
 		void on_Wheel_resetTime_changed(double val);
 #pragma endregion
 
+		void on_Light_Add_changed();
 
+#pragma region Light callbacks
+
+
+		void on_R_changed(int val);
+		void on_G_changed(int val);
+		void on_B_changed(int val);
+		void on_Intensity_changed(int val);
+
+		void on_Ambience_R_changed(int val);
+		void on_Ambience_G_changed(int val);
+		void on_Ambience_B_changed(int val);
+		void on_Ambience_Intensity_changed(int val);
+
+		void on_Radius_changed(int val);
+		void on_Constant_changed(int val);
+		void on_Linear_changed(int val);
+		void on_Quadratic_changed(int val);
+		void on_HideLight_changed(bool val);
+#pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);
 #pragma endregion
+
+
 	private:
 		void SetTriggerData(Container*& selection);
 		void AddTriggerItemToList(Container*& trigger, ContainerType type, int signal);
 		void ClearTriggerList();
 		void ClearEventList();
+		EVENT SetEventListByType(ContainerType type); //Return the first event in the list
 	};
 }
 #endif

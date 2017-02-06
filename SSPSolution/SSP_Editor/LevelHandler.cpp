@@ -37,6 +37,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	char* resData  = new char[resSize];										 //Allocate for resource data
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
+	delete[] resData;															 //Release the data from memory
 
 	//Spawn Points
 	LevelData::SpawnHeader spawns[2];
@@ -47,7 +48,8 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
 	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
-	file.write(modelData, modelSize);						//Write all modelEntities														
+	file.write(modelData, modelSize);						//Write all modelEntities	
+	delete[] modelData;										//Release the data from memory
     
     //AI Entities
 	if (header.AiComponentAmount > 0)
@@ -55,17 +57,17 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
 		GetAiData(aiData);								        //Get ai data	
-		file.write(aiData, aiSize);						//Write all aiComponents					
-		delete aiData;
+		file.write(aiData, aiSize);							    //Write all aiComponents					
+		delete[] aiData;
 	}
 
 	if (header.checkpointAmount > 0)
 	{
 		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
-		char* checkpointData = new char[checkpointSize];
+		char* checkpointData  = new char[checkpointSize];
 		this->GetCheckpointData(checkpointData);
 		file.write(checkpointData, checkpointSize);
-		delete checkpointData;
+		delete[] checkpointData;
 	}
 
 	if (header.buttonAmount > 0)
@@ -74,7 +76,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		char* buttonData = new char[buttonSize];
 		this->GetButtonData(buttonData);
 		file.write(buttonData, buttonSize);
-		delete buttonData;
+		delete[] buttonData;
 	}
 	if (header.doorAmount > 0)
 	{
@@ -82,7 +84,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		char* doorData = new char[doorSize];
 		this->GetDoorData(doorData);
 		file.write(doorData, doorSize);
-		delete doorData;
+		delete[] doorData;
 	}
 	if (header.leverAmount > 0)
 	{
@@ -90,7 +92,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		char* leverData = new char[leverSize];
 		this->GetLeverData(leverData);
 		file.write(leverData, leverSize);
-		delete leverData;
+		delete[] leverData;
 	}
 	if (header.wheelAmount > 0)
 	{
@@ -98,13 +100,29 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		char* wheelData = new char[wheelSize];
 		this->GetWheelData(wheelData);
 		file.write(wheelData, wheelSize);
-		delete wheelData;
+		delete[] wheelData;
 	}
+
+	
+	LevelData::SceneLightHeader sceneLights = GetSceneLightHeader(); //Get the lights header for the file 
+	char* sceneLightdata = (char*)&sceneLights;
+	file.write(sceneLightdata, sizeof(LevelData::SceneLightHeader)); //Write the scene light header
+
+	if (sceneLights.numPointLights > 0)
+	{
+		size_t pointLightSize = sizeof(LevelData::PointLightHeader) * sceneLights.numPointLights;
+		char* pointData		  = new char[pointLightSize];
+		this->GetPointLightData(pointData);
+		file.write(pointData, pointLightSize);
+		delete[] pointData;
+	}
+
+
 
 	file.close();
 	//Cleanup
-	delete resData;
-	delete modelData;
+
+	
 
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
@@ -203,7 +221,31 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadTriggerComponents((LevelData::WheelHeader*)wheelData, header.wheelAmount);
 		delete wheelData;
 	}
+	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
 
+	//Light header
+		
+		LevelData::SceneLightHeader lightHeader;
+		file.read((char*)&lightHeader, sizeof(LevelData::SceneLightHeader));
+	
+		Ambient amb;
+		amb.r =	lightHeader.ambientColor[0];
+		amb.g =	lightHeader.ambientColor[1];
+		amb.b =	lightHeader.ambientColor[2];
+		amb.intensity = lightHeader.ambientIntensity;
+		LightController::GetInstance()->SetLevelAmbient(amb);
+		//Point lights
+		if (lightHeader.numPointLights > 0) {
+
+		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader.numPointLights;	  //memsize
+		char* pointData = new char[pointlightSize];
+		file.read(pointData, pointlightSize);
+		LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
+		delete pointData;
+		}
+
+
+	}
 	file.close();
 	delete modelData; //Cleanup
 	QFileInfo info(QString::fromStdString(path));
@@ -268,17 +310,33 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 {
 	LevelData::MainLevelHeader header;
 	
-	header.resAmount	     = m_currentLevel.GetUniqueModels()->size();
 	header.entityAmount      = m_currentLevel.GetNumEntities();
 	header.lightAmount       = m_currentLevel.GetNumLights();
+	header.resAmount	     = (unsigned int) m_currentLevel.GetUniqueModels()->size();
 	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
-	header.checkpointAmount = (unsigned int)m_currentLevel.GetCheckpoints()->size();
-	header.buttonAmount = (unsigned int)m_currentLevel.GetPuzzleElements(BUTTON)->size();
-	header.doorAmount = (unsigned int)m_currentLevel.GetPuzzleElements(DOOR)->size();
-	header.leverAmount = (unsigned int)m_currentLevel.GetPuzzleElements(LEVER)->size();
-	header.wheelAmount = (unsigned int)m_currentLevel.GetPuzzleElements(WHEEL)->size();
+	header.checkpointAmount  = (unsigned int) m_currentLevel.GetCheckpoints()->size();
+	header.buttonAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(BUTTON)->size();
+	header.doorAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(DOOR)->size();
+	header.leverAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(LEVER)->size();
+	header.wheelAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(WHEEL)->size();
 
 	return header;
+}
+
+LevelData::SceneLightHeader LevelHandler::GetSceneLightHeader()
+{
+	LevelData::SceneLightHeader data;
+
+	data.numPointLights = LightController::GetInstance()->GetPointLightData()->size();
+	
+	const Ambient* amb = LightController::GetInstance()->GetLevelAmbient();
+
+	data.ambientIntensity = amb->intensity;
+	data.ambientColor[0] = amb->r;
+	data.ambientColor[1] = amb->g;
+	data.ambientColor[2] = amb->b;
+	//TODO: Add ambientColor and ambient Intesity
+	return data;
 }
 
 LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
@@ -441,6 +499,32 @@ LevelData::LevelStatus LevelHandler::GetWheelData(char * dataPtr)
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::GetPointLightData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	std::vector<LIGHTING::Point>* lights = LightController::GetInstance()->GetPointLightData();
+
+	for each(LIGHTING::Point light in *lights) {
+		
+		LevelData::PointLightHeader currentLight;
+		currentLight.falloff_quadratic = light.falloff.quadratic;
+		currentLight.falloff_constant  = light.falloff.constant;
+		currentLight.falloff_linear    = light.falloff.linear;
+		currentLight.position[0]	   = light.position.m128_f32[0];
+		currentLight.position[1]	   = light.position.m128_f32[1];
+		currentLight.position[2]	   = light.position.m128_f32[2];
+		currentLight.intensity		   = light.intensity;
+		currentLight.color[0]		   = light.color.r;
+		currentLight.color[1]		   = light.color.g;
+		currentLight.color[2]		   = light.color.b;
+		currentLight.radius			   = light.radius;
+		memcpy(dataPtr + offset, (char*)&currentLight, sizeof(LevelData::PointLightHeader));
+		offset += sizeof(LevelData::PointLightHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadEntities(LevelData::EntityHeader* dataPtr, size_t numEntities)
 {
 	GlobalIDHandler::GetInstance()->ResetIDs();
@@ -482,6 +566,27 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 		m_currentLevel.GetCheckpoints()->push_back(checkpoint);
 	}
 
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadPointLightComponents(LevelData::PointLightHeader * dataPtr, size_t numComponents)
+{
+
+
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		LIGHTING::Point point;
+		memcpy(&point.color, dataPtr[i].color, sizeof(float) * 3);
+		memcpy(&point.position.m128_f32, dataPtr[i].position, sizeof(float) * 3);
+
+		point.falloff.quadratic = dataPtr[i].falloff_quadratic;
+		point.falloff.constant  = dataPtr[i].falloff_constant;
+		point.falloff.linear	= dataPtr[i].falloff_linear;
+		point.intensity			= dataPtr[i].intensity;
+		point.radius			= dataPtr[i].radius;
+
+		LightController::GetInstance()->AddLight(&point);
+	}
 	return LevelData::LevelStatus::L_OK;
 }
 
