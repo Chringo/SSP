@@ -4,7 +4,8 @@
 
 Player::Player()
 {
-	this->m_speed = 5.0f;
+	this->m_maxSpeed = 5.0f;
+	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
 }
@@ -20,7 +21,8 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	int result = 0;
 
 	this->InitializeBase(entityID, pComp, gComp, aComp);
-	this->m_speed = 0.1f;
+	this->m_maxSpeed = 11.0f;
+	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
@@ -164,22 +166,29 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//Define a quaternion rotation so we can rotate the velocity vector
 				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
 				float forwardsVel = 0.0f, sidewaysVel = 0.0f;
-				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
+				//DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
+				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 				DirectX::XMVECTOR lookAtDir = this->m_lookDir;
 				lookAtDir.m128_f32[1] = 0.0f;
+				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
+				//Scale lookDir with forwards
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, forwards));
 
-				velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * forwards * dT * 10);
-				//velocity = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lookAtDir), m_speed * sideways * dT * 10);
-				
-				velocity.m128_f32[1] = 0.0f; // doing this makes it a forward vector instead of view direction
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(this->m_rightDir, m_speed*sideways * dT *10));
-				
-				//this deltatime is added to the bullet
-				//Rotate the velocity vector
-				//velocity = DirectX::XMVector3Rotate(velocity, rotation);
+				lookAtDir = this->m_rightDir;
+				lookAtDir.m128_f32[1] = 0.0f;
+				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
+				//Scale lookAtDir / m_rightDir with sideways
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, sideways));
+
+				//Velocity now contains both forwards and sideways velocity
+				velocity = DirectX::XMVector3Normalize(velocity);
+
+				//Scale that velocity with speed and deltaTime
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * dT);
+				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+
 				//Add the velocity to our physicsComponent
 				this->m_pComp->PC_velocity = velocity;
-				//this->m_pComp->dir
 			}
 
 		//}
@@ -221,12 +230,20 @@ Entity* Player::SetGrabbed(Entity * entityPtr)
 	return oldValue;	//Returns nullptr if nothing is droped for the new entity
 }
 
-float Player::SetSpeed(float speed)
+float Player::SetMaxSpeed(float speed)
 {
-	float oldSpeed = this->m_speed;
-	this->m_speed = speed;
+	float oldSpeed = this->m_maxSpeed;
+	this->m_maxSpeed = speed;
 	return oldSpeed;
 }
+
+float Player::SetAcceleration(float acceleration)
+{
+	float oldAcceleration = this->m_acceleration;
+	this->m_acceleration = acceleration;
+	return oldAcceleration;
+}
+
 
 DirectX::XMVECTOR Player::SetLookDir(DirectX::XMVECTOR lookDir)
 {
@@ -282,9 +299,14 @@ void Player::SetBall(Entity * ball)
 	this->m_ball = ball;
 }
 
-float Player::GetSpeed()
+float Player::GetMaxSpeed()
 {
-	return this->m_speed;
+	return this->m_maxSpeed;
+}
+
+float Player::GetAcceleration()
+{
+	return this->m_acceleration;
 }
 
 DirectX::XMVECTOR Player::GetLookDir()

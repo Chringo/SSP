@@ -115,6 +115,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
+	playerP->PC_friction = 5.0f;
 
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 	//this->m_player1.Initialize(1, playerP, playerG, nullptr);
@@ -147,7 +148,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
 
 	//this->m_player1.Initialize(1, playerP, playerG);
-	this->m_player1.SetSpeed(0.5f);
+	this->m_player1.SetMaxSpeed(5.0f);
+	this->m_player1.SetAcceleration(50.0f);
 
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
 
@@ -202,7 +204,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #endif // _DEBUG
 	this->m_player2.Initialize(2, playerP, playerG, playerAnim2);
 	//this->m_player2.Initialize(2, playerP, playerG);
-	this->m_player2.SetSpeed(0.5f);
+	this->m_player2.SetMaxSpeed(2.0f);
+	this->m_player2.SetAcceleration(0.5f);
 
 
 	////Ball1
