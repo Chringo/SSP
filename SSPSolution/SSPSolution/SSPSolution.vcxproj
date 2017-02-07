@@ -178,6 +178,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="PlatformEntity.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Progression.cpp" />
     <ClCompile Include="SoundHandler.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="LeverEntity.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="PlatformEntity.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Progression.h" />
     <ClInclude Include="SoundHandler.h" />

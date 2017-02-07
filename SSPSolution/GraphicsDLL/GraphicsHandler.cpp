@@ -87,6 +87,61 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	spheres.clear();
 
 }
+
+
+int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum)
+{
+	int result = 0;
+	//Enum
+	//enum { MAX_BRANCHING = 8 };
+	////Safety check
+	//if (curNode != nullptr)
+	//{
+
+	//	AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
+	//	result += 1;
+	//	DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//	//Branch
+	//	//If I am culled
+	//	Camera::C_AABB branchBounds;
+	//	branchBounds.pos = curNode->pos;
+	//	branchBounds.ext = curNode->ext;
+	//	CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+	//	if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+	//	{
+	//		renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+	//		myAABB.ext[0] *= 0.9999f;
+	//		myAABB.ext[1] *= 0.9999f;
+	//		myAABB.ext[2] *= 0.9999f;
+	//	}
+
+	//	for (int i = 0; i < 8; i++)
+	//	{
+	//		//For all non-culled branches
+	//		if (curNode->branches[i] != nullptr)
+	//		{
+	//			////Do the check to see if the branch is within the view frustrum
+	//			//Camera::C_AABB branchBounds;
+	//			//branchBounds.pos = curNode->pos;
+	//			//branchBounds.ext = curNode->ext;
+	//			//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+	//			//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+	//			//{
+	//			//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+	//			//	myAABB.ext[0] *= 0.9999f;
+	//			//	myAABB.ext[1] *= 0.9999f;
+	//			//	myAABB.ext[2] *= 0.9999f;
+	//			//}
+
+	//			//Enter your branch
+	//			result += RenderOctree(curNode->branches[i], cullingFrustrum);
+	//		}
+	//	}
+	//	this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
+
+	//}
+	return result;
+}
 #endif // _DEBUG
 
 int GraphicsHandler::IncreaseArraySize()
@@ -318,6 +373,10 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
 	this->m_maxGraphicsAnimationComponents = 5;
+	this->m_maxDepth = 5;
+	this->m_minDepth = 1;
+	this->m_minContainment = 2;
+	this->m_minSize = 4.0f;
 }
 
 
@@ -376,7 +435,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #endif // _DEBUG
 
 	return 0;
-	
 }
 
 Camera* GraphicsHandler::SetCamera(Camera * newCamera)
@@ -407,14 +465,108 @@ int GraphicsHandler::Render(float deltaTime)
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
+	//Use the root node in the octree to create arrays of things to render, one array for each model id
+
+	int amountOfModelsToRender = 0;
+	int componentsInTree = this->m_octreeRoot.containedComponents.size();
+	struct InstanceData {
+		int modelID;
+		int amountOfInstances;
+		DirectX::XMFLOAT4X4* componentSpecific;
+	};
+	std::vector<InstanceData> instancedRenderingList;
+	unsigned int lastModelID = 0;
+	if (componentsInTree > 0)
+		lastModelID = this->m_octreeRoot.containedComponents[0]->modelID;
+	int amountOfModelOccurrencees = 0;
+	//for (int i = 0; i < componentsInTree; i++)
+	//{
+	//	//If the component is to be rendered, increase the counter
+	//	if (this->m_octreeRoot.containedComponents[i]->isRendered)
+	//	{
+	//		//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+	//		if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
+	//		{
+	//			//Create the array
+	//			InstanceData instanceData;
+	//			instanceData.modelID = lastModelID;
+	//			instanceData.amountOfInstances = amountOfModelOccurrencees;
+	//			instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+
+	//			amountOfModelOccurrencees = 0;
+	//		}
+	//		++amountOfModelOccurrencees;
+	//	}
+	//}
+	////Fill the array with valuable data
+	//int instancedRenderingIndex = 0;
+	//int instancedModelCount = 0;
+	//for (int i = 0; i < componentsInTree; i++)
+	//{
+	//	//reset the 'isRendered' bool
+	//	if (this->m_octreeRoot.containedComponents[i]->isRendered != false)
+	//	{
+	//		//If it is time to change 
+	//		if (this->m_octreeRoot.containedComponents[i]->modelID != lastModelID)
+	//		{
+	//			instancedRenderingIndex++;
+	//			instancedModelCount = 0;
+	//		}
+	//		//Store the data
+	//		DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i]->worldMatrix);
+	//		
+	//	}
+	//}
+	//By all means it should be done by now
+
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
+	//Go through all components in the root node and render the ones that should be rendered
+	int renderCap = this->m_staticGraphicsComponents.size();
+	for (int i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
-		if (this->m_graphicsComponents[i]->active == false)
-			continue;
-		m_shaderControl->Draw(m_graphicsComponents[i]->modelPtr, m_graphicsComponents[i]);
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			if (this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->active)
+			{
+				m_shaderControl->Draw(this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->modelPtr, this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]);
+				this->m_octreeRoot.containedComponents[i]->isRendered = false;
+			}
+		}
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
+		continue;
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
+	renderCap = this->m_dynamicGraphicsComponents.size();
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_dynamicGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+		}
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
+		continue;
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
+	}
+	renderCap = this->m_persistantGraphicsComponents.size();
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_persistantGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+		}
+
+		/*if (this->m_staticGraphicsComponents[i]->active == false)
+		continue;
+		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
+	}
+	
+	//for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
+	//{
+	//	if (this->m_staticGraphicsComponents[i]->active == false)
+	//		continue;
+	//	m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);
+	//}
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
@@ -447,6 +599,15 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 
 #ifdef _DEBUG
+	Camera::ViewFrustrum renderTest;
+	this->m_camera->GetViewFrustrum(renderTest);
+
+	ID3D11RenderTargetView* temp = m_d3dHandler->GetBackbufferRTV();
+	ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
+	context->OMSetRenderTargets(1, &temp, this->dsv);
+	m_debugRender.SetActive();
+
+	this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 #endif // _DEBUG
 
@@ -574,6 +735,56 @@ void GraphicsHandler::Shutdown()
 	//	delete this->m_animGraphicsComponents[i];
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
+	//Clear the memory for the components
+	for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+	{
+		if (this->m_staticGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_staticGraphicsComponents[i];
+			this->m_staticGraphicsComponents[i] = nullptr;
+		}
+	}
+	for (size_t i = 0; i < this->m_dynamicGraphicsComponents.size(); i++)
+	{
+		if (this->m_dynamicGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_dynamicGraphicsComponents[i];
+			this->m_dynamicGraphicsComponents[i] = nullptr;
+		}
+	}
+	for (size_t i = 0; i < this->m_animationGraphicsComponents.size(); i++)
+	{
+		if (this->m_animationGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_animationGraphicsComponents[i];
+			this->m_animationGraphicsComponents[i] = nullptr;
+		}
+	}
+	for (size_t i = 0; i < this->m_persistantGraphicsComponents.size(); i++)
+	{
+		if (this->m_persistantGraphicsComponents[i] != nullptr)
+		{
+			delete this->m_persistantGraphicsComponents[i];
+			this->m_persistantGraphicsComponents[i] = nullptr;
+		}
+	}
+	this->m_animationGraphicsComponents.clear();
+	this->m_staticGraphicsComponents.clear();
+	this->m_dynamicGraphicsComponents.clear();
+	this->m_persistantGraphicsComponents.clear();
+
+	//Clear the Octree of contained components
+	for (size_t i = 0; i < this->m_octreeRoot.containedComponents.size(); i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i] != nullptr)
+		{
+			delete this->m_octreeRoot.containedComponents[i];
+			this->m_octreeRoot.containedComponents[i] = nullptr;
+		}
+	}
+	//Delete the octree branches
+	this->DeleteOctree(&this->m_octreeRoot);
+
 #ifdef _DEBUG
 	if (!editorMode)
 	{
@@ -595,6 +806,8 @@ void GraphicsHandler::Shutdown()
 			}
 		}
 	}
+
+	
 #endif // _DEBUG
 
 	
@@ -604,6 +817,193 @@ void GraphicsHandler::Shutdown()
 	m_debugRender.Release();
 #endif // _DEBUG
 
+}
+
+int GraphicsHandler::GenerateOctree()
+{
+	int result = 0;
+	//Check amount of components to be included into the octree
+	int componentCount = this->m_staticGraphicsComponents.size();
+
+
+	//Create the BoundingVolume we cull against
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[0];
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[1];
+	//this->m_staticGraphicsComponents[0]->modelPtr->GetOBBData().extension[2];
+
+	float minX, maxX, minY, maxY, minZ, maxZ;
+	minX = minY = minZ = D3D11_FLOAT32_MAX;
+	maxX = maxY = maxZ = -D3D11_FLOAT32_MAX;
+
+	std::vector<OctreeBV> listOfComponentBV;
+	this->m_octreeRoot.containedComponents.resize(componentCount);
+	//Fill the Octree with empty structs
+	for (size_t i = 0; i < componentCount; i++)
+	{
+		this->m_octreeRoot.containedComponents[i] = new OctreeBV();
+	}
+	//Fill the octree with the data
+	size_t i = 0;
+	for ( i = 0; i < componentCount; i++)
+	{
+		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
+		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
+		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[0]; // x
+		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[1]; // y
+		this->m_octreeRoot.containedComponents[i]->pos.z = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[2]; // z
+		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i]->modelID;
+		this->m_octreeRoot.containedComponents[i]->componentIndex = i;
+
+		//Check for the lowest and highest values
+		if (this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x < minX)
+			minX = this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
+			maxX = this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x;
+		if (this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y < minY)
+			minY = this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
+			maxY = this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y;
+		if (this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z < minZ)
+			minZ = this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z;
+		else if (this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
+			maxZ = this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z;
+	}
+	//After having finished filling the octree with data, sort it
+	std::sort(this->m_octreeRoot.containedComponents.begin(), this->m_octreeRoot.containedComponents.end(), Sorting_on_modelID());
+	
+	//Could we calculate the average distribution along each axis?
+	/*We have the amount of components, maybe we could take the most interesting axis of division when it comes to component clustering?
+	A forest with a single telephone pole would be very uninteresting in the y-dimension, lending more value to optimizing the x-z plane division.
+	Should we thus have a min-size for each axis of division? Though we should know the result of min size on max depth. If the deltaX of the world (DX)
+	is 64m and we have a max of 5 division we would, with no min size, reach 2m along the x-axis.
+	*/
+
+	//We should start with optimizing for the largest delta
+	float largestSize = max(max(maxX - minX, maxY - minY), maxZ - minZ);
+	//Determine the max division according to the largest size divided by the min size. Roof the value.
+	int size = largestSize;
+	bool reachedMaxDepth = false;
+	this->m_maxDepth = 0;
+	while (!reachedMaxDepth)
+	{
+		this->m_maxDepth++;
+		size = size / 2;
+		reachedMaxDepth = !(size > this->m_minSize);
+	}
+
+	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
+
+	//Initialize the octree root
+	for (i = 0; i < 8; i++)
+	{
+		this->m_octreeRoot.branches[i] = nullptr;
+	}
+	this->m_octreeRoot.ext = DirectX::XMFLOAT3((maxX - minX) / 2.0f, (maxY - minY) / 2.0f, (maxZ - minZ) / 2.0f);
+	this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
+	
+
+	//Build the tree
+	this->OctreeExtend(&this->m_octreeRoot, 0);
+
+	return result;
+}
+
+GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
+{
+	int result = 0;
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	for (int i = 0; i < 8; i++)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
+	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
+	int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}
+	return result;
+}
+
+int GraphicsHandler::ResizeDynamicComponents(size_t new_cap)
+{
+	int result = 1;
+	result = this->m_dynamicGraphicsComponents.size();
+	//Delete all old components
+	//std::remove_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), this->m_dynamicGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_dynamicGraphicsComponents.clear();
+
+	//Set size for the vector
+	this->m_dynamicGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_dynamicGraphicsComponents[i] = new GraphicsComponent();
+	}
+	return  result;
+}
+
+int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
+{
+	int result = 1;
+	result = this->m_staticGraphicsComponents.size();
+	//Delete all old components
+	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_staticGraphicsComponents.clear();
+
+	//Set size for the vector
+	this->m_staticGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
+	}
+	return  result;
+}
+
+int GraphicsHandler::ResizeAnimationComponents(size_t new_cap)
+{
+	int result = 0;
+	this->m_animationGraphicsComponents.resize(new_cap);
+	return  result;
+}
+
+int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
+{
+	int result = 1;
+	result = this->m_persistantGraphicsComponents.size();
+	//Delete all old components
+	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
+	std::transform(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(), this->m_persistantGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+
+	this->m_persistantGraphicsComponents.clear();
+
+	//Set size for the vector
+	this->m_persistantGraphicsComponents.resize(new_cap, nullptr);
+	//Go through vector and make pointers point to a structure
+	size_t amountOfComponents = new_cap;
+	for (size_t i = 0; i < amountOfComponents; i++)
+	{
+		this->m_persistantGraphicsComponents[i] = new GraphicsComponent();
+	}
+	return  result;
 }
 
 int GraphicsHandler::SetComponentArraySize(int newSize)
@@ -665,6 +1065,73 @@ GraphicsAnimationComponent* GraphicsHandler::GetNextAvailableAnimationComponent(
 	return nullptr;
 }
 
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
+{
+	GraphicsComponent* result = nullptr;
+	//Yea
+	//result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_Component);
+	if (this->m_staticGraphicsComponents.size() > 0)
+	{
+		result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+
+		/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
+		return arg.first == new_id; }) != ...)*/
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
+	}
+	return result;
+	//Yea that happened
+	/*if ((result = *std::find(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_gComponent()))->active == true)
+		return result;
+	else
+		return nullptr;*/
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailableDynamicComponent()
+{
+	GraphicsComponent* result = nullptr;
+	if (this->m_dynamicGraphicsComponents.size() > 0)
+	{
+		//If the list is empty it crashed, have fun
+		//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+		result = *std::find_if(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
+	}
+	return result;
+}
+
+GraphicsComponent * GraphicsHandler::GetNextAvailablePersistentComponent()
+{
+	GraphicsComponent* result = nullptr;
+	if (this->m_persistantGraphicsComponents.size() > 0)
+	{
+		//If the list is empty it crashed, have fun
+		//result = *std::find(this->m_dynamicGraphicsComponents.begin(), this->m_dynamicGraphicsComponents.end(), Find_Available_gComponent());
+		result = *std::find_if(this->m_persistantGraphicsComponents.begin(), this->m_persistantGraphicsComponents.end(),
+			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		if (result != nullptr && result->active)
+		{
+			result = nullptr;
+		}
+	}
+	return result;
+}
+
+//GraphicsAnimationComponent * GraphicsHandler::GetNextAvailableAnimationComponent()
+//{
+//	GraphicsAnimationComponent* newComponent = new GraphicsAnimationComponent();
+//	this->m_animationGraphicsComponents.push_back(newComponent);
+//	return newComponent;
+//}
+	
 int GraphicsHandler::UpdateComponentList()
 {
 	int result = 0;
@@ -793,4 +1260,330 @@ void GraphicsHandler::m_CreateTempsTestComponents()
 	
 
 
+}
+
+void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
+{
+	//Check if this node we are currently working on can split
+	int containedCount = curNode->containedComponents.size();
+	int shouldBranch = 0;
+	//Determin if we should branch this node
+	//Big enough to branch
+	shouldBranch += (curNode->ext.x < this->m_minSize && curNode->ext.y < this->m_minSize && curNode->ext.z < this->m_minSize);
+	//Contains enough for branching to be worth it
+	shouldBranch += !(containedCount > this->m_minContainment);
+	//Has not yet reached the maximum allowed depth
+	shouldBranch += !(depth < this->m_maxDepth);
+	//If should branch equals zero
+	if (shouldBranch == 0 || (depth < this->m_minDepth))
+	{
+		//Create the branches, we cull them later if not needed
+		for (int i = 0; i < 8; i++)
+		{
+			curNode->branches[i] = new OctreeNode();
+		}
+		//For the 8 new branches
+#pragma region
+		 //MIN	MIN		MIN
+		curNode->branches[0]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[0]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[0]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[0]->ext.x = curNode->ext.x / 2;
+		curNode->branches[0]->ext.y = curNode->ext.y / 2;
+		curNode->branches[0]->ext.z = curNode->ext.z / 2;
+		//MIN	MIN		MAX											 
+		curNode->branches[1]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[1]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[1]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[1]->ext.x = curNode->ext.x / 2;
+		curNode->branches[1]->ext.y = curNode->ext.y / 2;
+		curNode->branches[1]->ext.z = curNode->ext.z / 2;
+		//MAX	MIN		MAX											  
+		curNode->branches[2]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[2]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[2]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[2]->ext.x = curNode->ext.x / 2;
+		curNode->branches[2]->ext.y = curNode->ext.y / 2;
+		curNode->branches[2]->ext.z = curNode->ext.z / 2;
+		//MAX	MIN		MIN											  
+		curNode->branches[3]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[3]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+		curNode->branches[3]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[3]->ext.x = curNode->ext.x / 2;
+		curNode->branches[3]->ext.y = curNode->ext.y / 2;
+		curNode->branches[3]->ext.z = curNode->ext.z / 2;
+
+		//MIN	MAX		MIN											  
+		curNode->branches[4]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[4]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[4]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[4]->ext.x = curNode->ext.x / 2;
+		curNode->branches[4]->ext.y = curNode->ext.y / 2;
+		curNode->branches[4]->ext.z = curNode->ext.z / 2;
+		//MIN	MAX		MAX											  
+		curNode->branches[5]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+		curNode->branches[5]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[5]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[5]->ext.x = curNode->ext.x / 2;
+		curNode->branches[5]->ext.y = curNode->ext.y / 2;
+		curNode->branches[5]->ext.z = curNode->ext.z / 2;
+		//MAX	MAX		MAX											  
+		curNode->branches[6]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[6]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[6]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+		curNode->branches[6]->ext.x = curNode->ext.x / 2;
+		curNode->branches[6]->ext.y = curNode->ext.y / 2;
+		curNode->branches[6]->ext.z = curNode->ext.z / 2;
+		//MAX	MAX		MIN											  
+		curNode->branches[7]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+		curNode->branches[7]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+		curNode->branches[7]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+		curNode->branches[7]->ext.x = curNode->ext.x / 2;
+		curNode->branches[7]->ext.y = curNode->ext.y / 2;
+		curNode->branches[7]->ext.z = curNode->ext.z / 2;
+
+#pragma endregion Creating the branches
+
+		//Fill the branches
+		for (int index = 0; index < containedCount; index++)
+		{
+			//For all 8 branches: check if they intersect with the entity
+			for (int j = 0; j < 8; j++)
+			{
+				int withinCount = 0;
+				if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index]->pos, curNode->containedComponents[index]->ext))
+				{
+					//The component is within the branch
+					curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
+					++withinCount;
+				}
+			}
+		}
+
+		//If we are not in the root which should contain the master list of components
+		if (depth > 0)
+		{
+			//Empty this branch because we gave the brances our components
+			curNode->containedComponents.clear();
+		}
+
+		//Cull the branches without components
+		for (int i = 0; i < 8; i++)
+		{
+			if (curNode->branches[i]->containedComponents.size() == 0)
+			{
+				delete curNode->branches[i];
+				curNode->branches[i] = nullptr;
+			}
+			else
+			{
+				//Do the same algorithm for the child branches that are not culled
+				this->OctreeExtend(curNode->branches[i], depth + 1);
+			}
+		}
+	}
+
+/*	if (depth < this->m_maxDepth)
+	{
+		if (containedCount > 0)
+		{
+			if (curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize)
+			{
+				if (depth < this->m_minDepth)
+				{
+					if (containedCount > this->m_minContainment)
+					{
+						
+						//For the 8 new branches
+#pragma region
+						//MIN	MIN		MIN
+						curNode->branches[0]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+						curNode->branches[0]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+						curNode->branches[0]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+						curNode->branches[0]->ext.x = curNode->ext.x / 2;
+						curNode->branches[0]->ext.y = curNode->ext.y / 2;
+						curNode->branches[0]->ext.z = curNode->ext.z / 2;
+						//MIN	MIN		MAX											 
+						curNode->branches[1]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+						curNode->branches[1]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+						curNode->branches[1]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+						curNode->branches[1]->ext.x = curNode->ext.x / 2;
+						curNode->branches[1]->ext.y = curNode->ext.y / 2;
+						curNode->branches[1]->ext.z = curNode->ext.z / 2;
+						//MAX	MIN		MAX											  
+						curNode->branches[2]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+						curNode->branches[2]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+						curNode->branches[2]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+						curNode->branches[2]->ext.x = curNode->ext.x / 2;
+						curNode->branches[2]->ext.y = curNode->ext.y / 2;
+						curNode->branches[2]->ext.z = curNode->ext.z / 2;
+						//MIN	MIN		MAX											  
+						curNode->branches[3]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+						curNode->branches[3]->pos.y = curNode->pos.y - curNode->ext.y / 2;
+						curNode->branches[3]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+						curNode->branches[3]->ext.x = curNode->ext.x / 2;
+						curNode->branches[3]->ext.y = curNode->ext.y / 2;
+						curNode->branches[3]->ext.z = curNode->ext.z / 2;
+
+						//MIN	MAX		MIN											  
+						curNode->branches[4]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+						curNode->branches[4]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+						curNode->branches[4]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+						curNode->branches[4]->ext.x = curNode->ext.x / 2;
+						curNode->branches[4]->ext.y = curNode->ext.y / 2;
+						curNode->branches[4]->ext.z = curNode->ext.z / 2;
+						//MIN	MAX		MAX											  
+						curNode->branches[5]->pos.x = curNode->pos.x - curNode->ext.x / 2;
+						curNode->branches[5]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+						curNode->branches[5]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+						curNode->branches[5]->ext.x = curNode->ext.x / 2;
+						curNode->branches[5]->ext.y = curNode->ext.y / 2;
+						curNode->branches[5]->ext.z = curNode->ext.z / 2;
+						//MAX	MAX		MAX											  
+						curNode->branches[6]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+						curNode->branches[6]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+						curNode->branches[6]->pos.z = curNode->pos.z + curNode->ext.z / 2;
+						curNode->branches[6]->ext.x = curNode->ext.x / 2;
+						curNode->branches[6]->ext.y = curNode->ext.y / 2;
+						curNode->branches[6]->ext.z = curNode->ext.z / 2;
+						//MIN	MAX		MAX											  
+						curNode->branches[7]->pos.x = curNode->pos.x + curNode->ext.x / 2;
+						curNode->branches[7]->pos.y = curNode->pos.y + curNode->ext.y / 2;
+						curNode->branches[7]->pos.z = curNode->pos.z - curNode->ext.z / 2;
+						curNode->branches[7]->ext.x = curNode->ext.x / 2;
+						curNode->branches[7]->ext.y = curNode->ext.y / 2;
+						curNode->branches[7]->ext.z = curNode->ext.z / 2;
+
+#pragma endregion Creating the branches
+
+
+						//Fill the branches with the components
+						//Split this node
+						int xSplit = -1, ySplit = -1, zSplit = -1;
+						//For every contained component
+						for (int index = 0; index < containedCount; index++)
+						{
+							//float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
+							//if (abs(distance) < curNode->containedComponents[index].ext.x)
+							//	xSplit = 0;
+							//else
+							//	xSplit += (distance > 0) * 2;
+							//
+							//distance = curNode->containedComponents[index].pos.y - curNode->pos.y;
+							//if (abs(distance) < curNode->containedComponents[index].ext.y)
+							//	ySplit = 0;
+							//else
+							//	ySplit += (distance > 0) * 2;
+							//
+							//distance = curNode->containedComponents[index].pos.z - curNode->pos.z;
+							//if (abs(distance) < curNode->containedComponents[index].ext.z)
+							//	zSplit = 0;
+							//else
+							//	zSplit += (distance > 0) * 2;
+
+
+							
+							//For all 8 branches: check if they intersect with the entity
+							for (int j = 0; j < 8; j++)
+							{
+								if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index]->pos, curNode->containedComponents[index]->ext))
+								{
+									//The component is within the branch
+									curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
+								}
+							}
+
+						}
+						//After having pushed the components into the child remove them from this branch unless this is the root
+						if (depth > 0)
+						{
+							curNode->containedComponents.clear();
+						}
+					}
+				}
+			}
+			//Cull the branches without components
+			for (int i = 0; i < 8; i++)
+			{
+				if (curNode->branches[i]->containedComponents.size() == 0)
+				{
+					delete curNode->branches[i];
+					curNode->branches[i] = nullptr;
+				}
+				else
+				{
+					//Do the same algorithm for the child branches that are not culled
+					this->OctreeExtend(curNode->branches[i], depth + 1);
+				}
+			}
+		}
+	}*/
+	
+
+}
+
+
+void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum)
+{
+	//Enum
+	enum {MAX_BRANCHING = 8};
+	//Safety check
+	if (curNode != nullptr)
+	{
+		if (curNode->containedComponents.size() <= 0)
+		{
+			//Branch
+			for (int i = 0; i < 8; i++)
+			{
+				//For all non-culled branches
+				if (curNode->branches[i] != nullptr)
+				{
+					//Do the check to see if the branch is within the view frustrum
+					Camera::C_AABB branchBounds;
+					branchBounds.pos = curNode->pos;
+					branchBounds.ext = curNode->ext;
+					CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+					if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+					{
+						TraverseOctree(curNode->branches[i], cullingFrustrum);
+					}
+				}
+			}
+		}
+		else
+		{
+			//Leaf
+			for each (OctreeBV* entityComponent in curNode->containedComponents)
+			{
+				entityComponent->isRendered = true;
+			}
+		}
+	}
+}
+
+void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (curNode->branches[i] != nullptr)
+		{
+			this->DeleteOctree(curNode->branches[i]);
+			delete curNode->branches[i];
+			curNode->branches[i];
+		}
+	}
+}
+
+int GraphicsHandler::AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2)
+{
+	//If the distance between the centers is more than the combined exstensions, the box is not colliding on that axis
+	if (abs(pos1.x - pos2.x) > ext1.x + ext2.x)
+		return 0;
+	if (abs(pos1.y - pos2.y) > ext1.y + ext2.y)
+		return 0;
+	if (abs(pos1.z - pos2.z) > ext1.z + ext2.z)
+		return 0;
+	//A one line version that does not use branch prediction
+	//return abs(pos1.x - pos2.x) > ext1.x + ext2.x * abs(pos1.y - pos2.y) > ext1.y + ext2.y * abs(pos1.z - pos2.z) > ext1.z + ext2.z;
+	return 1;
 }

@@ -10,6 +10,12 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+enum CullingResult {
+	FRUSTRUM_OUTSIDE = 0,
+	FRUSTRUM_INTERSECT,
+	FRUSTRUM_INSIDE
+};
+
 struct cameraFrameData
 {
 	DirectX::XMMATRIX pView;
@@ -49,7 +55,40 @@ private:
 	float m_fieldOfView;
 
 	Sphere m_collisionSphere;
-	
+public:
+	struct Plane {
+		DirectX::XMFLOAT4 normal;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+	struct C_AABB {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+		DirectX::XMVECTOR GetPositiveVertex(const DirectX::XMVECTOR &normal);
+		DirectX::XMVECTOR GetNegativeVertex(const DirectX::XMVECTOR &normal);
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+	struct C_OBB {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+		DirectX::XMFLOAT3 ort;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
+
+	struct ViewFrustrum {
+		//Left, Right, Bottom, Top, Near, Far
+		Plane myPlanes[6];
+		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
+		CullingResult TestAgainstAABB(C_AABB box);
+		//An conservative test is fast but may not cull all things that could be culled
+		int TestAgainstOBBConservative(C_OBB box);
+		//An exact test will always cull all things perfectly but is slow
+		int TestAgainstOBBExact(C_OBB box);
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
 public:
 	GRAPHICSDLL_API Camera();
 	GRAPHICSDLL_API virtual ~Camera();
@@ -63,6 +102,10 @@ public:
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	//	0/1 = failed(succeeded to create the view frustrum.
+	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
+
+
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
 	GRAPHICSDLL_API DirectX::XMFLOAT4X4 * GetViewMatrix();
@@ -124,8 +167,8 @@ public:
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters
 private:
-	DirectX::XMVECTOR conjugate(DirectX::XMVECTOR quat);
-	DirectX::XMVECTOR mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
+	DirectX::XMVECTOR Conjugate(DirectX::XMVECTOR quat);
+	DirectX::XMVECTOR Mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b);
 	DirectX::XMVECTOR m_Dir();
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
