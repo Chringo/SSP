@@ -32,6 +32,7 @@ struct AnimationComponent
 
 	float m_TransitionDuration = 0.f;
 	float m_TransitionTimeLeft = 0.f;
+	float speed = 0.f;
 
 	bool m_TransitionComplete = false;
 
