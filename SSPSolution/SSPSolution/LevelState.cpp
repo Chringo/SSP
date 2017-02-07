@@ -105,9 +105,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
+
+	//playerP->PC_OBB.ext[0] = 0.5f;
+	//playerP->PC_OBB.ext[1] = 0.5f;
+	//playerP->PC_OBB.ext[2] = 0.5f;
+
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -628,7 +634,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						if (!this->m_player1.stateExists(PLAYER_PICKUP))
 						{
 							/*Player animation for picking up ball is set here.*/
-							this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.3f, FROZEN_TRANSITION, false, true);
+							this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.3f, FROZEN_TRANSITION, false, true, 1.0f);
 						}
 
 					}

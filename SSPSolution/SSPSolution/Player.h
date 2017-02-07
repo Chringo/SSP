@@ -39,7 +39,7 @@ public:
 	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);
 
 	float GetSpeed();
 	DirectX::XMVECTOR GetLookDir();

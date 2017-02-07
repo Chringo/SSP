@@ -46,7 +46,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
 				}
 			}
@@ -54,7 +54,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
 				}
 			}
@@ -71,7 +71,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
 				}
 			}
@@ -79,7 +79,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 				}
 			}
@@ -99,7 +99,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
 					{
-						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
 					}
 				}
@@ -107,7 +107,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_RIGHT))
 					{
-						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 					}
 				}
@@ -128,7 +128,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_LEFT_BALL))
 					{
-						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
 					}
 				}
@@ -136,7 +136,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_LEFT))
 					{
-						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false);
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT;
 					}
 				}
@@ -152,12 +152,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			if (m_grabbed != nullptr)
 			{
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 				this->m_aComp->previousState = PLAYER_BALL_IDLE;
 			}
 			else
 			{
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false);
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
 				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 		}
@@ -174,7 +174,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true);
+			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
 			this->m_aComp->previousState = PLAYER_THROW;
 
 			float strength = 50.0f;
@@ -189,7 +189,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true);
+			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
 			this->m_aComp->previousState = PLAYER_THROW;
 
 			float strength = 15.0f;		
@@ -331,7 +331,7 @@ bool Player::stateExists(int animationState)
 	}
 }
 
-void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation)
+void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed)
 {
 	this->m_aComp->m_TransitionDuration = transitionDuration;
 	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
@@ -339,6 +339,7 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 	this->m_aComp->blendFlag = blendingType;
 	this->m_aComp->target_State->isLooping = isLooping;
 	this->m_aComp->lockAnimation = lockAnimation;
+	this->m_aComp->playingSpeed = playingSpeed;
 }
 
 void Player::SetBall(Entity * ball)
