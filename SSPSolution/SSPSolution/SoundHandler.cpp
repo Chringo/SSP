@@ -1,9 +1,6 @@
 #include "SoundHandler.h"
 
-SoundHandler::SoundHandler()
-{
-
-}
+SoundHandler* SoundHandler::m_instance = nullptr;
 
 SoundHandler::~SoundHandler()
 {
@@ -13,7 +10,9 @@ int SoundHandler::Initialize()
 {
 
 	this->m_soundEngine = irrklang::createIrrKlangDevice();
-
+	//Time is defined as __int64, data loss might occur from limiting the value to an unsigned int
+	this->m_randomSeed = unsigned int(time(NULL));	//Set the seed
+	srand(this->m_randomSeed);
 	if (!this->m_soundEngine)
 	{
 		this->m_soundEngine = nullptr;
@@ -33,6 +32,8 @@ void SoundHandler::Shutdown()
 	{
 		this->m_soundEngine->drop();
 	}
+
+	delete this->m_instance;
 
 }
 
@@ -88,7 +89,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -100,7 +101,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -112,7 +113,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -124,7 +125,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -136,7 +137,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -148,7 +149,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -160,7 +161,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -172,7 +173,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -184,7 +185,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -196,7 +197,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -208,7 +209,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -220,7 +221,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -232,7 +233,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -244,7 +245,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -256,7 +257,151 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Activate_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Button_Clicked.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_drag_mono1.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_drag_mono2.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_drag_mono3.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_higher_mono1.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_higher_mono2.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_chain_higher_mono3.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Chainball_dropped_mono1.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Lever_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Lift_move.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Generel_Door_opening_mono.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -299,7 +444,7 @@ irrklang::ISound* SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop, bool 
 		{
 			newActiveSound->grab();
 
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -326,7 +471,7 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 		{
 			newActiveSound->grab();
 			
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -335,6 +480,66 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 			return newActiveSound;
 		}
 		
+	}
+
+	return nullptr;
+}
+
+irrklang::ISound * SoundHandler::PlayRandomSound2D(Sounds2D start_soundEnum, Sounds2D end_soundEnum, bool loop, bool track)
+{
+	//Check if the enum will fit as an index
+	if (start_soundEnum < this->m_sounds2D.size() && start_soundEnum != Sounds2D::NO_SOUND2D &&
+		end_soundEnum < this->m_sounds2D.size() && end_soundEnum != Sounds2D::NO_SOUND2D)
+	{
+
+		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
+
+		irrklang::ISoundSource* sp = this->m_sounds2D.at(randomSoundID);
+		irrklang::ISound* newActiveSound = this->m_soundEngine->play2D(sp, loop, false, true);
+
+		if (newActiveSound)	//If the sound is created/playing correctly
+		{
+			newActiveSound->grab();
+
+			if (track == true)	//If we want the soundEngine to handle cleanup
+			{
+				newActiveSound->setSoundStopEventReceiver(this);
+				return nullptr;
+			}
+
+			return newActiveSound;
+		}
+
+	}
+
+	return nullptr;
+}
+
+irrklang::ISound * SoundHandler::PlayRandomSound3D(Sounds3D start_soundEnum, Sounds3D end_soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track)
+{
+	//Check if the enum will fit as an index
+	if (start_soundEnum < this->m_sounds3D.size() && start_soundEnum != Sounds3D::NO_SOUND3D &&
+		end_soundEnum < this->m_sounds3D.size() && end_soundEnum != Sounds3D::NO_SOUND3D)
+	{
+		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
+
+		irrklang::ISoundSource* sp = this->m_sounds3D.at(randomSoundID);
+		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);
+		irrklang::ISound* newActiveSound = this->m_soundEngine->play3D(sp, pos, loop, false, true);
+
+		if (newActiveSound)	//If the sound is created/playing correctly
+		{
+			newActiveSound->grab();
+
+			if (track == true)	//If we want the soundEngine to handle cleanup
+			{
+				newActiveSound->setSoundStopEventReceiver(this);
+				return nullptr;
+			}
+
+			return newActiveSound;
+		}
+
 	}
 
 	return nullptr;
@@ -368,7 +573,7 @@ bool SoundHandler::ReInitSoundEngine()
 	if (deviceList->getDeviceCount() != 0)
 	{	
 		this->DropSounds();	//Drop all loaded sound since they must be cnnected with the new engine
-		result = this->Initialize();
+		result = this->Initialize() != 0;
 	}
 
 	return result;
