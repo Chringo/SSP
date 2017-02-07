@@ -1,9 +1,6 @@
 #include "SoundHandler.h"
 
-SoundHandler::SoundHandler()
-{
-
-}
+SoundHandler* SoundHandler::m_instance = nullptr;
 
 SoundHandler::~SoundHandler()
 {
@@ -35,6 +32,8 @@ void SoundHandler::Shutdown()
 	{
 		this->m_soundEngine->drop();
 	}
+
+	delete this->m_instance;
 
 }
 
@@ -90,7 +89,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -102,7 +101,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -114,7 +113,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -126,7 +125,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -138,7 +137,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -150,7 +149,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -162,7 +161,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -174,7 +173,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -186,7 +185,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -198,7 +197,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -210,7 +209,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -222,7 +221,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -234,7 +233,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -246,7 +245,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -258,7 +257,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -270,7 +269,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -282,7 +281,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -294,7 +293,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -306,7 +305,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -318,7 +317,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -330,7 +329,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -342,7 +341,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -354,7 +353,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -366,7 +365,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -378,7 +377,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -390,7 +389,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -402,7 +401,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -444,7 +443,7 @@ irrklang::ISound* SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop, bool 
 		{
 			newActiveSound->grab();
 
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -471,7 +470,7 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 		{
 			newActiveSound->grab();
 			
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -492,7 +491,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound2D(Sounds2D start_soundEnum, Sou
 		end_soundEnum < this->m_sounds2D.size() && end_soundEnum != Sounds2D::NO_SOUND2D)
 	{
 
-		int randomSoundID = (rand() % end_soundEnum) + start_soundEnum;	//Get a random sound between the two defined sounds
+		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
 
 		irrklang::ISoundSource* sp = this->m_sounds2D.at(randomSoundID);
 		irrklang::ISound* newActiveSound = this->m_soundEngine->play2D(sp, loop, false, true);
@@ -521,8 +520,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound3D(Sounds3D start_soundEnum, Sou
 	if (start_soundEnum < this->m_sounds3D.size() && start_soundEnum != Sounds3D::NO_SOUND3D &&
 		end_soundEnum < this->m_sounds3D.size() && end_soundEnum != Sounds3D::NO_SOUND3D)
 	{
-
-		int randomSoundID = (rand() % end_soundEnum) + start_soundEnum;	//Get a random sound between the two defined sounds
+		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
 
 		irrklang::ISoundSource* sp = this->m_sounds3D.at(randomSoundID);
 		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);

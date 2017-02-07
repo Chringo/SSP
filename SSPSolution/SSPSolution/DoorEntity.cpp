@@ -168,6 +168,11 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	
 	this->m_isOpened = i == this->m_subjectStates.size();
 
+	//Play sound
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+	SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_DOOR_OPENING, pos, false, false);
+
 	return 0;
 }
 
