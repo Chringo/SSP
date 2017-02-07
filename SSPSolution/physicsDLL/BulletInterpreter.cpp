@@ -40,28 +40,33 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 
 void BulletInterpreter::ApplyMovementPlayer1(float dt)
 {
-	//btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
-	//btVector3 OldVelocity = rb->getLinearVelocity();
+	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
+	
+	if (rb != nullptr)
+	{
+		btVector3 OldVelocity = rb->getLinearVelocity();
 
-	//btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
+		btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
 
-	//int active = rb->getActivationState();
+		int active = rb->getActivationState();
 
 
-	////newVel /= 100;
-	//if (active != ACTIVE_TAG)
-	//{
-	//	//sleep is for the weak
-	//	rb->activate();
-	//	//this->m_rigidBodies.at(this->player1->inde)
-	//}
+		//newVel /= 100;
+		if (active != ACTIVE_TAG)
+		{
+			//sleep is for the weak
+			rb->activate();
+			//this->m_rigidBodies.at(this->player1->inde)
+		}
 
-	//if (newVel.isZero() == false)
-	//{
-	//	newVel = OldVelocity + newVel;
-	//	rb->setLinearVelocity(newVel);
-	//}
-	//this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		if (newVel.isZero() == false)
+		{
+			newVel = OldVelocity + newVel;
+			rb->setLinearVelocity(newVel);
+		}
+		this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	}
+
 }
 
 void BulletInterpreter::ApplyMovementPlayer2()
