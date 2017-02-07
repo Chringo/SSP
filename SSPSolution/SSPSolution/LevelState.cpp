@@ -485,7 +485,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 				if (itr->packet_type == UPDATE_BUTTON_STATE)
 				{
-					for (int i = 0; i < this->m_buttonEntities.size(); i++)
+					for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
 					{
 						ButtonEntity* bP = this->m_buttonEntities.at(i);
 						if (bP->GetEntityID() == itr->entityID)
@@ -504,7 +504,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else if (itr->packet_type == UPDATE_LEVER_STATE)
 				{
-					for (int i = 0; i < this->m_leverEntities.size(); i++)
+					for (size_t i = 0; i < this->m_leverEntities.size(); i++)
 					{
 						LeverEntity* lP = this->m_leverEntities.at(i);
 						if (lP->GetEntityID() == itr->entityID)
@@ -536,7 +536,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
 			{
 
-				for (int i = 0; i < this->m_wheelEntities.size(); i++)
+				for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
 				{
 					WheelEntity* wP = this->m_wheelEntities.at(i);
 
@@ -945,77 +945,62 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	//Update all puzzle entities
-	//Buttons require input for logical evaluation
+#pragma region
+	//Commong variables needed for logic checks
+	DirectX::XMFLOAT3 playerPos;
+	DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+	//Buttons and levers require input for logical evaluation of activation
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
 	{
-		for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+		//Iterator version of looping
+		/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
 		{
 			DirectX::XMFLOAT3 playerPos;
 			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 
 			(*i)->CheckPressed(playerPos);
 		}
-	}
-	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
-	{
-		DirectX::XMFLOAT3 playerPos;
-		DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
-		(*i)->Update(dt, inputHandler);
-	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
-	{
-
-		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;
-		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+		for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
 		{
 			DirectX::XMFLOAT3 playerPos;
 			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 
+			(*i)->CheckPressed(playerPos);
+		}*/
+		//c++11 looping construct
+		for (ButtonEntity* e : this->m_buttonEntities)
+		{
+			e->CheckPressed(playerPos);
+		}
+		for (LeverEntity* e : this->m_leverEntities)
+		{
+			e->CheckPressed(playerPos);
+		}
+		
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+	{
+
+		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
+		//increasing = -1 + (!inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) * 2;		//No branching calculation, but uses multiplication and addition
+
+		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+		{
 			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
 	}
-	if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
 	{
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
-			DirectX::XMFLOAT3 playerPos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			(*i)->CheckPlayerInteraction(playerPos, 0);
 		}
 	}
-
-	//Check for state changes that should be sent over the networ
-	for (int i = 0; i < this->m_leverEntities.size(); i++)
+	//Buttons require updates to countdown their reset timer
+	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
 	{
-		LeverEntity* lP = this->m_leverEntities.at(i);
-		LeverSyncState* leverSync = lP->GetSyncState();
-		if (leverSync != nullptr)
-		{
-			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
-			delete leverSync;
-		}
+		(*i)->Update(dt, inputHandler);
 	}
-	for (int i = 0; i < this->m_buttonEntities.size(); i++)
-	{
-		ButtonEntity* bP = this->m_buttonEntities.at(i);
-		ButtonSyncState* buttonSync = bP->GetSyncState();
-		if (buttonSync != nullptr)
-		{
-			this->m_networkModule->SendStateButtonPacket(buttonSync->entityID, buttonSync->isActive);
-			delete buttonSync;
-		}
-	}
-	for (int i = 0; i < this->m_wheelEntities.size(); i++)
-	{
-		WheelEntity* wP = this->m_wheelEntities.at(i);
-		WheelSyncState* wheelSync = wP->GetSyncState();
-		if (wheelSync != nullptr)
-		{
-			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
-			delete wheelSync;
-		}
-	}
-
-
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
@@ -1026,6 +1011,41 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
+
+#pragma endregion Puzzle element update logic
+#pragma region
+	//Check for state changes that should be sent over the network
+	LeverSyncState* leverSync = nullptr;
+	for (LeverEntity* e : this->m_leverEntities)
+	{
+		leverSync = e->GetSyncState();
+		if (leverSync != nullptr)
+		{
+			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
+			delete leverSync;
+		}
+	}
+	ButtonSyncState* buttonSync = nullptr;
+	for (ButtonEntity* e : this->m_buttonEntities)
+	{
+		buttonSync = e->GetSyncState();
+		if (buttonSync != nullptr)
+		{
+			this->m_networkModule->SendStateButtonPacket(buttonSync->entityID, buttonSync->isActive);
+			delete buttonSync;
+		}
+	}
+	WheelSyncState* wheelSync = nullptr;
+	for (WheelEntity* e : this->m_wheelEntities)
+	{
+		wheelSync = e->GetSyncState();
+		if (wheelSync != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
+		}
+	}
+#pragma endregion Puzzle elements synchronization 
 	//Lock the camera to the player
 
 	for (size_t i = 0; i < this->m_platformEntities.size(); i++)

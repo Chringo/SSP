@@ -225,13 +225,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				lookAtDir.m128_f32[1] = 0.0f;
 				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
 				//Scale lookDir with forwards
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, forwards));
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(forwards)));
 
 				lookAtDir = this->m_rightDir;
 				lookAtDir.m128_f32[1] = 0.0f;
 				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
 				//Scale lookAtDir / m_rightDir with sideways
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, sideways));
+				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(sideways)));
 
 				//Velocity now contains both forwards and sideways velocity
 				velocity = DirectX::XMVector3Normalize(velocity);

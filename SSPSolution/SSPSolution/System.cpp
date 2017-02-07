@@ -291,7 +291,7 @@ int System::Update(float deltaTime)
 	//Frustrum cull
 	DebugHandler::instance()->StartTimer(3);
 	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-	DebugHandler::instance()->UpdateCustomLabel(1, renderedItems);
+	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
 
 	DebugHandler::instance()->StartTimer(2);
