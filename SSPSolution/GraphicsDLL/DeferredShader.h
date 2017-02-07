@@ -58,7 +58,7 @@ public:
 	int Draw(Resources::Model* model);
 	int Draw(Resources::Model* model, GraphicsComponent * component);
 	int Draw(Resources::Model* model, GraphicsAnimationComponent * component);
-	int DrawInstanced(InstanceData* data);
+	int DrawInstanced(InstanceData* data, int iteration = 0);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);

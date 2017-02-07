@@ -213,14 +213,16 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	for (size_t i = 4; i < 8; i++)
 	{
+
+		/*WORLD MATRIX*/inputDescInstanced[i] = { "WORLD", i - 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0 + (sizeof(float) * 4) * (i - 4), D3D11_INPUT_PER_INSTANCE_DATA, 1 };
 		//Create 4 vectors for the world data per instance
-		inputDescInstanced[i].SemanticName          = "WORLD";
-		inputDescInstanced[i].SemanticIndex         = i-4;
-		inputDescInstanced[i].InputSlot				= 1;
-		inputDescInstanced[i].InstanceDataStepRate  = 0;
-		inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		inputDescInstanced[i].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
-		inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
+	//inputDescInstanced[i].SemanticName          = "WORLD";
+	//inputDescInstanced[i].SemanticIndex         = i-4;
+	//inputDescInstanced[i].InputSlot				= 1;
+	//inputDescInstanced[i].InstanceDataStepRate  = 0;
+	//inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	//inputDescInstanced[i].AlignedByteOffset     = 0 + (sizeof(float) * 4) * (i-4);
+	//inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
 
 	}
 
@@ -450,10 +452,10 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ZeroMemory(&bufferInstancedDesc, sizeof(bufferInstancedDesc));
 
 	//InstancedObject buffer
-	bufferInstancedDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferInstancedDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferInstancedDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferInstancedDesc.ByteWidth = sizeof(InstanceData) * MAX_INSTANCED_GEOMETRY;
+	bufferInstancedDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
+	bufferInstancedDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+	bufferInstancedDesc.Usage			= D3D11_USAGE_DYNAMIC;
+	bufferInstancedDesc.ByteWidth		= sizeof(DirectX::XMFLOAT4X4) * MAX_INSTANCED_GEOMETRY;
 	HRESULT hr;
 	if (FAILED(hr = device->CreateBuffer(&bufferInstancedDesc, nullptr, &m_instanceBuffer))) {
 #ifdef _DEBUG
@@ -711,11 +713,30 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	return 0;
 }
 
-int DeferredShader::DrawInstanced(InstanceData* data)
+int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 {
 	Resources::Model* model;
-
+	
 	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
+	if (iteration == 0)
+	{
+		Resources::Material * mat = model->GetMaterial();
+		Resources::Texture** textures = mat->GetAllTextures();
+		ID3D11ShaderResourceView* resViews[5];
+		UINT numViews = 0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (textures[i] == nullptr)
+				continue;
+
+			resViews[numViews] = textures[i]->GetResourceView();
+			numViews += 1;
+		}
+
+
+		this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
+	}
+
 	DirectX::XMFLOAT4X4* matrixData = data->componentSpecific;
 	int numInstances				= data->amountOfInstances;  // can be changed if the limit is exceeded
 	if (data->amountOfInstances > MAX_INSTANCED_GEOMETRY) //if we've reached the limit, split it up into multiple render passes
@@ -726,20 +747,28 @@ int DeferredShader::DrawInstanced(InstanceData* data)
 		newBatch.modelID		   = data->modelID;
 		newBatch.componentSpecific = data->componentSpecific + MAX_INSTANCED_GEOMETRY; // Get a pointer to where it stopped rendering
 		newBatch.amountOfInstances = data->amountOfInstances - MAX_INSTANCED_GEOMETRY; // Discount the amount that has been rendered
-		DrawInstanced(&newBatch); 
+		DrawInstanced(&newBatch, iteration + 1 );
 #ifdef _DEBUG
-		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call" << std::endl;
+		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call| Iteration :"<< iteration + 1 << std::endl;
 #endif // _DEBUG
 	}
 
 #pragma region
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-	
-	m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	HRESULT hr;
+	hr = m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hr))
+	{
+#ifdef _DEBUG
+		std::cout << "Failed to map the instance buffer" << std::endl;
+#endif // _DEBUG
+
+		return 0;
+	}
 
 	DirectX::XMFLOAT4X4* tempStructMatrices = (DirectX::XMFLOAT4X4*)mappedResource.pData;
-
+	memset(mappedResource.pData, 0, sizeof(DirectX::XMFLOAT4X4) * MAX_INSTANCED_GEOMETRY);
 	memcpy(tempStructMatrices, (void*)matrixData, sizeof(DirectX::XMFLOAT4X4)* numInstances);
 
 	m_deviceContext->Unmap(m_instanceBuffer, 0);
