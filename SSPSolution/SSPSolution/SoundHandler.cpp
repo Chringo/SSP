@@ -13,7 +13,8 @@ int SoundHandler::Initialize()
 {
 
 	this->m_soundEngine = irrklang::createIrrKlangDevice();
-
+	this->m_randomSeed = time(NULL);	//Set the seed
+	srand(this->m_randomSeed);
 	if (!this->m_soundEngine)
 	{
 		this->m_soundEngine = nullptr;
@@ -264,7 +265,6 @@ void SoundHandler::LoadSounds()
 		printf("Failed to load sound");
 	}
 
-	//NEW
 	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Activate_mono.mp3");
 	if (sp != nullptr)
 	{
@@ -479,6 +479,67 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 			return newActiveSound;
 		}
 		
+	}
+
+	return nullptr;
+}
+
+irrklang::ISound * SoundHandler::PlayRandomSound2D(Sounds2D start_soundEnum, Sounds2D end_soundEnum, bool loop, bool track)
+{
+	//Check if the enum will fit as an index
+	if (start_soundEnum < this->m_sounds2D.size() && start_soundEnum != Sounds2D::NO_SOUND2D &&
+		end_soundEnum < this->m_sounds2D.size() && end_soundEnum != Sounds2D::NO_SOUND2D)
+	{
+
+		int randomSoundID = (rand() % end_soundEnum) + start_soundEnum;	//Get a random sound between the two defined sounds
+
+		irrklang::ISoundSource* sp = this->m_sounds2D.at(randomSoundID);
+		irrklang::ISound* newActiveSound = this->m_soundEngine->play2D(sp, loop, false, true);
+
+		if (newActiveSound)	//If the sound is created/playing correctly
+		{
+			newActiveSound->grab();
+
+			if (track == true)	//If we want the soundEngine to handle cleanup
+			{
+				newActiveSound->setSoundStopEventReceiver(this);
+				return nullptr;
+			}
+
+			return newActiveSound;
+		}
+
+	}
+
+	return nullptr;
+}
+
+irrklang::ISound * SoundHandler::PlayRandomSound3D(Sounds3D start_soundEnum, Sounds3D end_soundEnum, DirectX::XMFLOAT3 pos, bool loop, bool track)
+{
+	//Check if the enum will fit as an index
+	if (start_soundEnum < this->m_sounds3D.size() && start_soundEnum != Sounds3D::NO_SOUND3D &&
+		end_soundEnum < this->m_sounds3D.size() && end_soundEnum != Sounds3D::NO_SOUND3D)
+	{
+
+		int randomSoundID = (rand() % end_soundEnum) + start_soundEnum;	//Get a random sound between the two defined sounds
+
+		irrklang::ISoundSource* sp = this->m_sounds3D.at(randomSoundID);
+		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);
+		irrklang::ISound* newActiveSound = this->m_soundEngine->play3D(sp, pos, loop, false, true);
+
+		if (newActiveSound)	//If the sound is created/playing correctly
+		{
+			newActiveSound->grab();
+
+			if (track == true)	//If we want the soundEngine to handle cleanup
+			{
+				newActiveSound->setSoundStopEventReceiver(this);
+				return nullptr;
+			}
+
+			return newActiveSound;
+		}
+
 	}
 
 	return nullptr;
