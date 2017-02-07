@@ -518,25 +518,6 @@ int GraphicsHandler::Render(float deltaTime)
 		instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 		instancedRenderingList.push_back(instanceData);
 	}
-	//for (int i = 0; i < componentsInTree; i++)
-	//{
-	//	//If the component is to be rendered, increase the counter
-	//	if (this->m_octreeRoot.containedComponents[i]->isRendered)
-	//	{
-	//		//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-	//		if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
-	//		{
-	//			//Create the array
-	//			InstanceData instanceData;
-	//			instanceData.modelID = lastModelID;
-	//			instanceData.amountOfInstances = amountOfModelOccurrencees;
-	//			instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-	//			instancedRenderingList.push_back(instanceData);
-	//			amountOfModelOccurrencees = 0;
-	//		}
-	//		++amountOfModelOccurrencees;
-	//	}
-	//}
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
@@ -568,24 +549,14 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
 	}
 	//By all means it should be done by now
+	for (InstanceData& i : instancedRenderingList)
+	{
+		delete i.componentSpecific;
+	}
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
 	int renderCap = this->m_staticGraphicsComponents.size();
-	//for (int i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	//{
-	//	if (this->m_octreeRoot.containedComponents[i]->isRendered)
-	//	{
-	//		if (this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->active)
-	//		{
-	//			m_shaderControl->Draw(this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]->modelPtr, this->m_staticGraphicsComponents[this->m_octreeRoot.containedComponents[i]->componentIndex]);
-	//			this->m_octreeRoot.containedComponents[i]->isRendered = false;
-	//		}
-	//	}
-	//	/*if (this->m_staticGraphicsComponents[i]->active == false)
-	//	continue;
-	//	m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
-	//}
 	renderCap = this->m_dynamicGraphicsComponents.size();
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
