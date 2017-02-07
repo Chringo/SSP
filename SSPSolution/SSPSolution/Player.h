@@ -21,6 +21,9 @@ private:
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
 	DirectX::XMVECTOR m_rightDir;
+
+	irrklang::ISound* m_walkingSound;
+
 public:
 	Player();
 	~Player();
