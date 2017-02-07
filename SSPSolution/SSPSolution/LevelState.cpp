@@ -1343,7 +1343,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		LevelData::DoorHeader tempHeader = data->doors[i];
 		DoorEntity* tempEntity = new DoorEntity();
-		DynamicEntity* doorDE = new DynamicEntity();
 
 		//Create world matrix from data
 		memcpy(pos.m128_f32, tempHeader.position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
@@ -1372,7 +1371,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
 		door1P->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0,2,2,1));														//Set Position
 		door1P->PC_rotation = rot;												//Set Rotation
-		door1P->PC_is_Static = true;												//Set IsStatic
+		door1P->PC_is_Static = false;												//Set IsStatic
 		door1P->PC_active = true;													//Set Active
 		door1P->PC_gravityInfluence = 1.0f;
 		door1P->PC_mass = 0;
@@ -1406,8 +1405,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		std::vector<ElementState> subjectStates;
 		tempEntity->Initialize(tempHeader.EntityID, door1P, door1G, subjectStates, tempHeader.rotateTime);
-		//doorDE->Initialize(tempHeader.EntityID, door1P, door1G);
-		this->m_dynamicEntitys.push_back(doorDE);
+
 		this->m_doorEntities.push_back(tempEntity);
 	}
 #pragma endregion Create puzzle entities
