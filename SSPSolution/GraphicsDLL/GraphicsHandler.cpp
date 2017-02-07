@@ -553,8 +553,11 @@ int GraphicsHandler::Render(float deltaTime)
 				lastModelID = i->modelID;
 				instancedModelCount = 0;
 			}
+			//Get the data
+			DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex]->worldMatrix;
+			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
-			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i->componentIndex]->worldMatrix);
+			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
 
 		}
 	}

@@ -38,7 +38,7 @@ VS_OUT VS_main(VS_IN input)
 {
     VS_OUT output;
 
-    output.Pos   = mul(float4(input.Pos, 1.0f), transpose(input.worldMatrix));
+    output.Pos   = mul(float4(input.Pos, 1.0f), input.worldMatrix);
     output.wPos  = output.Pos;
     output.Pos   = mul(output.Pos, viewMatrix);
     output.Pos   = mul(output.Pos, projectionMatrix);
