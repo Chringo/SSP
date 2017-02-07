@@ -233,7 +233,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	//this->m_dynamicsWorld->stepSimulation(,);
 
-	/*btCollisionObjectArray* collObj = &this->m_dynamicsWorld->getCollisionObjectArray();
+	btCollisionObjectArray* collObj = &this->m_dynamicsWorld->getCollisionObjectArray();
 	btCollisionWorld* test;
 
 	btPersistentManifold* pMan = nullptr;
@@ -247,7 +247,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 		pMan = this->m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
 		const btCollisionObject* obj0 = pMan->getBody0();
 		const btCollisionObject* obj1 = pMan->getBody1();
-
+		
 		int nrOfContancts = pMan->getNumContacts();
 
 		btManifoldPoint* manifloldPoint = nullptr;
@@ -265,7 +265,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 		}
 	}
 
-	int i = 0;*/
+	int i = 0;
 	//update positions
 	//this->ApplyMovementPlayer1(dt);
 	//this->ApplyMovementPlayer2();
@@ -340,21 +340,6 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src, float dt)
 
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_IndexRigidBody == 2)
-		{
-			if (DirectX::XMVectorGetX(src->PC_rotationVelocity) == 0)
-			{
-				int w = 0;
-			}
-			else
-			{
-				int a = 0;
-			}
-
-
-			int i = 1;
-		}
-
 		btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
 
 		btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
@@ -546,12 +531,12 @@ void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR 
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 }
 
-void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float mass)
+void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 {
-	btCollisionShape* sphereShape = new btSphereShape(radius);
+	btCollisionShape* sphereShape = new btSphereShape(src->PC_Sphere.radius);
 
 	//creating a mothion state
-	btVector3 startTrans = this->crt_xmvecVec3(pos);
+	btVector3 startTrans = this->crt_xmvecVec3(src->PC_pos);
 
 	btQuaternion startTransQ = btQuaternion(0, 0, 0, 1.0f);
 	btTransform initialTransform = btTransform(startTransQ, startTrans);
@@ -562,10 +547,10 @@ void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float 
 	//by giving the body 0 in mass, it will be immovable
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI
 	(
-		mass,					//mass
+		src->PC_mass,					//mass
 		sphereMotionState,
 		sphereShape,
-		crt_xmvecVec3(pos)
+		startTrans
 	);
 
 	//create the rigid body
@@ -574,6 +559,8 @@ void BulletInterpreter::CreateSphere(float radius ,DirectX::XMVECTOR pos, float 
 
 	//add it into the world
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
+
 }
 
 void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)

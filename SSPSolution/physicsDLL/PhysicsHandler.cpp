@@ -2509,8 +2509,8 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_steadfast = false;
 	newObject->PC_mass = 1.0f;
 	newObject->PC_gravityInfluence = 1.0f;
-	newObject->PC_Sphere.radius = 1.0f;
-	newObject->PC_friction = 0.9f;
+	newObject->PC_Sphere.radius = 0.5f;
+	newObject->PC_friction = 0.5f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
 	//newObject->PC_OBB.quat = DirectX::XMVectorSet(0, 0, 0, 1);
@@ -2560,7 +2560,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		next = this->CreatePhysicsComponent(nextPos, false);
 		int indexBullet = this->m_physicsComponents.size() - 1;
 		
-		next->PC_BVtype = BV_OBB;
+		next->PC_BVtype = BV_Sphere;
 		next->PC_collides = false;
 		next->PC_active = true;
 		//next->PC_Sphere.radius = 0.35f;
@@ -2570,6 +2570,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		next->PC_OBB.ext[0] = 0.25f;
 		next->PC_OBB.ext[1] = 0.25f;
 		next->PC_OBB.ext[2] = 0.25f;
+		next->PC_Sphere.radius = 0.25;
 		next->PC_gravityInfluence = 1.0f;
 		next->PC_mass = 0.2;
 		this->TransferBoxesToBullet(next, indexBullet);
@@ -3105,6 +3106,11 @@ PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src
 	{
 		this->m_bullet.CreateOBB(src,index);
 	}
+	else if (src->PC_BVtype == BV_Sphere)
+	{
+		this->m_bullet.CreateSphere(src, index);
+	}
+
 	else
 	{
 		int i = 0;

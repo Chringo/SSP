@@ -235,8 +235,9 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  m_skeletonHandler->SetDevice(device);
 
  ResourceContainer* temp;
- unsigned int one = 2759249725;
- unsigned int two = 3255160373;
+ //unsigned int one = 2759249725;
+ unsigned int one = 1117267500;
+ unsigned int two = 1321651915;
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);

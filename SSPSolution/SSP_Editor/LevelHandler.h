@@ -54,6 +54,8 @@ private:
 	LevelData::LevelStatus LoadTriggerComponents(LevelData::WheelHeader*  dataPtr, size_t numComponents);
 	LevelData::LevelStatus LoadTriggerComponents(LevelData::LeverHeader*  dataPtr, size_t numComponents);
 #pragma endregion
- };
+ 
+	bool VerifyTriggerData(ListenerContainer* listener); //checks that the connected triggers to a container still exists, This is because things can be converted or deleted
+};
 
 #endif

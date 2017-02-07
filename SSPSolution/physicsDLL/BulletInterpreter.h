@@ -31,6 +31,8 @@ struct OBB
 	float ext[3];
 	DirectX::XMMATRIX ort;
 	//DirectX::XMVECTOR quat;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 };
 
 struct Ray
@@ -169,7 +171,7 @@ public:
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
-	PHYSICSDLL_API void CreateSphere(float radius, DirectX::XMVECTOR pos, float mass);
+	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src,int index);
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 
