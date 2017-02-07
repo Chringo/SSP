@@ -2103,6 +2103,13 @@ void PhysicsHandler::Update(float deltaTime)
 	//dt = (deltaTime / 50000);
 	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 	int i = 0;
+	int nrOfChainLinks = this->m_links.size();
+	
+	for (int i = 0; i < nrOfChainLinks; i++)
+	{
+		this->DoChainPhysics(&this->m_links.at(i), dt);
+	}
+
 
 	int size = this->m_physicsComponents.size();
 
@@ -2135,23 +2142,12 @@ void PhysicsHandler::Update(float deltaTime)
 			ptr->PC_pos = DirectX::XMVectorAdd(ptr->PC_pos, velocity);
 		}
 	}
-
-	int nrOfChainLinks = this->m_links.size();
-	
-	//for (int i = 0; i < nrOfChainLinks; i++)
-	//{
-	//	this->DoChainPhysics(&this->m_links.at(i), dt);
-	//}
-
-	//for (int i = 0; i < nrOfChainLinks; i++)
-	//{
-	//	this->AdjustChainLinkPosition(&this->m_links.at(i));
-	//}
-	
 	for (int i = 0; i < nrOfChainLinks; i++)
 	{
-		this->DoChainPhysics(&this->m_links.at(i), dt);
+		this->AdjustChainLinkPosition(&this->m_links.at(i));
 	}
+
+
 	/*for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->AdjustChainLinkPosition(&this->m_links.at(i));
@@ -2437,7 +2433,7 @@ void PhysicsHandler::DoChainPhysics(ChainLink * link, float dt)
 			v2_old[1] = DirectX::XMVectorGetY(pParallel);
 			v2_old[2] = DirectX::XMVectorGetZ(pParallel);
 
-			float e = 0.5;
+			float e = 0.8;
 
 			for (int i = 0; i < 3; i++)
 			{
@@ -2570,12 +2566,13 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		//next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
 
-		this->TransferBoxesToBullet(next, indexBullet);
 
-		next->PC_OBB.ext[0] = 0.15f;
-		next->PC_OBB.ext[1] = 0.15f;
-		next->PC_OBB.ext[2] = 0.15f;
+		next->PC_OBB.ext[0] = 0.25f;
+		next->PC_OBB.ext[1] = 0.25f;
+		next->PC_OBB.ext[2] = 0.25f;
 		next->PC_gravityInfluence = 1.0f;
+		next->PC_mass = 0.2;
+		this->TransferBoxesToBullet(next, indexBullet);
 
 		link.CL_previous = previous;
 		link.CL_next = next;

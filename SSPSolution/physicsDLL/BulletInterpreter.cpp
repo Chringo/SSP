@@ -233,6 +233,39 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	//this->m_dynamicsWorld->stepSimulation(,);
 
+	btCollisionObjectArray* collObj = &this->m_dynamicsWorld->getCollisionObjectArray();
+	btCollisionWorld* test;
+
+	btPersistentManifold* pMan = nullptr;
+
+
+	test = this->m_dynamicsWorld->getCollisionWorld();
+	int nrOfManifolds = this->m_dynamicsWorld->getDispatcher()->getNumManifolds();
+
+	for (int i = 0; i < nrOfManifolds; i++)
+	{
+		pMan = this->m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		const btCollisionObject* obj0 = pMan->getBody0();
+		const btCollisionObject* obj1 = pMan->getBody1();
+
+		int nrOfContancts = pMan->getNumContacts();
+
+		btManifoldPoint* manifloldPoint = nullptr;
+		for (int j = 0; j < nrOfContancts; j++)
+		{
+			manifloldPoint = &pMan->getContactPoint(j);
+				
+			if (manifloldPoint->getDistance() < 0.0f)
+			{
+				const btVector3 obj0Point = manifloldPoint->getPositionWorldOnA();
+				const btVector3 obj1Point = manifloldPoint->getPositionWorldOnB();
+			
+				const btVector3 normalOnB = manifloldPoint->m_normalWorldOnB;
+			}	
+		}
+	}
+
+	int i = 0;
 	//update positions
 	//this->ApplyMovementPlayer1(dt);
 	//this->ApplyMovementPlayer2();
@@ -332,7 +365,10 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src, float dt)
 
 		rigidBody->setLinearVelocity(PC_velocity);
 		rigidBody->setAngularVelocity(PC_rotationVel);
-		rigidBody->activate();
+		if (src->PC_mass != 0)
+		{
+			rigidBody->activate();
+		}
 		rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
 		btTransform moveInWorld = rigidBody->getWorldTransform();
 		DirectX::XMVECTOR quat = DirectX::XMQuaternionRotationMatrix(src->PC_OBB.ort);
@@ -356,6 +392,7 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src, float dt)
 
 		ms->setWorldTransform(moveInWorld);
 		rigidBody->setMotionState(ms);
+
 	}
 }
 
@@ -593,11 +630,27 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
 	}
+	//if (src->PC_mass != 0)
+	//{
+	//	rigidBody->setCollisionFlags(btCollisionObject::CollisionFlags::CF_STATIC_OBJECT);
+	//	int i = 0;
+	//}
+	//if (src->PC_mass == 0.2)
+	//{
+	//	//rigidBody->setCollisionFlags(btCollisionObject::CollisionFlags::CF_STATIC_OBJECT);
+	//	//btCollisionObject test;
+	//	//rigidBody->setIgnoreCollisionCheck( , )
+
+	//}
 
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	int pos = this->m_rigidBodies.size() - 1;
 	src->PC_IndexRigidBody = pos;
+
+
+	int i = 0;
+
 }
 
 void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)

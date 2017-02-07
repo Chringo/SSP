@@ -124,28 +124,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//sync with bullet
 	}
 
-
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-	{
-		//assumes grabbed is ALWAYS the ball
-		if (this->m_grabbed != nullptr)
-		{
-			
-			float strength = 50.0f;
-			//this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
-			this->m_grabbed->GetPhysicsComponent()->ApplyForce(this->m_lookDir, strength);
-			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-			this->SetGrabbed(nullptr);	//Release the entity
-		}
-
-	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_I))
 	{
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
 
-			float strength = 15.0f;		
+			float strength = 50.0f;		
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
 			this->SetGrabbed(nullptr);	//Relsease the entity
