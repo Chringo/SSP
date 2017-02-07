@@ -475,17 +475,26 @@ int GraphicsHandler::Render(float deltaTime)
 	//	DirectX::XMFLOAT4X4* componentSpecific;
 	//};
 	std::vector<InstanceData> instancedRenderingList;
+	unsigned int firstRenderedModelID = 0;
 	unsigned int lastModelID = 0;
-	if (componentsInTree > 0)
-		lastModelID = this->m_octreeRoot.containedComponents[0]->modelID;
+	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	{
+		if (i->isRendered)
+		{
+			lastModelID = i->modelID;
+			firstRenderedModelID = i->modelID;
+			break;
+		}
+	}
 	int amountOfModelOccurrencees = 0;
-	for (int i = 0; i < componentsInTree; i++)
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
-		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		if (i->isRendered)
 		{
 			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
+			if (lastModelID != i->modelID)
 			{
 				//Create the array
 				InstanceData instanceData;
@@ -493,28 +502,60 @@ int GraphicsHandler::Render(float deltaTime)
 				instanceData.amountOfInstances = amountOfModelOccurrencees;
 				instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 				instancedRenderingList.push_back(instanceData);
+				//Prepare the data for the next model ID
 				amountOfModelOccurrencees = 0;
+				lastModelID = i->modelID;
 			}
 			++amountOfModelOccurrencees;
 		}
 	}
+	if (componentsInTree > 0)
+	{
+
+		InstanceData instanceData;
+		instanceData.modelID = lastModelID;
+		instanceData.amountOfInstances = amountOfModelOccurrencees;
+		instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+		instancedRenderingList.push_back(instanceData);
+	}
+	//for (int i = 0; i < componentsInTree; i++)
+	//{
+	//	//If the component is to be rendered, increase the counter
+	//	if (this->m_octreeRoot.containedComponents[i]->isRendered)
+	//	{
+	//		//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+	//		if (lastModelID != this->m_octreeRoot.containedComponents[i]->modelID)
+	//		{
+	//			//Create the array
+	//			InstanceData instanceData;
+	//			instanceData.modelID = lastModelID;
+	//			instanceData.amountOfInstances = amountOfModelOccurrencees;
+	//			instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+	//			instancedRenderingList.push_back(instanceData);
+	//			amountOfModelOccurrencees = 0;
+	//		}
+	//		++amountOfModelOccurrencees;
+	//	}
+	//}
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	for (int i = 0; i < componentsInTree; i++)
+	lastModelID = firstRenderedModelID;
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
-		if (this->m_octreeRoot.containedComponents[i]->isRendered != false)
+		if (i->isRendered)
 		{
 			//If it is time to change 
-			if (this->m_octreeRoot.containedComponents[i]->modelID != lastModelID)
+			if (i->modelID != lastModelID)
 			{
 				instancedRenderingIndex++;
+				lastModelID = i->modelID;
 				instancedModelCount = 0;
 			}
 			//Store the data
-			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i]->worldMatrix);
-			
+			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], this->m_staticGraphicsComponents[i->componentIndex]->worldMatrix);
+
 		}
 	}
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
