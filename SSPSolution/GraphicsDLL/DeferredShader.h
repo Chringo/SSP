@@ -16,7 +16,7 @@ class DeferredShader :
 	public Shader
 {
 private:
-	static const int MAX_INSTANCED_GEOMETRY = 80;
+	static const int MAX_INSTANCED_GEOMETRY = 100;
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,

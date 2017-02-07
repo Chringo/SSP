@@ -564,9 +564,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
 		}
-		/*if (this->m_staticGraphicsComponents[i]->active == false)
-		continue;
-		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
+
 	}
 	renderCap = this->m_persistantGraphicsComponents.size();
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
@@ -576,17 +574,8 @@ int GraphicsHandler::Render(float deltaTime)
 			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
 		}
 
-		/*if (this->m_staticGraphicsComponents[i]->active == false)
-		continue;
-		m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);*/
 	}
 	
-	//for (int i = 0; i < this->m_nrOfGraphicsComponents; i++) //FOR EACH NORMAL GEOMETRY
-	//{
-	//	if (this->m_staticGraphicsComponents[i]->active == false)
-	//		continue;
-	//	m_shaderControl->Draw(m_staticGraphicsComponents[i]->modelPtr, m_staticGraphicsComponents[i]);
-	//}
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
