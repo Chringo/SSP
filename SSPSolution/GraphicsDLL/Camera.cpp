@@ -587,20 +587,58 @@ void Camera::m_updatePos()
 CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 {
 	CullingResult result = FRUSTRUM_INSIDE;
-	/*enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+/*
+#pragma region
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
 		DirectX::XMVECTOR normal = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
-		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetPositiveVertex(normal))) + pos < 0.0f)
+		DirectX::XMVECTOR vmin, vmax;
+		if (this->myPlanes[i].normal.x > 0)
 		{
-			return FRUSTRUM_OUTSIDE;
+			vmin.m128_f32[X] = box.pos.x - box.ext.x;
+			vmax.m128_f32[X] = box.pos.x + box.ext.x;
 		}
-		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetNegativeVertex(normal))) + pos < 0.0f)
+		else
 		{
-			return FRUSTRUM_INTERSECT;
+			vmin.m128_f32[X] = box.pos.x + box.ext.x;
+			vmax.m128_f32[X] = box.pos.x - box.ext.x;
 		}
-	}*/
+		if (this->myPlanes[i].normal.y > 0)
+		{
+			vmin.m128_f32[Y] = box.pos.y - box.ext.y;
+			vmax.m128_f32[Y] = box.pos.y + box.ext.y;
+		}
+		else
+		{
+			vmin.m128_f32[Y] = box.pos.y + box.ext.y;
+			vmax.m128_f32[Y] = box.pos.y - box.ext.y;
+		}
+		if (this->myPlanes[i].normal.z > 0)
+		{
+			vmin.m128_f32[Z] = box.pos.z - box.ext.z;
+			vmax.m128_f32[Z] = box.pos.z + box.ext.z;
+		}
+		else
+		{
+			vmin.m128_f32[Z] = box.pos.z + box.ext.z;
+			vmax.m128_f32[Z] = box.pos.z - box.ext.z;
+		}
+
+		if(DirectX::XMVector3Dot(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), vmin) + this->myPlanes[i].normal.w > 0)
+		{
+			result = FRUSTRUM_OUTSIDE;
+			break;
+		}
+		if (DirectX::XMVector3Dot(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), vmax) + this->myPlanes[i].normal.w >= 0)
+		{
+			result = FRUSTRUM_INTERSECT;
+		}
+	}
+#pragma endregion Uses only 2 corners
+*/
+#pragma region
 	for (int i = 0; i < 6; i++)
 	{
 		DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
@@ -647,9 +685,9 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 			continue;
 		}
 
-		return FRUSTRUM_OUTSIDE;
+		result = FRUSTRUM_OUTSIDE;
 	}
-	return FRUSTRUM_INSIDE;
+#pragma endregion uses all corners
 	return result;
 }
 
