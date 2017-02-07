@@ -9,7 +9,8 @@ class Player :
 {
 private:
 	//Meters per second
-	float m_speed;
+	float m_acceleration;
+	float m_maxSpeed;
 	float m_throwStrength;
 	bool m_isAiming;
 	Entity* m_ball;
@@ -34,7 +35,8 @@ public:
 
 	//Returns the old value
 	Entity* SetGrabbed(Entity* entityPtr);
-	float SetSpeed(float speed);
+	float SetMaxSpeed(float speed);
+	float SetAcceleration(float acceleration);
 	DirectX::XMVECTOR SetLookDir(DirectX::XMVECTOR lookDir);
 	DirectX::XMVECTOR SetUpDir(DirectX::XMVECTOR upDir);
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
@@ -44,7 +46,8 @@ public:
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation);
 
-	float GetSpeed();
+	float GetMaxSpeed();
+	float GetAcceleration();
 	DirectX::XMVECTOR GetLookDir();
 	DirectX::XMVECTOR GetUpDir();
 	DirectX::XMVECTOR GetRightDir();

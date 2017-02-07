@@ -10,7 +10,8 @@ int SoundHandler::Initialize()
 {
 
 	this->m_soundEngine = irrklang::createIrrKlangDevice();
-	this->m_randomSeed = time(NULL);	//Set the seed
+	//Time is defined as __int64, data loss might occur from limiting the value to an unsigned int
+	this->m_randomSeed = unsigned int(time(NULL));	//Set the seed
 	srand(this->m_randomSeed);
 	if (!this->m_soundEngine)
 	{
@@ -571,7 +572,7 @@ bool SoundHandler::ReInitSoundEngine()
 	if (deviceList->getDeviceCount() != 0)
 	{	
 		this->DropSounds();	//Drop all loaded sound since they must be cnnected with the new engine
-		result = this->Initialize();
+		result = this->Initialize() != 0;
 	}
 
 	return result;

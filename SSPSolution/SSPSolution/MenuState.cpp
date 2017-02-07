@@ -108,9 +108,9 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 	inputHandler->SetMouseLocked(false);
 	DirectX::XMFLOAT2 mousePos = inputHandler->GetMousePos();
-	int nrOfMainMenuItems = this->m_mainMenuButtons.size();
-	int nrOfOptionMenuitems = this->m_optionsMenuButtons.size();
-	int nrOfStartMenuitems = this->m_startMenuButtons.size();
+	size_t nrOfMainMenuItems = this->m_mainMenuButtons.size();
+	size_t nrOfOptionMenuitems = this->m_optionsMenuButtons.size();
+	size_t nrOfStartMenuitems = this->m_startMenuButtons.size();
 	switch (this->m_menuState)
 	{
 	case 0: /*/ Main menu /*/

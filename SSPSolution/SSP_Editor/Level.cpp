@@ -26,6 +26,7 @@ Level::Level()
 		{
 			this->m_puzzleElements.push_back(std::vector<Container*>());
 		}
+		
 	
 }
 
