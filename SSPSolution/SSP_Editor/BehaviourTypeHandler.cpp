@@ -732,7 +732,7 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 
 void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 {
-	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT)
+	if (selection->type == ContainerType::MODEL || selection->type == ContainerType::CHECKPOINT || selection->type == ContainerType::LIGHT)
 		return;
 
 	//this->m_triggerTab->setEnabled(true);
@@ -762,6 +762,8 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 
 			int signal = -1;
 			Container* heldTrigger = ((ListenerContainer*)selection)->triggerContainers[i];
+			if (heldTrigger == nullptr)
+				heldTrigger = trigger;
 			if (heldTrigger->type != trigger->type) { // Try to get the entity, (if it has been converted)
 				((ListenerContainer*)selection)->triggerContainers[i] = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
 				
