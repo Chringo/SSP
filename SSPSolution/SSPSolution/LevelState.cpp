@@ -138,7 +138,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 	this->m_cHandler->ResizeGraphicsPersistent(4);
-	
+
 	#pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
@@ -146,12 +146,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 1;								//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
-	
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0); //Set Rotation
-	
-	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
+	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
 	playerP->PC_OBB.ext[0] = 0.5f;
@@ -159,10 +157,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[2] = 0.5f;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 3.5f;
-
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
-	//this->m_player1.Initialize(1, playerP, playerG, nullptr);
-	
+
 	/*TEMP ANIM STUFF*/
 	#pragma region
 	AnimationComponent* playerAnim1 = nullptr;
@@ -189,7 +185,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(5.0f);
 	this->m_player1.SetAcceleration(26.0f);
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
@@ -202,7 +198,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;								//Set Entity ID												
+	playerP->PC_entityID = 2;	//Set Entity ID
 	playerP->PC_pos = { 0 };								//Set Position
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
@@ -241,7 +237,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 	#pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(2, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
 	this->m_player2.SetMaxSpeed(2.0f);
 	this->m_player2.SetAcceleration(0.5f);
 
@@ -890,24 +886,48 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	std::vector<DynamicEntity*> aiEntities;
 
-	m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
+	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
 		data->spawns[0].position[1],
 		data->spawns[0].position[2],
 		0);
-	m_player2_Spawn = DirectX::XMVectorSet(	//Store spawnPoint for player 2
+	this->m_player2_Spawn = DirectX::XMVectorSet(	//Store spawnPoint for player 2
 		data->spawns[1].position[0],
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
-	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+
+	//NETWORK SAFETY
+	/*
+	This is only a safety check if the network module was not initialized.
+	It should have been initialized in the menu state and have been connected
+	to the other player. By using isHost() function we know can determine if
+	we should switch the players ID and position or not.
+	*/
+	if (!this->m_networkModule)
+	{
+		this->m_networkModule = new NetworkModule();
+		this->m_networkModule->Initialize();
+	}
+
+	if (this->m_networkModule->IsHost())
+	{
+		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
+	}
+	else
+	{
+		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
+		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+	}
+
+	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+	
+	this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
-			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+			this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 
