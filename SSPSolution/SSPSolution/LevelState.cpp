@@ -1259,7 +1259,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_gravityInfluence = 0;
 		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
-		t_pc->PC_BVtype = BV_AABB;
+		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
@@ -1270,6 +1270,21 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+		
+		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
+		////t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+
+		//DirectX::XMMATRIX tempPos = t_pc->PC_OBB.ort;
+		//tempPos.r[3] = obbPos;
+		//DirectX::XMMATRIX tempBPos = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
+		//tempPos = tempPos*tempBPos;
+		
+		/*t_pc->PC_OBB.ort.r[3] = t_ac->AC_position;
+		t_pc->PC_OBB.ort.r[3].m128_f32[3] = 1.0f;*/
+		//t_pc->PC_OBB.ort.r[3] = hejsan;
+		t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x*-1, modelPtr->GetOBBData().position.y*-1, modelPtr->GetOBBData().position.z*-1,1 };
+
 #pragma endregion
 
 		//DynamicEntity* tde = new DynamicEntity();
