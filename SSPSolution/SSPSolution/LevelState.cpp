@@ -315,472 +315,472 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	this->m_networkModule->Update();
 
-	#pragma region 
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
+#pragma region 
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
+	{
+		//Check for updates for enteties
+		this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_entityPacketList.size() > 0)
 		{
-			//Check for updates for enteties
-			this->m_entityPacketList = this->m_networkModule->PacketBuffer_GetEntityPackets();	//This removes the entity packets from the list in NetworkModule
 
-			if (this->m_entityPacketList.size() > 0)
+			// Apply each packet to the right entity
+			std::list<EntityPacket>::iterator itr;
+			PhysicsComponent* pp = nullptr;
+			for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
 			{
+				/*
+				Every packet that we recived with the entityID 1 will be sent to player2 object since
+				we know that on the other computer will also play on his/her local player1 object.
+				This way we know that all packets with ID 1 is sent for the "self" player object (m_player2) and Id 2
+				for out local "self" player object (m_player1).	
+				To compensate for this we will have to switch places for m_player1 and m_player2 position on the 
+				connecting player so they still have the same start position relative to eachother.
+				*/
 
-				// Apply each packet to the right entity
-				std::list<EntityPacket>::iterator itr;
-				PhysicsComponent* pp = nullptr;
-				for (itr = this->m_entityPacketList.begin(); itr != this->m_entityPacketList.end(); itr++)
+				if ((int)itr->entityID == 1)	//Packets for player2
 				{
-					/*
-					Every packet that we recived with the entityID 1 will be sent to player2 object since
-					we know that on the other computer will also play on his/her local player1 object.
-					This way we know that all packets with ID 1 is sent for the "self" player object (m_player2) and Id 2
-					for out local "self" player object (m_player1).	
-					To compensate for this we will have to switch places for m_player1 and m_player2 position on the 
-					connecting player so they still have the same start position relative to eachother.
-					*/
+					pp = this->m_player2.GetPhysicsComponent();
 
-					if ((int)itr->entityID == 1)	//Packets for player2
+					// Update the component
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
+				}
+				else if ((int)itr->entityID == 2)	//Packets for player1
+				{
+					pp = this->m_player1.GetPhysicsComponent();
+
+					// Update the component
+					pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+					pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+				}
+				else //For every other entity
+				{
+					// Find the entity
+					std::vector<DynamicEntity*>::iterator Ditr;
+					for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++)
 					{
-						pp = this->m_player2.GetPhysicsComponent();
 
-						// Update the component
-						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-
-					}
-					else if ((int)itr->entityID == 2)	//Packets for player1
-					{
-						pp = this->m_player1.GetPhysicsComponent();
-
-						// Update the component
-						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-					}
-					else //For every other entity
-					{
-						// Find the entity
-						std::vector<DynamicEntity*>::iterator Ditr;
-						for (Ditr = this->m_dynamicEntitys.begin(); Ditr != this->m_dynamicEntitys.end(); Ditr++)
+						if (itr->entityID == (*Ditr._Ptr)->GetEntityID())
 						{
+							DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
+							pp = ent->GetPhysicsComponent();
 
-							if (itr->entityID == (*Ditr._Ptr)->GetEntityID())
-							{
-								DynamicEntity* ent = (*Ditr._Ptr);	// The entity identified by the ID sent from the other client
-								pp = ent->GetPhysicsComponent();
-
-								// Update the component
-								pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-								pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
-								pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-
-							}
+							// Update the component
+							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+							pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 						}
 
 					}
+
 				}
 			}
-			this->m_entityPacketList.clear();	//Clear the list
 		}
-	#pragma endregion Network_update_entities
+		this->m_entityPacketList.clear();	//Clear the list
+	}
+#pragma endregion Network_update_entities
 
-	#pragma region
+#pragma region
 
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+
+		// LEVERS AND BUTTONS //
+		this->m_statePacketList = this->m_networkModule->PacketBuffer_GetStatePackets();	//This removes the entity packets from the list in NetworkModule
+
+		if (this->m_statePacketList.size() > 0)
 		{
+			// Apply each packet to the right entity
+			std::list<StatePacket>::iterator itr;
 
-			// LEVERS AND BUTTONS //
-			this->m_statePacketList = this->m_networkModule->PacketBuffer_GetStatePackets();	//This removes the entity packets from the list in NetworkModule
-
-			if (this->m_statePacketList.size() > 0)
+			for (itr = this->m_statePacketList.begin(); itr != this->m_statePacketList.end(); itr++)
 			{
-				// Apply each packet to the right entity
-				std::list<StatePacket>::iterator itr;
 
-				for (itr = this->m_statePacketList.begin(); itr != this->m_statePacketList.end(); itr++)
+				if (itr->packet_type == UPDATE_BUTTON_STATE)
 				{
-
-					if (itr->packet_type == UPDATE_BUTTON_STATE)
+					for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
 					{
-						for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
+						ButtonEntity* bP = this->m_buttonEntities.at(i);
+						if (bP->GetEntityID() == itr->entityID)
 						{
-							ButtonEntity* bP = this->m_buttonEntities.at(i);
-							if (bP->GetEntityID() == itr->entityID)
-							{
-								ButtonSyncState newState;
-								newState.entityID = itr->entityID;
-								newState.isActive = itr->isActive;
-
-								bP->SetSyncState(&newState);
-
-								break;
-							}
-
-						}
-
-					}
-					else if (itr->packet_type == UPDATE_LEVER_STATE)
-					{
-						for (size_t i = 0; i < this->m_leverEntities.size(); i++)
-						{
-							LeverEntity* lP = this->m_leverEntities.at(i);
-							if (lP->GetEntityID() == itr->entityID)
-							{
-								LeverSyncState newState;
-								newState.entityID = itr->entityID;
-								newState.isActive = itr->isActive;
-
-								lP->SetSyncState(&newState);
-
-								break;
-							}
-						}
-					}
-				}
-			}
-			this->m_statePacketList.clear();
-			// LEVERS AND BUTTONS END//
-
-			// WHEELS //
-			this->m_wheelStatePacketList = this->m_networkModule->PacketBuffer_GetWheelStatePackets();	//This removes the entity packets from the list in NetworkModule
-
-			if (this->m_wheelStatePacketList.size() > 0)
-			{
-				// Apply each packet to the right entity
-				std::list<StateWheelPacket>::iterator itr;
-
-				for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
-				{
-
-					for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
-					{
-						WheelEntity* wP = this->m_wheelEntities.at(i);
-
-						if (wP->GetEntityID() == itr->entityID)
-						{
-							WheelSyncState newState;
+							ButtonSyncState newState;
 							newState.entityID = itr->entityID;
-							newState.rotationState = itr->rotationState;
-							newState.rotationAmount = itr->rotationAmount;
+							newState.isActive = itr->isActive;
 
-							wP->SetSyncState(&newState);
+							bP->SetSyncState(&newState);
+
+							break;
+						}
+
+					}
+
+				}
+				else if (itr->packet_type == UPDATE_LEVER_STATE)
+				{
+					for (size_t i = 0; i < this->m_leverEntities.size(); i++)
+					{
+						LeverEntity* lP = this->m_leverEntities.at(i);
+						if (lP->GetEntityID() == itr->entityID)
+						{
+							LeverSyncState newState;
+							newState.entityID = itr->entityID;
+							newState.isActive = itr->isActive;
+
+							lP->SetSyncState(&newState);
 
 							break;
 						}
 					}
 				}
 			}
-			this->m_wheelStatePacketList.clear();
-			// WHEELS END //
 		}
+		this->m_statePacketList.clear();
+		// LEVERS AND BUTTONS END//
 
-	#pragma endregion Network_update_States
+		// WHEELS //
+		this->m_wheelStatePacketList = this->m_networkModule->PacketBuffer_GetWheelStatePackets();	//This removes the entity packets from the list in NetworkModule
 
-	#pragma region
-		float yaw = inputHandler->GetMouseDelta().x;
-		float pitch = inputHandler->GetMouseDelta().y;
-		float mouseSens = 0.1f * dt;
+		if (this->m_wheelStatePacketList.size() > 0)
+		{
+			// Apply each packet to the right entity
+			std::list<StateWheelPacket>::iterator itr;
 
-		if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
-			this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
+			for (itr = this->m_wheelStatePacketList.begin(); itr != this->m_wheelStatePacketList.end(); itr++)
+			{
 
-		//update player for throw functionallity
-		DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
-		DirectX::XMFLOAT3 temp;
+				for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
+				{
+					WheelEntity* wP = this->m_wheelEntities.at(i);
 
-		this->m_cameraRef->GetCameraUp(temp);
+					if (wP->GetEntityID() == itr->entityID)
+					{
+						WheelSyncState newState;
+						newState.entityID = itr->entityID;
+						newState.rotationState = itr->rotationState;
+						newState.rotationAmount = itr->rotationAmount;
 
-		DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
-		DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
+						wP->SetSyncState(&newState);
 
-		//Camera
-		this->m_player1.SetRightDir(rightDir);
-		this->m_player1.SetUpDir(upDir);
-		this->m_player1.SetLookDir(playerLookDir);
+						break;
+					}
+				}
+			}
+		}
+		this->m_wheelStatePacketList.clear();
+		// WHEELS END //
+	}
 
-	#pragma endregion Camera_Update
+#pragma endregion Network_update_States
 
-	#pragma region
+#pragma region
+	float yaw = inputHandler->GetMouseDelta().x;
+	float pitch = inputHandler->GetMouseDelta().y;
+	float mouseSens = 0.1f * dt;
 
-		Entity* wasGrabbed = this->m_player1.GetGrabbed();
-		this->m_player1.Update(dt, inputHandler);
+	if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
+		this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
+
+	//update player for throw functionallity
+	DirectX::XMVECTOR playerLookDir = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&this->m_cameraRef->GetLookAt()), DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos())));
+	DirectX::XMFLOAT3 temp;
+
+	this->m_cameraRef->GetCameraUp(temp);
+
+	DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&temp);
+	DirectX::XMVECTOR rightDir = m_cameraRef->GetRight(); //DirectX::XMVector3Cross(upDir, playerLookDir);
+
+	//Camera
+	this->m_player1.SetRightDir(rightDir);
+	this->m_player1.SetUpDir(upDir);
+	this->m_player1.SetLookDir(playerLookDir);
+
+#pragma endregion Camera_Update
+
+#pragma region
+
+	Entity* wasGrabbed = this->m_player1.GetGrabbed();
+	this->m_player1.Update(dt, inputHandler);
 		
-		//Check if we released a grabbed object in player Update
-		if (wasGrabbed != this->m_player1.GetGrabbed() && wasGrabbed != nullptr)
+	//Check if we released a grabbed object in player Update
+	if (wasGrabbed != this->m_player1.GetGrabbed() && wasGrabbed != nullptr)
+	{
+		wasGrabbed->SyncComponents();	//Update the component
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
+	}
+
+
+	//update all dynamic (moving) entities
+	Entity* ent = nullptr;
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+	{
+		ent = this->m_dynamicEntitys.at(i);
+		if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 		{
-			wasGrabbed->SyncComponents();	//Update the component
-			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
+			ent->SyncComponents();	//Just sync the component and wait for the update package
 		}
-
-
-		//update all dynamic (moving) entities
-		Entity* ent = nullptr;
-		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+		else
 		{
-			ent = this->m_dynamicEntitys.at(i);
-			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
-			{
-				ent->SyncComponents();	//Just sync the component and wait for the update package
-			}
-			else
-			{
-				ent->Update(dt, inputHandler);	//Update the entity normaly
-			}
+			ent->Update(dt, inputHandler);	//Update the entity normaly
 		}
-		//Sync other half of the components
-		this->m_player2.SyncComponents();
-	#pragma endregion Update/Syncing
+	}
+	//Sync other half of the components
+	this->m_player2.SyncComponents();
+#pragma endregion Update/Syncing
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
-		{
-			Entity* closestBall = this->GetClosestBall(3);
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+	{
+		Entity* closestBall = this->GetClosestBall(3);
 			
-			if (closestBall != nullptr)	//If a ball was found
-			{				
-				this->m_player1.SetGrabbed(closestBall);
-				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
-			}
-
+		if (closestBall != nullptr)	//If a ball was found
+		{				
+			this->m_player1.SetGrabbed(closestBall);
+			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
-		{
-			this->m_player1.SetGrabbed(nullptr);
-			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
-		}
-	#pragma endregion Grab/Release
 
-	#pragma region
-		this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();	//This removes the entity packets from the list in NetworkModule
-		/*
-		We know that all packets are from the other player (m_player2)
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+	{
+		this->m_player1.SetGrabbed(nullptr);
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+	}
+#pragma endregion Grab/Release
+
+#pragma region
+	this->m_grabPacketList = this->m_networkModule->PacketBuffer_GetGrabPacket();	//This removes the entity packets from the list in NetworkModule
+	/*
+	We know that all packets are from the other player (m_player2)
 		
-		*/
-		if (this->m_grabPacketList.size() > 0)
+	*/
+	if (this->m_grabPacketList.size() > 0)
+	{
+		std::list<GrabPacket>::iterator itr;
+		PhysicsComponent* pp = nullptr;
+		Entity* ep = nullptr;
+
+		for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
 		{
-			std::list<GrabPacket>::iterator itr;
-			PhysicsComponent* pp = nullptr;
-			Entity* ep = nullptr;
-
-			for (itr = this->m_grabPacketList.begin(); itr != this->m_grabPacketList.end(); itr++)
+			//Check if we want to grab or drop			
+			if (itr->grabbedID >= 0)	//Grab
 			{
-				//Check if we want to grab or drop			
-				if (itr->grabbedID >= 0)	//Grab
+				if (itr->grabbedID == 3)
 				{
-					if (itr->grabbedID == 3)
-					{
-						this->m_player2.SetGrabbed(this->m_player1.GetBall());
-					}
-					else if (itr->grabbedID == 4)
-					{
-						this->m_player2.SetGrabbed(this->m_player2.GetBall());
-					}
-
+					this->m_player2.SetGrabbed(this->m_player1.GetBall());
 				}
-				else //Drop
+				else if (itr->grabbedID == 4)
 				{
-					this->m_player2.SetGrabbed(nullptr);
+					this->m_player2.SetGrabbed(this->m_player2.GetBall());
 				}
 
 			}
-		}
-		this->m_grabPacketList.clear();
-	#pragma endregion Grab_Requests
-
-	#pragma region
-		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
-		{
-			this->m_player1.SetAiming(true);
-			this->m_cameraRef->SetDistance(2);
-		}
-
-		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
-		{
-			this->m_player1.SetAiming(false);
-			this->m_cameraRef->SetDistance(10);
-		}
-
-		if (this->m_player1.GetIsAming())
-		{
-			this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
-		}
-	#pragma endregion Aiming
-
-	#pragma region
-
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//There is connected players
-		{
-			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
-			if (pp != nullptr)
+			else //Drop
 			{
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+				this->m_player2.SetGrabbed(nullptr);
+			}
 
-				Entity* ent = nullptr;
-				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+		}
+	}
+	this->m_grabPacketList.clear();
+#pragma endregion Grab_Requests
+
+#pragma region
+	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
+	if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(true);
+		this->m_cameraRef->SetDistance(2);
+	}
+
+	if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetAiming(false);
+		this->m_cameraRef->SetDistance(10);
+	}
+
+	if (this->m_player1.GetIsAming())
+	{
+		this->m_player1.SetLookDir(this->m_cameraRef->GetDirection());
+	}
+#pragma endregion Aiming
+
+#pragma region
+
+	if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//There is connected players
+	{
+		PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+		if (pp != nullptr)
+		{
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+
+			Entity* ent = nullptr;
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			{
+				ent = this->m_dynamicEntitys.at(i);
+
+				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
 				{
-					ent = this->m_dynamicEntitys.at(i);
-
-					if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
-					{
-						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
-					}
+					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
 				}
 			}
-
 		}
 
-	#pragma endregion Network_Send_Updates
+	}
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
-		{
-			// Reset player-position to spawn
-			m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-			m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-			m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-			// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
-			//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
-		{
-			//TODO: NOCLIP BOOOOIS
-			if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
-			{
-				//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
-				m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
-				m_player1.GetPhysicsComponent()->PC_steadfast = true;
-			}
-			else
-			{
-				//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
-				m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
-				m_player1.GetPhysicsComponent()->PC_steadfast = false;
-			}
-			//Result: Sloppy teleport :(
-			m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
-				m_player1.GetPhysicsComponent()->PC_pos,
-				(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
-		}
+#pragma endregion Network_Send_Updates
 
-		//Update all puzzle entities
-	#pragma region
-		//Commong variables needed for logic checks
-		DirectX::XMFLOAT3 playerPos;
-		DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
-		//Buttons and levers require input for logical evaluation of activation
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	{
+		// Reset player-position to spawn
+		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
+		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
+	{
+		//TODO: NOCLIP BOOOOIS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
 		{
-			//Iterator version of looping
-			/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
-			{
-				DirectX::XMFLOAT3 playerPos;
-				DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+		}
+		else
+		{
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+		}
+		//Result: Sloppy teleport :(
+		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos,
+			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+	}
 
-				(*i)->CheckPressed(playerPos);
-			}
-			for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
-			{
-				DirectX::XMFLOAT3 playerPos;
-				DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+	//Update all puzzle entities
+#pragma region
+	//Commong variables needed for logic checks
+	DirectX::XMFLOAT3 playerPos;
+	DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+	//Buttons and levers require input for logical evaluation of activation
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	{
+		//Iterator version of looping
+		/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+		{
+			DirectX::XMFLOAT3 playerPos;
+			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 
-				(*i)->CheckPressed(playerPos);
-			}*/
-			//c++11 looping construct
-			for (ButtonEntity* e : this->m_buttonEntities)
-			{
-				e->CheckPressed(playerPos);
-			}
-			for (LeverEntity* e : this->m_leverEntities)
-			{
-				e->CheckPressed(playerPos);
-			}
-		
+			(*i)->CheckPressed(playerPos);
 		}
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+		for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
 		{
+			DirectX::XMFLOAT3 playerPos;
+			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 
-			int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
-			//increasing = -1 + (!inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) * 2;		//No branching calculation, but uses multiplication and addition
-
-			for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
-			{
-				(*i)->CheckPlayerInteraction(playerPos, increasing);
-			}
-		}
-		else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
-		{
-			for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
-			{
-				(*i)->CheckPlayerInteraction(playerPos, 0);
-			}
-		}
-		//Buttons require updates to countdown their reset timer
-		for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
-		{
-			(*i)->Update(dt, inputHandler);
-		}
-		//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
-		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
-		{
-			(*i)->Update(dt, inputHandler);
-		}
-		//Doors require updates to change opening state
-		for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
-		{
-			(*i)->Update(dt, inputHandler);
-		}
-
-	#pragma endregion Puzzle element update logic
-	#pragma region
-		//Check for state changes that should be sent over the network
-		LeverSyncState* leverSync = nullptr;
-		for (LeverEntity* e : this->m_leverEntities)
-		{
-			leverSync = e->GetSyncState();
-			if (leverSync != nullptr)
-			{
-				this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
-				delete leverSync;
-			}
-		}
-		ButtonSyncState* buttonSync = nullptr;
+			(*i)->CheckPressed(playerPos);
+		}*/
+		//c++11 looping construct
 		for (ButtonEntity* e : this->m_buttonEntities)
 		{
-			buttonSync = e->GetSyncState();
-			if (buttonSync != nullptr)
-			{
-				this->m_networkModule->SendStateButtonPacket(buttonSync->entityID, buttonSync->isActive);
-				delete buttonSync;
-			}
+			e->CheckPressed(playerPos);
 		}
-		WheelSyncState* wheelSync = nullptr;
-		for (WheelEntity* e : this->m_wheelEntities)
+		for (LeverEntity* e : this->m_leverEntities)
 		{
-			wheelSync = e->GetSyncState();
-			if (wheelSync != nullptr)
-			{
-				this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
-				delete wheelSync;
-			}
+			e->CheckPressed(playerPos);
 		}
-	#pragma endregion Puzzle elements synchronization 
-		//Lock the camera to the player
+		
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+	{
 
-		for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
+		//increasing = -1 + (!inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) * 2;		//No branching calculation, but uses multiplication and addition
+
+		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
-			this->m_platformEntities[i]->Update(dt, inputHandler);
+			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
-	#pragma endregion Update_Puzzle_Elements
+	}
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	{
+		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+		{
+			(*i)->CheckPlayerInteraction(playerPos, 0);
+		}
+	}
+	//Buttons require updates to countdown their reset timer
+	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
+	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+	//Doors require updates to change opening state
+	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
+
+#pragma endregion Puzzle element update logic
+#pragma region
+	//Check for state changes that should be sent over the network
+	LeverSyncState* leverSync = nullptr;
+	for (LeverEntity* e : this->m_leverEntities)
+	{
+		leverSync = e->GetSyncState();
+		if (leverSync != nullptr)
+		{
+			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
+			delete leverSync;
+		}
+	}
+	ButtonSyncState* buttonSync = nullptr;
+	for (ButtonEntity* e : this->m_buttonEntities)
+	{
+		buttonSync = e->GetSyncState();
+		if (buttonSync != nullptr)
+		{
+			this->m_networkModule->SendStateButtonPacket(buttonSync->entityID, buttonSync->isActive);
+			delete buttonSync;
+		}
+	}
+	WheelSyncState* wheelSync = nullptr;
+	for (WheelEntity* e : this->m_wheelEntities)
+	{
+		wheelSync = e->GetSyncState();
+		if (wheelSync != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
+		}
+	}
+#pragma endregion Puzzle elements synchronization 
+	//Lock the camera to the player
+
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		this->m_platformEntities[i]->Update(dt, inputHandler);
+	}
+#pragma endregion Update_Puzzle_Elements
 
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
@@ -790,54 +790,53 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	// Reactionary level director acts
 	this->m_director.Update(dt);
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-	#pragma endregion MUSIC_KEYS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+	{
+		if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
 		{
-			if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
+			if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
 			{
-				if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
-				{
-					printf("Joined client with the ip %s\n", this->m_ip);
+				printf("Joined client with the ip %s\n", this->m_ip);
 
-					//TEMP SULOTION
-					//Move the camera to player 2 since we joined a game 
-					DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
-					m_cameraRef->SetCameraPivot(
-						&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
-						targetOffset,
-						1.3f
-					);
-				}
-				else
-				{
-					printf("Failed to connect to the client %s\n", this->m_ip);
-				}
-
+				//TEMP SULOTION
+				//Move the camera to player 2 since we joined a game 
+				DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+				m_cameraRef->SetCameraPivot(
+					&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
+					targetOffset,
+					1.3f
+				);
 			}
 			else
 			{
-				printf("Join failed since this module is already connected to other clients\n");
+				printf("Failed to connect to the client %s\n", this->m_ip);
 			}
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
-		{
-			this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
-		}
-	#pragma endregion Network_Key_events
 
+		}
+		else
+		{
+			printf("Join failed since this module is already connected to other clients\n");
+		}
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+	{
+		this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
+	}
+#pragma endregion Network_Key_events
 	this->m_cameraRef->Update(dt);
 
 	//Update the listner pos and direction for sound
