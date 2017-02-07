@@ -425,6 +425,7 @@ LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 	
 	for each (AiContainer* ai in *m_currentLevel.GetAiHandler()->GetAllPathComponents())
 	{
+		VerifyTriggerData(ai);
 		LevelData::AiHeader * ah = ai->GetData();
 		memcpy(dataPtr + offset, (char*)ah, sizeof(LevelData::AiHeader));
 		offset += sizeof(LevelData::AiHeader);
@@ -452,6 +453,7 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 	unsigned int offset = 0;
 	for each (Button* button in *this->m_currentLevel.GetPuzzleElements(BUTTON))
 	{
+		VerifyTriggerData(button);
 		LevelData::ButtonHeader* bh = button->GetData();
 		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::ButtonHeader));
 		offset += sizeof(LevelData::ButtonHeader);
@@ -465,6 +467,7 @@ LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
 	unsigned int offset = 0;
 	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(DOOR))
 	{
+		VerifyTriggerData(door);
 		LevelData::DoorHeader* bh = door->GetData();
 		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));
 		offset += sizeof(LevelData::DoorHeader);
@@ -478,6 +481,7 @@ LevelData::LevelStatus LevelHandler::GetLeverData(char * dataPtr)
 	unsigned int offset = 0;
 	for each (Lever* lever in *this->m_currentLevel.GetPuzzleElements(LEVER))
 	{
+		VerifyTriggerData(lever);
 		LevelData::LeverHeader* lh = lever->GetData();
 		memcpy(dataPtr + offset, (char*)lh, sizeof(LevelData::LeverHeader));
 		offset += sizeof(LevelData::LeverHeader);
@@ -491,6 +495,7 @@ LevelData::LevelStatus LevelHandler::GetWheelData(char * dataPtr)
 	unsigned int offset = 0;
 	for each (Wheel* wheel in *this->m_currentLevel.GetPuzzleElements(WHEEL))
 	{
+		VerifyTriggerData(wheel);
 		LevelData::WheelHeader* wh = wheel->GetData();
 		memcpy(dataPtr + offset, (char*)wh, sizeof(LevelData::WheelHeader));
 		offset += sizeof(LevelData::WheelHeader);
@@ -640,4 +645,36 @@ LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::LeverHeade
 	}
 
 	return LevelData::LevelStatus::L_OK;
+}
+
+
+
+bool LevelHandler::VerifyTriggerData(ListenerContainer* listener)
+{
+	for (unsigned int i = 0; i < listener->numTriggers; i++)
+	{
+		//Ask the level if the trigger exists. So that it wont crash if a connected trigger has been
+		//deleted.
+
+		Container* trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(listener->triggerEntityIds[i]);
+		if (trigger == nullptr) { //this means it has been deleted completely
+			listener->DeleteTrigger(listener->triggerEntityIds[i]);
+			if (listener->numTriggers < 1)//if there are no other triggers
+				return false;
+			else {
+				i -= 1;
+				continue;
+			}
+		}
+
+
+		if (trigger->type == ContainerType::MODEL) {								// this is a check to make sure that the trigger is not a model.	   									   
+			listener->DeleteTrigger(trigger->internalID); 	// This is because, you can add a button, then convert that button to a model,
+																				// when deleting,														// In that case, every listener that is connected to that button needs to remove that connection
+																				// every trigger is moved one step to the front in the array.			// So if the selected objects connections has changed to something that is not a trigger.																		//so decrease i by one, to iterate over 0 again							// The trigger will be removed
+			i -= 1;
+			continue;
+		}
+	}
+	return true;
 }

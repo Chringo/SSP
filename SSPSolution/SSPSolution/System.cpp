@@ -116,7 +116,9 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
+	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
 
 
 	return result;
@@ -287,8 +289,13 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
 	DebugHandler::instance()->EndTimer(0);
 	//Render
-	DebugHandler::instance()->StartTimer(2);
+	//Frustrum cull
+	DebugHandler::instance()->StartTimer(3);
+	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+	DebugHandler::instance()->UpdateCustomLabel(1, renderedItems);
+	DebugHandler::instance()->EndTimer(3);
 
+	DebugHandler::instance()->StartTimer(2);
 	this->m_graphicsHandler->Render(deltaTime);
 
 	DebugHandler::instance()->EndTimer(2);
