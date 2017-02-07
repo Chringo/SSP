@@ -630,12 +630,12 @@ void MenuState::Hosting(float dt)
 				{
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
 				}
@@ -692,12 +692,12 @@ void MenuState::Joining()
 			{
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/forKim.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 				break;
 
 			}
