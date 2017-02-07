@@ -22,7 +22,7 @@
     <ProjectGuid>{9BFF2156-5379-46CE-9BC9-35BD895C4ECD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SSPSolution</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
     <ProjectName>SSPApplication</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -178,6 +178,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="PlatformEntity.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Progression.cpp" />
     <ClCompile Include="SoundHandler.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="LeverEntity.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="PlatformEntity.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Progression.h" />
     <ClInclude Include="SoundHandler.h" />

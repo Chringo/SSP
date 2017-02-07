@@ -21,9 +21,12 @@ int Entity::SyncComponents()
 		{
 			// Assuming m_pComp->PC_is_Static is true
 			// Works for now since we're only handling platforms
-
-			this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
+			if (this->m_aiComp->AC_triggered)
+				this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
+			else
+				this->m_pComp->PC_velocity = { 0 };
 			this->m_aiComp->AC_position = this->m_pComp->PC_pos;
+			//TODO: test physcomp vs aicomp positions are still updated after they are released from duty
 		}
 		if (this->m_gComp != nullptr)
 		{

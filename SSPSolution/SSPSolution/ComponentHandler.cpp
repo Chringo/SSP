@@ -9,28 +9,57 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler, SoundHandler* soundHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
 	this->m_aHandler = aHandler;
-	this->m_soundHandler = soundHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr || soundHandler == nullptr)
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr)
 		result = 0;
 	return result;
 }
 
-GraphicsComponent * ComponentHandler::GetGraphicsComponent()
+GraphicsComponent * ComponentHandler::GetStaticGraphicsComponent()
 {
 	GraphicsComponent* graphicsComponent = nullptr;
 	if (this->m_graphicsHandler != nullptr)
 	{
-		graphicsComponent = this->m_graphicsHandler->GetNextAvailableComponent();
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailableStaticComponent();
 	}
 	return graphicsComponent;
 }
+
+GraphicsComponent * ComponentHandler::GetDynamicGraphicsComponent()
+{
+	GraphicsComponent* graphicsComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailableDynamicComponent();
+	}
+	return graphicsComponent;
+}
+
+GraphicsComponent * ComponentHandler::GetPersistentGraphicsComponent()
+{
+	GraphicsComponent* graphicsComponent = nullptr;
+	if (this->m_graphicsHandler != nullptr)
+	{
+		graphicsComponent = this->m_graphicsHandler->GetNextAvailablePersistentComponent();
+	}
+	return graphicsComponent;
+}
+
+//GraphicsComponent * ComponentHandler::GetGraphicsComponent()
+//{
+//	GraphicsComponent* graphicsComponent = nullptr;
+//	if (this->m_graphicsHandler != nullptr)
+//	{
+//		graphicsComponent = this->m_graphicsHandler->GetNextAvailableComponent();
+//	}
+//	return graphicsComponent;
+//}
 GraphicsAnimationComponent * ComponentHandler::GetGraphicsAnimationComponent()
 {
 	GraphicsAnimationComponent * graphicsAnimComponent = nullptr;
@@ -91,11 +120,6 @@ AnimationComponent * ComponentHandler::GetAnimationComponent()
 	return animComp;
 }
 
-SoundHandler * ComponentHandler::GetSoundHandler()
-{
-	return this->m_soundHandler;
-}
-
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
@@ -112,11 +136,6 @@ void ComponentHandler::UpdateAIComponents()
 
 void ComponentHandler::UpdateSoundHandler()
 {
-}
-
-void ComponentHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
-{
-	this->m_soundHandler->UpdateListnerPos(newPos, newLookDir, newUpVector);
 }
 
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
@@ -136,8 +155,34 @@ PhysicsComponent * ComponentHandler::GetClosestPhysicsComponent(PhysicsComponent
 	return this->m_physicsHandler->GetClosestComponent(component, minDistance);
 }
 
+int ComponentHandler::ResizeGraphicsStatic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeStaticComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsDynamic(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizeDynamicComponents(newCap);
+	return size;
+}
+
+int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
+{
+	int size = 0;
+	size = this->m_graphicsHandler->ResizePersistentComponents(newCap);
+	return size;
+}
+
 PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
 {
 	return this->m_physicsHandler;
+}
+
+GraphicsHandler * ComponentHandler::GetGraphicsHandler() const
+{
+	return this->m_graphicsHandler;
 }
 
