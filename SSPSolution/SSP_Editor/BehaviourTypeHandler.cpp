@@ -754,14 +754,20 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 			Container* trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
 			if (trigger == nullptr) { //this means it has been deleted completely
 				((ListenerContainer*)selection)->DeleteTrigger(((ListenerContainer*)selection)->triggerEntityIds[i]);
-				if (((ListenerContainer*)selection)->numTriggers < 1)//if there are no other triggers
-					continue;
-				
+				//if (((ListenerContainer*)selection)->numTriggers < 1)//if there are no other triggers
+				//	continue;
+				i -= 1;
+				continue;
 			}
 
-			 trigger = ((ListenerContainer*)selection)->triggerContainers[i];
-			if (trigger == nullptr) { // Try to get the entity, (if it has been converted)
-				trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
+			int signal = -1;
+			Container* heldTrigger = ((ListenerContainer*)selection)->triggerContainers[i];
+			if (heldTrigger->type != trigger->type) { // Try to get the entity, (if it has been converted)
+				((ListenerContainer*)selection)->triggerContainers[i] = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(((ListenerContainer*)selection)->triggerEntityIds[i]);
+				
+			}
+			else{
+				signal = ((ListenerContainer*)selection)->listenEvent[i];
 			}
 
 
@@ -773,7 +779,7 @@ void Ui::BehaviourTypeHandler::SetTriggerData(Container *& selection)
 				i -= 1;
 				continue;																
 			}																																						
-			AddTriggerItemToList(trigger, trigger->type, ((ListenerContainer*)selection)->listenEvent[i]);
+			AddTriggerItemToList(trigger, trigger->type, signal);
 		}
 		m_triggerList->selectRow(0);
 		if (((ListenerContainer*)m_selection)->triggerContainers[m_triggerList->currentRow()] == nullptr) {
