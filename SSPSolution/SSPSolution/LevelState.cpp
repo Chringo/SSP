@@ -1391,7 +1391,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		button1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		tempEntity->Initialize(tempHeader.EntityID, button1P, button1G, tempHeader.interactionDistance + 2.0f);
+		tempEntity->Initialize(tempHeader.EntityID, button1P, button1G, tempHeader.interactionDistance + 2.0f, tempHeader.resetTime);
 		this->m_buttonEntities.push_back(tempEntity);
 	}
 	//Create the levers
