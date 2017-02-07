@@ -213,16 +213,14 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	for (size_t i = 4; i < 8; i++)
 	{
-
-		/*WORLD MATRIX*/inputDescInstanced[i] = { "WORLD", i - 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0 + (sizeof(float) * 4) * (i - 4), D3D11_INPUT_PER_INSTANCE_DATA, 1 };
 		//Create 4 vectors for the world data per instance
-	//inputDescInstanced[i].SemanticName          = "WORLD";
-	//inputDescInstanced[i].SemanticIndex         = i-4;
-	//inputDescInstanced[i].InputSlot				= 1;
-	//inputDescInstanced[i].InstanceDataStepRate  = 0;
-	//inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	//inputDescInstanced[i].AlignedByteOffset     = 0 + (sizeof(float) * 4) * (i-4);
-	//inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
+		inputDescInstanced[i].SemanticName          = "WORLD";
+		inputDescInstanced[i].SemanticIndex         = i-4;
+		inputDescInstanced[i].InputSlot				= 1;
+		inputDescInstanced[i].InstanceDataStepRate  = 1;  
+		inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		inputDescInstanced[i].AlignedByteOffset		= 0 + (sizeof(float) * 4) * (i-4);
+		inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
 
 	}
 
