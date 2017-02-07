@@ -71,7 +71,12 @@ int LevelState::ShutDown()
 		this->m_wheelEntities[i] = nullptr;
 	}
 	this->m_wheelEntities.clear();
-
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		delete this->m_platformEntities[i];
+		this->m_platformEntities[i] = nullptr;
+	}
+	this->m_platformEntities.clear();
 	// Clear level director
 	this->m_director.Shutdown();
 
@@ -908,6 +913,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
 		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
+	{
+		//TODO: NOCLIP BOOOOIS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+		}
+		else
+		{
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+		}
+		//Result: Sloppy teleport :(
+		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos,
+			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+	}
 
 	//Update all puzzle entities
 	//Buttons require input for logical evaluation
@@ -992,6 +1017,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		(*i)->Update(dt, inputHandler);
 	}
 	//Lock the camera to the player
+
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		this->m_platformEntities[i]->Update(dt, inputHandler);
+	}
 
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
@@ -1242,10 +1272,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 #pragma endregion
 
-
-		DynamicEntity* tde = new DynamicEntity();
-		tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-		m_dynamicEntitys.push_back(tde);
+		//DynamicEntity* tde = new DynamicEntity();
+		//tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
+		//m_dynamicEntitys.push_back(tde);
+		PlatformEntity* tpe = new PlatformEntity();
+		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
+		this->m_platformEntities.push_back(tpe);
 	}
 	
 #pragma region Creating Field
@@ -1571,6 +1603,69 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	//Connect puzzle entities
 #pragma region
+	//Connect Platforms to other things
+	for (size_t i = 0; i < data->numAI; i++)
+	{
+		//LevelData::AiHeader tempHeader = data->aiComponents[i];
+		PlatformEntity* toConnect = nullptr;
+		//Find our platform and save it to our pointer(toConnect)
+		for (std::vector<PlatformEntity*>::iterator observer = this->m_platformEntities.begin(); observer != this->m_platformEntities.end() && toConnect == nullptr; observer++)
+		{
+			if ((*observer)->GetEntityID() == data->aiComponents[i].EntityID)
+			{
+				toConnect = (*observer);
+			}
+		}
+		//Find our connections
+		for (int connectionIndex = 0; connectionIndex < data->aiComponents[i].Listener.numConnections; connectionIndex++)
+		{
+			//Get the ID
+			unsigned int connectionID = data->aiComponents[i].Listener.SenderID[connectionIndex];
+			//Cycle through every puzzle element list until you find the connection ID
+			Entity* entityToObserve = nullptr;
+			bool foundConnection = false;
+			for (std::vector<ButtonEntity*>::iterator other = this->m_buttonEntities.begin(); other != this->m_buttonEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp - have to test the platforms to make this right
+				}
+			}
+			for (std::vector<LeverEntity*>::iterator other = this->m_leverEntities.begin(); other != this->m_leverEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
+				}
+			}
+			for (std::vector<WheelEntity*>::iterator other = this->m_wheelEntities.begin(); other != this->m_wheelEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
+				}
+			}
+			for (std::vector<DoorEntity*>::iterator other = this->m_doorEntities.begin(); other != this->m_doorEntities.end() && !foundConnection; other++)
+			{
+				if ((*other)->GetEntityID() == connectionID)
+				{
+					entityToObserve = (*other);
+					entityToObserve->AddObserver(toConnect, toConnect->GetEntityID());
+					foundConnection = true;
+					toConnect->GetAIComponent()->AC_triggered = false;// temp
+				}
+			}
+		}
+	}
 	//Connect Doors to other things
 	for (size_t i = 0; i < data->numDoor; i++)
 	{
