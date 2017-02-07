@@ -169,6 +169,8 @@ public:
 	PHYSICSDLL_API void TestBulletPhysics();
 	PHYSICSDLL_API void RegisterBox(int index);
 
+	PHYSICSDLL_API void BulletworldCallback(float timestep);
+
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
 	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
@@ -180,6 +182,6 @@ public:
 	PHYSICSDLL_API void SetPlayer1(PhysicsComponent* p1);
 	PHYSICSDLL_API void SetPlayer2(PhysicsComponent* p2);
 
-
+	PHYSICSDLL_API DirectX::XMVECTOR FindNormalFromComponent(int index);
 };
 #endif

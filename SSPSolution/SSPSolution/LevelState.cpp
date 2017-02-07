@@ -154,8 +154,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
 
 	//this->m_player1.Initialize(1, playerP, playerG);
-	this->m_player1.SetMaxSpeed(200.0f);
-	this->m_player1.SetAcceleration(200.0f);
+	this->m_player1.SetMaxSpeed(50.0f);
+	this->m_player1.SetAcceleration(50.0f);
 
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
 

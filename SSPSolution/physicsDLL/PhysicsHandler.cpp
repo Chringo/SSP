@@ -2473,11 +2473,55 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 
 	if (distance > link->CL_lenght)
 	{
-		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght), diffVec);
+		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
 		toMove = DirectX::XMVectorScale(toMove, 0.5f);
 
-		link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, DirectX::XMVectorScale(toMove, -1));
-		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, toMove);
+		DirectX::XMVECTOR next_toMove = DirectX::XMVectorScale(toMove, -1);
+		DirectX::XMVECTOR previous_toMove = toMove;
+
+		link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
+		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
+
+
+		//DirectX::XMVECTOR collNorm = this->m_bullet.FindNormalFromComponent(link->CL_next->PC_IndexRigidBody);
+
+		//if (DirectX::XMVectorGetW(collNorm) == -1)
+		//{
+		//	link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
+		//}
+		//else
+		//{
+		//	float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(next_toMove)));
+		//	if (dotProd < 0)
+		//	{
+		//		DirectX::XMVECTOR paral;
+		//		DirectX::XMVECTOR perp;
+
+		//		DirectX::XMVector3ComponentsFromNormal(&paral, &perp, next_toMove, collNorm);
+		//		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, perp);
+		//	}
+		//}
+
+
+		//collNorm = this->m_bullet.FindNormalFromComponent(link->CL_previous->PC_IndexRigidBody);
+		//if (DirectX::XMVectorGetW(collNorm) == -1)
+		//{
+		//	link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
+		//}
+		//else
+		//{
+		//	float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(previous_toMove)));
+
+		//	if (dotProd < 0)
+		//	{
+		//		DirectX::XMVECTOR paral;
+		//		DirectX::XMVECTOR perp;
+
+		//		DirectX::XMVector3ComponentsFromNormal(&paral, &perp, next_toMove, collNorm);
+		//		link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, perp);
+		//	}
+		//}
+
 
 	}
 
