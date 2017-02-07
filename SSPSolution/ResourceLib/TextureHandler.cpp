@@ -206,13 +206,12 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 		ID3D11ShaderResourceView* textureView[5];
 		ID3D11Resource*			textureResource[5];
 		///*PBR test textures*/
-		path_str[TEXTURE_ALBEDO]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
-		path_str[TEXTURE_SPECULAR]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
-		path_str[TEXTURE_ROUGHNESS] = std::string("../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
-		path_str[TEXTURE_NORMAL]	= std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
-		path_str[TEXTURE_AO]		= std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
+		path_str[TEXTURE_ALBEDO]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
+		path_str[TEXTURE_SPECULAR]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
+		path_str[TEXTURE_ROUGHNESS]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
+		path_str[TEXTURE_NORMAL]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
+		path_str[TEXTURE_AO]				= std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
 
-		
 		path_str_EDITOR[TEXTURE_ALBEDO]     = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
 		path_str_EDITOR[TEXTURE_SPECULAR]   = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
 		path_str_EDITOR[TEXTURE_ROUGHNESS]  = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");

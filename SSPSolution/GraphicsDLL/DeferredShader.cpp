@@ -33,7 +33,7 @@ DeferredShader::~DeferredShader()
 int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
-	ID3D10Blob* vertexShaderBuffer[4] = { nullptr };
+	ID3D10Blob* vertexShaderBuffer[IL_TYPE_COUNT] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
@@ -42,10 +42,11 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
-	WCHAR* vsAnimFilename = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
-	WCHAR* gsFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* vsFilename       = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsInstFilename   = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
+	WCHAR* vsAnimFilename   = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
+	WCHAR* gsFilename		= L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* psFilename	    = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 
 	// Compile the shaders \\
 
@@ -57,7 +58,6 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	if (FAILED(hResult)) 
 	{
 		Shader::OutputShaderErrorMessage(errorMessage, vsFilename);
-
 		return 1;
 	}
 #ifdef _DEBUG
@@ -71,6 +71,19 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 		return 1;
 	}
+
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, vsInstFilename);
+
+		return 1;
+	}
+
 #ifdef _DEBUG
 	hResult = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShaderBuffer, &errorMessage);
 #else
@@ -100,6 +113,11 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Animated]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Instanced]);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -156,6 +174,62 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
+
+	
+	// Create the input layout  for instancing \\
+
+	D3D11_INPUT_ELEMENT_DESC inputDescInstanced[8];
+	inputDescInstanced[0].SemanticName		    = "POSITION";
+	inputDescInstanced[0].SemanticIndex			= 0;
+	inputDescInstanced[0].InputSlot				= 0;
+	inputDescInstanced[0].AlignedByteOffset     = 0;
+	inputDescInstanced[0].InstanceDataStepRate  = 0;
+	inputDescInstanced[0].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[0].InputSlotClass	    = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[1].SemanticName		    = "NORMAL";
+	inputDescInstanced[1].SemanticIndex			= 0;
+	inputDescInstanced[1].InputSlot				= 0;
+	inputDescInstanced[1].InstanceDataStepRate  = 0;
+	inputDescInstanced[1].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[1].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[1].InputSlotClass	    = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[2].SemanticName		    = "TANGENT";
+	inputDescInstanced[2].SemanticIndex	        = 0;
+	inputDescInstanced[2].InputSlot		        = 0;
+	inputDescInstanced[2].InstanceDataStepRate  = 0;
+	inputDescInstanced[2].Format		        = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputDescInstanced[2].AlignedByteOffset     = D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[2].InputSlotClass        = D3D11_INPUT_PER_VERTEX_DATA;
+
+	inputDescInstanced[3].SemanticName			= "TEXCOORD";
+	inputDescInstanced[3].SemanticIndex		    = 0;
+	inputDescInstanced[3].InputSlot			    = 0;
+	inputDescInstanced[3].InstanceDataStepRate  = 0;
+	inputDescInstanced[3].Format				= DXGI_FORMAT_R32G32_FLOAT;
+	inputDescInstanced[3].AlignedByteOffset		= D3D11_APPEND_ALIGNED_ELEMENT;
+	inputDescInstanced[3].InputSlotClass		= D3D11_INPUT_PER_VERTEX_DATA;
+
+	for (size_t i = 4; i < 8; i++)
+	{
+		//Create 4 vectors for the world data per instance
+		inputDescInstanced[i].SemanticName          = "WORLD";
+		inputDescInstanced[i].SemanticIndex         = i-4;
+		inputDescInstanced[i].InputSlot				= 1;
+		inputDescInstanced[i].InstanceDataStepRate  = 1;  
+		inputDescInstanced[i].Format		        = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		inputDescInstanced[i].AlignedByteOffset		= 0 + (sizeof(float) * 4) * (i-4);
+		inputDescInstanced[i].InputSlotClass	    = D3D11_INPUT_PER_INSTANCE_DATA;
+
+	}
+
+	 numElements = sizeof(inputDescInstanced) / sizeof(inputDescInstanced[0]);
+	//Create the vertex input layout.
+	hResult = device->CreateInputLayout(inputDescInstanced, numElements, vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), &this->m_layout[IL_INSTANCED_NORMAL]);
+	if (FAILED(hResult)) {
+		return 1;
+	}
 	// Create the input layout \\
 
 	D3D11_INPUT_ELEMENT_DESC inputDescAnim[6];
@@ -367,6 +441,30 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	}
 
 	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
+
+	//-----------------------------------------------------------------------------------------------------------------------------------
+	//Instanced geometry BUFFER
+	//-----------------------------------------------------------------------------------------------------------------------------------
+
+	D3D11_BUFFER_DESC bufferInstancedDesc;
+	ZeroMemory(&bufferInstancedDesc, sizeof(bufferInstancedDesc));
+
+	//InstancedObject buffer
+	bufferInstancedDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
+	bufferInstancedDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+	bufferInstancedDesc.Usage			= D3D11_USAGE_DYNAMIC;
+	bufferInstancedDesc.ByteWidth		= sizeof(DirectX::XMFLOAT4X4) * MAX_INSTANCED_GEOMETRY;
+	HRESULT hr;
+	if (FAILED(hr = device->CreateBuffer(&bufferInstancedDesc, nullptr, &m_instanceBuffer))) {
+#ifdef _DEBUG
+		MessageBox(NULL, L"Failed to create Instance buffer", L"Init Error", MB_ICONERROR | MB_OK);
+#endif // _DEBUG
+		return 1;
+	}
+
+
+
+
 	return 0;
 }
 
@@ -413,6 +511,11 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		break;
 	}
 	case ShaderLib::Instanced:
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Instanced], NULL, 0);
+		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
 		break;
 	case ShaderLib::Animated:
 	{
@@ -468,6 +571,11 @@ void DeferredShader::Release()
 			this->m_layout[i]->Release();
 			this->m_layout[i] = nullptr;
 		}
+	}
+	if (m_instanceBuffer)
+	{
+		m_instanceBuffer->Release();
+		m_instanceBuffer = nullptr;
 	}
 
 	//Release the sampler state
@@ -603,6 +711,85 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	return 0;
 }
 
+int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
+{
+	Resources::Model* model;
+	
+	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
+	if (iteration == 0)
+	{
+		Resources::Material * mat = model->GetMaterial();
+		Resources::Texture** textures = mat->GetAllTextures();
+		ID3D11ShaderResourceView* resViews[5];
+		UINT numViews = 0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (textures[i] == nullptr)
+				continue;
+
+			resViews[numViews] = textures[i]->GetResourceView();
+			numViews += 1;
+		}
+
+
+		this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
+	}
+
+	DirectX::XMFLOAT4X4* matrixData = data->componentSpecific;
+	int numInstances				= data->amountOfInstances;  // can be changed if the limit is exceeded
+	if (data->amountOfInstances > MAX_INSTANCED_GEOMETRY) //if we've reached the limit, split it up into multiple render passes
+	{
+		numInstances = MAX_INSTANCED_GEOMETRY; //Change the amount for the current pass to MAX_INSTANCED_GEOMETRY
+
+		InstanceData newBatch;
+		newBatch.modelID		   = data->modelID;
+		newBatch.componentSpecific = data->componentSpecific + MAX_INSTANCED_GEOMETRY; // Get a pointer to where it stopped rendering
+		newBatch.amountOfInstances = data->amountOfInstances - MAX_INSTANCED_GEOMETRY; // Discount the amount that has been rendered
+		DrawInstanced(&newBatch, iteration + 1 );
+#ifdef _DEBUG
+		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call| Iteration :"<< iteration + 1 << std::endl;
+#endif // _DEBUG
+	}
+
+#pragma region
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	HRESULT hr;
+	hr = m_deviceContext->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hr))
+	{
+#ifdef _DEBUG
+		std::cout << "Failed to map the instance buffer" << std::endl;
+#endif // _DEBUG
+
+		return 0;
+	}
+
+	DirectX::XMFLOAT4X4* tempStructMatrices = (DirectX::XMFLOAT4X4*)mappedResource.pData;
+	memset(mappedResource.pData, 0, sizeof(DirectX::XMFLOAT4X4) * MAX_INSTANCED_GEOMETRY);
+	memcpy(tempStructMatrices, (void*)matrixData, sizeof(DirectX::XMFLOAT4X4)* numInstances);
+
+	m_deviceContext->Unmap(m_instanceBuffer, 0);
+#pragma endregion Map the data to the instance buffer
+
+	ID3D11Buffer* vertBuffer  = model->GetMesh()->GetVerticesBuffer();
+	ID3D11Buffer* indexBuffer = model->GetMesh()->GetIndicesBuffer();
+	
+
+	UINT32 offset[2]     = { 0,0 };
+	UINT32 size[2];
+	size[0] = sizeof(Resources::Mesh::Vertex); //Size of each vertex
+	size[1] = sizeof(DirectX::XMFLOAT4X4);	  //size of each instance
+
+	ID3D11Buffer* vbs[2] = { vertBuffer,m_instanceBuffer};
+		
+	this->m_deviceContext->IASetVertexBuffers(0, 2, vbs, size, offset);
+	this->m_deviceContext->IASetIndexBuffer(indexBuffer ,DXGI_FORMAT_R32_UINT, 0);
+	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->m_deviceContext->DrawIndexedInstanced(model->GetMesh()->GetNumIndices(), numInstances, 0, 0, 0);
+	return 0;
+}
+
 
 int DeferredShader::Clear() //clears RTVs and DSV
 {
@@ -630,10 +817,6 @@ ID3D11ShaderResourceView ** DeferredShader::GetShaderResourceViews()
 }
 
 
-int DeferredShader::DrawInstanced(/*RESOURCE*/ /*INSTANCE_COUNT*/)
-{
-	return 0;
-}
 
 int DeferredShader::DrawGrid(Resources::Model * model) //depricated
 {
