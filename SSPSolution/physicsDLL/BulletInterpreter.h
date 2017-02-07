@@ -121,6 +121,8 @@ private:
 	btCollisionDispatcher* m_dispatcher;
 	btSequentialImpulseConstraintSolver* m_solver;
 	btDiscreteDynamicsWorld* m_dynamicsWorld;
+	
+	btScalar timeStep; //for callback function
 
 	std::vector<int> m_physicsHandlerIndex;
 	
@@ -147,6 +149,9 @@ private:
 	//apply stuff to bullet
 	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
 	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
+
+	//callback function
+	PHYSICSDLL_API void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -169,7 +174,8 @@ public:
 	PHYSICSDLL_API void TestBulletPhysics();
 	PHYSICSDLL_API void RegisterBox(int index);
 
-	PHYSICSDLL_API void BulletworldCallback(float timestep);
+	
+	PHYSICSDLL_API void BCb();
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body

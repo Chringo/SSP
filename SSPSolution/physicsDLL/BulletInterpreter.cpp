@@ -216,15 +216,21 @@ void BulletInterpreter::Initialize()
 		this->m_solver,
 		this->m_collitionConfiguration
 	);
+
 	this->player1 = nullptr;
 	this->player2 = nullptr;
 
 	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
+
+	this->timeStep = 0;
 }
 
 void BulletInterpreter::UpdateBulletEngine(const float& dt)
 {
+	//for callback
+	this->timeStep = dt;
+	
 	//time will act on the objects
 	btScalar timeStep = dt;
 	int maxSubSteps = 3;
@@ -458,6 +464,32 @@ void BulletInterpreter::TestBulletPhysics()
 void BulletInterpreter::RegisterBox(int index)
 {
 	this->m_physicsHandlerIndex.push_back(index);
+}
+
+PHYSICSDLL_API void BulletInterpreter::BCb()
+{
+
+	/*
+	// DynamicsWorld.h , declaration
+	typedef void (*btInternalTickCallback)(btDynamicsWorld *world, btScalar timeStep);
+	
+
+	declaration here
+	/// Set the callback for when an internal tick (simulation substep) happens, optional user info
+	void setInternalTickCallback(btInternalTickCallback cb,	void* worldUserInfo=0,bool isPreTick=false)
+	*/
+	
+	//tutorial followed: http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
+	//callback function info: http://stackoverflow.com/questions/9596276/how-to-explain-callbacks-in-plain-english-how-are-they-different-from-calling-o/9652434#9652434
+
+
+	//visual studio screems at me
+	//this->m_dynamicsWorld->setInternalTickCallback(this->BulletworldCallback);
+}
+
+void BulletInterpreter::BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
+{
+	printf("timewarped time by %f: ", float(this->timeStep));
 }
 
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)

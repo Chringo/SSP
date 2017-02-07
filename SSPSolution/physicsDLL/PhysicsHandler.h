@@ -107,6 +107,8 @@ private:
 	void SetNumberOfDynamics(unsigned int newNumberOfDynamics);
 	void SetIsHost(bool newIsHost);
 
+	void CallbackBullet();
+
 public:
 	PHYSICSDLL_API PhysicsHandler();
 	PHYSICSDLL_API ~PhysicsHandler();

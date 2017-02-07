@@ -2068,6 +2068,11 @@ void PhysicsHandler::SetIsHost(bool newIsHost)
 	this->m_isHost = newIsHost;
 }
 
+void PhysicsHandler::CallbackBullet()
+{
+	this->m_bullet.BCb();
+}
+
 PhysicsHandler::PhysicsHandler()
 {
 }
@@ -2146,7 +2151,7 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->AdjustChainLinkPosition(&this->m_links.at(i));
 	}
-
+	
 
 	/*for (int i = 0; i < nrOfChainLinks; i++)
 	{
@@ -2482,6 +2487,8 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 		link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
 		link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
 
+		//test to callback
+		this->CallbackBullet();
 
 		//DirectX::XMVECTOR collNorm = this->m_bullet.FindNormalFromComponent(link->CL_next->PC_IndexRigidBody);
 
