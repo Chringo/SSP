@@ -141,7 +141,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
 
 	//this->m_player1.Initialize(1, playerP, playerG);
-	this->m_player1.SetSpeed(0.5f);
+	this->m_player1.SetSpeed(5.0f);
 
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
 
@@ -209,10 +209,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_entityID = 3;									//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_rotationVelocity = DirectX::XMVectorSet((3.14/180) * 30 , (3.14 / 180) * 30,0,0);
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
 	ballP->PC_BVtype = BV_OBB;
-
+	ballP->PC_velocity = DirectX::XMVectorSet(10, 0, 0, 0);
 	ballP->PC_OBB.ext[0] = 0.5f;
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
@@ -1072,11 +1073,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
-	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(-32, 0, 12, 0));
+	m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(-32, 1, 12, 0));
 	m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
 	m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(-1, 1, -1, 0));
 	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
