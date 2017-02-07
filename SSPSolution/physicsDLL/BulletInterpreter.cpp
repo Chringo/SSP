@@ -233,7 +233,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 	//this->m_dynamicsWorld->stepSimulation(,);
 
-	btCollisionObjectArray* collObj = &this->m_dynamicsWorld->getCollisionObjectArray();
+	/*btCollisionObjectArray* collObj = &this->m_dynamicsWorld->getCollisionObjectArray();
 	btCollisionWorld* test;
 
 	btPersistentManifold* pMan = nullptr;
@@ -265,7 +265,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 		}
 	}
 
-	int i = 0;
+	int i = 0;*/
 	//update positions
 	//this->ApplyMovementPlayer1(dt);
 	//this->ApplyMovementPlayer2();
