@@ -442,7 +442,7 @@ irrklang::ISound* SoundHandler::PlaySound2D(Sounds2D soundEnum, bool loop, bool 
 		{
 			newActiveSound->grab();
 
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -469,7 +469,7 @@ irrklang::ISound* SoundHandler::PlaySound3D(Sounds3D soundEnum, DirectX::XMFLOAT
 		{
 			newActiveSound->grab();
 			
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;

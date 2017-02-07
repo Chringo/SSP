@@ -22,6 +22,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
+	this->m_walkingSound = nullptr;
 
 	return result;
 }
@@ -252,6 +253,32 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//	this->m_pComp->PC_OBB.ort.r[2].m128_f32[0], this->m_pComp->PC_OBB.ort.r[2].m128_f32[1], this->m_pComp->PC_OBB.ort.r[2].m128_f32[2], 1.0f
 				//);
 
+				//Play walking sounds
+				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
+				{
+
+					DirectX::XMFLOAT3 pos;
+					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+				}
+				else
+				{
+					if (this->m_walkingSound->getIsPaused())	//If the walking sound is paused
+					{
+						this->m_walkingSound->setIsPaused(false);	//Un pause it
+					}
+				}
+
+
+			}
+			else
+			{
+				if (this->m_walkingSound != nullptr && !this->m_walkingSound->getIsPaused())
+				{
+					this->m_walkingSound->setPlayPosition(0);
+					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
+				}
+				
 			}
 
 		//}
