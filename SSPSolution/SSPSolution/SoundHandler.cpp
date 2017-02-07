@@ -519,8 +519,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound3D(Sounds3D start_soundEnum, Sou
 	if (start_soundEnum < this->m_sounds3D.size() && start_soundEnum != Sounds3D::NO_SOUND3D &&
 		end_soundEnum < this->m_sounds3D.size() && end_soundEnum != Sounds3D::NO_SOUND3D)
 	{
-
-		int randomSoundID = (rand() % end_soundEnum) + start_soundEnum;	//Get a random sound between the two defined sounds
+		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
 
 		irrklang::ISoundSource* sp = this->m_sounds3D.at(randomSoundID);
 		irrklang::vec3d<float> pos(pos.x, pos.y, pos.z);
