@@ -129,6 +129,63 @@ int Camera::UpdateProjection(float screenAspect, float fieldOfView, float nearPl
 	return 1;
 }
 
+int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
+{
+	int result = 0;
+	//Constants for descriptive code
+	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_INWARDS};
+	DirectX::XMMATRIX clipSpaceMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&this->m_viewMatrix), DirectX::XMLoadFloat4x4(&this->m_projectionMatrix));
+	DirectX::XMFLOAT4X4 M;
+	DirectX::XMStoreFloat4x4(&M, clipSpaceMatrix);
+	//Extract clipping planes
+	//RIGHT
+	
+	storeIn.myPlanes[LEFT].normal.x = (M._14 + M._11) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.y = (M._24 + M._21) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.z = (M._34 + M._31) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[LEFT].normal.w = (M._44 + M._41) * PLANE_NORMAL_DIRECTION_CHOICE;
+	//LEFT
+	storeIn.myPlanes[RIGHT].normal.x = (M._14 - M._11) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.y = (M._24 - M._21) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.z = (M._34 - M._31) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[RIGHT].normal.w = (M._44 - M._41) * PLANE_NORMAL_DIRECTION_CHOICE;
+	//BOTTOM
+	storeIn.myPlanes[BOTTOM].normal.x = (M._14 + M._12) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.y = (M._24 + M._22) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.z = (M._34 + M._32) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[BOTTOM].normal.w = (M._44 + M._42) * PLANE_NORMAL_DIRECTION_CHOICE;
+	//TOP
+	storeIn.myPlanes[TOP].normal.x = (M._14 - M._12) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.y = (M._24 - M._22) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.z = (M._34 - M._32) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[TOP].normal.w = (M._44 - M._42) * PLANE_NORMAL_DIRECTION_CHOICE;
+	//NEAR
+	storeIn.myPlanes[NEAR].normal.x = (M._14 + M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.y = (M._24 + M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.z = (M._34 + M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[NEAR].normal.w = (M._44 + M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
+	//FAR
+	storeIn.myPlanes[FAR].normal.x = (M._14 - M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.y = (M._24 - M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.z = (M._34 - M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[FAR].normal.w = (M._44 - M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
+
+	//Normalize the planes
+	for (int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
+	{
+		/*float denominator = 1.0f / (DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal))));
+		storeIn.myPlanes[planeIndex].normal.m128_f32[X] *= denominator;
+		storeIn.myPlanes[planeIndex].normal.m128_f32[Y] *= denominator;
+		storeIn.myPlanes[planeIndex].normal.m128_f32[Z] *= denominator;
+		storeIn.myPlanes[planeIndex].normal.m128_f32[W] *= denominator;*/
+		DirectX::XMStoreFloat4(&storeIn.myPlanes[planeIndex].normal, DirectX::XMVector4Normalize(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal)));
+		//storeIn.myPlanes[planeIndex].normal = DirectX::XMVector3Normalize(storeIn.myPlanes[planeIndex].normal);
+	}
+
+	return result;
+}
+
 #pragma region
 void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 {
@@ -382,13 +439,13 @@ void Camera::RotateCamera(double x, double y, double z, double angle)
 	quatView = DirectX::XMVectorSetZ(quatView, this->m_lookAt.z - this->m_cameraPos.z);
 	quatView = DirectX::XMVectorSetW(quatView, 0.0f);
 	//Rotate the vector and normalize it
-	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
+	result = DirectX::XMVector3Normalize(Mult(DirectX::XMVector3Normalize(Mult(temp, quatView)), Conjugate(temp)));
 	//Move the lookAt vector back to the camera
 	this->m_lookAt.x = DirectX::XMVectorGetX(result) + this->m_cameraPos.x;
 	this->m_lookAt.y = DirectX::XMVectorGetY(result) + this->m_cameraPos.y;
 	this->m_lookAt.z = DirectX::XMVectorGetZ(result) + this->m_cameraPos.z;
 	quatView = DirectX::XMLoadFloat4(&this->m_cameraUp);
-	result = DirectX::XMVector3Normalize(mult(DirectX::XMVector3Normalize(mult(temp, quatView)), conjugate(temp)));
+	result = DirectX::XMVector3Normalize(Mult(DirectX::XMVector3Normalize(Mult(temp, quatView)), Conjugate(temp)));
 	DirectX::XMStoreFloat4(&this->m_cameraUp, result);
 	return;
 }
@@ -479,7 +536,7 @@ DirectX::XMVECTOR Camera::GetRight()
 {
 	return m_camRightvector;
 }
-DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
+DirectX::XMVECTOR Camera::Conjugate(DirectX::XMVECTOR quat)
 {
 	DirectX::XMVECTOR result = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(quat) * -1);
@@ -488,7 +545,7 @@ DirectX::XMVECTOR Camera::conjugate(DirectX::XMVECTOR quat)
 	result = DirectX::XMVectorSetW(result, DirectX::XMVectorGetW(quat));
 	return result;
 }
-DirectX::XMVECTOR Camera::mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
+DirectX::XMVECTOR Camera::Mult(DirectX::XMVECTOR a, DirectX::XMVECTOR b)
 {
 	DirectX::XMFLOAT4 C, A, B;
 	DirectX::XMStoreFloat4(&A, a);
@@ -526,3 +583,115 @@ void Camera::m_updatePos()
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 }
 #pragma endregion setters
+
+CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
+{
+	CullingResult result = FRUSTRUM_INSIDE;
+	/*enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		float pos = this->myPlanes[i].normal.w;
+		DirectX::XMVECTOR normal = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetPositiveVertex(normal))) + pos < 0.0f)
+		{
+			return FRUSTRUM_OUTSIDE;
+		}
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(normal, box.GetNegativeVertex(normal))) + pos < 0.0f)
+		{
+			return FRUSTRUM_INTERSECT;
+		}
+	}*/
+	for (int i = 0; i < 6; i++)
+	{
+		DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
+		DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
+		//+Y
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		//-Y
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) >= 0.0f)
+		{
+			continue;
+		}
+
+		return FRUSTRUM_OUTSIDE;
+	}
+	return FRUSTRUM_INSIDE;
+	return result;
+}
+
+int Camera::ViewFrustrum::TestAgainstOBBConservative(C_OBB box) 
+{
+	int result = 0;
+	return result;
+}
+
+int Camera::ViewFrustrum::TestAgainstOBBExact(C_OBB box) 
+{
+	int result = 0;
+	return result;
+}
+
+
+DirectX::XMVECTOR Camera::C_AABB::GetPositiveVertex(const DirectX::XMVECTOR & normal)
+{
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&this->pos);
+	DirectX::XMVECTOR ext = DirectX::XMLoadFloat3(&this->ext);
+	DirectX::XMVECTOR result = DirectX::XMVectorSubtract(pos, ext);
+	if (DirectX::XMVectorGetX(normal) >= 0)
+		result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(DirectX::XMVectorAdd(pos, ext)));
+	if (DirectX::XMVectorGetY(normal) >= 0)
+		result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(DirectX::XMVectorAdd(pos, ext)));
+	if (DirectX::XMVectorGetZ(normal) >= 0)
+		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorAdd(pos, ext)));
+
+	return DirectX::XMVectorAdd(pos, result);
+}
+
+DirectX::XMVECTOR Camera::C_AABB::GetNegativeVertex(const DirectX::XMVECTOR & normal)
+{
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&this->pos);
+	DirectX::XMVECTOR ext = DirectX::XMLoadFloat3(&this->ext);
+	DirectX::XMVECTOR result = DirectX::XMVectorSubtract(pos, ext);
+	if (DirectX::XMVectorGetX(normal) >= 0)
+		result = DirectX::XMVectorSetX(result, DirectX::XMVectorGetX(DirectX::XMVectorSubtract(pos, ext)));
+	if (DirectX::XMVectorGetY(normal) >= 0)
+		result = DirectX::XMVectorSetY(result, DirectX::XMVectorGetY(DirectX::XMVectorSubtract(pos, ext)));
+	if (DirectX::XMVectorGetZ(normal) >= 0)
+		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorSubtract(pos, ext)));
+
+	return DirectX::XMVectorAdd(pos, result);
+}
