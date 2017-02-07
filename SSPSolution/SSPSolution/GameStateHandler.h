@@ -19,6 +19,7 @@ public:
 	int ShutDown();
 
 	int Initialize(ComponentHandler* cHandler, Camera* cameraRef);
+	int Initialize(ComponentHandler* cHandler, Camera* cameraRef, std::string levelPath);
 
 	int Update(float dt, InputHandler* inputHandler);
 

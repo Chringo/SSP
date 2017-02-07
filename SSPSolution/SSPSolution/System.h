@@ -47,7 +47,7 @@ public:
 	~System();
 	int Shutdown();
 
-	int Initialize();
+	int Initialize(std::string path);
 	//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 	int Run();
 	int Update(float deltaTime);

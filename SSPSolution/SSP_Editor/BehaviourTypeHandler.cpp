@@ -130,6 +130,8 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_HideLights, SIGNAL(toggled(bool)), this, SLOT(on_HideLight_changed(bool)));
 
 #pragma endregion
+
+	connect(m_RunLevel, SIGNAL(clicked()), this, SLOT(on_Run_Level_changed()));
 }
 
 Ui::BehaviourTypeHandler::~BehaviourTypeHandler()
@@ -725,6 +727,12 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 
 	((Lever*)m_selection)->interactionDistance = (float)val;
 
+}
+
+void Ui::BehaviourTypeHandler::on_Run_Level_changed()
+{
+
+	printf("bajs");
 }
 
 #pragma endregion

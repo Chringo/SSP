@@ -123,6 +123,35 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 	//return result;
 }
 
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef, std::string levelPath)
+{
+	int result = 0;
+
+	//Create, Initialize and push a LevelSelectState
+	LevelSelectState* levelSelect = new LevelSelectState();
+	result = levelSelect->Initialize(this, cHandler, cameraRef);
+
+	//If the initialization was successful
+	if (result > 0)
+	{
+		//Push it to the gamestate stack/vector
+		this->PushStateToStack(levelSelect);
+
+
+		levelSelect->LoadLevel(levelPath);
+	}
+	else
+	{
+		//Delete it
+		delete levelSelect;
+		levelSelect = nullptr;
+	}
+
+	return result;
+
+	return 0;
+}
+
 int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
