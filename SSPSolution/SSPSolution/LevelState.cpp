@@ -339,6 +339,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//this->m_cameraRef->SetCameraPivot(this->m_player1.GetPhysicsComponent()->PC_pos, 10);
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
+	//NETWORK SAFETY
+	if (!this->m_networkModule)
+	{
+		this->m_networkModule = new NetworkModule();
+		this->m_networkModule->Initialize();
+	}
+
+
 	if (this->m_networkModule->IsHost())
 	{
 		m_cameraRef->SetCameraPivot(
