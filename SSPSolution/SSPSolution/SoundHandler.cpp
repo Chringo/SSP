@@ -1,9 +1,6 @@
 #include "SoundHandler.h"
 
-SoundHandler::SoundHandler()
-{
-
-}
+SoundHandler* SoundHandler::m_instance = nullptr;
 
 SoundHandler::~SoundHandler()
 {
@@ -34,6 +31,8 @@ void SoundHandler::Shutdown()
 	{
 		this->m_soundEngine->drop();
 	}
+
+	delete this->m_instance;
 
 }
 
@@ -281,7 +280,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(5);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -401,7 +400,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
-		sp->setDefaultMinDistance(20);
+		sp->setDefaultMinDistance(5);
 		this->m_sounds3D.push_back(sp);
 	}
 	else

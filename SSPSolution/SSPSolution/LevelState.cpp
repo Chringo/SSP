@@ -946,12 +946,32 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPressed(playerPos);
 		}
 	}
+	
 	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
 	{
 		DirectX::XMFLOAT3 playerPos;
 		DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 		(*i)->Update(dt, inputHandler);
 	}
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	{
+		for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
+		{
+			DirectX::XMFLOAT3 playerPos;
+			DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+
+			(*i)->CheckPressed(playerPos);
+		}
+	}
+
+	for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
+	{
+		DirectX::XMFLOAT3 playerPos;
+		DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
+		(*i)->Update(dt, inputHandler);
+	}
+
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
 	{
 
@@ -1033,13 +1053,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		this->m_cHandler->GetSoundHandler()->PlaySound2D(Sounds2D::MENU1, false, false);
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-		this->m_cHandler->GetSoundHandler()->PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
 	}
 
 
@@ -1084,7 +1104,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMStoreFloat3(&dir, this->m_cameraRef->GetDirection());
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
-	this->m_cHandler->UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
 
 	return result;
 }
