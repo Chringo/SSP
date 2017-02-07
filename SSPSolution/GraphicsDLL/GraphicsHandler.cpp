@@ -375,8 +375,8 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsAnimationComponents = 5;
 	this->m_maxDepth = 5;
 	this->m_minDepth = 1;
-	this->m_minContainment = 3;
-	this->m_minSize = 2.0f;
+	this->m_minContainment = 2;
+	this->m_minSize = 4.0f;
 }
 
 
@@ -873,6 +873,28 @@ int GraphicsHandler::GenerateOctree()
 	//After having finished filling the octree with data, sort it
 	std::sort(this->m_octreeRoot.containedComponents.begin(), this->m_octreeRoot.containedComponents.end(), Sorting_on_modelID());
 	
+	//Could we calculate the average distribution along each axis?
+	/*We have the amount of components, maybe we could take the most interesting axis of division when it comes to component clustering?
+	A forest with a single telephone pole would be very uninteresting in the y-dimension, lending more value to optimizing the x-z plane division.
+	Should we thus have a min-size for each axis of division? Though we should know the result of min size on max depth. If the deltaX of the world (DX)
+	is 64m and we have a max of 5 division we would, with no min size, reach 2m along the x-axis.
+	*/
+
+	//We should start with optimizing for the largest delta
+	float largestSize = max(max(maxX - minX, maxY - minY), maxZ - minZ);
+	//Determine the max division according to the largest size divided by the min size. Roof the value.
+	int size = largestSize;
+	bool reachedMaxDepth = false;
+	this->m_maxDepth = 0;
+	while (!reachedMaxDepth)
+	{
+		this->m_maxDepth++;
+		size = size / 2;
+		reachedMaxDepth = !(size > this->m_minSize);
+	}
+
+	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
+
 	//Initialize the octree root
 	for (i = 0; i < 8; i++)
 	{
@@ -1248,7 +1270,7 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 	int shouldBranch = 0;
 	//Determin if we should branch this node
 	//Big enough to branch
-	shouldBranch += !(curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize);
+	shouldBranch += (curNode->ext.x < this->m_minSize && curNode->ext.y < this->m_minSize && curNode->ext.z < this->m_minSize);
 	//Contains enough for branching to be worth it
 	shouldBranch += !(containedCount > this->m_minContainment);
 	//Has not yet reached the maximum allowed depth
