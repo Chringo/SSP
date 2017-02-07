@@ -75,7 +75,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 			//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, matrix);
 		}
 
-		this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 3.14 /2, 1);
+		this->m_pComp->PC_rotation = DirectX::XMVectorSetByIndex(this->m_pComp->PC_rotation, 3.14f / 2.0f, 1);
 		this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_originalOrto, DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionRotationRollPitchYawFromVector(this->m_pComp->PC_rotation)));
 
 		this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorScale(this->m_originalOrto.r[2], -1));
@@ -83,9 +83,9 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 
 		this->SyncComponents();
-		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_originalOrto.r[1], -1.5);
-		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[2], -0.2));
-		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[0], -1.2));
+		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_originalOrto.r[1], -1.5f);
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[2], -0.2f));
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_originalOrto.r[0], -1.2f));
 		DirectX::XMMATRIX offSet_matrix = DirectX::XMMatrixTranslationFromVector(offSet);
 		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, offSet_matrix);
 
@@ -141,8 +141,8 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		this->m_pComp->PC_OBB.ort = DirectX::XMMatrixMultiply(this->m_originalOrto, DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionRotationRollPitchYawFromVector(this->m_pComp->PC_rotation)));
 		
 		this->SyncComponents();
-		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5);
-		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2));
+		DirectX::XMVECTOR offSet = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
+		offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
 		DirectX::XMMATRIX offSet_matrix = DirectX::XMMatrixTranslationFromVector(offSet);
 		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, offSet_matrix);
 
