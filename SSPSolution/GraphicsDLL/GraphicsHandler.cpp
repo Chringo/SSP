@@ -435,7 +435,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #endif // _DEBUG
 
 	return 0;
-	
 }
 
 Camera* GraphicsHandler::SetCamera(Camera * newCamera)
