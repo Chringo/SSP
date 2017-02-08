@@ -26,8 +26,8 @@ enum ContainerType
 struct Container
 {
 	unsigned int	  internalID;
-	DirectX::XMVECTOR position;		// Total värde. 
-	DirectX::XMVECTOR rotation;		// Total värde. 
+	DirectX::XMVECTOR position;
+	DirectX::XMVECTOR rotation;
 	GraphicsComponent component;
 	bool			  isDirty      = false;
 	bool			  isStatic     = true;
@@ -45,8 +45,7 @@ struct Container
 		this->isStatic		= obj.isStatic		;
 		this->type = MODEL;
 	}
-	Container& operator=(Container const& obj)
-	{
+	Container& operator=(Container const& obj) {
 		this->internalID  = obj.internalID;
 		this->position	  = obj.position;
 		this->rotation	  = obj.rotation;
@@ -56,8 +55,7 @@ struct Container
 		this->type = MODEL;
 		return *this;
 	}
-
-	};
+};
 
 struct ListenerContainer : Container
 {
@@ -631,8 +629,7 @@ struct AiContainer : ListenerContainer
 		this->type = AI;
 	}
 	AIComponent	  aiComponent;
-
-
+	DirectX::XMVECTOR OBBCenterPos;
 
 	void ConvertFromContainer(Container* obj)
 	{
