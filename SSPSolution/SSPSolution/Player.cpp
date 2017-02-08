@@ -49,7 +49,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
 				}
 			}
@@ -57,7 +57,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_FORWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
 				}
 			}
@@ -74,7 +74,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
 				}
 			}
@@ -82,7 +82,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (!stateExists(PLAYER_RUN_BACKWARD))
 				{
-					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 				}
 			}
@@ -102,7 +102,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
 					{
-						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
 					}
 				}
@@ -110,7 +110,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_RIGHT))
 					{
-						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 					}
 				}
@@ -131,7 +131,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_LEFT_BALL))
 					{
-						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
 					}
 				}
@@ -139,7 +139,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					if (!stateExists(PLAYER_RUN_LEFT))
 					{
-						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT;
 					}
 				}
@@ -253,17 +253,27 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				//Add the velocity to our physicsComponent
 				this->m_pComp->PC_velocity = velocity;
-				//this->m_pComp->dir
 				
+				//Rotates the player to run in the direction that the camera faces. 
+				DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));
+				this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+					-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+					0.f, 1.f, 0.f, 0.0f,
+					-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,		
+					0, 0, 0, 1.0f
+				);
+				//If the player is grabbing the ball, the ball entity should also rotate in the direction of the camera. 
+				if (this->m_grabbed != nullptr)
+				{
+					PhysicsComponent* physicComp = this->m_ball->GetPhysicsComponent();
 
-				//stoopid john maths right here bitches
-				//DirectX::XMVECTOR walkDir = DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 });
-				//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
-				//	-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
-				//	0.f, 1.f, 0.f, 0.0f,
-				//	-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
-				//	this->m_pComp->PC_OBB.ort.r[2].m128_f32[0], this->m_pComp->PC_OBB.ort.r[2].m128_f32[1], this->m_pComp->PC_OBB.ort.r[2].m128_f32[2], 1.0f
-				//);
+					physicComp->PC_OBB.ort = DirectX::XMMatrixSet(
+						-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+						0.f, 1.f, 0.f, 0.0f,
+						-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
+						0, 0, 0, 1.0f
+					);
+				}
 
 				//Play walking sounds
 				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
