@@ -16,10 +16,10 @@ cbuffer camera : register(b1)
 
 struct VS_IN
 {
-    float3 Pos : POSITION;
-    float3 Normal : NORMAL;
-    float3 Tangent : TANGENT0;
-    float2 UV : TEXCOORD0;
+    float3 Pos      : POSITION;
+    float3 Normal   : NORMAL;
+    float3 Tangent  : TANGENT0;
+    float2 UV       : TEXCOORD0;
 };
 
 struct VS_OUT

@@ -62,6 +62,7 @@ void ShaderControl::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 			m_shaders[DEFERRED]->SetVariation(ShaderVariations);
 			break;
 		}
+
 	}
 }
 
@@ -134,6 +135,19 @@ void ShaderControl::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 		((DeferredShader*)m_shaders[DEFERRED])->Draw(model, component);
 		break;
 	}
+
+}
+
+void ShaderControl::DrawInstanced(InstanceData * data)
+{
+	if (m_activeShader != DEFERRED)
+	{
+#ifdef _DEBUG
+		std::cout << "Deferred shader not set for instanced rendering" << std::endl;
+#endif // _DEBUG
+		return;
+	}
+	((DeferredShader*)m_shaders[DEFERRED])->DrawInstanced(data);
 
 }
 

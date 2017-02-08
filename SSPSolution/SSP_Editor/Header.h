@@ -65,10 +65,20 @@ struct ListenerContainer : Container
 	Container*	 triggerContainers[20]; //pointers to the triggers
 	ListenerContainer() : Container() {
 		memset(triggerEntityIds, 0, sizeof(UINT) * 20);
-		memset(triggerContainers, NULL, sizeof(Container*));
+		memset(triggerContainers, NULL, sizeof(Container*) * 20);
+		//for (size_t i = 0; i < 20; i++)
+		//{
+		//	triggerContainers[i] = nullptr;
+		//}
 	};
 	ListenerContainer(const Container &obj) : Container(obj) //copy constructor to convert from a container type to Button
 	{
+		memset(triggerEntityIds, 0, sizeof(UINT) * 20);
+		memset(triggerContainers, NULL, sizeof(Container*) * 20);
+		//for (size_t i = 0; i < 20; i++)
+		//{
+		//	triggerContainers[i] = nullptr;
+		//}
 	}
 	bool AddTrigger(Container* trigger, EVENT listenEvent)
 	{
@@ -114,14 +124,18 @@ struct ListenerContainer : Container
 		if (!triggerExist) // if the trigger does not exist
 			return;
 
-		for (size_t j = index; j < numTriggers - 1; j++) //move the data to the left in the array
+		for (size_t j = index; j <= numTriggers - 1; j++) //move the data to the left in the array
 		{
 			triggerEntityIds[j]		= triggerEntityIds[j + 1];
+			triggerEntityIds[j + 1] = 0;
 			triggerContainers[j]    = triggerContainers[j + 1];
+			triggerContainers[j + 1] = nullptr;
 			listenEvent[j]		    = listenEvent[j + 1];
 		}
 		triggerContainers[numTriggers] = nullptr;
 		numTriggers -= 1;
+		if (numTriggers == 0)
+			triggerContainers[0] = nullptr;
 	}
 
 };
