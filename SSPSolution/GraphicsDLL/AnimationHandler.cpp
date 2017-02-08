@@ -597,7 +597,8 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		//	toRootTransform[0] = localTransforms[0];
 		//}
 
-		DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
+		//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
+		toRootTransform[0] = localTransforms[0];
 	}
 
 	for (int i = 1; i < jointCount; i++)
