@@ -20,6 +20,7 @@ enum PacketTypes {
 	UPDATE_CAMERA,
 	UPDATE_GRAB,
 	SYNC_PHYSICS,
+	SYNC_READY,
 	TEST_PACKET,
 };
 
@@ -156,6 +157,8 @@ struct SyncPhysicPacket : public Packet
 	unsigned int	startIndex;
 	unsigned int	nrOfDynamics;
 	bool			isHost;
+	unsigned int	levelID;
+	unsigned int	checkpointID;
 
 	void serialize(char * data)
 	{
