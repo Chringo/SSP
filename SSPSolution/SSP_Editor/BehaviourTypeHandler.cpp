@@ -1,4 +1,5 @@
 #include "BehaviourTypeHandler.h"
+#include <QProcess>
 
 Ui::BehaviourTypeHandler::BehaviourTypeHandler()
 {
@@ -130,7 +131,7 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	connect(m_HideLights, SIGNAL(toggled(bool)), this, SLOT(on_HideLight_changed(bool)));
 
 #pragma endregion
-
+	m_RunLevel = ui->pushButton;
 	connect(m_RunLevel, SIGNAL(clicked()), this, SLOT(on_Run_Level_changed()));
 }
 
@@ -731,8 +732,21 @@ void Ui::BehaviourTypeHandler::on_lever_distance_changed(double val)
 
 void Ui::BehaviourTypeHandler::on_Run_Level_changed()
 {
+	//system("start ../SSPSolution/SSPApplication.exe");
+	QString path;
 
-	printf("bajs");
+	if (LevelHandler::GetInstance()->ExportLevelFile(path) == LevelData::LevelStatus::L_FILE_SAVE_CANCELLED)
+		return;
+
+	QString dir = QCoreApplication::applicationDirPath();
+	dir.replace("EditorComp/Debug", "SSPSolution");
+	dir.replace("/", "\\");
+	QDir::setCurrent(dir);
+
+	QStringList args;
+
+	args << "/c" << "start" << "SSPApplication.exe" << path;
+	QProcess::startDetached("cmd", args);
 }
 
 #pragma endregion
