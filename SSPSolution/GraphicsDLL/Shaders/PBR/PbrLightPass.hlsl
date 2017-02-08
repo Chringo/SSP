@@ -1,10 +1,10 @@
-Texture2D colorTex		: register(t0);
-Texture2D metalRoughAo  : register(t1);
-Texture2D normalTex		: register(t2);
-Texture2D wPosTex		: register(t3);
-
+Texture2D colorTex		   : register(t0);
+Texture2D metalRoughAo     : register(t1);
+Texture2D normalTex		   : register(t2);
+Texture2D wPosTex		   : register(t3);
+Texture2DArray shadowTex   : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
 SamplerState linearSampler : register(s0);
-SamplerState pointSampler : register(s1);
+SamplerState pointSampler  : register(s1);
 
 cbuffer camera : register(b1)
 {
@@ -38,7 +38,7 @@ struct PointLight //Must be 16 bit aligned!
 };
 
 
-StructuredBuffer<PointLight> pointlights : register(t8);
+StructuredBuffer<PointLight> pointlights : register(t6);
 
 struct VS_OUT
 {

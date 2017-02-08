@@ -65,6 +65,7 @@ public:
 	ID3D11ShaderResourceView** GetShaderResourceViews();
 	int SetActive();
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
+	void SetShadowDataToRead();
 	void Release();
 
 	

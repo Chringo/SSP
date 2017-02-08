@@ -692,6 +692,12 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	return 0;
 }
 
+void DeferredShader::SetShadowDataToRead()
+{
+
+	this->m_deviceContext->PSSetShaderResources(10, MAX_SHADOW_AMOUNT, &m_deferredSRV[ShaderLib::Shadow]);
+}
+
 void DeferredShader::Release()
 {
 	Shader::Release();

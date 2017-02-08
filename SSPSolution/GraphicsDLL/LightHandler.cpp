@@ -196,6 +196,7 @@ bool LIGHTING::LightHandler::SetBuffersAsActive()
 {
 	for (size_t i = 0; i < NUM_LT; i++)
 	{
+		m_gDeviceContext->GSSetShaderResources(BUFFER_SHADER_SLOTS[i], 1, &m_structuredBuffers[i]);
 		m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[i], 1, &m_structuredBuffers[i]);
 	}
 	return true;
