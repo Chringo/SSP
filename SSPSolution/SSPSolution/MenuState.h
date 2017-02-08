@@ -118,8 +118,8 @@ private:
 	float timeoutTime;
 	bool sentSyncPacket;
 
-	void Hosting(float dt);
-	void Joining();
+	void Hosting(float dt, InputHandler* inputHandler);
+	void Joining(InputHandler* inputHandler);
 
 public:
 	MenuState();

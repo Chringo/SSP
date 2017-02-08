@@ -542,12 +542,12 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		
 		if (isHosting)	//If we have pressed the host button
 		{
-			this->Hosting(dt);	//Do the Host update
+			this->Hosting(dt, inputHandler);	//Do the Host update
 		}
 
 		if (isJoining)
 		{
-			this->Joining();
+			this->Joining(inputHandler);
 		}
 
 		break;
@@ -563,7 +563,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
-void MenuState::Hosting(float dt)
+void MenuState::Hosting(float dt, InputHandler* inputHandler)
 {
 	#pragma region
 
@@ -649,13 +649,15 @@ void MenuState::Hosting(float dt)
 				levelSelect = nullptr;
 			}
 			#pragma endregion Load_Level
+
+			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 	}
 
 #pragma endregion Network_Sync
 }
 
-void MenuState::Joining()
+void MenuState::Joining(InputHandler* inputHandler)
 {
 	#pragma region
 	//Listen for syncPacket
@@ -703,6 +705,7 @@ void MenuState::Joining()
 			}
 			#pragma endregion Level_To_Load
 
+			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 		else
 		{
