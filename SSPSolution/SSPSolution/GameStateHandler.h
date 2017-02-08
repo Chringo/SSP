@@ -5,7 +5,7 @@
 #include "LevelSelectState.h"
 #include <vector>
 
-//#define START_WITHOUT_MENU
+#define START_WITHOUT_MENU
 
 class GameStateHandler
 {
