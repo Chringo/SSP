@@ -2,7 +2,15 @@ cbuffer worldMatrix : register(b0)
 {
     float4x4 worldMatrix;
 }
+cbuffer frame : register(b1)
+{
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
 
+    float4 camPos;
+    float timer,
+    padding1, padding2, padding3;
+}
 
 struct VS_IN
 {
@@ -26,7 +34,7 @@ struct SHADOW_GS_OUT
 SHADOW_VS_OUT VS_main(VS_IN input)
 {
     SHADOW_VS_OUT output = (SHADOW_VS_OUT) 0;
-    output.position = float4(input.Pos, 1.0f);
+    output.position = mul(float4(input.Pos, 1), worldMatrix);
 
     return output;
 }
@@ -63,7 +71,7 @@ cbuffer shadow : register(b5)
 
 static const uint MAX_SHADOWMAP_AMOUNT = 1;
 
-StructuredBuffer<PointLight> pointlights : register(t8);
+StructuredBuffer<PointLight> pointlights : register(t6);
 
 
 [maxvertexcount(200)]
@@ -85,7 +93,7 @@ void GS_main(
             {
                 element.rtIndex = rt_index;
                 eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-                matrix combinedMatrix1 = mul(eachViewMatrix, ShadowProjectionMatrix);
+                matrix combinedMatrix1 = mul(viewMatrix, projectionMatrix);
                 element.position = mul(input[i].position, combinedMatrix1);
 
                 output.Append(element);

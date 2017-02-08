@@ -29,7 +29,7 @@ cbuffer shadow : register(b5)
     int numCasters;
     float spadding1, spadding2, spadding3;
 }
-StructuredBuffer<PointLight> pointlights : register(t8);
+StructuredBuffer<PointLight> pointlights : register(t6);
 struct VS_IN
     {
     float3 Pos           : POSITION;
