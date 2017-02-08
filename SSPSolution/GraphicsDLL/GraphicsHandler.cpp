@@ -435,7 +435,6 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #endif // _DEBUG
 
 	return 0;
-	
 }
 
 Camera* GraphicsHandler::SetCamera(Camera * newCamera)
@@ -523,8 +522,8 @@ int GraphicsHandler::Render(float deltaTime)
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
-	int renderCap = this->m_staticGraphicsComponents.size();
-	for (int i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	size_t renderCap = this->m_staticGraphicsComponents.size();
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_octreeRoot.containedComponents[i]->isRendered)
 		{
@@ -824,7 +823,7 @@ int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
-	int componentCount = this->m_staticGraphicsComponents.size();
+	size_t componentCount = this->m_staticGraphicsComponents.size();
 
 
 	//Create the BoundingVolume we cull against
@@ -883,7 +882,7 @@ int GraphicsHandler::GenerateOctree()
 	//We should start with optimizing for the largest delta
 	float largestSize = max(max(maxX - minX, maxY - minY), maxZ - minZ);
 	//Determine the max division according to the largest size divided by the min size. Roof the value.
-	int size = largestSize;
+	int size = int(largestSize + 0.5f);
 	bool reachedMaxDepth = false;
 	this->m_maxDepth = 0;
 	while (!reachedMaxDepth)

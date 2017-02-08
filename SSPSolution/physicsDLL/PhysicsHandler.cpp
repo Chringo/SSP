@@ -2122,7 +2122,7 @@ void PhysicsHandler::Update(float deltaTime)
 	}
 
 
-	for (int i = 0; i < this->m_physicsComponents.size(); i++)
+	for (size_t i = 0; i < this->m_physicsComponents.size(); i++)
 	{
 		PhysicsComponent* ptr = this->m_physicsComponents.at(i);
 		if (this->m_physicsComponents.at(i)->PC_steadfast == true)
@@ -2596,7 +2596,7 @@ void PhysicsHandler::ResetChainLink()
 	// This resets the player, the chain link, and the ball
 	int nrOfChainLinks = this->m_links.size();
 	this->m_links[0].CL_previous->PC_velocity = { 0 };
-	for (size_t i = 0; i < nrOfChainLinks; i++)
+	for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->m_links[i].CL_next->PC_velocity = { 0 };
 		this->m_links[i].CL_next->PC_pos =
