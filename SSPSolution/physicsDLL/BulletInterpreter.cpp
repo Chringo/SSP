@@ -189,6 +189,12 @@ BulletInterpreter::~BulletInterpreter()
 {
 }
 
+void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
+{
+	printf("All hail the feurher %f: ", float(timeStep));
+}
+
+
 void BulletInterpreter::Initialize()
 {
 	/*
@@ -224,6 +230,9 @@ void BulletInterpreter::Initialize()
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
 	this->timeStep = 0;
+
+	//btInternalTickCallback* test = new btInternalTickCallback;
+	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
 }
 
 void BulletInterpreter::UpdateBulletEngine(const float& dt)
@@ -484,13 +493,9 @@ PHYSICSDLL_API void BulletInterpreter::BCb()
 
 
 	//visual studio screems at me
-	//this->m_dynamicsWorld->setInternalTickCallback(this->BulletworldCallback);
+//	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
 }
 
-void BulletInterpreter::BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
-{
-	printf("timewarped time by %f: ", float(this->timeStep));
-}
 
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
 {

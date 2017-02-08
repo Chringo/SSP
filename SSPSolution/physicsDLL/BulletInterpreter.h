@@ -151,7 +151,7 @@ private:
 	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
 
 	//callback function
-	PHYSICSDLL_API void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
+	//void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
