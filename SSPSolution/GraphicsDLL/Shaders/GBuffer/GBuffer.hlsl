@@ -7,14 +7,6 @@ Texture2D aoTex			 : register(t4);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-cbuffer shadow : register(b5)
-{
-    float4x4 ShadowViewMatrix;
-    float4x4 ShadowProjectionMatrix;
-
-    int numCasters;
-    float padding1, padding2, padding3;
-}
 
 struct VS_OUT
 {

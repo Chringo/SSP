@@ -15,7 +15,7 @@ cbuffer shadow : register(b5)
     float4x4 ShadowProjectionMatrix;
 
     int numCasters;
-    float padding1, padding2, padding3;
+    float spadding1, spadding2, spadding3;
 }
 
 struct VS_IN
