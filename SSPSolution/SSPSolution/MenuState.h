@@ -3,6 +3,9 @@
 #include "GameState.h"
 #include "LevelSelectState.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
+
+const float TIMEOUT_TIME = 200;
+
 class MenuState :
 	public GameState
 {
@@ -39,6 +42,9 @@ private:
 				m_textComp->active = 0;
 			}
 		}
+
+
+
 	};
 	struct TextBox {
 		UIComponent* m_uiComp;
@@ -105,6 +111,16 @@ private:
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
+	
+	//Network related functions and variables
+	bool isHosting;
+	bool isJoining;
+	float timeoutTime;
+	bool sentSyncPacket;
+
+	void Hosting(float dt, InputHandler* inputHandler);
+	void Joining(InputHandler* inputHandler);
+
 public:
 	MenuState();
 	~MenuState();

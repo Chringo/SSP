@@ -8,10 +8,15 @@ Player::Player()
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
+	this->m_walkingSound = nullptr;
 }
 
 Player::~Player()
 {
+	if (this->m_walkingSound)
+	{
+		this->m_walkingSound->drop();
+	}
 }
 
 int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
@@ -265,7 +270,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//If the player is grabbing the ball, the ball entity should also rotate in the direction of the camera. 
 				if (this->m_grabbed != nullptr)
 				{
-					PhysicsComponent* physicComp = this->m_ball->GetPhysicsComponent();
+					PhysicsComponent* physicComp = this->m_grabbed->GetPhysicsComponent();
 
 					physicComp->PC_OBB.ort = DirectX::XMMatrixSet(
 						-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
