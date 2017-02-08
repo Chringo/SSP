@@ -103,7 +103,7 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &shadow.D3DBuffer);
 	if (SUCCEEDED(hResult))
-		deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &shadow.D3DBuffer);
+		deviceContext->GSSetConstantBuffers(CB_SHADOW_B5, 1, &shadow.D3DBuffer);
 	else
 		return	1;
 

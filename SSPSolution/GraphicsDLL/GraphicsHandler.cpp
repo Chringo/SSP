@@ -461,6 +461,9 @@ int GraphicsHandler::Render(float deltaTime)
 	this->m_camera->GetViewMatrix(frame.cView);
 	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
+
+
+
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);

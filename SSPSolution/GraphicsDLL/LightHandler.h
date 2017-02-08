@@ -38,7 +38,6 @@ namespace LIGHTING
 			AREALIGHT_BUFFER		 = 10,
 			SPOTLIGHT_BUFFER		 = 11
 		};
-		
 		struct LightArray {
 			Light* dataPtr = nullptr;
 			unsigned int numItems = 0;
@@ -48,6 +47,7 @@ namespace LIGHTING
 	private:
 		LightHandler();
 		~LightHandler();
+		ConstantBufferHandler::ConstantBuffer::shadow::cbData m_shadowCb;
 		LightBufferData m_constBufferData;
 		LightArray m_lightData[NUM_LT];
 		ID3D11Device*			  m_gDevice;

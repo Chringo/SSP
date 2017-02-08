@@ -207,6 +207,7 @@ public:
 				DirectX::XMFLOAT4X4 pView;
 				DirectX::XMFLOAT4X4 pProjection;
 				int pShadowCasterAmount;
+				float padding1 = 0.f, padding2 = 0.f, padding3 = 0.f;
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

@@ -41,6 +41,14 @@ cbuffer LightInfo : register(b3)
     float3 AMBIENT_COLOR;
     float AMBIENT_INTENSITY;
 }
+cbuffer shadow : register(b5)
+{
+    float4x4 ShadowViewMatrix;
+    float4x4 ShadowProjectionMatrix;
+
+    int numCasters;
+    float spadding1, spadding2, spadding3;
+}
 
 static const uint MAX_SHADOWMAP_AMOUNT = 1;
 
