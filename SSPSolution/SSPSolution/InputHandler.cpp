@@ -270,6 +270,7 @@ void InputHandler::mouseMovement(SDL_Window * window)
 		}
 		else
 		{	
+
 			SDL_ShowCursor(SDL_ENABLE);
 		}
 		

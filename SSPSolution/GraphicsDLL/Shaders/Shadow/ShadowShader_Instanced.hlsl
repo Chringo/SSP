@@ -9,7 +9,14 @@ cbuffer camera : register(b1)
     padding1, padding2, padding3;
 
 }
+cbuffer shadow : register(b5)
+{
+    float4x4 ShadowViewMatrix;
+    float4x4 ShadowProjectionMatrix;
 
+    int numCasters;
+    float spadding1, spadding2, spadding3;
+}
 
 struct VS_IN
     {
