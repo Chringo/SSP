@@ -4,7 +4,7 @@ DeferredShader::DeferredShader() : Shader()
 {
 	this->m_samplerState = nullptr;
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_VERTEX_SHADERS; i++)
 	{
 		this->m_vertexShader[i] = nullptr;
 	}
@@ -21,7 +21,7 @@ DeferredShader::DeferredShader() : Shader()
 		this->m_deferredRTV[i] = nullptr;
 		this->m_deferredSRV[i] = nullptr;
 	}
-
+	m_shadowMapSV = nullptr;
 	this->m_DSV = nullptr;
 }
 

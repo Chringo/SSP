@@ -42,7 +42,7 @@ private:
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;
 
-	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT - 1]; // shadowMapping does not use any renderTarget
+	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT];
 	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
 	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 
