@@ -26,9 +26,9 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
 
 			//Play sound
-			//DirectX::XMFLOAT3 pos;
-			//DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			//SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+			DirectX::XMFLOAT3 pos;
+			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
 
 			this->m_needSync = true;
 		}
@@ -67,9 +67,9 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 		
 		////Play sound
-		//DirectX::XMFLOAT3 pos;
-		//DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-		//SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
 		
 		this->m_needSync = true;
 	}
