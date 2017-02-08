@@ -178,6 +178,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
+
+	return Resources::Status::ST_ERROR_OPENING_FILE;
 }
 
 void FileImporter::LoadImportedFiles()
