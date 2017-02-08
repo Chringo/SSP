@@ -1289,11 +1289,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_gc->modelID = data->aiComponents[i].modelID;
 		t_gc->modelPtr = modelPtr;
 		//Create world matrix from data
-		//memcpy(pos.m128_f32, data->aiComponents[i].position, sizeof(float) * 3);//Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
 		//Create the rotation matrix
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
@@ -1346,9 +1345,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z, 1.0f };
 #pragma endregion
 
-		//DynamicEntity* tde = new DynamicEntity();
-		//tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-		//m_dynamicEntitys.push_back(tde);
 		PlatformEntity* tpe = new PlatformEntity();
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);

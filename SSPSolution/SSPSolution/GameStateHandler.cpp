@@ -72,7 +72,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		this->PushStateToStack(levelSelect);
 
 
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/asdf.level"));
+		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 	}
 	else
 	{
