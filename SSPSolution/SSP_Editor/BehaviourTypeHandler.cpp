@@ -594,7 +594,6 @@ void Ui::BehaviourTypeHandler::on_Add()
 			//do stuff
 			
 			//if (temp == 0) { //if there was no Path when add was clicked, Add new AI component to the model
-
 				//Ask The Ai handler to create a new Path Component
 				if (m_selection->type != AI)
 				{
@@ -603,12 +602,11 @@ void Ui::BehaviourTypeHandler::on_Add()
 					newComponent->aiComponent.AC_entityID = m_selection->internalID;
 				}
 			//}
-				AIController control(&((AiContainer*)m_selection)->aiComponent);
-				DirectX::XMVECTOR newPos = m_selection->position;
-			
-				control.AddWaypoint(newPos);
+			AIController control(&((AiContainer*)m_selection)->aiComponent);
+			DirectX::XMVECTOR newPos = m_selection->position;
+			newPos = ((AiContainer*)m_selection)->OBBCenterPos;
+			control.AddWaypoint(newPos);
 		}
-		
 	}
 }
 
