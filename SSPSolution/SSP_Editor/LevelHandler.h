@@ -21,7 +21,7 @@ public:
 	~LevelHandler();
 	static LevelHandler* GetInstance();
 
-	LevelData::LevelStatus ExportLevelFile();
+	LevelData::LevelStatus ExportLevelFile(QString & filepath = QString());
 	LevelData::LevelStatus ImportLevelFile();
 	LevelData::LevelStatus NewLevel();
 	Level* GetCurrentLevel() { return &this->m_currentLevel; };
