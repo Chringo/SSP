@@ -6,7 +6,10 @@ struct VS_IN
     float2 UV       : TEXCOORD0;
 };
 
-
+struct SHADOW_VS_OUT
+{
+    float4 position : SV_POSITION;
+};
 struct SHADOW_GS_OUT
 {
     float4 position : SV_POSITION;
@@ -14,10 +17,12 @@ struct SHADOW_GS_OUT
 };
 
 
-float4 VS_main(VS_IN input) : SV_Position
+SHADOW_VS_OUT VS_main(VS_IN input)
 {
-    
-    return float4(input.Pos, 1.0f);
+    SHADOW_VS_OUT output = (SHADOW_VS_OUT) 0;
+    output.position = float4(input.Pos, 1.0f);
+
+    return output;
 }
 
 struct PointLight //Must be 16 bit aligned!
@@ -50,7 +55,7 @@ StructuredBuffer<PointLight> pointlights : register(t8);
 [maxvertexcount(200)]
 //Geometry shader!
 void GS_main( 
-	triangle float4 input[3],
+	triangle SHADOW_VS_OUT input[3],
 	inout TriangleStream<SHADOW_GS_OUT> output)
 {
 	//matrix combinedMatrix = mul(world, mul(view, projection));

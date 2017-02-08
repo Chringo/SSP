@@ -18,8 +18,12 @@ DeferredShader::DeferredShader() : Shader()
 
 	for (int i = 0; i < BUFFER_COUNT; i++) {
 		this->m_deferredT2D[i] = nullptr;
-		this->m_deferredRTV[i] = nullptr;
 		this->m_deferredSRV[i] = nullptr;
+	}
+	for (size_t i = 0; i < RTV_COUNT; i++)
+	{
+		this->m_deferredRTV[i] = nullptr;
+
 	}
 	this->m_shadowMapSV = nullptr;
 	this->m_DSV   = nullptr;
@@ -35,6 +39,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[VS_NUM_VERTEX_SHADERS] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
+	ID3D10Blob* geoShadowShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
 
@@ -42,12 +47,12 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 
 	//Insert shader path here
-	WCHAR* vsFilename       = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
-	WCHAR* vsInstFilename   = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
-	WCHAR* vsAnimFilename   = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
-	WCHAR* gsFilename		= L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* psFilename	    = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* shadowFilename	= L"../GraphicsDLL/Shaders/Shadow/ShadowShader.hlsl";
+	WCHAR* vsFilename         = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsInstFilename     = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
+	WCHAR* vsAnimFilename     = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
+	WCHAR* gsFilename		  = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* psFilename	      = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* shadowFilename	  = L"../GraphicsDLL/Shaders/Shadow/ShadowShader.hlsl";
 	WCHAR* shadowInstFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Instanced.hlsl";
 	// Compile the shaders \\
 
@@ -127,6 +132,17 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(shadowFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShadowShaderBuffer, &errorMessage);
+#else
+	hResult = D3DCompileFromFile(shadowFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &geoShadowShaderBuffer, &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, shadowFilename);
+		return 1;
+	}
+
 
 	// Create the shaders \\
 
@@ -145,7 +161,25 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	{
 		return 1;
 	}
+
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_NORMAL]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_INSTANCED]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 	hResult = device->CreateGeometryShader(geoShaderBuffer->GetBufferPointer(), geoShaderBuffer->GetBufferSize(), NULL, &this->m_geoShader);
+	if (FAILED(hResult)) {
+		return 1;
+	}
+	hResult = device->CreateGeometryShader(geoShadowShaderBuffer->GetBufferPointer(), geoShadowShaderBuffer->GetBufferSize(), NULL, &this->m_ShadowGeoShader);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -153,7 +187,6 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	if (FAILED(hResult)) {
 		return 1;
 	}
-
 	// Create the input layout \\
 
 	D3D11_INPUT_ELEMENT_DESC inputDescNormal[4];
@@ -313,13 +346,17 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	}
 
 	//Release and nullptr the buffers as they are no longer needed
-	vertexShaderBuffer[0]->Release();
-	vertexShaderBuffer[0] = nullptr;
+	for (size_t i = 0; i < VS_NUM_VERTEX_SHADERS; i++)
+	{
+		vertexShaderBuffer[i]->Release();
+		vertexShaderBuffer[i] = nullptr;
+	}
 	geoShaderBuffer->Release();
 	geoShaderBuffer = nullptr;
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = nullptr;
-
+	geoShadowShaderBuffer->Release();
+	geoShadowShaderBuffer = nullptr;
 
 	// Create the sampler \\
 
@@ -373,7 +410,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	renderTextureDesc.MiscFlags = 0;
 
 	//Create the render target textures
-	for (int i = 0; i < BUFFER_COUNT; i++) {
+	for (int i = 0; i < BUFFER_COUNT -1; i++) { //shadow texture is created separately
 		hResult = device->CreateTexture2D(&renderTextureDesc, NULL, &this->m_deferredT2D[i]);
 		if (FAILED(hResult)) {
 			return 1;
@@ -386,7 +423,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	//Create the render target views
-	for (int i = 0; i<BUFFER_COUNT; i++) {
+	for (int i = 0; i< RTV_COUNT; i++) {
 		hResult = device->CreateRenderTargetView(this->m_deferredT2D[i], &renderTargetViewDesc, &this->m_deferredRTV[i]);
 		if (FAILED(hResult)) {
 			return 1;
@@ -400,7 +437,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	//Create the shader resource views
-	for (int i = 0; i < BUFFER_COUNT; i++) {
+	for (int i = 0; i < BUFFER_COUNT -1 ; i++) { //Shadow srv is created separately
 		hResult = device->CreateShaderResourceView(this->m_deferredT2D[i], &shaderResourceViewDesc, &this->m_deferredSRV[i]);
 		if (FAILED(hResult)) {
 			return 1;
@@ -465,6 +502,67 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	deviceContext->OMSetDepthStencilState(m_DSS, NULL);
 
+
+#pragma region create shadowmap stuff
+	
+
+	D3D11_TEXTURE2D_DESC ShadowTexDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewShadowDesc;
+
+	ZeroMemory(&ShadowTexDesc, sizeof(ShadowTexDesc));
+
+	//Set up the render texture desciption
+
+	ShadowTexDesc.Width				= (UINT)SHADOW_WIDTH;	//Resolution
+	ShadowTexDesc.Height			= (UINT)SHADOW_HEIGHT;	//Resolution
+	ShadowTexDesc.MipLevels			= 1;
+	ShadowTexDesc.ArraySize			= MAX_SHADOW_AMOUNT;	//Maximum amounts of shadow maps
+	ShadowTexDesc.Format			= DXGI_FORMAT_R32_TYPELESS;
+	ShadowTexDesc.SampleDesc.Count  = 1;
+	ShadowTexDesc.Usage				= D3D11_USAGE_DEFAULT;
+	ShadowTexDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	ShadowTexDesc.CPUAccessFlags	= 0;
+	ShadowTexDesc.MiscFlags		    = 0;
+
+	//Create the render target Texture
+
+	hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &m_deferredT2D[ShaderLib::Shadow]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	//create depth stencil
+
+	ZeroMemory(&descDSV, sizeof(descDSV));
+	descDSV.Format						   = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension				   = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+	descDSV.Texture2DArray.ArraySize	   = MAX_SHADOW_AMOUNT;
+	descDSV.Texture2DArray.FirstArraySlice = 0;
+	descDSV.Texture2DArray.MipSlice		   = 0;
+
+	hResult = device->CreateDepthStencilView(m_deferredT2D[ShaderLib::Shadow], &descDSV, &m_shadowMapSV);
+	if (FAILED(hResult))
+		return 1;
+
+	//Set up the shader resource view
+
+	resourceViewShadowDesc.Format						  = DXGI_FORMAT_R32_FLOAT;
+	resourceViewShadowDesc.ViewDimension				  = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	resourceViewShadowDesc.Texture2DArray.ArraySize		  = MAX_SHADOW_AMOUNT;
+	resourceViewShadowDesc.Texture2DArray.FirstArraySlice = 0;
+	resourceViewShadowDesc.Texture2DArray.MostDetailedMip = 0;
+	resourceViewShadowDesc.Texture2DArray.MipLevels		  = 1;
+
+	//Create the resourceView;
+
+	hResult = device->CreateShaderResourceView(m_deferredT2D[ShaderLib::Shadow], &resourceViewShadowDesc, &m_deferredSRV[ShaderLib::Shadow]);
+	if (FAILED(hResult))
+		return 1;
+
+#pragma endregion
+
 	//-----------------------------------------------------------------------------------------------------------------------------------
 	//Instanced geometry BUFFER
 	//-----------------------------------------------------------------------------------------------------------------------------------
@@ -485,9 +583,6 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
-
-
-
 	return 0;
 }
 
@@ -502,21 +597,11 @@ int DeferredShader::SetActive()
 
 	//m_deviceContext->IASetInputLayout(this->m_layout);
 
-	//Set the vertex and pixel shaders that will be used to render this triangle
-	//m_deviceContext->VSSetShader(this->m_vertexShader[0], NULL, 0);
-	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-	m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
-
-
+	
 	//this->Clear(); //clear rtv and dsv
 	//Set the sampler state in pixel shader
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
-
-	//Set the render target views
-	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV);
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
 
 	return 0;
 }
@@ -529,23 +614,36 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
+		//Set the render target views
+		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
+
 		break;
 	}
 	case ShaderLib::Instanced:
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_INSTANCED_NORMAL], NULL, 0);
+		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 
+		//Set the render target views
+		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 		break;
 	case ShaderLib::Animated:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
+		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_ANIMATED], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
+
+		//Set the render target views
+		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
+
 		break;
 	}
 	case ShaderLib::InstancedAnimated:
@@ -554,8 +652,37 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL], NULL, 0);
+		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
+		//Set the render target views
+		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
+
+		break;
+	}
+	case ShaderLib::Shadow:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_NORMAL], NULL, 0);
+		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
+		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
+		//Set the render target views
+		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
+
+		break;
+	}
+	case ShaderLib::InstancedShadow:
+	{
+
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_INSTANCED], NULL, 0);
+		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
+		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
+		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		break;
 	}
 	default:
@@ -605,6 +732,11 @@ void DeferredShader::Release()
 		m_shadowMapSV->Release();
 		m_shadowMapSV = nullptr;
 	}
+	if (m_ShadowGeoShader)
+	{
+		m_ShadowGeoShader->Release();
+		m_ShadowGeoShader = nullptr;
+	}
 
 	//Release the sampler state
 	if (this->m_samplerState)
@@ -612,15 +744,19 @@ void DeferredShader::Release()
 		this->m_samplerState->Release();
 		this->m_samplerState = nullptr;
 	}
+	for (size_t i = 0; i < RTV_COUNT; i++)
+	{
+		if (this->m_deferredRTV[i]) {
+			this->m_deferredRTV[i]->Release();
+			this->m_deferredRTV[i] = nullptr;
+		}
+
+	}
 	//Release the deferred render targets
 	for (int i = 0; i < BUFFER_COUNT; i++) {
 		if (this->m_deferredT2D[i]) {
 			this->m_deferredT2D[i]->Release();
 			this->m_deferredT2D[i] = nullptr;
-		}
-		if (this->m_deferredRTV[i]) {
-			this->m_deferredRTV[i]->Release();
-			this->m_deferredRTV[i] = nullptr;
 		}
 		if (this->m_deferredSRV[i]) {
 			this->m_deferredSRV[i]->Release();
@@ -803,7 +939,6 @@ int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 	ID3D11Buffer* vertBuffer  = model->GetMesh()->GetVerticesBuffer();
 	ID3D11Buffer* indexBuffer = model->GetMesh()->GetIndicesBuffer();
 	
-
 	UINT32 offset[2]     = { 0,0 };
 	UINT32 size[2];
 	size[0] = sizeof(Resources::Mesh::Vertex); //Size of each vertex
@@ -829,13 +964,13 @@ int DeferredShader::Clear() //clears RTVs and DSV
 	color[3] = 1.0f;
 
 	//Clear the render target textures
-	for (int i = 0; i < BUFFER_COUNT-1; i++) {
+	for (int i = 0; i < RTV_COUNT; i++) {
 		m_deviceContext->ClearRenderTargetView(this->m_deferredRTV[i], color);
 	}
 
 	//Clear the depth buffer
 	m_deviceContext->ClearDepthStencilView(this->m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
+	m_deviceContext->ClearDepthStencilView(this->m_shadowMapSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return 0;
 }
 

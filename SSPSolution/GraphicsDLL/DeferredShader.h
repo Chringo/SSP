@@ -18,6 +18,8 @@ class DeferredShader :
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
 	static const int MAX_SHADOW_AMOUNT      = 1;
+	static const int SHADOW_WIDTH  = 1024;
+	static const int SHADOW_HEIGHT = 1024;
 	enum VERTEX_SHADERS {
 		VS_NORMAL,
 		VS_ANIMATED,
@@ -36,13 +38,14 @@ public:
 
 	ID3D11VertexShader*   m_vertexShader[VS_NUM_VERTEX_SHADERS];
 	ID3D11GeometryShader* m_geoShader;
+	ID3D11GeometryShader* m_ShadowGeoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];
 
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;
 
-	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT];
+	ID3D11RenderTargetView*		m_deferredRTV[RTV_COUNT];
 	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
 	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 

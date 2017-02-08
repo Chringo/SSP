@@ -8,6 +8,8 @@
 
 const int BUFFER_COUNT = 5; //color metal  wpos RNAO SHADOW
 
+const int RTV_COUNT = 4; // shadow does not use RTVs
+
 class Shader
 {
 protected:
