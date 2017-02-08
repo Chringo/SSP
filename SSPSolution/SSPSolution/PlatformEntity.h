@@ -5,6 +5,7 @@ class PlatformEntity :
 	public Entity
 {
 private:
+	irrklang::ISound* m_ActiveSound;
 
 public:
 	PlatformEntity();
