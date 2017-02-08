@@ -40,14 +40,13 @@ private:
 	AIHandler m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
-	//SoundHandler
-	SoundHandler m_soundHandler;
+
 public:
 	System();
 	~System();
 	int Shutdown();
 
-	int Initialize();
+	int Initialize(std::string path = "");
 	//Do not place things here without talking to the system designers. Place any update method in the System::Update(float dt) method
 	int Run();
 	int Update(float deltaTime);

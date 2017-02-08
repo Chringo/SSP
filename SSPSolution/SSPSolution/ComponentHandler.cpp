@@ -9,15 +9,14 @@ ComponentHandler::~ComponentHandler()
 {
 }
 
-int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler, SoundHandler* soundHandler)
+int ComponentHandler::Initialize(GraphicsHandler * graphicsHandler, PhysicsHandler* physicsHandler, AIHandler* aiHandler, AnimationHandler* aHandler)
 {
 	int result = 1;
 	this->m_graphicsHandler = graphicsHandler;
 	this->m_physicsHandler = physicsHandler;
 	this->m_aiHandler = aiHandler;
 	this->m_aHandler = aHandler;
-	this->m_soundHandler = soundHandler;
-	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr || soundHandler == nullptr)
+	if (graphicsHandler == nullptr || physicsHandler == nullptr || aiHandler == nullptr || aHandler == nullptr)
 		result = 0;
 	return result;
 }
@@ -121,11 +120,6 @@ AnimationComponent * ComponentHandler::GetAnimationComponent()
 	return animComp;
 }
 
-SoundHandler * ComponentHandler::GetSoundHandler()
-{
-	return this->m_soundHandler;
-}
-
 void ComponentHandler::UpdateGraphicsComponents()
 {
 	this->m_graphicsHandler->UpdateComponentList();
@@ -144,11 +138,6 @@ void ComponentHandler::UpdateSoundHandler()
 {
 }
 
-void ComponentHandler::UpdateListnerPos(DirectX::XMFLOAT3 newPos, DirectX::XMFLOAT3 newLookDir, DirectX::XMFLOAT3 newUpVector)
-{
-	this->m_soundHandler->UpdateListnerPos(newPos, newLookDir, newUpVector);
-}
-
 void ComponentHandler::SetGraphicsComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetComponentArraySize(gCompSize);
@@ -159,11 +148,6 @@ void ComponentHandler::SetGraphicsAnimationComponentListSize(int gCompSize)
 {
 	this->m_graphicsHandler->SetAnimComponentArraySize(gCompSize);
 	return;
-}
-
-PhysicsComponent * ComponentHandler::GetClosestPhysicsComponent(PhysicsComponent * component, int minDistance)
-{
-	return this->m_physicsHandler->GetClosestComponent(component, minDistance);
 }
 
 int ComponentHandler::ResizeGraphicsStatic(size_t newCap)

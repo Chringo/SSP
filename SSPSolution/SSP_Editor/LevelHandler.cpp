@@ -17,7 +17,7 @@ LevelHandler * LevelHandler::GetInstance()
 	return &instance;
 }
 
-LevelData::LevelStatus LevelHandler::ExportLevelFile()
+LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 {
 	std::string path = GetFilePathAndName(Operation::SAVE);
 	if (path == "")
@@ -126,6 +126,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
+	filepath = (QString::fromStdString(path));
 	return LevelData::LevelStatus::L_OK;
 }
 

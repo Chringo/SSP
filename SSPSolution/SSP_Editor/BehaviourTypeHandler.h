@@ -75,6 +75,7 @@ namespace Ui {
 		QPushButton*		m_Down;
 		QPushButton*		m_AddCheckpoint;
 		QPushButton*		m_AddLightButton;
+		QPushButton*		m_RunLevel;
 		QSpinBox*			m_CheckpointValue;
 
 		QLabel*			m_uniqueID;
@@ -199,7 +200,7 @@ namespace Ui {
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);
 #pragma endregion
-
+		void on_Run_Level_changed();
 
 	private:
 		void SetTriggerData(Container*& selection);

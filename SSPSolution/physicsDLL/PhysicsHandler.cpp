@@ -2109,6 +2109,8 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
+
+
 	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
 	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
 
@@ -2787,7 +2789,7 @@ void PhysicsHandler::ResetChainLink()
 	// This resets the player, the chain link, and the ball
 	int nrOfChainLinks = this->m_links.size();
 	this->m_links[0].CL_previous->PC_velocity = { 0 };
-	for (size_t i = 0; i < nrOfChainLinks; i++)
+	for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->m_links[i].CL_next->PC_velocity = { 0 };
 		this->m_links[i].CL_next->PC_pos =
@@ -3245,52 +3247,6 @@ void PhysicsHandler::SortComponents()
 	}
 }
 
-PhysicsComponent * PhysicsHandler::GetClosestComponent(PhysicsComponent * component, int minDistance)
-{
-	PhysicsComponent* pp = nullptr;
-	PhysicsComponent* closest = nullptr;
-	float distance = 0.0f;
-	float closestDistance = 999999999.0f;	//Gotta be big
-	DirectX::XMVECTOR vec;
-
-	for(size_t i = 0; i < this->m_dynamicComponents.size(); i++)	//We know the dynamics are in the front of the array
-	{
-		pp = this->m_dynamicComponents.at(i);
-
-		if (pp->PC_entityID != 0 && pp->PC_entityID != 1 && pp->PC_entityID != 2)	//Check so we sont find our own component we compare to
-		{
-			
-			//Calc the distance
-			vec = DirectX::XMVectorSubtract(pp->PC_pos, component->PC_pos);
-			distance = DirectX::XMVectorGetX( DirectX::XMVector3Length(vec) );
-
-			if (distance <= minDistance)	// Check its close enoughe 
-			{
-
-				if (closest != nullptr)		// If we already found a component
-				{
-
-					if (distance < closestDistance)	//The new one is closer
-					{
-						closest = pp;
-						closestDistance = distance;
-					}
-
-				}
-				else
-				{
-					closest = pp;
-					closestDistance = distance;
-				}
-				
-			}
-
-		}
-
-	}
-
-	return closest;
-}
 
 PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	

@@ -21,6 +21,9 @@ private:
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
 	DirectX::XMVECTOR m_rightDir;
+
+	irrklang::ISound* m_walkingSound;
+
 public:
 	Player();
 	~Player();
@@ -41,7 +44,7 @@ public:
 	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);
 
 	float GetMaxSpeed();
 	float GetAcceleration();
