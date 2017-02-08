@@ -8,7 +8,7 @@
 #pragma comment (lib,"../Debug/ResourceLib")
 
 struct InstanceData {
-	int modelID;
+	unsigned int modelID;
 	int amountOfInstances;
 	DirectX::XMFLOAT4X4 componentSpecific[100];
 };
