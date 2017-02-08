@@ -117,9 +117,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
+
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
+
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 3.5f;
 
@@ -147,6 +153,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
 		playerAnim1->source_State->isLooping = true; // TEMP TEST
+		playerAnim1->playingSpeed = 2.0f;
 	}
 
 	this->m_player1.Initialize(1, playerP, playerG, playerAnim1);
@@ -204,6 +211,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
 		playerAnim2->source_State->isLooping = true; // TEMP TEST
+		playerAnim2->playingSpeed = 2.0f;
 	}
 
 	this->m_player2.Initialize(2, playerP, playerG, playerAnim2);
@@ -643,7 +651,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						if (!this->m_player1.stateExists(PLAYER_PICKUP))
 						{
 							/*Player animation for picking up ball is set here.*/
-							this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.3f, FROZEN_TRANSITION, false, true);
+							this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.3f, FROZEN_TRANSITION, false, true, 1.0f);
 						}
 
 					}

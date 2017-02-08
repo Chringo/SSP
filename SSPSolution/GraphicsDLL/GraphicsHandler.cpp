@@ -475,63 +475,99 @@ int GraphicsHandler::Render(float deltaTime)
 	//	DirectX::XMFLOAT4X4* componentSpecific;
 	//};
 	std::vector<InstanceData> instancedRenderingList;
-	unsigned int firstRenderedModelID = 0;
+	unsigned int firstRenderedModelID = UINT_MAX;
+	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		if (i->isRendered)
 		{
+			if (i->modelID == lastModelID)
+			{
+				firstRenderedInstancedModelID = i->modelID;
+				break;
+			}
+			
 			lastModelID = i->modelID;
-			firstRenderedModelID = i->modelID;
-			break;
+			if (firstRenderedModelID == UINT_MAX)
+			{
+				firstRenderedModelID = i->modelID;
+			}
 		}
 	}
+
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	int amountOfModelOccurrencees = 0;
+	unsigned int lastComponentIndex = 0;
+	lastModelID = firstRenderedModelID;
+	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
 		{
 			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != i->modelID)
+			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
 			{
-				//Create the array
-				InstanceData instanceData;
-				instanceData.modelID = lastModelID;
-				instanceData.amountOfInstances = amountOfModelOccurrencees;
-				instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-				instancedRenderingList.push_back(instanceData);
-				//Prepare the data for the next model ID
-				amountOfModelOccurrencees = 0;
-				lastModelID = i->modelID;
+				if (amountOfModelOccurrencees > 1)
+				{
+
+					//Create the array
+					InstanceData instanceData;
+					instanceData.modelID = lastModelID;
+					instanceData.amountOfInstances = amountOfModelOccurrencees;
+					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+					instancedRenderingList.push_back(instanceData);
+					amountOfModelOccurrencees = 0;
+
+				}
+				else 
+				{
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+					lastRenderedComponent->isRendered = false;
+					amountOfModelOccurrencees = 0;
+				}
 			}
+			//Prepare the data for the next model ID
+			lastModelID = i->modelID;
+			lastComponentIndex = i->componentIndex;
+			lastRenderedComponent = i;
 			++amountOfModelOccurrencees;
 		}
 	}
-	if (componentsInTree > 0)
+	if (componentsInTree > 0 && lastRenderedComponent != nullptr)
 	{
-
-		InstanceData instanceData;
-		instanceData.modelID = lastModelID;
-		instanceData.amountOfInstances = amountOfModelOccurrencees;
-		instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-		instancedRenderingList.push_back(instanceData);
+		if (amountOfModelOccurrencees > 1)
+		{
+			InstanceData instanceData;
+			instanceData.modelID = lastModelID;
+			instanceData.amountOfInstances = amountOfModelOccurrencees;
+			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+			instancedRenderingList.push_back(instanceData);
+		}
+		else
+		{
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			lastRenderedComponent->isRendered = false;
+			amountOfModelOccurrencees = -1;
+		}
 	}
+
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	lastModelID = firstRenderedModelID;
+	lastModelID = firstRenderedInstancedModelID;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
 		if (i->isRendered)
 		{
 			//If it is time to change 
-			if (i->modelID != lastModelID)
+			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
 			{
 				instancedRenderingIndex++;
-				lastModelID = i->modelID;
 				instancedModelCount = 0;
 			}
 			//Get the data
@@ -539,20 +575,19 @@ int GraphicsHandler::Render(float deltaTime)
 			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
 			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-
+			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
 	}
 	//By all means it should be done by now
-	for (InstanceData& i : instancedRenderingList)
+	/*for (InstanceData& i : instancedRenderingList)
 	{
 		delete i.componentSpecific;
-	}
+	}*/
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
