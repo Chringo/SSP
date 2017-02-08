@@ -40,28 +40,7 @@ int Entity::SyncComponents()
 			}
 			else
 			{
-				//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos);
-				//if (m_entityID == 922)
-				//{
-					this->m_gComp->worldMatrix = 
-						DirectX::XMMatrixMultiply(
-							DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), 
-							DirectX::XMMatrixTranslationFromVector(
-								DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-									DirectX::XMVECTOR{
-						m_gComp->modelPtr->GetOBBData().position.x, 
-							m_gComp->modelPtr->GetOBBData().position.y,
-							m_gComp->modelPtr->GetOBBData().position.z, 0})));
-				//this->m_gComp->worldMatrix =
-				//	DirectX::XMMatrixMultiply(
-				//		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
-				//		DirectX::XMMatrixTranslationFromVector(
-				//			DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-				//				this->m_pComp->PC_OBB.ort.r[3])));
-					//m_gComp->modelPtr->GetOBBData().position
-				//}
-				//else
-					//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 			}
 
 			result = 1;
