@@ -189,10 +189,6 @@ BulletInterpreter::~BulletInterpreter()
 {
 }
 
-void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
-{
-	printf("All hail the feurher %f: ", float(timeStep));
-}
 
 
 void BulletInterpreter::Initialize()
@@ -230,9 +226,9 @@ void BulletInterpreter::Initialize()
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
 	this->timeStep = 0;
-
+	//this->m_dynamicsWorld->getWorldUserInfo()
 	//btInternalTickCallback* test = new btInternalTickCallback;
-	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
+	//this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
 }
 
 void BulletInterpreter::UpdateBulletEngine(const float& dt)
@@ -242,14 +238,14 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	
 	//time will act on the objects
 	btScalar timeStep = dt;
-	int maxSubSteps = 3;
+	int maxSubSteps = 8;
 	btScalar fixedTimeStep = btScalar(1.0)/btScalar(60); 
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 
 }
 
-void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src, float dt)
+void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
 	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
@@ -261,7 +257,10 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src, float dt)
 
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();
-
+		if (src->PC_mass != 0)
+		{
+			rigidBody->activate();
+		}
 		btVector3 bulletVelocity = rigidBody->getLinearVelocity();
 		btVector3 bulletAnglularV = rigidBody->getAngularVelocity();
 
@@ -313,7 +312,7 @@ PHYSICSDLL_API void BulletInterpreter::SyncPosWithBullet(PhysicsComponent* src)
 
 }
 
-void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src, float dt)
+void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 {
 
 	if (src->PC_IndexRigidBody != -1)
@@ -623,6 +622,8 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
+
+
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	int pos = this->m_rigidBodies.size() - 1;
@@ -637,7 +638,7 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 {
 	//this is always static
 	DirectX::XMVECTOR pos = src->PC_pos;
-	DirectX::XMVECTOR ext = DirectX::XMVectorSet(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2], 0);
+	DirectX::XMVECTOR ext = DirectX::XMVectorSet(src->PC_AABB.ext[0], src->PC_AABB.ext[1], src->PC_AABB.ext[2], 0);
 
 	btVector3 extends = this->crt_xmvecVec3(ext);
 	btCollisionShape* box = new btBoxShape(extends);
@@ -703,13 +704,11 @@ PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int 
 
 	colWorld = this->m_dynamicsWorld->getCollisionWorld();
 	int nrOfManifolds = this->m_dynamicsWorld->getDispatcher()->getNumManifolds();
-
 	for (int i = 0; i < nrOfManifolds; i++)
 	{
 		pMan = this->m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
 		const btCollisionObject* obj0 = pMan->getBody0();
 		const btCollisionObject* obj1 = pMan->getBody1();
-
 		int nrOfContancts = pMan->getNumContacts();
 
 		btManifoldPoint* manifloldPoint = nullptr;
@@ -717,9 +716,10 @@ PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int 
 		{
 			manifloldPoint = &pMan->getContactPoint(j);
 			
-			if (obj0->getUserIndex() == index || obj1->getUserIndex() == index)
+			if (obj0->getUserIndex() == index)
 			{
-				if (manifloldPoint->getDistance() < 0.0f)
+				//index == objectA
+				if (manifloldPoint->getDistance() < 1.0f)
 				{
 
 					const btVector3 obj0Point = manifloldPoint->getPositionWorldOnA();
@@ -728,16 +728,104 @@ PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int 
 					const btVector3 normalOnB = manifloldPoint->m_normalWorldOnB;
 
 					btVector3 toConv = normalOnB;
-					toConv *= -1;
 
 					toConv.normalize();
 					toReturn = this->crt_Vec3XMVEc(toConv);
 				}
 			}
+			if (obj1->getUserIndex() == index)
+			{
+				//index == objectB
+
+				if (manifloldPoint->getDistance() < 1.0f)
+				{
+
+					const btVector3 obj0Point = manifloldPoint->getPositionWorldOnA();
+					const btVector3 obj1Point = manifloldPoint->getPositionWorldOnB();
+
+					const btVector3 normalOnB = manifloldPoint->m_normalWorldOnB;
+
+					btVector3 toConv = normalOnB * -1;
+
+					toConv.normalize();
+					toReturn = this->crt_Vec3XMVEc(toConv);
+				}
+			}
+
 		}
 	}
 
 	return toReturn;
+}
+PHYSICSDLL_API void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index)
+{
+	btPersistentManifold* pMan = nullptr;
+	btCollisionWorld* colWorld = nullptr;
+	DirectX::XMVECTOR toReturn = DirectX::XMVectorSet(0, 0, 0, -1);
+
+
+
+	colWorld = this->m_dynamicsWorld->getCollisionWorld();
+	int nrOfManifolds = this->m_dynamicsWorld->getDispatcher()->getNumManifolds();
+
+	for (int i = 0; i < nrOfManifolds; i++)
+	{
+		pMan = this->m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		const btCollisionObject* obj0 = pMan->getBody0();
+		const btCollisionObject* obj1 = pMan->getBody1();
+		int nrOfContancts = pMan->getNumContacts();
+
+		btManifoldPoint* manifloldPoint = nullptr;
+		for (int j = 0; j < nrOfContancts; j++)
+		{
+			manifloldPoint = &pMan->getContactPoint(j);
+
+			if (obj0->getUserIndex() == index)
+			{
+				//index == objectA
+				if (manifloldPoint->getDistance() < 1.0f)
+				{
+
+					const btVector3 obj0Point = manifloldPoint->getPositionWorldOnA();
+					const btVector3 obj1Point = manifloldPoint->getPositionWorldOnB();
+
+					const btVector3 normalOnB = manifloldPoint->m_normalWorldOnB;
+
+					btVector3 toConv = normalOnB;
+
+					toConv.normalize();
+					DirectX::XMFLOAT3 normal;
+					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
+					src->m_normals.push_back(normal);
+				}
+			}
+			if (obj1->getUserIndex() == index)
+			{
+				//index == objectB
+
+				if (manifloldPoint->getDistance() < 1.0f)
+				{
+
+					const btVector3 obj0Point = manifloldPoint->getPositionWorldOnA();
+					const btVector3 obj1Point = manifloldPoint->getPositionWorldOnB();
+
+					const btVector3 normalOnB = manifloldPoint->m_normalWorldOnB;
+
+					btVector3 toConv = normalOnB * -1;
+
+					toConv.normalize();
+					DirectX::XMFLOAT3 normal;
+					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
+					src->m_normals.push_back(normal);
+				}
+			}
+
+		}
+	}
+}
+PHYSICSDLL_API btDynamicsWorld * BulletInterpreter::GetBulletWorld()
+{
+	return this->m_dynamicsWorld;
 }
 
 void BulletInterpreter::CreateDummyObjects()

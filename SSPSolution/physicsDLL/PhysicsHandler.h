@@ -108,8 +108,9 @@ private:
 	void SetIsHost(bool newIsHost);
 
 	void CallbackBullet();
-
+	//static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 public:
+	float timeStep;
 	PHYSICSDLL_API PhysicsHandler();
 	PHYSICSDLL_API ~PhysicsHandler();
 
@@ -148,9 +149,11 @@ public:
 	PHYSICSDLL_API int GetNrOfComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
+	PHYSICSDLL_API bool checkCollition();
+
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
-	PHYSICSDLL_API bool checkCollition();
+	PHYSICSDLL_API BulletInterpreter* GetBulletInterpreterRef();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
@@ -160,6 +163,15 @@ public:
 	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
 	
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
+
+	PHYSICSDLL_API void SyncAllPhyicsComponentsToBullet();
+	PHYSICSDLL_API void SyncBulletToPhysicsComponents();
+
+	PHYSICSDLL_API void DoChainPhysics(float dt);
+	PHYSICSDLL_API void DoChainAjustPhysics();
+	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
+
+	PHYSICSDLL_API void ClearCollisionNormals();
 
 
 #ifdef _DEBUG

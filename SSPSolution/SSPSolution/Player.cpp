@@ -23,7 +23,8 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
-	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
+	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 2, 0);
+	
 
 	return result;
 }
@@ -171,8 +172,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		ptr->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
 		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		ptr->PC_gravityInfluence = 0;
-		//sync with bullet
+		ptr->PC_gravityInfluence = 1.0;
 	}
 
 

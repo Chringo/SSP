@@ -84,6 +84,8 @@ struct PhysicsComponent
 	Sphere PC_Sphere;
 	Plane PC_Plane;
 
+	std::vector<DirectX::XMFLOAT3> m_normals;
+
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 
@@ -161,10 +163,10 @@ public:
 	PHYSICSDLL_API void Initialize();
 
 	PHYSICSDLL_API void UpdateBulletEngine(const float& dt); //lets time pass in the bullet engine, letting forces move and apply on the rigid bodies
-	PHYSICSDLL_API void SyncGameWithBullet(PhysicsComponent* src, float dt);	//this function call and add forces on player and components during events
+	PHYSICSDLL_API void SyncGameWithBullet(PhysicsComponent* src);	//this function call and add forces on player and components during events
 
 	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);	//forces updates in bullet world, when the ball is grabed, the ball needs a new position in bullet
-	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src, float dt);
+	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src);
 
 	PHYSICSDLL_API void Shutdown();
 
@@ -189,5 +191,8 @@ public:
 	PHYSICSDLL_API void SetPlayer2(PhysicsComponent* p2);
 
 	PHYSICSDLL_API DirectX::XMVECTOR FindNormalFromComponent(int index);
+
+	PHYSICSDLL_API void AddNormalFromCollisions(PhysicsComponent* src, int index);
+	PHYSICSDLL_API btDynamicsWorld* GetBulletWorld();
 };
 #endif
