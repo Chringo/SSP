@@ -845,6 +845,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
 		}
 	#pragma endregion Network_Key_events
+
 	this->m_cameraRef->Update(dt);
 
 	//Update the listner pos and direction for sound
