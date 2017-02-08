@@ -742,19 +742,19 @@ int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 
 	DirectX::XMFLOAT4X4* matrixData = data->componentSpecific;
 	int numInstances				= data->amountOfInstances;  // can be changed if the limit is exceeded
-	if (data->amountOfInstances > MAX_INSTANCED_GEOMETRY) //if we've reached the limit, split it up into multiple render passes
-	{
-		numInstances = MAX_INSTANCED_GEOMETRY; //Change the amount for the current pass to MAX_INSTANCED_GEOMETRY
-
-		InstanceData newBatch;
-		newBatch.modelID		   = data->modelID;
-		newBatch.componentSpecific = data->componentSpecific + MAX_INSTANCED_GEOMETRY; // Get a pointer to where it stopped rendering
-		newBatch.amountOfInstances = data->amountOfInstances - MAX_INSTANCED_GEOMETRY; // Discount the amount that has been rendered
-		DrawInstanced(&newBatch, iteration + 1 );
-#ifdef _DEBUG
-		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call| Iteration :"<< iteration + 1 << std::endl;
-#endif // _DEBUG
-	}
+//	if (data->amountOfInstances > MAX_INSTANCED_GEOMETRY) //if we've reached the limit, split it up into multiple render passes
+//	{
+//		numInstances = MAX_INSTANCED_GEOMETRY; //Change the amount for the current pass to MAX_INSTANCED_GEOMETRY
+//
+//		InstanceData newBatch;
+//		newBatch.modelID		   = data->modelID;
+//		newBatch.componentSpecific = data->componentSpecific + MAX_INSTANCED_GEOMETRY; // Get a pointer to where it stopped rendering
+//		newBatch.amountOfInstances = data->amountOfInstances - MAX_INSTANCED_GEOMETRY; // Discount the amount that has been rendered
+//		DrawInstanced(&newBatch, iteration + 1 );
+//#ifdef _DEBUG
+//		std::cout << "The instance buffer has reached its limit, splitting the rendering up into another draw call| Iteration :"<< iteration + 1 << std::endl;
+//#endif // _DEBUG
+//	}
 
 #pragma region
 	D3D11_MAPPED_SUBRESOURCE mappedResource;

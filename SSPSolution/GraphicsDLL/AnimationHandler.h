@@ -32,7 +32,7 @@ struct AnimationComponent
 
 	float m_TransitionDuration = 0.f;
 	float m_TransitionTimeLeft = 0.f;
-	float speed = 0.f;
+	float playingSpeed = 0.f;
 
 	bool m_TransitionComplete = false;
 
@@ -81,13 +81,13 @@ public:
 private:
 	//Functions only used in class.
 	void SetAnimCompIndex(int animCompIndex);
-	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices);
+	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices, std::vector<DirectX::XMFLOAT4X4> localScales);
 	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
 	void Blend(float secondsElapsed);
 	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
 	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed);
 };
 
 #endif
