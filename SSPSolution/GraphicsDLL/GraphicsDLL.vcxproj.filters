@@ -184,6 +184,9 @@
     <FxCompile Include="Shaders\Debug\DebugPS.hlsl">
       <Filter>Resource Files\Shaders\Debug</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\GBuffer\GBufferVS_Instanced.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

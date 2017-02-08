@@ -21,8 +21,10 @@
 
 const int ARRAY_INC = 5;
 
+	
 class GraphicsHandler
 {
+	
 
 #ifdef _DEBUG
 private:

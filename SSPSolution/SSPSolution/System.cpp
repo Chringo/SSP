@@ -28,7 +28,7 @@ int System::Shutdown()
 	this->m_inputHandler = nullptr;
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
-	this->m_soundHandler.Shutdown();
+	SoundHandler::instance().Shutdown();
 	//delete this->m_AIHandler;
 	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
@@ -101,12 +101,8 @@ int System::Initialize(std::string path)
 	this->m_AnimationHandler = new AnimationHandler();
 	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
 
-
-	//Initialize the SoundHandler
-	this->m_soundHandler = SoundHandler();
-	this->m_soundHandler.Initialize();
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler, &this->m_soundHandler);
+	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
 	//Initialize the GameStateHandler
 	if (path.length() > 1)
 		this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
@@ -277,7 +273,7 @@ int System::Update(float deltaTime)
 
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
 	{
-		this->m_soundHandler.ReInitSoundEngine();
+		SoundHandler::instance().ReInitSoundEngine();
 	}
 
 	this->m_AnimationHandler->Update(deltaTime);
@@ -294,7 +290,7 @@ int System::Update(float deltaTime)
 	//Frustrum cull
 	DebugHandler::instance()->StartTimer(3);
 	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-	DebugHandler::instance()->UpdateCustomLabel(1, renderedItems);
+	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
 
 	DebugHandler::instance()->StartTimer(2);
