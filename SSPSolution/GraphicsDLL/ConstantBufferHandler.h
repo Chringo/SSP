@@ -13,6 +13,7 @@ class ConstantBufferHandler
 		CB_MATERIAL_B2,
 		CB_LIGHT_B3, 
 		CB_SKELETON_B4,
+		CB_SHADOW_B5,
 
 		CB_TYPE_COUNT
 	};
@@ -198,6 +199,45 @@ public:
 			}
 		};
 
+		struct shadow
+		{
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 pView;
+				DirectX::XMFLOAT4X4 pProjection;
+				int pShadowCasterAmount;
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			struct cbData
+			{
+				DirectX::XMMATRIX cView;
+				DirectX::XMMATRIX cProjection;
+				int cShadowCasterAmount;
+			};
+			ID3D11Buffer * D3DBuffer = nullptr;
+			pData p;
+			cbData c;
+			pData GetPData()
+			{
+				DirectX::XMStoreFloat4x4(&p.pView, DirectX::XMMatrixTranspose(c.cView));
+				DirectX::XMStoreFloat4x4(&p.pProjection, DirectX::XMMatrixTranspose(c.cProjection));
+				p.pShadowCasterAmount = c.cShadowCasterAmount;
+				return p;
+			};
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				c = *(cbData*)data;
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
 	};
 
 private:
@@ -216,6 +256,7 @@ public:
 	ConstantBuffer::light light;
 	ConstantBuffer::material material;
 	ConstantBuffer::skeleton skeleton;
+	ConstantBuffer::shadow shadow;
 
 	int Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
 	int ResetConstantBuffers();
