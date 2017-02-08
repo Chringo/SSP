@@ -157,17 +157,6 @@
     <ClCompile Include="BulletInterpreter.cpp" />
     <ClCompile Include="PhysicsHandler.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Bulletphysics\src\BulletCollision\BulletCollision.vcxproj">
-      <Project>{252cc6f5-f2ac-3e6f-879b-c5240c03bd7f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Bulletphysics\src\BulletDynamics\BulletDynamics.vcxproj">
-      <Project>{38c7869d-07a6-3749-b19b-480c69741102}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Bulletphysics\src\LinearMath\LinearMath.vcxproj">
-      <Project>{8a3efc55-1401-3a7d-83ec-aee8420239c6}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
