@@ -17,6 +17,15 @@ class DeferredShader :
 {
 private:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
+	static const int NUM_VERTEX_SHADERS = 5;
+	enum VERTEX_SHADERS {
+		VS_NORMAL,
+		VS_ANIMATED,
+		VS_INSTANCED_NORMAL,
+		VS_SHADOW_NORMAL,
+		VS_SHADOW_INSTANCED,
+		VS_NUM_VERTEX_SHADERS
+	};
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,
@@ -25,7 +34,7 @@ private:
 		IL_TYPE_COUNT
 	};
 
-	ID3D11VertexShader*   m_vertexShader[IL_TYPE_COUNT];
+	ID3D11VertexShader*   m_vertexShader[NUM_VERTEX_SHADERS];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];
@@ -33,13 +42,14 @@ private:
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;
 
-	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT];
+	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT - 1]; // shadowMapping does not use any renderTarget
 	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
 	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 
 	ID3D11Texture2D*		 m_depthStencilBuffer;
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
+	ID3D11DepthStencilView*	 m_shadowMapSV;
 
 	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;

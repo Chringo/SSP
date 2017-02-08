@@ -6,7 +6,7 @@
 #include "GraphicsComponent.h"
 #include "ShaderLib.h"
 
-const int BUFFER_COUNT = 4; //color metal rough normal ao wpos
+const int BUFFER_COUNT = 5; //color metal  wpos RNAO SHADOW
 
 class Shader
 {

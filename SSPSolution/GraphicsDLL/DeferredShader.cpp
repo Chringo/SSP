@@ -33,7 +33,7 @@ DeferredShader::~DeferredShader()
 int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
 {
 	HRESULT hResult;
-	ID3D10Blob* vertexShaderBuffer[IL_TYPE_COUNT] = { nullptr };
+	ID3D10Blob* vertexShaderBuffer[VS_NUM_VERTEX_SHADERS] = { nullptr };
 	ID3D10Blob* geoShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
@@ -51,9 +51,9 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	// Compile the shaders \\
 
 #ifdef _DEBUG
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Normal], &errorMessage);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_NORMAL], &errorMessage);
 #else
-	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Normal], &errorMessage);
+	hResult = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_NORMAL], &errorMessage);
 #endif // _DEBUG
 	if (FAILED(hResult)) 
 	{
@@ -61,9 +61,9 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 #ifdef _DEBUG
-	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Animated], &errorMessage);
+	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_ANIMATED], &errorMessage);
 #else
-	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Animated], &errorMessage);
+	hResult = D3DCompileFromFile(vsAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_ANIMATED], &errorMessage);
 #endif // _DEBUG
 	if (FAILED(hResult))
 	{
@@ -73,9 +73,9 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	}
 
 #ifdef _DEBUG
-	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_INSTANCED_NORMAL], &errorMessage);
 #else
-	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[ShaderLib::Instanced], &errorMessage);
+	hResult = D3DCompileFromFile(vsInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_INSTANCED_NORMAL], &errorMessage);
 #endif // _DEBUG
 	if (FAILED(hResult))
 	{
@@ -107,17 +107,17 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	// Create the shaders \\
 
-	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Normal]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Normal]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Normal]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_NORMAL]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_NORMAL]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL]);
 	if (FAILED(hResult)) 
 	{
 		return 1;
 	}
-	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Animated]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_ANIMATED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_ANIMATED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_ANIMATED]);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
-	hResult = device->CreateVertexShader(vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), NULL, &this->m_vertexShader[ShaderLib::Instanced]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_INSTANCED_NORMAL]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_INSTANCED_NORMAL]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_INSTANCED_NORMAL]);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -226,7 +226,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	 numElements = sizeof(inputDescInstanced) / sizeof(inputDescInstanced[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescInstanced, numElements, vertexShaderBuffer[ShaderLib::Instanced]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Instanced]->GetBufferSize(), &this->m_layout[IL_INSTANCED_NORMAL]);
+	hResult = device->CreateInputLayout(inputDescInstanced, numElements, vertexShaderBuffer[VS_INSTANCED_NORMAL]->GetBufferPointer(), vertexShaderBuffer[VS_INSTANCED_NORMAL]->GetBufferSize(), &this->m_layout[IL_INSTANCED_NORMAL]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -284,7 +284,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	numElements = sizeof(inputDescAnim) / sizeof(inputDescAnim[0]);
 	//Create the vertex input layout.
-	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[ShaderLib::Animated]->GetBufferPointer(), vertexShaderBuffer[ShaderLib::Animated]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
+	hResult = device->CreateInputLayout(inputDescAnim, numElements, vertexShaderBuffer[VS_ANIMATED]->GetBufferPointer(), vertexShaderBuffer[VS_ANIMATED]->GetBufferSize(), &this->m_layout[IL_ANIMATED]);
 	if (FAILED(hResult)) {
 		return 1;
 	}
@@ -490,7 +490,7 @@ int DeferredShader::SetActive()
 	this->m_deviceContext->PSSetSamplers(0, 1, &this->m_samplerState);
 
 	//Set the render target views
-	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT, this->m_deferredRTV, this->m_DSV);
+	this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV);
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
@@ -506,13 +506,13 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
 	}
 	case ShaderLib::Instanced:
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
-		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Instanced], NULL, 0);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_INSTANCED_NORMAL], NULL, 0);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 
@@ -521,7 +521,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Animated], NULL, 0);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_ANIMATED], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
 		break;
 	}
@@ -530,7 +530,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::Wireframe:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_NORMAL]);
-		m_deviceContext->VSSetShader(this->m_vertexShader[ShaderLib::Normal], NULL, 0);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL], NULL, 0);
 		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 		break;
@@ -546,7 +546,7 @@ void DeferredShader::Release()
 {
 	Shader::Release();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_VERTEX_SHADERS; i++)
 	{
 		if (this->m_vertexShader[i])
 		{
@@ -576,6 +576,11 @@ void DeferredShader::Release()
 	{
 		m_instanceBuffer->Release();
 		m_instanceBuffer = nullptr;
+	}
+	if (m_shadowMapSV)
+	{
+		m_shadowMapSV->Release();
+		m_shadowMapSV = nullptr;
 	}
 
 	//Release the sampler state
@@ -801,7 +806,7 @@ int DeferredShader::Clear() //clears RTVs and DSV
 	color[3] = 1.0f;
 
 	//Clear the render target textures
-	for (int i = 0; i < BUFFER_COUNT; i++) {
+	for (int i = 0; i < BUFFER_COUNT-1; i++) {
 		m_deviceContext->ClearRenderTargetView(this->m_deferredRTV[i], color);
 	}
 
