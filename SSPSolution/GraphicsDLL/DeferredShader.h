@@ -7,19 +7,25 @@
 #include "../ResourceLib/ResourceHandler.h"
 #pragma comment (lib,"../Debug/ResourceLib")
 
+struct InstanceData {
+	int modelID;
+	int amountOfInstances;
+	DirectX::XMFLOAT4X4* componentSpecific;
+};
 class DeferredShader :
 	public Shader
 {
 private:
+	static const int MAX_INSTANCED_GEOMETRY = 100;
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,
 		IL_ANIMATED,
-
+		IL_INSTANCED_NORMAL,
 		IL_TYPE_COUNT
 	};
 
-	ID3D11VertexShader*   m_vertexShader[4];
+	ID3D11VertexShader*   m_vertexShader[IL_TYPE_COUNT];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];
@@ -35,6 +41,7 @@ private:
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
 
+	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;
 public:
 	DeferredShader();
@@ -47,10 +54,11 @@ public:
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
 	void Release();
 
-
+	
 	int Draw(Resources::Model* model);
 	int Draw(Resources::Model* model, GraphicsComponent * component);
 	int Draw(Resources::Model* model, GraphicsAnimationComponent * component);
+	int DrawInstanced(InstanceData* data, int iteration = 0);
 
 	int Clear();
 	int InitializeGridShader(ID3D11Device * device);
@@ -59,7 +67,6 @@ public:
 	int DrawFromEditor(Resources::Model * model1);
 	ID3D11DepthStencilView*  GetDepthStencilView() const { return this->m_DSV; };
 private:
-	int DrawInstanced();
 };
 
 #endif

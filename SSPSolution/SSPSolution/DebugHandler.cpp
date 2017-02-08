@@ -400,7 +400,7 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
 	this->m_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
 
-	size_t usedVRAM = videoMemoryInfo.CurrentUsage / 1024 / 1024;
+	size_t usedVRAM = size_t(videoMemoryInfo.CurrentUsage / 1024 / 1024);
 	this->m_vramTextComp->text = L"VRAM usage: " + std::to_wstring(usedVRAM) + L" MB";
 
 	return 1;

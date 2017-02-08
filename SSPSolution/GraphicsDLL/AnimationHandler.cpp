@@ -164,7 +164,7 @@ void AnimationHandler::UpdateAnimationComponents(float dt)
 void AnimationHandler::ShutDown()
 {
 	/*Delete all content in the std::vector and the vector itself is cleared.*/
-	for (int i = 0; i < this->m_AnimComponentList.size(); i++)
+	for (size_t i = 0; i < this->m_AnimComponentList.size(); i++)
 	{
 		delete this->m_AnimComponentList[i];
 	}
