@@ -21,8 +21,8 @@ DeferredShader::DeferredShader() : Shader()
 		this->m_deferredRTV[i] = nullptr;
 		this->m_deferredSRV[i] = nullptr;
 	}
-	m_shadowMapSV = nullptr;
-	this->m_DSV = nullptr;
+	this->m_shadowMapSV = nullptr;
+	this->m_DSV   = nullptr;
 }
 
 
@@ -47,7 +47,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	WCHAR* vsAnimFilename   = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
 	WCHAR* gsFilename		= L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 	WCHAR* psFilename	    = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-
+	WCHAR* shadowFilename	= L"../GraphicsDLL/Shaders/Shadow/ShadowShader.hlsl";
+	WCHAR* shadowInstFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Instanced.hlsl";
 	// Compile the shaders \\
 
 #ifdef _DEBUG
@@ -104,6 +105,28 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		Shader::OutputShaderErrorMessage(errorMessage, psFilename);
 		return 1;
 	}
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(shadowFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(shadowFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL], &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, shadowFilename);
+		return 1;
+	}
+
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(shadowInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED ], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(shadowInstFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED], &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, shadowInstFilename);
+		return 1;
+	}
+
 
 	// Create the shaders \\
 
