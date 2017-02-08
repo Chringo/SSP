@@ -10,13 +10,15 @@
 struct InstanceData {
 	int modelID;
 	int amountOfInstances;
-	DirectX::XMFLOAT4X4* componentSpecific;
+	DirectX::XMFLOAT4X4 componentSpecific[100];
 };
 class DeferredShader :
 	public Shader
 {
-private:
+public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
+
+private:
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,
