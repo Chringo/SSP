@@ -537,7 +537,7 @@ int GraphicsHandler::Render(float deltaTime)
 			++amountOfModelOccurrencees;
 		}
 	}
-	if (componentsInTree > 0)
+	if (componentsInTree > 0 && lastRenderedComponent != nullptr)
 	{
 		if (amountOfModelOccurrencees > 1)
 		{
