@@ -152,9 +152,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
+
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
+
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 3.5f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -182,6 +188,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
 		playerAnim1->source_State->isLooping = true; // TEMP TEST
+		playerAnim1->playingSpeed = 2.0f;
 	}
 #pragma endregion Animation_Player1
 
@@ -234,6 +241,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
 		playerAnim2->source_State->isLooping = true; // TEMP TEST
+		playerAnim2->playingSpeed = 2.0f;
 	}
 	#pragma endregion Animation_Player2
 
@@ -1043,11 +1051,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_gc->modelID = data->aiComponents[i].modelID;
 		t_gc->modelPtr = modelPtr;
 		//Create world matrix from data
-		//memcpy(pos.m128_f32, data->aiComponents[i].position, sizeof(float) * 3);//Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, data->aiComponents[i].rotation, sizeof(float) * 3);//Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
+		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
 		//Create the rotation matrix
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
@@ -1062,7 +1069,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = t_ac->AC_position;
+		t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
 		t_pc->PC_entityID = data->aiComponents[i].EntityID;
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
@@ -1080,11 +1087,26 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+
+		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
+		////t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		//DirectX::XMVectorSubtract(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		//DirectX::XMMATRIX tempPos = t_pc->PC_OBB.ort;
+		//tempPos.r[3] = obbPos;
+		//DirectX::XMMATRIX tempBPos = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
+		//tempPos = tempPos*tempBPos;
+
+		/*t_pc->PC_OBB.ort.r[3] = t_ac->AC_position;
+		t_pc->PC_OBB.ort.r[3].m128_f32[3] = 1.0f;*/
+		//t_pc->PC_OBB.ort.r[3] = hejsan;
+		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x*-1, modelPtr->GetOBBData().position.y*-1, modelPtr->GetOBBData().position.z*-1,1 };
+		//t_pc->PC_pos = hejsan;
+
+		/* DANGER ZONE */
+		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z, 1.0f };
 #pragma endregion
 
-		//DynamicEntity* tde = new DynamicEntity();
-		//tde->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr, t_ac);
-		//m_dynamicEntitys.push_back(tde);
 		PlatformEntity* tpe = new PlatformEntity();
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);

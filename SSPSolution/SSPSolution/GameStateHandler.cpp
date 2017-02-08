@@ -45,7 +45,7 @@ int GameStateHandler::ShutDown()
 }
 
 
-int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef, std::string levelPath)
 {
 	int result = 0;
 	
@@ -75,8 +75,10 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		//Push it to the gamestate stack/vector
 		this->PushStateToStack(levelSelect);
 
-
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+		if (levelPath.length() < 2)
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+		else
+			levelSelect->LoadLevel(levelPath);
 	}
 	else
 	{

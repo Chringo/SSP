@@ -44,8 +44,12 @@ SelectionHandler * SelectionHandler::GetInstance()
 void SelectionHandler::Update()
 {
 	m_transformWidget.UpdateOBB();
-	m_IsDirty = false;
-	
+	if (GetSelected()->type == AI)
+	{
+		((AiContainer*)this->GetSelected())->OBBCenterPos =
+			*m_transformWidget.GetOBBCenterPostition();
+	}
+	m_IsDirty = false;	
 }
 
 bool SelectionHandler::NeedsUpdate()
