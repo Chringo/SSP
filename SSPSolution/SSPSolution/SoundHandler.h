@@ -9,7 +9,7 @@
 #include "../irrKlang/Include/irrKlang.h"
 #pragma comment (lib, "../irrKlang/lib/irrKlang")
 
-const int SOUND_MIN_DISTANCE = 5;	//At what distance (in sound space) the sound no longer will be heard
+const irrklang::ik_f32 SOUND_MIN_DISTANCE = 5;	//At what distance (in sound space) the sound no longer will be heard
 
 enum Sounds2D
 {
