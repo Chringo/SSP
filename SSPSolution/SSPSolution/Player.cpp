@@ -8,10 +8,15 @@ Player::Player()
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
+	this->m_walkingSound = nullptr;
 }
 
 Player::~Player()
 {
+	if (this->m_walkingSound)
+	{
+		this->m_walkingSound->drop();
+	}
 }
 
 int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
