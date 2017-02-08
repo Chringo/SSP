@@ -238,9 +238,11 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  //unsigned int one = 2759249725;
  unsigned int one = 1117267500;
  unsigned int two = 1321651915;
+ unsigned int three = 1680427216;
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);
+ LoadModel(three, temp);
  FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 }
 

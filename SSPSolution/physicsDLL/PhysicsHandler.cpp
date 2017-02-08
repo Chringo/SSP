@@ -766,7 +766,6 @@ bool PhysicsHandler::AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsCom
 					}
 					//obj1->PC_pos = DirectX::XMVectorAdd(obj1->PC_pos, correction);
 					this->CollitionDynamics(obj1, obj2, normal, dt);
-					obj1->PC_normalForce = normal;
 
 					//overlappY
 
@@ -1586,10 +1585,10 @@ bool PhysicsHandler::SphereAABBIntersectionTest(PhysicsComponent * objSphere, Ph
 		objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, toMove);
 
 		this->CollitionDynamics(objSphere, objAABB, diffVec, dt);
-		objSphere->PC_normalForce = diffVec;
+		//objSphere->PC_normalForce = diffVec;
 		if (!objAABB->PC_is_Static)
 		{
-			objAABB->PC_normalForce = DirectX::XMVectorScale(diffVec, -1);
+//			objAABB->PC_normalForce = DirectX::XMVectorScale(diffVec, -1);
 		}
 	}
 
@@ -1660,7 +1659,7 @@ bool PhysicsHandler::SphereOBBIntersectionTest(PhysicsComponent * objSphere, Phy
 		{
 			objSphere->PC_pos = DirectX::XMVectorAdd(objSphere->PC_pos, toMove);
 			this->CollitionDynamics(objSphere, objOBB, normal, dt);
-			objSphere->PC_normalForce = normal;
+	//		objSphere->PC_normalForce = normal;
 		}
 		else
 		{
@@ -1689,10 +1688,10 @@ bool PhysicsHandler::SphereSphereIntersectionTest(PhysicsComponent * objSphere1,
 			DirectX::XMVECTOR toMove = DirectX::XMVectorScale(diffVec, totalLenght - d);
 			objSphere1->PC_pos = DirectX::XMVectorAdd(objSphere1->PC_pos, toMove);
 			this->CollitionDynamics(objSphere1, objSphere2, diffVec, dt);
-			objSphere1->PC_normalForce = diffVec;
+		//	objSphere1->PC_normalForce = diffVec;
 			if (!objSphere2->PC_is_Static)
 			{
-				objSphere2->PC_normalForce = DirectX::XMVectorScale(diffVec, -1);
+	//			objSphere2->PC_normalForce = DirectX::XMVectorScale(diffVec, -1);
 			}
 		}
 	}
@@ -1720,7 +1719,7 @@ bool PhysicsHandler::SpherePlaneIntersectionTest(PhysicsComponent * objSphere, P
 		this->CollitionDynamics(objSphere, objPlane, objPlane->PC_Plane.PC_normal, dt);
 
 
-		objSphere->PC_normalForce = objPlane->PC_Plane.PC_normal;
+		//objSphere->PC_normalForce = objPlane->PC_Plane.PC_normal;
 	}
 
 	return result;
@@ -1768,7 +1767,7 @@ bool PhysicsHandler::AABBPlaneIntersectionTest(PhysicsComponent * objAABB, Physi
 		objAABB->PC_pos = DirectX::XMVectorAdd(objAABB->PC_pos, toMove);
 		this->CollitionDynamics(objAABB, objPlane, objPlane->PC_Plane.PC_normal, dt);
 
-		objAABB->PC_normalForce = objPlane->PC_normalForce;
+	//	objAABB->PC_normalForce = objPlane->PC_normalForce;
 
 	}
 
@@ -1811,7 +1810,7 @@ bool PhysicsHandler::OBBPlaneIntersectionTest(PhysicsComponent * objOBB, Physics
 		objOBB->PC_pos = DirectX::XMVectorAdd(objOBB->PC_pos, toMove);
 		this->CollitionDynamics(objOBB, objPlane, objPlane->PC_Plane.PC_normal, dt);
 
-		objOBB->PC_normalForce = objPlane->PC_normalForce;
+//		objOBB->PC_normalForce = objPlane->PC_normalForce;
 
 	}
 
@@ -2667,7 +2666,7 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
+//	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_active = 1;
 	newObject->PC_collides = true;
 	newObject->PC_entityID = 0;
@@ -2762,6 +2761,24 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	next->PC_pos = nextPos;
 	link.CL_previous = previous;
 	link.CL_next = next;
+	this->m_links.push_back(link);
+}
+
+PHYSICSDLL_API void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght)
+{
+	ChainLink link;
+	link.CL_lenght = linkLenght;
+	link.CL_next = next;
+	link.CL_previous = previous;
+
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+
+	if (distance > linkLenght)
+	{
+		next->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorSet(1, 0, 0, 0));
+	}
+
 	this->m_links.push_back(link);
 }
 
@@ -3294,16 +3311,6 @@ PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src
 	{
 		int i = 0;
 	}
-}
-
-PHYSICSDLL_API void PhysicsHandler::ApplyPlayer1ToBullet(PhysicsComponent * player1)
-{
-	this->m_bullet.SetPlayer1(player1);
-}
-
-PHYSICSDLL_API void PhysicsHandler::ApplyPlayer2ToBullet(PhysicsComponent * player2)
-{
-	this->m_bullet.SetPlayer2(player2);
 }
 
 PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)

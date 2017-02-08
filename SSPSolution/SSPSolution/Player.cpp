@@ -23,7 +23,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
-	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 2, 0);
+	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
 	
 
 	return result;

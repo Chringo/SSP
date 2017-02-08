@@ -56,11 +56,11 @@ struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
-	DirectX::XMVECTOR PC_normalForce;
+	//DirectX::XMVECTOR PC_normalForce;
 	
 	//for impulse
-	DirectX::XMVECTOR PC_ForceDir;
-	float PC_Power;
+	//DirectX::XMVECTOR PC_ForceDir;
+	//float PC_Power;
 
 	double PC_gravityInfluence;
 	int PC_active;
@@ -72,12 +72,10 @@ struct PhysicsComponent
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
 	bool PC_steadfast = false;
-	bool PC_ApplyImpulse = false;
-	bool PC_NotExistInBulletWorld;
+	//bool PC_ApplyImpulse = false;
+	//bool PC_NotExistInBulletWorld;
 	int PC_IndexRigidBody = -1;
-	bool PC_Bullet_AffectedByGravity = true;
-	bool PC_GotGrabbedByP1 = false;
-	bool PC_GotGrabbedByP2 = false;
+	//bool PC_Bullet_AffectedByGravity = true;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -89,17 +87,18 @@ struct PhysicsComponent
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 
-	void ApplyForce(DirectX::XMVECTOR dir, float strength)
-	{
-		if (this->PC_IndexRigidBody != -1)
-		{
-			//if the component is OBB or AABB
-			this->PC_ApplyImpulse = true;
-			this->PC_ForceDir = dir;
-			this->PC_Power = strength;
-			this->PC_Bullet_AffectedByGravity = true;
-		}
-	}
+//	void ApplyForce(DirectX::XMVECTOR dir, float strength)
+//	{
+//		if (this->PC_IndexRigidBody != -1)
+//		{
+//			//if the component is OBB or AABB
+//			this->PC_ApplyImpulse = true;
+//			this->PC_ForceDir = dir;
+//			this->PC_Power = strength;
+//			this->PC_Bullet_AffectedByGravity = true;
+//		}
+//	}
+
 };
 
 #pragma endregion
@@ -134,16 +133,14 @@ private:
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 
-	PhysicsComponent* player1;
-	PhysicsComponent* player2;
+	//PhysicsComponent* player1;
+	//PhysicsComponent* player2;
 
 	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
 
 	//player specifics
-	void ApplyMovementPlayer1(float dt);
-	void ApplyMovementPlayer2();
-
-	void ApplyImpulseOnPC(PhysicsComponent* src);
+	//void ApplyMovementPlayer1(float dt);
+	//void ApplyMovementPlayer2();
 	void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
 
 	void applyLinearVelocityOnSrc(PhysicsComponent* src);
@@ -165,7 +162,6 @@ public:
 	PHYSICSDLL_API void UpdateBulletEngine(const float& dt); //lets time pass in the bullet engine, letting forces move and apply on the rigid bodies
 	PHYSICSDLL_API void SyncGameWithBullet(PhysicsComponent* src);	//this function call and add forces on player and components during events
 
-	PHYSICSDLL_API void SyncPosWithBullet(PhysicsComponent* src);	//forces updates in bullet world, when the ball is grabed, the ball needs a new position in bullet
 	PHYSICSDLL_API void SyncBulletWithGame(PhysicsComponent* src);
 
 	PHYSICSDLL_API void Shutdown();
@@ -186,9 +182,6 @@ public:
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
-
-	PHYSICSDLL_API void SetPlayer1(PhysicsComponent* p1);
-	PHYSICSDLL_API void SetPlayer2(PhysicsComponent* p2);
 
 	PHYSICSDLL_API DirectX::XMVECTOR FindNormalFromComponent(int index);
 

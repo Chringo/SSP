@@ -38,64 +38,6 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	return toReturn;
 }
 
-void BulletInterpreter::ApplyMovementPlayer1(float dt)
-{
-	btRigidBody* rb = this->m_rigidBodies.at(this->player1->PC_IndexRigidBody);
-	btVector3 OldVelocity = rb->getLinearVelocity();
-
-	btVector3 newVel = this->crt_xmvecVec3(this->player1->PC_velocity);
-
-	int active = rb->getActivationState();
-
-
-	//newVel /= 100;
-	if (active != ACTIVE_TAG)
-	{
-		//sleep is for the weak
-		rb->activate();
-		//this->m_rigidBodies.at(this->player1->inde)
-	}
-
-	if (newVel.isZero() == false)
-	{
-		newVel = OldVelocity + newVel;
-		rb->setLinearVelocity(newVel);
-	}
-	this->player1->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-}
-
-void BulletInterpreter::ApplyMovementPlayer2()
-{
-}
-
-void BulletInterpreter::ApplyImpulseOnPC(PhysicsComponent * src)
-{
-	this->SyncPosWithBullet(src);
-
-	btVector3 force;
-	btVector3 posAffectedByForce;
-
-	force = this->crt_xmvecVec3(src->PC_ForceDir);
-	force = force.normalize();
-	//force = btVector3(0, 1, 1);
-
-	force *= src->PC_Power;
-	posAffectedByForce = btVector3(0, 0.2, 0);
-
-	btRigidBody* holder = nullptr;
-	holder = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-
-	holder->setActivationState(ACTIVE_TAG);
-	
-	//holder->clearForces();
-	holder->applyImpulse(force, posAffectedByForce);
-
-	src->PC_ForceDir = DirectX::XMVectorSet(0, 0, 0, 0);
-	src->PC_Power = 0;
-	src->PC_ApplyImpulse = false;
-	src->PC_Bullet_AffectedByGravity = true;
-}
-
 void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsComponent * src)
 {
 	btTransform trans;
@@ -189,8 +131,6 @@ BulletInterpreter::~BulletInterpreter()
 {
 }
 
-
-
 void BulletInterpreter::Initialize()
 {
 	/*
@@ -219,9 +159,6 @@ void BulletInterpreter::Initialize()
 		this->m_collitionConfiguration
 	);
 
-	this->player1 = nullptr;
-	this->player2 = nullptr;
-
 	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
@@ -238,7 +175,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	
 	//time will act on the objects
 	btScalar timeStep = dt;
-	int maxSubSteps = 8;
+	int maxSubSteps = 20;
 	btScalar fixedTimeStep = btScalar(1.0)/btScalar(60); 
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -292,24 +229,6 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 	}
 	
 	
-}
-
-PHYSICSDLL_API void BulletInterpreter::SyncPosWithBullet(PhysicsComponent* src)
-{
-	/*btRigidBody* temp = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-	btTransform tTranform; 
-	temp->getMotionState()->getWorldTransform(tTranform);
-	
-	btVector3 nPos = this->crt_xmvecVec3(src->PC_pos);
-	tTranform.setOrigin(nPos);
-
-	btMotionState* newMotionState = nullptr;
-	newMotionState = temp->getMotionState();
-	
-	newMotionState->setWorldTransform(tTranform);
-	temp->setMotionState(newMotionState);
-*/
-
 }
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
@@ -495,7 +414,6 @@ PHYSICSDLL_API void BulletInterpreter::BCb()
 //	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
 }
 
-
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
 {
 	btCollisionShape* planeShape = new btStaticPlaneShape(this->crt_xmvecVec3(normal), 1);
@@ -676,22 +594,6 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);
-}
-
-void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)
-{
-	this->player1 = p1;
-	this->player1->PC_IndexRigidBody = 0;
-
-	this->player1->PC_OBB.ort = this->RotateBB(this->player1);
-}
-
-void BulletInterpreter::SetPlayer2(PhysicsComponent * p2)
-{
-	this->player2 = p2;
-	this->player2->PC_IndexRigidBody = 1;
-
-	this->player2->PC_OBB.ort = this->RotateBB(p2);
 }
 
 PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int index)
