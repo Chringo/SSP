@@ -70,6 +70,10 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
 		
 	}
 }

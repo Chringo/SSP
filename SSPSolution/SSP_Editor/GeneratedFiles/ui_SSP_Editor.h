@@ -1782,7 +1782,7 @@ public:
         label_11->setText(QApplication::translate("SSP_EditorClass", "Radius", Q_NULLPTR));
         CustomBehaviourTabWidget->setTabText(CustomBehaviourTabWidget->indexOf(Lights), QApplication::translate("SSP_EditorClass", "Lights", Q_NULLPTR));
         label_2->setText(QApplication::translate("SSP_EditorClass", "Preview", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("SSP_EditorClass", "Reload", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SSP_EditorClass", "Run Level", Q_NULLPTR));
         QTreeWidgetItem *___qtreewidgetitem = assetTree->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("SSP_EditorClass", "Files", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("SSP_EditorClass", "Asset Browser", Q_NULLPTR));

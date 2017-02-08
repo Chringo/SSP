@@ -18,8 +18,8 @@ protected:
 	Camera* m_cameraRef;	
 	char* m_ip = "192.168.1.25";	//Tobias NUC Specific local ip
 
-
 	int InitializeBase(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
+
 public:
 	static NetworkModule* m_networkModule;	// Is public so we can accses it from GameStateHandler for Shutdown
 

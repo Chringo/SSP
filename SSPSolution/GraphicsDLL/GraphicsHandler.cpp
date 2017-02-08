@@ -475,63 +475,99 @@ int GraphicsHandler::Render(float deltaTime)
 	//	DirectX::XMFLOAT4X4* componentSpecific;
 	//};
 	std::vector<InstanceData> instancedRenderingList;
-	unsigned int firstRenderedModelID = 0;
+	unsigned int firstRenderedModelID = UINT_MAX;
+	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		if (i->isRendered)
 		{
+			if (i->modelID == lastModelID)
+			{
+				firstRenderedInstancedModelID = i->modelID;
+				break;
+			}
+			
 			lastModelID = i->modelID;
-			firstRenderedModelID = i->modelID;
-			break;
+			if (firstRenderedModelID == UINT_MAX)
+			{
+				firstRenderedModelID = i->modelID;
+			}
 		}
 	}
+
+	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	int amountOfModelOccurrencees = 0;
+	unsigned int lastComponentIndex = 0;
+	lastModelID = firstRenderedModelID;
+	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
 		{
 			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != i->modelID)
+			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
 			{
-				//Create the array
-				InstanceData instanceData;
-				instanceData.modelID = lastModelID;
-				instanceData.amountOfInstances = amountOfModelOccurrencees;
-				instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-				instancedRenderingList.push_back(instanceData);
-				//Prepare the data for the next model ID
-				amountOfModelOccurrencees = 0;
-				lastModelID = i->modelID;
+				if (amountOfModelOccurrencees > 1)
+				{
+
+					//Create the array
+					InstanceData instanceData;
+					instanceData.modelID = lastModelID;
+					instanceData.amountOfInstances = amountOfModelOccurrencees;
+					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+					instancedRenderingList.push_back(instanceData);
+					amountOfModelOccurrencees = 0;
+
+				}
+				else 
+				{
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+					lastRenderedComponent->isRendered = false;
+					amountOfModelOccurrencees = 0;
+				}
 			}
+			//Prepare the data for the next model ID
+			lastModelID = i->modelID;
+			lastComponentIndex = i->componentIndex;
+			lastRenderedComponent = i;
 			++amountOfModelOccurrencees;
 		}
 	}
-	if (componentsInTree > 0)
+	if (componentsInTree > 0 && lastRenderedComponent != nullptr)
 	{
-
-		InstanceData instanceData;
-		instanceData.modelID = lastModelID;
-		instanceData.amountOfInstances = amountOfModelOccurrencees;
-		instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-		instancedRenderingList.push_back(instanceData);
+		if (amountOfModelOccurrencees > 1)
+		{
+			InstanceData instanceData;
+			instanceData.modelID = lastModelID;
+			instanceData.amountOfInstances = amountOfModelOccurrencees;
+			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+			instancedRenderingList.push_back(instanceData);
+		}
+		else
+		{
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			lastRenderedComponent->isRendered = false;
+			amountOfModelOccurrencees = -1;
+		}
 	}
+
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	lastModelID = firstRenderedModelID;
+	lastModelID = firstRenderedInstancedModelID;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
 		if (i->isRendered)
 		{
 			//If it is time to change 
-			if (i->modelID != lastModelID)
+			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
 			{
 				instancedRenderingIndex++;
-				lastModelID = i->modelID;
 				instancedModelCount = 0;
 			}
 			//Get the data
@@ -539,20 +575,19 @@ int GraphicsHandler::Render(float deltaTime)
 			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
 			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-
+			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
 	}
 	//By all means it should be done by now
-	for (InstanceData& i : instancedRenderingList)
+	/*for (InstanceData& i : instancedRenderingList)
 	{
 		delete i.componentSpecific;
-	}
+	}*/
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
@@ -1392,143 +1427,6 @@ void GraphicsHandler::OctreeExtend(OctreeNode* curNode, int depth)
 		}
 	}
 
-/*	if (depth < this->m_maxDepth)
-	{
-		if (containedCount > 0)
-		{
-			if (curNode->ext.x > this->m_minSize && curNode->ext.y > this->m_minSize && curNode->ext.z > this->m_minSize)
-			{
-				if (depth < this->m_minDepth)
-				{
-					if (containedCount > this->m_minContainment)
-					{
-						
-						//For the 8 new branches
-#pragma region
-						//MIN	MIN		MIN
-						curNode->branches[0]->pos.x = curNode->pos.x - curNode->ext.x / 2;
-						curNode->branches[0]->pos.y = curNode->pos.y - curNode->ext.y / 2;
-						curNode->branches[0]->pos.z = curNode->pos.z - curNode->ext.z / 2;
-						curNode->branches[0]->ext.x = curNode->ext.x / 2;
-						curNode->branches[0]->ext.y = curNode->ext.y / 2;
-						curNode->branches[0]->ext.z = curNode->ext.z / 2;
-						//MIN	MIN		MAX											 
-						curNode->branches[1]->pos.x = curNode->pos.x - curNode->ext.x / 2;
-						curNode->branches[1]->pos.y = curNode->pos.y - curNode->ext.y / 2;
-						curNode->branches[1]->pos.z = curNode->pos.z + curNode->ext.z / 2;
-						curNode->branches[1]->ext.x = curNode->ext.x / 2;
-						curNode->branches[1]->ext.y = curNode->ext.y / 2;
-						curNode->branches[1]->ext.z = curNode->ext.z / 2;
-						//MAX	MIN		MAX											  
-						curNode->branches[2]->pos.x = curNode->pos.x + curNode->ext.x / 2;
-						curNode->branches[2]->pos.y = curNode->pos.y - curNode->ext.y / 2;
-						curNode->branches[2]->pos.z = curNode->pos.z + curNode->ext.z / 2;
-						curNode->branches[2]->ext.x = curNode->ext.x / 2;
-						curNode->branches[2]->ext.y = curNode->ext.y / 2;
-						curNode->branches[2]->ext.z = curNode->ext.z / 2;
-						//MIN	MIN		MAX											  
-						curNode->branches[3]->pos.x = curNode->pos.x + curNode->ext.x / 2;
-						curNode->branches[3]->pos.y = curNode->pos.y - curNode->ext.y / 2;
-						curNode->branches[3]->pos.z = curNode->pos.z - curNode->ext.z / 2;
-						curNode->branches[3]->ext.x = curNode->ext.x / 2;
-						curNode->branches[3]->ext.y = curNode->ext.y / 2;
-						curNode->branches[3]->ext.z = curNode->ext.z / 2;
-
-						//MIN	MAX		MIN											  
-						curNode->branches[4]->pos.x = curNode->pos.x - curNode->ext.x / 2;
-						curNode->branches[4]->pos.y = curNode->pos.y + curNode->ext.y / 2;
-						curNode->branches[4]->pos.z = curNode->pos.z - curNode->ext.z / 2;
-						curNode->branches[4]->ext.x = curNode->ext.x / 2;
-						curNode->branches[4]->ext.y = curNode->ext.y / 2;
-						curNode->branches[4]->ext.z = curNode->ext.z / 2;
-						//MIN	MAX		MAX											  
-						curNode->branches[5]->pos.x = curNode->pos.x - curNode->ext.x / 2;
-						curNode->branches[5]->pos.y = curNode->pos.y + curNode->ext.y / 2;
-						curNode->branches[5]->pos.z = curNode->pos.z + curNode->ext.z / 2;
-						curNode->branches[5]->ext.x = curNode->ext.x / 2;
-						curNode->branches[5]->ext.y = curNode->ext.y / 2;
-						curNode->branches[5]->ext.z = curNode->ext.z / 2;
-						//MAX	MAX		MAX											  
-						curNode->branches[6]->pos.x = curNode->pos.x + curNode->ext.x / 2;
-						curNode->branches[6]->pos.y = curNode->pos.y + curNode->ext.y / 2;
-						curNode->branches[6]->pos.z = curNode->pos.z + curNode->ext.z / 2;
-						curNode->branches[6]->ext.x = curNode->ext.x / 2;
-						curNode->branches[6]->ext.y = curNode->ext.y / 2;
-						curNode->branches[6]->ext.z = curNode->ext.z / 2;
-						//MIN	MAX		MAX											  
-						curNode->branches[7]->pos.x = curNode->pos.x + curNode->ext.x / 2;
-						curNode->branches[7]->pos.y = curNode->pos.y + curNode->ext.y / 2;
-						curNode->branches[7]->pos.z = curNode->pos.z - curNode->ext.z / 2;
-						curNode->branches[7]->ext.x = curNode->ext.x / 2;
-						curNode->branches[7]->ext.y = curNode->ext.y / 2;
-						curNode->branches[7]->ext.z = curNode->ext.z / 2;
-
-#pragma endregion Creating the branches
-
-
-						//Fill the branches with the components
-						//Split this node
-						int xSplit = -1, ySplit = -1, zSplit = -1;
-						//For every contained component
-						for (int index = 0; index < containedCount; index++)
-						{
-							//float distance = curNode->containedComponents[index].pos.x - curNode->pos.x;
-							//if (abs(distance) < curNode->containedComponents[index].ext.x)
-							//	xSplit = 0;
-							//else
-							//	xSplit += (distance > 0) * 2;
-							//
-							//distance = curNode->containedComponents[index].pos.y - curNode->pos.y;
-							//if (abs(distance) < curNode->containedComponents[index].ext.y)
-							//	ySplit = 0;
-							//else
-							//	ySplit += (distance > 0) * 2;
-							//
-							//distance = curNode->containedComponents[index].pos.z - curNode->pos.z;
-							//if (abs(distance) < curNode->containedComponents[index].ext.z)
-							//	zSplit = 0;
-							//else
-							//	zSplit += (distance > 0) * 2;
-
-
-							
-							//For all 8 branches: check if they intersect with the entity
-							for (int j = 0; j < 8; j++)
-							{
-								if (AABBvsAABBIntersectionTest(curNode->branches[j]->pos, curNode->branches[j]->ext, curNode->containedComponents[index]->pos, curNode->containedComponents[index]->ext))
-								{
-									//The component is within the branch
-									curNode->branches[j]->containedComponents.push_back(curNode->containedComponents[index]);
-								}
-							}
-
-						}
-						//After having pushed the components into the child remove them from this branch unless this is the root
-						if (depth > 0)
-						{
-							curNode->containedComponents.clear();
-						}
-					}
-				}
-			}
-			//Cull the branches without components
-			for (int i = 0; i < 8; i++)
-			{
-				if (curNode->branches[i]->containedComponents.size() == 0)
-				{
-					delete curNode->branches[i];
-					curNode->branches[i] = nullptr;
-				}
-				else
-				{
-					//Do the same algorithm for the child branches that are not culled
-					this->OctreeExtend(curNode->branches[i], depth + 1);
-				}
-			}
-		}
-	}*/
-	
-
 }
 
 
@@ -1551,6 +1449,7 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 					Camera::C_AABB branchBounds;
 					branchBounds.pos = curNode->pos;
 					branchBounds.ext = curNode->ext;
+					
 					CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 					if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
 					{
