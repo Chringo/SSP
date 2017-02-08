@@ -17,7 +17,6 @@ class DeferredShader :
 {
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
-	static const int NUM_VERTEX_SHADERS = 5;
 	enum VERTEX_SHADERS {
 		VS_NORMAL,
 		VS_ANIMATED,
@@ -34,7 +33,7 @@ public:
 		IL_TYPE_COUNT
 	};
 
-	ID3D11VertexShader*   m_vertexShader[NUM_VERTEX_SHADERS];
+	ID3D11VertexShader*   m_vertexShader[VS_NUM_VERTEX_SHADERS];
 	ID3D11GeometryShader* m_geoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];

@@ -4,7 +4,7 @@ DeferredShader::DeferredShader() : Shader()
 {
 	this->m_samplerState = nullptr;
 
-	for (int i = 0; i < NUM_VERTEX_SHADERS; i++)
+	for (int i = 0; i < VS_NUM_VERTEX_SHADERS; i++)
 	{
 		this->m_vertexShader[i] = nullptr;
 	}
@@ -546,7 +546,7 @@ void DeferredShader::Release()
 {
 	Shader::Release();
 
-	for (int i = 0; i < NUM_VERTEX_SHADERS; i++)
+	for (int i = 0; i < VS_NUM_VERTEX_SHADERS; i++)
 	{
 		if (this->m_vertexShader[i])
 		{
