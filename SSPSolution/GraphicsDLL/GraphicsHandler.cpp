@@ -93,53 +93,53 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 {
 	int result = 0;
 	//Enum
-	//enum { MAX_BRANCHING = 8 };
-	////Safety check
-	//if (curNode != nullptr)
-	//{
+	enum { MAX_BRANCHING = 8 };
+	//Safety check
+	if (curNode != nullptr)
+	{
 
-	//	AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
-	//	result += 1;
-	//	DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//	//Branch
-	//	//If I am culled
-	//	Camera::C_AABB branchBounds;
-	//	branchBounds.pos = curNode->pos;
-	//	branchBounds.ext = curNode->ext;
-	//	CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
-	//	if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-	//	{
-	//		renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-	//		myAABB.ext[0] *= 0.9999f;
-	//		myAABB.ext[1] *= 0.9999f;
-	//		myAABB.ext[2] *= 0.9999f;
-	//	}
+		AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
+		result += 1;
+		DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+		//Branch
+		//If I am culled
+		Camera::C_AABB branchBounds;
+		branchBounds.pos = curNode->pos;
+		branchBounds.ext = curNode->ext;
+		CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+		{
+			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+			myAABB.ext[0] *= 0.9999f;
+			myAABB.ext[1] *= 0.9999f;
+			myAABB.ext[2] *= 0.9999f;
+			this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
+		}
 
-	//	for (int i = 0; i < 8; i++)
-	//	{
-	//		//For all non-culled branches
-	//		if (curNode->branches[i] != nullptr)
-	//		{
-	//			////Do the check to see if the branch is within the view frustrum
-	//			//Camera::C_AABB branchBounds;
-	//			//branchBounds.pos = curNode->pos;
-	//			//branchBounds.ext = curNode->ext;
-	//			//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
-	//			//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-	//			//{
-	//			//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-	//			//	myAABB.ext[0] *= 0.9999f;
-	//			//	myAABB.ext[1] *= 0.9999f;
-	//			//	myAABB.ext[2] *= 0.9999f;
-	//			//}
+		for (int i = 0; i < 8; i++)
+		{
+			//For all non-culled branches
+			if (curNode->branches[i] != nullptr)
+			{
+				////Do the check to see if the branch is within the view frustrum
+				//Camera::C_AABB branchBounds;
+				//branchBounds.pos = curNode->pos;
+				//branchBounds.ext = curNode->ext;
+				//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+				//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+				//{
+				//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+				//	myAABB.ext[0] *= 0.9999f;
+				//	myAABB.ext[1] *= 0.9999f;
+				//	myAABB.ext[2] *= 0.9999f;
+				//}
 
-	//			//Enter your branch
-	//			result += RenderOctree(curNode->branches[i], cullingFrustrum);
-	//		}
-	//	}
-	//	this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
+				//Enter your branch
+				result += RenderOctree(curNode->branches[i], cullingFrustrum);
+			}
+		}
 
-	//}
+	}
 	return result;
 }
 #endif // _DEBUG
@@ -421,7 +421,16 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
-
+	this->m_overviewCamera.Initialize();
+	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(20.f, 1.f, -10.f, 0.f);
+	DirectX::XMVECTOR camOffset = DirectX::XMVectorSet(0.f, 50.f, 0.f, 0.f);
+	this->m_overviewCamera.SetCameraPivot(&camPos, camOffset, 2.0f);
+	this->m_overviewCamera.RotateCameraPivot(0.f, -1.0f);
+	/*this->m_overviewCamera.SetCameraPos(camPos);
+	camPos = DirectX::XMVectorSet(10.f, 0.f, 0.f, 0.f);
+	this->m_overviewCamera.SetLookAt(camPos);*/
+	this->m_overviewCamera.Update(0.0f);
+	this->m_useOverview = false;
 
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
@@ -457,8 +466,17 @@ int GraphicsHandler::Render(float deltaTime)
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
-	this->m_camera->GetCameraPos(frame.cPos);
-	this->m_camera->GetViewMatrix(frame.cView);
+	if (this->m_useOverview)
+	{
+		this->m_overviewCamera.GetCameraPos(frame.cPos);
+		this->m_overviewCamera.GetViewMatrix(frame.cView);
+	}
+	else
+	{
+		this->m_camera->GetCameraPos(frame.cPos);
+		this->m_camera->GetViewMatrix(frame.cView);
+	}
+	
 	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
 	/********************/
@@ -1254,6 +1272,11 @@ GraphicsComponent * GraphicsHandler::getComponent(int index)
 GraphicsAnimationComponent * GraphicsHandler::getAnimComponent(int index)
 {
 	return this->m_animGraphicsComponents[index];
+}
+
+GRAPHICSDLL_API void GraphicsHandler::ToggleOverviewCamera()
+{
+	this->m_useOverview = !this->m_useOverview;
 }
 
 void GraphicsHandler::m_CreateTempsTestComponents()
