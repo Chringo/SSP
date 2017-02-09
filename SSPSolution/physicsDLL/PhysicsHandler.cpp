@@ -2108,8 +2108,8 @@ bool PhysicsHandler::Initialize()
 
 
 
-	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
-	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this), true);
+	//btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
+	//tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
 
 	return true;
 }
@@ -2128,16 +2128,21 @@ void PhysicsHandler::Update(float deltaTime)
 	float dt = (deltaTime / 1000000);
 	
 
-	
+
+	//Bullet <---- physicsComponent
 	this->SyncAllPhyicsComponentsToBullet();
 
+	//take a step in bullet engine, max 3 steps
 	this->m_bullet.UpdateBulletEngine(dt);
 
+	//PhysicsComponent -----> Bullet
 	this->SyncBulletToPhysicsComponents();
+	
+	this->DoChainPhysics(dt);
+
+	this->DoChainAjustPhysics();
 
 	this->UpdateStaticPlatforms(dt);
-
-	this->DoChainPhysics(dt);
 
 	this->ClearCollisionNormals();
 
@@ -3342,12 +3347,20 @@ PHYSICSDLL_API void PhysicsHandler::ClearCollisionNormals()
 
 PHYSICSDLL_API void PhysicsHandler::ProcessCallback(btScalar timestep)
 {
-	this->SyncBulletToPhysicsComponents();
+	//this->DoChainAjustPhysics();
 
-	//this->DoChainPhysics(timeStep);
+	//this->SyncBulletToPhysicsComponents();
+
+
+	this->DoChainPhysics(timeStep);
+	
+	this->DoChainAjustPhysics();
+
 	//this->UpdateStaticPlatforms(timeStep);
+	//this->m_bullet.UpdateBulletEngine(timestep);
 
-	this->SyncAllPhyicsComponentsToBullet();
+	//this->SyncAllPhyicsComponentsToBullet();
+	
 	//this->ClearCollisionNormals();
 	this->timeStep = timeStep;
 }

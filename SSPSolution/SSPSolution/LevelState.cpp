@@ -191,10 +191,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(300.0f);
 	this->m_player1.SetAcceleration(300.0f);
-	#ifdef DEBUG
-	this->m_player1.SetMaxSpeed(50.0f);
-	this->m_player1.SetAcceleration(50.0f);
-	#endif // DEBUG
 
 	#pragma endregion Player1
 

@@ -174,10 +174,15 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	//this->timeStep = dt;
 	
 	//time will act on the objects
+	int maxSubSteps = 6;
 	btScalar timeStep = dt;
-	int maxSubSteps = 3;
 
-	btScalar fixedTimeStep = btScalar(1.0)/btScalar(60); 
+	#ifdef _DEBUG
+	maxSubSteps = 14;
+	#endif
+
+
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(120); 
 	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -215,7 +220,9 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 		DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixIdentity();
 		rotMatrix = DirectX::XMMatrixRotationQuaternion(test);
 		src->PC_OBB.ort = rotMatrix;
+		
 		//calculate the offset
+
 		src->PC_pos = this->crt_Vec3XMVEc(bulletPos);
 		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
 		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
