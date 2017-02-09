@@ -591,7 +591,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
-	int renderCap = this->m_staticGraphicsComponents.size();
+	size_t renderCap = this->m_staticGraphicsComponents.size();
 	renderCap = this->m_dynamicGraphicsComponents.size();
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
@@ -935,7 +935,6 @@ int GraphicsHandler::GenerateOctree()
 		size = size / 2;
 		reachedMaxDepth = !(size > this->m_minSize);
 	}
-
 	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
 
 	//Initialize the octree root

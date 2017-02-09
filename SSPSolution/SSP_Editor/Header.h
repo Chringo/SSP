@@ -92,6 +92,7 @@ struct ListenerContainer : Container
 			this->triggerContainers[numTriggers] = trigger;
 			this->listenEvent[numTriggers] = listenEvent;
 			numTriggers += 1;
+			return true;
 		}
 		else
 			return false;
