@@ -119,7 +119,7 @@ void AnimationHandler::Update(float dt)
 				continue;
 			}
 		}
-
+		/*Ragdoll physics is currently happening, continue to the next component in the list.*/
 		else
 		{
 			continue;

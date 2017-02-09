@@ -199,13 +199,22 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	{
 		playerAnim1->source_State->stateIndex = ANIMATION_ERROR;
 	}
-	
+
+
 #pragma endregion Animation_Player1
 
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(5.0f);
 	this->m_player1.SetAcceleration(26.0f);
 	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer1ToBullet(playerP);
+
+	/*Get the ragdoll for player 1 and set it.*/
+	this->m_player1.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayerRagdoll());
+
+
+
+
+
 	#pragma endregion Player1
 	
 	#pragma region
@@ -330,6 +339,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma endregion Set_Camera
 
 	this->m_director.Initialize();
+
+	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
+		DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)) ,
+		this->m_player1.GetPhysicsComponent(),
+		this->m_player1.GetBall()->GetPhysicsComponent());
 
 	return result;
 }
@@ -942,7 +956,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player1_Spawn, DirectX::XMVectorSet(0, 10, 0, 0));
+		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(10, 0, 0, 0);
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 	}
 	else
@@ -958,7 +972,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
-	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
+
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 

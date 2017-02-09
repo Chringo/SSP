@@ -9,6 +9,7 @@ Player::Player()
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
 	this->m_walkingSound = nullptr;
+	this->m_ragdoll = nullptr;
 }
 
 Player::~Player()
@@ -41,6 +42,41 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+
+	if (this->m_ragdoll != nullptr)
+	{
+		if (this->m_ragdoll->state == ANIMATED)
+		{
+
+			this->m_ragdoll->SetBindPose(((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms, this->m_pComp->PC_pos);
+			//for (int i = 0; i < 21; i++)
+			//{
+			//	DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixInverse(nullptr, *inverseBindPose);
+			//}
+		}
+		if (this->m_ragdoll->state == RAGDOLL)
+		{
+			if (!stateExists(RAGDOLL_STATE))
+			{
+				SetAnimationComponent(RAGDOLL_STATE, 0.f, NO_TRANSITION, false, false, 0.f);
+				//this->m_ragdoll->upperBody.center->PC_pos = ((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[2].r[3];
+				//this->m_ragdoll->upperBody.center->PC_OBB.ort = ((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[2];
+
+				//this->m_ragdoll->upperBody.center->PC_pos = ((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[2].r[3];
+				//this->m_ragdoll->upperBody.center->PC_OBB.ort = ((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[2];
+				
+			}
+			for (int i = 0; i < 21; i++)
+			{
+				this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorSetW(this->m_ragdoll->jointMatrixes[i].r[3], 1);
+				DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+				((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, this->m_ragdoll->jointMatrixes[i]);
+				//((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = this->m_ragdoll->jointMatrixes[i];
+			}
+			//
+		}
+	}
 
 	/*Run forward.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
@@ -416,18 +452,40 @@ bool Player::stateExists(int animationState)
 
 void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed)
 {
-	this->m_aComp->m_TransitionDuration = transitionDuration;
-	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-	this->m_aComp->target_State->stateIndex = animationState;
-	this->m_aComp->blendFlag = blendingType;
-	this->m_aComp->target_State->isLooping = isLooping;
-	this->m_aComp->lockAnimation = lockAnimation;
-	this->m_aComp->playingSpeed = playingSpeed;
+	if (animationState != RAGDOLL_STATE)
+	{
+		this->m_aComp->m_TransitionDuration = transitionDuration;
+		this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+		this->m_aComp->target_State->stateIndex = animationState;
+		this->m_aComp->blendFlag = blendingType;
+		this->m_aComp->target_State->isLooping = isLooping;
+		this->m_aComp->lockAnimation = lockAnimation;
+		this->m_aComp->playingSpeed = playingSpeed;
+	}
+
+	else
+	{
+		this->m_aComp->m_TransitionDuration = transitionDuration;
+		this->m_aComp->source_State->stateIndex = animationState;
+		this->m_aComp->blendFlag = blendingType;
+		this->m_aComp->lockAnimation = lockAnimation;
+		this->m_aComp->playingSpeed = playingSpeed;
+
+		this->m_aComp->target_State = nullptr;
+		this->m_aComp->target_Time = 0.f;
+		this->m_aComp->source_Time = 0.f;
+	}
+	
 }
 
 void Player::SetBall(Entity * ball)
 {
 	this->m_ball = ball;
+}
+
+void Player::SetRagdoll(Ragdoll * ragdoll)
+{
+	this->m_ragdoll = ragdoll;
 }
 
 float Player::GetMaxSpeed()

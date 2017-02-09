@@ -15,6 +15,8 @@ private:
 	bool m_isAiming;
 	Entity* m_ball;
 
+	Ragdoll* m_ragdoll;
+
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
 
@@ -42,6 +44,7 @@ public:
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
 	void SetAiming(bool isAming);
 	void SetBall(Entity* ball);
+	void SetRagdoll(Ragdoll* ragdoll);
 
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);

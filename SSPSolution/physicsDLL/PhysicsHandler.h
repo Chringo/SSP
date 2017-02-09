@@ -10,6 +10,8 @@
 #include <DirectXMath.h>
 #include <vector>
 #include "BulletInterpreter.h"
+//#include "..\ResourceLib\Skeleton.h"
+#include "../ResourceLib/Skeleton.h"
 
 class PhysicsHandler
 {
@@ -123,7 +125,7 @@ public:
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
 
 	PHYSICSDLL_API void CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent* playerPC);
-	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
+	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
 
 	PHYSICSDLL_API void AdjustRagdoll(Ragdoll* ragdoll, float dt);
 	PHYSICSDLL_API DirectX::XMVECTOR AdjustBodyPartDistance(PhysicsComponent* previous, PhysicsComponent* next, float lenght);
@@ -150,6 +152,8 @@ public:
 	PHYSICSDLL_API int GetNrOfBodyComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetBodyComponentAt(int index)const;
 
+	PHYSICSDLL_API Ragdoll* GetPlayerRagdoll();
+
 	PHYSICSDLL_API int GetNrOfMagnets()const;
 	//PHYSICSDLL_API Magnet* GetMagnetAt(int index);
 
@@ -168,9 +172,10 @@ public:
 	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
 	
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
-
+	PHYSICSDLL_API void SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
 
 #ifdef _DEBUG
+
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentAABB(AABB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentPlane(Plane*& src, int index);
