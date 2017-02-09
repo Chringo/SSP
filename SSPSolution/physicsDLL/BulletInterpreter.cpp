@@ -254,7 +254,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::Update(PhysicsComponent * src, int index, float dt)
 {
-	DirectX::XMVECTOR result;
+	//DirectX::XMVECTOR result;
 
 	if(src->PC_IndexRigidBody != -1 && src->PC_BVtype != BV_Sphere)
 	{
