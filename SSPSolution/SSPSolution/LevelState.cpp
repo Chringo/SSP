@@ -1794,6 +1794,8 @@ int LevelState::LoadNext()
 	int result = 0;
 	Resources::Status st = Resources::Status::ST_OK;
 	std::string path = "";
+	
+
 	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
 	//Assume we are in level one and load level two
 	path = "../ResourceLib/AssetFiles/L1P1.level";
@@ -1827,6 +1829,53 @@ int LevelState::LoadNext()
 		
 	}
 #pragma endregion Loading data
+
+
+	//In order to correctly load the components into the physics handler we need to flush the old ones because the Active variable doesn't work according to Axel.
+#pragma region
+	//Shutdown the physics handler
+	PhysicsHandler* blarg = this->m_cHandler->GetPhysicsHandler();
+	blarg->ShutDown();
+	blarg->Initialize();
+#pragma endregion Physics handler restart
+	this->m_director.Initialize();
+#pragma region
+	//We then need to recreate the persistent components here
+	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
+	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic							
+	playerP->PC_mass = 5;
+	playerP->PC_BVtype = BV_OBB;
+
+	//Should be done
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+
+	playerP->PC_OBB.ext[0] = 0.5f;
+	playerP->PC_OBB.ext[1] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;
+
+	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_friction = 3.5f;
+	this->m_player1.SetPhysicsComponent(playerP);
+#pragma endregion Player 1
+#pragma region
+	playerP = m_cHandler->GetPhysicsComponent();
+	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_pos = { 0 };								//Set Position
+	playerP->PC_is_Static = false;							//Set IsStatic
+	playerP->PC_active = true;								//Set Active
+	playerP->PC_mass = 5;
+	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_BVtype = BV_OBB;
+	playerP->PC_OBB.ext[0] = 0.5f;
+	playerP->PC_OBB.ext[1] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;
+#pragma endregion Player2
+
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
 	return 1;
