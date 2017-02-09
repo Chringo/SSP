@@ -15,7 +15,13 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 	//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos);
 	//if (m_entityID == 922)
 	//{
-	this->m_gComp->worldMatrix =
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(
+		DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
+			DirectX::XMVECTOR{
+		m_gComp->modelPtr->GetOBBData().position.x,
+			m_gComp->modelPtr->GetOBBData().position.y,
+			m_gComp->modelPtr->GetOBBData().position.z, 0})));
+	/*this->m_gComp->worldMatrix =
 		DirectX::XMMatrixMultiply(
 			DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
 			DirectX::XMMatrixTranslationFromVector(
@@ -23,7 +29,8 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 					DirectX::XMVECTOR{
 		m_gComp->modelPtr->GetOBBData().position.x,
 			m_gComp->modelPtr->GetOBBData().position.y,
-			m_gComp->modelPtr->GetOBBData().position.z, 0})));
+			m_gComp->modelPtr->GetOBBData().position.z, 0})));*/
+
 	//this->m_gComp->worldMatrix =
 	//	DirectX::XMMatrixMultiply(
 	//		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),

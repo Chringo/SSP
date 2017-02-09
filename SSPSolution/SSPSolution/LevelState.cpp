@@ -1103,6 +1103,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
+			, modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
+		//door1P->PC_pos = tempOBBPos.r[3];
+
+		t_pc->PC_OBB.ort = rotate;
+
 		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
 		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
 		////t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });

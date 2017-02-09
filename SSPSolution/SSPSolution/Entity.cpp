@@ -96,7 +96,7 @@ void Entity::UnsafeSyncComponents()
 				DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSubtract(
 					this->m_pComp->PC_pos,
 					DirectX::XMVECTOR{
-				0,
+					0,
 					this->m_pComp->PC_OBB.ext[1],
 					0,
 					0}
