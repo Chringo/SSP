@@ -493,7 +493,7 @@ unsigned int Level::GetNumLights()
 
 unsigned int Level::GetNumPuzzleElements()
 {
-	unsigned int amount;
+	unsigned int amount = 0;
 	for (size_t i = 0; i < m_puzzleElements.size(); i++)
 	{
 		amount += (unsigned int)m_puzzleElements.at(i).size();
