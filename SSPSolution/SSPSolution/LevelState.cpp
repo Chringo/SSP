@@ -196,7 +196,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	#pragma endregion Player1
 
 	//Player 2
-	#pragma region
+#pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 1117267500;
@@ -216,7 +216,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
 	/*TEMP ANIM STUFF*/
-	#pragma region
+#pragma region
 	AnimationComponent* playerAnim2 = nullptr;
 
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
@@ -248,7 +248,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	
 #pragma endregion Player2
 
-	#pragma region
+#pragma region
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
@@ -276,9 +276,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 	m_player1.SetBall(ball);
-	#pragma endregion Ball1
+#pragma endregion Ball1
 
-	#pragma region
+#pragma region
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
@@ -300,7 +300,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
-	#pragma endregion Ball2
+#pragma endregion Ball2
 
 	
 
@@ -1978,66 +1978,78 @@ int LevelState::UnloadLevel()
 	//We then need to recreate the persistent components here
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;	//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
-	playerP->PC_mass = 5;
+	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
 
 	//Should be done
 	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-
-	playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[1] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
 
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-	playerP->PC_friction = 3.5f;
+	playerP->PC_friction = 1.0f;
 	this->m_player1.SetPhysicsComponent(playerP);
 #pragma endregion Player 1
 #pragma region
+	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;	//Set Entity ID
-	playerP->PC_pos = { 0 };								//Set Position
-	playerP->PC_is_Static = false;							//Set IsStatic
-	playerP->PC_active = true;								//Set Active
-	playerP->PC_mass = 5;
-	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic							
+	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+
+	//Should be done
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[1] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
+
+	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_friction = 1.0f;
+	this->m_player2.SetPhysicsComponent(playerP);
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 3;									//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
-	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_BVtype = BV_Sphere;
+	ballP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	ballP->PC_OBB.ext[0] = 0.5f;
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
-	ballP->PC_mass = 10;
+	ballP->PC_Sphere.radius = 0.25;
+	ballP->PC_mass = 50;
 	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
 	this->m_player1.GetBall()->SetPhysicsComponent(ballP);
 
 #pragma endregion ball1
 #pragma region
 	ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_entityID = 4;									//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
-	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_BVtype = BV_Sphere;
+	ballP->PC_Sphere.radius = 0.25;
 	ballP->PC_OBB.ext[0] = 0.5f;
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
-	ballP->PC_mass = 10;
+	ballP->PC_mass = 50;
 	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
 	this->m_player2.GetBall()->SetPhysicsComponent(ballP);
 #pragma endregion ball2
