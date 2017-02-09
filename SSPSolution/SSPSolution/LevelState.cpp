@@ -355,6 +355,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
 	PhysicsComponent* next = nullptr;
+
 	for (int i = 1; i <= nrOfSegments; i++)
 	{
 		if (i != 1)
