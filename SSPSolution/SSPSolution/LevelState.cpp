@@ -369,6 +369,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		PC_ptr->PC_BVtype = BV_Sphere;
 		PC_ptr->PC_Sphere.radius = 0.1f;
 		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
 		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
 		GC_ptr->modelID = 1680427216;
 		GC_ptr->active = true;
@@ -405,6 +406,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		PC_ptr->PC_BVtype = BV_Sphere;
 		PC_ptr->PC_Sphere.radius = 0.1f;
 		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
 		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
 		GC_ptr->modelID = 1680427216;
 		GC_ptr->active = true;

@@ -406,7 +406,6 @@ void BulletInterpreter::RegisterBox(int index)
 
 PHYSICSDLL_API void BulletInterpreter::BCb()
 {
-
 	/*
 	// DynamicsWorld.h , declaration
 	typedef void (*btInternalTickCallback)(btDynamicsWorld *world, btScalar timeStep);
@@ -485,6 +484,8 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 	btRigidBody* rigidBody = new btRigidBody(groundRigidBodyCI);
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
+	rigidBody->setAngularFactor(btVector3(0, 0, 0));
+
 	this->m_rigidBodies.push_back(rigidBody);
 
 	//add it into the world

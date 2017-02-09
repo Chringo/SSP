@@ -2108,8 +2108,8 @@ bool PhysicsHandler::Initialize()
 
 
 
-	//btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
-	//tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
+	/*btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
+	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));*/
 
 	return true;
 }
@@ -3349,22 +3349,12 @@ PHYSICSDLL_API void PhysicsHandler::ClearCollisionNormals()
 
 PHYSICSDLL_API void PhysicsHandler::ProcessCallback(btScalar timestep)
 {
-	//this->DoChainAjustPhysics();
-
-	//this->SyncBulletToPhysicsComponents();
-
-
+	//this->SyncAllPhyicsComponentsToBullet();
+	
 	this->DoChainPhysics(timeStep);
 	
 	this->DoChainAjustPhysics();
 
-	//this->UpdateStaticPlatforms(timeStep);
-	//this->m_bullet.UpdateBulletEngine(timestep);
-
-	//this->SyncAllPhyicsComponentsToBullet();
-	
-	//this->ClearCollisionNormals();
-	this->timeStep = timeStep;
 }
 
 #ifdef _DEBUG
