@@ -154,7 +154,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 2;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
@@ -206,10 +206,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_pos = { 0 };								//Set Position
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
-	playerP->PC_mass = 2;
+	playerP->PC_mass = 10;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -242,8 +242,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	#pragma endregion Animation_Player2
 
 	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
-	this->m_player2.SetMaxSpeed(200.0f);
-	this->m_player2.SetAcceleration(200.0f);
+	this->m_player2.SetMaxSpeed(30.0f);
+	this->m_player2.SetAcceleration(5.0f);
 	
 #pragma endregion Player2
 
@@ -270,7 +270,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//ballP->PC_Sphere.radius = 1;
 
 
-	ballP->PC_mass = 10;
+	ballP->PC_mass = 50;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -294,7 +294,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_Sphere.radius = 0.25;
 
-	ballP->PC_mass = 10;
+	ballP->PC_mass = 50;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);

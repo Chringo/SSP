@@ -2562,6 +2562,8 @@ void PhysicsHandler::AdjustChainLinkPosition(ChainLink * link)
 
 		this->m_bullet.AddNormalFromCollisions(link->CL_previous, link->CL_previous->PC_IndexRigidBody);
 		int nrOfNormals = link->CL_previous->m_normals.size();
+		
+		//no collsion
 		if (nrOfNormals == 0)
 		{
 			link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
