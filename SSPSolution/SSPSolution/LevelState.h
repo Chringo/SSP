@@ -42,6 +42,7 @@ private:
 	
 	Entity* GetClosestBall(float minDist);
 
+	int m_clearedLevel;
 public:
 	LevelState();
 	virtual ~LevelState();

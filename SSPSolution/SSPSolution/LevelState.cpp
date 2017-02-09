@@ -63,6 +63,7 @@ Entity* LevelState::GetClosestBall(float minDist)
 
 LevelState::LevelState()
 {
+	this->m_clearedLevel = 0;
 }
 
 LevelState::~LevelState()
@@ -793,7 +794,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
-		m_fieldEntities[i]->Update(dt, inputHandler);
+		int fieldActivated = m_fieldEntities[i]->Update(dt, inputHandler);
+		this->m_clearedLevel = fieldActivated;
 	}
 	// Reactionary level director acts
 	this->m_director.Update(dt);
@@ -854,6 +856,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+
+	if (this->m_clearedLevel == 1)
+	{
+		this->LoadNext();
+	}
 
 	return result;
 }
