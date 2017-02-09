@@ -404,7 +404,7 @@ void BulletInterpreter::RegisterBox(int index)
 	this->m_physicsHandlerIndex.push_back(index);
 }
 
-PHYSICSDLL_API void BulletInterpreter::BCb()
+void BulletInterpreter::BCb()
 {
 	/*
 	// DynamicsWorld.h , declaration
@@ -608,7 +608,7 @@ btRigidBody * BulletInterpreter::GetRigidBody(int index)
 	return this->m_rigidBodies.at(index);
 }
 
-PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int index)
+DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int index)
 {
 	btPersistentManifold* pMan = nullptr;
 	btCollisionWorld* colWorld = nullptr;
@@ -671,7 +671,7 @@ PHYSICSDLL_API DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int 
 
 	return toReturn;
 }
-PHYSICSDLL_API void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index)
+void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index)
 {
 	btPersistentManifold* pMan = nullptr;
 	btCollisionWorld* colWorld = nullptr;
@@ -737,7 +737,7 @@ PHYSICSDLL_API void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent*
 		}
 	}
 }
-PHYSICSDLL_API btDynamicsWorld * BulletInterpreter::GetBulletWorld()
+btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 {
 	return this->m_dynamicsWorld;
 }

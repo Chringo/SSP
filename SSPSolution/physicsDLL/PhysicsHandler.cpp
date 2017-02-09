@@ -2772,7 +2772,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
-PHYSICSDLL_API void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght)
+void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght)
 {
 	ChainLink link;
 	link.CL_lenght = linkLenght;
@@ -3151,7 +3151,7 @@ void PhysicsHandler::SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComp
 	toRotate->PC_rotation = rotVec;
 }
 
-PHYSICSDLL_API BulletInterpreter * PhysicsHandler::GetBulletInterpreterRef()
+BulletInterpreter * PhysicsHandler::GetBulletInterpreterRef()
 {
 	return &this->m_bullet;
 }
@@ -3254,7 +3254,7 @@ void PhysicsHandler::SortComponents()
 }
 
 
-PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
+void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
 	if (src->PC_BVtype == BV_AABB)
 	{
@@ -3275,12 +3275,12 @@ PHYSICSDLL_API void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src
 	}
 }
 
-PHYSICSDLL_API btRigidBody * PhysicsHandler::GetRigidBody(int index)
+btRigidBody * PhysicsHandler::GetRigidBody(int index)
 {
 	return this->m_bullet.GetRigidBody(index);
 }
 
-PHYSICSDLL_API void PhysicsHandler::SyncBulletToPhysicsComponents()
+void PhysicsHandler::SyncBulletToPhysicsComponents()
 {
 	int size = this->m_physicsComponents.size();
 	for (int i = 0; i < size; i++)
@@ -3290,7 +3290,7 @@ PHYSICSDLL_API void PhysicsHandler::SyncBulletToPhysicsComponents()
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::SyncAllPhyicsComponentsToBullet()
+void PhysicsHandler::SyncAllPhyicsComponentsToBullet()
 {
 	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 
@@ -3302,7 +3302,7 @@ PHYSICSDLL_API void PhysicsHandler::SyncAllPhyicsComponentsToBullet()
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::DoChainPhysics(float dt)
+void PhysicsHandler::DoChainPhysics(float dt)
 {
 	int nrOfChainLinks = this->m_links.size();
 
@@ -3312,7 +3312,7 @@ PHYSICSDLL_API void PhysicsHandler::DoChainPhysics(float dt)
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::DoChainAjustPhysics()
+void PhysicsHandler::DoChainAjustPhysics()
 {
 	int nrOfChainLinks = this->m_links.size();
 
@@ -3322,7 +3322,7 @@ PHYSICSDLL_API void PhysicsHandler::DoChainAjustPhysics()
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::UpdateStaticPlatforms(float dt)
+void PhysicsHandler::UpdateStaticPlatforms(float dt)
 {
 	for (int i = 0; i < this->m_physicsComponents.size(); i++)
 	{
@@ -3337,7 +3337,7 @@ PHYSICSDLL_API void PhysicsHandler::UpdateStaticPlatforms(float dt)
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::ClearCollisionNormals()
+void PhysicsHandler::ClearCollisionNormals()
 {
 	int size = this->m_dynamicComponents.size();
 
@@ -3347,7 +3347,7 @@ PHYSICSDLL_API void PhysicsHandler::ClearCollisionNormals()
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::ProcessCallback(btScalar timestep)
+void PhysicsHandler::ProcessCallback(btScalar timestep)
 {
 	//this->SyncAllPhyicsComponentsToBullet();
 	
