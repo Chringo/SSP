@@ -375,8 +375,8 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsAnimationComponents = 5;
 	this->m_maxDepth = 5;
 	this->m_minDepth = 1;
-	this->m_minContainment = 2;
-	this->m_minSize = 4.0f;
+	this->m_minContainment = 0;
+	this->m_minSize = 1.0f;
 }
 
 
@@ -955,13 +955,13 @@ int GraphicsHandler::GenerateOctree()
 	}
 
 	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
-
+	this->m_maxDepth = 8;
 	//Initialize the octree root
 	for (i = 0; i < 8; i++)
 	{
 		this->m_octreeRoot.branches[i] = nullptr;
 	}
-	this->m_octreeRoot.ext = DirectX::XMFLOAT3((maxX - minX) / 2.0f, (maxY - minY) / 2.0f, (maxZ - minZ) / 2.0f);
+	this->m_octreeRoot.ext = DirectX::XMFLOAT3((largestSize) / 2.0f, (largestSize) / 2.0f, (largestSize) / 2.0f);
 	this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
 	
 
