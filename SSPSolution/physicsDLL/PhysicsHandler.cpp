@@ -2091,6 +2091,7 @@ void PhysicsHandler::ShutDown()
 	{
 		delete this->m_physicsComponents.at(i);
 	}
+	this->m_bullet.Shutdown();
 }
 
 void PhysicsHandler::Update(float deltaTime)
