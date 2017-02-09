@@ -857,6 +857,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
 
+	PhysicsComponent* playerPC = this->m_player1.GetPhysicsComponent();
+	//playerPC->Po
 	if (this->m_clearedLevel == 1)
 	{
 		this->LoadNext();
