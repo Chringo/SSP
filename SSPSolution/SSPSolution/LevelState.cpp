@@ -1800,7 +1800,7 @@ int LevelState::UnloadLevel()
 		delete this->m_staticEntitys[i];
 		this->m_staticEntitys[i] = nullptr;
 	}
-
+	this->m_staticEntitys.clear();
 	//Clear the puzzle entities
 	for (size_t i = 0; i < this->m_doorEntities.size(); i++)
 	{
