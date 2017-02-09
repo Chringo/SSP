@@ -239,7 +239,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				velocity = DirectX::XMVector3Normalize(velocity);
 
 				//Scale that velocity with speed and deltaTime
-				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * dT);
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
 				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
 
 				//Add the velocity to our physicsComponent

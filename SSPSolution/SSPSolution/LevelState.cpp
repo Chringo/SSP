@@ -158,7 +158,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
-	playerP->PC_friction = 0.5f;
+	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
 	/*TEMP ANIM STUFF*/
@@ -189,8 +189,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma endregion Animation_Player1
 
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
-	this->m_player1.SetMaxSpeed(300.0f);
-	this->m_player1.SetAcceleration(300.0f);
+	this->m_player1.SetMaxSpeed(30.0f);
+	this->m_player1.SetAcceleration(5.0f);
 
 	#pragma endregion Player1
 
@@ -432,7 +432,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
-
+	char* welp = new char('h');
 	this->m_networkModule->Update();
 
 	#pragma region 
@@ -1125,7 +1125,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 0.5f;
+		t_pc->PC_friction = 1.0f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
