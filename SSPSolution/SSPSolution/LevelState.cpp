@@ -862,13 +862,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//Check all fields
 	//In meters
 	float maxDistance = 5.0f;
-	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	for (FieldEntity* i : this->m_fieldEntities)
-	{
-		float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(i->GetPhysicsComponent()->PC_pos, checkAgainst)).m128_f32[0];
-		if (distanceBetween < maxDistance)
-			this->m_clearedLevel = 1;
-	}
+	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(7.0f, 0.5f, 2.3f, 0.0f);
+	float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(winArea, checkAgainst)).m128_f32[0];
+	if (distanceBetween < maxDistance)
+		this->m_clearedLevel = 1;
 	if (this->m_clearedLevel == 1)
 	{
 		this->LoadNext();
@@ -1875,7 +1872,7 @@ int LevelState::LoadNext()
 
 	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
 	//Assume we are in level one and load level two
-	path = "../ResourceLib/AssetFiles/L1P1.level";
+	path = "../ResourceLib/AssetFiles/L2P1.level";
 	//Begin by clearing the current level data by calling UnloadLevel.
 	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
 #pragma region
