@@ -1922,16 +1922,19 @@ int LevelState::UnloadLevel()
 	DynamicEntity* ball1 = nullptr;
 	DynamicEntity* ball2 = nullptr;
 	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
+	ball1->SyncComponents();
 	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
+	ball2->SyncComponents();
+	//Sync components to make sure the values in the graphics components are somewhat sane
 
 	// Clear the dynamic entities. Don't delete the balls
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
-		if (this->m_dynamicEntitys[i] != ball1 || this->m_dynamicEntitys[i] != ball2)
+		if (this->m_dynamicEntitys[i] != ball1 && this->m_dynamicEntitys[i] != ball2)
 		{
 			delete this->m_dynamicEntitys[i];
+			this->m_dynamicEntitys[i] = nullptr;
 		}
-		this->m_dynamicEntitys[i] = nullptr;
 	}
 	this->m_dynamicEntitys.clear();
 
