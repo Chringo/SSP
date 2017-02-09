@@ -35,76 +35,94 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE)
+		if (this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != RAGDOLL_STATE)
 		{
-			/*Set the current animation component index.*/
-			SetAnimCompIndex(aCompIndex);
-
-			/*Multiplying the current animation's playing speed.*/
-			seconds *= m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
-
-			/*If only one animation is playing, there should be no transition.*/
-			if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
+			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
+			if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE &&
+				(this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+				this->m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
 			{
-				/*If there is no source state, the program should make a assert.*/
-				assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
+				/*Set the current animation component index.*/
+				SetAnimCompIndex(aCompIndex);
 
-				/*Increment source animation's local time.*/
-				m_AnimComponentList[m_AnimCompIndex]->source_Time += seconds;
+				/*Multiplying the current animation's playing speed.*/
+				seconds *= m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
 
-				/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
-				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
+				/*If only one animation is playing, there should be no transition.*/
+				if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
 				{
-					/*Animation is looping. Reset the local time of the source animation.*/
-					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
+					/*If there is no source state, the program should make a assert.*/
+					assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
+
+					/*Increment source animation's local time.*/
+					m_AnimComponentList[m_AnimCompIndex]->source_Time += seconds;
+
+					/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
+					if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 					{
-						m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
-					}
-					else
-					{
-						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
-						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+						/*Animation is looping. Reset the local time of the source animation.*/
+						if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
+							if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+							{
+								SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+								m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							}
+							else
+							{
+								SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+								m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							}
+							/*All animations that are not looping gets it lock released, other animations can now contribute.*/
+							m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
 						}
-						/*All animations that are not looping gets it lock released, other animations can now contribute.*/
-						m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
 					}
+					/*Interpolate the keyframes of this animation.*/
+					InterpolateKeys(m_AnimComponentList[m_AnimCompIndex]->source_State, m_AnimComponentList[m_AnimCompIndex]->source_Time);
 				}
-				/*Interpolate the keyframes of this animation.*/
-				InterpolateKeys(m_AnimComponentList[m_AnimCompIndex]->source_State, m_AnimComponentList[m_AnimCompIndex]->source_Time);
-			}
 
-			/*If two animations are playing, there should be a SMOOTH transition or FROZEN transition.*/
-			else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
-				|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
-			{
-				/*Transition is complete. Swap the animations and remove the old animation.*/
-				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
+				/*If two animations are playing, there should be a SMOOTH transition or FROZEN transition.*/
+				else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
+					|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 				{
-					m_AnimComponentList[m_AnimCompIndex]->blendFlag = NO_TRANSITION;
-					m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete = false;
+					/*Transition is complete. Swap the animations and remove the old animation.*/
+					if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
+					{
+						m_AnimComponentList[m_AnimCompIndex]->blendFlag = NO_TRANSITION;
+						m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete = false;
 
-					/*After the blending is finished, the target state will simply become the new source state.*/
-					m_AnimComponentList[m_AnimCompIndex]->source_State = m_AnimComponentList[m_AnimCompIndex]->target_State;
-					/*Assign the target local time to source local time.*/
-					m_AnimComponentList[m_AnimCompIndex]->source_Time = m_AnimComponentList[m_AnimCompIndex]->target_Time;
+						/*After the blending is finished, the target state will simply become the new source state.*/
+						m_AnimComponentList[m_AnimCompIndex]->source_State = m_AnimComponentList[m_AnimCompIndex]->target_State;
+						/*Assign the target local time to source local time.*/
+						m_AnimComponentList[m_AnimCompIndex]->source_Time = m_AnimComponentList[m_AnimCompIndex]->target_Time;
 
-					/*Reset target state and it's local time.*/
-					m_AnimComponentList[m_AnimCompIndex]->target_State = nullptr;
-					m_AnimComponentList[m_AnimCompIndex]->target_Time = 0;
+						/*Reset target state and it's local time.*/
+						m_AnimComponentList[m_AnimCompIndex]->target_State = nullptr;
+						m_AnimComponentList[m_AnimCompIndex]->target_Time = 0;
+					}
+
+					/*Blending is not complete. Proceed the transition process.*/
+					else
+						Blend(seconds);
 				}
-
-				/*Blending is not complete. Proceed the transition process.*/
-				else
-					Blend(seconds);
 			}
+			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
+			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE &&
+				this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == ANIMATION_ERROR &&
+				this->m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex == ANIMATION_ERROR)
+			{
+				continue;
+			}
+		}
+
+		else
+		{
+			continue;
 		}
 	}
 }

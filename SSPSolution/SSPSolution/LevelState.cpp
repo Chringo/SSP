@@ -174,22 +174,32 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerAnim1 = m_cHandler->GetAnimationComponent();
 
 	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim1->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	/*If the graphics component have a skeleton for the player, assign the joints and animations to the animation component.*/
+	if (playerAnim1->skeleton != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		playerAnim1->active = 1;
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State->isLooping = true; 
+			playerAnim1->playingSpeed = 2.0f;
+		}
+	}
+	/*If the graphics component don't have a skeleton, set the source state to ERROR state.*/
+	else
 	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
-		playerAnim1->source_State->isLooping = true; // TEMP TEST
-		playerAnim1->playingSpeed = 2.0f;
+		playerAnim1->source_State->stateIndex = ANIMATION_ERROR;
 	}
+	
 #pragma endregion Animation_Player1
 
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
@@ -223,25 +233,33 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-	this->m_cHandler->GetPhysicsHandler()->ApplyPlayer2ToBullet(playerP);
 	playerAnim2 = m_cHandler->GetAnimationComponent();
 
 	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim2->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	/*If the graphics component have a skeleton for the player, assign the joints and animations to the animation component.*/
+	if (playerAnim2->skeleton != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		playerAnim2->active = 1;
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim2->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim2->source_State->isLooping = true;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
-
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+	/*If the graphics component don't have a skeleton, set the source state to ERROR state.*/
+	else
 	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
-		playerAnim2->source_State->isLooping = true; // TEMP TEST
-		playerAnim2->playingSpeed = 2.0f;
+		playerAnim2->source_State->stateIndex = ANIMATION_ERROR;
 	}
 	#pragma endregion Animation_Player2
 

@@ -9,7 +9,8 @@
 
 enum AnimationStates : int
 {
-	ANIMATION_ERROR = -1,
+	ANIMATION_ERROR = - 2,
+	RAGDOLL_STATE = - 1,
 	PLAYER_IDLE = 0, 
 	PLAYER_RUN_FORWARD,
 	PLAYER_RUN_BACKWARD,
