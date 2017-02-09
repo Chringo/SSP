@@ -304,7 +304,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
 	m_cameraRef->SetCameraPivot(
-		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
 		targetOffset,
 		1.3f
 	);
@@ -939,6 +939,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 1, 2, 0));
+	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(this->m_player1_Spawn, this->m_player1.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 1.0);
 	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 1.0);
 
@@ -1751,7 +1752,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	for (index; index < size; index++)
 	{
-		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
+		PhysicsComponent* t_pc = ptr->GetComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	

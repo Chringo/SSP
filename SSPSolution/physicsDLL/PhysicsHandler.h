@@ -20,12 +20,16 @@ private:
 	std::vector<PhysicsComponent*> m_staticComponents;
 	BulletInterpreter m_bullet;
 
-	std::vector<ChainLink> m_links;
+	std::vector<PhysicsLink> m_links;
+
+	std::vector<PhysicsComponent*> m_bodyPC;
+
+	Ragdoll m_playerRagDoll;
 
 	std::vector<Field> m_fields;
 
 	DirectX::XMVECTOR m_gravity;
-
+	int m_ragdollNotMovingCounter;
 	int m_nrOfStaticObjects;
 	unsigned int	m_startIndex;		// At what index to start to check colision
 	unsigned int	m_numberOfDynamics;	// Number of dynamic objects to check since we only want half
@@ -92,6 +96,8 @@ public:
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
 
+	PHYSICSDLL_API void DoRagdollIntersection(float dt);
+
 	PHYSICSDLL_API void CheckFieldIntersection();
 
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
@@ -102,15 +108,27 @@ public:
 	PHYSICSDLL_API void TranslateBB(const DirectX::XMVECTOR &newPos, PhysicsComponent* src);
 	PHYSICSDLL_API void Add_toRotateVec(PhysicsComponent* src);
 
-	PHYSICSDLL_API void DoChainPhysics(ChainLink* link, float dt);
-	PHYSICSDLL_API void AdjustChainLinkPosition(ChainLink* link);
+	PHYSICSDLL_API void DoChainPhysics(PhysicsLink* link, float dt);
+	PHYSICSDLL_API void AdjustChainLinkPosition(PhysicsLink* link);
 
 	PHYSICSDLL_API void ApplyForceToComponent(PhysicsComponent* componentPtr, DirectX::XMVECTOR force, float dt);
 
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
+	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
+
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
 	PHYSICSDLL_API void ResetChainLink();
+
+	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
+
+	PHYSICSDLL_API void CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent* playerPC);
+	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
+
+	PHYSICSDLL_API void AdjustRagdoll(Ragdoll* ragdoll, float dt);
+	PHYSICSDLL_API DirectX::XMVECTOR AdjustBodyPartDistance(PhysicsComponent* previous, PhysicsComponent* next, float lenght);
+	PHYSICSDLL_API void AdjustBodyParts(BodyPart* bodypart, float dt);
+
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 	PHYSICSDLL_API bool IntersectRaySphere(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const Sphere &obj, const DirectX::XMVECTOR &pos, float &distanceToOBB);
@@ -121,7 +139,22 @@ public:
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
 
 	PHYSICSDLL_API int GetNrOfComponents()const;
+	PHYSICSDLL_API PhysicsComponent* GetComponentAt(int index)const;
+
+	PHYSICSDLL_API int GetNrOfDynamicComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
+
+	PHYSICSDLL_API int GetNrOfStaticComponents()const;
+	PHYSICSDLL_API PhysicsComponent* GetStaticComponentAt(int index)const;
+
+	PHYSICSDLL_API int GetNrOfBodyComponents()const;
+	PHYSICSDLL_API PhysicsComponent* GetBodyComponentAt(int index)const;
+
+	PHYSICSDLL_API int GetNrOfMagnets()const;
+	//PHYSICSDLL_API Magnet* GetMagnetAt(int index);
+
+	PHYSICSDLL_API int GetNrOfFields()const;
+	PHYSICSDLL_API Field* GetFieldAt(int index);
 
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
