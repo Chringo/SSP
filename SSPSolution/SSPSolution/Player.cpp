@@ -245,7 +245,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//Add the velocity to our physicsComponent
 				float ySpeed = 0;
 				ySpeed = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
-				ySpeed += DirectX::XMVectorGetY(velocity);
+				//ySpeed += DirectX::XMVectorGetY(velocity);
 
 				this->m_pComp->PC_velocity = velocity;
 				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);

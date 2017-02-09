@@ -11,6 +11,8 @@
 #include <vector>
 #include "BulletInterpreter.h"
 
+static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
+
 struct ChainLink
 {
 	float CL_lenght;
@@ -106,9 +108,6 @@ private:
 	void SetStartIndex(unsigned int newStartIndex);
 	void SetNumberOfDynamics(unsigned int newNumberOfDynamics);
 	void SetIsHost(bool newIsHost);
-
-	void CallbackBullet();
-	//static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 public:
 	float timeStep;
 	PHYSICSDLL_API PhysicsHandler();
@@ -173,6 +172,7 @@ public:
 	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
 
 	PHYSICSDLL_API void ClearCollisionNormals();
+	PHYSICSDLL_API void ProcessCallback(btScalar timestep);
 
 
 #ifdef _DEBUG

@@ -137,7 +137,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
-	float nrOfSegmentsPerPlayer = 8; //more than 10 segments can lead to chain segments going through walls
+	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
 	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2);
 	// creating the player
 
@@ -152,9 +152,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.0, 0, 0); //Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
-	playerP->PC_mass = 2;
+	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 2;
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);

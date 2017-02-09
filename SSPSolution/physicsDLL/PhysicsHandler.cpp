@@ -11,8 +11,9 @@ void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
 
 
 	PhysicsHandler* PH = static_cast<PhysicsHandler*>(world->getWorldUserInfo());
+	PH->ProcessCallback(timeStep);
 
-	PH->SyncBulletToPhysicsComponents();
+	/*PH->SyncBulletToPhysicsComponents();
 
 	PH->DoChainPhysics(timeStep);
 
@@ -22,7 +23,7 @@ void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
 
 	PH->SyncAllPhyicsComponentsToBullet();
 	PH->ClearCollisionNormals();
-	PH->timeStep = timeStep;
+	PH->timeStep = timeStep;*/
 }
 
 bool PhysicsHandler::IntersectAABB()
@@ -2087,10 +2088,6 @@ void PhysicsHandler::SetIsHost(bool newIsHost)
 	this->m_isHost = newIsHost;
 }
 
-void PhysicsHandler::CallbackBullet()
-{
-	this->m_bullet.BCb();
-}
 
 PhysicsHandler::PhysicsHandler()
 {
@@ -2112,7 +2109,7 @@ bool PhysicsHandler::Initialize()
 
 
 	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
-	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
+	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this), true);
 
 	return true;
 }
@@ -2138,11 +2135,13 @@ void PhysicsHandler::Update(float deltaTime)
 
 	this->SyncBulletToPhysicsComponents();
 
-	this->UpdateStaticPlatforms(this->timeStep);
+	this->UpdateStaticPlatforms(dt);
 
-	this->DoChainPhysics(this->timeStep);
+	this->DoChainPhysics(dt);
 
-	this->DoChainAjustPhysics();
+	this->ClearCollisionNormals();
+
+
 	
 	//old code
 #pragma region
@@ -3339,6 +3338,18 @@ PHYSICSDLL_API void PhysicsHandler::ClearCollisionNormals()
 	{
 		this->m_dynamicComponents.at(i)->m_normals.clear();
 	}
+}
+
+PHYSICSDLL_API void PhysicsHandler::ProcessCallback(btScalar timestep)
+{
+	this->SyncBulletToPhysicsComponents();
+
+	//this->DoChainPhysics(timeStep);
+	//this->UpdateStaticPlatforms(timeStep);
+
+	this->SyncAllPhyicsComponentsToBullet();
+	//this->ClearCollisionNormals();
+	this->timeStep = timeStep;
 }
 
 #ifdef _DEBUG

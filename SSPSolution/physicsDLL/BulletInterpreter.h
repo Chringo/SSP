@@ -123,7 +123,7 @@ private:
 	btSequentialImpulseConstraintSolver* m_solver;
 	btDiscreteDynamicsWorld* m_dynamicsWorld;
 	
-	btScalar timeStep; //for callback function
+	//btScalar timeStep; //for callback function
 
 	std::vector<int> m_physicsHandlerIndex;
 	

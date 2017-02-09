@@ -162,7 +162,7 @@ void BulletInterpreter::Initialize()
 	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
-	this->timeStep = 0;
+	//this->timeStep = 0;
 	//this->m_dynamicsWorld->getWorldUserInfo()
 	//btInternalTickCallback* test = new btInternalTickCallback;
 	//this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
@@ -171,12 +171,14 @@ void BulletInterpreter::Initialize()
 void BulletInterpreter::UpdateBulletEngine(const float& dt)
 {
 	//for callback
-	this->timeStep = dt;
+	//this->timeStep = dt;
 	
 	//time will act on the objects
 	btScalar timeStep = dt;
-	int maxSubSteps = 20;
+	int maxSubSteps = 3;
+
 	btScalar fixedTimeStep = btScalar(1.0)/btScalar(60); 
+	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
 
@@ -187,7 +189,7 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_IndexRigidBody == 2)
+		if (src->PC_IndexRigidBody == 4)
 		{
 			int i = 1;
 		}
@@ -236,11 +238,16 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 
 	if (src->PC_IndexRigidBody != -1)
 	{
+		if (src->PC_mass == 0.2f)
+		{
+			int i = 0;
+		}
+
 		btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
 
 		btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
 		btVector3 PC_velocity = this->crt_xmvecVec3(src->PC_velocity);
-
+		
 		btRigidBody* rigidBody = nullptr;
 		rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
