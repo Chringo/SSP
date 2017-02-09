@@ -669,6 +669,8 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 
+		//Null the input of the shadowmap
+		this->m_deviceContext->PSSetShaderResources(10, MAX_SHADOW_AMOUNT, NULL);
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 
@@ -682,6 +684,9 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		break;
 	}

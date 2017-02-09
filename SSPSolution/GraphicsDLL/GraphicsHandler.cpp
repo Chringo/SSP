@@ -581,7 +581,7 @@ int GraphicsHandler::Render(float deltaTime)
 			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow);
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
