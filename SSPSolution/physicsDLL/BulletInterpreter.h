@@ -100,15 +100,62 @@ struct PhysicsComponent
 	}
 };
 
-
-
-
-struct ChainLink
+enum PhysicsLinkType
 {
-	float CL_lenght;
-	PhysicsComponent* CL_next;
-	PhysicsComponent* CL_previous;
+	PL_CHAIN,
+	PL_BODY
 };
+struct PhysicsLink
+{
+	PhysicsLinkType PL_type;
+	float PL_lenght;
+	PhysicsComponent* PL_next;
+	PhysicsComponent* PL_previous;
+};
+enum BodyPartType
+{
+	BP_UPPERBODY,
+	BP_LOWERBODY,
+	BP_LEFT_ARM,
+	BP_RIGHT_ARM,
+	BP_LEFT_LEG,
+	BP_RIGHT_LEG
+};
+struct BodyPart
+{
+	BodyPartType BP_type;
+	PhysicsComponent* center;
+	PhysicsComponent* next;
+	PhysicsComponent* previous;
+	PhysicsComponent* next2;
+};
+enum RagdollState
+{
+	ANIMATED,
+	RAGDOLL
+};
+struct Ragdoll
+{
+	RagdollState state;
+
+	PhysicsComponent* playerPC;
+	PhysicsComponent* ballPC;
+
+	BodyPart upperBody;
+	BodyPart lowerBody;
+	BodyPart rightArm;
+	BodyPart leftArm;
+	BodyPart rightLeg;
+	BodyPart leftLeg;
+};
+
+
+//struct ChainLink
+//{
+//	float CL_lenght;
+//	PhysicsComponent* CL_next;
+//	PhysicsComponent* CL_previous;
+//};
 
 struct Field
 {
