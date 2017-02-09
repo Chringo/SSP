@@ -1875,7 +1875,38 @@ int LevelState::LoadNext()
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
 #pragma endregion Player2
+#pragma region balls
+#pragma region 
+	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_OBB.ext[0] = 0.5f;
+	ballP->PC_OBB.ext[1] = 0.5f;
+	ballP->PC_OBB.ext[2] = 0.5f;
+	ballP->PC_mass = 10;
+	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
+	this->m_player1.GetBall()->SetPhysicsComponent(ballP);
 
+#pragma endregion ball1
+#pragma region
+	ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_OBB;
+	ballP->PC_OBB.ext[0] = 0.5f;
+	ballP->PC_OBB.ext[1] = 0.5f;
+	ballP->PC_OBB.ext[2] = 0.5f;
+	ballP->PC_mass = 10;
+	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
+	this->m_player2.GetBall()->SetPhysicsComponent(ballP);
+#pragma endregion ball2
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
 	return 1;
