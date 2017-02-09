@@ -1848,19 +1848,20 @@ int LevelState::UnloadLevel()
 	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
 	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
 
-	// Clear the dynamic entities
-	//Actually only clear the dynamic entitie if they are not one of the balls
-	/*for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+	// Clear the dynamic entities. Don't delete the balls
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
 		if (this->m_dynamicEntitys[i] != ball1 || this->m_dynamicEntitys[i] != ball2)
 		{
+			delete this->m_dynamicEntitys[i];
+			this->m_dynamicEntitys[i] = nullptr;
 		}
-		delete this->m_dynamicEntitys[i];
-		this->m_dynamicEntitys[i] = nullptr;
-	}*/
+	}
+	this->m_dynamicEntitys.clear();
 
-	//Re-insert them into our dynamic list
-	//this->m_dynamicEntitys.push_back(ball1, ball2);
+	//Re-introduce them into our dynamic list
+	this->m_dynamicEntitys.push_back(ball1);
+	this->m_dynamicEntitys.push_back(ball2);
 
 	return 1;
 }
