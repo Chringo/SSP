@@ -11,7 +11,9 @@
 
 #include <DirectXMath.h>
 #include <vector>
+#pragma warning(push, 1)
 #include "bullet3-2.85.1\src\btBulletDynamicsCommon.h"
+#pragma warning(pop)
 
 enum BoundingVolumeType
 {

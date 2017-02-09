@@ -591,9 +591,9 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
-	int renderCap = this->m_staticGraphicsComponents.size();
+	size_t renderCap = this->m_staticGraphicsComponents.size();
 	renderCap = this->m_dynamicGraphicsComponents.size();
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_dynamicGraphicsComponents[i]->active)
 		{
@@ -602,7 +602,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 	}
 	renderCap = this->m_persistantGraphicsComponents.size();
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)
 		{
