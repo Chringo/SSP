@@ -22,6 +22,9 @@
 class DebugHandler
 {
 private:
+	// How many frames to use for average fps
+	const static int m_FRAMES_FOR_AVG = 100;
+
 	struct Timer {
 		std::wstring label;
 		TextComponent* textComp;
@@ -29,23 +32,53 @@ private:
 		unsigned int maxTime;
 		LARGE_INTEGER startTime;
 		LARGE_INTEGER endTime;
+		unsigned int avgPercentage[m_FRAMES_FOR_AVG];
+		unsigned int avgTime[m_FRAMES_FOR_AVG];
+		int currAvgPtr;
 		Timer()
 		{
 			this->minTime = 9999999;
 			this->maxTime = 0;
+			this->currAvgPtr = 0;
+			for (int i = 0; i < m_FRAMES_FOR_AVG; i++)
+			{
+				this->avgPercentage[i] = 10;
+				this->avgTime[i] = 1000;
+			}
 		}
 		~Timer()
 		{
 		}
-		unsigned int GetTimeMS(LARGE_INTEGER frequency) // !!! Not MS atm  us
+		unsigned int GetTimeMS(LARGE_INTEGER frequency, LARGE_INTEGER elaspedTime) // !!! Not MS atm  us
 		{
-			LARGE_INTEGER elapsedTime;
-			elapsedTime.QuadPart = this->endTime.QuadPart - this->startTime.QuadPart;
-			elapsedTime.QuadPart *= 1000000;
-			unsigned int time = (unsigned int)(elapsedTime.QuadPart / frequency.QuadPart);
+			LARGE_INTEGER elapsedTimeLocal;
+			elapsedTimeLocal.QuadPart = this->endTime.QuadPart - this->startTime.QuadPart;
+			elapsedTimeLocal.QuadPart *= 1000000;
+			unsigned int time = (unsigned int)(elapsedTimeLocal.QuadPart / frequency.QuadPart);
 			minTime = (minTime < time) ? minTime : time;
 			maxTime = (maxTime > time) ? maxTime : time;
+			avgPercentage[currAvgPtr] = (unsigned int)((time / (float)elaspedTime.QuadPart) * 100);
+			avgTime[currAvgPtr] = time;
 			return time;
+		}
+		unsigned int GetAvgTime()
+		{
+			unsigned int sum = 0;
+			for (int i = 0; i < m_FRAMES_FOR_AVG; i++)
+			{
+				sum += this->avgTime[i];
+			}
+			return sum / m_FRAMES_FOR_AVG;
+		}
+		unsigned int GetAvgPercentage()
+		{
+			unsigned int sum = 0;
+			for (int i = 0; i < m_FRAMES_FOR_AVG; i++)
+			{
+				sum += this->avgPercentage[i];
+			}
+			currAvgPtr = (currAvgPtr >= m_FRAMES_FOR_AVG) ? 0 : currAvgPtr+1;
+			return sum / m_FRAMES_FOR_AVG;
 		}
 	};
 	struct Value {
@@ -53,9 +86,6 @@ private:
 		TextComponent* textComp;
 		float value;
 	};
-
-	// How many frames to use for average fps
-	const static int m_FRAMES_FOR_AVG = 50;
 
 	LARGE_INTEGER m_frequency;
 	std::vector<Timer> m_timers;
