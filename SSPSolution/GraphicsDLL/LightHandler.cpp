@@ -22,7 +22,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	DirectX::XMVECTOR pos = { 8.0f,5.0f,-17.0f,1.0f };
 	DirectX::XMVECTOR spak = { 4.0f,2.0f,-11.0f,1.0f };
 	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
-	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH(1.6 * DirectX::XM_PI, 1, 0, 1000);
+	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH(((float)DirectX::XM_PI * 5) / 12.0f, 1.0f, 0.1f, 1000.0f);
 	m_shadowCb.cView = DirectX::XMMatrixLookAtLH(pos, spak, up);
 	m_shadowCb.cShadowCasterAmount = 3;
 

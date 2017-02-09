@@ -47,12 +47,12 @@ struct PointLight //Must be 16 bit aligned!
 };
 cbuffer LightInfo : register(b3)
 {
-    uint NUM_POINTLIGHTS;
-    uint NUM_AREALIGHTS;
-    uint NUM_DIRECTIONALLIGHTS;
-    uint NUM_SPOTLIGHTS;
+    uint   NUM_POINTLIGHTS;
+    uint   NUM_AREALIGHTS;
+    uint   NUM_DIRECTIONALLIGHTS;
+    uint   NUM_SPOTLIGHTS;
     float3 AMBIENT_COLOR;
-    float AMBIENT_INTENSITY;
+    float  AMBIENT_INTENSITY;
 }
 cbuffer shadow : register(b5)
 {
@@ -85,22 +85,24 @@ void GS_main(
     SHADOW_GS_OUT element;
     uint rt_index = 0; //Current shadow map to write to
     float4x4 eachViewMatrix = ShadowViewMatrix;
-    for (int eachLight = 0; eachLight < numCasters; eachLight++) // go through all the lights that casts shadows
+   // for (int eachLight = 0; eachLight < 1; eachLight++) // go through all the lights that casts shadows
+   // {
+   //     if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
+   //     {
+	//		
+   //         rt_index += 1; // add 1 to the shadowmap index.
+   //     }
+   // }
+
+    [unroll]
+    for (int i = 0; i < 3; i++) //loop through the verts of the face
     {
-        if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
-        {
-			[unroll]
-            for (int i = 0; i < 3; i++) //loop through the verts of the face
-            {
-                element.rtIndex = rt_index;
-                eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-                matrix combinedMatrix1 = mul(ShadowViewMatrix, ShadowProjectionMatrix);
-                element.position = mul(input[i].position, combinedMatrix1);
-                element.position.w = 1.0f;
-                output.Append(element);
-            }
-            output.RestartStrip();
-            rt_index += 1; // add 1 to the shadowmap index.
-        }
+        element.rtIndex = 0;
+       // eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
+        matrix combinedMatrix1 = mul(viewMatrix, projectionMatrix);
+        element.position = mul(input[i].position, combinedMatrix1);
+        element.position.w = 1.0f;
+        output.Append(element);
     }
+    output.RestartStrip();
 }
