@@ -670,7 +670,8 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
 
 		//Null the input of the shadowmap
-		this->m_deviceContext->PSSetShaderResources(10, MAX_SHADOW_AMOUNT, NULL);
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 
@@ -678,7 +679,6 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	}
 	case ShaderLib::InstancedShadow:
 	{
-
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_INSTANCED_NORMAL]);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_INSTANCED], NULL, 0);
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);

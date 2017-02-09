@@ -31,13 +31,7 @@ struct SHADOW_GS_OUT
 };
 
 
-SHADOW_VS_OUT VS_main(VS_IN input)
-{
-    SHADOW_VS_OUT output = (SHADOW_VS_OUT) 0;
-    output.position = mul(float4(input.Pos, 1), worldMatrix);
 
-    return output;
-}
 
 struct PointLight //Must be 16 bit aligned!
 {
@@ -73,6 +67,13 @@ static const uint MAX_SHADOWMAP_AMOUNT = 1;
 
 StructuredBuffer<PointLight> pointlights : register(t6);
 
+SHADOW_VS_OUT VS_main(VS_IN input)
+{
+    SHADOW_VS_OUT output = (SHADOW_VS_OUT) 0;
+    output.position = mul(float4(input.Pos, 1), worldMatrix);
+
+    return output;
+}
 
 [maxvertexcount(200)]
 //Geometry shader!
@@ -84,7 +85,7 @@ void GS_main(
     SHADOW_GS_OUT element;
     uint rt_index = 0; //Current shadow map to write to
     float4x4 eachViewMatrix = ShadowViewMatrix;
-    for (int eachLight = 0; eachLight < numCasters; eachLight++) // go through all the lights that casts shadows
+    for (int eachLight = 0; eachLight < 1; eachLight++) // go through all the lights that casts shadows
     {
         if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
         {

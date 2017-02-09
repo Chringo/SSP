@@ -62,33 +62,33 @@ VS_OUT VS_main(VS_IN input)
 static const uint MAX_SHADOWMAP_AMOUNT = 4;
 
 
-[maxvertexcount(200)]
-//Geometry shader!
-void SHADOW_GS_main( //GO THROUGH VARIABLES
-	triangle VS_OUT input[3],
-	inout TriangleStream<GS_OUT> output)
-{
-	//matrix combinedMatrix = mul(world, mul(view, projection));
-    GS_OUT element;
-    uint rt_index = 0; //Current shadow map to write to
-    float4x4 eachViewMatrix = ShadowViewMatrix;
-    for (int eachLight = 0; eachLight < numCasters; eachLight++) // go through all the lights that casts shadows
-    {
-        if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
-        {
-			[unroll]
-            for (int i = 0; i < 3; i++) //loop through the verts of the face
-            {
-                element.rtIndex = rt_index;
-                eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-                matrix combinedMatrix1 = mul(eachViewMatrix, ShadowProjectionMatrix);
-                element.position = mul(input[i].position, combinedMatrix1);
-
-                output.Append(element);
-            }
-            output.RestartStrip();
-            rt_index += 1; // add 1 to the shadowmap index.
-        }
-    }
-}
+//[maxvertexcount(200)]
+////Geometry shader!
+//void SHADOW_GS_main( //GO THROUGH VARIABLES
+//	triangle VS_OUT input[3],
+//	inout TriangleStream<GS_OUT> output)
+//{
+//	//matrix combinedMatrix = mul(world, mul(view, projection));
+//    GS_OUT element;
+//    uint rt_index = 0; //Current shadow map to write to
+//    float4x4 eachViewMatrix = ShadowViewMatrix;
+//    for (int eachLight = 0; eachLight < numCasters; eachLight++) // go through all the lights that casts shadows
+//    {
+//        if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
+//        {
+//			[unroll]
+//            for (int i = 0; i < 3; i++) //loop through the verts of the face
+//            {
+//                element.rtIndex = rt_index;
+//                eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
+//                matrix combinedMatrix1 = mul(eachViewMatrix, ShadowProjectionMatrix);
+//                element.position = mul(input[i].position, combinedMatrix1);
+//
+//                output.Append(element);
+//            }
+//            output.RestartStrip();
+//            rt_index += 1; // add 1 to the shadowmap index.
+//        }
+//    }
+//}
 
