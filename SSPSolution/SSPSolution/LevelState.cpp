@@ -772,6 +772,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos,
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 
 	//Update all puzzle entities
