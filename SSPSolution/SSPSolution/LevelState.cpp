@@ -791,12 +791,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	#pragma endregion Update_Puzzle_Elements
 
-	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+	/*this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
 		int fieldActivated = m_fieldEntities[i]->Update(dt, inputHandler);
 		this->m_clearedLevel = fieldActivated;
-	}
+	}*/
 	// Reactionary level director acts
 	this->m_director.Update(dt);
 
@@ -868,6 +868,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_clearedLevel = 1;
 	if (this->m_clearedLevel == 1)
 	{
+		this->m_clearedLevel = 0;
 		this->LoadNext(inputHandler);
 	}
 
@@ -1950,7 +1951,9 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 	int result = 0;
 	Resources::Status st = Resources::Status::ST_OK;
 	std::string path = "";
-	
+
+	//We also need to clear the internal lists, lets have another function do that
+	this->UnloadLevel();
 
 	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
 	//Assume we are in level one and load level two
@@ -1986,8 +1989,6 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 	}
 #pragma endregion Loading data
 
-	//We also need to clear the internal lists, lets have another function do that
-	this->UnloadLevel();
 
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
