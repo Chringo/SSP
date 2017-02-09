@@ -148,18 +148,25 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;	//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	//playerP->PC_pos = DirectX::XMVECTOR{ playerG->modelPtr->GetOBBData().position.x, playerG->modelPtr->GetOBBData().position.y, playerG->modelPtr->GetOBBData().position.z, 0 };
+	//playerP->PC_pos = DirectX::XMVectorSet(1, 1, 1, 1);
+	
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 5;
 	playerP->PC_BVtype = BV_OBB;
-
-	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	
+	playerP->PC_OBB = m_ConvertOBB(playerG->modelPtr->GetOBBData());
+	
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
-	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 
-	playerP->PC_OBB.ext[0] = 0.5f;
+	//playerP->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ playerG->modelPtr->GetOBBData().position.x, playerG->modelPtr->GetOBBData().position.y, playerG->modelPtr->GetOBBData().position.z, 1 };
+
+	/*playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;*/
 
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 3.5f;
@@ -212,9 +219,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_mass = 5;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = 0.5f;
+
+	playerP->PC_OBB = m_ConvertOBB(playerG->modelPtr->GetOBBData());
+
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
+*/
+	/*playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_OBB.ext[2] = 0.5f;*/
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
 	/*TEMP ANIM STUFF*/
