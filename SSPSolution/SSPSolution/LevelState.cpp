@@ -137,7 +137,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
+	//this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 	this->m_cHandler->ResizeGraphicsPersistent(4);
 
 	#pragma region
@@ -858,7 +858,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
 
 	PhysicsComponent* playerPC = this->m_player1.GetPhysicsComponent();
-	//playerPC->Po
+	DirectX::XMVECTOR checkAgainst = playerPC->PC_pos;
+	//Check all fields
+	//In meters
+	float maxDistance = 5.0f;
+	for (FieldEntity* i : this->m_fieldEntities)
+	{
+		float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(i->GetPhysicsComponent()->PC_pos, checkAgainst)).m128_f32[0];
+		if (distanceBetween < maxDistance)
+			this->m_clearedLevel = 1;
+	}
 	if (this->m_clearedLevel == 1)
 	{
 		this->LoadNext();
