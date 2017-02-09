@@ -1949,9 +1949,7 @@ int LevelState::LoadNext()
 	playerP->PC_OBB.ext[0] = 0.5f;
 	playerP->PC_OBB.ext[1] = 0.5f;
 	playerP->PC_OBB.ext[2] = 0.5f;
-#pragma endregion Player2
-#pragma endregion Player2
-#pragma region balls
+#pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = 3;									//Set Entity ID
