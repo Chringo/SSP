@@ -1143,7 +1143,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			tPos,
 			1,	//EntityID Player1
-			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
+			2,	//EntityID Player2
 			tOBB
 		);
 		FieldEntity* tempFE = new FieldEntity();
