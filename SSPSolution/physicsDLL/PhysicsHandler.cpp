@@ -2090,6 +2090,7 @@ void PhysicsHandler::ShutDown()
 	for (int i = 0; i < size; i++)
 	{
 		delete this->m_physicsComponents.at(i);
+		this->m_physicsComponents.at(i) == nullptr;
 	}
 	this->m_physicsComponents.clear();
 	this->m_bullet.Shutdown();
