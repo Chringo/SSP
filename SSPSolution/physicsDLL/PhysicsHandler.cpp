@@ -2309,8 +2309,8 @@ void PhysicsHandler::Update(float deltaTime)
 void PhysicsHandler::CheckFieldIntersection()
 {
 	Field* field = nullptr;
-	int nrOfFields = this->m_fields.size();
-	for (int i = 0; i < nrOfFields; i++)
+	size_t nrOfFields = this->m_fields.size();
+	for (size_t i = 0; i < nrOfFields; i++)
 	{
 		field = &this->m_fields.at(i);
 
