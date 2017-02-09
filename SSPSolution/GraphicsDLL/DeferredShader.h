@@ -56,6 +56,7 @@ public:
 
 	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;
+	bool m_shadowStateActive = false;
 public:
 	DeferredShader();
 	~DeferredShader();

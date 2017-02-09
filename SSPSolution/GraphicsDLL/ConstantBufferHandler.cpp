@@ -46,6 +46,7 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	if (SUCCEEDED(hResult))
 	{
 		deviceContext->VSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
+		deviceContext->GSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
 		deviceContext->PSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
 	}
 	else

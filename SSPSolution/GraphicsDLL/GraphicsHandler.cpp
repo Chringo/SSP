@@ -581,7 +581,12 @@ int GraphicsHandler::Render(float deltaTime)
 			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow); //render shadows
+	for (size_t i = 0; i < instancedRenderingList.size(); i++)
+	{
+		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
+	}
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
@@ -592,10 +597,10 @@ int GraphicsHandler::Render(float deltaTime)
 		delete i.componentSpecific;
 	}*/
 
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
 	int renderCap = this->m_staticGraphicsComponents.size();
 	renderCap = this->m_dynamicGraphicsComponents.size();
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_dynamicGraphicsComponents[i]->active)
@@ -604,7 +609,28 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_dynamicGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+		}
+
+	}
+
+
+
 	renderCap = this->m_persistantGraphicsComponents.size();
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_persistantGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+		}
+
+	}
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); //render
 	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)

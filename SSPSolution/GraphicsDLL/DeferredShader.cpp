@@ -620,7 +620,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
-
+		m_shadowStateActive = false;
 		break;
 	}
 	case ShaderLib::Instanced:
@@ -629,7 +629,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
-
+		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 		break;
@@ -640,7 +640,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_ANIMATED], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
-
+		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 
@@ -655,7 +655,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
-
+		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 
@@ -674,7 +674,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
-
+		m_shadowStateActive = true;
 		break;
 	}
 	case ShaderLib::InstancedShadow:
@@ -688,6 +688,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
+		m_shadowStateActive = true;
 		break;
 	}
 	default:
@@ -792,22 +793,25 @@ int DeferredShader::Draw(Resources::Model * model)
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
-	Resources::Material * mat     = model->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
+	if (!m_shadowStateActive)
 	{
-		if (textures[i] == nullptr)
-			continue;
+		Resources::Material * mat     = model->GetMaterial();
+		Resources::Texture** textures = mat->GetAllTextures();
+		ID3D11ShaderResourceView* resViews[5];
+		UINT numViews = 0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (textures[i] == nullptr)
+				continue;
 
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
+			resViews[numViews] = textures[i]->GetResourceView();
+			numViews += 1;
+		}
+
+
+		this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 	}
-
 	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
@@ -830,21 +834,24 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
-	Resources::Material * mat = model->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
+	if (!m_shadowStateActive)
 	{
-		if (textures[i] == nullptr)
-			continue;
+		Resources::Material * mat = model->GetMaterial();
+		Resources::Texture** textures = mat->GetAllTextures();
+		ID3D11ShaderResourceView* resViews[5];
+		UINT numViews = 0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (textures[i] == nullptr)
+				continue;
 
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
+			resViews[numViews] = textures[i]->GetResourceView();
+			numViews += 1;
+		}
+
+
+		this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 	}
-
-
-	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
@@ -864,21 +871,24 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	this->m_deviceContext->IASetVertexBuffers(0, 1, &vBuf, &m_vertexSize, &offset);
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
-	Resources::Material * mat = model->GetMaterial();
-	Resources::Texture** textures = mat->GetAllTextures();
-	ID3D11ShaderResourceView* resViews[5];
-	UINT numViews = 0;
-	for (size_t i = 0; i < 5; i++)
+	if (!m_shadowStateActive)
 	{
-		if (textures[i] == nullptr)
-			continue;
+		Resources::Material * mat = model->GetMaterial();
+		Resources::Texture** textures = mat->GetAllTextures();
+		ID3D11ShaderResourceView* resViews[5];
+		UINT numViews = 0;
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (textures[i] == nullptr)
+				continue;
 
-		resViews[numViews] = textures[i]->GetResourceView();
-		numViews += 1;
+			resViews[numViews] = textures[i]->GetResourceView();
+			numViews += 1;
+		}
+
+
+		this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 	}
-
-
-	this->m_deviceContext->PSSetShaderResources(0, numViews, resViews);
 
 	this->m_deviceContext->DrawIndexed(meshPtr->GetNumIndices(), 0, 0);
 
@@ -891,7 +901,7 @@ int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 	Resources::Model* model;
 	
 	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
-	if (iteration == 0)
+	if (iteration == 0 && m_shadowStateActive == false)
 	{
 		Resources::Material * mat = model->GetMaterial();
 		Resources::Texture** textures = mat->GetAllTextures();

@@ -85,7 +85,7 @@ void GS_main(
     SHADOW_GS_OUT element;
     uint rt_index = 0; //Current shadow map to write to
     float4x4 eachViewMatrix = ShadowViewMatrix;
-    for (int eachLight = 0; eachLight < 1; eachLight++) // go through all the lights that casts shadows
+    for (int eachLight = 0; eachLight < numCasters; eachLight++) // go through all the lights that casts shadows
     {
         if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
         {
@@ -94,9 +94,9 @@ void GS_main(
             {
                 element.rtIndex = rt_index;
                 eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-                matrix combinedMatrix1 = mul(viewMatrix, projectionMatrix);
+                matrix combinedMatrix1 = mul(ShadowViewMatrix, ShadowProjectionMatrix);
                 element.position = mul(input[i].position, combinedMatrix1);
-
+                element.position.w = 1.0f;
                 output.Append(element);
             }
             output.RestartStrip();

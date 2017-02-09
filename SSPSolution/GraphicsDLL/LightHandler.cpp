@@ -19,8 +19,11 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 		this->CreateStructuredBuffer(LIGHT_TYPE(i),3); //Create all the structured buffers  and update the constant buffer
 	}
 
-	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH(2 * DirectX::XM_PI, 1, 0, 100);
-	m_shadowCb.cView = DirectX::XMMatrixIdentity();
+	DirectX::XMVECTOR pos = { 8.0f,5.0f,-17.0f,1.0f };
+	DirectX::XMVECTOR spak = { 4.0f,2.0f,-11.0f,1.0f };
+	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
+	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH(1.6 * DirectX::XM_PI, 1, 0, 1000);
+	m_shadowCb.cView = DirectX::XMMatrixLookAtLH(pos, spak, up);
 	m_shadowCb.cShadowCasterAmount = 3;
 
 	ConstantBufferHandler::GetInstance()->shadow.UpdateBuffer(&m_shadowCb);
