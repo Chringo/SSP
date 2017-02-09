@@ -2164,6 +2164,7 @@ void PhysicsHandler::Update(float deltaTime)
 		this->AdjustChainLinkPosition(&this->m_links.at(i));
 	}
 	this->DoRagdollIntersection(dt);
+	this->AdjustRagdoll(&this->m_playerRagDoll, dt);
 	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
 	
 	// DYNAMIC VS DYNAMIC
@@ -2373,7 +2374,7 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 			this->m_ragdollNotMovingCounter++;
 			if (m_ragdollNotMovingCounter > 500)
 			{
-				this->m_playerRagDoll.state = ANIMATED;
+				//this->m_playerRagDoll.state = ANIMATED;
 			}
 		}
 		else
@@ -3483,7 +3484,7 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(DirectX::XMVECTOR pos, Ph
 
 #pragma endregion
 
-	this->m_playerRagDoll.state = ANIMATED;
+	this->m_playerRagDoll.state = RAGDOLL;
 	rightFoot->PC_entityID = -1;
 
 	//upperBody->PC_mass = 5;
@@ -3507,7 +3508,7 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(DirectX::XMVECTOR pos, Ph
 
 
 	//rightFoot->PC_velocity = DirectX::XMVectorSet(0, 0, 1, 0);
-	//rightHand->PC_velocity = DirectX::XMVectorSet(0, 0, 3, 0);
+	rightHand->PC_velocity = DirectX::XMVectorSet(0, 0, 3, 0);
 
 	//this->CreateChainLink(rightFoot, ball, 4, 2);
 	//this->CreateChainLink(leftFoot, ball, 4, 2);
