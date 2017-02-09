@@ -1791,10 +1791,10 @@ int LevelState::UnloadLevel()
 {
 	int result = 0;
 	//Clear components from GraphicsHandler.
-	//Shutdown PhysicsHandler and initialize it again.
-	//Leave sound alone for now.
+	this->m_cHandler->ResizeGraphicsDynamic(0);
+	this->m_cHandler->ResizeGraphicsStatic(0);
 	//Clear internal lists
-	// Clear the static entities
+#pragma region
 	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
 	{
 		delete this->m_staticEntitys[i];
@@ -1839,81 +1839,17 @@ int LevelState::UnloadLevel()
 		this->m_platformEntities[i] = nullptr;
 	}
 	this->m_platformEntities.clear();
-	//We have a special case with the dynamic entities, save the balls and Re-insert them into the dynamic list
-	DynamicEntity* ball1 = nullptr;
-	DynamicEntity* ball2 = nullptr;
-	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
-	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
-
-	// Clear the dynamic entities. Don't delete the balls
-	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-	{
-		if (this->m_dynamicEntitys[i] != ball1 || this->m_dynamicEntitys[i] != ball2)
-		{
-			delete this->m_dynamicEntitys[i];
-			this->m_dynamicEntitys[i] = nullptr;
-		}
-	}
-	this->m_dynamicEntitys.clear();
-
-	//Re-introduce them into our dynamic list
-	this->m_dynamicEntitys.push_back(ball1);
-	this->m_dynamicEntitys.push_back(ball2);
-
-	return 1;
-}
-
-int LevelState::LoadNext()
-{
-	int result = 0;
-	Resources::Status st = Resources::Status::ST_OK;
-	std::string path = "";
-	
-
-	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
-	//Assume we are in level one and load level two
-	path = "../ResourceLib/AssetFiles/L2P1.level";
-	//Begin by clearing the current level data by calling UnloadLevel.
-	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
-#pragma region
-	printf("LOAD LEVEL 1\n");
-	//Load LevelData from file
-	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
-																	   //if not successful
-	if (st != Resources::ST_OK)
-	{
-		//Error loading file.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
-	}
-	//Load Resources of the level
-	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
-	//if not successful
-	if (st != Resources::ST_OK)
-	{
-		//Error loading level from resource handler.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
-	}
-
-	//Load Lights of the level
-
-	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
-	{
-		//Error loading lights through LightHandler.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
-		
-	}
-#pragma endregion Loading data
-
-	//We also need to clear the internal lists, lets have another function do that
-	this->UnloadLevel();
+#pragma endregion Clear entity lists
 	//In order to correctly load the components into the physics handler we need to flush the old ones because the Active variable doesn't work according to Axel.
+	//Shutdown PhysicsHandler and initialize it again.
 #pragma region
-	//Shutdown the physics handler
-	PhysicsHandler* blarg = this->m_cHandler->GetPhysicsHandler();
-	blarg->ShutDown();
-	blarg->Initialize();
+	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
+	pHandler->ShutDown();
+	pHandler->Initialize();
 #pragma endregion Physics handler restart
+
 	this->m_director.Initialize();
+#pragma region
 #pragma region
 	//We then need to recreate the persistent components here
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -1981,6 +1917,75 @@ int LevelState::LoadNext()
 	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
 	this->m_player2.GetBall()->SetPhysicsComponent(ballP);
 #pragma endregion ball2
+#pragma endregion 
+	//We have a special case with the dynamic entities, save the balls and Re-insert them into the dynamic list
+	DynamicEntity* ball1 = nullptr;
+	DynamicEntity* ball2 = nullptr;
+	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
+	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
+
+	// Clear the dynamic entities. Don't delete the balls
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+	{
+		if (this->m_dynamicEntitys[i] != ball1 || this->m_dynamicEntitys[i] != ball2)
+		{
+			delete this->m_dynamicEntitys[i];
+		}
+		this->m_dynamicEntitys[i] = nullptr;
+	}
+	this->m_dynamicEntitys.clear();
+
+	//Re-introduce them into our dynamic list
+	this->m_dynamicEntitys.push_back(ball1);
+	this->m_dynamicEntitys.push_back(ball2);
+
+	return 1;
+}
+
+int LevelState::LoadNext()
+{
+	int result = 0;
+	Resources::Status st = Resources::Status::ST_OK;
+	std::string path = "";
+	
+
+	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
+	//Assume we are in level one and load level two
+	path = "../ResourceLib/AssetFiles/L2P1.level";
+	//Begin by clearing the current level data by calling UnloadLevel.
+	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
+#pragma region
+	printf("LOAD LEVEL 1\n");
+	//Load LevelData from file
+	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
+																	   //if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading file.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+	}
+	//Load Resources of the level
+	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading level from resource handler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+	}
+
+	//Load Lights of the level
+
+	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+	{
+		//Error loading lights through LightHandler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
+		
+	}
+#pragma endregion Loading data
+
+	//We also need to clear the internal lists, lets have another function do that
+	this->UnloadLevel();
+	
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
 	return 1;
