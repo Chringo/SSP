@@ -34,29 +34,12 @@ int Entity::SyncComponents()
 			{
 				if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
 				{
-					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+					//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
 				}
 				else
 				{
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-				//if (this->m_gComp->modelID == 1117267500 || this->m_pComp->PC_entityID == 2|| this->m_pComp->PC_entityID == 1)
-				//{
-				//	
-				//	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort,
-				//		DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSubtract(
-				//			this->m_pComp->PC_pos, 
-				//			DirectX::XMVECTOR{ 
-				//			0,
-				//			this->m_pComp->PC_OBB.ext[1],
-				//			0,
-				//			0}
-				//			)));
-				//}
-				//
-				//else
-				//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-
 				}
 			}
 			else
