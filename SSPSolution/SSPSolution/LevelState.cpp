@@ -1170,7 +1170,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		t_pc->PC_pos = t_ac->AC_position;// OLD HACK DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
 		t_pc->PC_entityID = data->aiComponents[i].EntityID;
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
