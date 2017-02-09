@@ -1179,7 +1179,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_gravityInfluence = 0;
 		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
-		t_pc->PC_BVtype = BV_AABB;
+		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
