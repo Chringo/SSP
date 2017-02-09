@@ -862,6 +862,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//Check all fields
 	//In meters
 	float maxDistance = 5.0f;
+	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	for (FieldEntity* i : this->m_fieldEntities)
 	{
 		float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(i->GetPhysicsComponent()->PC_pos, checkAgainst)).m128_f32[0];
@@ -1795,6 +1796,72 @@ int LevelState::UnloadLevel()
 	//Clear components from GraphicsHandler.
 	//Shutdown PhysicsHandler and initialize it again.
 	//Leave sound alone for now.
+	//Clear internal lists
+	// Clear the static entities
+	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
+	{
+		delete this->m_staticEntitys[i];
+		this->m_staticEntitys[i] = nullptr;
+	}
+
+	//Clear the puzzle entities
+	for (size_t i = 0; i < this->m_doorEntities.size(); i++)
+	{
+		delete this->m_doorEntities[i];
+		this->m_doorEntities[i] = nullptr;
+	}
+	this->m_doorEntities.clear();
+	for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
+	{
+		delete this->m_buttonEntities[i];
+		this->m_buttonEntities[i] = nullptr;
+	}
+	this->m_buttonEntities.clear();
+	for (size_t i = 0; i < this->m_leverEntities.size(); i++)
+	{
+		delete this->m_leverEntities[i];
+		this->m_leverEntities[i] = nullptr;
+	}
+	this->m_leverEntities.clear();
+	for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
+	{
+		delete this->m_wheelEntities[i];
+		this->m_wheelEntities[i] = nullptr;
+	}
+	this->m_wheelEntities.clear();
+	for (size_t i = 0; i < this->m_fieldEntities.size(); i++)
+	{
+		delete this->m_fieldEntities[i];
+		this->m_fieldEntities[i] = nullptr;
+	}
+	this->m_fieldEntities.clear();
+
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		delete this->m_platformEntities[i];
+		this->m_platformEntities[i] = nullptr;
+	}
+	this->m_platformEntities.clear();
+	//We have a special case with the dynamic entities, save the balls and Re-insert them into the dynamic list
+	DynamicEntity* ball1 = nullptr;
+	DynamicEntity* ball2 = nullptr;
+	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
+	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
+
+	// Clear the dynamic entities
+	//Actually only clear the dynamic entitie if they are not one of the balls
+	/*for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+	{
+		if (this->m_dynamicEntitys[i] != ball1 || this->m_dynamicEntitys[i] != ball2)
+		{
+		}
+		delete this->m_dynamicEntitys[i];
+		this->m_dynamicEntitys[i] = nullptr;
+	}*/
+
+	//Re-insert them into our dynamic list
+	//this->m_dynamicEntitys.push_back(ball1, ball2);
+
 	return 1;
 }
 
@@ -1839,7 +1906,8 @@ int LevelState::LoadNext()
 	}
 #pragma endregion Loading data
 
-
+	//We also need to clear the internal lists, lets have another function do that
+	this->UnloadLevel();
 	//In order to correctly load the components into the physics handler we need to flush the old ones because the Active variable doesn't work according to Axel.
 #pragma region
 	//Shutdown the physics handler
