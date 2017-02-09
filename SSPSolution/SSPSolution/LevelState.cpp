@@ -868,7 +868,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_clearedLevel = 1;
 	if (this->m_clearedLevel == 1)
 	{
-		this->LoadNext();
+		this->LoadNext(inputHandler);
 	}
 
 	return result;
@@ -1945,7 +1945,7 @@ int LevelState::UnloadLevel()
 	return 1;
 }
 
-int LevelState::LoadNext()
+int LevelState::LoadNext(InputHandler * inputHandler)
 {
 	int result = 0;
 	Resources::Status st = Resources::Status::ST_OK;
@@ -1988,9 +1988,21 @@ int LevelState::LoadNext()
 
 	//We also need to clear the internal lists, lets have another function do that
 	this->UnloadLevel();
-	
+
+#pragma region
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+
+	m_cameraRef->SetCameraPivot(
+		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+		targetOffset,
+		1.3f
+	);
+
+#pragma endregion Set_Camera
+
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
+	//this->Update(0.0000000001f, inputHandler);
 	return 1;
 }
 
