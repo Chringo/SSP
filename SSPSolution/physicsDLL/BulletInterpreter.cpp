@@ -194,10 +194,7 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_IndexRigidBody == 4)
-		{
-			int i = 1;
-		}
+
 
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();

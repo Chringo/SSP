@@ -376,9 +376,9 @@ bool PhysicsHandler::SphereOBBIntersectionTest(Sphere* &sphere, DirectX::XMVECTO
 	DirectX::XMMATRIX rot = DirectX::XMMatrixRotationX(radX) * DirectX::XMMatrixRotationY(radY) * DirectX::XMMatrixRotationZ(radZ);
 	DirectX::XMVECTOR t;
 	DirectX::XMVECTOR toSphere;
-	DirectX::XMVECTOR originalToSphere;
+	//DirectX::XMVECTOR originalToSphere;
 
-	DirectX::XMVECTOR originalVel;
+	//DirectX::XMVECTOR originalVel;
 
 	DirectX::XMMATRIX rotInv = DirectX::XMMatrixInverse(&t, rot);
 
@@ -511,7 +511,7 @@ bool PhysicsHandler::AABBAABBIntersectionTest(AABB* &aabb1, DirectX::XMVECTOR aa
 	DirectX::XMFLOAT3 temp;
 	DirectX::XMFLOAT3 temp2;
 
-	float xOverlap;
+	//float xOverlap;
 	float yOverlap;
 	float zOverlap;
 
@@ -1606,9 +1606,9 @@ bool PhysicsHandler::SphereOBBIntersectionTest(PhysicsComponent * objSphere, Phy
 	DirectX::XMMATRIX rot = DirectX::XMMatrixRotationX(radX) * DirectX::XMMatrixRotationY(radY) * DirectX::XMMatrixRotationZ(radZ);
 	DirectX::XMVECTOR t;
 	DirectX::XMVECTOR toSphere;
-	DirectX::XMVECTOR originalToSphere;
+	//DirectX::XMVECTOR originalToSphere;
 
-	DirectX::XMVECTOR originalVel;
+	//DirectX::XMVECTOR originalVel;
 
 	DirectX::XMMATRIX rotInv = DirectX::XMMatrixInverse(&t, rot);
 
