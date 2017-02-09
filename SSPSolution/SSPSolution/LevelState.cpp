@@ -1771,3 +1771,55 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	return 1;
 }
 
+int LevelState::UnloadLevel()
+{
+	int result = 0;
+	//Clear components from GraphicsHandler.
+	//Shutdown PhysicsHandler and initialize it again.
+	//Leave sound alone for now.
+	return 1;
+}
+
+int LevelState::LoadNext()
+{
+	int result = 0;
+	Resources::Status st = Resources::Status::ST_OK;
+	std::string path = "";
+	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
+	//Assume we are in level one and load level two
+	path = "../ResourceLib/AssetFiles/L1P1.level";
+	//Begin by clearing the current level data by calling UnloadLevel.
+	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
+#pragma region
+	printf("LOAD LEVEL 1\n");
+	//Load LevelData from file
+	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
+																	   //if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading file.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+	}
+	//Load Resources of the level
+	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading level from resource handler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+	}
+
+	//Load Lights of the level
+
+	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+	{
+		//Error loading lights through LightHandler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
+		
+	}
+#pragma endregion Loading data
+	//Call the CreateLevel with the level data.
+	result = this->CreateLevel(level);
+	return 1;
+}
+
