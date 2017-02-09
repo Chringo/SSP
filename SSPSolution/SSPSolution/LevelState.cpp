@@ -912,8 +912,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::Status st = Resources::ST_OK;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
-	std::vector<DynamicEntity*> aiEntities;
-
 	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
 		data->spawns[0].position[1],
