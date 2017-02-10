@@ -913,12 +913,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-	/*this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
 		int fieldActivated = m_fieldEntities[i]->Update(dt, inputHandler);
 		this->m_clearedLevel = fieldActivated;
-	}*/
+	}
 	// Reactionary level director acts
 	this->m_director.Update(dt);
 
@@ -982,10 +982,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	PhysicsComponent* playerPC = this->m_player1.GetPhysicsComponent();
 	DirectX::XMVECTOR checkAgainst = playerPC->PC_pos;
 	//Check all fields
-	for (FieldEntity* i : this->m_fieldEntities)
+	/*for (FieldEntity* i : this->m_fieldEntities)
 	{
 		this->m_clearedLevel = i->Update(dt, inputHandler);
-	}
+	}*/
 	//In meters
 	/*float maxDistance = 5.0f;
 	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(7.0f, 0.5f, 2.3f, 0.0f);
