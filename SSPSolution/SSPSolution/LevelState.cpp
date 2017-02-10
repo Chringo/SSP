@@ -665,14 +665,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 			else
 			{
-				if (this->m_networkModule->IsHost())
-				{
-					ent->Update(dt, inputHandler);	//Update the entity normaly
-				}
-				else
-				{
-					ent->SyncComponents();	//Update the entity normaly
-				}
+				ent->Update(dt, inputHandler);	//Update the entity normaly
 				
 			}
 		}
@@ -718,11 +711,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					if (itr->grabbedID == 3)
 					{
-						this->m_player2.SetGrabbed(this->m_player1.GetBall());
+						this->m_player2.SetGrabbed(this->m_player2.GetBall());
 					}
 					else if (itr->grabbedID == 4)
 					{
-						this->m_player2.SetGrabbed(this->m_player2.GetBall());
+						this->m_player2.SetGrabbed(this->m_player1.GetBall());
 					}
 
 				}
