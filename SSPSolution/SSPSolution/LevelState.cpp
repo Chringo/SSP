@@ -929,7 +929,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
 		m_fieldEntities[i]->Update(dt, inputHandler);
