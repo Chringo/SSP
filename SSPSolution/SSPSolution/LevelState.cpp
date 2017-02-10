@@ -412,7 +412,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	PhysicsComponent* previous;
+
 	if (this->m_networkModule->IsHost())
 	{
 		previous = this->m_player2.GetPhysicsComponent();
@@ -677,18 +677,30 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		//update all dynamic (moving) entities
 		Entity* ent = nullptr;
-		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+		if (this->m_networkModule->IsHost())
 		{
-			ent = this->m_dynamicEntitys.at(i);
-			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 			{
-				ent->SyncComponents();	//Just sync the component and wait for the update package
-			}
-			else
-			{
-				ent->Update(dt, inputHandler);	//Update the entity normaly
+				ent = this->m_dynamicEntitys.at(i);
+				if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
+				{
+					ent->SyncComponents();	//Just sync the component and wait for the update package
+				}
+				else
+				{
+					ent->Update(dt, inputHandler);	//Update the entity normaly
+				}
 			}
 		}
+		else
+		{
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+			{
+				ent = this->m_dynamicEntitys.at(i);
+				ent->SyncComponents();
+			}
+		}
+
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
 	#pragma endregion Update/Syncing
