@@ -701,14 +701,36 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(true);
-			this->m_cameraRef->SetDistance(2);
+			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
+			m_cameraRef->SetCameraPivotOffset(
+				targetOffset,
+				.5f
+			);
+
 		}
 
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(false);
-			this->m_cameraRef->SetDistance(10);
+			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
+			m_cameraRef->SetCameraPivotOffset(
+				targetOffset,
+				1.3f
+			);
 		}
+#ifdef _DEBUG
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
+		{
+			m_cameraRef->SetDistance(10.f);
+			
+		}
+
+		if (inputHandler->IsKeyReleased(SDL_SCANCODE_C))
+		{
+			m_cameraRef->SetDistance(1.3f);
+
+		}
+#endif
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -794,7 +816,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
-
+	
 	//Update all puzzle entities
 	#pragma region
 	//Commong variables needed for logic checks
