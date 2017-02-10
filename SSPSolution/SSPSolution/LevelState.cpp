@@ -761,7 +761,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			
 			if (this->m_player1.GetGrabbed() != nullptr)
 			{
-				pp = this->m_player1.GetGrabbed.GetPhysicsComponent();
+				pp = this->m_player1.GetGrabbed()->GetPhysicsComponent();
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
 			}
 
