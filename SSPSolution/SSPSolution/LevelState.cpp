@@ -928,41 +928,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	#pragma endregion MUSIC_KEYS
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
-		{
-			if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
-			{
-				if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
-				{
-					printf("Joined client with the ip %s\n", this->m_ip);
-
-					//TEMP SULOTION
-					//Move the camera to player 2 since we joined a game 
-					DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
-					m_cameraRef->SetCameraPivot(
-						&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
-						targetOffset,
-						1.3f
-					);
-				}
-				else
-				{
-					printf("Failed to connect to the client %s\n", this->m_ip);
-				}
-
-			}
-			else
-			{
-				printf("Join failed since this module is already connected to other clients\n");
-			}
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
-		{
-			this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
-		}
-	#pragma endregion Network_Key_events
-
 	this->m_cameraRef->Update(dt);
 
 	//Update the listner pos and direction for sound
