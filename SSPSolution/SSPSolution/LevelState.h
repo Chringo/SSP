@@ -14,8 +14,6 @@
 #include "FieldEntity.h"
 #include "PlatformEntity.h"
 
-const int CHAIN_LINK_ID = INT32_MAX;
-
 class LevelState :
 	public GameState
 {

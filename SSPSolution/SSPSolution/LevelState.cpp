@@ -362,7 +362,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		{
 			linkLenght = 0.35f;
 		}
-		unsigned int entityID = CHAIN_LINK_ID - i;
+		unsigned int entityID = 5;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
 		PC_ptr->PC_entityID = entityID;
@@ -399,7 +399,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		{
 			linkLenght = 0.35;
 		}
-		unsigned int entityID = CHAIN_LINK_ID - (i + nrOfSegments);
+		unsigned int entityID =6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
 		PC_ptr->PC_entityID = entityID;
@@ -644,6 +644,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
 				ent->SyncComponents();	//Just sync the component and wait for the update package
+			}
+			else if (ent->GetEntityID == 5 || ent->GetEntityID == 6)
+			{
+				//Simply dont send update packets
 			}
 			else
 			{
