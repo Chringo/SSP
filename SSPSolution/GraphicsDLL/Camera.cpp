@@ -275,7 +275,7 @@ DirectX::XMVECTOR Camera::GetCameraPivot()
 {
 	return *this->m_focusPoint;
 }
-GRAPHICSDLL_API float Camera::GetCameraDistance()
+float Camera::GetCameraDistance()
 {
 	return this->m_distance;
 }
