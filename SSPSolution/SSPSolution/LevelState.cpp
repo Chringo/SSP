@@ -645,10 +645,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				ent->SyncComponents();	//Just sync the component and wait for the update package
 			}
-			else if (ent->GetEntityID() == 5 || ent->GetEntityID() == 6)
-			{
-				//Simply dont send update packets
-			}
 			else
 			{
 				ent->Update(dt, inputHandler);	//Update the entity normaly
@@ -749,7 +745,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				ent = this->m_dynamicEntitys.at(i);
 
-				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
+				if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2
 				{
 					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
 					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
