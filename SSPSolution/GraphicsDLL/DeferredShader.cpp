@@ -135,9 +135,9 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 
 #ifdef _DEBUG
-	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], &errorMessage);
+	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATED], &errorMessage);
 #else
-	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], &errorMessage);
+	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATED], &errorMessage);
 #endif // _DEBUG
 	if (FAILED(hResult))
 	{
@@ -188,7 +188,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
-	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]);
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATED]);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -713,7 +713,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 	case ShaderLib::AnimatedShadow:
 	{
 		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
-		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], NULL, 0);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATED], NULL, 0);
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
