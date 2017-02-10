@@ -479,7 +479,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
-					else if ((int)itr->entityID == 3)	//Packets for player1
+					else if ((int)itr->entityID == 3)	//Packets for ball1
 					{
 						pp = this->m_player2.GetBall()->GetPhysicsComponent();
 
@@ -488,7 +488,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
-					else if ((int)itr->entityID == 4)	//Packets for player1
+					else if ((int)itr->entityID == 4)	//Packets for ball2
 					{
 						pp = this->m_player1.GetBall()->GetPhysicsComponent();
 
@@ -661,8 +661,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			ent = this->m_dynamicEntitys.at(i);
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
-				ent->Update(dt, inputHandler);
-				//ent->SyncComponents();	//Just sync the component and wait for the update package
+				ent->SyncComponents();	//Just sync the component and wait for the update package
 			}
 			else
 			{
@@ -758,6 +757,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (pp != nullptr)
 			{
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+			}
+			
+			if (this->m_player1.GetGrabbed() != nullptr)
+			{
+				pp = this->m_player1.GetGrabbed.GetPhysicsComponent();
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
 			}
 
 			Entity* ent = nullptr;
