@@ -735,7 +735,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
-		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
@@ -756,6 +756,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos,
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 
 	//Update all puzzle entities
@@ -1013,13 +1014,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
-	
-
-
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 2.0);
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 2.0);
-
-	//m_player1.GetPhysicsComponent()->PC_OBB = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), DirectX::XMMatrixRotationY(1.52));
+	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
@@ -1803,10 +1798,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 	}
 #pragma endregion Connect puzzle entities
-
-
-
-	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 	PhysicsHandler* ptr = nullptr;
