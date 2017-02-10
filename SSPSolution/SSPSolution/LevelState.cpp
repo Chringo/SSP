@@ -1137,6 +1137,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	
 		t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 		t_pc->PC_OBB.ort = DirectX::XMMatrixTranspose(t_pc->PC_OBB.ort);
+		//This is where the final rotation is stores. We want to use this rotation matrix and get the extensions for the OBB
+		//Create a vector describing the extension of the AABB
+		//Rotate the extension according the OBB ort
+		//And lastly store the result in graphics components as the model bounds used in culling
+		DirectX::XMStoreFloat3(&t_gc->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(t_pc->PC_OBB.ext[0], t_pc->PC_OBB.ext[1], t_pc->PC_OBB.ext[2], 0.0f), t_pc->PC_OBB.ort));
+		
+		
 
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
