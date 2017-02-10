@@ -435,7 +435,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
-	char* welp = new char('h');
+
+	if (this->m_clearedLevel == 1)
+	{
+		this->m_clearedLevel = 0;
+		this->LoadNext(inputHandler);
+	}
+
 	this->m_networkModule->Update();
 
 	#pragma region 
@@ -976,17 +982,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	PhysicsComponent* playerPC = this->m_player1.GetPhysicsComponent();
 	DirectX::XMVECTOR checkAgainst = playerPC->PC_pos;
 	//Check all fields
+	for (FieldEntity* i : this->m_fieldEntities)
+	{
+		this->m_clearedLevel = i->Update(dt, inputHandler);
+	}
 	//In meters
-	float maxDistance = 5.0f;
+	/*float maxDistance = 5.0f;
 	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(7.0f, 0.5f, 2.3f, 0.0f);
 	float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(winArea, checkAgainst)).m128_f32[0];
 	if (distanceBetween < maxDistance)
-		this->m_clearedLevel = 1;
-	if (this->m_clearedLevel == 1)
-	{
-		this->m_clearedLevel = 0;
-		this->LoadNext(inputHandler);
-	}
+		this->m_clearedLevel = 1;*/
 
 	return result;
 }
@@ -1343,7 +1348,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			tPos,
 			1,	//EntityID Player1
-			2,	//EntityID Player2
+			1,	//EntityID Player2
 			tOBB
 		);
 		FieldEntity* tempFE = new FieldEntity();

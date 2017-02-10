@@ -391,7 +391,7 @@ typedef enum
     /* @} *//* Walther keys */
 
     /* Add any other keys here. */
-
+	SDL_SCANCODE_DOESNOTEXISTYET = 511,
     SDL_NUM_SCANCODES = 512 /**< not a key, just marks the number of scancodes
                                  for array bounds */
 } SDL_Scancode;
