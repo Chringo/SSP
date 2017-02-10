@@ -661,7 +661,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			ent = this->m_dynamicEntitys.at(i);
 			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
-				ent->SyncComponents();	//Just sync the component and wait for the update package
+				ent->Update(dt, inputHandler);
+				//ent->SyncComponents();	//Just sync the component and wait for the update package
 			}
 			else
 			{
