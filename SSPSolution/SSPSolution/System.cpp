@@ -174,13 +174,13 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-
+	framecountingtest++;
 
 	int result = 1;
 
 	DebugHandler::instance()->StartTimer(1);
 
-	this->m_physicsHandler.CheckFieldIntersection();
+	this->m_physicsHandler.CheckFieldIntersection(framecountingtest);
 	this->m_physicsHandler.Update(deltaTime);
 
 	DebugHandler::instance()->EndTimer(1);

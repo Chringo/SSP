@@ -20,6 +20,7 @@ int FieldEntity::Update(float deltaTime, InputHandler * inputHandler)
 	if (this->m_field->F_first_inside && this->m_field->F_second_inside)
 	{
 		this->m_subject.Notify(this->m_entityID, FIELD_CONTAINS);
+		printf("YOU'RE IN THE KILL ZONE!");
 	}
 
 	// TODO: More EVENT messages if needed

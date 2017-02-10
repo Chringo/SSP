@@ -39,7 +39,7 @@ private:
 	AIHandler m_AIHandler;
 	//This is the component handler which acts as an interface between the subsystems and the states
 	ComponentHandler m_componentHandler;
-
+	int framecountingtest = 0;
 public:
 	System();
 	~System();

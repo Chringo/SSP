@@ -117,7 +117,7 @@ public:
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
 
-	PHYSICSDLL_API void CheckFieldIntersection();
+	PHYSICSDLL_API void CheckFieldIntersection(int frame);
 
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);

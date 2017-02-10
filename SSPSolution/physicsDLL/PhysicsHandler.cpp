@@ -2358,8 +2358,9 @@ void PhysicsHandler::Update(float deltaTime)
 #pragma endregion
 }
 
-void PhysicsHandler::CheckFieldIntersection()
+void PhysicsHandler::CheckFieldIntersection(int frame)
 {
+	printf("Frame: %d - ", frame);
 	Field* field = nullptr;
 	int nrOfFields = this->m_fields.size();
 	for (int i = 0; i < nrOfFields; i++)
@@ -2377,12 +2378,14 @@ void PhysicsHandler::CheckFieldIntersection()
 			{
 				if (ptr->PC_BVtype == BV_AABB)
 				{
+					printf("BV_AABB\n");
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
 					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
+					printf("BV_Sphere\n");
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
@@ -2390,6 +2393,7 @@ void PhysicsHandler::CheckFieldIntersection()
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
+					printf("BV_OBB\n");
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
