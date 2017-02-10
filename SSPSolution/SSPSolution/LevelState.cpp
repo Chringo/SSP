@@ -1170,7 +1170,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		t_pc->PC_pos = t_ac->AC_position;
 		t_pc->PC_entityID = data->aiComponents[i].EntityID;
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
@@ -1188,6 +1188,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+
+		// Adjust OBB in physics component - hack...
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
+			, modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
+		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
 
 		PlatformEntity* tpe = new PlatformEntity();
@@ -1473,11 +1479,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		door1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 		resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 		PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
-		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
-		door1P->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0,2,2,1));														//Set Position
-		door1P->PC_rotation = rot;												//Set Rotation
-		door1P->PC_is_Static = false;												//Set IsStatic
-		door1P->PC_active = true;													//Set Active
+		door1P->PC_entityID = tempHeader.EntityID;			//Set Entity ID
+		door1P->PC_pos = pos;								//Set Position
+		door1P->PC_rotation = rot;							//Set Rotation
+		door1P->PC_is_Static = false;						//Set IsStatic
+		door1P->PC_active = true;							//Set Active
 		door1P->PC_gravityInfluence = 1.0f;
 		door1P->PC_mass = 0;
 		door1P->PC_friction = 0.00f;
