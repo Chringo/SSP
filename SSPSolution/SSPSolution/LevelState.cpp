@@ -435,6 +435,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
+	char* welp = new char('h');
 	this->m_networkModule->Update();
 
 	#pragma region 
@@ -1033,7 +1034,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 		unsigned int entityID = 5;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
 		PC_ptr->PC_Sphere.radius = 0.1f;
@@ -1070,7 +1071,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
 		PC_ptr->PC_Sphere.radius = 0.1f;
