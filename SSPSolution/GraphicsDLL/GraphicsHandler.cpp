@@ -649,6 +649,14 @@ int GraphicsHandler::Render(float deltaTime)
 
 	}
 	
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
+	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+	{
+		if (this->m_animGraphicsComponents[i]->active == false)
+			continue;
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+
+	}
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
