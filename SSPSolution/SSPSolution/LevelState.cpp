@@ -353,17 +353,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-
-	PhysicsComponent* previous;
-	if (this->m_networkModule->IsHost())
-	{
-		previous = this->m_player1.GetPhysicsComponent();
-	}
-	else
-	{
-		previous = this->m_player2.GetPhysicsComponent();
-	}
-	
+	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
 	PhysicsComponent* next = nullptr;
 
 	for (int i = 1; i <= nrOfSegments; i++)
@@ -393,34 +383,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		previous = next;
 
 	}
-	if (this->m_networkModule->IsHost())
-	{
-		linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-		linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-		linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
-	}
-	else
-	{
-		linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-		linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-		linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
-	}
-	
+	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-
-	if (this->m_networkModule->IsHost())
-	{
-		previous = this->m_player2.GetPhysicsComponent();
-	}
-	else
-	{
-		previous = this->m_player1.GetPhysicsComponent();
-	}
+	previous = this->m_player2.GetPhysicsComponent();
 	next = nullptr;
 	for (int i = 1; i <= nrOfSegments; i++)
 	{
@@ -449,20 +420,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		previous = next;
 
 	}
-	if (this->m_networkModule->IsHost())
-	{
-		linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-		linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-		linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
-	}
-	else
-	{
-		linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-		linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-		linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
-	}
+	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 	#pragma endregion Create_Chain_Link
 
 	this->m_director.Initialize();
@@ -677,30 +638,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 		//update all dynamic (moving) entities
 		Entity* ent = nullptr;
-		if (this->m_networkModule->IsHost())
+		for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 		{
-			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+			ent = this->m_dynamicEntitys.at(i);
+			if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
 			{
-				ent = this->m_dynamicEntitys.at(i);
-				if (ent == this->m_player2.GetGrabbed())		//Check if the entity is  grabbed by player2, if it is there will be an update packet for it
-				{
-					ent->SyncComponents();	//Just sync the component and wait for the update package
-				}
-				else
-				{
-					ent->Update(dt, inputHandler);	//Update the entity normaly
-				}
+				ent->SyncComponents();	//Just sync the component and wait for the update package
+			}
+			else
+			{
+				ent->Update(dt, inputHandler);	//Update the entity normaly
 			}
 		}
-		else
-		{
-			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
-			{
-				ent = this->m_dynamicEntitys.at(i);
-				ent->SyncComponents();
-			}
-		}
-
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
 	#pragma endregion Update/Syncing
