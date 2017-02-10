@@ -2120,7 +2120,14 @@ void PhysicsHandler::ShutDown()
 	for (int i = 0; i < size; i++)
 	{
 		delete this->m_physicsComponents.at(i);
+		this->m_physicsComponents.at(i) = nullptr;
 	}
+	this->m_physicsComponents.clear();
+	this->m_dynamicComponents.clear();
+	this->m_staticComponents.clear();
+	this->m_links.clear();
+
+	this->m_bullet.Shutdown();
 }
 
 void PhysicsHandler::Update(float deltaTime)
@@ -2361,8 +2368,8 @@ void PhysicsHandler::Update(float deltaTime)
 void PhysicsHandler::CheckFieldIntersection()
 {
 	Field* field = nullptr;
-	int nrOfFields = this->m_fields.size();
-	for (int i = 0; i < nrOfFields; i++)
+	size_t nrOfFields = this->m_fields.size();
+	for (size_t i = 0; i < nrOfFields; i++)
 	{
 		field = &this->m_fields.at(i);
 
@@ -2487,7 +2494,7 @@ void PhysicsHandler::DoChainPhysics(ChainLink * link, float dt)
 			v2_old[1] = DirectX::XMVectorGetY(pParallel);
 			v2_old[2] = DirectX::XMVectorGetZ(pParallel);
 
-			float e = 0.8;
+			float e = 0.8f;
 
 			for (int i = 0; i < 3; i++)
 			{
@@ -2753,7 +2760,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		next->PC_OBB.ext[2] = 0.25f;
 		next->PC_Sphere.radius = 0.25;
 		next->PC_gravityInfluence = 1.0f;
-		next->PC_mass = 0.2;
+		next->PC_mass = 0.2f;
 		this->TransferBoxesToBullet(next, indexBullet);
 
 		link.CL_previous = previous;
@@ -3324,7 +3331,8 @@ void PhysicsHandler::DoChainAjustPhysics()
 
 void PhysicsHandler::UpdateStaticPlatforms(float dt)
 {
-	for (int i = 0; i < this->m_physicsComponents.size(); i++)
+	size_t cap = this->m_physicsComponents.size();
+	for (size_t i = 0; i < cap; i++)
 	{
 		PhysicsComponent* ptr = this->m_physicsComponents.at(i);
 		if (ptr->PC_steadfast == true)

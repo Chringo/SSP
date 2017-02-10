@@ -1017,6 +1017,20 @@ int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 	{
 		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
 	}
+
+	//Clear the Octree of contained components
+	for (size_t i = 0; i < this->m_octreeRoot.containedComponents.size(); i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i] != nullptr)
+		{
+			delete this->m_octreeRoot.containedComponents[i];
+			this->m_octreeRoot.containedComponents[i] = nullptr;
+		}
+	}
+	this->m_octreeRoot.containedComponents.clear();
+	//Delete the octree branches
+	this->DeleteOctree(&this->m_octreeRoot);
+
 	return  result;
 }
 
@@ -1612,7 +1626,7 @@ void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
 		{
 			this->DeleteOctree(curNode->branches[i]);
 			delete curNode->branches[i];
-			curNode->branches[i];
+			curNode->branches[i] = nullptr;
 		}
 	}
 }

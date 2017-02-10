@@ -191,7 +191,6 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
-	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
 
@@ -261,7 +260,8 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 		{
 			rigidBody->activate();
 		}
-		rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
+		rigidBody->setGravity(this->m_GravityAcc * btScalar(src->PC_gravityInfluence));
+		
 		btTransform moveInWorld = rigidBody->getWorldTransform();
 		DirectX::XMVECTOR quat = DirectX::XMQuaternionRotationMatrix(src->PC_OBB.ort);
 
@@ -325,7 +325,9 @@ void BulletInterpreter::Shutdown()
 	for (int i = 0; i < size; i++)
 	{
 		delete this->m_rigidBodies.at(i);
+		this->m_rigidBodies.at(i) = nullptr;
 	}
+	this->m_rigidBodies.clear();
 }
 
 void BulletInterpreter::CreateRigidBody(PhysicsComponent* fromGame)
