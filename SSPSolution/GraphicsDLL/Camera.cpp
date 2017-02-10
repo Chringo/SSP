@@ -339,7 +339,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	return;
 }
 
-GRAPHICSDLL_API void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance)
+void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance)
 {
 	bool result = false;
 
