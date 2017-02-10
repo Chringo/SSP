@@ -435,7 +435,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
-	char* welp = new char('h');
 	this->m_networkModule->Update();
 
 	#pragma region 
