@@ -353,7 +353,17 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+
+	PhysicsComponent* previous;
+	if (this->m_networkModule->IsHost())
+	{
+		previous = this->m_player1.GetPhysicsComponent();
+	}
+	else
+	{
+		previous = this->m_player2.GetPhysicsComponent();
+	}
+	
 	PhysicsComponent* next = nullptr;
 
 	for (int i = 1; i <= nrOfSegments; i++)
@@ -383,15 +393,34 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		previous = next;
 
 	}
-	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+	if (this->m_networkModule->IsHost())
+	{
+		linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+		linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+		linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+	}
+	else
+	{
+		linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+		linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+		linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+	}
+	
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	previous = this->m_player2.GetPhysicsComponent();
+	PhysicsComponent* previous;
+	if (this->m_networkModule->IsHost())
+	{
+		previous = this->m_player2.GetPhysicsComponent();
+	}
+	else
+	{
+		previous = this->m_player1.GetPhysicsComponent();
+	}
 	next = nullptr;
 	for (int i = 1; i <= nrOfSegments; i++)
 	{
@@ -420,10 +449,20 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		previous = next;
 
 	}
-	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+	if (this->m_networkModule->IsHost())
+	{
+		linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+		linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+		linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+	}
+	else
+	{
+		linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+		linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+		linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+	}
 	#pragma endregion Create_Chain_Link
 
 	this->m_director.Initialize();
