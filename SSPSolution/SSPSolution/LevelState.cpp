@@ -1167,7 +1167,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
 			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
 		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
-		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1])* 10;
+		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 #pragma endregion
