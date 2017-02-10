@@ -196,6 +196,9 @@
     <FxCompile Include="Shaders\Shadow\ShadowShader_Instanced.hlsl">
       <Filter>Resource Files\Shaders\Shadow</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Shadow\ShadowShader_Animation.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

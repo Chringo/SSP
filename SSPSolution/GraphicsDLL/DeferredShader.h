@@ -17,7 +17,7 @@ class DeferredShader :
 {
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
-	static const int MAX_SHADOW_AMOUNT      = 1;
+	static const int MAX_SHADOW_AMOUNT      = 2;
 	static const int SHADOW_WIDTH  = 1024;
 	static const int SHADOW_HEIGHT = 1024;
 	enum VERTEX_SHADERS {
@@ -26,6 +26,7 @@ public:
 		VS_INSTANCED_NORMAL,
 		VS_SHADOW_NORMAL,
 		VS_SHADOW_INSTANCED,
+		VS_SHADOW_ANIMATIED,
 		VS_NUM_VERTEX_SHADERS
 	};
 	enum INPUT_LAYOUTS

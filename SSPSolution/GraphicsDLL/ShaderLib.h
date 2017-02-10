@@ -14,7 +14,8 @@ namespace ShaderLib
 		InstancedAnimated = 3,
 		Shadow			  = 4,
 		InstancedShadow   = 5,
-		Wireframe = 6
+		AnimatedShadow	  = 6,
+		Wireframe		  = 7
 	};
 
 

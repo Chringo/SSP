@@ -54,6 +54,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	WCHAR* psFilename	      = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
 	WCHAR* shadowFilename	  = L"../GraphicsDLL/Shaders/Shadow/ShadowShader.hlsl";
 	WCHAR* shadowInstFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Instanced.hlsl";
+	WCHAR* shadowAnimFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Animation.hlsl";
 	// Compile the shaders \\
 
 #ifdef _DEBUG
@@ -132,6 +133,18 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 		return 1;
 	}
 
+
+#ifdef _DEBUG
+	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_DEBUG, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], &errorMessage);
+#else
+	hResult = D3DCompileFromFile(shadowAnimFilename, NULL, NULL, "VS_main", "vs_5_0", D3D10_SHADER_OPTIMIZATION_LEVEL3, 0, &vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], &errorMessage);
+#endif // _DEBUG
+	if (FAILED(hResult))
+	{
+		Shader::OutputShaderErrorMessage(errorMessage, shadowAnimFilename);
+		return 1;
+	}
+
 #ifdef _DEBUG
 	hResult = D3DCompileFromFile(shadowFilename, NULL, NULL, "GS_main", "gs_5_0", D3D10_SHADER_DEBUG, 0, &geoShadowShaderBuffer, &errorMessage);
 #else
@@ -170,6 +183,12 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 
 	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_INSTANCED]);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATIED]);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -737,6 +756,21 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 
 		break;
 	}
+	case ShaderLib::AnimatedShadow:
+	{
+		m_deviceContext->IASetInputLayout(this->m_layout[IL_ANIMATED]);
+		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_ANIMATIED], NULL, 0);
+		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
+		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
+		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
+
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
+		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
+		m_shadowStateActive = true;
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -747,7 +781,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 void DeferredShader::SetShadowDataToRead()
 {
 
-	this->m_deviceContext->PSSetShaderResources(10, MAX_SHADOW_AMOUNT, &m_deferredSRV[ShaderLib::Shadow]);
+	this->m_deviceContext->PSSetShaderResources(10, 1, &m_deferredSRV[ShaderLib::Shadow]);
 }
 
 void DeferredShader::Release()
