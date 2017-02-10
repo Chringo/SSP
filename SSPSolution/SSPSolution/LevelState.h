@@ -13,6 +13,16 @@
 #include "LeverEntity.h"
 #include "FieldEntity.h"
 #include "PlatformEntity.h"
+//more than 10 segments can lead to chain segments going through walls. #ShitSebbeSays
+
+#define CHAIN_SEGMENT_MODEL_ID 1680427216
+//Per player
+#define CHAIN_SEGMENTS 5
+#define PLAYER1_ID 1
+#define PLAYER2_ID 1
+#define BALL1_ID 1
+#define BALL2_ID 1
+#define CHAIN_ID 1
 
 class LevelState :
 	public GameState

@@ -2125,6 +2125,7 @@ void PhysicsHandler::ShutDown()
 	this->m_physicsComponents.clear();
 	this->m_dynamicComponents.clear();
 	this->m_staticComponents.clear();
+	this->m_links.clear();
 
 	this->m_bullet.Shutdown();
 }

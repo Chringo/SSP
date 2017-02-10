@@ -26,7 +26,7 @@ inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader
 Entity* LevelState::GetClosestBall(float minDist)
 {
 	Entity* closest = nullptr;
-	float closestDistance = 9999999999;
+	float closestDistance = FLT_MAX;
 	PhysicsComponent* pc = this->m_player1.GetPhysicsComponent();
 	
 	//Calc the distance for play1 ball;
@@ -138,11 +138,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
-	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
-	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2);
-	// creating the player
 
-	#pragma region
+	this->m_cHandler->ResizeGraphicsPersistent(2 + CHAIN_SEGMENTS * 2);
+	// creating the player
+	//Player1
+#pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 1117267500;
@@ -163,7 +163,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
 	/*TEMP ANIM STUFF*/
-	#pragma region
+#pragma region
 	AnimationComponent* playerAnim1 = nullptr;
 
 	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
@@ -193,7 +193,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
-	#pragma endregion Player1
+#pragma endregion Player1
 
 	//Player 2
 #pragma region
@@ -338,7 +338,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	plat->Initialize(5, platP, platG, nullptr, platA);
 #pragma endregion AIComponent tests
 
-	#pragma region
+#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
 	m_cameraRef->SetCameraPivot(
@@ -346,86 +346,85 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		targetOffset,
 		1.3f
 	);
-	#pragma endregion Set_Camera
-
-#pragma region
-	int nrOfSegments = nrOfSegmentsPerPlayer;
-	float linkLenght = 1.2f;
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
-	PhysicsComponent* next = nullptr;
-
-	for (int i = 1; i <= nrOfSegments; i++)
-	{
-		if (i != 1)
-		{
-			linkLenght = 0.35f;
-		}
-		unsigned int entityID = 5;
-		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
-		PC_ptr->PC_entityID = entityID;
-		PC_ptr->PC_BVtype = BV_Sphere;
-		PC_ptr->PC_Sphere.radius = 0.1f;
-		PC_ptr->PC_mass = 0.2f;
-		PC_ptr->PC_friction = 1.0f;
-		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
-		GC_ptr->modelID = 1680427216;
-		GC_ptr->active = true;
-		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
-		DynamicEntity* chainLink = new DynamicEntity();
-		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
-		this->m_dynamicEntitys.push_back(chainLink);
-
-		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
-		previous = next;
-
-	}
-	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
-
-	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	previous = this->m_player2.GetPhysicsComponent();
-	next = nullptr;
-	for (int i = 1; i <= nrOfSegments; i++)
-	{
-		if (i != 1)
-		{
-			linkLenght = 0.35;
-		}
-		unsigned int entityID = 6;
-		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
-		PC_ptr->PC_entityID = entityID;
-		PC_ptr->PC_BVtype = BV_Sphere;
-		PC_ptr->PC_Sphere.radius = 0.1f;
-		PC_ptr->PC_mass = 0.2f;
-		PC_ptr->PC_friction = 1.0f;
-		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
-		GC_ptr->modelID = 1680427216;
-		GC_ptr->active = true;
-		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
-		DynamicEntity* chainLink = new DynamicEntity();
-		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
-		this->m_dynamicEntitys.push_back(chainLink);
-
-		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
-		previous = next;
-
-	}
-	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
-	#pragma endregion Create_Chain_Link
+#pragma endregion Set_Camera
+//
+//#pragma region
+//	float linkLenght = 1.2f;
+//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+//	PhysicsComponent* next = nullptr;
+//
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35f;
+//		}
+//		unsigned int entityID = 5;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+//
+//	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	previous = this->m_player2.GetPhysicsComponent();
+//	next = nullptr;
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35;
+//		}
+//		unsigned int entityID = 6;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+//#pragma endregion Create_Chain_Link
 
 	this->m_director.Initialize();
 
@@ -994,6 +993,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 int LevelState::CreateLevel(LevelData::Level * data)
 {
+	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	//Get how many static and dynamic components that will be needed in the level
 	int staticEntityCount = 0;
 	int dynamicEntityCount = 0;
@@ -1010,12 +1010,90 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	staticEntityCount += data->numLever;
 	staticEntityCount += data->numWheel;
 	dynamicEntityCount += data->numDoor;
+	dynamicEntityCount += CHAIN_SEGMENTS * 2;
 
 	this->m_cHandler->ResizeGraphicsStatic(staticEntityCount);
 	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
 
 
 
+
+#pragma region
+	float linkLenght = 1.2f;
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+	PhysicsComponent* next = nullptr;
+
+	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+	{
+		if (i != 1)
+		{
+			linkLenght = 0.35f;
+		}
+		unsigned int entityID = 5;
+		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+		PC_ptr->PC_entityID = entityID;
+		PC_ptr->PC_BVtype = BV_Sphere;
+		PC_ptr->PC_Sphere.radius = 0.1f;
+		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
+		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
+		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+		GC_ptr->active = true;
+		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+		DynamicEntity* chainLink = new DynamicEntity();
+		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+		this->m_dynamicEntitys.push_back(chainLink);
+
+		next = PC_ptr;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+		previous = next;
+
+	}
+	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+
+	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	previous = this->m_player2.GetPhysicsComponent();
+	next = nullptr;
+	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+	{
+		if (i != 1)
+		{
+			linkLenght = 0.35f;
+		}
+		unsigned int entityID = 6;
+		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+		PC_ptr->PC_entityID = entityID;
+		PC_ptr->PC_BVtype = BV_Sphere;
+		PC_ptr->PC_Sphere.radius = 0.1f;
+		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
+		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
+		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+		GC_ptr->active = true;
+		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+		DynamicEntity* chainLink = new DynamicEntity();
+		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+		this->m_dynamicEntitys.push_back(chainLink);
+
+		next = PC_ptr;
+		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+		previous = next;
+	}
+	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+#pragma endregion Create_Chain_Link
 
 
 	DirectX::XMVECTOR rot;
@@ -1027,7 +1105,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
 	Resources::Status st = Resources::ST_OK;
-	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 
 	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
@@ -2063,6 +2140,8 @@ int LevelState::UnloadLevel()
 	ball2->SyncComponents();
 	//Sync components to make sure the values in the graphics components are somewhat sane
 
+
+
 	// Clear the dynamic entities. Don't delete the balls
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
@@ -2073,6 +2152,8 @@ int LevelState::UnloadLevel()
 		}
 	}
 	this->m_dynamicEntitys.clear();
+
+
 
 	//Re-introduce them into our dynamic list
 	this->m_dynamicEntitys.push_back(ball1);
