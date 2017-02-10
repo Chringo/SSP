@@ -278,7 +278,7 @@ void NetworkModule::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMFLOAT4X4 newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -289,7 +289,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
 	DirectX::XMStoreFloat3(&packet.newPos, newPos);
-	DirectX::XMStoreFloat3(&packet.newRotation, newRotation);
+	packet.newRotation = newRotation;
 	DirectX::XMStoreFloat3(&packet.newVelocity, newVelocity);
 	//packet.newRotationVelocity = newRotationVelocity;
 
