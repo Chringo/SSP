@@ -173,8 +173,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 	if (this->m_grabbed != nullptr)
 	{
-		this->m_grabbed->GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
-		//sync with bullet
+		PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent(); 
+		ptr->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
+		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		ptr->PC_gravityInfluence = 1.0;
 	}
 
 
@@ -193,31 +196,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 
 			float strength = 50.0f;
-			//this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(DirectX::XMVectorAdd(this->m_lookDir, DirectX::XMVectorSet(0, 0, 0, 0)), strength);
-			this->m_grabbed->GetPhysicsComponent()->ApplyForce(this->m_lookDir, strength);
+			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
+			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
 			this->SetGrabbed(nullptr);	//Release the entity
 		}
 
 	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_I))
-	{
-		//assumes grabbed is ALWAYS the ball
-		if (this->m_grabbed != nullptr)
-		{
-			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
-			this->m_aComp->previousState = PLAYER_THROW;
 
-			//Play sound
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-
-			float strength = 15.0f;		
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
-			this->SetGrabbed(nullptr);	//Relsease the entity
-		}
-
-	}
 	//Check if player is grounded
 
 	//Check if the player CAN	 update its physics component
@@ -243,6 +228,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//Scale lookDir with forwards
 				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(forwards)));
 
+				this->m_rightDir.m128_f32[1] = 0.0f;
 				lookAtDir = this->m_rightDir;
 				lookAtDir.m128_f32[1] = 0.0f;
 				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
@@ -253,11 +239,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				velocity = DirectX::XMVector3Normalize(velocity);
 
 				//Scale that velocity with speed and deltaTime
-				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * dT);
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
 				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
 
 				//Add the velocity to our physicsComponent
+				float ySpeed = 0;
+				ySpeed = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
+				//ySpeed += DirectX::XMVectorGetY(velocity);
+
 				this->m_pComp->PC_velocity = velocity;
+				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
 				
 				//Rotates the player to run in the direction that the camera faces. 
 				DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));
@@ -305,7 +296,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					this->m_walkingSound->setPlayPosition(0);
 					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
 				}
-				
 			}
 
 
