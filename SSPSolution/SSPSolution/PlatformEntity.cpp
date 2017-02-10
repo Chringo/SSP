@@ -13,23 +13,15 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
 	this->SyncComponents();
 
-	//this->m_gComp->worldMatrix =
-	//	DirectX::XMMatrixMultiply(
-	//		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
-	//		DirectX::XMMatrixTranslationFromVector(
-	//			DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-	//				DirectX::XMVECTOR{
-	//	m_gComp->modelPtr->GetOBBData().position.x,
-	//		m_gComp->modelPtr->GetOBBData().position.y,
-	//		m_gComp->modelPtr->GetOBBData().position.z, 0})));
-
-	//this->m_gComp->worldMatrix =
-	//	DirectX::XMMatrixMultiply(
-	//		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
-	//		DirectX::XMMatrixTranslationFromVector(
-	//			DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-	//				this->m_pComp->PC_OBB.ort.r[3])));
-
+	// Adjust misplaced graphics component - hack...
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, 
+		DirectX::XMMatrixTranslationFromVector(
+		DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
+			DirectX::XMVECTOR{
+		m_gComp->modelPtr->GetOBBData().position.x,
+			m_gComp->modelPtr->GetOBBData().position.y,
+			m_gComp->modelPtr->GetOBBData().position.z, 0})));
+	
 	if (this->GetAIComponent()->AC_triggered)
 	{
 		if (this->m_ActiveSound == nullptr)
