@@ -651,6 +651,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			wasGrabbed->SyncComponents();	//Update the component
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
+			this->m_networkModule->SendEntityUpdatePacket(wasGrabbed->GetPhysicsComponent()->PC_entityID, (wasGrabbed->GetPhysicsComponent()->PC_pos, (wasGrabbed->GetPhysicsComponent()->PC_velocity, (wasGrabbed->GetPhysicsComponent()->PC_rotation);	//Send the update data
 		}
 
 
