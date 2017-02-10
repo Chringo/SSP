@@ -362,7 +362,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		{
 			linkLenght = 0.35f;
 		}
-		unsigned int entityID = 5;
+		unsigned int entityID = CHAIN_LINK_ID;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
 		PC_ptr->PC_entityID = entityID;
@@ -399,7 +399,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		{
 			linkLenght = 0.35;
 		}
-		unsigned int entityID = 6;
+		unsigned int entityID = CHAIN_LINK_ID -1;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
 		PC_ptr->PC_entityID = entityID;
