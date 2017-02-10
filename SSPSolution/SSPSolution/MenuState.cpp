@@ -258,13 +258,13 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_optionsMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Toggle fullscreen was clicked
-			//Cheating by telling the system the user pressed F
-			inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
+			////Cheating by telling the system the user pressed F
+			//inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
+			result = 511;
 		}
 		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
 		{
 			//Return to main menu was clicked
-			inputHandler->SetKeyState(SDL_SCANCODE_F, false); //Temporary cheat
 			//Switch visable buttons
 			this->m_optionsMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;

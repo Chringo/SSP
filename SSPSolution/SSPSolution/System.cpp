@@ -153,10 +153,6 @@ int System::Run()
 		{
 			this->m_running = false;
 		}
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
-		{
-			this->FullscreenToggle();
-		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
 		{
 			DebugHandler::instance()->ToggleDebugInfo();
@@ -278,10 +274,13 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	enum {TOGGLE_FULLSCREEN = 511};
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
-
+	if (result == TOGGLE_FULLSCREEN)
+	{
+		this->FullscreenToggle();
+	}
 	DebugHandler::instance()->EndTimer(0);
-
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
 	//Render
