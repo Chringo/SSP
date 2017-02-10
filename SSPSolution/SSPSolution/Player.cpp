@@ -42,19 +42,17 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
-
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
+	{
+		this->m_ragdoll->state = RAGDOLL_TRANSITION;
+		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
+	{
+		this->m_ragdoll->state = ANIMATED_TRANSITION;
+	}
 	if (this->m_ragdoll != nullptr)
 	{
-		if (this->m_ragdoll->state == ANIMATED)
-		{
-
-			this->m_ragdoll->SetBindPose(((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms, this->m_pComp->PC_pos);
-			//for (int i = 0; i < 21; i++)
-			//{
-			//	DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
-			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixInverse(nullptr, *inverseBindPose);
-			//}
-		}
 		if (this->m_ragdoll->state == RAGDOLL)
 		{
 			if (!stateExists(RAGDOLL_STATE))
@@ -69,12 +67,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			}
 			for (int i = 0; i < 21; i++)
 			{
+				//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorScale(this->m_ragdoll->jointMatrixes[i].r[3],0.05);
 				this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorSetW(this->m_ragdoll->jointMatrixes[i].r[3], 1);
 				DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
 				((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, this->m_ragdoll->jointMatrixes[i]);
 				//((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = this->m_ragdoll->jointMatrixes[i];
 			}
-			//
 		}
 	}
 

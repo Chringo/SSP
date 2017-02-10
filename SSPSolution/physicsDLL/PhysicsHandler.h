@@ -12,7 +12,155 @@
 #include "BulletInterpreter.h"
 //#include "..\ResourceLib\Skeleton.h"
 #include "../ResourceLib/Skeleton.h"
+#include "../GraphicsDLL/GraphicsComponent.h"
+#include "../GraphicsDLL/AnimationHandler.h"
 
+enum BodyPartType
+{
+	BP_UPPERBODY,
+	BP_LOWERBODY,
+	BP_LEFT_ARM,
+	BP_RIGHT_ARM,
+	BP_LEFT_LEG,
+	BP_RIGHT_LEG
+};
+struct BodyPart
+{
+	BodyPartType BP_type;
+	PhysicsComponent* center;
+	PhysicsComponent* next;
+	PhysicsComponent* previous;
+	PhysicsComponent* next2;
+	PhysicsComponent* next3;
+	PhysicsComponent* next4;
+	PhysicsComponent* next5;
+};
+enum RagdollState
+{
+	ANIMATED,
+	RAGDOLL_TRANSITION,
+	RAGDOLL,
+	ANIMATED_TRANSITION,
+};
+struct Ragdoll
+{
+	RagdollState state;
+
+	PhysicsComponent* playerPC;
+	PhysicsComponent* ballPC;
+
+	BodyPart upperBody;
+	BodyPart lowerBody;
+	BodyPart rightArm;
+	BodyPart leftArm;
+	BodyPart rightLeg;
+	BodyPart leftLeg;
+
+	Resources::Skeleton::Joint *Skeleton;
+
+	DirectX::XMMATRIX jointMatrixes[21];
+
+	void SetBindPose(DirectX::XMMATRIX *jointMatrixes, DirectX::XMVECTOR pos)
+	{
+		float scale = 1.0f;
+
+		//center of body
+		this->lowerBody.center->PC_OBB.ort = this->jointMatrixes[0];
+		this->lowerBody.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[0].r[3], scale), pos);
+		this->lowerBody.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		//1-4 lowerbody to head
+		this->upperBody.next3->PC_OBB.ort = this->jointMatrixes[1];
+		this->upperBody.next3->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[1].r[3], scale), pos);
+		this->upperBody.next3->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->upperBody.center->PC_OBB.ort = this->jointMatrixes[2];
+		this->upperBody.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[2].r[3], scale), pos);
+		this->upperBody.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->upperBody.next4->PC_OBB.ort = this->jointMatrixes[3];
+		this->upperBody.next4->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[3].r[3], scale), pos);
+		this->upperBody.next4->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->upperBody.next5->PC_OBB.ort = this->jointMatrixes[4];
+		this->upperBody.next5->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[4].r[3], scale), pos);
+		this->upperBody.next5->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		//-----
+
+		//5-8 rightarm
+		this->rightArm.center->PC_OBB.ort = this->jointMatrixes[5];
+		this->rightArm.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[5].r[3], scale), pos);
+		this->rightArm.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightArm.next->PC_OBB.ort = this->jointMatrixes[6];
+		this->rightArm.next->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[6].r[3], scale), pos);
+		this->rightArm.next->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightArm.next2->PC_OBB.ort = this->jointMatrixes[7];
+		this->rightArm.next2->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[7].r[3], scale), pos);
+		this->rightArm.next2->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightArm.next3->PC_OBB.ort = this->jointMatrixes[8];
+		this->rightArm.next3->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[8].r[3], scale), pos);
+		this->rightArm.next3->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+
+		//----
+
+		//9-12 leftarm
+		this->leftArm.center->PC_OBB.ort = this->jointMatrixes[9];
+		this->leftArm.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[9].r[3], scale), pos);
+		this->leftArm.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftArm.next->PC_OBB.ort = this->jointMatrixes[10];
+		this->leftArm.next->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[10].r[3], scale), pos);
+		this->leftArm.next->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftArm.next2->PC_OBB.ort = this->jointMatrixes[11];
+		this->leftArm.next2->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[11].r[3], scale), pos);
+		this->leftArm.next2->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftArm.next3->PC_OBB.ort = this->jointMatrixes[12];
+		this->leftArm.next3->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[12].r[3], scale), pos);
+		this->leftArm.next3->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		//----
+
+		//13-16 rightLeg - foot
+		this->rightLeg.center->PC_OBB.ort = this->jointMatrixes[13];
+		this->rightLeg.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[13].r[3], scale), pos);
+		this->rightLeg.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightLeg.next->PC_OBB.ort = this->jointMatrixes[14];
+		this->rightLeg.next->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[14].r[3], scale), pos);
+		this->rightLeg.next->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightLeg.next2->PC_OBB.ort = this->jointMatrixes[15];
+		this->rightLeg.next2->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[15].r[3], scale), pos);
+		this->rightLeg.next2->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->rightLeg.next3->PC_OBB.ort = this->jointMatrixes[16];
+		this->rightLeg.next3->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[16].r[3], scale), pos);
+		this->rightLeg.next3->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		//-----
+
+		//17-20 leftleg - foot
+		this->leftLeg.center->PC_OBB.ort = this->jointMatrixes[17];
+		this->leftLeg.center->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[17].r[3], scale), pos);
+		this->leftLeg.center->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftLeg.next->PC_OBB.ort = this->jointMatrixes[18];
+		this->leftLeg.next->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[18].r[3], scale), pos);
+		this->leftLeg.next->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftLeg.next2->PC_OBB.ort = this->jointMatrixes[19];
+		this->leftLeg.next2->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[19].r[3], scale), pos);
+		this->leftLeg.next2->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		this->leftLeg.next3->PC_OBB.ort = this->jointMatrixes[20];
+		this->leftLeg.next3->PC_pos = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->jointMatrixes[20].r[3], scale), pos);
+		this->leftLeg.next3->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+	}
+};
 class PhysicsHandler
 {
 private:
@@ -29,6 +177,9 @@ private:
 	Ragdoll m_playerRagDoll;
 
 	std::vector<Field> m_fields;
+
+
+	DirectX::XMMATRIX TESTjointMatrixes[21];
 
 	DirectX::XMVECTOR m_gravity;
 	int m_ragdollNotMovingCounter;
@@ -173,6 +324,11 @@ public:
 	
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 	PHYSICSDLL_API void SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
+	PHYSICSDLL_API void SyncRagdollWithSkelton(Ragdoll* ragdoll);
+
+	PHYSICSDLL_API DirectX::XMMATRIX CalcTransformMatrix(PhysicsComponent* joint1, PhysicsComponent* joint2, PhysicsComponent* joint3);
+
+	PHYSICSDLL_API void CalcNewRotationAxises(PhysicsComponent* joint1, PhysicsComponent* joint2);
 
 #ifdef _DEBUG
 
