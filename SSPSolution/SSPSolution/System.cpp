@@ -109,7 +109,7 @@ int System::Initialize(std::string path)
 	//this->m_Anim = new Animation();
 
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
-	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"GS Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
@@ -182,7 +182,6 @@ int System::Update(float deltaTime)
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
 
-	DebugHandler::instance()->StartTimer(0);
 
 	int result = 1;
 
@@ -276,14 +275,15 @@ int System::Update(float deltaTime)
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
-	
+	DebugHandler::instance()->StartTimer(0);
+
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 
+	DebugHandler::instance()->EndTimer(0);
 
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance()->EndTimer(0);
 	//Render
 	//Frustrum cull
 	DebugHandler::instance()->StartTimer(3);
