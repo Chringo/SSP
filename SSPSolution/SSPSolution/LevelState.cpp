@@ -665,7 +665,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 			else
 			{
-				ent->Update(dt, inputHandler);	//Update the entity normaly
+				if (this->m_networkModule->IsHost())
+				{
+					ent->Update(dt, inputHandler);	//Update the entity normaly
+				}
+				else
+				{
+					ent->SyncComponents();	//Update the entity normaly
+				}
+				
 			}
 		}
 		//Sync other half of the components
@@ -759,14 +767,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 
 			Entity* ent = nullptr;
-			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			if (this->m_networkModule->IsHost())
 			{
-				ent = this->m_dynamicEntitys.at(i);
 
-				if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
+				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 				{
-					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
+					ent = this->m_dynamicEntitys.at(i);
+
+					if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
+					{
+						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
+					}
 				}
 			}
 
