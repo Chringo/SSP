@@ -645,7 +645,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				ent->SyncComponents();	//Just sync the component and wait for the update package
 			}
-			else if (ent->GetEntityID == 5 || ent->GetEntityID == 6)
+			else if (ent->GetEntityID() == 5 || ent->GetEntityID() == 6)
 			{
 				//Simply dont send update packets
 			}
