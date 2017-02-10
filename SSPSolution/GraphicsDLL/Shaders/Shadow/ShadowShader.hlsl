@@ -99,9 +99,9 @@ void GS_main(
     {
         element.rtIndex = 0;
        // eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-        matrix combinedMatrix1 = mul(viewMatrix, projectionMatrix);
+        matrix combinedMatrix1 = mul(ShadowViewMatrix, ShadowProjectionMatrix);
+        //element.position.w = input[i].position;
         element.position = mul(input[i].position, combinedMatrix1);
-        element.position.w = 1.0f;
         output.Append(element);
     }
     output.RestartStrip();
