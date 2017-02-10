@@ -479,6 +479,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
+					else if ((int)itr->entityID == 3)	//Packets for player1
+					{
+						pp = this->m_player2.GetBall()->GetPhysicsComponent();
+
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					}
+					else if ((int)itr->entityID == 4)	//Packets for player1
+					{
+						pp = this->m_player1.GetBall()->GetPhysicsComponent();
+
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					}
 					else //For every other entity
 					{
 						// Find the entity
@@ -745,7 +763,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				ent = this->m_dynamicEntitys.at(i);
 
-				if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2
+				if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
 				{
 					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
 					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
