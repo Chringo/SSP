@@ -17,7 +17,7 @@ class DeferredShader :
 {
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
-	static const int MAX_SHADOW_AMOUNT      = 1;
+	static const int MAX_SHADOW_AMOUNT      = 2;
 	static const int SHADOW_WIDTH  = 1280;
 	static const int SHADOW_HEIGHT = 720;
 	enum VERTEX_SHADERS {
