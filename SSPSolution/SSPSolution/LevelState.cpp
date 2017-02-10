@@ -738,17 +738,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (pp != nullptr)
 			{
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+			}
 
-				Entity* ent = nullptr;
-				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			Entity* ent = nullptr;
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			{
+				ent = this->m_dynamicEntitys.at(i);
+
+				if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
 				{
-					ent = this->m_dynamicEntitys.at(i);
-
-					if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
-					{
-						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
-					}
+					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
 				}
 			}
 
