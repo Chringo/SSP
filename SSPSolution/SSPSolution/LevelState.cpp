@@ -300,43 +300,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
 	#pragma endregion Ball2
-
 	
-
-#pragma region
-//	DynamicEntity* plat = new DynamicEntity();
-//	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
-//	platG->modelID = 1337;
-//	platG->active = true;
-//	resHandler->GetModel(platG->modelID, platG->modelPtr);
-//	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
-//	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
-//	platP->PC_is_Static = false;
-//	platP->PC_steadfast = true;
-//	platP->PC_AABB.ext[0] = 5;
-//	platP->PC_AABB.ext[1] = 0.1f;
-//	platP->PC_AABB.ext[2] = 5;
-//	platP->PC_elasticity = 0;
-//	platP->PC_friction = 1.0f;
-//	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
-//	AIComponent* platA = m_cHandler->GetAIComponent();
-//#pragma region AIComp variables
-//	platA->AC_triggered = true;
-//	platA->AC_speed = 0.15f;
-//	platA->AC_position = platP->PC_pos;
-//	platA->AC_pattern = AI_ROUNDTRIP;
-//	platA->AC_nrOfWaypoint = 4;
-//	platA->AC_waypoints[0] = platP->PC_pos;
-//	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
-//	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
-//	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
-//#pragma endregion
-//	platP->PC_entityID = plat->GetEntityID();
-//	platA->AC_entityID = plat->GetEntityID();
-//	this->m_dynamicEntitys.push_back(plat);
-//	plat->Initialize(5, platP, platG, nullptr, platA);
-#pragma endregion AIComponent tests
-
 	#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
@@ -997,9 +961,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
 
 
-
-
-
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
 	rot.m128_f32[3] = 0.0f;	//Set w to 0
@@ -1010,8 +971,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	Resources::Model* modelPtr;
 	Resources::Status st = Resources::ST_OK;
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-
-	std::vector<DynamicEntity*> aiEntities;
 
 	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
@@ -1211,24 +1170,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1])* 10;
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
-
-		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
-		////t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMVectorSubtract(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMMATRIX tempPos = t_pc->PC_OBB.ort;
-		//tempPos.r[3] = obbPos;
-		//DirectX::XMMATRIX tempBPos = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-		//tempPos = tempPos*tempBPos;
-
-		/*t_pc->PC_OBB.ort.r[3] = t_ac->AC_position;
-		t_pc->PC_OBB.ort.r[3].m128_f32[3] = 1.0f;*/
-		//t_pc->PC_OBB.ort.r[3] = hejsan;
-		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x*-1, modelPtr->GetOBBData().position.y*-1, modelPtr->GetOBBData().position.z*-1,1 };
-		//t_pc->PC_pos = hejsan;
-
-		/* DANGER ZONE */
-		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z, 1.0f };
 #pragma endregion
 
 		PlatformEntity* tpe = new PlatformEntity();
