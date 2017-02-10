@@ -343,9 +343,9 @@ float4 PS_main(VS_OUT input) : SV_Target
     float NdotV = abs(dot(N, V)) + EPSILON;
     
 
-    float shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
-    return shadowFactor.rrrr;
 
+
+    float shadowFactor = 1.0;
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
@@ -365,13 +365,12 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
 
             //DO SHADOW STUFF HERE
-            //float shadowFactor = 1.0;
-            //if (i == 10)
-            //{
-            //    shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
-            //    lightPower *= shadowFactor;
+            if (i == 0)
+            {
+                shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
+                lightPower *= shadowFactor;
 
-            //}
+            }
 
 
             //DIFFUSE
@@ -393,6 +392,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     }
 
 
+    //return shadowFactor;
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
