@@ -535,7 +535,7 @@ void Camera::DecreaseDistance(float amount)
 
 }
 
-GRAPHICSDLL_API void Camera::IncreaseDistance(float amount)
+void Camera::IncreaseDistance(float amount)
 {
 	this->m_distance += amount;
 
