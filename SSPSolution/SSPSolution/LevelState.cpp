@@ -154,19 +154,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	
-	playerP->PC_OBB = m_ConvertOBB(playerG->modelPtr->GetOBBData());
-	
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
-
-	//playerP->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ playerG->modelPtr->GetOBBData().position.x, playerG->modelPtr->GetOBBData().position.y, playerG->modelPtr->GetOBBData().position.z, 1 };
-
-	/*playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;*/
-
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -219,16 +209,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_mass = 10;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-
-	playerP->PC_OBB = m_ConvertOBB(playerG->modelPtr->GetOBBData());
-
-	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
-*/
-	/*playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 0.5f;
-	playerP->PC_OBB.ext[2] = 0.5f;*/
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
 	/*TEMP ANIM STUFF*/
@@ -317,6 +300,42 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
 	#pragma endregion Ball2
+
+	
+
+#pragma region
+//	DynamicEntity* plat = new DynamicEntity();
+//	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
+//	platG->modelID = 1337;
+//	platG->active = true;
+//	resHandler->GetModel(platG->modelID, platG->modelPtr);
+//	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
+//	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
+//	platP->PC_is_Static = false;
+//	platP->PC_steadfast = true;
+//	platP->PC_AABB.ext[0] = 5;
+//	platP->PC_AABB.ext[1] = 0.1f;
+//	platP->PC_AABB.ext[2] = 5;
+//	platP->PC_elasticity = 0;
+//	platP->PC_friction = 1.0f;
+//	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
+//	AIComponent* platA = m_cHandler->GetAIComponent();
+//#pragma region AIComp variables
+//	platA->AC_triggered = true;
+//	platA->AC_speed = 0.15f;
+//	platA->AC_position = platP->PC_pos;
+//	platA->AC_pattern = AI_ROUNDTRIP;
+//	platA->AC_nrOfWaypoint = 4;
+//	platA->AC_waypoints[0] = platP->PC_pos;
+//	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
+//	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
+//	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
+//#pragma endregion
+//	platP->PC_entityID = plat->GetEntityID();
+//	platA->AC_entityID = plat->GetEntityID();
+//	this->m_dynamicEntitys.push_back(plat);
+//	plat->Initialize(5, platP, platG, nullptr, platA);
+#pragma endregion AIComponent tests
 
 	#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
@@ -416,7 +435,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
-
+	char* welp = new char('h');
 	this->m_networkModule->Update();
 
 	#pragma region 
@@ -760,20 +779,20 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		//TODO: NOCLIP BOOOOIS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
 		{
-			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
-			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
 		}
 		else
 		{
-			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
-			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
 		}
 		//Result: Sloppy teleport :(
 		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos,
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
-
-		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
 
 	//Update all puzzle entities
@@ -1093,8 +1112,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
 		t_pc->PC_BVtype = BV_OBB;
+		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+
+
 
 		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
 			, modelPtr->GetOBBData().position.z });
@@ -1172,14 +1194,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = t_ac->AC_position;// OLD HACK DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
 		t_pc->PC_entityID = data->aiComponents[i].EntityID;
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
 		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
-		t_pc->PC_BVtype = BV_OBB;
+		t_pc->PC_BVtype = BV_AABB;
 		t_pc->PC_mass = 0;
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
@@ -1187,16 +1209,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
 			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
 		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
-		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
+		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1])* 10;
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
-
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
-			, modelPtr->GetOBBData().position.z });
-		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
-		//door1P->PC_pos = tempOBBPos.r[3];
-
-		t_pc->PC_OBB.ort = rotate;
 
 		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
 		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
@@ -1848,6 +1863,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 	}
 #pragma endregion Connect puzzle entities
+
+
 
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
