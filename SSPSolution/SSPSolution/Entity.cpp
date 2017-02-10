@@ -34,13 +34,12 @@ int Entity::SyncComponents()
 			{
 				if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
 				{
-					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+					//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
 				}
 				else
 				{
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-
 				}
 			}
 			else
@@ -79,6 +78,20 @@ void Entity::UnsafeSyncComponents()
 	//rotate and translate the obb in the game
 	if (this->m_pComp->PC_BVtype == BV_OBB)
 	{
+		//if (this->m_gComp->modelID == 1117267500 )
+		//{
+		//
+		//	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort,
+		//		DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSubtract(
+		//			this->m_pComp->PC_pos,
+		//			DirectX::XMVECTOR{
+		//			0,
+		//			this->m_pComp->PC_OBB.ext[1],
+		//			0,
+		//			0}
+		//	)));
+		//}
+		//else
 		//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationQuaternion(this->m_pComp->PC_OBB.quat), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 		if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
 		{
@@ -137,10 +150,6 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 
 	}
 	else {
-		if (this->m_entityID == 3)
-		{
-			int a = 0;
-		}
 		this->m_isGrabbed = false;
 		//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
