@@ -315,6 +315,8 @@ void Camera::SetCameraPos(DirectX::XMVECTOR newCamPos)
 	return;
 }
 
+
+
 void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance)
 {
 	bool result = false;
@@ -335,6 +337,20 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	m_updatePos();
 
 	return;
+}
+
+GRAPHICSDLL_API void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance)
+{
+	bool result = false;
+
+	this->m_distance = distance;
+	this->m_focusPointOffset = targetOffset;
+
+	this->m_camDirvector = m_Dir();
+	this->m_camRightvector = m_Right();
+	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+
+	m_updatePos();
 }
 
 void Camera::SetLookAt(DirectX::XMFLOAT4 newLookAt)
