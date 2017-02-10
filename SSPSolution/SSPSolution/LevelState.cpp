@@ -742,15 +742,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		//TODO: NOCLIP BOOOOIS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
 		{
-			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
-			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
-			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
 		}
 		else
 		{
-			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
-			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
-			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
 		}
 		//Result: Sloppy teleport :(
 		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
