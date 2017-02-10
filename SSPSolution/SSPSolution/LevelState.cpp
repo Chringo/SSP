@@ -1457,11 +1457,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		door1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 		resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 		PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
-		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
-		door1P->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0,2,2,1));														//Set Position
-		door1P->PC_rotation = rot;												//Set Rotation
-		door1P->PC_is_Static = false;												//Set IsStatic
-		door1P->PC_active = true;													//Set Active
+		door1P->PC_entityID = tempHeader.EntityID;			//Set Entity ID
+		door1P->PC_pos = pos;								//Set Position
+		door1P->PC_rotation = rot;							//Set Rotation
+		door1P->PC_is_Static = false;						//Set IsStatic
+		door1P->PC_active = true;							//Set Active
 		door1P->PC_gravityInfluence = 1.0f;
 		door1P->PC_mass = 0;
 		door1P->PC_friction = 0.00f;
