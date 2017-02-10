@@ -591,6 +591,7 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
 	}
+
 	//By all means it should be done by now
 	/*for (InstanceData& i : instancedRenderingList)
 	{
@@ -609,6 +610,16 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
+
+	D3D11_VIEWPORT vP;
+	vP.Width = 1280.f;
+	vP.Height = 720.f;
+	vP.MinDepth = 0.0f;
+	vP.MaxDepth = 1.0f;
+	vP.TopLeftX = 0;
+	vP.TopLeftY = 0;
+	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
+
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
 	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{

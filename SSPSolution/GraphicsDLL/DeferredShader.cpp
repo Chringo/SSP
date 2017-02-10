@@ -621,6 +621,16 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 		m_shadowStateActive = false;
+
+		D3D11_VIEWPORT vP;
+		vP.Width = 1280.f;
+		vP.Height = 720.f;
+		vP.MinDepth = 0.0f;
+		vP.MaxDepth = 1.0f;
+		vP.TopLeftX = 0;
+		vP.TopLeftY = 0;
+		m_deviceContext->RSSetViewports(1, &vP);
+
 		break;
 	}
 	case ShaderLib::Instanced:
@@ -632,6 +642,15 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
+		D3D11_VIEWPORT vP;
+		vP.Width = 1280.f;
+		vP.Height = 720.f;
+		vP.MinDepth = 0.0f;
+		vP.MaxDepth = 1.0f;
+		vP.TopLeftX = 0;
+		vP.TopLeftY = 0;
+		m_deviceContext->RSSetViewports(1, &vP);
+
 		break;
 	case ShaderLib::Animated:
 	{
@@ -643,7 +662,14 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
-
+		D3D11_VIEWPORT vP;
+		vP.Width = 1280.f;
+		vP.Height = 720.f;
+		vP.MinDepth = 0.0f;
+		vP.MaxDepth = 1.0f;
+		vP.TopLeftX = 0;
+		vP.TopLeftY = 0;
+		m_deviceContext->RSSetViewports(1, &vP);
 		break;
 	}
 	case ShaderLib::InstancedAnimated:
@@ -675,6 +701,16 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		m_shadowStateActive = true;
+
+		D3D11_VIEWPORT vP;
+		vP.Width = SHADOW_WIDTH;
+		vP.Height = SHADOW_HEIGHT;
+		vP.MinDepth = 0.0f;
+		vP.MaxDepth = 1.0f;
+		vP.TopLeftX = 0;
+		vP.TopLeftY = 0;
+		m_deviceContext->RSSetViewports(1, &vP);
+
 		break;
 	}
 	case ShaderLib::InstancedShadow:
@@ -689,6 +725,16 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		m_shadowStateActive = true;
+
+		D3D11_VIEWPORT vP;
+		vP.Width = SHADOW_WIDTH;
+		vP.Height = SHADOW_HEIGHT;
+		vP.MinDepth = 0.0f;
+		vP.MaxDepth = 1.0f;
+		vP.TopLeftX = 0;
+		vP.TopLeftY = 0;
+		m_deviceContext->RSSetViewports(1, &vP);
+
 		break;
 	}
 	default:

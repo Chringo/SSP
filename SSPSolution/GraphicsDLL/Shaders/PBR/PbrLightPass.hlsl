@@ -14,6 +14,16 @@ cbuffer camera : register(b1)
     float4 camPos;
 
 }
+
+cbuffer shadow : register(b5)
+{
+    float4x4 ShadowViewMatrix;
+    float4x4 ShadowProjectionMatrix;
+
+    int numCasters;
+    float spadding1, spadding2, spadding3;
+}
+
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
@@ -203,10 +213,91 @@ float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float c
     return attenuation;
 }
 
+float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, int shadowMapIndex)
+{
+
+	//shadowmap stuff
+    float shadowSamples = 0.0f;
+
+    float4 shadowSample = float4(1, 1, 1, 1);
+    float tempCooef = 0;
+    float SMAP_SIZE = 1024.0f;
+	
+    float bias;
+    float dx = 1.0f / SMAP_SIZE;
+
+    float2 projectTexCoord;
+    float depthValue;
+    float lightDepthValue;
+    float lightIntensity;
+    float4 lightPos;
+		//worldPos.xyz = worldPos.xyz / worldPos.w;
+
+
+		//lightPos = mul(worldPos, lightView);
+		//lightPos = mul(lightPos, lightProj);
+
+		//projectTexCoord.x = lightPos.x / lightPos.w;
+		//projectTexCoord.y = lightPos.y / lightPos.w;
+
+		//lightDepthValue = lightPos.z / lightPos.w;
+
+		//projectTexCoord.x = projectTexCoord.x * 0.5f + 0.5f;
+		//projectTexCoord.y = projectTexCoord.y * -0.5f + 0.5f;
+		//
+
+		//depthValue = shadowTex.Sample(linearSampler, float3(projectTexCoord.xy, shadowMapIndex)).r + bias;
+
+		////float tempSample = shadowTex.Sample(samplerTypeState, float3(projectTexCoord, i)).r
+
+		//float s0 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
+		//float s1 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(dx, 0.0f, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
+		//float s2 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(0.0f, dx, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
+		//float s3 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(dx, dx, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
+
+		//float2 texelpos = projectTexCoord * SMAP_SIZE;
+		//float2 lerps = frac(texelpos);
+		//float shadowcooef = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
+
+
+
+
+
+    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightView);
+    posLightH = mul(posLightH, lightProj);
+    posLightH.xy /= posLightH.w;
+
+    float2 smTex = float2(posLightH.x, -posLightH.y) * 0.5f + 0.5f;
+
+    float depth = posLightH.z / posLightH.w;
+
+    smTex -= float2(dx, dx) * 0.5f;
+
+		////////////////BIAS IS HERE
+    bias = 0.00001f;
+
+		//16 samples == -2 till 2
+		//8 samples == -1 till 1
+		[unroll]
+    for (int k = -2; k < 2; k++)
+			[unroll]
+        for (int l = -2; l < 2; l++)
+            shadowSamples += shadowTex.Sample(pointSampler, float3(smTex + float2(dx * k, dx * l), 0)).r + bias < depth ? 0.0f : 1.0f;
+
+    float shadowFactor = shadowSamples * 0.0625f; // division by 16.0f;    //0.125f;//division by 8      // 
+
+
+		//tempCooef += shadowcooef;
+	
+	//shadowSample = shadowSample * tempCooef;
+	//shadowSample = saturate(shadowSample);
+    return shadowFactor;
+}
+
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
-    return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
+
 
     uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
@@ -251,6 +342,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
+
+    float shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
+    return shadowFactor.rrrr;
+
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
@@ -270,6 +365,14 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
 
             //DO SHADOW STUFF HERE
+            //float shadowFactor = 1.0;
+            //if (i == 10)
+            //{
+            //    shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
+            //    lightPower *= shadowFactor;
+
+            //}
+
 
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
@@ -283,6 +386,7 @@ float4 PS_main(VS_OUT input) : SV_Target
             float3 fr = d * f * vis / Pi;
 
             specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
+
 
            // return diffuseLight;
         }
