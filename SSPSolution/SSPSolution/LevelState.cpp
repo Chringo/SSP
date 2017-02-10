@@ -1166,6 +1166,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
+
+		// Adjust OBB in physics component - hack...
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
+			, modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
+		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
 
 		PlatformEntity* tpe = new PlatformEntity();
