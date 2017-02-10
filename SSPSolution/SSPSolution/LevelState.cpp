@@ -466,7 +466,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 					}
@@ -476,7 +476,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else if ((int)itr->entityID == 3)	//Packets for ball1
@@ -485,7 +485,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else if ((int)itr->entityID == 4)	//Packets for ball2
@@ -494,7 +494,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else //For every other entity
@@ -511,7 +511,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 								// Update the component
 								pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-								pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+								pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 								pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 							}
@@ -651,7 +651,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			wasGrabbed->SyncComponents();	//Update the component
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
-			this->m_networkModule->SendEntityUpdatePacket(wasGrabbed->GetPhysicsComponent()->PC_entityID, wasGrabbed->GetPhysicsComponent()->PC_pos, wasGrabbed->GetPhysicsComponent()->PC_velocity, wasGrabbed->GetPhysicsComponent()->PC_rotation);	//Send the update data
+			DirectX::XMFLOAT4X4 newrot;
+			DirectX::XMStoreFloat4x4(&newrot, wasGrabbed->GetPhysicsComponent()->PC_OBB.ort);
+			this->m_networkModule->SendEntityUpdatePacket(wasGrabbed->GetPhysicsComponent()->PC_entityID, wasGrabbed->GetPhysicsComponent()->PC_pos, wasGrabbed->GetPhysicsComponent()->PC_velocity, newrot);	//Send the update data
 		}
 
 
@@ -757,13 +759,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			if (pp != nullptr)
 			{
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update data for the player
 			}
 			
 			if (this->m_player1.GetGrabbed() != nullptr)
 			{
 				pp = this->m_player1.GetGrabbed()->GetPhysicsComponent();
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);
 			}
 
 			Entity* ent = nullptr;
@@ -777,7 +783,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
 					{
 						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
+						DirectX::XMFLOAT4X4 newrot;
+						DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update
 					}
 				}
 			}
