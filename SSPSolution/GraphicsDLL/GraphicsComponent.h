@@ -12,6 +12,7 @@ struct GraphicsComponent
 	unsigned int modelID = 0;
 	Resources::Model* modelPtr;
 	DirectX::XMMATRIX worldMatrix;
+	DirectX::XMMATRIX rotationMatrix;
 	DirectX::XMFLOAT3 extensions;
 	GraphicsComponent() {}
 	GraphicsComponent(const GraphicsComponent& a) {
