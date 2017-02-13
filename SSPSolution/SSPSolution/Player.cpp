@@ -28,7 +28,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
-	this->m_carryOffset = DirectX::XMVectorSet(0, 2, 0, 0);
+	this->m_carryOffset = DirectX::XMVectorSet(1.2, 0.8, -1.0, 0);
 	this->m_walkingSound = nullptr;
 
 	return result;
@@ -173,11 +173,20 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 	if (this->m_grabbed != nullptr)
 	{
+		DirectX::XMMATRIX hej = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[5];
+
+		DirectX::XMMATRIX hejdå = this->GetGraphicComponent()->worldMatrix;
+		DirectX::XMMATRIX tjabba = DirectX::XMMatrixMultiply(hej, hejdå);
+		DirectX::XMVECTOR pos = DirectX::XMVectorAdd(this->m_carryOffset, hej.r[3]);
+
+		//DirectX::XMVector3Transform(this->m_pComp->PC_pos, hej);
 		PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent(); 
-		ptr->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
+		ptr->PC_pos = DirectX::XMVector3Transform(pos, hejdå);// tjabba.r[3];// DirectX::XMVectorAdd(this->m_pComp->PC_pos, tjabba.r[3]);
+			//
+			////DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
 		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		ptr->PC_gravityInfluence = 1.0;
+		ptr->PC_gravityInfluence = 0.0;
 	}
 
 
