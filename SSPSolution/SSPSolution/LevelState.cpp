@@ -582,6 +582,29 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_update_States
 
 	#pragma region
+	if(this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+		this->m_animationPacketList = this->m_networkModule->PacketBuffer_GetAnimationPackets();
+
+		if (this->m_animationPacketList.size() > 0)
+		{
+			std::list<AnimationPacket>::iterator itr;
+			for (itr = this->m_animationPacketList.begin(); itr != this->m_animationPacketList.end(); itr++)
+			{
+				/* We know that all packets will be sent to player2
+				since only player2 will send animation packets */
+
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed);
+				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+			}
+
+		}
+		this->m_animationPacketList.clear();
+
+	}
+	#pragma endregion Update_Animations
+
+	#pragma region
 		float yaw = inputHandler->GetMouseDelta().x;
 		float pitch = inputHandler->GetMouseDelta().y;
 		float mouseSens = 0.1f * dt;
@@ -638,7 +661,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
-	#pragma endregion Update/Syncing
+	#pragma endregion Update/Syncing Components
 
 	#pragma region
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
@@ -930,6 +953,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	
 	#pragma endregion Update_Puzzle_Elements
+
+	#pragma region
+	// We only send updates for player1 since player2 will recive the updates from the network
+	if (this->m_player1.isAnimationChanged())
+	{
+		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->m_TransitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+	}
+
+	#pragma endregion Send_Player_Animation_Update
 
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
