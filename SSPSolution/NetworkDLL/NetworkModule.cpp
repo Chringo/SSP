@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -308,6 +308,7 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID)
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
+	packet.newstate = newState;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);

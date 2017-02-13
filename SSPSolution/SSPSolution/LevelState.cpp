@@ -929,6 +929,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
+	#pragma region
+	this->m_player1.GetAnimationComponent()->previousState;
+
+	#pragma endregion Update_Player_Animation_State
+
 	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
