@@ -28,7 +28,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_acceleration = 5.0f;
 	this->m_grabbed = nullptr;
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
-	this->m_carryOffset = DirectX::XMVectorSet(1.2, 0.8, -1.0, 0);
+	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
 
 	return result;
@@ -173,15 +173,47 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 	if (this->m_grabbed != nullptr)
 	{
-		DirectX::XMMATRIX hej = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[5];
 
-		DirectX::XMMATRIX hejdå = this->GetGraphicComponent()->worldMatrix;
-		DirectX::XMMATRIX tjabba = DirectX::XMMatrixMultiply(hej, hejdå);
-		DirectX::XMVECTOR pos = DirectX::XMVectorAdd(this->m_carryOffset, hej.r[3]);
+		DirectX::XMVECTOR zero = { 0,0,0,0 };
+		int jointindex = 8;
+		int jointIndexTwo = 12;
+		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[jointindex];
 
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[jointindex].invBindPose);
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
+
+		DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[jointIndexTwo];
+
+		DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[jointIndexTwo].invBindPose);
+		 det     = DirectX::XMMatrixDeterminant(tposeTwo);
+		 tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
+		 jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
+
+		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
+		//DirectX::XMMATRIX tjabba = DirectX::XMMatrixMultiply(tpose,hejdå);
+		//DirectX::XMVECTOR pos	 = //DirectX::XMVectorAdd(this->m_carryOffset, hej.r[3]);
+		//hejdå.r[3] = DirectX::XMVectorAdd(hej.r[3], hejdå.r[3]);;
 		//DirectX::XMVector3Transform(this->m_pComp->PC_pos, hej);
+		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f);
+
+		joint    = DirectX::XMMatrixMultiply(joint,    world);// DirectX::XMMatrixMultiply(tpose, joint);
+		jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);//DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
+
+		//joint	 = DirectX::XMMatrixMultiply(joint);
+		//jointTwo = DirectX::XMMatrixMultiply(jointTwo, scale);
+		DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3] , joint.r[3]);
+
+		//joint = DirectX::XMMatrixMultiply(jointTwo,joint);
+		jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
+		//zero = DirectX::XMVector3TransformCoord(zero, joint);
+
+		jointToJoint = DirectX::XMVector3TransformCoord(jointToJoint, world);
+		DirectX::XMMATRIX tonewPos = DirectX::XMMatrixTranslationFromVector(jointToJoint);
 		PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent(); 
-		ptr->PC_pos = DirectX::XMVector3Transform(pos, hejdå);// tjabba.r[3];// DirectX::XMVectorAdd(this->m_pComp->PC_pos, tjabba.r[3]);
+		ptr->PC_active = false;
+		ptr->PC_pos = joint.r[3];// DirectX::XMVector3TransformCoord(jointToJoint, tonewPos);// DirectX::XMVectorAdd(hej.r[3], hejdå.r[3]);// DirectX::XMVector3Transform(pos, hejdå);// tjabba.r[3];// DirectX::XMVectorAdd(this->m_pComp->PC_pos, tjabba.r[3]);
 			//
 			////DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
 		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -198,13 +230,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
 			this->m_aComp->previousState = PLAYER_THROW;
-
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 
 			float strength = 50.0f;
+			m_grabbed->GetPhysicsComponent()->PC_active = true;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
 			this->SetGrabbed(nullptr);	//Release the entity
