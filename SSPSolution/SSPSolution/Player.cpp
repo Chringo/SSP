@@ -193,27 +193,27 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 
 	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-	if(inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
-	{
-		//assumes grabbed is ALWAYS the ball
-		if (this->m_grabbed != nullptr)
+		if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
-			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
-			this->m_aComp->previousState = PLAYER_THROW;
+			//assumes grabbed is ALWAYS the ball
+			if (this->m_grabbed != nullptr)
+			{
+				this->m_oldAnimState = this->m_aComp->previousState;
+				SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
+				this->m_aComp->previousState = PLAYER_THROW;
 
-			//Play sound
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+				//Play sound
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 
-			float strength = 50.0f;
-			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
-			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-			this->SetGrabbed(nullptr);	//Release the entity
+				float strength = 50.0f;
+				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
+				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
+				this->SetGrabbed(nullptr);	//Release the entity
+			}
+
 		}
-
-	}
 
 	//Check if player is grounded
 
