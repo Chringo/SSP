@@ -180,7 +180,6 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->StartTimer(1);
 
-	this->m_physicsHandler.CheckFieldIntersection(framecountingtest);
 	this->m_physicsHandler.Update(deltaTime);
 
 	DebugHandler::instance()->EndTimer(1);

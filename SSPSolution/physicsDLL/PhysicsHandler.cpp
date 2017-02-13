@@ -2139,7 +2139,7 @@ void PhysicsHandler::Update(float deltaTime)
 	this->SyncBulletToPhysicsComponents();
 	
 	this->DoChainPhysics(dt);
-
+	this->CheckFieldIntersection();
 	this->DoChainAjustPhysics();
 
 	this->UpdateStaticPlatforms(dt);
