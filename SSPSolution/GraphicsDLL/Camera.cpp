@@ -204,7 +204,7 @@ int Camera::Reset()
 Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
 {
 	Ray ray;
-	ray.RayDir = this->m_Dir;
+	ray.RayDir = this->m_Dir();
 	ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
 
 	return ray;
