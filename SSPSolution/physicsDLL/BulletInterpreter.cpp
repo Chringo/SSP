@@ -286,7 +286,9 @@ void BulletInterpreter::Shutdown()
 	for (int i = 0; i < size; i++)
 	{
 		delete this->m_rigidBodies.at(i);
+		this->m_rigidBodies.at(i) = nullptr;
 	}
+	this->m_rigidBodies.clear();
 }
 
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
