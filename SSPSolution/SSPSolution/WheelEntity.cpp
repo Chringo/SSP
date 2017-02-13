@@ -257,7 +257,6 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
 				{
 					this->m_rotationState = 0;
-					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 				else
 				{
@@ -265,7 +264,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 					if (this->m_rotationState != -1)
 						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 					this->m_rotationState = -1;
-					//this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 			}
 		}
