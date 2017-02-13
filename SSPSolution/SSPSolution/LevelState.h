@@ -49,6 +49,7 @@ private:
 	std::list<StatePacket> m_statePacketList;	//List with all updates for entities from the network
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
+	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
 	
 	Entity* GetClosestBall(float minDist);
 
