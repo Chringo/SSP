@@ -83,6 +83,7 @@ private:
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
+	void CheckFieldIntersection();
 
 	//collitionCorrection
 	void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
@@ -116,8 +117,6 @@ public:
 	PHYSICSDLL_API bool Initialize();
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
-
-	PHYSICSDLL_API void CheckFieldIntersection(int frame);
 
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);

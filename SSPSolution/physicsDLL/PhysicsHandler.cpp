@@ -2134,12 +2134,12 @@ void PhysicsHandler::Update(float deltaTime)
 
 	//take a step in bullet engine, max 3 steps
 	this->m_bullet.UpdateBulletEngine(dt);
-
+	this->CheckFieldIntersection();
 	//PhysicsComponent -----> Bullet
 	this->SyncBulletToPhysicsComponents();
 	
 	this->DoChainPhysics(dt);
-	this->CheckFieldIntersection();
+
 	this->DoChainAjustPhysics();
 
 	this->UpdateStaticPlatforms(dt);
@@ -2358,7 +2358,7 @@ void PhysicsHandler::Update(float deltaTime)
 #pragma endregion
 }
 
-void PhysicsHandler::CheckFieldIntersection(int frame)
+void PhysicsHandler::CheckFieldIntersection()
 {
 	printf("Frame: %d - ", frame);
 	Field* field = nullptr;

@@ -174,7 +174,6 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-	framecountingtest++;
 
 	int result = 1;
 
