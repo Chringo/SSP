@@ -90,29 +90,30 @@ bool PhysicsHandler::OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Po
 {
 	DirectX::XMFLOAT3 transPF_v;
 	DirectX::XMFLOAT3 transPF_t;
-
-	DirectX::XMFLOAT3 orthA[3];
-	DirectX::XMFLOAT3 orthB[3];
-
+	
 	DirectX::XMFLOAT3 posA;
 	DirectX::XMFLOAT3 posB;
 
 	DirectX::XMStoreFloat3(&posA, obb1Pos);
 	DirectX::XMStoreFloat3(&posB, obb2Pos);
 
-
-	//not very clever way, but I need to know if shit work, for debug purpuses
-	for (int i = 0; i < 3; i++)
-	{
-		DirectX::XMStoreFloat3(&orthA[i], obb1->ort.r[i]);
-		DirectX::XMStoreFloat3(&orthB[i], obb2->ort.r[i]);
-	}
-
 	OBB* a = nullptr;
 	OBB* b = nullptr;
 
 	a = obb1;
 	b = obb2;
+
+	DirectX::XMFLOAT3 orthA[3];
+	DirectX::XMFLOAT3 orthB[3];
+	//not very clever way, but I need to know if shit work, for debug purpuses
+	for (int i = 0; i < 3; i++)
+	{
+		//printf("%d - ", i);
+		DirectX::XMStoreFloat3(&orthA[i], a->ort.r[i]);
+		//printf("PASS1 ");
+		DirectX::XMStoreFloat3(&orthB[i], b->ort.r[i]);
+		//printf("PASS2\n");
+	}
 
 	float T[3];
 
@@ -2127,14 +2128,14 @@ void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 1000000);
 	
-
+	this->CheckFieldIntersection();
 
 	//Bullet <---- physicsComponent
 	this->SyncAllPhyicsComponentsToBullet();
 
 	//take a step in bullet engine, max 3 steps
 	this->m_bullet.UpdateBulletEngine(dt);
-	this->CheckFieldIntersection();
+
 	//PhysicsComponent -----> Bullet
 	this->SyncBulletToPhysicsComponents();
 	
@@ -2360,7 +2361,7 @@ void PhysicsHandler::Update(float deltaTime)
 
 void PhysicsHandler::CheckFieldIntersection()
 {
-	printf("Frame: %d - ", frame);
+	//printf("Frame: %d - ", frame);
 	Field* field = nullptr;
 	int nrOfFields = this->m_fields.size();
 	for (int i = 0; i < nrOfFields; i++)
@@ -2378,14 +2379,14 @@ void PhysicsHandler::CheckFieldIntersection()
 			{
 				if (ptr->PC_BVtype == BV_AABB)
 				{
-					printf("BV_AABB\n");
+					//printf("BV_AABB\n");
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
 					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
-					printf("BV_Sphere\n");
+					//printf("BV_Sphere\n");
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
@@ -2393,7 +2394,7 @@ void PhysicsHandler::CheckFieldIntersection()
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
-					printf("BV_OBB\n");
+					//printf("BV_OBB\n");
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
@@ -3058,6 +3059,7 @@ Field * PhysicsHandler::CreateField(const DirectX::XMVECTOR & pos, unsigned int 
 	this->m_fields.push_back(Field());
 	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
 	DirectX::XMStoreFloat3(&field->F_pos, pos);
+	//field->F_pos = pos;
 	field->F_BV.ext[0] = ext[0];
 	field->F_BV.ext[1] = ext[1];
 	field->F_BV.ext[2] = ext[2];

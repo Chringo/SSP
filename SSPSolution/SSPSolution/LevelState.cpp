@@ -1208,11 +1208,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//OBB* tOBB = new OBB();
 		//memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
 		//memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
-		DirectX::XMVECTOR tPos = {
+		DirectX::XMVECTOR tPos = DirectX::XMVectorSet(
 			data->checkpoints[i].position[0],
 			data->checkpoints[i].position[1],
-			data->checkpoints[i].position[2]
-		};
+			data->checkpoints[i].position[2],
+			0);
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			tPos,
 			1,	//EntityID Player1
@@ -1220,10 +1220,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
-		//FieldEntity* tempFE = new FieldEntity();
-		//tempFE->Initialize(data->checkpoints[i].entityID, nullptr);
-		//this->m_fieldEntities.push_back(tempFE);
-		//this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+		FieldEntity* tempFE = new FieldEntity();
+		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		this->m_fieldEntities.push_back(tempFE);
+		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
 		//delete tOBB;
 	}
 
