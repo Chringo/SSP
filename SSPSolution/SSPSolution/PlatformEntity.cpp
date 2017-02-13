@@ -1,33 +1,51 @@
 #include "PlatformEntity.h"
-PlatformEntity::PlatformEntity(){}
-PlatformEntity::~PlatformEntity(){}
+PlatformEntity::PlatformEntity()
+{
+	this->m_ActiveSound = nullptr;
+}
+PlatformEntity::~PlatformEntity()
+{
+	if (this->m_ActiveSound != nullptr)
+		this->m_ActiveSound->drop();
+}
 
 int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
 	this->SyncComponents();
-	//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos);
-	//if (m_entityID == 922)
-	//{
-	this->m_gComp->worldMatrix =
-		DirectX::XMMatrixMultiply(
-			DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
-			DirectX::XMMatrixTranslationFromVector(
-				DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-					DirectX::XMVECTOR{
+
+	// Adjust misplaced graphics component - hack...
+	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, 
+		DirectX::XMMatrixTranslationFromVector(
+		DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
+			DirectX::XMVECTOR{
 		m_gComp->modelPtr->GetOBBData().position.x,
 			m_gComp->modelPtr->GetOBBData().position.y,
 			m_gComp->modelPtr->GetOBBData().position.z, 0})));
-	//this->m_gComp->worldMatrix =
-	//	DirectX::XMMatrixMultiply(
-	//		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation),
-	//		DirectX::XMMatrixTranslationFromVector(
-	//			DirectX::XMVectorSubtract(this->m_pComp->PC_pos,
-	//				this->m_pComp->PC_OBB.ort.r[3])));
-	//m_gComp->modelPtr->GetOBBData().position
-	//}
-	//else
-	//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-
+	
+	if (this->GetAIComponent()->AC_triggered)
+	{
+		if (this->m_ActiveSound == nullptr)
+		{
+			DirectX::XMFLOAT3 pos;
+			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			this->m_ActiveSound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LIFT, pos, true, true);
+		}
+		else
+		{
+			if (this->m_ActiveSound->getIsPaused())
+			{
+				this->m_ActiveSound->setIsPaused(false);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_ActiveSound != nullptr && !this->m_ActiveSound->getIsPaused())
+		{
+			this->m_ActiveSound->setPlayPosition(0);
+			this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
+		}
+	}
 	return 1;
 }
 

@@ -50,6 +50,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			if (this->m_resetCountdown < 0)
 			{
 				this->m_rotationState = -2;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 			}
 		}
 		break;
@@ -232,7 +233,7 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
 		{
 			this->m_needSync = true;
-
+			//if increasing == 1 then you want to increase, if -1 you want to decrease
 			if (increasing == 1)
 			{
 				//Check if max has been reached
@@ -243,8 +244,11 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				}
 				else
 				{
+					//If we were not already increasing 
+					if(this->m_rotationState != 1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
 					this->m_rotationState = 1;
-					//this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 			}
 			else if (increasing == -1)
@@ -253,12 +257,14 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
 				{
 					this->m_rotationState = 0;
-					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 				else
 				{
+					//If we were not already dencreasing 
+					if (this->m_rotationState != -1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 					this->m_rotationState = -1;
-					//this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
 			}
 		}
