@@ -102,17 +102,41 @@ bool PhysicsHandler::OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Po
 
 	a = obb1;
 	b = obb2;
-
+	printf("%d", a->ort.r[0].m128_f32[0]);
 	DirectX::XMFLOAT3 orthA[3];
+	orthA[0].x = 0.0f;
+	orthA[0].y = 0.0f;
+	orthA[0].z = 0.0f;
+	orthA[1].x = 0.0f;
+	orthA[1].y = 0.0f;
+	orthA[1].z = 0.0f;
+	orthA[2].x = 0.0f;
+	orthA[2].y = 0.0f;
+	orthA[2].z = 0.0f;
 	DirectX::XMFLOAT3 orthB[3];
+	orthB[0].x = 0.0f;
+	orthB[0].y = 0.0f;
+	orthB[0].z = 0.0f;
+	orthB[1].x = 0.0f;
+	orthB[1].y = 0.0f;
+	orthB[1].z = 0.0f;
+	orthB[2].x = 0.0f;
+	orthB[2].y = 0.0f;
+	orthB[2].z = 0.0f;
 	//not very clever way, but I need to know if shit work, for debug purpuses
 	for (int i = 0; i < 3; i++)
 	{
 		//printf("%d - ", i);
-		DirectX::XMStoreFloat3(&orthA[i], a->ort.r[i]);
-		//printf("PASS1 ");
-		DirectX::XMStoreFloat3(&orthB[i], b->ort.r[i]);
-		//printf("PASS2\n");
+		//DirectX::XMStoreFloat3(&orthA[i], a->ort.r[i]);
+		orthA[i].x = a->ort.r[i].m128_f32[0];
+		orthA[i].y = a->ort.r[i].m128_f32[1];
+		orthA[i].z = a->ort.r[i].m128_f32[2];
+		printf("PASS1 ");
+		//DirectX::XMStoreFloat3(&orthB[i], b->ort.r[i]);
+		orthB[i].x = b->ort.r[i].m128_f32[0];
+		orthB[i].y = b->ort.r[i].m128_f32[1];
+		orthB[i].z = b->ort.r[i].m128_f32[2];
+		printf("PASS2\n");
 	}
 
 	float T[3];
