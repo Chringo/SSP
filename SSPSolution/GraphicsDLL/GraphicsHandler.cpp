@@ -961,13 +961,14 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 	{
 		if (this->m_octreeRoot.branches[i] != nullptr)
 		{
-			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			//this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
 	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
+		this->m_octreeRoot.containedComponents[i]->isRendered = true;
 		if (this->m_octreeRoot.containedComponents[i]->isRendered)
 		{
 			result++;
