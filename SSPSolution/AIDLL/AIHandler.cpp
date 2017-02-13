@@ -38,7 +38,7 @@ int AIHandler::Update(float deltaTime)
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		//TODO: Remove active from this statement
-		if (this->m_AIComponents[i]->AC_active && this->m_AIComponents[i]->AC_triggered)
+		if (this->m_AIComponents[i]->AC_active && this->m_AIComponents[i]->AC_triggered && this->m_AIComponents[i]->AC_nrOfWaypoint != 0)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
 			if (this->m_AIComponents[i]->AC_pattern == AI_ONEWAY)
@@ -51,13 +51,20 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents[i]->AC_position,
 						this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
-						1.0f, i))
+						0.05f, i))
 					{
 						this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
-						this->m_AIComponents[i]->AC_nextWaypointID++;
-						this->m_AIComponents[i]->AC_direction = 1;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID + 1 < this->m_AIComponents[i]->AC_nrOfWaypoint)
+							this->m_AIComponents[i]->AC_nextWaypointID++;
+
 						//the platform stops when arriving at its destination
 						this->m_AIComponents[i]->AC_triggered = false;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID == this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
+							this->m_AIComponents[i]->AC_direction = 1;
+						else if (this->m_AIComponents[i]->AC_nextWaypointID < 0)
+							this->m_AIComponents[i]->AC_nextWaypointID = 0;
 					}
 					else
 						UpdatePosition(i);
@@ -67,13 +74,20 @@ int AIHandler::Update(float deltaTime)
 					if (WaypointApprox(
 						this->m_AIComponents[i]->AC_position,
 						this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
-						1.0f, i))
+						0.05f, i))
 					{
 						this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
-						this->m_AIComponents[i]->AC_nextWaypointID--;
-						this->m_AIComponents[i]->AC_direction = 0;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID > 0)
+							this->m_AIComponents[i]->AC_nextWaypointID--;
+
 						//the platform stops when arriving at its destination
 						this->m_AIComponents[i]->AC_triggered = false;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID == 0)
+							this->m_AIComponents[i]->AC_direction = 0;
+						else if (this->m_AIComponents[i]->AC_nextWaypointID > this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
+							this->m_AIComponents[i]->AC_nextWaypointID = this->m_AIComponents[i]->AC_nrOfWaypoint;
 					}
 					else
 						UpdatePosition(i);

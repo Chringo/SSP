@@ -154,7 +154,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
@@ -582,6 +582,29 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_update_States
 
 	#pragma region
+	if(this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+		this->m_animationPacketList = this->m_networkModule->PacketBuffer_GetAnimationPackets();
+
+		if (this->m_animationPacketList.size() > 0)
+		{
+			std::list<AnimationPacket>::iterator itr;
+			for (itr = this->m_animationPacketList.begin(); itr != this->m_animationPacketList.end(); itr++)
+			{
+				/* We know that all packets will be sent to player2
+				since only player2 will send animation packets */
+
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed);
+				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+			}
+
+		}
+		this->m_animationPacketList.clear();
+
+	}
+	#pragma endregion Update_Animations
+
+	#pragma region
 		float yaw = inputHandler->GetMouseDelta().x;
 		float pitch = inputHandler->GetMouseDelta().y;
 		float mouseSens = 0.1f * dt;
@@ -638,10 +661,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
-	#pragma endregion Update/Syncing
+	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_player1.GetGrabbed() == nullptr && !inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			Entity* closestBall = this->GetClosestBall(3);
 			
@@ -652,7 +675,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_Q))
 		{
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
@@ -783,7 +806,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_Send_Updates
 
 	#pragma region
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
 	{
 		// Reset player-position to spawn
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
@@ -825,7 +848,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 playerPos;
 	DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 	//Buttons and levers require input for logical evaluation of activation
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_E))
 	{
 		//Iterator version of looping
 		/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
@@ -853,7 +876,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
 		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
@@ -864,7 +887,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_E))
 	{
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
@@ -931,7 +954,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+	#pragma region
+	// We only send updates for player1 since player2 will recive the updates from the network
+	if (this->m_player1.isAnimationChanged())
+	{
+		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->m_TransitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+	}
+
+	#pragma endregion Send_Player_Animation_Update
+
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
 		m_fieldEntities[i]->Update(dt, inputHandler);
@@ -1204,28 +1236,20 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	}
 	
 #pragma region Creating Field
-	//for (size_t i = 0; i < data->numCheckpoints; i++)
-	//{
-	//	OBB* tOBB = new OBB();
-	//	memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
-	//	memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
-	//	DirectX::XMVECTOR tPos = {
-	//		data->checkpoints[i].position[0],
-	//		data->checkpoints[i].position[1],
-	//		data->checkpoints[i].position[2]
-	//	};
-	//	Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-	//		tPos,
-	//		1,	//EntityID Player1
-	//		3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-	//		tOBB
-	//	);
-	//	FieldEntity* tempFE = new FieldEntity();
-	//	tempFE->Initialize(data->checkpoints[i].entityID, tempField);
-	//	this->m_fieldEntities.push_back(tempFE);
-	//	this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
-	//	delete tOBB;
-	//}
+	for (size_t i = 0; i < data->numCheckpoints; i++)
+	{
+		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+			data->checkpoints[i].position,
+			1,	//EntityID Player1
+			2,	//EntityID Player2
+			data->checkpoints[i].ext,
+			data->checkpoints[i].ort
+		);
+		FieldEntity* tempFE = new FieldEntity();
+		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		this->m_fieldEntities.push_back(tempFE);
+		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+	}
 
 	// TODO: Field Data for States in Level Director
 	/*for (size_t k = 0; k < this->m_director.GetNrOfStates(); k++)
