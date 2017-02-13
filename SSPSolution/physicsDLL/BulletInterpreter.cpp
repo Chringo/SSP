@@ -38,46 +38,6 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	return toReturn;
 }
 
-void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsComponent * src)
-{
-	btTransform trans;
-
-	//get the position in the Bullet world
-	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
-	btVector3 origin = trans.getOrigin();
-
-	//update PhysicsComponent
-	src->PC_pos = this->crt_Vec3XMVEc(origin);
-
-	if (src->PC_steadfast == true)
-	{
-		btRigidBody* rigid = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-
-		btVector3 vel = this->crt_xmvecVec3(src->PC_velocity);
-		rigid->setLinearVelocity(vel);
-		rigid->setGravity(btVector3(0,0,0));
-
-		trans = rigid->getWorldTransform();
-		trans.setOrigin(this->crt_xmvecVec3(src->PC_pos));
-
-		btMotionState* ms = nullptr;
-		ms = rigid->getMotionState();
-
-		ms->setWorldTransform(trans);
-
-		rigid->setMotionState(ms);
-	}
-	else if (src->PC_BVtype == BV_OBB)
-	{
-		//convert the position to xmvector 
-		btQuaternion rotation = trans.getRotation();
-		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
-
-		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
-	}
-
-}
-
  void BulletInterpreter::applyLinearVelocityOnSrc(PhysicsComponent * src)
 {
 
@@ -194,14 +154,9 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
-
-
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();
-		if (src->PC_mass != 0)
-		{
-			rigidBody->activate();
-		}
+
 		btVector3 bulletVelocity = rigidBody->getLinearVelocity();
 		btVector3 bulletAnglularV = rigidBody->getAngularVelocity();
 
@@ -223,40 +178,28 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 		src->PC_pos = this->crt_Vec3XMVEc(bulletPos);
 		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
 		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
-		//for (int i = 0; i < 3; i++)
-		//{
-		//	btVector3 newRow = bulletBasis.getRow(i);
-		//	rotMatrix.r[i] = this->crt_Vec3XMVEc(newRow);
-		//}
-		//rotMatrix = DirectX::XMMatrixTranspose(rotMatrix);
-		//src->PC_OBB.ort = rotMatrix;
-		
-
 	}
-	
-	
 }
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 {
-
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_mass == 0.2f)
-		{
-			int i = 0;
-		}
-
 		btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
-
 		btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
 		btVector3 PC_velocity = this->crt_xmvecVec3(src->PC_velocity);
-		
+
 		btRigidBody* rigidBody = nullptr;
 		rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
+		if (src->PC_mass != 0 && src->PC_active == true)
+		{
+			rigidBody->activate();
+		}
+
 		rigidBody->setLinearVelocity(PC_velocity);
 		rigidBody->setAngularVelocity(PC_rotationVel);
+
 		if (src->PC_mass != 0)
 		{
 			rigidBody->activate();
@@ -279,12 +222,22 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 		moveInWorld.setRotation(quaturnion);
 		moveInWorld.setOrigin(PC_pos);
 		
+		if (src->PC_active == false)
+		{
+			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
+			rigidBody->setIgnoreCollisionCheck(playerShape, true);
+		}
+		else
+		{
+			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
+			rigidBody->setIgnoreCollisionCheck(playerShape, false);
+		}
+
 		btMotionState* ms = nullptr;
 		ms = rigidBody->getMotionState();
 
 		ms->setWorldTransform(moveInWorld);
 		rigidBody->setMotionState(ms);
-
 	}
 }
 
@@ -326,102 +279,6 @@ void BulletInterpreter::Shutdown()
 	{
 		delete this->m_rigidBodies.at(i);
 	}
-}
-
-void BulletInterpreter::CreateRigidBody(PhysicsComponent* fromGame)
-{
-	btQuaternion temp = btQuaternion(0, 0, 0, 1); //do not know what this does exactlly
-	btVector3 pos = btVector3(0, -1, 0);
-
-	if (fromGame->PC_is_Static == true)
-	{
-		//collition shapes
-		if (fromGame->PC_BVtype == BV_Plane)
-		{
-			btVector3 norm = this->crt_xmvecVec3(fromGame->PC_Plane.PC_normal);
-			btStaticPlaneShape* StaticShape = new btStaticPlaneShape(norm, 1);
-		}
-
-		if (fromGame->PC_BVtype == BV_OBB)
-		{
-			btBoxShape* boxShape = nullptr;
-		}
-
-		if (fromGame->PC_BVtype == BV_Sphere)
-		{
-			//btSphereShape* sphereShape = nullptr;
-			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
-		}
-		
-	}
-	else
-	{
-		if (fromGame->PC_BVtype == BV_Plane)
-		{
-
-		}
-
-		if (fromGame->PC_BVtype == BV_OBB)
-		{
-			btBoxShape* boxShape = nullptr;
-			btCollisionObject* temp = new btCollisionObject;
-		}
-
-		if (fromGame->PC_BVtype == BV_Sphere)
-		{
-			//btSphereShape* sphereShape = nullptr;
-			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
-		}
-
-		if (fromGame->PC_BVtype == BV_AABB)
-		{
-			//btBoxShape* boxShape = nullptr;
-		}
-	}
-}
-
-void BulletInterpreter::TestBulletPhysics()
-{
-	std::ofstream outputFile;
-	outputFile.open("BulletData.txt");
-	float interval = 1.0f / 60.0f;
-
-	for (int i = 0; i < 300; i++)
-	{
-		m_dynamicsWorld->stepSimulation(interval, 10);
-
-		btTransform trans;
-		this->m_rigidBodies.at(1)->getMotionState()->getWorldTransform(trans);
-
-		outputFile << trans.getOrigin().getY() << '\n';
-	}
-
-	outputFile.close();
-}
-
-void BulletInterpreter::RegisterBox(int index)
-{
-	this->m_physicsHandlerIndex.push_back(index);
-}
-
-void BulletInterpreter::BCb()
-{
-	/*
-	// DynamicsWorld.h , declaration
-	typedef void (*btInternalTickCallback)(btDynamicsWorld *world, btScalar timeStep);
-	
-
-	declaration here
-	/// Set the callback for when an internal tick (simulation substep) happens, optional user info
-	void setInternalTickCallback(btInternalTickCallback cb,	void* worldUserInfo=0,bool isPreTick=false)
-	*/
-	
-	//tutorial followed: http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
-	//callback function info: http://stackoverflow.com/questions/9596276/how-to-explain-callbacks-in-plain-english-how-are-they-different-from-calling-o/9652434#9652434
-
-
-	//visual studio screems at me
-//	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
 }
 
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
@@ -530,6 +387,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	btVector3 interia(0, 0, 0);
 	if (src->PC_mass != 0)
 	{
+		
 		box->calculateLocalInertia(src->PC_mass, interia);
 	}
 
@@ -547,11 +405,11 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	if (index == 0 || index == 1)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
+		
 	}
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
-
 
 
 	this->m_rigidBodies.push_back(rigidBody);
@@ -671,6 +529,7 @@ DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int index)
 
 	return toReturn;
 }
+
 void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index)
 {
 	btPersistentManifold* pMan = nullptr;
@@ -737,6 +596,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 		}
 	}
 }
+
 btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 {
 	return this->m_dynamicsWorld;
