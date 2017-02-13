@@ -138,7 +138,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
-	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2);
+	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2 + 2);	//+2 for 
 	// creating the player
 
 	#pragma region
@@ -311,7 +311,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	);
 	#pragma endregion Set_Camera
 
-#pragma region
+	#pragma region
 	int nrOfSegments = nrOfSegmentsPerPlayer;
 	float linkLenght = 1.2f;
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
@@ -389,6 +389,24 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 	#pragma endregion Create_Chain_Link
+
+	#pragma region
+	this->m_player1_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
+	this->m_player1_Ping.m_gComp->modelID = 1117267500;
+	this->m_player1_Ping.m_gComp->active = true;
+	resHandler->GetModel(this->m_player1_Ping.m_gComp->modelID, this->m_player1_Ping.m_gComp->modelPtr);
+	this->m_player1_Ping.m_pos = { 0, 0, 0 };
+	this->m_player1_Ping.m_timeOut = 5;
+	this->m_player1_Ping.isShown = false;
+
+	this->m_player2_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
+	this->m_player2_Ping.m_gComp->modelID = 1117267500;
+	this->m_player2_Ping.m_gComp->active = true;
+	resHandler->GetModel(this->m_player2_Ping.m_gComp->modelID, this->m_player2_Ping.m_gComp->modelPtr);
+	this->m_player2_Ping.m_pos = { 0, 0, 0 };
+	this->m_player2_Ping.m_timeOut = 5;
+	this->m_player2_Ping.isShown = false;
+	#pragma endregion PingModels
 
 	this->m_director.Initialize();
 
@@ -984,7 +1002,16 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
 		}
 	#pragma endregion MUSIC_KEYS
-
+	
+	#pragma region
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_KP_7))
+		{
+			DirectX::XMVECTOR pos;
+			pos = DirectX::XMLoadFloat3(&this->m_player1_Ping.m_pos);
+			this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
+		}
+	#pragma endregion Ping Test
+	
 	this->m_cameraRef->Update(dt);
 
 	//Update the listner pos and direction for sound

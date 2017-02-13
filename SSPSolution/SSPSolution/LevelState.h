@@ -19,11 +19,21 @@ class LevelState :
 {
 private:
 
+	struct PingObject
+	{
+		GraphicsComponent* m_gComp;
+		DirectX::XMFLOAT3 m_pos;
+		float m_timeOut;
+		bool isShown;
+	};
+
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
 	Player m_player2;
 	DirectX::XMVECTOR m_player1_Spawn;
 	DirectX::XMVECTOR m_player2_Spawn;
+	PingObject m_player1_Ping;
+	PingObject m_player2_Ping;
 
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	//Entities where no data needs to be moved between the components
