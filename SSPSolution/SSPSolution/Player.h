@@ -23,6 +23,7 @@ private:
 	DirectX::XMVECTOR m_rightDir;
 
 	irrklang::ISound* m_walkingSound;
+	int	m_oldAnimState;
 
 public:
 	Player();
