@@ -178,18 +178,7 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 		src->PC_pos = this->crt_Vec3XMVEc(bulletPos);
 		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
 		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
-		//for (int i = 0; i < 3; i++)
-		//{
-		//	btVector3 newRow = bulletBasis.getRow(i);
-		//	rotMatrix.r[i] = this->crt_Vec3XMVEc(newRow);
-		//}
-		//rotMatrix = DirectX::XMMatrixTranspose(rotMatrix);
-		//src->PC_OBB.ort = rotMatrix;
-		
-
 	}
-	
-	
 }
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
