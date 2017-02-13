@@ -90,29 +90,33 @@ bool PhysicsHandler::OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Po
 {
 	DirectX::XMFLOAT3 transPF_v;
 	DirectX::XMFLOAT3 transPF_t;
-
-	DirectX::XMFLOAT3 orthA[3];
-	DirectX::XMFLOAT3 orthB[3];
-
+	
 	DirectX::XMFLOAT3 posA;
 	DirectX::XMFLOAT3 posB;
 
 	DirectX::XMStoreFloat3(&posA, obb1Pos);
 	DirectX::XMStoreFloat3(&posB, obb2Pos);
 
-
-	//not very clever way, but I need to know if shit work, for debug purpuses
-	for (int i = 0; i < 3; i++)
-	{
-		DirectX::XMStoreFloat3(&orthA[i], obb1->ort.r[i]);
-		DirectX::XMStoreFloat3(&orthB[i], obb2->ort.r[i]);
-	}
-
 	OBB* a = nullptr;
 	OBB* b = nullptr;
 
 	a = obb1;
 	b = obb2;
+
+	DirectX::XMFLOAT3 orthA[3];
+	DirectX::XMFLOAT3 orthB[3];
+	//not very clever way, but I need to know if shit work, for debug purpuses
+	for (int i = 0; i < 3; i++)
+	{
+		//DirectX::XMStoreFloat3(&orthA[i], a->ort.r[i]);//Unsafe
+		orthA[i].x = a->ort.r[i].m128_f32[0];
+		orthA[i].y = a->ort.r[i].m128_f32[1];
+		orthA[i].z = a->ort.r[i].m128_f32[2];
+		//DirectX::XMStoreFloat3(&orthB[i], b->ort.r[i]);
+		orthB[i].x = b->ort.r[i].m128_f32[0];
+		orthB[i].y = b->ort.r[i].m128_f32[1];
+		orthB[i].z = b->ort.r[i].m128_f32[2];
+	}
 
 	float T[3];
 
@@ -2127,7 +2131,7 @@ void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 1000000);
 	
-
+	this->CheckFieldIntersection();
 
 	//Bullet <---- physicsComponent
 	this->SyncAllPhyicsComponentsToBullet();
@@ -2360,6 +2364,7 @@ void PhysicsHandler::Update(float deltaTime)
 
 void PhysicsHandler::CheckFieldIntersection()
 {
+	//printf("Frame: %d - ", frame);
 	Field* field = nullptr;
 	int nrOfFields = this->m_fields.size();
 	for (int i = 0; i < nrOfFields; i++)
@@ -2377,12 +2382,14 @@ void PhysicsHandler::CheckFieldIntersection()
 			{
 				if (ptr->PC_BVtype == BV_AABB)
 				{
+					//printf("BV_AABB\n");
 					OBB* obb_ptr = &field->F_BV;
 					AABB* aabb_ptr = &ptr->PC_AABB;
 					result = this->OBBAABBIntersectionTest(obb_ptr, fieldPos, aabb_ptr, ptr->PC_pos);
 				}
 				else if (ptr->PC_BVtype == BV_Sphere)
 				{
+					//printf("BV_Sphere\n");
 					OBB* obb_ptr = &field->F_BV;
 					Sphere* sphere_ptr = &ptr->PC_Sphere;
 
@@ -2390,6 +2397,7 @@ void PhysicsHandler::CheckFieldIntersection()
 				}
 				else if (ptr->PC_BVtype == BV_OBB)
 				{
+					//printf("BV_OBB\n");
 					OBB* FIELD_obb_ptr = &field->F_BV;
 					OBB* PC_obb_ptr = &ptr->PC_OBB;
 
@@ -3049,41 +3057,21 @@ bool PhysicsHandler::IntersectRaySphere(const DirectX::XMVECTOR & rayOrigin, con
 	return true;
 }
 
-Field * PhysicsHandler::CreateField(DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, OBB* & obb)
+Field * PhysicsHandler::CreateField(float * pos, unsigned int entityID1, unsigned int entityID2, float * ext, float * ort)
 {
-	//this->m_fields.push_back(Field());
-	//Field* field = &this->m_fields.at(this->m_fields.size() - 1);
+	this->m_fields.push_back(Field());
+	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
 	//DirectX::XMStoreFloat3(&field->F_pos, pos);
-	//field->F_BV.ext[0] = obb->ext[0];
-	//field->F_BV.ext[1] = obb->ext[1];
-	//field->F_BV.ext[2] = obb->ext[2];
-	//field->F_BV.ort = obb->ort;
-	//field->F_entitityID1 = entityID1;
-	//field->F_entitityID2 = entityID2;
-	//field->F_first_inside = false;
-	//field->F_second_inside = false;
-	//return field;
-	printf("A");
-	Field temp;
-	printf("B");
-	temp.F_BV.ort = obb->ort;
-	temp.F_BV.ext[0] = obb->ext[0];
-	temp.F_BV.ext[1] = obb->ext[1];
-	temp.F_BV.ext[2] = obb->ext[2];
-	printf("C");
-	DirectX::XMStoreFloat3(&temp.F_pos, pos);
-	//temp.F_pos = pos;
-	printf("D");
-
-	temp.F_entitityID1 = entityID1;
-	temp.F_entitityID2 = entityID2;
-	temp.F_first_inside = false;
-	temp.F_second_inside = false;
-	printf("E");
-
-	this->m_fields.push_back(temp);
-	printf("F");
-	return &this->m_fields.back();
+	field->F_pos = DirectX::XMFLOAT3(pos[0], pos[1], pos[2]);
+	field->F_BV.ext[0] = ext[0];
+	field->F_BV.ext[1] = ext[1];
+	field->F_BV.ext[2] = ext[2];
+	memcpy(&field->F_BV.ort, &static_cast<DirectX::XMMATRIX>(ort), sizeof(float) * 16);
+	field->F_entitityID1 = entityID1;
+	field->F_entitityID2 = entityID2;
+	field->F_first_inside = false;
+	field->F_second_inside = false;
+	return field;
 }
 
 void PhysicsHandler::SimpleCollition(float dt)

@@ -4,8 +4,6 @@ System::System()
 	this->m_inputHandler = NULL;
 	this->m_window = NULL;
 }
-
-
 System::~System()
 {
 }
@@ -29,16 +27,11 @@ int System::Shutdown()
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
 	SoundHandler::instance().Shutdown();
-	//delete this->m_AIHandler;
-	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
 	DebugHandler::instance()->Shutdown();
-
-	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	
 	return result;
 }
 
@@ -181,7 +174,6 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-
 
 	int result = 1;
 
