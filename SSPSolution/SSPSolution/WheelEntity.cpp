@@ -50,6 +50,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			if (this->m_resetCountdown < 0)
 			{
 				this->m_rotationState = -2;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 			}
 		}
 		break;
