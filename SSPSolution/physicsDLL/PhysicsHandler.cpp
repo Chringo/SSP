@@ -1641,7 +1641,6 @@ void PhysicsHandler::SetIsHost(bool newIsHost)
 	this->m_isHost = newIsHost;
 }
 
-
 PhysicsHandler::PhysicsHandler()
 {
 }
