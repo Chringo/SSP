@@ -155,13 +155,27 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 int DoorEntity::React(int entityID, EVENT reactEvent)
 {
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
-	//this->m_isOpened = reactEvent == EVENT::BUTTON_ACTIVE;
+	//I, Kim, do not remember our old crazy solution.
 	int i = 0;
 	for (std::vector<ElementState>::iterator element = this->m_subjectStates.begin(); element != this->m_subjectStates.end(); element++)
 	{
+		//Match the EntityID
 		if ((element->entityID == entityID))
 		{
-			element->desiredStateReached = element->desiredState == reactEvent;
+			//There is a special case of Wheel Incrementation
+			if (element->desiredState < EVENT::WHEEL_0 || element->desiredState > EVENT::WHEEL_100)
+			{
+				//We are not listening for incrementation events from wheels
+				element->desiredStateReached = element->desiredState == reactEvent;
+			}
+			else
+			{
+				//We are listening for incrementation events from wheel so ignore state events
+				if (reactEvent != EVENT::WHEEL_INCREASING && reactEvent != EVENT::WHEEL_DECREASING && reactEvent != EVENT::WHEEL_RESET)
+				{
+					element->desiredStateReached = element->desiredState == reactEvent;
+				}
+			}
 		}
 		i += element->desiredStateReached;
 	}
