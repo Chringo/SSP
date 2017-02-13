@@ -142,7 +142,6 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 	{
 		this->m_isGrabbed = false;
 		this->m_pComp->PC_active = true;
-		//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	
 	return lastValue;

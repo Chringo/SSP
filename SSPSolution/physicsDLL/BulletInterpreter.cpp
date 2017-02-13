@@ -238,7 +238,6 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 
 		ms->setWorldTransform(moveInWorld);
 		rigidBody->setMotionState(ms);
-
 	}
 }
 
