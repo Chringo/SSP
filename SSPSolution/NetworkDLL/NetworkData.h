@@ -61,7 +61,7 @@ struct EntityPacket: public Packet
 	unsigned int		entityID;					
 	DirectX::XMFLOAT3	newPos;				
 	DirectX::XMFLOAT3	newVelocity;
-	DirectX::XMFLOAT3	newRotation;
+	DirectX::XMFLOAT4X4	newRotation;
 	//DirectX::XMVECTOR	newRotationVelocity;
 
 	void serialize(char * data)

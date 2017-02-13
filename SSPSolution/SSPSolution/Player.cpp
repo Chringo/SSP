@@ -41,7 +41,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
-
+	
 	/*Run forward.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -295,6 +295,17 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					this->m_walkingSound->setPlayPosition(0);
 					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
+				}
+
+				if (m_isAiming)
+				{
+					DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));
+					this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+						-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+						0.f, 1.f, 0.f, 0.0f,
+						-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
+						0, 0, 0, 1.0f
+					);
 				}
 			}
 

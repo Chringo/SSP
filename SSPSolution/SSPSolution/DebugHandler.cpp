@@ -269,6 +269,11 @@ int DebugHandler::DisplayConsole(float dTime)
 	);*/
 	SetConsoleCursorPosition(console, topLeft);
 
+	LARGE_INTEGER elapsedTime;
+	elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
+	elapsedTime.QuadPart *= 1000000;
+	elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+
 	std::vector<Timer>::iterator iter;
 
 	unsigned int time;
@@ -277,12 +282,9 @@ int DebugHandler::DisplayConsole(float dTime)
 		iter != this->m_timers.end();
 		i++, iter++)
 	{
-		time = iter->GetTimeMS(this->m_frequency);
+		time = iter->GetTimeMS(this->m_frequency, elapsedTime);
 
-		LARGE_INTEGER elapsedTime;
-		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
-		elapsedTime.QuadPart *= 1000000;
-		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+		
 
 		std::wcout << std::fixed << std::setprecision(1) << iter->label << ": [" << iter->minTime << "] "
 			<< time << " [" << iter->maxTime << "] us, " 
@@ -334,6 +336,12 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	{
 		return 0;
 	}
+
+	LARGE_INTEGER elapsedTime;
+	elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
+	elapsedTime.QuadPart *= 1000000;
+	elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+
 	std::vector<Timer>::iterator iter;
 	unsigned int time;
 	int i;
@@ -341,16 +349,13 @@ int DebugHandler::DisplayOnScreen(float dTime)
 		iter != this->m_timers.end();
 		i++, iter++)
 	{
-		time = iter->GetTimeMS(this->m_frequency);
-
-		LARGE_INTEGER elapsedTime;
-		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
-		elapsedTime.QuadPart *= 1000000;
-		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+		time = iter->GetTimeMS(this->m_frequency, elapsedTime);
 
 		iter->textComp->text = iter->label + L": [" + std::to_wstring(iter->minTime) + L"] "
-			+ std::to_wstring(time) + L" [" + std::to_wstring(iter->maxTime) + L"] us, "
-			+ std::to_wstring((int)((time / (float)elapsedTime.QuadPart) * 100)) + L"%";
+			+ std::to_wstring(time) + L" [" + std::to_wstring(iter->maxTime) 
+			+ L"] (" + std::to_wstring(iter->GetAvgTime())
+			+ L") us, " + std::to_wstring(iter->avgPercentage[iter->currAvgPtr])
+			+ L" (" +  std::to_wstring(iter->GetAvgPercentage()) + L") %";
 	}
 
 	int nrOfCustomLabels = this->m_values.size();
