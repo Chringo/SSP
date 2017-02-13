@@ -3057,12 +3057,12 @@ bool PhysicsHandler::IntersectRaySphere(const DirectX::XMVECTOR & rayOrigin, con
 	return true;
 }
 
-Field * PhysicsHandler::CreateField(const DirectX::XMVECTOR & pos, unsigned int entityID1, unsigned int entityID2, float * ext, float * ort)
+Field * PhysicsHandler::CreateField(float * pos, unsigned int entityID1, unsigned int entityID2, float * ext, float * ort)
 {
 	this->m_fields.push_back(Field());
 	Field* field = &this->m_fields.at(this->m_fields.size() - 1);
-	DirectX::XMStoreFloat3(&field->F_pos, pos);
-	//field->F_pos = pos;
+	//DirectX::XMStoreFloat3(&field->F_pos, pos);
+	field->F_pos = DirectX::XMFLOAT3(pos[0], pos[1], pos[2]);
 	field->F_BV.ext[0] = ext[0];
 	field->F_BV.ext[1] = ext[1];
 	field->F_BV.ext[2] = ext[2];

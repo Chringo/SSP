@@ -1211,7 +1211,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			data->checkpoints[i].position[2],
 			0);
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-			tPos,
+			data->checkpoints[i].position,
 			1,	//EntityID Player1
 			2,	//EntityID Player2
 			data->checkpoints[i].ext,
