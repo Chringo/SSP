@@ -2103,13 +2103,13 @@ void PhysicsHandler::Update(float deltaTime)
 	int i = 0;
 	if (this->m_playerRagDoll.state == ANIMATED_TRANSITION)
 	{
-		this->SetRagdollToBindPose(&this->m_playerRagDoll, this->m_playerRagDoll.playerPC->PC_pos);
+		this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, -2.2, 0.15, 0)));
 		this->m_playerRagDoll.state = ANIMATED;
 	}
 	if (this->m_playerRagDoll.state == ANIMATED)
 	{
 
-		this->SetRagdollToBindPose(&this->m_playerRagDoll, this->m_playerRagDoll.playerPC->PC_pos);
+		this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, 0, 0.15, 0)));
 		float rightfootVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.rightLeg.next2->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.ballPC->PC_velocity));
 		if (rightfootVel > 0.7 && ballVel > 0.7)
@@ -3657,9 +3657,9 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(Resources::Skeleton::Join
 	//leftFoot->PC_mass = 0.625;
 
 	rightShoulder->PC_is_Static = true;
-	rightElbow->PC_is_Static = true;
+	//rightElbow->PC_is_Static = true;
 	leftShoulder->PC_is_Static = true;
-	leftElbow->PC_is_Static = true;
+	//leftElbow->PC_is_Static = true;
 	leftLeg->PC_is_Static = true;
 	leftKnee->PC_is_Static = true;
 	rightLeg->PC_is_Static = true;
@@ -3676,8 +3676,8 @@ void PhysicsHandler::AdjustRagdoll(Ragdoll * ragdoll, float dt)
 {
 	this->AdjustBodyParts(&ragdoll->upperBody, dt);
 	this->AdjustBodyParts(&ragdoll->lowerBody, dt);
-	//this->AdjustBodyParts(&ragdoll->rightArm, dt);
-	//this->AdjustBodyParts(&ragdoll->leftArm, dt);
+	this->AdjustBodyParts(&ragdoll->rightArm, dt);
+	this->AdjustBodyParts(&ragdoll->leftArm, dt);
 	//this->AdjustBodyParts(&ragdoll->rightLeg, dt);
 	//this->AdjustBodyParts(&ragdoll->leftLeg, dt);
 
@@ -3730,7 +3730,7 @@ void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
 		DirectX::XMVECTOR uppVec = DirectX::XMVectorSubtract(bodypart->center->PC_pos, bodypart->next3->PC_pos);
 		uppVec = DirectX::XMVector3Normalize(uppVec);
 
-		DirectX::XMVECTOR rightVec = DirectX::XMVectorSubtract(bodypart->next->PC_pos, bodypart->center->PC_pos);
+		DirectX::XMVECTOR rightVec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(bodypart->next->PC_pos, bodypart->center->PC_pos));
 		DirectX::XMVECTOR perp;
 		DirectX::XMVECTOR para;
 
@@ -3792,21 +3792,24 @@ void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
 #pragma region
 	if (bodypart->BP_type == BP_RIGHT_ARM || bodypart->BP_type == BP_LEFT_ARM)
 	{
-		//updates the ortoMatrix of the elbow
-		//bodypart->center == shoulder
-		//bodypart->next == elbow
+		//bodypart->next->PC_OBB.ort = bodypart->center->PC_OBB.ort;
+		//bodypart->next2->PC_OBB.ort = bodypart->center->PC_OBB.ort;
+
+		////updates the ortoMatrix of the elbow
+		////bodypart->center == shoulder
+		////bodypart->next == elbow
 		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(bodypart->next->PC_pos, bodypart->center->PC_pos);
 		diffVec = DirectX::XMVector3Normalize(diffVec);
 
 		DirectX::XMVECTOR para;
 		DirectX::XMVECTOR perp;
 
-		//use the vector from the shoulder to the elbow as the rightVec and takes the perpendicular parts of the 
-		//uppVector from the shoulder and sets that as the elbows uppVec
+		////use the vector from the shoulder to the elbow as the rightVec and takes the perpendicular parts of the 
+		////uppVector from the shoulder and sets that as the elbows uppVec
 		DirectX::XMVector3ComponentsFromNormal(&para, &perp, bodypart->center->PC_OBB.ort.r[1], diffVec);
 		DirectX::XMVECTOR uppVec = DirectX::XMVector3Normalize(perp);
 
-		//forward vector from crossproduct between rightVec(diffVec) and uppvec
+		////forward vector from crossproduct between rightVec(diffVec) and uppvec
 		DirectX::XMVECTOR forwardVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(diffVec, uppVec));
 		uppVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(forwardVec, diffVec));
 
@@ -3815,128 +3818,125 @@ void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
 		bodypart->next->PC_OBB.ort.r[1] = uppVec;
 		bodypart->next->PC_OBB.ort.r[2] = forwardVec;
 
-		bodypart->next->PC_OBB.ort = DirectX::XMMatrixTranspose(bodypart->next->PC_OBB.ort);
+		//bodypart->next->PC_OBB.ort = DirectX::XMMatrixTranspose(bodypart->next->PC_OBB.ort);
 
-		////----
+		//----
 
-		//if (bodypart->BP_type == BP_LEFT_ARM)
-		//{
-		//	//revers the rightVec and the forwardVec of the ortoMatrix if it belongs to the left arm
-		//	bodypart->next->PC_OBB.ort.r[0] = DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], -1);
-		//	bodypart->next->PC_OBB.ort.r[2] = DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[2], -1);
+		if (bodypart->BP_type == BP_LEFT_ARM)
+		{
+			//revers the rightVec and the forwardVec of the ortoMatrix if it belongs to the left arm
+			bodypart->next->PC_OBB.ort.r[0] = DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], -1);
+			bodypart->next->PC_OBB.ort.r[2] = DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[2], -1);
 
-		//	float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
-		//	float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
-		//	float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
+			float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
+			float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
+			float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
 
-		//	//the constraints that keeps the arm from bending in weird ways
-		//	if (axis1dot > -0.3)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[0]);
-		//		para = DirectX::XMVectorSubtract(DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[0], -0.3), para);
-		//		bodypart->next->PC_pos = DirectX::XMVectorAdd(bodypart->next->PC_pos, para);
-		//		//this->CollitionDynamics(bodypart->center, bodypart->next, DirectX::XMVectorSet(-1, 0, 0, 0), 1.0f);
-		//	}
-		//	if (axis3dot < -0.2)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
-		//		para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], -0.2));
-		//		bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
-		//	}
-		//}
-		////constraint that keep the arm from bending weird ways if it belongs to the right arm
-		//else if (BP_RIGHT_ARM)
-		//{
-		//	float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
-		//	float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
-		//	float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
+			//the constraints that keeps the arm from bending in weird ways
+			if (axis1dot > 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[0]);
+				//para = DirectX::XMVectorSubtract(DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[0], -0.3), para);
+				bodypart->next->PC_pos = DirectX::XMVectorAdd(bodypart->next->PC_pos, para);
+			}
+			if (axis3dot > 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
+				//para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], 0.2));
+				bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
+			}
+		}
+		//constraint that keep the arm from bending weird ways if it belongs to the right arm
+		else if (BP_RIGHT_ARM)
+		{
+			float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
+			float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
+			float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
 
 
-		//	if (axis1dot < 0.3)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[0]);
-		//		para = DirectX::XMVectorSubtract(DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[0], 0.3), para);
-		//		bodypart->next->PC_pos = DirectX::XMVectorAdd(bodypart->next->PC_pos, para);
-		//		//this->CollitionDynamics(bodypart->center, bodypart->next, DirectX::XMVectorSet(-1, 0, 0, 0), 1.0f);
-		//	}
-		//	if (axis3dot < -0.2)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
-		//		para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], -0.2));
-		//		bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
-		//	}
-		//}
+			if (axis1dot < 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[0]);
+				//para = DirectX::XMVectorSubtract(DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[0], 0.3), para);
+				bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
+			}
+			if (axis3dot > 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
+				//para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], -0.2));
+				bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
+			}
+		}
 
 		//updates the right hand dependent on the right elbow
 		//bodypart->next == elbow
 		//bodypart->next2 == hand 
 
-		//diffVec = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, bodypart->next->PC_pos);
-		//diffVec = DirectX::XMVector3Normalize(diffVec);
+		diffVec = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, bodypart->next->PC_pos);
+		diffVec = DirectX::XMVector3Normalize(diffVec);
 
 		//use the vector from the elbow to the hand as the rightVec and gets the uppVec by taking the perpendicular
 		//part of the uppVec from the elbow on the rightVec(diffVec) 
-		//DirectX::XMVector3ComponentsFromNormal(&para, &perp, bodypart->next->PC_OBB.ort.r[1], diffVec);
-		//uppVec = DirectX::XMVector3Normalize(perp);
+		DirectX::XMVector3ComponentsFromNormal(&para, &perp, bodypart->next->PC_OBB.ort.r[1], diffVec);
+		uppVec = DirectX::XMVector3Normalize(perp);
 
 		//gets the forwardVec with CrossProduct
-		//forwardVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(diffVec, uppVec));
-		//uppVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(forwardVec, diffVec));
+		forwardVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(diffVec, uppVec));
+		uppVec = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(forwardVec, diffVec));
 
 
 		//set the ortoMatrix (stored in the OBB of the PhysicsComponent)
-		//bodypart->next2->PC_OBB.ort.r[0] = diffVec;
-		//bodypart->next2->PC_OBB.ort.r[1] = uppVec;
-		//bodypart->next2->PC_OBB.ort.r[2] = forwardVec;
+		bodypart->next2->PC_OBB.ort.r[0] = diffVec;
+		bodypart->next2->PC_OBB.ort.r[1] = uppVec;
+		bodypart->next2->PC_OBB.ort.r[2] = forwardVec;
 
 
-		//DirectX::XMVECTOR test;
-		//DirectX::XMMatrixInverse(&test, bodypart->next->PC_OBB.ort);
+		DirectX::XMVECTOR test;
+		DirectX::XMMatrixInverse(&test, bodypart->next->PC_OBB.ort);
 
-		//if (bodypart->BP_type == BP_LEFT_ARM)
-		//{
-		//	reverse the rightVec and the forwardVec if they belong to the leftArm
-		//	bodypart->next2->PC_OBB.ort.r[0] = DirectX::XMVectorScale(bodypart->next2->PC_OBB.ort.r[0], -1);
-		//	bodypart->next2->PC_OBB.ort.r[2] = DirectX::XMVectorScale(bodypart->next2->PC_OBB.ort.r[2], -1);
+		if (bodypart->BP_type == BP_LEFT_ARM)
+		{
+			//reverse the rightVec and the forwardVec if they belong to the leftArm
+			bodypart->next2->PC_OBB.ort.r[0] = DirectX::XMVectorScale(bodypart->next2->PC_OBB.ort.r[0], -1);
+			bodypart->next2->PC_OBB.ort.r[2] = DirectX::XMVectorScale(bodypart->next2->PC_OBB.ort.r[2], -1);
 
-		//	float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
-		//	float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
-		//	float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
+			float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[0]));
+			float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[1]));
+			float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->center->PC_OBB.ort.r[2]));
 
-		//	constraint that keeps the arm from bending in weird ways
-		//	if (axis3dot < 0)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[2]);
-		//		bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
-		//		this->CollitionDynamics(bodypart->next, bodypart->next2, DirectX::XMVectorScale(diffVec,-1), dt);
-		//	}
-		//	if (axis1dot > 0.8)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[0]);
-		//		para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], 0.8));
-		//		bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
-		//	}
-		//}
+			//constraint that keeps the arm from bending in weird ways
+			if (axis3dot > 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[2]);
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
+				this->CollitionDynamics(bodypart->next, bodypart->next2, DirectX::XMVectorScale(diffVec,-1), dt);
+			}
+			if (axis1dot > 0.8)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[0]);
+				para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], 0.8));
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
+			}
+		}
 		//constrints that keep the arm from bendin in weird ways
-		//else if (bodypart->BP_type == BP_RIGHT_ARM)
-		//{
-		//	float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[0]));
-		//	float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[1]));
-		//	float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[2]));
+		else if (bodypart->BP_type == BP_RIGHT_ARM)
+		{
+			float axis1dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[0]));
+			float axis2dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[1]));
+			float axis3dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(diffVec, bodypart->next->PC_OBB.ort.r[2]));
 
-		//	if (axis3dot > 0)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[2]);
-		//		bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
-		//		this->CollitionDynamics(bodypart->next, bodypart->next2, DirectX::XMVectorScale(diffVec,-1), dt);
-		//	}
-		//	if (axis1dot < -0.8)
-		//	{
-		//		DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[0]);
-		//		para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], -0.8));
-		//		bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
-		//	}
-		//}
+			if (axis3dot > 0)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[2]);
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
+			}
+			if (axis1dot < -0.8)
+			{
+				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->next->PC_OBB.ort.r[0]);
+				para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->next->PC_OBB.ort.r[0], -0.8));
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
+			}
+		}
 
 	}
 #pragma endregion Adjust right/left arm
@@ -4626,7 +4626,7 @@ PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
 	
 	//center of body
 	ragdoll->jointMatrixes[0] = ragdoll->lowerBody.center->PC_OBB.ort;
-	//ragdoll->jointMatrixes[0].r[3] = DirectX::XMVectorSetW(ragdoll->playerPC->PC_pos, 1);
+	ragdoll->jointMatrixes[0].r[3] = this->TESTjointMatrixes[0].r[3];
 
 	//1-4 lowerbody - head
 	ragdoll->jointMatrixes[1] = this->CalcTransformMatrix(ragdoll->lowerBody.center, ragdoll->upperBody.next3, ragdoll->upperBody.center);
@@ -4639,6 +4639,7 @@ PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
 	ragdoll->jointMatrixes[6] = this->CalcTransformMatrix(ragdoll->rightArm.center, ragdoll->rightArm.next, ragdoll->rightArm.next2);
 	ragdoll->jointMatrixes[7] = this->CalcTransformMatrix(ragdoll->rightArm.next, ragdoll->rightArm.next2, ragdoll->rightArm.next3);
 	ragdoll->jointMatrixes[8] = this->CalcTransformMatrix(ragdoll->rightArm.next2, ragdoll->rightArm.next3, ragdoll->rightArm.next3);
+
 	//---
 	//9-12 leftarm
 	ragdoll->jointMatrixes[9] = this->CalcTransformMatrix(ragdoll->upperBody.center, ragdoll->leftArm.center, ragdoll->leftArm.next);
@@ -4658,15 +4659,59 @@ PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
 	ragdoll->jointMatrixes[19] = this->CalcTransformMatrix(ragdoll->leftLeg.next, ragdoll->leftLeg.next2, ragdoll->leftLeg.next3);
 	ragdoll->jointMatrixes[20] = this->CalcTransformMatrix(ragdoll->leftLeg.next2, ragdoll->leftLeg.next3, ragdoll->leftLeg.next3);
 	//----
-	DirectX::XMVECTOR temp = DirectX::XMVectorSet(0, 0, 0, 0);
-	for (int i = 0; i < 21; i++)
+
+	for (int childIndex = 1; childIndex < 21; childIndex++)
 	{
 
-		temp = this->TESTjointMatrixes[i].r[3];
-		DirectX::XMMATRIX trans = DirectX::XMMatrixTranslationFromVector(temp);
-		ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(trans, ragdoll->jointMatrixes[i]);
-		//ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(temp, ragdoll->jointMatrixes[i].r[3]);
+		int parentI = ragdoll->Skeleton[childIndex].parentIndex;
+		DirectX::XMMATRIX parentTransform = ragdoll->jointMatrixes[parentI];
+
+		DirectX::XMMATRIX childTransform = ragdoll->jointMatrixes[childIndex];
+		//DirectX::XMVECTOR childOffSet = DirectX::XMVectorSet(0, 0, 0, 0);
+		//DirectX::XMVECTOR parentOffSet = DirectX::XMVectorSet(0, 0, 0, 0);
+		if (childIndex == 7 ||childIndex == 8)
+		{
+			int a = 0;
+
+		}
+		//childOffSet = DirectX::XMVectorSubtract(this->m_bodyPC.at(childIndex)->PC_pos, this->m_bodyPC.at(parentI)->PC_pos);
+		//parentOffSet = this->TESTjointMatrixes[parentI].r[3];
+
+		//childTransform.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		//parentTransform.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+
+		DirectX::XMMATRIX relationTransform = DirectX::XMMatrixMultiply(childTransform, parentTransform);
+
+		//DirectX::XMVECTOR finalOffSet = DirectX::XMVector3Transform(childOffSet, relationTransform);
+
+		//relationTransform.r[3] = DirectX::XMVectorAdd(relationTransform.r[3], childOffSet);
+
+		ragdoll->jointMatrixes[childIndex] = relationTransform;
 	}
+
+	//DirectX::XMMATRIX rotations[21];
+
+	//rotations[0] = this->m_bodyPC.at(0)->PC_OBB.ort;
+	//for (int i = 1; i < 21; i++)
+	//{
+	//	int parentIndex = ragdoll->Skeleton[i].parentIndex;
+	//	rotations[i] = this->m_bodyPC.at(i)->PC_OBB.ort;
+	//	ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector((this->m_bodyPC.at(i)->PC_pos, this->m_bodyPC.at(parentIndex)->PC_pos)) * rotations[i];
+	//}
+
+
+
+	//ragdoll->jointMatrixes[0].r[3] = this->TESTjointMatrixes[0].r[3];
+
+	//for (int i = 1; i < 21; i++)
+	//{
+	//	int parentIndex = ragdoll->Skeleton[i].parentIndex;
+	//	ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorSubtract(this->m_bodyPC.at(i)->PC_pos, this->m_bodyPC.at(parentIndex)->PC_pos);
+	//	ragdoll->jointMatrixes[i].r[3] = this->TESTjointMatrixes[i].r[3];
+	//	//ragdoll->jointMatrixes[i] = this->TESTjointMatrixes[i] * this->m_bodyPC.at(i)->PC_OBB.ort;
+	//	ragdoll->jointMatrixes[i] = this->m_bodyPC.at(parentIndex)->PC_OBB.ort * this->m_bodyPC.at(i)->PC_OBB.ort;
+	//}
+
 }
 
 PHYSICSDLL_API DirectX::XMMATRIX PhysicsHandler::CalcTransformMatrix(PhysicsComponent * joint1, PhysicsComponent * joint2, PhysicsComponent* joint3)
@@ -4677,9 +4722,9 @@ PHYSICSDLL_API DirectX::XMMATRIX PhysicsHandler::CalcTransformMatrix(PhysicsComp
 	DirectX::XMMATRIX orto2 = joint3->PC_OBB.ort;
 
 	DirectX::XMMATRIX localAxises = orto2;
-	localAxises = DirectX::XMMatrixMultiply(orto2, orto1);
+	localAxises = DirectX::XMMatrixMultiply(DirectX::XMMatrixInverse(nullptr, orto1), orto2);
 
-	//localAxises.r[3] = DirectX::XMVectorSetW(offSet, 1);
+	localAxises.r[3] = DirectX::XMVectorSetW(offSet, 1);
 
 	return localAxises;
 }
