@@ -134,6 +134,7 @@ public:
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMFLOAT4 newCamPos);
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMVECTOR newCamPos);
 	GRAPHICSDLL_API void SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance);
+	GRAPHICSDLL_API void SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMFLOAT4 newLookAt);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMVECTOR newLookAt);
 	GRAPHICSDLL_API void SetCameraUp(DirectX::XMFLOAT4 newCamUp);
