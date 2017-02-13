@@ -154,7 +154,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
