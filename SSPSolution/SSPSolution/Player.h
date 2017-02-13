@@ -14,7 +14,6 @@ private:
 	float m_throwStrength;
 	bool m_isAiming;
 	Entity* m_ball;
-
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
 

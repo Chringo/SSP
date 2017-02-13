@@ -154,7 +154,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
@@ -664,7 +664,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_player1.GetGrabbed() == nullptr && !inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			Entity* closestBall = this->GetClosestBall(3);
 			
@@ -675,7 +675,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_Q))
 		{
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
@@ -806,7 +806,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_Send_Updates
 
 	#pragma region
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
 	{
 		// Reset player-position to spawn
 		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
@@ -848,7 +848,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 playerPos;
 	DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 	//Buttons and levers require input for logical evaluation of activation
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_E))
 	{
 		//Iterator version of looping
 		/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
@@ -876,7 +876,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
 		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
@@ -887,7 +887,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_E))
 	{
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
