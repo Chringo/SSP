@@ -1203,9 +1203,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma region Creating Field
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
-		OBB* tOBB = new OBB();
-		memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
-		memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
+		//OBB* tOBB = new OBB();
+		//memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
+		//memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
 		DirectX::XMVECTOR tPos = {
 			data->checkpoints[i].position[0],
 			data->checkpoints[i].position[1],
@@ -1215,13 +1215,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			tPos,
 			1,	//EntityID Player1
 			3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-			tOBB
+			data->checkpoints[i].ext,
+			data->checkpoints[i].ort
 		);
-		FieldEntity* tempFE = new FieldEntity();
-		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
-		this->m_fieldEntities.push_back(tempFE);
-		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
-		delete tOBB;
+		//FieldEntity* tempFE = new FieldEntity();
+		//tempFE->Initialize(data->checkpoints[i].entityID, nullptr);
+		//this->m_fieldEntities.push_back(tempFE);
+		//this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+		//delete tOBB;
 	}
 
 	// TODO: Field Data for States in Level Director
