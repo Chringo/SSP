@@ -468,7 +468,7 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
-PHYSICSDLL_API void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
+void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 {
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());

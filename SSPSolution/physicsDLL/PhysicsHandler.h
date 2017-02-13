@@ -32,7 +32,6 @@ struct Field
 	bool F_second_inside;
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
 };
 
 
