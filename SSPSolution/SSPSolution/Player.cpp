@@ -482,3 +482,15 @@ Entity * Player::GetBall()
 {
 	return this->m_ball;
 }
+
+bool Player::isAnimationChanged()
+{
+	bool result = false;
+
+	if (this->m_oldAnimState != this->m_aComp->previousState)
+	{
+		result = true;
+	}
+
+	return result;
+}
