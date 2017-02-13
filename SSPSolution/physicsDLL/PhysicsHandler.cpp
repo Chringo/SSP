@@ -3268,11 +3268,6 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 	{
 		this->m_bullet.CreateSphere(src, index);
 	}
-
-	else
-	{
-		int i = 0;
-	}
 }
 
 btRigidBody * PhysicsHandler::GetRigidBody(int index)

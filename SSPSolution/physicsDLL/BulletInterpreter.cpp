@@ -38,46 +38,6 @@ DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 	return toReturn;
 }
 
-void BulletInterpreter::UpdatePhysicsComponentTransformWithBullet(PhysicsComponent * src)
-{
-	btTransform trans;
-
-	//get the position in the Bullet world
-	this->m_rigidBodies.at(src->PC_IndexRigidBody)->getMotionState()->getWorldTransform(trans);
-	btVector3 origin = trans.getOrigin();
-
-	//update PhysicsComponent
-	src->PC_pos = this->crt_Vec3XMVEc(origin);
-
-	if (src->PC_steadfast == true)
-	{
-		btRigidBody* rigid = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-
-		btVector3 vel = this->crt_xmvecVec3(src->PC_velocity);
-		rigid->setLinearVelocity(vel);
-		rigid->setGravity(btVector3(0,0,0));
-
-		trans = rigid->getWorldTransform();
-		trans.setOrigin(this->crt_xmvecVec3(src->PC_pos));
-
-		btMotionState* ms = nullptr;
-		ms = rigid->getMotionState();
-
-		ms->setWorldTransform(trans);
-
-		rigid->setMotionState(ms);
-	}
-	else if (src->PC_BVtype == BV_OBB)
-	{
-		//convert the position to xmvector 
-		btQuaternion rotation = trans.getRotation();
-		DirectX::XMVECTOR rot = DirectX::XMVectorSet(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
-
-		src->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(rot);
-	}
-
-}
-
  void BulletInterpreter::applyLinearVelocityOnSrc(PhysicsComponent * src)
 {
 
@@ -328,102 +288,6 @@ void BulletInterpreter::Shutdown()
 	}
 }
 
-void BulletInterpreter::CreateRigidBody(PhysicsComponent* fromGame)
-{
-	btQuaternion temp = btQuaternion(0, 0, 0, 1); //do not know what this does exactlly
-	btVector3 pos = btVector3(0, -1, 0);
-
-	if (fromGame->PC_is_Static == true)
-	{
-		//collition shapes
-		if (fromGame->PC_BVtype == BV_Plane)
-		{
-			btVector3 norm = this->crt_xmvecVec3(fromGame->PC_Plane.PC_normal);
-			btStaticPlaneShape* StaticShape = new btStaticPlaneShape(norm, 1);
-		}
-
-		if (fromGame->PC_BVtype == BV_OBB)
-		{
-			btBoxShape* boxShape = nullptr;
-		}
-
-		if (fromGame->PC_BVtype == BV_Sphere)
-		{
-			//btSphereShape* sphereShape = nullptr;
-			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
-		}
-		
-	}
-	else
-	{
-		if (fromGame->PC_BVtype == BV_Plane)
-		{
-
-		}
-
-		if (fromGame->PC_BVtype == BV_OBB)
-		{
-			btBoxShape* boxShape = nullptr;
-			btCollisionObject* temp = new btCollisionObject;
-		}
-
-		if (fromGame->PC_BVtype == BV_Sphere)
-		{
-			//btSphereShape* sphereShape = nullptr;
-			//sphereShape = new btSphereShape(fromGame->PC_Sphere.radius);
-		}
-
-		if (fromGame->PC_BVtype == BV_AABB)
-		{
-			//btBoxShape* boxShape = nullptr;
-		}
-	}
-}
-
-void BulletInterpreter::TestBulletPhysics()
-{
-	std::ofstream outputFile;
-	outputFile.open("BulletData.txt");
-	float interval = 1.0f / 60.0f;
-
-	for (int i = 0; i < 300; i++)
-	{
-		m_dynamicsWorld->stepSimulation(interval, 10);
-
-		btTransform trans;
-		this->m_rigidBodies.at(1)->getMotionState()->getWorldTransform(trans);
-
-		outputFile << trans.getOrigin().getY() << '\n';
-	}
-
-	outputFile.close();
-}
-
-void BulletInterpreter::RegisterBox(int index)
-{
-	this->m_physicsHandlerIndex.push_back(index);
-}
-
-void BulletInterpreter::BCb()
-{
-	/*
-	// DynamicsWorld.h , declaration
-	typedef void (*btInternalTickCallback)(btDynamicsWorld *world, btScalar timeStep);
-	
-
-	declaration here
-	/// Set the callback for when an internal tick (simulation substep) happens, optional user info
-	void setInternalTickCallback(btInternalTickCallback cb,	void* worldUserInfo=0,bool isPreTick=false)
-	*/
-	
-	//tutorial followed: http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
-	//callback function info: http://stackoverflow.com/questions/9596276/how-to-explain-callbacks-in-plain-english-how-are-they-different-from-calling-o/9652434#9652434
-
-
-	//visual studio screems at me
-//	this->m_dynamicsWorld->setInternalTickCallback(BulletworldCallback);
-}
-
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
 {
 	btCollisionShape* planeShape = new btStaticPlaneShape(this->crt_xmvecVec3(normal), 1);
@@ -530,6 +394,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	btVector3 interia(0, 0, 0);
 	if (src->PC_mass != 0)
 	{
+		
 		box->calculateLocalInertia(src->PC_mass, interia);
 	}
 
@@ -547,6 +412,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	if (index == 0 || index == 1)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
+		
 	}
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
@@ -671,6 +537,7 @@ DirectX::XMVECTOR BulletInterpreter::FindNormalFromComponent(int index)
 
 	return toReturn;
 }
+
 void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index)
 {
 	btPersistentManifold* pMan = nullptr;
@@ -737,6 +604,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 		}
 	}
 }
+
 btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 {
 	return this->m_dynamicsWorld;

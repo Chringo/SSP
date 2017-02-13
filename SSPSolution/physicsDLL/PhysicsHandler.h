@@ -150,7 +150,6 @@ public:
 	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
 	PHYSICSDLL_API bool checkCollition();
-
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	PHYSICSDLL_API BulletInterpreter* GetBulletInterpreterRef();
