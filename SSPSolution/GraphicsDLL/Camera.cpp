@@ -186,6 +186,30 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 	return result;
 }
 
+int Camera::Reset()
+{
+	int result = 0;
+
+	m_pitch = DirectX::XMConvertToRadians(-45.0);
+	m_yaw = DirectX::XMConvertToRadians(-45.0);
+
+	this->m_camDirvector = m_Dir();
+	this->m_camRightvector = m_Right();
+
+	m_updatePos();
+
+	return result;
+}
+
+Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
+{
+	Ray ray;
+	ray.RayDir = this->m_Dir();
+	ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
+
+	return ray;
+}
+
 #pragma region
 void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 {
