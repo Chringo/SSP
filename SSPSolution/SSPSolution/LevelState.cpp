@@ -1000,21 +1000,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
-
-	PhysicsComponent* playerPC = this->m_player1.GetPhysicsComponent();
-	DirectX::XMVECTOR checkAgainst = playerPC->PC_pos;
-	//Check all fields
-	/*for (FieldEntity* i : this->m_fieldEntities)
-	{
-		this->m_clearedLevel = i->Update(dt, inputHandler);
-	}*/
-	//In meters
-	/*float maxDistance = 5.0f;
-	DirectX::XMVECTOR winArea = DirectX::XMVectorSet(7.0f, 0.5f, 2.3f, 0.0f);
-	float distanceBetween = DirectX::XMVector3Length(DirectX::XMVectorSubtract(winArea, checkAgainst)).m128_f32[0];
-	if (distanceBetween < maxDistance)
-		this->m_clearedLevel = 1;*/
-
 	return result;
 }
 
