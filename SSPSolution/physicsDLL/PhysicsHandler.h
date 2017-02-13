@@ -32,7 +32,6 @@ struct Field
 	bool F_second_inside;
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
 };
 
 
@@ -84,11 +83,6 @@ private:
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
 	void CheckFieldIntersection();
-
-	//collitionCorrection
-	void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
-	void ObbObbCollitionCorrection(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
-	DirectX::XMVECTOR FindCollitionPoint(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
 
 	bool IsPointInBox(DirectX::XMVECTOR point, OBB* &src, DirectX::XMVECTOR BoxPos);
 
@@ -154,13 +148,9 @@ public:
 	PHYSICSDLL_API BulletInterpreter* GetBulletInterpreterRef();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
-	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
+	//PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
 	
 	PHYSICSDLL_API void TransferBoxesToBullet(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
-	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
-	
-	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 
 	PHYSICSDLL_API void SyncAllPhyicsComponentsToBullet();
 	PHYSICSDLL_API void SyncBulletToPhysicsComponents();
