@@ -58,12 +58,6 @@ struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
-	
-	//DirectX::XMVECTOR PC_normalForce;
-	
-	//for impulse
-	//DirectX::XMVECTOR PC_ForceDir;
-	//float PC_Power;
 
 	double PC_gravityInfluence;
 	int PC_active;
@@ -75,10 +69,7 @@ struct PhysicsComponent
 	float PC_elasticity;
 	BoundingVolumeType PC_BVtype;
 	bool PC_steadfast = false;
-	//bool PC_ApplyImpulse = false;
-	//bool PC_NotExistInBulletWorld;
 	int PC_IndexRigidBody = -1;
-	//bool PC_Bullet_AffectedByGravity = true;
 
 	AABB PC_AABB;
 	OBB PC_OBB;
@@ -89,19 +80,6 @@ struct PhysicsComponent
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
-//	void ApplyForce(DirectX::XMVECTOR dir, float strength)
-//	{
-//		if (this->PC_IndexRigidBody != -1)
-//		{
-//			//if the component is OBB or AABB
-//			this->PC_ApplyImpulse = true;
-//			this->PC_ForceDir = dir;
-//			this->PC_Power = strength;
-//			this->PC_Bullet_AffectedByGravity = true;
-//		}
-//	}
-
 };
 
 #pragma endregion
@@ -172,5 +150,6 @@ public:
 	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index);
 };
 #endif

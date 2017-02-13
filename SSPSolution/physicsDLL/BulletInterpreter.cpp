@@ -461,6 +461,68 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
+PHYSICSDLL_API void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
+{
+	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
+	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
+	DirectX::XMMATRIX orth = src->PC_OBB.ort;
+
+	//creating a mothion state
+	btVector3 startTrans = this->crt_xmvecVec3(src->PC_pos);
+
+	btVector3 r1 = this->crt_xmvecVec3(orth.r[0]);
+	btVector3 r2 = this->crt_xmvecVec3(orth.r[1]);
+	btVector3 r3 = this->crt_xmvecVec3(orth.r[2]);
+
+	btMatrix3x3 test;
+	test.setValue
+	(
+		r1.getX(), r1.getY(), r1.getZ(),
+		r2.getX(), r2.getY(), r2.getZ(),
+		r3.getX(), r3.getY(), r3.getZ()
+	);
+
+	btTransform initialTransform = btTransform(test, startTrans);
+
+	btDefaultMotionState* boxMotionState = nullptr;
+	boxMotionState = new btDefaultMotionState(initialTransform);
+
+	btVector3 interia(0, 0, 0);
+	if (src->PC_mass != 0)
+	{
+		Capsule->calculateLocalInertia(src->PC_mass, interia);
+	}
+
+	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
+	(
+		src->PC_mass,  //mass
+		boxMotionState,
+		Capsule,
+		interia		//Interia / masspunkt 
+	);
+
+	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
+	rigidBody->setFriction(src->PC_friction);
+
+	if (index == 0 || index == 1)
+	{
+		rigidBody->setAngularFactor(btVector3(0, 0, 0));
+
+	}
+
+	rigidBody->setUserIndex(this->m_rigidBodies.size());
+	rigidBody->setUserIndex2(this->m_rigidBodies.size());
+
+
+	this->m_rigidBodies.push_back(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	int pos = this->m_rigidBodies.size() - 1;
+	src->PC_IndexRigidBody = pos;
+
+
+	int i = 0;
+}
+
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);
