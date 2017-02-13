@@ -58,6 +58,7 @@ struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
+	
 	//DirectX::XMVECTOR PC_normalForce;
 	
 	//for impulse
@@ -135,24 +136,15 @@ private:
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 
-	//PhysicsComponent* player1;
-	//PhysicsComponent* player2;
-
 	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
 
 	//player specifics
-	//void ApplyMovementPlayer1(float dt);
-	//void ApplyMovementPlayer2();
-	void UpdatePhysicsComponentTransformWithBullet(PhysicsComponent* src);
-
 	void applyLinearVelocityOnSrc(PhysicsComponent* src);
 
 	//apply stuff to bullet
 	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
 	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
 
-	//callback function
-	//void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 public:
 	std::vector<btRigidBody*> m_rigidBodies;
 	
@@ -168,26 +160,17 @@ public:
 
 	PHYSICSDLL_API void Shutdown();
 
-	PHYSICSDLL_API void CreateRigidBody(PhysicsComponent* fromGame);
-
-	//test functions
-	PHYSICSDLL_API void TestBulletPhysics();
-	PHYSICSDLL_API void RegisterBox(int index);
-
-	
-	PHYSICSDLL_API void BCb();
-
-	//type of rigidBodies
-	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
-	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src,int index);
-	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
-
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 
 	PHYSICSDLL_API DirectX::XMVECTOR FindNormalFromComponent(int index);
 
 	PHYSICSDLL_API void AddNormalFromCollisions(PhysicsComponent* src, int index);
 	PHYSICSDLL_API btDynamicsWorld* GetBulletWorld();
+
+	//type of rigidBodies
+	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
+	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 };
 #endif
