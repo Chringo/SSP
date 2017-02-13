@@ -179,13 +179,16 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 		}
 		i += element->desiredStateReached;
 	}
-	
+	//The state of the door changed, it iseither not opened or not closed anymore
+	if (this->m_isOpened != i == this->m_subjectStates.size())
+	{
+		//Play sound
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_DOOR_OPENING, pos, false, false);
+	}
 	this->m_isOpened = i == this->m_subjectStates.size();
 
-	//Play sound
-	DirectX::XMFLOAT3 pos;
-	DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-	SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_DOOR_OPENING, pos, false, false);
 
 	return 0;
 }
