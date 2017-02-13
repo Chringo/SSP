@@ -77,7 +77,12 @@ struct EntityPacket: public Packet
 struct AnimationPacket : public Packet
 {
 	unsigned int	entityID;	
-	int				newstate;			
+	int				newstate;
+	float			transitionDuritation;
+	int				blendingType;
+	bool			isLooping;
+	bool			lockAnimation;
+	float			playingSpeed;
 
 	void serialize(char * data)
 	{
