@@ -141,7 +141,7 @@ public:
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 	PHYSICSDLL_API bool IntersectRaySphere(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const Sphere &obj, const DirectX::XMVECTOR &pos, float &distanceToOBB);
 
-	PHYSICSDLL_API Field* CreateField(DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, OBB* &obb);
+	PHYSICSDLL_API Field* CreateField(const DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, float * ext, float * ort);
 
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
