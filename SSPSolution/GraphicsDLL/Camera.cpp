@@ -64,6 +64,17 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	return result;
 }
 
+GRAPHICSDLL_API int Camera::SetPhysicsComponent(PhysicsComponent * pComp)
+{
+	this->m_pComp = pComp;
+	return 0;
+}
+
+GRAPHICSDLL_API PhysicsComponent * Camera::GetPhysicsComponent()
+{
+	return this->m_pComp;
+}
+
 int Camera::Update(float dt)
 {
 	int result = 1;
