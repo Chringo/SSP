@@ -489,6 +489,7 @@ bool Player::isAnimationChanged()
 
 	if (this->m_oldAnimState != this->m_aComp->previousState)
 	{
+		this->m_oldAnimState = this->m_aComp->previousState;
 		result = true;
 	}
 
