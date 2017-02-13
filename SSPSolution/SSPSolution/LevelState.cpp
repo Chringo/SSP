@@ -1205,11 +1205,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma region Creating Field
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
-		DirectX::XMVECTOR tPos = DirectX::XMVectorSet(
-			data->checkpoints[i].position[0],
-			data->checkpoints[i].position[1],
-			data->checkpoints[i].position[2],
-			0);
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1

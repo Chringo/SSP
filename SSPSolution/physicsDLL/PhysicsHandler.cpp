@@ -3072,27 +3072,6 @@ Field * PhysicsHandler::CreateField(float * pos, unsigned int entityID1, unsigne
 	field->F_first_inside = false;
 	field->F_second_inside = false;
 	return field;
-	//printf("A");
-	//Field temp;
-	//printf("B");
-	//temp.F_BV.ort = obb->ort;
-	//temp.F_BV.ext[0] = obb->ext[0];
-	//temp.F_BV.ext[1] = obb->ext[1];
-	//temp.F_BV.ext[2] = obb->ext[2];
-	//printf("C");
-	//DirectX::XMStoreFloat3(&temp.F_pos, pos);
-	////temp.F_pos = pos;
-	//printf("D");
-
-	//temp.F_entitityID1 = entityID1;
-	//temp.F_entitityID2 = entityID2;
-	//temp.F_first_inside = false;
-	//temp.F_second_inside = false;
-	//printf("E");
-
-	//this->m_fields.push_back(temp);
-	//printf("F");
-	//return &this->m_fields.back();
 }
 
 void PhysicsHandler::SimpleCollition(float dt)
