@@ -302,7 +302,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	m_player2.SetBall(ball2);
 	#pragma endregion Ball2
 	
-	#pragma region
+#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
 	m_cameraRef->SetCameraPivot(
@@ -732,7 +732,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			this->m_player1.SetAiming(true);
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
-			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3);
+			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
 			targetOffset = DirectX::XMVectorAdd(targetOffset, { 0.0f, 1.25f, 0.0f, 0.0f });
 
 			m_cameraRef->SetCameraPivotOffset(

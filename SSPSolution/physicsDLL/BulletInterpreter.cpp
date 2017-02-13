@@ -191,7 +191,7 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 		btRigidBody* rigidBody = nullptr;
 		rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
-		if (src->PC_mass != 0 && src->PC_active == true)
+		if (src->PC_mass != 0.0f && src->PC_active != 0)
 		{
 			rigidBody->activate();
 		}
