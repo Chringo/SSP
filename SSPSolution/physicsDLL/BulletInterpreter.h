@@ -58,6 +58,7 @@ struct PhysicsComponent
 	DirectX::XMVECTOR PC_velocity;
 	DirectX::XMVECTOR PC_rotation;
 	DirectX::XMVECTOR PC_rotationVelocity;
+	
 	//DirectX::XMVECTOR PC_normalForce;
 	
 	//for impulse

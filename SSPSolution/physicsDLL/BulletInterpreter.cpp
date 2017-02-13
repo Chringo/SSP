@@ -154,14 +154,9 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
-
-
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();
-		if (src->PC_mass != 0)
-		{
-			rigidBody->activate();
-		}
+
 		btVector3 bulletVelocity = rigidBody->getLinearVelocity();
 		btVector3 bulletAnglularV = rigidBody->getAngularVelocity();
 
@@ -199,24 +194,23 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 {
-
 	if (src->PC_IndexRigidBody != -1)
 	{
-		if (src->PC_mass == 0.2f)
-		{
-			int i = 0;
-		}
-
 		btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
-
 		btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
 		btVector3 PC_velocity = this->crt_xmvecVec3(src->PC_velocity);
-		
+
 		btRigidBody* rigidBody = nullptr;
 		rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
+		if (src->PC_mass != 0 && src->PC_active == true)
+		{
+			rigidBody->activate();
+		}
+
 		rigidBody->setLinearVelocity(PC_velocity);
 		rigidBody->setAngularVelocity(PC_rotationVel);
+
 		if (src->PC_mass != 0)
 		{
 			rigidBody->activate();
@@ -239,6 +233,17 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 		moveInWorld.setRotation(quaturnion);
 		moveInWorld.setOrigin(PC_pos);
 		
+		if (src->PC_active == false)
+		{
+			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
+			rigidBody->setIgnoreCollisionCheck(playerShape, true);
+		}
+		else
+		{
+			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
+			rigidBody->setIgnoreCollisionCheck(playerShape, false);
+		}
+
 		btMotionState* ms = nullptr;
 		ms = rigidBody->getMotionState();
 
@@ -417,7 +422,6 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
-
 
 
 	this->m_rigidBodies.push_back(rigidBody);
