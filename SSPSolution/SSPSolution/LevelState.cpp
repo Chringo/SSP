@@ -721,15 +721,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	#pragma region
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+		if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			this->m_player1.SetAiming(true);
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
+			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3);
+			targetOffset = DirectX::XMVectorAdd(targetOffset, { 0.0f, 1.25f, 0.0f, 0.0f });
+
 			m_cameraRef->SetCameraPivotOffset(
 				targetOffset,
 				.5f
 			);
-
 		}
 
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
