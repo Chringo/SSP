@@ -104,7 +104,8 @@ public:
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
-
+	GRAPHICSDLL_API int Reset();
+	GRAPHICSDLL_API Ray CastRay();
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
