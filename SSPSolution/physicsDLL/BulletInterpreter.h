@@ -114,6 +114,9 @@ private:
 	void applyVelocityOnRigidbody(PhysicsComponent* src);
 	void applyRotationOnRigidbody(PhysicsComponent* src);
 	void applyForcesToRigidbody(PhysicsComponent* src);
+
+	//read the changes from the rigidbody
+	DirectX::XMMATRIX GetNextFrameRotationMatrix(btTransform &transform);
 	
 	void IgnoreCollitionCheckOnPickupP1(PhysicsComponent* src);
 

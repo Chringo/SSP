@@ -50,6 +50,19 @@
 	 rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
  }
 
+ DirectX::XMMATRIX BulletInterpreter::GetNextFrameRotationMatrix(btTransform & transform)
+ {
+	 btVector3 bulletPos = transform.getOrigin();
+	 btMatrix3x3 bulletBasis = transform.getBasis();
+
+	 btQuaternion na = transform.getRotation();
+	 DirectX::XMVECTOR test = DirectX::XMVectorSet(na.getX(), na.getY(), na.getZ(), na.getW());
+
+	 DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixIdentity();
+	 rotMatrix = DirectX::XMMatrixRotationQuaternion(test);
+	 return rotMatrix;
+ }
+
  void BulletInterpreter::IgnoreCollitionCheckOnPickupP1(PhysicsComponent* src)
  {
 	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
@@ -189,37 +202,32 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
-	DirectX::XMVECTOR result;
 	if (src->PC_IndexRigidBody != -1)
 	{
+		//get rigid body and transform
+#pragma region
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();
+
+		btTransform bulletTransform;
+		ms->getWorldTransform(bulletTransform);
+#pragma endregion 
 
 		btVector3 bulletVelocity = rigidBody->getLinearVelocity();
 		btVector3 bulletAnglularV = rigidBody->getAngularVelocity();
 
-		btTransform bulletTransform;
-		ms->getWorldTransform(bulletTransform);
+		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
+		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
 
 		btVector3 bulletPos = bulletTransform.getOrigin();
-		btMatrix3x3 bulletBasis = bulletTransform.getBasis();
-
-		btQuaternion na = bulletTransform.getRotation();
-		DirectX::XMVECTOR test = DirectX::XMVectorSet(na.getX(), na.getY(), na.getZ(), na.getW());
-
-		DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixIdentity();
-		rotMatrix = DirectX::XMMatrixRotationQuaternion(test);
-		src->PC_OBB.ort = rotMatrix;
-		
-		//calculate the offset
-
 		src->PC_pos = this->crt_Vec3XMVEc(bulletPos);
-		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
-		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
+
+
+		src->PC_OBB.ort = this->GetNextFrameRotationMatrix(bulletTransform);
 	}
 }
 
-void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
+void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 {
 	if (src->PC_IndexRigidBody != -1)
 	{
@@ -238,7 +246,6 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
 		{
 			this->IgnoreCollitionCheckOnPickupP1(src);
 		}
-
 	}
 }
 
