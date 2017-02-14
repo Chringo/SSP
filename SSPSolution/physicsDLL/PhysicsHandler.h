@@ -328,10 +328,9 @@ public:
 
 	PHYSICSDLL_API DirectX::XMMATRIX CalcTransformMatrix(PhysicsComponent* joint1, PhysicsComponent* joint2, PhysicsComponent* joint3);
 
-	PHYSICSDLL_API void CalcNewRotationAxises(PhysicsComponent* joint1, PhysicsComponent* joint2);
+	PHYSICSDLL_API DirectX::XMMATRIX CalcNewRotationAxises(PhysicsComponent* joint1, PhysicsComponent* joint2);
 
 #ifdef _DEBUG
-
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentAABB(AABB*& src, int index);
 	PHYSICSDLL_API void GetPhysicsComponentPlane(Plane*& src, int index);

@@ -2081,6 +2081,11 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
+	DirectX::XMMATRIX child = DirectX::XMMatrixRotationX((3.14 / 180) * 45);
+	DirectX::XMMATRIX parent = DirectX::XMMatrixRotationZ((3.14 / 180) * 45);
+
+	DirectX::XMMATRIX result = DirectX::XMMatrixMultiply(DirectX::XMMatrixInverse(nullptr, parent), child);
+
 	return true;
 }
 
@@ -2103,7 +2108,6 @@ void PhysicsHandler::Update(float deltaTime)
 	int i = 0;
 	if (this->m_playerRagDoll.state == ANIMATED_TRANSITION)
 	{
-		this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, -2.2, 0.15, 0)));
 		this->m_playerRagDoll.state = ANIMATED;
 	}
 	if (this->m_playerRagDoll.state == ANIMATED)
@@ -2168,6 +2172,7 @@ void PhysicsHandler::Update(float deltaTime)
 		}
 		this->DoRagdollIntersection(dt);
 	}
+	/*
 	//this->m_numberOfDynamics = this->m_physicsComponents.size() - this->m_nrOfStaticObjects;	// SHOULD BE REMOVED SINCE WE GET THE NUMBER FROM THE NETWORK MODULE (NOT IMPLETED YET) //
 	
 	// DYNAMIC VS DYNAMIC
@@ -2317,7 +2322,7 @@ void PhysicsHandler::Update(float deltaTime)
 	//	}
 
 	//}
-
+	*/
 }
 
 void PhysicsHandler::DoRagdollIntersection(float dt)
@@ -4618,7 +4623,18 @@ void PhysicsHandler::SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR po
 		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(ragdoll->jointMatrixes[i].r[3], pos);
 		this->m_bodyPC.at(i)->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
 	}
-
+	for (int i = 5; i < 9; i++)
+	{
+		int parentIndex = ragdoll->Skeleton[i].parentIndex;
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(this->m_bodyPC.at(i)->PC_pos, this->m_bodyPC.at(parentIndex)->PC_pos)));
+		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(this->m_bodyPC.at(parentIndex)->PC_pos, DirectX::XMVectorScale(this->m_bodyPC.at(parentIndex)->PC_OBB.ort.r[0], distance));
+	}
+	for (int i = 9; i < 13; i++)
+	{
+		int parentIndex = ragdoll->Skeleton[i].parentIndex;
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(this->m_bodyPC.at(i)->PC_pos, this->m_bodyPC.at(parentIndex)->PC_pos)));
+		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(this->m_bodyPC.at(parentIndex)->PC_pos, DirectX::XMVectorScale(this->m_bodyPC.at(parentIndex)->PC_OBB.ort.r[0], -distance));
+	}
 }
 
 PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
@@ -4639,7 +4655,6 @@ PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
 	ragdoll->jointMatrixes[6] = this->CalcTransformMatrix(ragdoll->rightArm.center, ragdoll->rightArm.next, ragdoll->rightArm.next2);
 	ragdoll->jointMatrixes[7] = this->CalcTransformMatrix(ragdoll->rightArm.next, ragdoll->rightArm.next2, ragdoll->rightArm.next3);
 	ragdoll->jointMatrixes[8] = this->CalcTransformMatrix(ragdoll->rightArm.next2, ragdoll->rightArm.next3, ragdoll->rightArm.next3);
-
 	//---
 	//9-12 leftarm
 	ragdoll->jointMatrixes[9] = this->CalcTransformMatrix(ragdoll->upperBody.center, ragdoll->leftArm.center, ragdoll->leftArm.next);
@@ -4667,29 +4682,28 @@ PHYSICSDLL_API void PhysicsHandler::SyncRagdollWithSkelton(Ragdoll * ragdoll)
 		DirectX::XMMATRIX parentTransform = ragdoll->jointMatrixes[parentI];
 
 		DirectX::XMMATRIX childTransform = ragdoll->jointMatrixes[childIndex];
-		//DirectX::XMVECTOR childOffSet = DirectX::XMVectorSet(0, 0, 0, 0);
-		//DirectX::XMVECTOR parentOffSet = DirectX::XMVectorSet(0, 0, 0, 0);
-		if (childIndex == 7 ||childIndex == 8)
+
+		if (childIndex == 2)
 		{
 			int a = 0;
 
 		}
-		//childOffSet = DirectX::XMVectorSubtract(this->m_bodyPC.at(childIndex)->PC_pos, this->m_bodyPC.at(parentI)->PC_pos);
-		//parentOffSet = this->TESTjointMatrixes[parentI].r[3];
 
-		//childTransform.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
-		//parentTransform.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		DirectX::XMVECTOR parentOffSet = this->TESTjointMatrixes[parentI].r[3];
+
+		DirectX::XMVECTOR childOffSet = this->TESTjointMatrixes[childIndex].r[3];
+
+		DirectX::XMVECTOR offset = DirectX::XMVectorSubtract(childOffSet, parentOffSet);
 
 		DirectX::XMMATRIX relationTransform = DirectX::XMMatrixMultiply(childTransform, parentTransform);
 
-		//DirectX::XMVECTOR finalOffSet = DirectX::XMVector3Transform(childOffSet, relationTransform);
+		offset = DirectX::XMVector3Transform(offset, parentTransform);
 
-		//relationTransform.r[3] = DirectX::XMVectorAdd(relationTransform.r[3], childOffSet);
+		relationTransform.r[3] = offset;
+
 
 		ragdoll->jointMatrixes[childIndex] = relationTransform;
 	}
-
-	//DirectX::XMMATRIX rotations[21];
 
 	//rotations[0] = this->m_bodyPC.at(0)->PC_OBB.ort;
 	//for (int i = 1; i < 21; i++)
@@ -4724,19 +4738,25 @@ PHYSICSDLL_API DirectX::XMMATRIX PhysicsHandler::CalcTransformMatrix(PhysicsComp
 	DirectX::XMMATRIX localAxises = orto2;
 	localAxises = DirectX::XMMatrixMultiply(DirectX::XMMatrixInverse(nullptr, orto1), orto2);
 
-	localAxises.r[3] = DirectX::XMVectorSetW(offSet, 1);
+	//localAxises.r[3] = DirectX::XMVectorSetW(offSet, 1);
 
 	return localAxises;
 }
 
-PHYSICSDLL_API void  PhysicsHandler::CalcNewRotationAxises(PhysicsComponent * joint1, PhysicsComponent * joint2)
+PHYSICSDLL_API DirectX::XMMATRIX  PhysicsHandler::CalcNewRotationAxises(PhysicsComponent * parent, PhysicsComponent * child)
 {
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(joint2->PC_pos, joint1->PC_pos);
+	DirectX::XMMATRIX parentRot = parent->PC_OBB.ort;
+	DirectX::XMMATRIX childRot = child->PC_OBB.ort;
 
+	DirectX::XMMATRIX result = DirectX::XMMatrixMultiply(DirectX::XMMatrixInverse(nullptr, parentRot), childRot);
+	//DirectX::XMMATRIX result = DirectX::XMMatrixMultiply(childRot, DirectX::XMMatrixInverse(nullptr, parentRot));
 
+	return result;
 }
 
 #ifdef _DEBUG
+
+
 
 void PhysicsHandler::GetPhysicsComponentOBB(OBB*& src, int index)
 {
@@ -4759,7 +4779,6 @@ void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
 }
 
 #endif 
-
 PHYSICSDLL_API Ragdoll * PhysicsHandler::GetPlayerRagdoll()
 {
 	return &this->m_playerRagDoll;

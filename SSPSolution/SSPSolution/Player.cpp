@@ -42,12 +42,19 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
+	{
+		this->m_ragdoll->state = RAGDOLL_TRANSITION;
+		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0.5, 0);
+		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
+		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 1, 0);
+	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
-		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0, -0.5, 0);
+		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, -0.5, 0);
 		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
-		//this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, -1, 0);
+		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, -1, 0);
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
@@ -77,7 +84,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorScale(this->m_ragdoll->jointMatrixes[i].r[3],0.05);
 				this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorSetW(this->m_ragdoll->jointMatrixes[i].r[3], 1);
+
+				//this->m_ragdoll->jointMatrixes[i].r[0] = DirectX::XMVectorSetX(this->m_ragdoll->jointMatrixes[i].r[0], 1);
+				//this->m_ragdoll->jointMatrixes[i].r[1] = DirectX::XMVectorSetY(this->m_ragdoll->jointMatrixes[i].r[1], 1);
+				//this->m_ragdoll->jointMatrixes[i].r[2] = DirectX::XMVectorSetZ(this->m_ragdoll->jointMatrixes[i].r[2], 1);
+
 				DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+
 				((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, this->m_ragdoll->jointMatrixes[i]);
 				//((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = this->m_ragdoll->jointMatrixes[i];
 			}
