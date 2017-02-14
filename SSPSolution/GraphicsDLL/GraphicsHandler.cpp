@@ -455,13 +455,11 @@ int GraphicsHandler::Render(float deltaTime)
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
 
-	std::vector<OctreeBV*> compsFromRay;
 	Camera::C_Ray ray = this->m_camera->CastRay();
 	for (size_t i = 0; i < 8; i++)
 	{
-		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, compsFromRay);
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray);
 	}
-	result = compsFromRay.size();
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -513,6 +511,12 @@ int GraphicsHandler::Render(float deltaTime)
 	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
+		if (i->isInRay)
+		{
+			result++;
+			i->isInRay = false;
+			//This component needs to be checked against the ray for camera intersection
+		}
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
 		{
@@ -1627,7 +1631,7 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
-void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray, std::vector<OctreeBV*>& compsForCamRay)
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 {
 	//Safety check
 	if (curNode != nullptr)
@@ -1646,9 +1650,13 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 					branchBounds.ext = curNode->ext;
 					double distance = -1.0;
 					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-					if (intersectsRay && distance < 2.f)
+					if (intersectsRay)
 					{
-						TraverseOctreeRay(curNode->branches[i], ray, compsForCamRay);
+						int lol = 0;
+						if (distance < 1.5f)
+						{
+							TraverseOctreeRay(curNode->branches[i], ray);
+						}
 					}
 				}
 			}
@@ -1658,7 +1666,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 			//Leaf
 			for each (OctreeBV* entityComponent in curNode->containedComponents)
 			{
-				compsForCamRay.push_back(entityComponent);
+				entityComponent->isInRay = true;
 			}
 		}
 	}
@@ -1666,30 +1674,91 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 
 bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance)
 {
-	//double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
-	//double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
-	double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
-	double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
+#pragma region v1
+	////double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
+	////double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
+	//double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
+	//double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
 
-	double tmin = min(tx1, tx2);
-	double tmax = max(tx1, tx2);
+	//double tmin = min(tx1, tx2);
+	//double tmax = max(tx1, tx2);
 
-	//double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
-	//double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
-	double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
-	double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
+	////double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
+	////double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
+	//double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
+	//double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
 
-	tmin = max(tmin, min(ty1, ty2));
-	tmax = min(tmax, max(ty1, ty2));
+	//tmin = max(tmin, min(ty1, ty2));
+	//tmax = min(tmax, max(ty1, ty2));
 
-	double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
-	double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
+	//double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
+	//double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
 
-	tmin = max(tmin, min(tz1, tz2));
-	tmax = min(tmax, max(tz1, tz2));
+	//tmin = max(tmin, min(tz1, tz2));
+	//tmax = min(tmax, max(tz1, tz2));
 
+	//distance = tmax - tmin;
+	//return tmax >= tmin;
+#pragma endregion v1
+
+#pragma region v2
+	//Other implementation
+	float tmin = FLT_MIN;
+	float tmax = FLT_MAX;
+
+	//For x axis
+	float invDir = ray.dir.x;
+	float min = bb.pos.x - bb.ext.x;
+	float max = bb.pos.x + bb.ext.x;
+	float t0 = (min - ray.origin.x) * invDir;
+	float t1 = (max - ray.origin.x) * invDir;
+	if (t0 > t1)
+	{
+		std::swap(t0, t1);
+	}
+	tmin = t0 > tmin ? t0 : tmin;
+	tmax = t1 < tmax ? t1 : tmax;
+	if (tmax <= tmin)
+	{
+		return false;
+	}
+
+	//For y axis
+	invDir = ray.dir.y;
+	min = bb.pos.y - bb.ext.y;
+	max = bb.pos.y + bb.ext.y;
+	t0 = (min - ray.origin.y) * invDir;
+	t1 = (max - ray.origin.y) * invDir;
+	if (t0 > t1)
+	{
+		std::swap(t0, t1);
+	}
+	tmin = t0 > tmin ? t0 : tmin;
+	tmax = t1 < tmax ? t1 : tmax;
+	if (tmax <= tmin)
+	{
+		return false;
+	}
+
+	//For z axis
+	invDir = ray.dir.z;
+	min = bb.pos.z - bb.ext.z;
+	max = bb.pos.z + bb.ext.z;
+	t0 = (min - ray.origin.z) * invDir;
+	t1 = (max - ray.origin.z) * invDir;
+	if (t0 > t1)
+	{
+		std::swap(t0, t1);
+	}
+	tmin = t0 > tmin ? t0 : tmin;
+	tmax = t1 < tmax ? t1 : tmax;
+	if (tmax <= tmin)
+	{
+		return false;
+	}
 	distance = tmax - tmin;
-	return tmax >= tmin;
+	return true;
+#pragma endregion v2
 }
 
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
