@@ -1,15 +1,7 @@
 #include "LeverEntity.h"
 
-
-
-LeverEntity::LeverEntity()
-{
-}
-
-
-LeverEntity::~LeverEntity()
-{
-}
+LeverEntity::LeverEntity(){}
+LeverEntity::~LeverEntity(){}
 
 int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
 {
