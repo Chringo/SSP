@@ -3343,7 +3343,10 @@ void PhysicsHandler::ClearCollisionNormals()
 
 	for (int i = 0; i < size; i++)
 	{
-		this->m_dynamicComponents.at(i)->m_normals.clear();
+		if (this->m_dynamicComponents.at(i)->m_normals.size() > 0)
+		{
+			this->m_dynamicComponents.at(i)->m_normals.clear();
+		}
 	}
 }
 

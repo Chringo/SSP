@@ -303,6 +303,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	
 	#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
 
 	m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
@@ -1841,7 +1842,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-	
+
+
+
 	size = this->m_doorEntities.size();
 	//for (int i = 0; i < size; i++)
 	//{

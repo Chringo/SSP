@@ -53,7 +53,7 @@ private:
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
-
+	PhysicsComponent * m_pComp;
 	Sphere m_collisionSphere;
 public:
 	struct Plane {
@@ -96,8 +96,8 @@ public:
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
 	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
-	GRAPHICSDLL_API int SetPhysicsComponent();
-	GRAPHICSDLL_API int GetPhysicsComponent();
+	GRAPHICSDLL_API int SetPhysicsComponent(PhysicsComponent * pComp);
+	GRAPHICSDLL_API PhysicsComponent * GetPhysicsComponent();
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update(float dt);

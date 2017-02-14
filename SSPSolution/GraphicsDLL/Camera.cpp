@@ -67,6 +67,18 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 GRAPHICSDLL_API int Camera::SetPhysicsComponent(PhysicsComponent * pComp)
 {
 	this->m_pComp = pComp;
+	this->m_pComp->PC_BVtype = BV_Sphere;
+	this->m_pComp->PC_active = true;
+	this->m_pComp->PC_is_Static = false;
+	//this->m_pComp->PC_OBB.ext[0] = 0.05f;
+	//this->m_pComp->PC_OBB.ext[1] = 0.05f;
+	//this->m_pComp->PC_OBB.ext[2] = 0.05f;
+
+	//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	this->m_pComp->PC_Sphere.radius = 0.1;
+	this->m_pComp->PC_pos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+
+
 	return 0;
 }
 
@@ -360,6 +372,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	m_pitch = DirectX::XMConvertToRadians(-45.0);
@@ -368,7 +381,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	this->m_camDirvector = m_Dir();
 	this->m_camRightvector = m_Right();
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-
+	
 	m_updatePos();
 
 	return;
@@ -379,6 +392,7 @@ void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance
 	bool result = false;
 
 	this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	this->m_camDirvector = m_Dir();
@@ -619,6 +633,23 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
+	
+	//m_pComp->PC_pos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	//
+	////m_pComp->m_normals.size() == 0;
+	////m_pComp->PC_collides
+
+	//if (this->m_pComp->PC_collides == true)
+	//{
+	//	if (m_distance > 0.2)
+	//		this->m_distance -= 0.01;
+	//}
+	//else if (m_distance < m_maxDistance)
+	//	this->m_distance += 0.01;
+	//else if (m_distance > m_maxDistance)
+	//	m_distance = m_maxDistance;
+
+
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
@@ -629,6 +660,8 @@ void Camera::m_updatePos()
 	float z = m_distance * cos(m_pitch) * cos(m_yaw);
 
 	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+
+
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
