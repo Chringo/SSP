@@ -75,6 +75,12 @@ public:
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
+	struct C_Ray {
+		DirectX::XMFLOAT3 origin;
+		DirectX::XMFLOAT3 dir;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
+	};
 
 	struct ViewFrustrum {
 		//Left, Right, Bottom, Top, Near, Far
@@ -105,7 +111,7 @@ public:
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
-	GRAPHICSDLL_API Ray CastRay();
+	GRAPHICSDLL_API C_Ray CastRay();
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);

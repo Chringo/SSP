@@ -183,11 +183,14 @@ int Camera::Reset()
 	return result;
 }
 
-Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
+Camera::C_Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
 {
-	Ray ray;
-	ray.RayDir = this->m_Dir();
-	ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	C_Ray ray;
+	DirectX::XMStoreFloat3(&ray.origin, this->m_Dir());
+	ray.dir = DirectX::XMFLOAT3(this->m_cameraPos.x, this->m_cameraPos.y, this->m_cameraPos.z);
+
+	//ray.RayDir = this->m_Dir();
+	//ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
 
 	return ray;
 }
