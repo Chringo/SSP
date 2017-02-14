@@ -64,61 +64,20 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	return result;
 }
 
-GRAPHICSDLL_API int Camera::SetPhysicsComponent(PhysicsComponent * pComp)
-{
-	this->m_pComp = pComp;
-	this->m_pComp->PC_BVtype = BV_Sphere;
-	this->m_pComp->PC_active = true;
-	this->m_pComp->PC_is_Static = false;
-	//this->m_pComp->PC_OBB.ext[0] = 0.05f;
-	//this->m_pComp->PC_OBB.ext[1] = 0.05f;
-	//this->m_pComp->PC_OBB.ext[2] = 0.05f;
-
-	//this->m_pComp->PC_OBB.ort = DirectX::XMMatrixIdentity();
-	this->m_pComp->PC_Sphere.radius = 0.1;
-	this->m_pComp->PC_pos = DirectX::XMLoadFloat4(&this->m_cameraPos);
-
-
-	return 0;
-}
-
-GRAPHICSDLL_API PhysicsComponent * Camera::GetPhysicsComponent()
-{
-	return this->m_pComp;
-}
-
-int Camera::Update(float dt)
+int Camera::Update()
 {
 	int result = 1;
 	this->m_updatePos();
 
-	//crash fix
-	//this->m_lookAt.z = 2;
-	//DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
-	//DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
-
-	//DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
-	//
-
-	//DirectX::XMMATRIX hier = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset));
-
-	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
-
-
-
-	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-	//if (!DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
-	//{
-	//	this->m_lookAt.y += 1;
-	//}
-
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
-	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
-	//
-	//view = DirectX::XMMatrixMultiply(hier, view);
-	//DirectX::XMStoreFloat4x4(&this->m_viewMatrix, view);
 
 	return result;
+}
+
+int Camera::UpdateDeltaTime(float dt)
+{
+	this->m_deltaTime = dt;
+	return 0;
 }
 
 int Camera::UpdateView()
@@ -472,8 +431,8 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
 
-	m_pitch += pitch;
-	m_yaw -= yaw;
+	this->m_pitch += pitch * this->m_deltaTime;
+	this->m_yaw -= yaw * this->m_deltaTime;
 
 	//1.48352986 is ~85 degrees in radians
 	if (m_pitch > 1.48352986f)
@@ -590,12 +549,6 @@ void Camera::IncreaseDistance(float amount)
 
 
 }
-Sphere Camera::GetCollisionSphere(DirectX::XMVECTOR & pos)
-{
-	pos = DirectX::XMLoadFloat3(&this->GetCameraPos());
-
-	return m_collisionSphere;
-}
 
 DirectX::XMVECTOR Camera::GetRight()
 {
@@ -633,22 +586,24 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
-	
-	//m_pComp->PC_pos = DirectX::XMLoadFloat4(&this->m_cameraPos);
-	//
-	////m_pComp->m_normals.size() == 0;
-	////m_pComp->PC_collides
+	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 
-	//if (this->m_pComp->PC_collides == true)
-	//{
-	//	if (m_distance > 0.2)
-	//		this->m_distance -= 0.01;
-	//}
-	//else if (m_distance < m_maxDistance)
-	//	this->m_distance += 0.01;
-	//else if (m_distance > m_maxDistance)
-	//	m_distance = m_maxDistance;
+	float intersectDistance;
+	bool intersection = false;
 
+	//graphicshandler.getcameraobjectlist() = objectlist;
+	//intersection = physicshandler.intersectobb(ray, objectlist, &distance, m_maxDistance, minDistance)
+
+	if (intersection)
+	{
+		if (intersectDistance < this->m_maxDistance)
+			this->m_distance -= 0.01 * this->m_deltaTime;
+		else if (this->m_distance < this->m_maxDistance)
+			this->m_distance += 0.01 * this->m_deltaTime;
+		
+		if (this->m_distance > this->m_maxDistance)
+			this->m_distance = this->m_maxDistance;
+	}
 
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
