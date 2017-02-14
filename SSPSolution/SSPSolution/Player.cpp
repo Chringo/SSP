@@ -185,48 +185,44 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (this->m_grabbed != nullptr)
 	{
 
-		DirectX::XMVECTOR zero = { 0,0,0,0 };
-		int jointindex = 8;
-		int jointIndexTwo = 12;
-		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[jointindex];
+		//Set the ball to be between the two hands
+		
+		//left hand index  : 8
+		//right hand index : 12
 
-		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[jointindex].invBindPose);
-		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		//Get left hand, multiply it by bind pose to correct position
+		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
+		DirectX::XMVECTOR det   = DirectX::XMMatrixDeterminant(tpose);
 		tpose = DirectX::XMMatrixInverse(&det, tpose);
 		joint = DirectX::XMMatrixMultiply(tpose, joint);
 
-		DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[jointIndexTwo];
+		//Get right hand, multiply it by its bind pose to correct the position
+		DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[12];
+		DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[12].invBindPose);
+		det      = DirectX::XMMatrixDeterminant(tposeTwo);
+		tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
+		jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
 
-		DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[jointIndexTwo].invBindPose);
-		 det     = DirectX::XMMatrixDeterminant(tposeTwo);
-		 tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
-		 jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
-
+		//Get world matrix of the character
 		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
-		//DirectX::XMMATRIX tjabba = DirectX::XMMatrixMultiply(tpose,hejdå);
-		//DirectX::XMVECTOR pos	 = //DirectX::XMVectorAdd(this->m_carryOffset, hej.r[3]);
-		//hejdå.r[3] = DirectX::XMVectorAdd(hej.r[3], hejdå.r[3]);;
-		//DirectX::XMVector3Transform(this->m_pComp->PC_pos, hej);
-		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f);
+		
+		//Multiply the hand joints into world space
+		joint    = DirectX::XMMatrixMultiply(joint,    world);
+		jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);
 
-		joint    = DirectX::XMMatrixMultiply(joint,    world);// DirectX::XMMatrixMultiply(tpose, joint);
-		jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);//DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
-
-		//joint	 = DirectX::XMMatrixMultiply(joint);
-		//jointTwo = DirectX::XMMatrixMultiply(jointTwo, scale);
+		//Get a vector from left hand to right hand
 		DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3] , joint.r[3]);
 
-		//joint = DirectX::XMMatrixMultiply(jointTwo,joint);
+		//Cut the vector in half
 		jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
-		//zero = DirectX::XMVector3TransformCoord(zero, joint);
 
-		jointToJoint = DirectX::XMVector3TransformCoord(jointToJoint, world);
-		DirectX::XMMATRIX tonewPos = DirectX::XMMatrixTranslationFromVector(jointToJoint);
 		PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent(); 
-		ptr->PC_active = false;
-		ptr->PC_pos = joint.r[3];// DirectX::XMVector3TransformCoord(jointToJoint, tonewPos);// DirectX::XMVectorAdd(hej.r[3], hejdå.r[3]);// DirectX::XMVector3Transform(pos, hejdå);// tjabba.r[3];// DirectX::XMVectorAdd(this->m_pComp->PC_pos, tjabba.r[3]);
-			//
-			////DirectX::XMVectorAdd(this->m_pComp->PC_pos, this->m_carryOffset);
+
+		//Final pos = left hand + half jointToJoint vector
+		ptr->PC_pos = DirectX::XMVectorAdd(joint.r[3], jointToJoint);
+
+
 		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ptr->PC_gravityInfluence = 0.0;
@@ -399,9 +395,10 @@ Entity* Player::SetGrabbed(Entity * entityPtr)
 	{
 		oldValue = this->m_grabbed;
 		this->m_grabbed = entityPtr;
-
+		
 		if (this->m_grabbed != nullptr)	//If we grab something that is not a nullptr
 		{
+			m_grabbed->GetPhysicsComponent()->PC_active = false;
 			this->m_grabbed->SetGrabbed(this);	//Set the new entity to be grabbed by this entity	
 		}
 		if (oldValue != nullptr)	//If we drop something
