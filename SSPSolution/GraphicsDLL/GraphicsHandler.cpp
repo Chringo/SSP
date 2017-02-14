@@ -474,7 +474,7 @@ int GraphicsHandler::Render(float deltaTime)
 	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
 	int amountOfModelsToRender = 0;
-	int componentsInTree = compsFromRay.size();
+	int componentsInTree = this->m_octreeRoot.containedComponents.size();
 	//struct InstanceData {
 	//	int modelID;
 	//	int amountOfInstances;
@@ -485,7 +485,7 @@ int GraphicsHandler::Render(float deltaTime)
 	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
-	for (OctreeBV* i : compsFromRay)
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		if (i->isRendered)
 		{
@@ -509,7 +509,7 @@ int GraphicsHandler::Render(float deltaTime)
 	unsigned int lastComponentIndex = 0;
 	lastModelID = firstRenderedModelID;
 	OctreeBV* lastRenderedComponent = nullptr;
-	for (OctreeBV* i : compsFromRay)
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
@@ -565,7 +565,7 @@ int GraphicsHandler::Render(float deltaTime)
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
 	lastModelID = firstRenderedInstancedModelID;
-	for (OctreeBV* i : compsFromRay)
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
 		if (i->isRendered)
@@ -1644,7 +1644,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 					branchBounds.ext = curNode->ext;
 					double distance = -1.0;
 					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-					if (intersectsRay && distance < this->m_camera->GetCameraDistance())
+					if (intersectsRay && distance < 2.f)
 					{
 						TraverseOctreeRay(curNode->branches[i], ray, compsForCamRay);
 					}
@@ -1666,22 +1666,22 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 {
 	//double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
 	//double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
-	double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * -ray.dir.x;
-	double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * -ray.dir.x;
+	double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
+	double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
 
 	double tmin = min(tx1, tx2);
 	double tmax = max(tx1, tx2);
 
 	//double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
 	//double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
-	double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * -ray.dir.y;
-	double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * -ray.dir.y;
+	double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
+	double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
 
 	tmin = max(tmin, min(ty1, ty2));
 	tmax = min(tmax, max(ty1, ty2));
 
-	double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * -ray.dir.z;
-	double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * -ray.dir.z;
+	double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
+	double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
 
 	tmin = max(tmin, min(tz1, tz2));
 	tmax = min(tmax, max(tz1, tz2));
