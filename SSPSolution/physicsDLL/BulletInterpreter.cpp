@@ -447,16 +447,14 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	btQuaternion startTransQ = btQuaternion(0, 0, 0, 1.0f);
 	btTransform initialTransform = btTransform(startTransQ, startTrans);
 
-	btDefaultMotionState* boxMotionState = nullptr;
-	boxMotionState = new btDefaultMotionState(initialTransform);
-
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
 		0,  //mass
-		boxMotionState,
+		nullptr,
 		box,
 		btVector3(0, 0, 0)
 	);
+	boxRigidBodyCI.m_startWorldTransform = initialTransform;
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
 
@@ -516,12 +514,13 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 	if (index == 0 || index == 1)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
-
 	}
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
+	//Player is always active
+	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
