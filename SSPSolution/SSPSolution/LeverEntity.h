@@ -14,13 +14,11 @@ private:
 	//Variables
 	bool m_isActive;
 	float m_range;
-	float m_animTime = 5.0f;
-	float m_animSpeed= 50.0f;
+	float m_animSpeed  = 70.0f;
 	float m_targetRot;
 	float m_currRot;
 	bool m_animationActive;
 	bool m_needSync;
-	DirectX::XMVECTOR m_originRot;
 	float m_activatedRotation = 90.0f;
 public:
 	LeverEntity();

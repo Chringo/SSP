@@ -30,7 +30,7 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		PhysicsComponent* ptr = this->GetPhysicsComponent();
 		DirectX::XMMATRIX rot;
-		float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 24);
+		float sinRot = (pow(sin(m_animSpeed * dT) + 1,4) / 4);
 		if (m_targetRot == 0)
 		{
 			if (m_currRot < m_targetRot)

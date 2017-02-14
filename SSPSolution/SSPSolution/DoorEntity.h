@@ -24,8 +24,14 @@ private:
 	float m_maxRotation;
 	float m_rotateTime;
 	float m_rotatePerSec;
-	
 	bool m_needSync;
+
+
+	float m_animSpeed = 70.0f;
+	float m_targetRot;
+	float m_currRot;
+	bool m_animationActive;
+	float m_activatedRotation = 90.0f;
 public:
 	DoorEntity();
 	virtual ~DoorEntity();
