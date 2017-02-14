@@ -219,9 +219,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
-    float3 metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
-    float3 roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
-    float3 AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
+    float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
+    float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
+    float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
 
@@ -237,7 +237,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
     //AO
-    float AO = AOSamp.b;
+    float AO = AOSamp;
 
     //DIFFUSE & SPECULAR
     float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, f90);

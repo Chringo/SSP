@@ -1,47 +1,98 @@
 #include "BulletInterpreter.h"
 #include <fstream>
 
-
-DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
+ void BulletInterpreter::applyVelocityOnRigidbody(PhysicsComponent * src)
 {
+	 btRigidBody* rigidBody = nullptr;
+	 rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
-	DirectX::XMMATRIX rotMatrix;
-	DirectX::XMMATRIX toReturn;
-	DirectX::XMVECTOR rotationScalars = src->PC_rotation;
+	 btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
+	 btVector3 PC_velocity = this->crt_xmvecVec3(src->PC_velocity);
 
-	float xRad = 0;
-	float yRad = 0;
-	float zRad = 0;
-
-	//get the rotation in degrees
-	xRad = DirectX::XMVectorGetX(rotationScalars);
-	yRad = DirectX::XMVectorGetY(rotationScalars);
-	zRad = DirectX::XMVectorGetZ(rotationScalars);
-
-	//convert to radian
-	//xRad = (DirectX::XMConvertToRadians(xRad));
-	//yRad = (DirectX::XMConvertToRadians(yRad));
-	//zRad = (DirectX::XMConvertToRadians(zRad));
-
-	////do some mathemagic
-	//DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(xRad);
-	//DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(yRad);
-	//DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(zRad);
-
-	//DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixX, rotationMatrixZ);
-	//rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
-	
-	DirectX::XMMATRIX rotate = DirectX::XMMatrixRotationRollPitchYaw(xRad, yRad, zRad);
-
-	toReturn = DirectX::XMMatrixMultiply(src->PC_OBB.ort, rotate);
-
-	return toReturn;
+	 rigidBody->setLinearVelocity(PC_velocity);
+	 rigidBody->setAngularVelocity(PC_rotationVel);
 }
 
- void BulletInterpreter::applyLinearVelocityOnSrc(PhysicsComponent * src)
-{
+ void BulletInterpreter::applyRotationOnRigidbody(PhysicsComponent * src)
+ {
+	 btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
 
-}
+	 btRigidBody* rigidBody = nullptr;
+	 rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+
+	 btTransform moveInWorld = rigidBody->getWorldTransform();
+	 DirectX::XMVECTOR quat = DirectX::XMQuaternionRotationMatrix(src->PC_OBB.ort);
+
+	 btVector3 bulletQuat;
+	 btQuaternion quaturnion;
+
+	 quaturnion = btQuaternion(
+		 DirectX::XMVectorGetX(quat),
+		 DirectX::XMVectorGetY(quat),
+		 DirectX::XMVectorGetZ(quat),
+		 DirectX::XMVectorGetW(quat)
+	 );
+
+
+	 moveInWorld.setRotation(quaturnion);
+	 moveInWorld.setOrigin(PC_pos);
+
+	 btMotionState* ms = nullptr;
+	 ms = rigidBody->getMotionState();
+
+	 ms->setWorldTransform(moveInWorld);
+	 rigidBody->setMotionState(ms);
+ }
+
+ void BulletInterpreter::applyForcesToRigidbody(PhysicsComponent * src)
+ {
+	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	 rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
+ }
+
+ DirectX::XMMATRIX BulletInterpreter::GetNextFrameRotationMatrix(btTransform & transform)
+ {
+	 btVector3 bulletPos = transform.getOrigin();
+	 btMatrix3x3 bulletBasis = transform.getBasis();
+
+	 btQuaternion na = transform.getRotation();
+	 DirectX::XMVECTOR test = DirectX::XMVectorSet(na.getX(), na.getY(), na.getZ(), na.getW());
+
+	 DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixIdentity();
+	 rotMatrix = DirectX::XMMatrixRotationQuaternion(test);
+	 return rotMatrix;
+ }
+
+ void BulletInterpreter::IgnoreCollitionCheckOnPickupP1(PhysicsComponent* src)
+ {
+	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	 const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
+
+	 if (src->PC_active == false)
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, true);
+	 }
+	 else
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, false);
+	 }
+ }
+
+ void BulletInterpreter::forceDynamicObjectsToActive(PhysicsComponent * src)
+ {
+	 btRigidBody* rigidBody = nullptr;
+	 rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+
+	 if (src->PC_mass != 0 && src->PC_active == true)
+	 {
+		 rigidBody->activate();
+	 }
+
+	 if (src->PC_mass != 0)
+	 {
+		 rigidBody->activate();
+	 }
+ }
 
  btTransform BulletInterpreter::GetLastRotationToBullet(btRigidBody * rb, PhysicsComponent* src)
  {
@@ -151,93 +202,50 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
-	DirectX::XMVECTOR result;
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
+		//get rigid body and transform
+#pragma region
 		btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 		btMotionState* ms = rigidBody->getMotionState();
+
+		btTransform bulletTransform;
+		ms->getWorldTransform(bulletTransform);
+#pragma endregion 
 
 		btVector3 bulletVelocity = rigidBody->getLinearVelocity();
 		btVector3 bulletAnglularV = rigidBody->getAngularVelocity();
 
-		btTransform bulletTransform;
-		ms->getWorldTransform(bulletTransform);
+		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
+		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
 
 		btVector3 bulletPos = bulletTransform.getOrigin();
-		btMatrix3x3 bulletBasis = bulletTransform.getBasis();
-
-		btQuaternion na = bulletTransform.getRotation();
-		DirectX::XMVECTOR test = DirectX::XMVectorSet(na.getX(), na.getY(), na.getZ(), na.getW());
-
-		DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixIdentity();
-		rotMatrix = DirectX::XMMatrixRotationQuaternion(test);
-		src->PC_OBB.ort = rotMatrix;
-		
-		//calculate the offset
-
 		src->PC_pos = this->crt_Vec3XMVEc(bulletPos);
-		src->PC_rotationVelocity = this->crt_Vec3XMVEc(bulletAnglularV);
-		src->PC_velocity = this->crt_Vec3XMVEc(bulletVelocity);
+
+
+		src->PC_OBB.ort = this->GetNextFrameRotationMatrix(bulletTransform);
 	}
 }
 
-void BulletInterpreter::SyncBulletWithGame(PhysicsComponent * src)
+void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 {
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
-		btVector3 PC_pos = this->crt_xmvecVec3(src->PC_pos);
-		btVector3 PC_rotationVel = this->crt_xmvecVec3(src->PC_rotationVelocity);
-		btVector3 PC_velocity = this->crt_xmvecVec3(src->PC_velocity);
+		this->applyVelocityOnRigidbody(src);
 
-		btRigidBody* rigidBody = nullptr;
-		rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-
-		if (src->PC_mass != 0 && src->PC_active == true)
-		{
-			rigidBody->activate();
-		}
-
-		rigidBody->setLinearVelocity(PC_velocity);
-		rigidBody->setAngularVelocity(PC_rotationVel);
-
-		if (src->PC_mass != 0)
-		{
-			rigidBody->activate();
-		}
-		rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
-		btTransform moveInWorld = rigidBody->getWorldTransform();
-		DirectX::XMVECTOR quat = DirectX::XMQuaternionRotationMatrix(src->PC_OBB.ort);
-
-		btVector3 bulletQuat;
-		btQuaternion quaturnion;
-
-		quaturnion = btQuaternion(
-			DirectX::XMVectorGetX(quat), 
-			DirectX::XMVectorGetY(quat), 
-			DirectX::XMVectorGetZ(quat),
-			DirectX::XMVectorGetW(quat)
-		);
-
-
-		moveInWorld.setRotation(quaturnion);
-		moveInWorld.setOrigin(PC_pos);
+		//if the rigid body to activate
+		this->forceDynamicObjectsToActive(src);
 		
-		if (src->PC_active == false)
+		this->applyForcesToRigidbody(src);
+		
+		this->applyRotationOnRigidbody(src);
+		
+		//the ball might be picked up or dropped, and need to ignore collition check
+		//for a short period of time for animation
+		if (src->PC_IndexRigidBody == 2)
 		{
-			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
-			rigidBody->setIgnoreCollisionCheck(playerShape, true);
+			this->IgnoreCollitionCheckOnPickupP1(src);
 		}
-		else
-		{
-			const btCollisionObject* playerShape = this->m_rigidBodies.at(0);
-			rigidBody->setIgnoreCollisionCheck(playerShape, false);
-		}
-
-		btMotionState* ms = nullptr;
-		ms = rigidBody->getMotionState();
-
-		ms->setWorldTransform(moveInWorld);
-		rigidBody->setMotionState(ms);
 	}
 }
 
@@ -278,7 +286,9 @@ void BulletInterpreter::Shutdown()
 	for (int i = 0; i < size; i++)
 	{
 		delete this->m_rigidBodies.at(i);
+		this->m_rigidBodies.at(i) = nullptr;
 	}
+	this->m_rigidBodies.clear();
 }
 
 void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos)
@@ -437,16 +447,14 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	btQuaternion startTransQ = btQuaternion(0, 0, 0, 1.0f);
 	btTransform initialTransform = btTransform(startTransQ, startTrans);
 
-	btDefaultMotionState* boxMotionState = nullptr;
-	boxMotionState = new btDefaultMotionState(initialTransform);
-
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
 		0,  //mass
-		boxMotionState,
+		nullptr,
 		box,
 		btVector3(0, 0, 0)
 	);
+	boxRigidBodyCI.m_startWorldTransform = initialTransform;
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
 
@@ -457,11 +465,10 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 	
-	this->m_physicsHandlerIndex.push_back(index);
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
-PHYSICSDLL_API void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
+void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 {
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
@@ -507,12 +514,13 @@ PHYSICSDLL_API void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int 
 	if (index == 0 || index == 1)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
-
 	}
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
+	//Player is always active
+	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);

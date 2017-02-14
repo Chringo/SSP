@@ -15,20 +15,17 @@ int FieldEntity::Initialize(int entityID, Field* field)
 	return 1;
 }
 
+//Returns 1 if the internal conditions are met.
 int FieldEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
-	if (m_field != nullptr)
+	int result = 0;
+	if (this->m_field->F_first_inside && this->m_field->F_second_inside)
 	{
-		if (this->m_field->F_first_inside && this->m_field->F_second_inside)
-		{
-			this->m_subject.Notify(this->m_entityID, FIELD_CONTAINS);
-			printf("YOU'RE IN THE KILL ZONE!");
-		}
+		this->m_subject.Notify(this->m_entityID, FIELD_CONTAINS);
+		result = 1;
 	}
-
 	// TODO: More EVENT messages if needed
-
-	return 1;
+	return result;
 }
 
 int FieldEntity::React(int entityID, EVENT reactEvent)
@@ -41,7 +38,3 @@ Field * FieldEntity::GetField()
 {
 	return this->m_field;
 }
-//void FieldEntity::SetField(Field * field)
-//{
-//	this->m_field = field;
-//}
