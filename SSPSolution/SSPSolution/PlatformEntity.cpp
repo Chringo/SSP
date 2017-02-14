@@ -1,9 +1,14 @@
 #include "PlatformEntity.h"
-PlatformEntity::PlatformEntity()
-{
-	this->m_ActiveSound = nullptr;
-}
+PlatformEntity::PlatformEntity(){}
 PlatformEntity::~PlatformEntity()
+{
+	this->Shutdown();
+}
+int PlatformEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
+{
+	this->InitializeBase(entityID, pComp, gComp, nullptr, aiComp);
+}
+int PlatformEntity::Shutdown()
 {
 	if (this->m_ActiveSound != nullptr)
 		this->m_ActiveSound->drop();
@@ -82,11 +87,5 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 	default:
 		break;
 	}
-	return 1;
-}
-
-int PlatformEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
-{
-	this->InitializeBase(entityID, pComp, gComp, nullptr, aiComp);
 	return 1;
 }
