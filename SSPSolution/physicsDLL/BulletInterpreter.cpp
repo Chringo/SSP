@@ -202,7 +202,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
 		//get rigid body and transform
 #pragma region
@@ -229,7 +229,7 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 {
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
 		this->applyVelocityOnRigidbody(src);
 
