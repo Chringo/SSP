@@ -1636,8 +1636,9 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Ray ray, std::vect
 					Camera::C_AABB branchBounds;
 					branchBounds.pos = curNode->pos;
 					branchBounds.ext = curNode->ext;
-					bool intersectsRay = true;
-					if (intersectsRay)
+					double distance = -1.0;
+					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+					if (intersectsRay && distance < this->m_camera->GetCameraDistance())
 					{
 						TraverseOctreeRay(curNode->branches[i], ray, compsForCamRay);
 					}
@@ -1655,7 +1656,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Ray ray, std::vect
 	}
 }
 
-double GraphicsHandler::RayVSAABB(Ray ray, Camera::C_AABB bb)
+bool GraphicsHandler::RayVSAABB(Ray ray, Camera::C_AABB bb, double& distance)
 {
 	//double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
 	//double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
@@ -1679,7 +1680,8 @@ double GraphicsHandler::RayVSAABB(Ray ray, Camera::C_AABB bb)
 	tmin = max(tmin, min(tz1, tz2));
 	tmax = min(tmax, max(tz1, tz2));
 
-	return tmax - tmin;
+	distance = tmax - tmin;
+	return tmax >= tmin;
 }
 
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
