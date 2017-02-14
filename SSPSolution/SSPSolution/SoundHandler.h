@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "../irrKlang/Include/irrKlang.h"
-#pragma comment (lib, "../irrKlang/lib/irrKlang")
+//#include "../irrKlang/x64/include/irrKlang.h"
+//#pragma comment lib, "../irrKlang/lib/irrKlang")
 
 const irrklang::ik_f32 SOUND_MIN_DISTANCE = 5;	//At what distance (in sound space) the sound no longer will be heard
 
