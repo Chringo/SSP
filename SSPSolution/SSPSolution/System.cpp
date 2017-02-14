@@ -108,6 +108,7 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
+	DebugHandler::instance()->CreateCustomLabel(L"Components for ray", 0.0f);
 
 
 	return result;
@@ -283,7 +284,8 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->EndTimer(3);
 
 	DebugHandler::instance()->StartTimer(2);
-	this->m_graphicsHandler->Render(deltaTime);
+	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 	DebugHandler::instance()->EndTimer(2);
 

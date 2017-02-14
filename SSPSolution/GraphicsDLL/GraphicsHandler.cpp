@@ -447,6 +447,7 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
 	this->m_d3dHandler->ClearBlendState();
@@ -460,6 +461,7 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, compsFromRay);
 	}
+	result = compsFromRay.size();
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -664,7 +666,7 @@ int GraphicsHandler::Render(float deltaTime)
 	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
 	
-	return 0;
+	return result;
 }
 
 int GraphicsHandler::InitializeGrid()
