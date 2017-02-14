@@ -1619,6 +1619,69 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Ray ray, std::vector<OctreeBV*>& compsForCamRay)
+{
+	//Safety check
+	if (curNode != nullptr)
+	{
+		if (curNode->containedComponents.size() <= 0)
+		{
+			//Branch
+			for (int i = 0; i < 8; i++)
+			{
+				//For all non-culled branches
+				if (curNode->branches[i] != nullptr)
+				{
+					//Do the check to see if the branch is within the view frustrum
+					Camera::C_AABB branchBounds;
+					branchBounds.pos = curNode->pos;
+					branchBounds.ext = curNode->ext;
+					bool intersectsRay = true;
+					if (intersectsRay)
+					{
+						TraverseOctreeRay(curNode->branches[i], ray, compsForCamRay);
+					}
+				}
+			}
+		}
+		else
+		{
+			//Leaf
+			for each (OctreeBV* entityComponent in curNode->containedComponents)
+			{
+				compsForCamRay.push_back(entityComponent);
+			}
+		}
+	}
+}
+
+double GraphicsHandler::RayVSAABB(Ray ray, Camera::C_AABB bb)
+{
+	//double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
+	//double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
+	double tx1 = ((bb.pos.x - bb.ext.x) - ray.Origin.m128_f32[0]) * -ray.RayDir.m128_f32[0];
+	double tx2 = ((bb.pos.x + bb.ext.x) - ray.Origin.m128_f32[0]) * -ray.RayDir.m128_f32[0];
+
+	double tmin = min(tx1, tx2);
+	double tmax = max(tx1, tx2);
+
+	//double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
+	//double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
+	double ty1 = ((bb.pos.y - bb.ext.y) - ray.Origin.m128_f32[1]) * -ray.RayDir.m128_f32[1];
+	double ty2 = ((bb.pos.y + bb.ext.y) - ray.Origin.m128_f32[1]) * -ray.RayDir.m128_f32[1];
+
+	tmin = max(tmin, min(ty1, ty2));
+	tmax = min(tmax, max(ty1, ty2));
+
+	double tz1 = ((bb.pos.z - bb.ext.z) - ray.Origin.m128_f32[2]) * -ray.RayDir.m128_f32[2];
+	double tz2 = ((bb.pos.z + bb.ext.z) - ray.Origin.m128_f32[2]) * -ray.RayDir.m128_f32[2];
+
+	tmin = max(tmin, min(tz1, tz2));
+	tmax = min(tmax, max(tz1, tz2));
+
+	return tmax - tmin;
+}
+
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
 {
 	for (int i = 0; i < 8; i++)
