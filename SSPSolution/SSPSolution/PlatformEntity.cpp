@@ -6,16 +6,21 @@ PlatformEntity::~PlatformEntity()
 }
 int PlatformEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
 {
+	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr, aiComp);
+	return result;
 }
 int PlatformEntity::Shutdown()
 {
+	int result = 0;
 	if (this->m_ActiveSound != nullptr)
 		this->m_ActiveSound->drop();
+	return result;
 }
 
 int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
+	int result = 0;
 	this->SyncComponents();
 
 	// Adjust misplaced graphics component - hack...
@@ -51,7 +56,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
 		}
 	}
-	return 1;
+	return result;
 }
 
 int PlatformEntity::React(int entityID, EVENT reactEvent)
