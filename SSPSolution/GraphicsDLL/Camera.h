@@ -53,8 +53,7 @@ private:
 	//The values for the projection matrix
 	float m_screenAspect;
 	float m_fieldOfView;
-
-	Sphere m_collisionSphere;
+	float m_deltaTime;
 public:
 	struct Plane {
 		DirectX::XMFLOAT4 normal;
@@ -98,7 +97,8 @@ public:
 	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720.f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
-	GRAPHICSDLL_API int Update(float dt);
+	GRAPHICSDLL_API int Update();
+	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
 	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
@@ -163,8 +163,6 @@ public:
 	GRAPHICSDLL_API void SetDistance(float newDistance);
 	GRAPHICSDLL_API void DecreaseDistance(float amount);
 	GRAPHICSDLL_API void IncreaseDistance(float amount);
-
-	GRAPHICSDLL_API Sphere GetCollisionSphere(DirectX::XMVECTOR & pos);
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 #pragma endregion setters

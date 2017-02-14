@@ -64,38 +64,20 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	return result;
 }
 
-int Camera::Update(float dt)
+int Camera::Update()
 {
 	int result = 1;
 	this->m_updatePos();
 
-	//crash fix
-	//this->m_lookAt.z = 2;
-	//DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
-	//DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
-
-	//DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
-	//
-
-	//DirectX::XMMATRIX hier = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset));
-
-	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
-
-
-
-	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-	//if (!DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
-	//{
-	//	this->m_lookAt.y += 1;
-	//}
-
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
-	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
-	//
-	//view = DirectX::XMMatrixMultiply(hier, view);
-	//DirectX::XMStoreFloat4x4(&this->m_viewMatrix, view);
 
 	return result;
+}
+
+int Camera::UpdateDeltaTime(float dt)
+{
+	this->m_deltaTime = dt;
+	return 0;
 }
 
 int Camera::UpdateView()
@@ -349,6 +331,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 
 	this->m_focusPoint = lockTarget;
 	this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	m_pitch = DirectX::XMConvertToRadians(-45.0);
@@ -357,7 +340,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	this->m_camDirvector = m_Dir();
 	this->m_camRightvector = m_Right();
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-
+	
 	m_updatePos();
 
 	return;
@@ -368,6 +351,7 @@ void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance
 	bool result = false;
 
 	this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	this->m_camDirvector = m_Dir();
@@ -447,8 +431,8 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
 
-	m_pitch += pitch;
-	m_yaw -= yaw;
+	this->m_pitch += pitch * this->m_deltaTime;
+	this->m_yaw -= yaw * this->m_deltaTime;
 
 	//1.48352986 is ~85 degrees in radians
 	if (m_pitch > 1.48352986f)
@@ -565,12 +549,6 @@ void Camera::IncreaseDistance(float amount)
 
 
 }
-Sphere Camera::GetCollisionSphere(DirectX::XMVECTOR & pos)
-{
-	pos = DirectX::XMLoadFloat3(&this->GetCameraPos());
-
-	return m_collisionSphere;
-}
 
 DirectX::XMVECTOR Camera::GetRight()
 {
@@ -608,6 +586,25 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
+	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+
+	float intersectDistance;
+	bool intersection = false;
+
+	//graphicshandler.getcameraobjectlist() = objectlist;
+	//intersection = physicshandler.intersectobb(ray, objectlist, &distance, m_maxDistance, minDistance)
+
+	if (intersection)
+	{
+		if (intersectDistance < this->m_maxDistance)
+			this->m_distance -= 0.01 * this->m_deltaTime;
+		else if (this->m_distance < this->m_maxDistance)
+			this->m_distance += 0.01 * this->m_deltaTime;
+		
+		if (this->m_distance > this->m_maxDistance)
+			this->m_distance = this->m_maxDistance;
+	}
+
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
@@ -618,6 +615,8 @@ void Camera::m_updatePos()
 	float z = m_distance * cos(m_pitch) * cos(m_yaw);
 
 	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+
+
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);

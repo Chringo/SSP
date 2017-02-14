@@ -222,7 +222,7 @@ int System::Update(float deltaTime)
 #endif // _DEBUG
 
 	//CAM
-	this->m_camera->Update(deltaTime);
+	this->m_camera->Update();
 
 	//AI
 	this->m_AIHandler.Update(deltaTime);
