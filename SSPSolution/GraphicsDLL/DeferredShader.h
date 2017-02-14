@@ -5,7 +5,7 @@
 #include "Shader.h"
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/ResourceHandler.h"
-#pragma comment (lib,"../Debug/ResourceLib")
+//#pragma comment lib,"../Debug/ResourceLib")
 
 struct InstanceData {
 	unsigned int modelID;
