@@ -15,14 +15,19 @@ int FieldEntity::Initialize(int entityID, Field* field)
 	return 1;
 }
 
+//Returns 1 if the internal conditions are met.
 int FieldEntity::Update(float deltaTime, InputHandler * inputHandler)
 {
+	int result = 0;
 	if (this->m_field->F_first_inside && this->m_field->F_second_inside)
+	{
 		this->m_subject.Notify(this->m_entityID, FIELD_CONTAINS);
-
+		printf("HAHA");
+		result = 1;
+	}
 	// TODO: More EVENT messages if needed
 
-	return 1;
+	return result;
 }
 
 int FieldEntity::React(int entityID, EVENT reactEvent)
