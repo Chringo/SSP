@@ -4,8 +4,6 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "../ResourceLib/ResourceHandler.h"
-//#pragma comment lib,"../Debug/ResourceLib")
-
 
 //include this to find out VRAM
 //#include "stdafx.h"
