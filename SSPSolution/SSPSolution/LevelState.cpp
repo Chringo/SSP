@@ -1329,7 +1329,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1
-			3,	//EntityID Player2
+			2,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -1944,7 +1944,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	
-	size = this->m_doorEntities.size();
+	//size = this->m_doorEntities.size();
 	//for (int i = 0; i < size; i++)
 	//{
 	//	PhysicsComponent* door;
