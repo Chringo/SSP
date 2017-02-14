@@ -115,7 +115,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)irrKlang\x64\lib;$(SolutionDir)SDL-SSP\lib\x64;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;irrKlang.lib;GraphicsDLL-d.lib;AIDLL-d.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;irrKlang.lib;ResourceLib-d.lib;GraphicsDLL-d.lib;NetworkDLL.lib;AIDLL-d.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -161,7 +161,7 @@ copy /y "$(SolutionDir)\Release\*.exe" "$(ProjectDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)irrKlang\x64\lib;$(SolutionDir)SDL-SSP\lib\x64;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;irrKlang.lib;AIDLL.lib;GraphicsDLL.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;irrKlang.lib;ResourceLib.lib;GraphicsDLL.lib;NetworkDLL.lib;AIDLL.lib;physicsDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
