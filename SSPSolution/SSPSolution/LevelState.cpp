@@ -884,6 +884,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
+		
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
@@ -925,6 +926,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	LeverSyncState* leverSync = nullptr;
 	for (LeverEntity* e : this->m_leverEntities)
 	{
+		e->Update(dt, inputHandler);
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
