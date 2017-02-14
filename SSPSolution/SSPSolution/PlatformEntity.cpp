@@ -81,10 +81,12 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 	case BUTTON_ACTIVE:
 		this->GetAIComponent()->AC_triggered = true;
 		break;
-	//case LEVER_DEACTIVE:
-	//	break;
-	//case LEVER_ACTIVE:
-	//	break;
+	case LEVER_DEACTIVE:
+		this->GetAIComponent()->AC_triggered = false;
+		break;
+	case LEVER_ACTIVE:
+		this->GetAIComponent()->AC_triggered = true;
+		break;
 	//case LEVER_ENABLED:
 	//	break;
 	//case LEVER_DISABLED:
