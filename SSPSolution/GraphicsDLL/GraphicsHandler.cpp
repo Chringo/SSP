@@ -454,6 +454,12 @@ int GraphicsHandler::Render(float deltaTime)
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
 
+	std::vector<OctreeBV*> compsFromRay;
+	Camera::C_Ray ray = this->m_camera->CastRay();
+	for (size_t i = 0; i < 8; i++)
+	{
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, compsFromRay);
+	}
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -468,7 +474,7 @@ int GraphicsHandler::Render(float deltaTime)
 	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
 	int amountOfModelsToRender = 0;
-	int componentsInTree = this->m_octreeRoot.containedComponents.size();
+	int componentsInTree = compsFromRay.size();
 	//struct InstanceData {
 	//	int modelID;
 	//	int amountOfInstances;
@@ -479,7 +485,7 @@ int GraphicsHandler::Render(float deltaTime)
 	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	for (OctreeBV* i : compsFromRay)
 	{
 		if (i->isRendered)
 		{
@@ -503,7 +509,7 @@ int GraphicsHandler::Render(float deltaTime)
 	unsigned int lastComponentIndex = 0;
 	lastModelID = firstRenderedModelID;
 	OctreeBV* lastRenderedComponent = nullptr;
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	for (OctreeBV* i : compsFromRay)
 	{
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
@@ -559,7 +565,7 @@ int GraphicsHandler::Render(float deltaTime)
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
 	lastModelID = firstRenderedInstancedModelID;
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	for (OctreeBV* i : compsFromRay)
 	{
 		//reset the 'isRendered' bool
 		if (i->isRendered)
@@ -1619,7 +1625,7 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
-void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Ray ray, std::vector<OctreeBV*>& compsForCamRay)
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray, std::vector<OctreeBV*>& compsForCamRay)
 {
 	//Safety check
 	if (curNode != nullptr)
@@ -1656,26 +1662,26 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Ray ray, std::vect
 	}
 }
 
-bool GraphicsHandler::RayVSAABB(Ray ray, Camera::C_AABB bb, double& distance)
+bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance)
 {
 	//double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
 	//double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
-	double tx1 = ((bb.pos.x - bb.ext.x) - ray.Origin.m128_f32[0]) * -ray.RayDir.m128_f32[0];
-	double tx2 = ((bb.pos.x + bb.ext.x) - ray.Origin.m128_f32[0]) * -ray.RayDir.m128_f32[0];
+	double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * -ray.dir.x;
+	double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * -ray.dir.x;
 
 	double tmin = min(tx1, tx2);
 	double tmax = max(tx1, tx2);
 
 	//double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
 	//double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
-	double ty1 = ((bb.pos.y - bb.ext.y) - ray.Origin.m128_f32[1]) * -ray.RayDir.m128_f32[1];
-	double ty2 = ((bb.pos.y + bb.ext.y) - ray.Origin.m128_f32[1]) * -ray.RayDir.m128_f32[1];
+	double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * -ray.dir.y;
+	double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * -ray.dir.y;
 
 	tmin = max(tmin, min(ty1, ty2));
 	tmax = min(tmax, max(ty1, ty2));
 
-	double tz1 = ((bb.pos.z - bb.ext.z) - ray.Origin.m128_f32[2]) * -ray.RayDir.m128_f32[2];
-	double tz2 = ((bb.pos.z + bb.ext.z) - ray.Origin.m128_f32[2]) * -ray.RayDir.m128_f32[2];
+	double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * -ray.dir.z;
+	double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * -ray.dir.z;
 
 	tmin = max(tmin, min(tz1, tz2));
 	tmax = min(tmax, max(tz1, tz2));
