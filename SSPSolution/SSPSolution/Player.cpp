@@ -45,16 +45,17 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
-		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0.5, 0);
+		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
+		//this->m_ragdoll->rightLeg.center->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
 		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
-		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 1, 0);
+		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 0, 0);
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
-		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, -0.5, 0);
+		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
 		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
-		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, -1, 0);
+		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{

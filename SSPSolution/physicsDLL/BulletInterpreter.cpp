@@ -631,6 +631,10 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
+PHYSICSDLL_API void BulletInterpreter::AddConstraint(PhysicsComponent * src1, PhysicsComponent * src2)
+{
+}
+
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);

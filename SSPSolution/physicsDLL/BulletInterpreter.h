@@ -207,6 +207,8 @@ public:
 	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src,int index);
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 
+	PHYSICSDLL_API void AddConstraint(PhysicsComponent* src1, PhysicsComponent* src2);
+
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 
 	PHYSICSDLL_API void SetPlayer1(PhysicsComponent* p1);
