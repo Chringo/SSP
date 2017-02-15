@@ -1216,7 +1216,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//We cannot set pos directly because of bounding box vs model offsets
 		//t_pc->PC_pos		   = pos;						//Set Position
 		t_pc->PC_rotation	   = rot;						//Set Rotation
-		DirectX::XMStoreFloat3(&t_gc->rotation, DirectX::XMVectorScale(rot, 0.017453292519943295769236907684886f));		//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
 		t_pc->PC_BVtype		   = BV_OBB;
@@ -1402,7 +1401,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		button1P->PC_steadfast = true;
 		//DirectX::XMQuaternionRotationMatrix
 
+		button1P->PC_BVtype = BV_OBB;
 		//Copy the bounding volume data from the model into the physics component for reference
+		button1P->PC_OBB = m_ConvertOBB(button1G->modelPtr->GetOBBData()); //Convert and insert OBB data
 		button1P->PC_AABB.ext[0] = button1G->modelPtr->GetOBBData().extension[0];
 		button1P->PC_AABB.ext[1] = button1G->modelPtr->GetOBBData().extension[1];
 		button1P->PC_AABB.ext[2] = button1G->modelPtr->GetOBBData().extension[2];
@@ -1410,22 +1411,27 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		button1P->PC_OBB.ext[1] = button1P->PC_AABB.ext[1] * 2.0f;
 		button1P->PC_OBB.ext[2] = button1P->PC_AABB.ext[2] * 2.0f;
 
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ button1G->modelPtr->GetOBBData().position.x, button1G->modelPtr->GetOBBData().position.y, button1G->modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, button1G->worldMatrix);
 
-		button1P->PC_BVtype = BV_OBB;
-		//Check for rotation, if found then set the bounding volume to OBB
-		float ignoreIfLess = 0.0000000001f;
-		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
-		{
-			//There is a rotation
-			button1P->PC_BVtype = BV_OBB;
-		}
+		button1P->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&button1G->pos, tempOBBPos.r[3]);
+
+		button1P->PC_OBB.ort = DirectX::XMMatrixMultiply(button1P->PC_OBB.ort, rotate);
+		button1P->PC_OBB.ort = DirectX::XMMatrixTranspose(button1P->PC_OBB.ort);
+		//This is where the final rotation is stored. We want to use this rotation matrix and get the extensions for the OBB
+		//Create a vector describing the extension of the AABB
+		//Rotate the extension according the OBB ort
+		//And lastly store the result in graphics components as the model bounds used in culling
+		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
+		button1G->ort = button1P->PC_OBB.ort;
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
 			button1P->PC_AABB.ext[1] , button1P->PC_AABB.ext[2] }, rotate);
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		button1P->PC_OBB.ort = rotate;
-
+		button1G->ort = button1P->PC_OBB.ort;
 
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
@@ -1474,7 +1480,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		lever1P->PC_steadfast = true;
 		//DirectX::XMQuaternionRotationMatrix
 
+		lever1P->PC_BVtype = BV_OBB;
 		//Copy the bounding volume data from the model into the physics component for reference
+		lever1P->PC_OBB = m_ConvertOBB(lever1G->modelPtr->GetOBBData()); //Convert and insert OBB data
 		lever1P->PC_AABB.ext[0] = lever1G->modelPtr->GetOBBData().extension[0];
 		lever1P->PC_AABB.ext[1] = lever1G->modelPtr->GetOBBData().extension[1];
 		lever1P->PC_AABB.ext[2] = lever1G->modelPtr->GetOBBData().extension[2];
@@ -1482,8 +1490,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		lever1P->PC_OBB.ext[1] = lever1P->PC_AABB.ext[1] * 2.0f;
 		lever1P->PC_OBB.ext[2] = lever1P->PC_AABB.ext[2] * 2.0f;
 
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ lever1G->modelPtr->GetOBBData().position.x, lever1G->modelPtr->GetOBBData().position.y, lever1G->modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, lever1G->worldMatrix);
 
-		lever1P->PC_BVtype = BV_OBB;
+		lever1P->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&lever1G->pos, tempOBBPos.r[3]);
+
+		lever1P->PC_OBB.ort = DirectX::XMMatrixMultiply(lever1P->PC_OBB.ort, rotate);
+		lever1P->PC_OBB.ort = DirectX::XMMatrixTranspose(lever1P->PC_OBB.ort);
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ lever1P->PC_AABB.ext[0],
@@ -1549,13 +1563,24 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 		wheel1P->PC_BVtype = BV_OBB;
-		//Check for rotation, if found then set the bounding volume to OBB
-		float ignoreIfLess = 0.0000000001f;
-		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
-		{
-			//There is a rotation
-			wheel1P->PC_BVtype = BV_OBB;
-		}
+		//Copy the bounding volume data from the model into the physics component for reference
+		wheel1P->PC_OBB = m_ConvertOBB(wheel1G->modelPtr->GetOBBData()); //Convert and insert OBB data
+		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
+
+		wheel1P->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&wheel1G->pos, tempOBBPos.r[3]);
+
+		wheel1P->PC_OBB.ort = DirectX::XMMatrixMultiply(wheel1P->PC_OBB.ort, rotate);
+		wheel1P->PC_OBB.ort = DirectX::XMMatrixTranspose(wheel1P->PC_OBB.ort);
+
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ wheel1P->PC_AABB.ext[0],
