@@ -104,20 +104,24 @@ private:
 	btSequentialImpulseConstraintSolver* m_solver;
 	btDiscreteDynamicsWorld* m_dynamicsWorld;
 	
-	//btScalar timeStep; //for callback function
-
-	std::vector<int> m_physicsHandlerIndex;
-	
 	btVector3 m_GravityAcc;
 
 	void CreateDummyObjects();
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 
-	DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src);
+	//apply changes to rigid bodys
+	void applyVelocityOnRigidbody(PhysicsComponent* src);
+	void applyRotationOnRigidbody(PhysicsComponent* src);
+	void applyForcesToRigidbody(PhysicsComponent* src);
 
-	//player specifics
-	void applyLinearVelocityOnSrc(PhysicsComponent* src);
+	//read the changes from the rigidbody
+	DirectX::XMMATRIX GetNextFrameRotationMatrix(btTransform &transform);
+	
+	void IgnoreCollitionCheckOnPickupP1(PhysicsComponent* src);
+
+	//force activation
+	void forceDynamicObjectsToActive(PhysicsComponent* src);
 
 	//apply stuff to bullet
 	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
