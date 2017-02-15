@@ -46,24 +46,21 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		
 
 #pragma region 
-		if (m_targetRot == 0)
+		if (m_targetRot == 0) // If we are playing the closing animation
 		{
-			if (m_currRot < m_targetRot)
+			if (m_currRot < m_targetRot) // if the animation is not yet finished
 			{
 				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
 				m_currRot += sinRot;
 				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(sinRot));
 			}
 			else {
-				m_animationActive = false;
-				m_currRot = m_targetRot;
+				m_animationActive = false; //disable animation flag
+				m_currRot = m_targetRot; // set the variables to match
 
-				DirectX::XMFLOAT3 pos;
-				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-				
-
-				this->m_needSync = true;
+				this->m_needSync = true; // for network
 				this->SyncComponents();
+				//Sync the graphical component to match the bounding box
 				//Get pivot point
 				DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
 				pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
@@ -74,23 +71,23 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 			}
 
 		}
-		else
+		else //We are playing the opening animation
 		{
 
-			if (m_currRot > m_targetRot)
+			if (m_currRot > m_targetRot) // if the animation is not yet finished
 			{
 				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
 				m_currRot -= sinRot;
 				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(-sinRot));
 			}
-			else {
-				m_animationActive = false;
-				m_currRot = m_targetRot;
-				DirectX::XMFLOAT3 pos;
-				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			else { // It has reached the end of the animation, the door is fully open
+				m_animationActive = false; //deactivate animation
+				m_currRot = m_targetRot;   // Set the variables to match exactly
 
-				this->m_needSync = true;
+
+				this->m_needSync = true; //for network
 				this->SyncComponents();
+
 				//Sync graphical component to match the bounding box
 				//Get pivot point
 				DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
@@ -108,15 +105,18 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 		/*
 		To rotate around a pivot point.
-		- Translate to pivot point,
-		- newTranslation * rotate * scale ,
-		- OriginalPos - pivotPoint
+		- Translate to pivot point,    (pivotTranslationMatrix)
+		- Get yer olde rotation matrix (rotationMatrix)
+		- pointVector = pointVector * (pivotTranslationMatrix * rotationMatrix)  //scale should be included but omitted for simplicity, we do not animate scale here
+		- pointVector = pointVector * -pivotTranslationMatrix
 
 		Tx = pivotpoint
 		Point' = Tx + (R * S) * (Point -Tx)
 
 		We have to do a bit differently here because the Obb holds the rotation and the physicscomponent holds the position
 		So they are not in the same matrix.
+
+		We only rotate the bounding box, but the position is both rotated and translated
 		*/
 
 		//A big problem here is that the graphical component has a different pivot point than the bounding box
@@ -152,7 +152,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 	
 	}
-#pragma endregion Rotate around pivot
+#pragma endregion Rotate around pivot (By Martin)
 
 #pragma region Commented code, Author not known, (Kim?,Sebastian?)
 
