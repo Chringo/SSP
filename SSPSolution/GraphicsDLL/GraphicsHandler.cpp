@@ -110,12 +110,25 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
 		{
 			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-			myAABB.ext[0] *= 0.9999f;
-			myAABB.ext[1] *= 0.9999f;
-			myAABB.ext[2] *= 0.9999f;
+			/*myAABB.ext[0] *= 1.0f;
+			myAABB.ext[1] *= 1.0f;
+			myAABB.ext[2] *= 1.0f;*/
 			this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
 		}
 
+		//Test against all internal components if it is the root
+		if (curNode == &this->m_octreeRoot)
+		{
+			AABB containedAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
+			for (OctreeBV* contained : curNode->containedComponents)
+			{
+				renderColor = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+				containedAABB.ext[0] = contained->ext.x;
+				containedAABB.ext[1] = contained->ext.y;
+				containedAABB.ext[2] = contained->ext.z;
+				this->m_debugRender.Render(DirectX::XMLoadFloat3(&contained->pos), containedAABB, renderColor);
+			}
+		}
 		for (int i = 0; i < 8; i++)
 		{
 			//For all non-culled branches
@@ -922,61 +935,66 @@ int GraphicsHandler::GenerateOctree()
 #pragma region
 		if (this->m_octreeRoot.containedComponents[i]->ext.x != this->m_staticGraphicsComponents[i]->extensions.x || this->m_octreeRoot.containedComponents[i]->ext.y != this->m_staticGraphicsComponents[i]->extensions.y || this->m_octreeRoot.containedComponents[i]->ext.z != this->m_staticGraphicsComponents[i]->extensions.z)
 		{
-			DirectX::XMVECTOR quaternion;
-			DirectX::XMVECTOR translation;
-			DirectX::XMVECTOR scale;
-			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i]->worldMatrix);
-			DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(quaternion);
-			DirectX::XMVECTOR corners[8];
-			//Define the 8 AABB corners (if we exclude the center)
-			corners[0] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ - this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ - this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ - this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[1] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ - this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ - this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ + this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[2] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ - this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ + this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[3] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ - this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ - this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[4] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ - this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ - this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[5] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ - this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ + this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[6] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ + this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			corners[7] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ - this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
-			//Transform the 8 corners to the OBB corners
-			for (int cornerIndex = 0; cornerIndex < CORNER_MAX; cornerIndex++)
+			if (true)
 			{
-				//corners[i] = DirectX::XMVector3Rotate(corners[cornerIndex], quaternion);
-				//Store the old pos
-				DirectX::XMVECTOR oldPos = corners[cornerIndex];
-				//Calculate the new pos
-				corners[cornerIndex] = DirectX::XMVector4Transform(corners[cornerIndex], rotationMatrix);
-				//If these are the same then the pos is either (0.0f; 0.0f; 0.0f) or the rotation matrix doesn't do anything
-				if (DirectX::XMVector3Equal(oldPos, corners[cornerIndex]))
+				DirectX::XMVECTOR quaternion;
+				DirectX::XMVECTOR translation;
+				DirectX::XMVECTOR scale;
+				DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i]->worldMatrix);
+				DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(quaternion);
+				DirectX::XMVECTOR corners[8];
+				//Define the 8 AABB corners (if we exclude the center)
+				corners[0] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ -this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ -this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ -this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[1] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ -this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ -this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ +this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[2] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ +this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ -this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ +this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[3] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ +this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ -this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ -this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[4] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ -this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ +this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ -this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[5] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ -this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ +this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ +this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[6] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ +this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ +this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ +this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				corners[7] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ +this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ +this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ -this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
+				//Transform the 8 corners to the OBB corners
+				for (int cornerIndex = 0; cornerIndex < CORNER_MAX; cornerIndex++)
 				{
-					if (oldPos.m128_f32[0] == 0.0f && oldPos.m128_f32[1] == 0.0f && oldPos.m128_f32[2] == 0.0f)
+					//corners[i] = DirectX::XMVector3Rotate(corners[cornerIndex], quaternion);
+					//Store the old pos
+					DirectX::XMVECTOR oldPos = corners[cornerIndex];
+					//Calculate the new pos
+					corners[cornerIndex] = DirectX::XMVector4Transform(corners[cornerIndex], rotationMatrix);
+					//If these are the same then the pos is either (0.0f; 0.0f; 0.0f) or the rotation matrix doesn't do anything
+					if (DirectX::XMVector3Equal(oldPos, corners[cornerIndex]))
 					{
-						//The reason it wasn't moved was because it was in origo, thank god
-						bool areWeFucked = false;
-					}
-					else
-					{
-						//We are fucked
-						bool areWeFucked = true;
+						if (oldPos.m128_f32[0] == 0.0f && oldPos.m128_f32[1] == 0.0f && oldPos.m128_f32[2] == 0.0f)
+						{
+							//The reason it wasn't moved was because it was in origo, thank god
+							bool areWeFucked = false;
+						}
+						else
+						{
+							//We are fucked
+							bool areWeFucked = true;
+						}
 					}
 				}
-			}
-			//For the 8 OBB corners, calculate the largest extensions along each axis
-			DirectX::XMFLOAT3 absExt;
-			absExt.x = corners[0].m128_f32[0];
-			absExt.y = corners[0].m128_f32[1];
-			absExt.z = corners[0].m128_f32[2];
-			for (int cornerIndex = 1; cornerIndex < 8; cornerIndex++)
-			{
-				if (abs(corners[cornerIndex].m128_f32[0]) > absExt.x)
-					absExt.x = abs(corners[cornerIndex].m128_f32[0]);
-				if (abs(corners[cornerIndex].m128_f32[1]) > absExt.y)
-					absExt.y = abs(corners[cornerIndex].m128_f32[1]);
-				if (abs(corners[cornerIndex].m128_f32[2]) > absExt.z)
-					absExt.z = abs(corners[cornerIndex].m128_f32[2]);
-			}
+				//For the 8 OBB corners, calculate the largest extensions along each axis
+				DirectX::XMFLOAT3 absExt;
+				absExt.x = corners[0].m128_f32[0];
+				absExt.y = corners[0].m128_f32[1];
+				absExt.z = corners[0].m128_f32[2];
+				for (int cornerIndex = 1; cornerIndex < 8; cornerIndex++)
+				{
+					if (abs(corners[cornerIndex].m128_f32[0]) > absExt.x)
+						absExt.x = abs(corners[cornerIndex].m128_f32[0]);
+					if (abs(corners[cornerIndex].m128_f32[1]) > absExt.y)
+						absExt.y = abs(corners[cornerIndex].m128_f32[1]);
+					if (abs(corners[cornerIndex].m128_f32[2]) > absExt.z)
+						absExt.z = abs(corners[cornerIndex].m128_f32[2]);
+				}
 
-			this->m_octreeRoot.containedComponents[i]->ext = this->m_staticGraphicsComponents[i]->extensions;
-			this->m_octreeRoot.containedComponents[i]->ext = absExt;
+				//this->m_octreeRoot.containedComponents[i]->ext = this->m_staticGraphicsComponents[i]->extensions;
+				this->m_octreeRoot.containedComponents[i]->ext.x = absExt.x;
+				this->m_octreeRoot.containedComponents[i]->ext.y = absExt.y;
+				this->m_octreeRoot.containedComponents[i]->ext.z = absExt.z;
+			}
 		}
 #pragma endregion Generate an AABB that contains the OBB
 		//Check for the lowest and highest values
@@ -1549,8 +1567,8 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 				{
 					//Do the check to see if the branch is within the view frustrum
 					Camera::C_AABB branchBounds;
-					branchBounds.pos = curNode->pos;
-					branchBounds.ext = curNode->ext;
+					branchBounds.pos = curNode->branches[i]->pos;
+					branchBounds.ext = curNode->branches[i]->ext;
 					
 					CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 					if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
