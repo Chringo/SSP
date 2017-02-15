@@ -867,6 +867,7 @@ int GraphicsHandler::GenerateOctree()
 {
 	int result = 0;
 	//Check amount of components to be included into the octree
+	enum{CORNER_MAX = 8};
 	size_t componentCount = this->m_staticGraphicsComponents.size();
 
 
@@ -911,10 +912,27 @@ int GraphicsHandler::GenerateOctree()
 			corners[6] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ + this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
 			corners[7] = DirectX::XMVectorSet(/*this->m_octreeRoot.containedComponents[i]->pos.x*/ + this->m_octreeRoot.containedComponents[i]->ext.x, /*this->m_octreeRoot.containedComponents[i]->pos.y*/ + this->m_octreeRoot.containedComponents[i]->ext.y, /*this->m_octreeRoot.containedComponents[i]->pos.z*/ - this->m_octreeRoot.containedComponents[i]->ext.z, 1.0f);
 			//Transform the 8 corners to the OBB corners
-			for (int cornerIndex = 0; cornerIndex < 8; cornerIndex++)
+			for (int cornerIndex = 0; cornerIndex < CORNER_MAX; cornerIndex++)
 			{
 				//corners[i] = DirectX::XMVector3Rotate(corners[cornerIndex], quaternion);
-				corners[i] = DirectX::XMVector4Transform(corners[i], rotationMatrix);
+				//Store the old pos
+				DirectX::XMVECTOR oldPos = corners[cornerIndex];
+				//Calculate the new pos
+				corners[cornerIndex] = DirectX::XMVector4Transform(corners[cornerIndex], rotationMatrix);
+				//If these are the same then the pos is either (0.0f; 0.0f; 0.0f) or the rotation matrix doesn't do anything
+				if (DirectX::XMVector3Equal(oldPos, corners[cornerIndex]))
+				{
+					if (oldPos.m128_f32[0] == oldPos.m128_f32[1] == oldPos.m128_f32[2] == 0.0f)
+					{
+						//The reason it wasn't moved was because it was in origo, thank god
+						bool areWeFucked = false;
+					}
+					else
+					{
+						//We are fucked
+						bool areWeFucked = true;
+					}
+				}
 			}
 			//For the 8 OBB corners, calculate the largest extensions along each axis
 			float extX, extY, extZ;
@@ -932,8 +950,8 @@ int GraphicsHandler::GenerateOctree()
 					absExt.z = abs(corners[cornerIndex].m128_f32[2]);
 			}
 
-			this->m_octreeRoot.containedComponents[i]->ext = absExt;
 			this->m_octreeRoot.containedComponents[i]->ext = this->m_staticGraphicsComponents[i]->extensions;
+			this->m_octreeRoot.containedComponents[i]->ext = absExt;
 		}
 		this->m_octreeRoot.containedComponents[i]->pos.x = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[0]; // x
 		this->m_octreeRoot.containedComponents[i]->pos.y = this->m_staticGraphicsComponents[i]->worldMatrix.r[3].m128_f32[1]; // y
