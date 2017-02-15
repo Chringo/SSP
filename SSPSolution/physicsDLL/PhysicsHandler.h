@@ -326,9 +326,11 @@ public:
 	PHYSICSDLL_API void SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
 	PHYSICSDLL_API void SyncRagdollWithSkelton(Ragdoll* ragdoll);
 
-	PHYSICSDLL_API DirectX::XMMATRIX CalcTransformMatrix(PhysicsComponent* joint1, PhysicsComponent* joint2, PhysicsComponent* joint3);
+	PHYSICSDLL_API DirectX::XMMATRIX CalcTransformMatrix(PhysicsComponent* joint2, PhysicsComponent* joint3);
 
 	PHYSICSDLL_API DirectX::XMMATRIX CalcNewRotationAxises(PhysicsComponent* joint1, PhysicsComponent* joint2);
+
+	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

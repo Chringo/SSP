@@ -45,17 +45,22 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
-		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
-		//this->m_ragdoll->rightLeg.center->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
-		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
-		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 0, 0);
+		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
+		//this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 0, 0);
+		this->m_ragdoll->rightLeg.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
+		this->m_ragdoll->leftLeg.next2->PC_velocity = DirectX::XMVectorSet(0, -0.5, 0, 0);
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
-		this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
-		//this->m_ragdoll->rightArm.next->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
-		this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0, -1, 0);
+		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
+		this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 1, 0);
+		this->m_ragdoll->upperBody.next->PC_velocity = DirectX::XMVectorSet(0, 0, 1, 0);
+		this->m_ragdoll->upperBody.next2->PC_velocity = DirectX::XMVectorSet(0, 0, 1, 0);
+		//this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
+		//this->m_ragdoll->rightLeg.next2->PC_velocity = DirectX::XMVectorSet(1, 0, 0, 0);
+		//this->m_ragdoll->leftLeg.next2->PC_velocity = DirectX::XMVectorSet(-1, 0, 0, 0);
+		
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
@@ -379,6 +384,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
+			if (this->m_ragdoll->state == RAGDOLL)
+			{
+				//DirectX::XMMATRIX ragdollOffSet = DirectX::XMMatrixIdentity();
+				//ragdollOffSet = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(this->m_ragdoll->lowerBody.center->PC_OBB.ort.r[2], 1.7));
+				//this->m_gComp->worldMatrix *= ragdollOffSet;
+				//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_ragdoll->lowerBody.center->PC_pos);
+			}
 		}
 	}
 
