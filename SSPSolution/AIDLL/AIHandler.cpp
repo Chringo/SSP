@@ -252,3 +252,14 @@ void AIHandler::UpdatePosition(int i)
 		this->m_AIComponents[i]->AC_WaypointUpdated = true;
 	}
 }
+
+void AIHandler::WaypointTime()
+{
+	for (size_t i = 0; i < this->m_nrOfAIComponents; i++)
+	{
+		for (size_t j = 0; j < this->m_AIComponents[i]->AC_nrOfWaypoint; j++)
+		{
+			
+		}
+	}
+}

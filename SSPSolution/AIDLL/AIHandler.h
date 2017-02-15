@@ -38,6 +38,6 @@ private:
 	AIComponent* CreateAIComponent(int entityID);
 	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
 	void UpdatePosition(int i);
-
+	void WaypointTime();
 };
 #endif
