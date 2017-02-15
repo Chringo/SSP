@@ -487,7 +487,7 @@ int GraphicsHandler::Render(float deltaTime)
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
-		if (i->isRendered)
+		if (i->isInRay)
 		{
 			if (i->modelID == lastModelID)
 			{
@@ -514,11 +514,11 @@ int GraphicsHandler::Render(float deltaTime)
 		if (i->isInRay)
 		{
 			result++;
-			i->isInRay = false;
+			//i->isInRay = false;
 			//This component needs to be checked against the ray for camera intersection
 		}
 		//If the component is to be rendered, increase the counter
-		if (i->isRendered)
+		if (i->isInRay)
 		{
 			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
 			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
@@ -538,7 +538,7 @@ int GraphicsHandler::Render(float deltaTime)
 				else 
 				{
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
-					lastRenderedComponent->isRendered = false;
+					lastRenderedComponent->isInRay = false;
 					amountOfModelOccurrencees = 0;
 				}
 			}
@@ -562,7 +562,7 @@ int GraphicsHandler::Render(float deltaTime)
 		else
 		{
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
-			lastRenderedComponent->isRendered = false;
+			lastRenderedComponent->isInRay = false;
 			amountOfModelOccurrencees = -1;
 		}
 	}
@@ -573,8 +573,8 @@ int GraphicsHandler::Render(float deltaTime)
 	lastModelID = firstRenderedInstancedModelID;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
-		//reset the 'isRendered' bool
-		if (i->isRendered)
+		//reset the 'isInRay' bool
+		if (i->isInRay)
 		{
 			//If it is time to change 
 			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
@@ -587,7 +587,7 @@ int GraphicsHandler::Render(float deltaTime)
 			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
 			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-			i->isRendered = false;
+			i->isInRay = false;
 		}
 	}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
