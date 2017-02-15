@@ -285,19 +285,20 @@ void BulletInterpreter::Shutdown()
 	int size = this->m_rigidBodies.size();
 	for (int i = 0; i < size; i++)
 	{
-		btMotionState* tempMSPtr = this->m_rigidBodies.at(i)->getMotionState();
+		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
+		btMotionState* tempMSPtr = tempPtr->getMotionState();
 		if (tempMSPtr != nullptr)
 		{
 			delete tempMSPtr;
 		}
-		btCollisionShape* tempBPtr = this->m_rigidBodies.at(i)->getCollisionShape();
+		btCollisionShape* tempBPtr = tempPtr->getCollisionShape();
 		if (tempBPtr != nullptr)
 		{
 			delete tempBPtr;
 		}
 
-		delete this->m_rigidBodies.at(i);
-		this->m_rigidBodies.at(i) = nullptr;
+		delete tempPtr;
+		tempPtr = nullptr;
 	}
 	this->m_rigidBodies.clear();
 }
