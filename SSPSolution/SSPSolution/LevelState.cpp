@@ -679,6 +679,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{				
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f);
 			}
 
 		}
@@ -883,6 +884,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
+		
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
@@ -924,6 +926,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	LeverSyncState* leverSync = nullptr;
 	for (LeverEntity* e : this->m_leverEntities)
 	{
+		e->Update(dt, inputHandler);
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
