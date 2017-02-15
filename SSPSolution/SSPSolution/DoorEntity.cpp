@@ -43,13 +43,14 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		PhysicsComponent* ptr = this->GetPhysicsComponent(); //Get this doors physicscomponent
 		DirectX::XMMATRIX rot = DirectX::XMMatrixIdentity(); //init Rot
-		float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4);
+		
 
 #pragma region 
 		if (m_targetRot == 0)
 		{
 			if (m_currRot < m_targetRot)
 			{
+				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
 				m_currRot += sinRot;
 				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(sinRot));
 			}
@@ -78,6 +79,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 			if (m_currRot > m_targetRot)
 			{
+				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
 				m_currRot -= sinRot;
 				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(-sinRot));
 			}
@@ -86,16 +88,13 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 				m_currRot = m_targetRot;
 				DirectX::XMFLOAT3 pos;
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-				//SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
 
 				this->m_needSync = true;
 				this->SyncComponents();
+				//Sync graphical component to match the bounding box
 				//Get pivot point
 				DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
 				pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
-
-
-
 				//Create translation matrix to pivot (Tx)
 				DirectX::XMMATRIX pivotMatrix = DirectX::XMMatrixTranslationFromVector(pivot);
 				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, pivotMatrix);
@@ -115,39 +114,47 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 		Tx = pivotpoint
 		Point' = Tx + (R * S) * (Point -Tx)
+
+		We have to do a bit differently here because the Obb holds the rotation and the physicscomponent holds the position
+		So they are not in the same matrix.
 		*/
 
-		//Get pivot point
-		DirectX::XMVECTOR localPivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
+		//A big problem here is that the graphical component has a different pivot point than the bounding box
+
+		//Get pivot point, Which is at the bottom right of the door
+		DirectX::XMVECTOR localPivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f); // -Y
+		//Create a matrix for the graphical part, Since it is visually offset
 		DirectX::XMMATRIX graphicsOffsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f)));
-		localPivot = DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], 1.2f));
-
-		DirectX::XMVECTOR worldPos = this->m_pComp->PC_pos;
-		//pivot = DirectX::XMVectorAdd(pivot, worldPos);
 		
+		//move the pivot point to be relative to the bounding box, 
+		localPivot = DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], 1.2f));// + Z
 
-		DirectX::XMVECTOR pivot = DirectX::XMVectorSubtract(localPivot, worldPos);
-		//Create translation matrix to pivot (Tx)
+		
+		//create an offset vector  | localPivot - pos
+		DirectX::XMVECTOR pivot = DirectX::XMVectorSubtract(localPivot, this->m_pComp->PC_pos);
+
+		//Create translation matrix to offset (Tx)
 		DirectX::XMMATRIX pivotMatrix = DirectX::XMMatrixTranslationFromVector(pivot);
 		//Create the inverse of that translation, (-Tx)
 		DirectX::XMVECTOR pivotDet = DirectX::XMMatrixDeterminant(pivotMatrix);
 		DirectX::XMMATRIX inversePivot = DirectX::XMMatrixInverse(&pivotDet, pivotMatrix);
 
-		ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
-		rot = DirectX::XMMatrixMultiply(pivotMatrix,rot); // Tx + R
+		ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot); //Multiply the bounding box with the rotation only!
 
-		this->m_pComp->PC_pos = DirectX::XMVector3TransformCoord(this->m_pComp->PC_pos, rot);
-		this->m_pComp->PC_pos = DirectX::XMVector3TransformCoord(this->m_pComp->PC_pos, inversePivot);
-		this->SyncComponents();
+		rot = DirectX::XMMatrixMultiply(pivotMatrix,rot); // Tx + R | Update the rotation matrix to include the pivot translation
+
+		this->m_pComp->PC_pos = DirectX::XMVector3TransformCoord(this->m_pComp->PC_pos, rot); // Translate and rotate the position around the pivot
+		this->m_pComp->PC_pos = DirectX::XMVector3TransformCoord(this->m_pComp->PC_pos, inversePivot); // Translate the position back to its position
+		this->SyncComponents(); // Update components
 		
 		
-		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, graphicsOffsetMatrix);
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, graphicsOffsetMatrix); //Multiply with the graphicsMatrix to align the model
 
 	
 	}
 #pragma endregion Rotate around pivot
 
-#pragma region Commented code
+#pragma region Commented code, Author not known, (Kim?,Sebastian?)
 
 	//
 	//if (this->m_isOpened)
