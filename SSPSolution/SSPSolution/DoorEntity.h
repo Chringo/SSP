@@ -26,6 +26,7 @@ private:
 	float m_rotatePerSec;
 	bool m_needSync;
 
+	DirectX::XMVECTOR pivotPoint;
 
 	float m_animSpeed = 70.0f;
 	float m_targetRot;

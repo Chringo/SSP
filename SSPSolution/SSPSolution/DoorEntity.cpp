@@ -24,9 +24,14 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->m_maxRotation += currentYRotation;
 	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
 	this->SyncComponents();
+	//pComp->PC_OBB.ext[0] *= 0.2;
+	//pComp->PC_OBB.ext[1] *= 0.2;
+	//pComp->PC_OBB.ext[2] *= 0.2;
 	//Get pivot point
+
 	DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
 	pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
+	pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[0], 0.2f));
 	//Create translation matrix to pivot (Tx)
 	DirectX::XMMATRIX pivotMatrix = DirectX::XMMatrixTranslationFromVector(pivot);
 	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, pivotMatrix);
@@ -44,26 +49,32 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		PhysicsComponent* ptr = this->GetPhysicsComponent(); //Get this doors physicscomponent
 		DirectX::XMMATRIX rot = DirectX::XMMatrixIdentity(); //init Rot
 		
-
+		static float lastFrameRotValue = 0;
+		float frameRot = m_animSpeed * dT;
 #pragma region 
 		if (m_targetRot == 0) // If we are playing the closing animation
 		{
-			if (m_currRot < m_targetRot) // if the animation is not yet finished
+
+			if (m_currRot + frameRot < m_targetRot) // if the animation is not yet finished
 			{
-				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
-				m_currRot += sinRot;
-				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(sinRot));
+				m_currRot += frameRot;
+				float sinRot = (pow(sin(m_animSpeed * dT ) + 1, 4.0f) / 4.0f); // calculate current rotation value
+				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(-frameRot));
+				lastFrameRotValue = m_currRot;
 			}
 			else {
+			
+
 				m_animationActive = false; //disable animation flag
 				m_currRot = m_targetRot; // set the variables to match
-
-				this->m_needSync = true; // for network
+			
 				this->SyncComponents();
+				m_pComp->PC_OBB.ort = m_originalOrto;
 				//Sync the graphical component to match the bounding box
 				//Get pivot point
 				DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
 				pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
+				pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[0], 0.2f));
 				//Create translation matrix to pivot (Tx)
 				DirectX::XMMATRIX pivotMatrix = DirectX::XMMatrixTranslationFromVector(pivot);
 				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, pivotMatrix);
@@ -74,28 +85,20 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		else //We are playing the opening animation
 		{
 
-			if (m_currRot > m_targetRot) // if the animation is not yet finished
+			if (m_currRot - frameRot > m_targetRot) // if the animation is not yet finished
 			{
-				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4) / 4); // calculate current rotation value
-				m_currRot -= sinRot;
-				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(-sinRot));
+				m_currRot -= frameRot;
+				float sinRot = (pow(sin(m_animSpeed * dT) + 1, 4.0f) / 4.0f); // calculate current rotation value
+
+				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(frameRot));
+				lastFrameRotValue = m_currRot;
 			}
 			else { // It has reached the end of the animation, the door is fully open
 				m_animationActive = false; //deactivate animation
 				m_currRot = m_targetRot;   // Set the variables to match exactly
+				rot = DirectX::XMMatrixRotationAxis(this->m_pComp->PC_OBB.ort.r[1], DirectX::XMConvertToRadians(m_targetRot - lastFrameRotValue)); ;
 
-
-				this->m_needSync = true; //for network
-				this->SyncComponents();
-
-				//Sync graphical component to match the bounding box
-				//Get pivot point
-				DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
-				pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f));
-				//Create translation matrix to pivot (Tx)
-				DirectX::XMMATRIX pivotMatrix = DirectX::XMMatrixTranslationFromVector(pivot);
-				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, pivotMatrix);
-				return 0;
+				
 			}
 
 		}
@@ -124,12 +127,11 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		//Get pivot point, Which is at the bottom right of the door
 		DirectX::XMVECTOR localPivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f); // -Y
 		//Create a matrix for the graphical part, Since it is visually offset
-		DirectX::XMMATRIX graphicsOffsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f)));
+		//DirectX::XMMATRIX graphicsOffsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f)));
 		
 		//move the pivot point to be relative to the bounding box, 
 		localPivot = DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], 1.2f));// + Z
 
-		
 		//create an offset vector  | localPivot - pos
 		DirectX::XMVECTOR pivot = DirectX::XMVectorSubtract(localPivot, this->m_pComp->PC_pos);
 
@@ -147,7 +149,14 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 		this->m_pComp->PC_pos = DirectX::XMVector3TransformCoord(this->m_pComp->PC_pos, inversePivot); // Translate the position back to its position
 		this->SyncComponents(); // Update components
 		
-		
+
+		//Get pivot point, Which is at the bottom right of the door
+		 localPivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f); // -Y
+		 pivot = DirectX::XMVectorAdd(pivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[0], 0.2f)); //+ X
+		//Create a matrix for the graphical part, Since it is visually offset
+		 localPivot = DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[0], 0.2f));
+		DirectX::XMMATRIX graphicsOffsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f)));
+
 		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, graphicsOffsetMatrix); //Multiply with the graphicsMatrix to align the model
 
 	
@@ -279,6 +288,8 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//I, Kim, do not remember our old crazy solution.
 	int i = 0;
+	if (this->m_animationActive == true)
+		return 0;
 	for (std::vector<ElementState>::iterator element = this->m_subjectStates.begin(); element != this->m_subjectStates.end(); element++)
 	{
 		//Match the EntityID
@@ -312,9 +323,11 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 		m_animationActive = true;
+		this->m_needSync = true; // for network
+		this->GetPhysicsComponent()->PC_active = false;
 		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_DOOR_OPENING, pos, false, false);
 	}
-
+	
 	this->m_isOpened = i == this->m_subjectStates.size();
 
 
