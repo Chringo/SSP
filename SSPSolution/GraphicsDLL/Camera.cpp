@@ -43,6 +43,8 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_focusPointOffset = { 0.0 };
 	this->m_camRightvector = { 0.0 };
 	this->m_camDirvector = { 0.0 };
+	this->m_maxDistance = 1.0f;
+	this->m_distance = 1.0f;
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -60,6 +62,9 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 
 	//Create the projection matrix
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
+
+
+	m_intersectionOBBs.reserve(150);
 
 	return result;
 }
@@ -195,6 +200,28 @@ Camera::C_Ray Camera::CastRay() //returns a ray projected from the camera origin
 	return ray;
 }
 
+int Camera::AddToIntersectCheck(DirectX::XMFLOAT3X3 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
+{
+
+	C_OBB obb;
+	obb.ort = ort;
+	obb.ext = ext;
+	obb.pos = pos;
+
+
+
+	this->m_intersectionOBBs.push_back(obb);
+	//this->m_intersectionOBBspos.push_back(pos);
+
+	return 0;
+}
+
+int Camera::ClearIntersectList()
+{
+	this->m_intersectionOBBs.clear();
+	return 0;
+}
+
 #pragma region
 void Camera::GetViewMatrix(DirectX::XMMATRIX & storeIn)
 {
@@ -287,6 +314,10 @@ DirectX::XMVECTOR Camera::GetCameraPivot()
 float Camera::GetCameraDistance()
 {
 	return this->m_distance;
+}
+float Camera::GetCameraMaxDistance()
+{
+	return this->m_maxDistance;
 }
 void Camera::GetCameraFrameData(cameraFrameData & storeIn)
 {
@@ -589,24 +620,7 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
-	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
-
-	float intersectDistance;
-	bool intersection = false;
-
-	//graphicshandler.getcameraobjectlist() = objectlist;
-	//intersection = physicshandler.intersectobb(ray, objectlist, &distance, m_maxDistance, minDistance)
-
-	if (intersection)
-	{
-		if (intersectDistance < this->m_maxDistance)
-			this->m_distance -= 0.01 * this->m_deltaTime;
-		else if (this->m_distance < this->m_maxDistance)
-			this->m_distance += 0.01 * this->m_deltaTime;
-		
-		if (this->m_distance > this->m_maxDistance)
-			this->m_distance = this->m_maxDistance;
-	}
+	this->m_calcDistance();
 
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
@@ -623,6 +637,60 @@ void Camera::m_updatePos()
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+}
+void Camera::m_calcDistance()
+{
+	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	
+	static float targetDistance;
+	float intersectDistance = m_distance + 0.2;
+	float hitDistance = intersectDistance;
+	bool newDistance = false;
+
+	
+	//intersection = physicshandler.intersectobb(ray, objectlist, &distance, m_maxDistance, minDistance)
+
+	for (C_OBB i : m_intersectionOBBs)
+	{
+		OBB obb;
+		obb.ext[0] = i.ext.x;
+		obb.ext[1] = i.ext.y;
+		obb.ext[2] = i.ext.z;
+
+		obb.ort = DirectX::XMLoadFloat3x3(&i.ort);
+		
+
+		if (m_ph.IntersectRayOBB(campos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		{
+
+			if (hitDistance < intersectDistance)
+			{
+				newDistance = true;
+				intersectDistance = hitDistance;
+			}
+
+		}
+	}
+
+		
+
+	if (newDistance)
+	{
+		if (intersectDistance < this->m_distance)
+			this->m_distance -= 1.0 * this->m_deltaTime;
+		else if(intersectDistance > m_distance)
+			this->m_distance += 1.0 * this->m_deltaTime;
+
+		if (this->m_distance > this->m_maxDistance)
+			this->m_distance = this->m_maxDistance;
+		else if (this->m_distance < 0.08)
+			this->m_distance = 0.08;
+	}
+	else if(this->m_distance < m_maxDistance)
+		this->m_distance += 1.0 * this->m_deltaTime;
+
+	
+
 }
 #pragma endregion setters
 

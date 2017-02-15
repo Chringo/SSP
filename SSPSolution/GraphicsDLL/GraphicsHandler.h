@@ -243,6 +243,7 @@ private:
 	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance);
 	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
+	inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox);
 };
 
 #endif

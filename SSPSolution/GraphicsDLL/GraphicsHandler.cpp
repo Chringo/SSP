@@ -455,11 +455,38 @@ int GraphicsHandler::Render(float deltaTime)
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
 
+#pragma region CameraIntersectListCreation
+	m_camera->ClearIntersectList();
 	Camera::C_Ray ray = this->m_camera->CastRay();
 	for (size_t i = 0; i < 8; i++)
 	{
 		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray);
 	}
+
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	{
+		if (i->isInRay)
+		{
+			result++;
+			
+			DirectX::XMMATRIX ortm;
+			DirectX::XMFLOAT3X3 ort;
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+
+			DirectX::XMStoreFloat3x3(&ort, ortm);
+			this->m_camera->AddToIntersectCheck(
+				ort,
+				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
+				i->pos
+			);
+				i->isInRay = false;
+			//This component needs to be checked against the ray for camera intersection
+		}
+	}
+#pragma endregion
+
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -511,12 +538,6 @@ int GraphicsHandler::Render(float deltaTime)
 	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
-		if (i->isInRay)
-		{
-			result++;
-			i->isInRay = false;
-			//This component needs to be checked against the ray for camera intersection
-		}
 		//If the component is to be rendered, increase the counter
 		if (i->isRendered)
 		{
@@ -1652,8 +1673,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 					if (intersectsRay)
 					{
-						int lol = 0;
-						if (distance < 1.5f)
+						if (distance < m_camera->GetCameraMaxDistance())
 						{
 							TraverseOctreeRay(curNode->branches[i], ray);
 						}
@@ -1786,4 +1806,27 @@ int GraphicsHandler::AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX:
 	//A one line version that does not use branch prediction
 	//return abs(pos1.x - pos2.x) > ext1.x + ext2.x * abs(pos1.y - pos2.y) > ext1.y + ext2.y * abs(pos1.z - pos2.z) > ext1.z + ext2.z;
 	return 1;
+}
+
+inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
+{
+	OBB obj;
+
+	obj.ext[0] = boundingBox.extension[0];
+	obj.ext[1] = boundingBox.extension[1];
+	obj.ext[2] = boundingBox.extension[2];
+
+
+	DirectX::XMMATRIX extensionMatrix;
+	extensionMatrix = DirectX::XMMatrixSet(
+		boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+		boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+		boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	obj.ort = extensionMatrix;
+
+
+	return obj;
 }
