@@ -1209,7 +1209,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_rotation	   = rot;						//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
-		t_pc->PC_BVtype = BV_OBB;
+		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
@@ -1951,16 +1951,32 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	
-	//size = this->m_doorEntities.size();
-	//for (int i = 0; i < size; i++)
-	//{
-	//	PhysicsComponent* door;
-	//	
-	//	//this->m_dynamicEntitys.push_back
-	//	door = this->m_doorEntities.at(i)->GetPhysicsComponent();
-	//	ptr->TransferBoxesToBullet(door, index);
-	//	//this->m_player1.GetPhysicsComponent()->PC_pos = door->PC_pos;
-	//}
+	//Before generating the Octree, syn the physics data with the graphics data
+#pragma region 
+//
+//#pragma region
+//	for (ButtonEntity* i : this->m_buttonEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//	for (WheelEntity* i : this->m_wheelEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//	for (LeverEntity* i : this->m_leverEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//#pragma endregion puzzle
+//
+//#pragma region
+//	for (Entity* i : this->m_staticEntitys)
+//	{
+//		i->SyncComponents();
+//	}
+//#pragma endregion static
+//
+#pragma endregion Sync components
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
