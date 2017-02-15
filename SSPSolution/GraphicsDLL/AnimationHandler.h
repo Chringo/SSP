@@ -30,11 +30,13 @@ struct AnimationComponent
 	float source_Time = 0.f;
 	float target_Time = 0.f;
 
-	float m_TransitionDuration = 0.f;
-	float m_TransitionTimeLeft = 0.f;
-	float playingSpeed = 0.f;
+	float transitionDuration = 0.f;
+	float transitionTimeLeft = 0.f;
+	float playingSpeed = 1.f;
+	float velocity = 1.f;
 
 	bool m_TransitionComplete = false;
+	bool syncWalkSound = false;
 
 	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
@@ -88,6 +90,7 @@ private:
 	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
 	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed);
+	void CheckPlayerFootPosSynch(int player, int runningState, int foot, int keyframeIndex);
 };
 
 #endif

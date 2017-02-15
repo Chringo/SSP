@@ -56,7 +56,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
 				}
 			}
@@ -65,7 +65,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_FORWARD))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
 				}
 			}
@@ -83,7 +83,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
 				}
 			}
@@ -92,7 +92,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_BACKWARD))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 				}
 			}
@@ -113,7 +113,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
 					}
 				}
@@ -122,7 +122,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_RIGHT))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 					}
 				}
@@ -144,7 +144,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_LEFT_BALL))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
 					}
 				}
@@ -153,7 +153,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_LEFT))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 2.5f);
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT;
 					}
 				}
@@ -170,13 +170,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			if (m_grabbed != nullptr)
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 				this->m_aComp->previousState = PLAYER_BALL_IDLE;
 			}
 			else
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 2.0f);
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f);
 				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 		}
@@ -237,6 +237,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
 				SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f);
+				this->m_aComp->velocity = 1.0f;
 				this->m_aComp->previousState = PLAYER_THROW;
 				//Play sound
 				DirectX::XMFLOAT3 pos;
@@ -247,9 +248,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
+
 				this->SetGrabbed(nullptr);	//Release the entity
 			}
-
 		}
 
 	//Check if player is grounded
@@ -299,6 +300,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				this->m_pComp->PC_velocity = velocity;
 				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
 				
+				/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
+				DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
+				DirectX::XMStoreFloat(&this->m_aComp->velocity, velocityAnimation);
+				
 				//Rotates the player to run in the direction that the camera faces. 
 				DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0f,1.0f,0.0f,0.0f }));
 				this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
@@ -323,7 +328,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//Play walking sounds
 				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
 				{
-
 					DirectX::XMFLOAT3 pos;
 					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
@@ -335,8 +339,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 						this->m_walkingSound->setIsPaused(false);	//Un pause it
 					}
 				}
-
-
 			}
 			else
 			{
@@ -467,7 +469,7 @@ bool Player::stateExists(int animationState)
 
 void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed)
 {
-	this->m_aComp->m_TransitionDuration = transitionDuration;
+	this->m_aComp->transitionDuration = transitionDuration;
 	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 	this->m_aComp->target_State->stateIndex = animationState;
 	this->m_aComp->blendFlag = blendingType;
