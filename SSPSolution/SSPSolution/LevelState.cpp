@@ -1265,6 +1265,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 		}
 	}
+#pragma region
 	for (size_t i = 0; i < data->numAI; i++)
 	{
 		AIComponent* t_ac = m_cHandler->GetAIComponent();
@@ -1338,7 +1339,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);
 	}
-	
+#pragma endregion AI
+
 #pragma region
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
