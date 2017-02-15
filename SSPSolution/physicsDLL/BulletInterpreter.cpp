@@ -391,25 +391,43 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	btTransform initialTransform = btTransform(test, startTrans);
 
-	btDefaultMotionState* boxMotionState = nullptr;
-	boxMotionState = new btDefaultMotionState(initialTransform);
+	btRigidBody* rigidBody = nullptr;
+	if (!src->PC_is_Static)
+	{
+		btDefaultMotionState* boxMotionState = nullptr;
+		boxMotionState = new btDefaultMotionState(initialTransform);
 
-	btVector3 interia(0, 0, 0);
-	if (src->PC_mass != 0)
+		btVector3 interia(0, 0, 0);
+		if (src->PC_mass != 0)
+		{
+
+			box->calculateLocalInertia(src->PC_mass, interia);
+		}
+
+		btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
+		(
+			src->PC_mass,  //mass
+			boxMotionState,
+			box,
+			interia
+		);
+
+		rigidBody = new btRigidBody(boxRigidBodyCI);
+	}
+	else
 	{
 		
-		box->calculateLocalInertia(src->PC_mass, interia);
+
+		btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
+		(
+			src->PC_mass,  //mass
+			nullptr,
+			box
+		);
+		boxRigidBodyCI.m_startWorldTransform = initialTransform;
+		rigidBody = new btRigidBody(boxRigidBodyCI);
 	}
-
-	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
-	(
-		src->PC_mass,  //mass
-		boxMotionState,
-		box,
-		interia		//Interia / masspunkt 
-	);
-
-	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
+	
 	rigidBody->setFriction(src->PC_friction);
 
 	if (index == 0 || index == 1)
