@@ -29,7 +29,11 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	
 	hResult = device->CreateBuffer(&bufferDesc, nullptr, &world.D3DBuffer);
 	if (SUCCEEDED(hResult))
+	{
+		this->m_deviceContext->GSSetConstantBuffers(CB_WORLD_B0, 1, &world.D3DBuffer);
+		this->m_deviceContext->PSSetConstantBuffers(CB_WORLD_B0, 1, &world.D3DBuffer);
 		this->m_deviceContext->VSSetConstantBuffers(CB_WORLD_B0, 1, &world.D3DBuffer);
+	}
 	else
 		return 1;
 
