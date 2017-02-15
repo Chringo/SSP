@@ -1326,13 +1326,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_platformEntities.push_back(tpe);
 	}
 	
-#pragma region Creating Field
+#pragma region
 	for (size_t i = 0; i < data->numCheckpoints; i++)
 	{
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1
-			3,	//EntityID Player2
+			2,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -1343,17 +1343,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	}
 
 	// TODO: Field Data for States in Level Director
-	/*for (size_t k = 0; k < this->m_director.GetNrOfStates(); k++)
-	{
-		for (size_t i = 0; i < this->m_currentState->nrOfFields; i++)
-		{
-			this->m_currentState->fieldMap[i].FD_entityID = nullptr;
-			this->m_currentState->fieldMap[i].FD_first_inside = nullptr;
-			this->m_currentState->fieldMap[i].FD_second_inside = nullptr;
-		}
-	}*/
-
-#pragma endregion
+#pragma endregion Creating Fields
 
 	//Create the PuzzleElements
 #pragma region
@@ -1957,7 +1947,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	
-	size = this->m_doorEntities.size();
+	//size = this->m_doorEntities.size();
 	//for (int i = 0; i < size; i++)
 	//{
 	//	PhysicsComponent* door;
