@@ -93,53 +93,58 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 {
 	int result = 0;
 	//Enum
-	//enum { MAX_BRANCHING = 8 };
-	////Safety check
-	//if (curNode != nullptr)
-	//{
+	enum { MAX_BRANCHING = 8 };
+	//Safety check
+	if (curNode != nullptr)
+	{
 
-	//	AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
-	//	result += 1;
-	//	DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//	//Branch
-	//	//If I am culled
-	//	Camera::C_AABB branchBounds;
-	//	branchBounds.pos = curNode->pos;
-	//	branchBounds.ext = curNode->ext;
-	//	CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
-	//	if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-	//	{
-	//		renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-	//		myAABB.ext[0] *= 0.9999f;
-	//		myAABB.ext[1] *= 0.9999f;
-	//		myAABB.ext[2] *= 0.9999f;
-	//	}
+		AABB myAABB = { curNode->ext.x , curNode->ext.y , curNode->ext.z };
+		result += 1;
+		DirectX::XMVECTOR renderColor = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+		//Branch
+		//If I am culled
+		Camera::C_AABB branchBounds;
+		branchBounds.pos = curNode->pos;
+		branchBounds.ext = curNode->ext;
+		/*CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+		{*/
+		double distance = -1.0;
+		Camera::C_Ray ray = this->m_camera->CastRay();
+		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+		if (intersectsRay && distance < 1.5f)
+		{
+			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+			myAABB.ext[0] *= 0.9999f;
+			myAABB.ext[1] *= 0.9999f;
+			myAABB.ext[2] *= 0.9999f;
+		}
 
-	//	for (int i = 0; i < 8; i++)
-	//	{
-	//		//For all non-culled branches
-	//		if (curNode->branches[i] != nullptr)
-	//		{
-	//			////Do the check to see if the branch is within the view frustrum
-	//			//Camera::C_AABB branchBounds;
-	//			//branchBounds.pos = curNode->pos;
-	//			//branchBounds.ext = curNode->ext;
-	//			//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
-	//			//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-	//			//{
-	//			//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
-	//			//	myAABB.ext[0] *= 0.9999f;
-	//			//	myAABB.ext[1] *= 0.9999f;
-	//			//	myAABB.ext[2] *= 0.9999f;
-	//			//}
+		for (int i = 0; i < 8; i++)
+		{
+			//For all non-culled branches
+			if (curNode->branches[i] != nullptr)
+			{
+				////Do the check to see if the branch is within the view frustrum
+				//Camera::C_AABB branchBounds;
+				//branchBounds.pos = curNode->pos;
+				//branchBounds.ext = curNode->ext;
+				//CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+				//if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
+				//{
+				//	renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
+				//	myAABB.ext[0] *= 0.9999f;
+				//	myAABB.ext[1] *= 0.9999f;
+				//	myAABB.ext[2] *= 0.9999f;
+				//}
 
-	//			//Enter your branch
-	//			result += RenderOctree(curNode->branches[i], cullingFrustrum);
-	//		}
-	//	}
-	//	this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
+				//Enter your branch
+				result += RenderOctree(curNode->branches[i], cullingFrustrum);
+			}
+		}
+		this->m_debugRender.Render(DirectX::XMLoadFloat3(&curNode->pos), myAABB, renderColor);
 
-	//}
+	}
 	return result;
 }
 #endif // _DEBUG
