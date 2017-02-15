@@ -81,6 +81,10 @@ int Camera::Update()
 
 int Camera::UpdateDeltaTime(float dt)
 {
+	
+
+	//0.00150899997
+	//if (m_deltaTime > 0.01f)
 	this->m_deltaTime = dt;
 	return 0;
 }
@@ -364,7 +368,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 
 
 	this->m_focusPoint = lockTarget;
-	this->m_distance = distance;
+	//this->m_distance = distance;
 	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
@@ -384,7 +388,7 @@ void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance
 {
 	bool result = false;
 
-	this->m_distance = distance;
+	//this->m_distance = distance;
 	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
@@ -464,6 +468,7 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
+
 
 	this->m_pitch += pitch * this->m_deltaTime;
 	this->m_yaw -= yaw * this->m_deltaTime;
@@ -638,17 +643,20 @@ void Camera::m_updatePos()
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
 }
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
 void Camera::m_calcDistance()
 {
 	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
 	
-	static float targetDistance;
+	static float targetDistance = m_distance;
 	float intersectDistance = m_distance + 0.2;
 	float hitDistance = intersectDistance;
+	float zoomSpeedFactor = 4.f;
 	bool newDistance = false;
-
-	
-	//intersection = physicshandler.intersectobb(ray, objectlist, &distance, m_maxDistance, minDistance)
 
 	for (C_OBB i : m_intersectionOBBs)
 	{
@@ -659,38 +667,34 @@ void Camera::m_calcDistance()
 
 		obb.ort = DirectX::XMLoadFloat3x3(&i.ort);
 		
-
 		if (m_ph.IntersectRayOBB(campos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
 		{
-
 			if (hitDistance < intersectDistance)
 			{
 				newDistance = true;
 				intersectDistance = hitDistance;
 			}
-
 		}
 	}
 
-		
 
 	if (newDistance)
 	{
-		if (intersectDistance < this->m_distance)
-			this->m_distance -= 1.0 * this->m_deltaTime;
-		else if(intersectDistance > m_distance)
-			this->m_distance += 1.0 * this->m_deltaTime;
+		if (intersectDistance < targetDistance)
+			targetDistance = intersectDistance;
+		else if(intersectDistance > targetDistance)
+			targetDistance = intersectDistance;
 
-		if (this->m_distance > this->m_maxDistance)
-			this->m_distance = this->m_maxDistance;
-		else if (this->m_distance < 0.08)
-			this->m_distance = 0.08;
+		if (targetDistance > this->m_maxDistance)
+			targetDistance = this->m_maxDistance;
+		else if (targetDistance < 0.05)
+			targetDistance = 0.05;
 	}
-	else if(this->m_distance < m_maxDistance)
-		this->m_distance += 1.0 * this->m_deltaTime;
+	else if(targetDistance < m_maxDistance || m_distance > m_maxDistance)
+		targetDistance = m_maxDistance;
 
-	
-
+	float diffFactor = abs(m_distance - targetDistance) * zoomSpeedFactor;
+	this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
 }
 #pragma endregion setters
 
