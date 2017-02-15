@@ -1,10 +1,6 @@
 #include "BulletInterpreter.h"
 #include <fstream>
 
-void TestTickCallBack(btDynamicsWorld *world, btScalar timeStep)
-{
-	printf("hello from tick callback");
-}
 
 DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 {
