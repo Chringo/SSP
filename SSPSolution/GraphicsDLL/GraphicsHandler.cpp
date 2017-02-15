@@ -948,7 +948,7 @@ int GraphicsHandler::GenerateOctree()
 				//If these are the same then the pos is either (0.0f; 0.0f; 0.0f) or the rotation matrix doesn't do anything
 				if (DirectX::XMVector3Equal(oldPos, corners[cornerIndex]))
 				{
-					if (oldPos.m128_f32[0] == oldPos.m128_f32[1] == oldPos.m128_f32[2] == 0.0f)
+					if (oldPos.m128_f32[0] == 0.0f && oldPos.m128_f32[1] == 0.0f && oldPos.m128_f32[2] == 0.0f)
 					{
 						//The reason it wasn't moved was because it was in origo, thank god
 						bool areWeFucked = false;
@@ -961,7 +961,6 @@ int GraphicsHandler::GenerateOctree()
 				}
 			}
 			//For the 8 OBB corners, calculate the largest extensions along each axis
-			float extX, extY, extZ;
 			DirectX::XMFLOAT3 absExt;
 			absExt.x = corners[0].m128_f32[0];
 			absExt.y = corners[0].m128_f32[1];
@@ -1036,20 +1035,21 @@ int GraphicsHandler::GenerateOctree()
 GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 {
 	int result = 0;
+	enum {MAX_BRANCHES = 8};
 	Camera::ViewFrustrum currentFrustrum;
 	this->m_camera->GetViewFrustrum(currentFrustrum);
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_BRANCHES; i++)
 	{
 		if (this->m_octreeRoot.branches[i] != nullptr)
 		{
-			//this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
 	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
-		this->m_octreeRoot.containedComponents[i]->isRendered = true;
+		//this->m_octreeRoot.containedComponents[i]->isRendered = true;
 		if (this->m_octreeRoot.containedComponents[i]->isRendered)
 		{
 			result++;
