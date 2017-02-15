@@ -28,16 +28,19 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 	int result = 0;
 	if (m_animationActive)
 	{
+		static float lastFrameRotValue = 0;
 		PhysicsComponent* ptr = this->GetPhysicsComponent();
 		DirectX::XMMATRIX rot;
-		float sinRot = (pow(sin(m_animSpeed * dT) + 1,4) / 4);
+		//float sinRot = (pow(sin(m_animSpeed * dT) + 1,4) / 4);
+		float frameRot = m_animSpeed * dT;
 		if (m_targetRot == 0)
 		{
-			if (m_currRot < m_targetRot)
+			if (m_currRot  + frameRot < m_targetRot)
 			{
-				m_currRot += sinRot;
-				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(sinRot));
-				ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+				m_currRot += frameRot;
+				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(frameRot));
+				//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+				lastFrameRotValue = m_currRot;
 			}
 			else {
 				m_animationActive = false;
@@ -46,6 +49,7 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 				DirectX::XMFLOAT3 pos;
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
+				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(m_targetRot - lastFrameRotValue));
 
 				this->m_needSync = true;
 			}
@@ -54,11 +58,12 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 		else
 		{
 		
-			 if (m_currRot > m_targetRot)
+			 if (m_currRot - frameRot > m_targetRot)
 			{
-				m_currRot -= sinRot;
-				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(-sinRot));
-				ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+				m_currRot -= frameRot;
+				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(-frameRot));
+				//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+				lastFrameRotValue = m_currRot;
 			}
 			 else {
 				 m_animationActive = false;
@@ -67,14 +72,14 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 				 DirectX::XMFLOAT3 pos;
 				 DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				 SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
-
+				 rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(m_targetRot + (lastFrameRotValue * -1)));
 				 this->m_needSync = true;
 			 }
 
 		}
 		
 
-		
+		ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
 		//ptr->PC_rotation.m128_f32[0] += m_activatedRotation;
 		this->SyncComponents();
 
