@@ -241,15 +241,14 @@ bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float
 	return true;
 }
 
-float AIHandler::Distance(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+float AIHandler::Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2)
 {
-	DirectX::XMVECTOR vector1 = DirectX::XMLoadFloat3(&v1);
-	DirectX::XMVECTOR vector2 = DirectX::XMLoadFloat3(&v2);
-	DirectX::XMVECTOR vectorSub = DirectX::XMVectorSubtract(vector1, vector2);
+	DirectX::XMVECTOR vectorSub = DirectX::XMVectorSubtract(v1, v2);
 	DirectX::XMVECTOR length = DirectX::XMVector3Length(vectorSub);
 
 	float distance = 0.0f;
 	DirectX::XMStoreFloat(&distance, length);
+
 	return distance;
 }
 
@@ -267,14 +266,21 @@ void AIHandler::UpdatePosition(int i)
 
 void AIHandler::WaypointTime()
 {
+	float distance;
+
 	for (size_t i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		for (size_t j = 0; j < this->m_AIComponents[i]->AC_nrOfWaypoint; j++)
 		{
+			DirectX::XMVECTOR v1 = this->m_AIComponents[i]->AC_waypoints[j];
+			DirectX::XMVECTOR v2 = this->m_AIComponents[i]->AC_waypoints[j + 1];
 
-			DirectX::XMVector3Length(&());
-			D3DXVec3Length(&(Point1 - Point2));
-			this->m_AIComponents[j]->AC_speed;
+			if (j == this->m_AIComponents[i]->AC_nrOfWaypoint)
+				v2 = this->m_AIComponents[i]->AC_waypoints[0];
+
+			distance = Distance(v1, v2);
+
+			this->m_AIComponents[i]->AC_waypointsTime[j] = distance / this->m_AIComponents[i]->AC_speed;
 		}
 	}
 }
