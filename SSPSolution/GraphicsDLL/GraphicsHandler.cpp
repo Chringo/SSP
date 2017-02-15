@@ -112,7 +112,8 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		double distance = -1.0;
 		Camera::C_Ray ray = this->m_camera->CastRay();
 		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-		if (intersectsRay && distance < 1.5f)
+		bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+		if (originInNode || (intersectsRay && distance < 1.5f))
 		{
 			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
 			myAABB.ext[0] *= 0.9999f;
@@ -1566,8 +1567,8 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 				{
 					//Do the check to see if the branch is within the view frustrum
 					Camera::C_AABB branchBounds;
-					branchBounds.pos = curNode->pos;
-					branchBounds.ext = curNode->ext;
+					branchBounds.pos = curNode->branches[i]->pos;
+					branchBounds.ext = curNode->branches[i]->ext;
 					
 					CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 					if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
@@ -1601,16 +1602,23 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 				//For all non-culled branches
 				if (curNode->branches[i] != nullptr)
 				{
-					//Do the check to see if the branch is within the view frustrum
 					Camera::C_AABB branchBounds;
-					branchBounds.pos = curNode->pos;
-					branchBounds.ext = curNode->ext;
-					double distance = -1.0;
-					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-					if (intersectsRay)
+					branchBounds.pos = curNode->branches[i]->pos;
+					branchBounds.ext = curNode->branches[i]->ext;
+					//Check the ray origin vs octree
+					bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+					
+					if (originInNode)
 					{
-						int lol = 0;
-						if (distance < 1.5f)
+						TraverseOctreeRay(curNode->branches[i], ray);
+					}
+					//Check the ray vs octree
+					else 
+					{
+						double distance = -1.0;
+						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+
+						if (intersectsRay && distance < 1.5f)
 						{
 							TraverseOctreeRay(curNode->branches[i], ray);
 						}
@@ -1664,7 +1672,7 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 	float tmax = FLT_MAX;
 
 	//For x axis
-	float invDir = ray.dir.x;
+	float invDir = 1.f / ray.dir.x;
 	float min = bb.pos.x - bb.ext.x;
 	float max = bb.pos.x + bb.ext.x;
 	float t0 = (min - ray.origin.x) * invDir;
@@ -1681,7 +1689,7 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 	}
 
 	//For y axis
-	invDir = ray.dir.y;
+	invDir = 1.f / ray.dir.y;
 	min = bb.pos.y - bb.ext.y;
 	max = bb.pos.y + bb.ext.y;
 	t0 = (min - ray.origin.y) * invDir;
@@ -1698,7 +1706,7 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 	}
 
 	//For z axis
-	invDir = ray.dir.z;
+	invDir = 1.f / ray.dir.z;
 	min = bb.pos.z - bb.ext.z;
 	max = bb.pos.z + bb.ext.z;
 	t0 = (min - ray.origin.z) * invDir;
@@ -1716,6 +1724,24 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 	distance = tmax - tmin;
 	return true;
 #pragma endregion v2
+}
+
+bool GraphicsHandler::PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb)
+{
+	if (pos.x < bb.pos.x - bb.ext.x)
+		return false;
+	if (pos.x > bb.pos.x + bb.ext.x)
+		return false;
+	if (pos.y < bb.pos.y - bb.ext.y)
+		return false;
+	if (pos.y > bb.pos.y + bb.ext.y)
+		return false;
+	if (pos.z < bb.pos.z - bb.ext.z)
+		return false;
+	if (pos.z > bb.pos.z + bb.ext.z)
+		return false;
+
+	return true;
 }
 
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
