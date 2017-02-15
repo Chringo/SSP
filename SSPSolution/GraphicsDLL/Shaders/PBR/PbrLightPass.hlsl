@@ -224,7 +224,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
-
+    //return N.rgbr;
 
 
     //METALNESS (F90)
@@ -263,7 +263,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             float LdotH = saturate((dot(L, H)));
             float NdotH = saturate((dot(N, H)));
-            float NdotL = max(saturate((dot(N, L))), 0.0002); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+            float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
 
             //DO SHADOW STUFF HERE
