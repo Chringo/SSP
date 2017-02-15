@@ -7,6 +7,10 @@ Texture2D aoTex			 : register(t4);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
+cbuffer worldMatrix : register(b0)
+{
+    float4x4 worldMatrix;
+}
 
 struct VS_OUT
 {
@@ -77,12 +81,14 @@ void GS_main(triangle VS_OUT input[3],
     GS_OUT element = (GS_OUT)0;
 
 
-    /*float4 vec1 = input[0].Pos - input[1].Pos;
-    float4 vec2 = input[1].Pos - input[2].Pos;
-    float4 vec3 = input[2].Pos - input[0].Pos;
+    float3 faceEdgeA = input[1].wPos - input[0].wPos;
+    float3 faceEdgeB = input[2].wPos - input[0].wPos;
 
-    float4 newNormal = float4(cross(vec1.xyz, vec2.xyz), 1);
-    newNormal = normalize(newNormal);*/
+    float2 uvEdge1 = input[1].UV - input[0].UV;
+    float2 uvEdge2 = input[2].UV - input[0].UV;
+    float3 tangent = (uvEdge2[1] * faceEdgeA - uvEdge1[1] * faceEdgeB) * (1 / (uvEdge1[0] * uvEdge2[1] - uvEdge2[0] * uvEdge1[1]));
+    tangent = normalize(tangent);
+
 
     for (uint vertex = 0; vertex < 3; vertex++)
     {
@@ -93,7 +99,8 @@ void GS_main(triangle VS_OUT input[3],
        
         element.wPos = input[vertex].wPos;
 
-        element.tangent = input[vertex].Tangent; //mul(float4(input[vertex].Tangent, 0.0), worldMatrix);
+        //element.tangent = input[vertex].Tangent; //mul(float4(input[vertex].Tangent, 0.0), worldMatrix);
+        element.tangent = tangent;
 
         //element.biTangent = -cross(element.Normal, element.tangent);
 
@@ -117,7 +124,10 @@ PS_OUT PS_main(GS_OUT input)
     output.metalRoughAo.r = metalTex.Sample(linearSampler, input.UV).r;
     output.metalRoughAo.g = roughTex.Sample(linearSampler, input.UV).r;
     output.metalRoughAo.b = aoTex.Sample(linearSampler, input.UV).r;
-    output.normal = normalToWorldSpace(normalSamp, input.Normal, float3(input.tangent.x, input.tangent.y, -input.tangent.z));
+    //output.normal = normalSamp;
+    //output.normal = input.tangent;
+    output.normal = normalToWorldSpace(normalSamp, input.Normal, float3(input.tangent.x, input.tangent.y, input.tangent.z));
+    //output.normal = mul(float4(output.normal, 0), worldMatrix).rgb;
     output.wPosition = input.wPos;
    
     //output.metal_rough_AO = aoTex.Sample(pointSampler, input.UV);

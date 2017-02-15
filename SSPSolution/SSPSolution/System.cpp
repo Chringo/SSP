@@ -4,8 +4,6 @@ System::System()
 	this->m_inputHandler = NULL;
 	this->m_window = NULL;
 }
-
-
 System::~System()
 {
 }
@@ -29,16 +27,11 @@ int System::Shutdown()
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
 	SoundHandler::instance().Shutdown();
-	//delete this->m_AIHandler;
-	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
 	DebugHandler::instance()->Shutdown();
-
-	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	
 	return result;
 }
 
@@ -109,7 +102,7 @@ int System::Initialize(std::string path)
 	//this->m_Anim = new Animation();
 
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
-	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"GS Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
@@ -153,10 +146,6 @@ int System::Run()
 		{
 			this->m_running = false;
 		}
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
-		{
-			this->FullscreenToggle();
-		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
 		{
 			DebugHandler::instance()->ToggleDebugInfo();
@@ -181,8 +170,6 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-
-	DebugHandler::instance()->StartTimer(0);
 
 	int result = 1;
 
@@ -280,14 +267,18 @@ int System::Update(float deltaTime)
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
-	
+	DebugHandler::instance()->StartTimer(0);
+
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	enum {TOGGLE_FULLSCREEN = 511};
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
-
-
+	if (result == TOGGLE_FULLSCREEN)
+	{
+		this->FullscreenToggle();
+	}
+	DebugHandler::instance()->EndTimer(0);
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance()->EndTimer(0);
 	//Render
 	//Frustrum cull
 	DebugHandler::instance()->StartTimer(3);

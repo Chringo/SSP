@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	{
 		std::string path(argv[1]);
 		mySystem->Initialize(path);
-		printf("%s", path);
+		printf("%s", path.c_str());
 	}
 	else {
 		mySystem->Initialize();

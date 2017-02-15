@@ -1,15 +1,7 @@
 #include "LeverEntity.h"
 
-
-
-LeverEntity::LeverEntity()
-{
-}
-
-
-LeverEntity::~LeverEntity()
-{
-}
+LeverEntity::LeverEntity(){}
+LeverEntity::~LeverEntity(){}
 
 int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
 {
@@ -31,8 +23,8 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 int LeverEntity::React(int entityID, EVENT reactEvent)
 {
 	int result = 0;
-	//If a lever receives a LEVER::ACTIVATED event, deactivate this lever
-	if (reactEvent == EVENT::LEVER_ACTIVE)
+	//If a lever receives a LEVER::ACTIVATED or BUTTON::ACTIVATE event, deactivate this lever
+	if (reactEvent == EVENT::LEVER_ACTIVE || reactEvent == EVENT::BUTTON_ACTIVE)
 	{
 		this->m_isActive = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);

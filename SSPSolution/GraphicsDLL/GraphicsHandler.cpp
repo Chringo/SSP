@@ -609,7 +609,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	//Go through all components in the root node and render the ones that should be rendered
-	int renderCap = this->m_staticGraphicsComponents.size();
+	size_t renderCap = this->m_staticGraphicsComponents.size();
 	renderCap = this->m_dynamicGraphicsComponents.size();
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
@@ -953,7 +953,6 @@ int GraphicsHandler::GenerateOctree()
 		size = size / 2;
 		reachedMaxDepth = !(size > this->m_minSize);
 	}
-
 	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
 	this->m_maxDepth = 8;
 	//Initialize the octree root
@@ -980,13 +979,14 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 	{
 		if (this->m_octreeRoot.branches[i] != nullptr)
 		{
-			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			//this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
 	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
+		this->m_octreeRoot.containedComponents[i]->isRendered = true;
 		if (this->m_octreeRoot.containedComponents[i]->isRendered)
 		{
 			result++;
@@ -1036,6 +1036,20 @@ int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 	{
 		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
 	}
+
+	//Clear the Octree of contained components
+	for (size_t i = 0; i < this->m_octreeRoot.containedComponents.size(); i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i] != nullptr)
+		{
+			delete this->m_octreeRoot.containedComponents[i];
+			this->m_octreeRoot.containedComponents[i] = nullptr;
+		}
+	}
+	this->m_octreeRoot.containedComponents.clear();
+	//Delete the octree branches
+	this->DeleteOctree(&this->m_octreeRoot);
+
 	return  result;
 }
 
@@ -1500,7 +1514,7 @@ void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
 		{
 			this->DeleteOctree(curNode->branches[i]);
 			delete curNode->branches[i];
-			curNode->branches[i];
+			curNode->branches[i] = nullptr;
 		}
 	}
 }

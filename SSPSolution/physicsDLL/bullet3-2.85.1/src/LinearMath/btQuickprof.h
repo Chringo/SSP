@@ -10,8 +10,6 @@
 // Credits: The Clock class was inspired by the Timer classes in 
 // Ogre (www.ogre3d.org).
 
-
-
 #ifndef BT_QUICK_PROF_H
 #define BT_QUICK_PROF_H
 
