@@ -132,6 +132,7 @@ void ComponentHandler::UpdateGraphicsAnimationComponents()
 
 void ComponentHandler::UpdateAIComponents()
 {
+
 }
 
 void ComponentHandler::UpdateSoundHandler()
@@ -169,6 +170,11 @@ int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
 	int size = 0;
 	size = this->m_graphicsHandler->ResizePersistentComponents(newCap);
 	return size;
+}
+
+void ComponentHandler::WaypointTime()
+{
+	m_aiHandler->WaypointTime();
 }
 
 PhysicsHandler * ComponentHandler::GetPhysicsHandler() const
