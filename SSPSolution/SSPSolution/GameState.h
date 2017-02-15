@@ -1,7 +1,6 @@
 #ifndef SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #define SSPAPPLICATION_GAMESTATES_GAMESTATE_H
 #include "../NetworkDLL/NetworkModule.h"
-#pragma comment (lib, "../Debug/NetworkDLL")
 #include "InputHandler.h"
 #include "ComponentHandler.h"
 #include "../GraphicsDLL/Camera.h"

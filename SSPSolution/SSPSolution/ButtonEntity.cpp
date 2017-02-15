@@ -39,6 +39,17 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 int ButtonEntity::React(int entityID, EVENT reactEvent)
 {
 	int result = 0;
+	//If a button receives a LEVER::ACTIVATED or BUTTON::ACTIVATE event, deactivate this lever
+	if (reactEvent == EVENT::LEVER_ACTIVE || reactEvent == EVENT::BUTTON_ACTIVE)
+	{
+		this->m_isActive = false;
+		this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
+
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+
+	}
 	return result;
 }
 
