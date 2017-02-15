@@ -40,18 +40,25 @@ void AnimationHandler::Update(float dt)
 			/*Set the current animation component index.*/
 			SetAnimCompIndex(aCompIndex);
 
-			/*Multiplying the current animation's playing speed.*/
-			seconds *= m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
-
 			/*If only one animation is playing, there should be no transition.*/
 			if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
 			{
 				/*If there is no source state, the program should make a assert.*/
 				assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
 
-				/*Increment source animation's local time.*/
-				m_AnimComponentList[m_AnimCompIndex]->source_Time += seconds;
+				/*Increment source animation's local time and multiply by speed factor and velocity.*/
+				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
+				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
+				
+				if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_IDLE
+					&& m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_BALL_IDLE)
+				{
+					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
+				}
 
+				else 
+					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * playingSpeed);
+					
 				/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 				{
@@ -118,8 +125,8 @@ AnimationComponent* AnimationHandler::CreateAnimationComponent()
 	animComp->target_State = nullptr;
 	animComp->source_Time = 0.f;
 	animComp->target_Time = 0.f;
-	animComp->m_TransitionDuration = 0.f;
-	animComp->m_TransitionTimeLeft = 0.f;
+	animComp->transitionDuration = 0.f;
+	animComp->transitionTimeLeft = 0.f;
 	animComp->blendFlag = NO_TRANSITION;
 	animComp->skeleton = nullptr;
 	animComp->animation_States = nullptr;
@@ -248,6 +255,21 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 				/*Check if the current time is between two keyframes for each joint.*/
 				if (currentTime > timeKeyframe1 && currentTime < timeKeyframe2)
 				{
+					/*Checks which foot is on the ground when a player is running in any direction to synch foot sound.*/
+					/*if (	
+							m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_FORWARD 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_FORWARD_BALL 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_BACKWARD 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_BACKWARD_BALL 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_RIGHT 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_RIGHT_BALL 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_LEFT 
+						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_LEFT_BALL)
+					{
+						CheckPlayerFootPosSynch(m_AnimCompIndex, animState->stateIndex, jointIndex, i);
+					}*/
+					
+
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
@@ -310,7 +332,7 @@ void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKe
 		DirectX::XMVECTOR quatAnim2 = DirectX::XMLoadFloat4(&blendKeysPerAnimation[1][jointIndex].quat);
 
 		/*Normalized blend factor between 0 to 1 is calculated here.*/
-		float blendFactor = transitionTime / m_AnimComponentList[m_AnimCompIndex]->m_TransitionDuration;
+		float blendFactor = transitionTime / m_AnimComponentList[m_AnimCompIndex]->transitionDuration;
 
 		DirectX::XMVECTOR lerpBlendTrans = DirectX::XMVectorLerp(transAnim1, transAnim2, blendFactor);
 		DirectX::XMVECTOR lerpBlendScale = DirectX::XMVectorLerp(scaleAnim1, scaleAnim2, blendFactor);
@@ -534,27 +556,135 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed)
 {
 	/*Sets a current used animation component and updates the information.*/
-	this->m_AnimComponentList[this->m_AnimCompIndex]->m_TransitionDuration = transitionDuration;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State = this->m_AnimComponentList[this->m_AnimCompIndex]->
 		animation_States->at(animationState)->GetAnimationStateData();
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->stateIndex = animationState;
-	this->m_AnimComponentList[this->m_AnimCompIndex]->m_TransitionDuration = transitionDuration;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->blendFlag = blendingType;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->isLooping = isLooping;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
 	
 }
 
+void AnimationHandler::CheckPlayerFootPosSynch(int player, int runningState, int foot, int keyframeIndex)
+{
+	if (player == PLAYER_STUDLEY)
+	{
+		if (foot == RIGHT_FOOT)
+		{
+			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
+			{
+				if (keyframeIndex == 1)
+					m_AnimComponentList[player]->syncWalkSound = true;
+			}
+			
+			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
+			{
+				if(keyframeIndex == 2)
+					m_AnimComponentList[player]->syncWalkSound = true;
+			}
+
+			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
+			{
+				if(keyframeIndex == 3)
+					m_AnimComponentList[player]->syncWalkSound = true;
+			}
+
+			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
+			{
+				if (keyframeIndex == 2)
+					m_AnimComponentList[player]->syncWalkSound = true;
+			}
+		}
+
+		if (foot == LEFT_FOOT)
+		{
+			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
+			{
+				if(keyframeIndex == 0)
+					m_AnimComponentList[player]->syncWalkSound = true;
+			}
+
+			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
+			{
+
+			}
+		}
+	}
+
+	if (player == PLAYER_ABBINGTON)
+	{
+		/*Write this code later when Abbington is animated and exported.*/
+
+		if (foot == LEFT_FOOT)
+		{
+			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
+			{
+
+			}
+		}
+
+		if (foot == LEFT_FOOT)
+		{
+			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
+			{
+
+			}
+
+			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
+			{
+
+			}
+		}
+	}
+}
+
 void AnimationHandler::Blend(float secondsElapsed)
 {
 	/*Increment the transition time remaining with the global time.*/
-	m_AnimComponentList[m_AnimCompIndex]->m_TransitionTimeLeft += secondsElapsed;
+	m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft += secondsElapsed;
 
 	/*If the transition time have reached the duration of the transition.*/
-	if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionTimeLeft >= m_AnimComponentList[m_AnimCompIndex]->m_TransitionDuration)
+	if (m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft >= m_AnimComponentList[m_AnimCompIndex]->transitionDuration)
 	{
 		m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete = true;
-		m_AnimComponentList[m_AnimCompIndex]->m_TransitionTimeLeft = 0;
+		m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft = 0;
 	}
 
 	/*Transition is still proceeding. Update both animations and blend between them.*/
@@ -568,7 +698,7 @@ void AnimationHandler::Blend(float secondsElapsed)
 		ExtractTargetKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->target_Time, secondsElapsed);
 
 		/*Blend the both the two extracted animations' keyframes together.*/
-		BlendKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->m_TransitionTimeLeft);
+		BlendKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft);
 	}
 }
 
