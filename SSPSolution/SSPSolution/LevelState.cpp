@@ -1006,6 +1006,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 int LevelState::CreateLevel(LevelData::Level * data)
 {
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
+#pragma region
 	//Get how many static and dynamic components that will be needed in the level
 	int staticEntityCount = 0;
 	int dynamicEntityCount = 0;
@@ -1026,8 +1027,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	this->m_cHandler->ResizeGraphicsStatic(staticEntityCount);
 	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
-
-
+#pragma endregion Update component list sizes
 
 
 #pragma region
@@ -1107,7 +1107,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 #pragma endregion Create_Chain_Link
 
-
+#pragma region
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
 	rot.m128_f32[3] = 0.0f;	//Set w to 0
@@ -1128,6 +1128,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
+#pragma endregion preparations and variable
 
 	//NETWORK SAFETY
 	/*
@@ -1161,6 +1162,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
+
+
+
+
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
@@ -1192,21 +1197,26 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(pos);
+#pragma region
+		//Create the rotation matrix
 		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
 		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
-		//Create the rotation matrix
 		
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+#pragma endregion Calculate rotation matrix
+		//Create the world matrix from a rotation and translation
 		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 
 		//Create Physics component
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
 		t_pc->PC_entityID	   = currEntity->EntityID;		//Set Entity ID
+		//We cannot set pos directly because of bounding box vs model offsets
 		//t_pc->PC_pos		   = pos;						//Set Position
 		t_pc->PC_rotation	   = rot;						//Set Rotation
+		DirectX::XMStoreFloat3(&t_gc->rotation, DirectX::XMVectorScale(rot, 0.017453292519943295769236907684886f));		//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
 		t_pc->PC_BVtype		   = BV_OBB;
@@ -1216,11 +1226,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
-			, modelPtr->GetOBBData().position.z });
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
 
 		t_pc->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&t_gc->pos, tempOBBPos.r[3]);
 		//t_pc->PC_pos.m128_f32[3] = 1.0f;
 
 		//get information from file
@@ -1241,7 +1251,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//Rotate the extension according the OBB ort
 		//And lastly store the result in graphics components as the model bounds used in culling
 		DirectX::XMStoreFloat3(&t_gc->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(t_pc->PC_OBB.ext[0], t_pc->PC_OBB.ext[1], t_pc->PC_OBB.ext[2], 0.0f), t_pc->PC_OBB.ort));
-		t_gc->rotationMatrix = t_pc->PC_OBB.ort;
+		t_gc->ort = t_pc->PC_OBB.ort;
 		
 
 		if (t_pc->PC_is_Static) {

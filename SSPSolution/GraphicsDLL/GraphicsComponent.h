@@ -13,6 +13,9 @@ struct GraphicsComponent
 	Resources::Model* modelPtr;
 	DirectX::XMMATRIX worldMatrix;
 	DirectX::XMMATRIX rotationMatrix;
+	DirectX::XMMATRIX ort;
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT3 rotation;
 	DirectX::XMFLOAT3 extensions;
 	GraphicsComponent() {}
 	GraphicsComponent(const GraphicsComponent& a) {
