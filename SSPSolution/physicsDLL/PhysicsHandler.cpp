@@ -4,6 +4,11 @@
 #include <ctime>
 
 
+void PHTestTickCallBack(btDynamicsWorld *world, btScalar timeStep)
+{
+	printf("hello from PH tick callback");
+
+}
 
 bool PhysicsHandler::IntersectAABB()
 {
@@ -2106,14 +2111,15 @@ void PhysicsHandler::Update(float deltaTime)
 	//dt = (deltaTime / 50000);
 	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
 	int i = 0;
-	if (this->m_playerRagDoll.state == ANIMATED_TRANSITION)
-	{
-		this->m_playerRagDoll.state = ANIMATED;
-	}
+	//if (this->m_playerRagDoll.state == ANIMATED_TRANSITION)
+	//{
+	//	//this->m_playerRagDoll.playerPC->PC_OBB.ort = this->m_playerRagDoll.lowerBody.center->PC_OBB.ort;
+	//	this->m_playerRagDoll.state = ANIMATED;
+	//}
 	if (this->m_playerRagDoll.state == ANIMATED)
 	{
 
-		this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, 0, 0.15, 0)));
+		this->SetRagdollToBindPose(&this->m_playerRagDoll, this->m_playerRagDoll.playerPC->PC_pos);
 		float rightfootVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.rightLeg.next2->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.ballPC->PC_velocity));
 		if (rightfootVel > 0.7 && ballVel > 0.7)
@@ -2334,7 +2340,7 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 	int nrOfStaticObjects = this->m_staticComponents.size();
 	if (this->m_playerRagDoll.state == RAGDOLL)
 	{
-		this->m_playerRagDoll.playerPC->PC_pos = this->m_playerRagDoll.lowerBody.center->PC_pos;
+		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.6, 0, 0));
 
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
@@ -4638,8 +4644,8 @@ void PhysicsHandler::SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR po
 
 	for (int i = 0; i < 21; i++)
 	{
-		this->m_bodyPC.at(i)->PC_OBB.ort = ragdoll->jointMatrixes[i];
-		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(ragdoll->jointMatrixes[i].r[3], pos);
+		this->m_bodyPC.at(i)->PC_OBB.ort = ragdoll->playerPC->PC_OBB.ort;
+		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(DirectX::XMVector3Transform(ragdoll->jointMatrixes[i].r[3], ragdoll->playerPC->PC_OBB.ort), pos);
 		this->m_bodyPC.at(i)->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
 	}
 	for (int i = 5; i < 9; i++)

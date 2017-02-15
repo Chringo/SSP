@@ -210,6 +210,7 @@ public:
 	PHYSICSDLL_API void AddConstraint(PhysicsComponent* src1, PhysicsComponent* src2);
 
 	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
+	PHYSICSDLL_API btDiscreteDynamicsWorld* GetDynamicWorldRef();
 
 	PHYSICSDLL_API void SetPlayer1(PhysicsComponent* p1);
 	PHYSICSDLL_API void SetPlayer2(PhysicsComponent* p2);

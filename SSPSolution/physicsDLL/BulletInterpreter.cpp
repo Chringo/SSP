@@ -1,6 +1,10 @@
 #include "BulletInterpreter.h"
 #include <fstream>
 
+void TestTickCallBack(btDynamicsWorld *world, btScalar timeStep)
+{
+	printf("hello from tick callback");
+}
 
 DirectX::XMMATRIX BulletInterpreter::RotateBB(PhysicsComponent* src)
 {
@@ -638,6 +642,11 @@ PHYSICSDLL_API void BulletInterpreter::AddConstraint(PhysicsComponent * src1, Ph
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);
+}
+
+PHYSICSDLL_API btDiscreteDynamicsWorld * BulletInterpreter::GetDynamicWorldRef()
+{
+	return this->m_dynamicsWorld;
 }
 
 void BulletInterpreter::SetPlayer1(PhysicsComponent * p1)

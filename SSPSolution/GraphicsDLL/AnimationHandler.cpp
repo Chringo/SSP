@@ -35,12 +35,12 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		if (this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != RAGDOLL_STATE)
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE)
 		{
 			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
-			if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE &&
-				(this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
-				this->m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+			if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
+				(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+				this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
 			{
 				/*Set the current animation component index.*/
 				SetAnimCompIndex(aCompIndex);
