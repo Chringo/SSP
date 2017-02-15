@@ -37,6 +37,7 @@ private:
 	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
 	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
+	float Distance(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2);
 	void UpdatePosition(int i);
 	void WaypointTime();
 };

@@ -241,6 +241,18 @@ bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float
 	return true;
 }
 
+float AIHandler::Distance(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+{
+	DirectX::XMVECTOR vector1 = DirectX::XMLoadFloat3(&v1);
+	DirectX::XMVECTOR vector2 = DirectX::XMLoadFloat3(&v2);
+	DirectX::XMVECTOR vectorSub = DirectX::XMVectorSubtract(vector1, vector2);
+	DirectX::XMVECTOR length = DirectX::XMVector3Length(vectorSub);
+
+	float distance = 0.0f;
+	DirectX::XMStoreFloat(&distance, length);
+	return distance;
+}
+
 void AIHandler::UpdatePosition(int i)
 {
 	//When the platform has reached its destination, the WaypointUpdate is not updated (false). Then the platform is given a new Waypoint.
@@ -259,7 +271,10 @@ void AIHandler::WaypointTime()
 	{
 		for (size_t j = 0; j < this->m_AIComponents[i]->AC_nrOfWaypoint; j++)
 		{
-			
+
+			DirectX::XMVector3Length(&());
+			D3DXVec3Length(&(Point1 - Point2));
+			this->m_AIComponents[j]->AC_speed;
 		}
 	}
 }
