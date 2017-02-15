@@ -392,20 +392,18 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	#pragma region
 	this->m_player1_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
-	this->m_player1_Ping.m_gComp->modelID = 1117267500;
-	this->m_player1_Ping.m_gComp->active = true;
+	this->m_player1_Ping.m_gComp->modelID = 1321651915;
+	this->m_player1_Ping.m_gComp->active = false;
+	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
 	resHandler->GetModel(this->m_player1_Ping.m_gComp->modelID, this->m_player1_Ping.m_gComp->modelPtr);
 	this->m_player1_Ping.m_pos = { 0, 0, 0 };
-	this->m_player1_Ping.m_timeOut = 5;
-	this->m_player1_Ping.isShown = false;
 
 	this->m_player2_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
-	this->m_player2_Ping.m_gComp->modelID = 1117267500;
-	this->m_player2_Ping.m_gComp->active = true;
+	this->m_player2_Ping.m_gComp->modelID = 1321651915;
+	this->m_player2_Ping.m_gComp->active = false;
+	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
 	resHandler->GetModel(this->m_player2_Ping.m_gComp->modelID, this->m_player2_Ping.m_gComp->modelPtr);
 	this->m_player2_Ping.m_pos = { 0, 0, 0 };
-	this->m_player2_Ping.m_timeOut = 5;
-	this->m_player2_Ping.isShown = false;
 	#pragma endregion PingModels
 
 	this->m_director.Initialize();
@@ -1006,12 +1004,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma region
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_KP_7))
 		{
-			DirectX::XMVECTOR pos;
-			pos = DirectX::XMLoadFloat3(&this->m_player1_Ping.m_pos);
+			this->m_player1_Ping.m_gComp->active = true;
+			this->m_player1_Ping.m_time = 0;
+			DirectX::XMVECTOR pos = this->m_player1.GetPhysicsComponent()->PC_pos;
 			this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(pos);
 		}
+
+		this->m_player1_Ping.Update(dt);
 	#pragma endregion Ping Test
 	
+		
+
 	this->m_cameraRef->Update(dt);
 
 	//Update the listner pos and direction for sound

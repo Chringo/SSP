@@ -23,8 +23,26 @@ private:
 	{
 		GraphicsComponent* m_gComp;
 		DirectX::XMFLOAT3 m_pos;
-		float m_timeOut;
-		bool isShown;
+		float m_time = 0;
+		float m_maxTime = 5;
+
+		void Update(float dt)
+		{
+			if (this->m_gComp->active)
+			{
+				this->m_time += dt;
+				if (this->m_time < m_maxTime)
+				{
+					//If we want to do soemthing while it is shown
+				}
+				else
+				{
+					this->m_gComp->active = false;
+					this->m_time = 0;
+				}
+			}
+
+		};
 	};
 
 	FSMEnvironment::LevelDirector m_director;
