@@ -31,7 +31,6 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 		static float lastFrameRotValue = 0;
 		PhysicsComponent* ptr = this->GetPhysicsComponent();
 		DirectX::XMMATRIX rot;
-		//float sinRot = (pow(sin(m_animSpeed * dT) + 1,4) / 4);
 		float frameRot = m_animSpeed * dT;
 		if (m_targetRot == 0)
 		{
@@ -39,7 +38,7 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 			{
 				m_currRot += frameRot;
 				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(frameRot));
-				//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+				
 				lastFrameRotValue = m_currRot;
 			}
 			else {
@@ -50,19 +49,15 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
 				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(m_targetRot - lastFrameRotValue));
-
-				this->m_needSync = true;
+				
 			}
-
 		}
 		else
 		{
-		
 			 if (m_currRot - frameRot > m_targetRot)
 			{
 				m_currRot -= frameRot;
 				rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(-frameRot));
-				//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
 				lastFrameRotValue = m_currRot;
 			}
 			 else {
@@ -73,14 +68,12 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 				 DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				 SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
 				 rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(m_targetRot + (lastFrameRotValue * -1)));
-				 this->m_needSync = true;
+				
 			 }
 
 		}
 		
-
 		ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
-		//ptr->PC_rotation.m128_f32[0] += m_activatedRotation;
 		this->SyncComponents();
 
 		
@@ -143,6 +136,7 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		}
 		//this->SyncComponents();
 		m_animationActive = true;
+		this->m_needSync = true;
 		
 	}
 	return 0;
