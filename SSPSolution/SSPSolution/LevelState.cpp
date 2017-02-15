@@ -678,7 +678,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (closestBall != nullptr)	//If a ball was found
 			{				
 				this->m_player1.SetGrabbed(closestBall);
-				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
+				//Play the animation for player picking up the ball.
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f);
+				AnimationComponent* animComp = m_player1.GetAnimationComponent();
+				animComp->velocity = 1.0f;
 			}
 
 		}
@@ -966,7 +970,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->m_TransitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
 	}
 
 	#pragma endregion Send_Player_Animation_Update
