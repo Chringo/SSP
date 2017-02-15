@@ -114,12 +114,16 @@ private:
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
 		bool isInRay;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	}; 
 	struct OctreeNode {
 		OctreeNode* branches[8] = { nullptr };
 		std::vector<OctreeBV*> containedComponents;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	};
 	OctreeNode m_octreeRoot;
 	Camera m_overviewCamera;
@@ -237,6 +241,8 @@ public:
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 	GRAPHICSDLL_API void ToggleOverviewCamera();
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 private:
 	void m_CreateTempsTestComponents();
 
