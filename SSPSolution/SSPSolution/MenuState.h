@@ -104,6 +104,7 @@ private:
 
 	unsigned int m_menuState; //0: Main menu, 1: Options Menu, 2: Start Menu
 	unsigned int m_markedItem;
+	UIComponent* m_menuBG;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;
 	UIComponent* m_keymaps;

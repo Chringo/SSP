@@ -35,6 +35,12 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
+	this->m_menuBG = cHandler->GetUIComponent();
+	this->m_menuBG->active = 1;
+	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_menuBG->size = DirectX::XMFLOAT2(1280.f, 720.f);
+	this->m_menuBG->spriteID = 4;
+
 	for (size_t i = 0; i < 3; i++) //Create the main menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
@@ -374,6 +380,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 					this->m_startMenuButtons[i].SetActive(false);
 				}
 				this->m_ipTextBox.SetActive(false);
+				this->m_menuBG->active = 0;
 
 				#pragma endregion Hide Menu
 				
@@ -407,6 +414,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
+			this->m_menuBG->active = 0;
+
 			//Update the IP stored in Progression
 			if (!this->m_ipTextBox.firstChar)
 			{
