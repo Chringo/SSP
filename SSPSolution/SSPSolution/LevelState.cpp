@@ -271,7 +271,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//ballP->PC_Sphere.radius = 1;
 
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -295,7 +295,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_Sphere.radius = 0.25;
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
@@ -1068,7 +1068,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::PLAYERLINK);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
 		}
 		else
 		{
@@ -1113,7 +1113,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		next = PC_ptr;
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::PLAYERLINK);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
 		}
 		else
 		{

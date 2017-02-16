@@ -1694,9 +1694,9 @@ void PhysicsHandler::Update(float deltaTime)
 	//PhysicsComponent -----> Bullet
 	this->SyncBulletToPhysicsComponents();
 	
-	this->DoChainPhysics(dt, false);
+	//this->DoChainPhysics(dt, false);
 
-	this->DoChainAjustPhysics(false);
+	//this->DoChainAjustPhysics(false);
 
 	this->UpdateStaticPlatforms(dt);
 
