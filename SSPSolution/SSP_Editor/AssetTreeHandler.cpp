@@ -9,26 +9,57 @@ Ui::AssetTreeHandler::AssetTreeHandler()
 
 Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 {
+	/*Defining m_tree and disabling sorting for manual sorting*/
 	this->m_tree = tree;
+	m_tree->setSortingEnabled(false);
 
-	QTreeWidgetItem* model = new QTreeWidgetItem(tree);
-	model->setText(0, "Models");
 
-	model->setTextAlignment(0, Qt::AlignCenter);
-	m_tree->addTopLevelItem(model);
-	m_tree->insertTopLevelItem(MODELS, model);
-	model->setExpanded(true);
+	/*Creating the "General Assets" tab*/
+	QTreeWidgetItem* g_Assets = new QTreeWidgetItem(tree);
+	g_Assets->setText(0, "General Assets");
 
-	QTreeWidgetItem* anim = new QTreeWidgetItem(tree);
-	anim->setText(0, "Animations");
+	g_Assets->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(g_Assets);
+	m_tree->insertTopLevelItem(GENERAL_ASSETS, g_Assets);
 
-	anim->setTextAlignment(0, Qt::AlignCenter);
-	anim->setExpanded(true);
-	m_tree->addTopLevelItem(anim);
-	m_tree->insertTopLevelItem(ANIMATIONS, anim);
+
+	/*Creating the "Floors" tab*/
+	QTreeWidgetItem* floors = new QTreeWidgetItem(tree);
+	floors->setText(0, "Floors");
+
+	floors->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(floors);
+	m_tree->insertTopLevelItem(FLOORS, floors);
 	m_tree->setHeaderLabels(QStringList() << "Resources");
 
 
+	/*Creating the "Ceilings" tab*/
+	QTreeWidgetItem* ceilings = new QTreeWidgetItem(tree);
+	ceilings->setText(0, "Ceilings");
+
+	ceilings->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(ceilings);
+	m_tree->insertTopLevelItem(CEILINGS, ceilings);
+	
+
+	/*Creating the "Walls" tab*/
+	QTreeWidgetItem* walls = new QTreeWidgetItem(tree);
+	walls->setText(0, "Walls");
+
+	walls->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(walls);
+	m_tree->insertTopLevelItem(WALLS, walls);
+
+
+	/*Creating the "Interactable" tab*/
+	QTreeWidgetItem* interactable = new QTreeWidgetItem(tree);
+	interactable->setText(0, "Interactable");
+
+	interactable->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(interactable);
+	m_tree->insertTopLevelItem(INTERACTABLE, interactable);
+
+	/*connecting the doubleclicked signal to the "on_treeview_doubleclicked function*/
 	connect(m_tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 
 }
