@@ -1684,7 +1684,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 
 bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance)
 {
-#pragma region v1
+#pragma region
 	////double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
 	////double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
 	//double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
@@ -1711,7 +1711,7 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& dis
 	//return tmax >= tmin;
 #pragma endregion v1
 
-#pragma region v2
+#pragma region
 	////Other implementation
 	//float tmin = FLT_MIN;
 	//float tmax = FLT_MAX;
