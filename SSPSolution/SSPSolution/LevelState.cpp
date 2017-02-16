@@ -910,7 +910,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		(*i)->Update(dt, inputHandler);
 	}
 	//Lever require updates to animate
-	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+	for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
