@@ -22,6 +22,7 @@ private:
 	ID3D11ShaderResourceView* m_texture1;
 	ID3D11ShaderResourceView* m_texture2;
 	ID3D11ShaderResourceView* m_texture3;
+	ID3D11ShaderResourceView* m_texture4;
 
 public:
 	UIHandler();
