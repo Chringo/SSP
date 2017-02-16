@@ -18,6 +18,7 @@ __declspec(align(16)) struct AIComponent
 
 	// AI variables
 	bool AC_triggered = false;	// Trigger handling
+	bool AC_finished = false;	// Triggered by One Way pattern when reaching final destination
 	int AC_time = 0;			// How long the component is active
 	bool AC_WaypointUpdated = false;//If false it will update the XMVECTOR AC_dir for the component this frame in the update function.
 	float AC_speed = 0;			// Movement speed
