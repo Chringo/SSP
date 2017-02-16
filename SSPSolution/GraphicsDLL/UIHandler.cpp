@@ -30,6 +30,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture1);
 	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_texture2);
+	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_tests.png", nullptr, &this->m_texture3);
 }
 
 void UIHandler::DrawUI()
@@ -45,6 +46,10 @@ void UIHandler::DrawUI()
 			if (tempUIComp->spriteID == 2)
 			{
 				this->m_spriteBatch->Draw(this->m_texture2, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+			}
+			else if (tempUIComp->spriteID == 3)
+			{
+				this->m_spriteBatch->Draw(this->m_texture3, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
 			}
 			else
 			{

@@ -21,6 +21,7 @@ private:
 	DirectX::SpriteFont* m_spriteFont;
 	ID3D11ShaderResourceView* m_texture1;
 	ID3D11ShaderResourceView* m_texture2;
+	ID3D11ShaderResourceView* m_texture3;
 
 public:
 	UIHandler();
