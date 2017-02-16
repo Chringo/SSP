@@ -32,6 +32,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_texture2);
 	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_tests.png", nullptr, &this->m_texture3);
 	DirectX::CreateWICTextureFromFile(device, L"menubg.png", nullptr, &this->m_texture4);
+	DirectX::CreateWICTextureFromFile(device, L"button.png", nullptr, &this->m_texture5);
 }
 
 void UIHandler::DrawUI()
@@ -55,6 +56,10 @@ void UIHandler::DrawUI()
 			else if (tempUIComp->spriteID == 4)
 			{
 				this->m_spriteBatch->Draw(this->m_texture4, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+			}
+			else if (tempUIComp->spriteID == 5)
+			{
+				this->m_spriteBatch->Draw(this->m_texture5, tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
 			}
 			else
 			{
