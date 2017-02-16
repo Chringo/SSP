@@ -17,6 +17,10 @@ private:
 	float m_resetTime;
 	float m_elapsedResetTime;
 	bool m_needSync;
+
+	bool m_animationActive = false;
+
+
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();
