@@ -31,7 +31,7 @@ __declspec(align(16)) struct AIComponent
 	int AC_nrOfWaypoint = 0;	// Nr of waypoints used in array
 
 	DirectX::XMVECTOR AC_waypoints[8];
-	int AC_waypointsTime[8];
+	float AC_waypointsTime[8];
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

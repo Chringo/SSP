@@ -35,6 +35,9 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
+
+	float dt = deltaTime;
+
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents[i] == nullptr)
@@ -267,6 +270,7 @@ void AIHandler::UpdatePosition(int i)
 void AIHandler::WaypointTime()
 {
 	float distance;
+	float speed;
 
 	for (size_t i = 0; i < this->m_nrOfAIComponents; i++)
 	{
@@ -275,12 +279,13 @@ void AIHandler::WaypointTime()
 			DirectX::XMVECTOR v1 = this->m_AIComponents[i]->AC_waypoints[j];
 			DirectX::XMVECTOR v2 = this->m_AIComponents[i]->AC_waypoints[j + 1];
 
-			if (j == this->m_AIComponents[i]->AC_nrOfWaypoint)
+			if (j == this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
 				v2 = this->m_AIComponents[i]->AC_waypoints[0];
 
 			distance = Distance(v1, v2);
+			speed = this->m_AIComponents[i]->AC_speed;
 
-			this->m_AIComponents[i]->AC_waypointsTime[j] = distance / this->m_AIComponents[i]->AC_speed;
+			this->m_AIComponents[i]->AC_waypointsTime[j] = distance / speed;
 		}
 	}
 }
