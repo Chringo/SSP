@@ -123,6 +123,7 @@ Resources::Status Resources::MeshHandler::LoadMesh(const unsigned int & id, Reso
 		indices = (unsigned int*)((char*)vertices + (sizeof(Mesh::Vertex)* meshData->numVerts));
 
 	}
+	
 	obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * meshData->indexLength);
 	if( !newMesh->SetIndices(indices, meshData->indexLength, m_device) )
 		st =  Status::ST_BUFFER_ERROR;
@@ -224,6 +225,13 @@ Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 
 	if (!m_placeHolder->SetIndices(indices, meshData->indexLength, m_device))
 		st = Status::ST_BUFFER_ERROR;
+
+	BoundingBoxHeader* obbdataPtr;
+
+	obbdataPtr = (BoundingBoxHeader*)((char*)indices + sizeof(unsigned int) * meshData->indexLength);
+	
+
+	m_placeHolder->SetOBBData(*obbdataPtr);
 
 	return st;
 }
