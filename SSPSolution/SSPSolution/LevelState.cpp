@@ -210,7 +210,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_mass = 10;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -271,7 +271,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//ballP->PC_Sphere.radius = 1;
 
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -295,7 +295,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_Sphere.radius = 0.25;
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
@@ -1069,14 +1069,23 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_dynamicEntitys.push_back(chainLink);
 
 		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		
 		previous = next;
 
 	}
 	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
@@ -1106,13 +1115,21 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_dynamicEntitys.push_back(chainLink);
 
 		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+
 		previous = next;
 	}
 	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
 #pragma endregion Create_Chain_Link
 
 #pragma region
@@ -1244,7 +1261,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.85f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
