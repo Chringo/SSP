@@ -36,10 +36,18 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 	/*Creating the "Ceilings" tab*/
 	QTreeWidgetItem* ceilings = new QTreeWidgetItem(tree);
 	ceilings->setText(0, "Ceilings");
-
 	ceilings->setTextAlignment(0, Qt::AlignCenter);
+
+	QTreeWidgetItem* brick = new QTreeWidgetItem();
+	brick->setText(0, "Bricks");
+	brick->setTextAlignment(0, Qt::AlignCenter);
+	ceilings->addChild(brick);
+	ceilings->insertChild(0, brick);
+
 	m_tree->addTopLevelItem(ceilings);
 	m_tree->insertTopLevelItem(CEILINGS, ceilings);
+
+	
 	
 
 	/*Creating the "Walls" tab*/
@@ -76,6 +84,21 @@ bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVari
 	
 	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+	m_tree->topLevelItem((int)type)->addChild(itm);
+
+	return true;
+}
+
+bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData, AssetSubCategories subType)
+{
+	QTreeWidgetItem *itm = new QTreeWidgetItem();
+
+	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
+	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+
+	/*if (type == CEILINGS)
+	m_tree->topLevelItem((int)type)->child(0)->addChild(itm);
+	else*/
 	m_tree->topLevelItem((int)type)->addChild(itm);
 	return true;
 }

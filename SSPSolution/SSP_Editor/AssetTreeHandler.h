@@ -30,6 +30,14 @@ namespace Ui {
 			INTERACTABLE,
 			NUM_CATEGORIES
 		};
+		enum AssetSubCategories
+		{
+			BRICK = 0,
+			STONE,
+			PLASTER,
+			IRON,
+			NUM_CATEGORIES
+		};
 
 	private:
 		QTreeWidget* m_tree;
@@ -38,6 +46,7 @@ namespace Ui {
 		AssetTreeHandler(QTreeWidget* tree);
 		~AssetTreeHandler();
 		bool AddItem(AssetCategories type, std::string name, QVariant itemData);
+		bool AddItem(AssetCategories type, std::string name, QVariant itemData, AssetSubCategories subType);
 		bool AddItem(AssetCategories type, QTreeWidgetItem* item);
 		
 	public slots:
