@@ -132,15 +132,15 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		Camera::C_AABB branchBounds;
 		branchBounds.pos = curNode->pos;
 		branchBounds.ext = curNode->ext;
-		/*CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
+		CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
-		{*/
-		float distance = -1.0;
+		{
+		/*float distance = -1.0;
 		Camera::C_Ray ray = this->m_camera->CastRay();
 		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 		bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
 		if (originInNode || (intersectsRay && distance < 1.5f))
-		{
+		{*/
 			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
 			/*myAABB.ext[0] *= 1.0f;
 			myAABB.ext[1] *= 1.0f;
@@ -550,7 +550,7 @@ int GraphicsHandler::Render(float deltaTime)
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
-		if (i->isInRay)
+		if (i->isRendered)
 		{
 			if (i->modelID == lastModelID)
 			{
@@ -577,11 +577,11 @@ int GraphicsHandler::Render(float deltaTime)
 		if (i->isInRay)
 		{
 			result++;
-			//i->isInRay = false;
+			i->isInRay = false;
 			//This component needs to be checked against the ray for camera intersection
 		}
 		//If the component is to be rendered, increase the counter
-		if (i->isInRay)
+		if (i->isRendered)
 		{
 			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
 			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
@@ -601,7 +601,7 @@ int GraphicsHandler::Render(float deltaTime)
 				else 
 				{
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
-					lastRenderedComponent->isInRay = false;
+					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
 				}
 			}
@@ -625,7 +625,7 @@ int GraphicsHandler::Render(float deltaTime)
 		else
 		{
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
-			lastRenderedComponent->isInRay = false;
+			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
 		}
 	}
@@ -637,7 +637,7 @@ int GraphicsHandler::Render(float deltaTime)
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isInRay' bool
-		if (i->isInRay)
+		if (i->isRendered)
 		{
 			//If it is time to change 
 			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
@@ -650,7 +650,7 @@ int GraphicsHandler::Render(float deltaTime)
 			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
 			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-			i->isInRay = false;
+			i->isRendered = false;
 		}
 	}
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
