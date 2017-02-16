@@ -1637,7 +1637,6 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 					{
 						double distance = -1.0;
 						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-
 						if (intersectsRay && distance < 1.5f)
 						{
 							TraverseOctreeRay(curNode->branches[i], ray);
