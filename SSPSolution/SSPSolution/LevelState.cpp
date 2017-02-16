@@ -131,13 +131,13 @@ int LevelState::ShutDown()
 	return result;
 }
 
-int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef, int levelToPlay)
+int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
 
 	this->m_clearedLevel = 0;
-	this->m_curLevel = levelToPlay;
+	this->m_curLevel = 0;
 
 	this->m_levelPaths.push_back("L1P1.level");
 	this->m_levelPaths.push_back("L1P2.level");
@@ -2228,5 +2228,15 @@ int LevelState::LoadNext()
 	result = this->CreateLevel(level);
 	//this->Update(0.0000000001f, inputHandler);
 	return 1;
+}
+
+int LevelState::GetLevelIndex()
+{
+	return this->m_curLevel;
+}
+
+std::string LevelState::GetLevelPath()
+{
+	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel));
 }
 
