@@ -103,29 +103,12 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		this->m_isActive = !this->m_isActive;
 
 	
-		
-		if (m_isActive)
-		{
-				//DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_activatedRotation),0.0f,0.0f);
+		if (m_isActive){
 			m_targetRot = m_activatedRotation;
-			//rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(-m_activatedRotation));
-			//
-			//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
-			//ptr->PC_rotation.m128_f32[0] += m_activatedRotation;
-			
-		
-
 		}
-		else
-		{
+		else{
 			m_targetRot = 0;
-			//rot = DirectX::XMMatrixRotationAxis(ptr->PC_OBB.ort.r[2], DirectX::XMConvertToRadians(m_activatedRotation));
-			//
-			//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
-			//ptr->PC_rotation.m128_f32[0] -= m_activatedRotation;
-
 		}
-		//this->SyncComponents();
 		m_animationActive = true;
 		this->m_needSync = true;
 		
