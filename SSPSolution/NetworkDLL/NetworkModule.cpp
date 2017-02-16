@@ -103,7 +103,7 @@ int NetworkModule::Initialize()
 
 int NetworkModule::Shutdown()
 {
-	int i = 0;
+	size_t i = 0;
 	i = this->connectedClients.size();
 
 	//DISCONNECT_REQUESTs should already have been sent on disconnect,
@@ -125,7 +125,7 @@ int NetworkModule::Shutdown()
 	}
 	
 	this->connectedClients.clear();	// Remove all connected clients
-	printf("%d Clients has been removed on server shutdown\n", i);
+	printf("%d Clients has been removed on server shutdown\n", (int)i);
 
 	closesocket(this->listenSocket);
 	WSACleanup();
@@ -928,7 +928,7 @@ std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
 	return result;
 }
 
-int NetworkModule::GetNrOfConnectedClients()
+size_t NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
 }

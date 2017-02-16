@@ -69,7 +69,7 @@ public:
 	
 	NETWORKDLL_API void	Update();				// Accept new clients and read incoming packets 
 	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
-	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
+	NETWORKDLL_API size_t GetNrOfConnectedClients();// Return the number of conencted clients
 	NETWORKDLL_API bool	IsHost();					//Return if whatever this client is Host or not
 	NETWORKDLL_API bool	IsClientReady();
 
