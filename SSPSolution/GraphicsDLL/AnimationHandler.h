@@ -7,7 +7,6 @@
 #include "AnimationStateEnums.h"
 #include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
-#pragma comment (lib,"../Debug/ResourceLib")
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)

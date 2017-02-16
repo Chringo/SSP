@@ -83,6 +83,7 @@ struct AnimationPacket : public Packet
 	bool			isLooping;
 	bool			lockAnimation;
 	float			playingSpeed;
+	float			velocity;
 
 	void serialize(char * data)
 	{
