@@ -2197,7 +2197,6 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
-	//this->Update(0.0000000001f, inputHandler);
 	return 1;
 }
 
