@@ -35,8 +35,7 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
-
-	float dt = deltaTime;
+	//float dt = deltaTime;
 
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
@@ -213,6 +212,31 @@ AIComponent * AIHandler::GetNextAvailableComponents()
 	}
 	this->m_nrOfAIComponents++;
 	return this->m_AIComponents[this->m_nrOfAIComponents - 1];
+}
+
+int AIHandler::UpdateAIComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfAIComponents - 1; i++)
+	{
+		if (!this->m_AIComponents[i]->AC_active)
+		{
+			AIComponent* tempComponentPtr = this->m_AIComponents[this->m_nrOfAIComponents - 1];
+			this->m_AIComponents[this->m_nrOfAIComponents - 1] = this->m_AIComponents[i];
+			this->m_AIComponents[i] = tempComponentPtr;
+			this->m_nrOfAIComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_AIComponents[this->m_nrOfAIComponents - 1]->AC_active)
+	{
+		this->m_nrOfAIComponents--;
+		result++;
+	}
+
+	return result;
 }
 
 AIComponent* AIHandler::CreateAIComponent(int entityID)

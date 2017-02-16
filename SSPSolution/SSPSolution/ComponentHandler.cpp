@@ -132,7 +132,7 @@ void ComponentHandler::UpdateGraphicsAnimationComponents()
 
 void ComponentHandler::UpdateAIComponents()
 {
-
+	this->m_aiHandler->UpdateAIComponentList();
 }
 
 void ComponentHandler::UpdateSoundHandler()

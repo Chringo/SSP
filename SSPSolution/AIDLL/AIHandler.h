@@ -28,6 +28,7 @@ public:
 
 	//Retrieve next available component in the vector
 	AIDLL_API AIComponent* GetNextAvailableComponents();
+	AIDLL_API int UpdateAIComponentList();
 	AIDLL_API void WaypointTime();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
