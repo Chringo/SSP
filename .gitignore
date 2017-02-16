@@ -5,6 +5,7 @@ SSPSolution/physicsDLL/Release/**
 SSPSolution/SSPSolution/Debug/**
 SSPSolution/SSPSolution/Release/**
 SSPSolution/SSP_Editor/GeneratedFiles/**
+**/shader_error.txt
 
 # Other databases
 *.bsc
