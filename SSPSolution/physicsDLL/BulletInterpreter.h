@@ -126,8 +126,8 @@ private:
 	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
 	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
 
-public:
 	std::vector<btRigidBody*> m_rigidBodies;
+public:
 	
 	PHYSICSDLL_API BulletInterpreter();
 	PHYSICSDLL_API virtual ~BulletInterpreter();

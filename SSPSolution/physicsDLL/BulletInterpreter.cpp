@@ -500,8 +500,11 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 {
-	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
+
+	//this capule is ugly hacked, needs further research
+	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2, src->PC_OBB.ext[1] * 1.6, src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
+	
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
 	//creating a mothion state
