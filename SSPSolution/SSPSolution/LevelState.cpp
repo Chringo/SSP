@@ -1031,9 +1031,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->ResizeGraphicsStatic(staticEntityCount);
 	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
 
-
-
-
 #pragma region
 	float linkLenght = 1.2f;
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
@@ -1111,7 +1108,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 #pragma endregion Create_Chain_Link
 
-
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
 	rot.m128_f32[3] = 0.0f;	//Set w to 0
@@ -1170,9 +1166,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
-
-		/*AnimationComponent* t_anim = nullptr;*/
-
+		
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
 		if (modelPtr->GetSkeleton() != nullptr)
@@ -1316,8 +1310,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
 		// Adjust OBB in physics component - hack...
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
-			, modelPtr->GetOBBData().position.z });
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ 
+			modelPtr->GetOBBData().position.x, 
+			modelPtr->GetOBBData().position.y,
+			modelPtr->GetOBBData().position.z 
+		});
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
 		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
