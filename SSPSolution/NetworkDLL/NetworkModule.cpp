@@ -497,7 +497,7 @@ void NetworkModule::ReadMessagesFromClients()
 		while( data_read != data_length)
 		{
 			//Read the header (skip the first 4 bytes since it is virtual function information)
-			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
+			memcpy(&header, &network_data[data_read + PACKETOFFSET], sizeof(PacketTypes));
 
 			#pragma region
 		

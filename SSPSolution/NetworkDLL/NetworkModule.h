@@ -14,6 +14,13 @@
 
 #define DEFAULT_PORT "6881"
 
+#ifdef _WIN64
+#define PACKETOFFSET 8
+#else
+#define PACKETOFFSET 4
+#endif
+
+
 #ifdef NETWORKDLL_EXPORTS  
 #define NETWORKDLL_API __declspec(dllexport)   
 #else  
