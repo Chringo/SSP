@@ -135,7 +135,7 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		/*CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
 		{*/
-		double distance = -1.0;
+		float distance = -1.0;
 		Camera::C_Ray ray = this->m_camera->CastRay();
 		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 		bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
