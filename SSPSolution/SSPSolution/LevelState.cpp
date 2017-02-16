@@ -1130,6 +1130,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		0);
 #pragma endregion preparations and variable
 
+#pragma region
 	//NETWORK SAFETY
 	/*
 	This is only a safety check if the network module was not initialized.
@@ -1153,7 +1154,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
-
+#pragma endregion Network
+#pragma region
 	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
@@ -1162,8 +1164,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
-
-
+#pragma endregion Checkpoints
 
 
 	for (size_t i = 0; i < data->numEntities; i++)
