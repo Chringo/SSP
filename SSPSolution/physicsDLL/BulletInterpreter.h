@@ -107,8 +107,7 @@ private:
 	btVector3 m_GravityAcc;
 
 	void CreateDummyObjects();
-	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
-	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
+	
 
 	//apply changes to rigid bodys
 	void applyVelocityOnRigidbody(PhysicsComponent* src);
@@ -155,5 +154,8 @@ public:
 	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index);
+
+	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
+	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 };
 #endif

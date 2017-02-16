@@ -207,7 +207,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 
-				float strength = 50.0f;
+				float strength = 35.0f;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
 				this->SetGrabbed(nullptr);	//Release the entity
