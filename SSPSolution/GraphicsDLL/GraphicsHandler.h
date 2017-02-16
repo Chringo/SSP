@@ -249,7 +249,7 @@ private:
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
 	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray);
-	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance);
+	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance);
 	bool PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb);
 	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);

@@ -1661,7 +1661,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 					//Check the ray vs octree
 					else 
 					{
-						double distance = -1.0;
+						float distance = -1.0;
 						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 						if (intersectsRay && distance < 1.5f)
 						{
@@ -1682,7 +1682,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 	}
 }
 
-bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance)
+bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance)
 {
 #pragma region v1
 	////double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
@@ -1712,63 +1712,94 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 #pragma endregion v1
 
 #pragma region v2
-	//Other implementation
-	float tmin = FLT_MIN;
-	float tmax = FLT_MAX;
+	////Other implementation
+	//float tmin = FLT_MIN;
+	//float tmax = FLT_MAX;
 
-	//For x axis
-	float invDir = 1.f / ray.dir.x;
-	float min = bb.pos.x - bb.ext.x;
-	float max = bb.pos.x + bb.ext.x;
-	float t0 = (min - ray.origin.x) * invDir;
-	float t1 = (max - ray.origin.x) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
+	////For x axis
+	//float invDir = 1.f / ray.dir.x;
+	//float min = bb.pos.x - bb.ext.x;
+	//float max = bb.pos.x + bb.ext.x;
+	//float t0 = (min - ray.origin.x) * invDir;
+	//float t1 = (max - ray.origin.x) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
 
-	//For y axis
-	invDir = 1.f / ray.dir.y;
-	min = bb.pos.y - bb.ext.y;
-	max = bb.pos.y + bb.ext.y;
-	t0 = (min - ray.origin.y) * invDir;
-	t1 = (max - ray.origin.y) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
+	////For y axis
+	//invDir = 1.f / ray.dir.y;
+	//min = bb.pos.y - bb.ext.y;
+	//max = bb.pos.y + bb.ext.y;
+	//t0 = (min - ray.origin.y) * invDir;
+	//t1 = (max - ray.origin.y) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
 
-	//For z axis
-	invDir = 1.f / ray.dir.z;
-	min = bb.pos.z - bb.ext.z;
-	max = bb.pos.z + bb.ext.z;
-	t0 = (min - ray.origin.z) * invDir;
-	t1 = (max - ray.origin.z) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
-	distance = tmax - tmin;
-	return true;
+	////For z axis
+	//invDir = 1.f / ray.dir.z;
+	//min = bb.pos.z - bb.ext.z;
+	//max = bb.pos.z + bb.ext.z;
+	//t0 = (min - ray.origin.z) * invDir;
+	//t1 = (max - ray.origin.z) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
+	//distance = tmax - tmin;
+	//return true;
 #pragma endregion v2
+
+#pragma region
+	//Implementation from 3dProject
+	DirectX::XMFLOAT3 invDir = DirectX::XMFLOAT3(1.f / ray.dir.x, 1.f / ray.dir.y, 1.f / ray.dir.z);
+	
+	float t1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * invDir.x;
+	float t2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * invDir.x;
+	float t3 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * invDir.y;
+	float t4 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * invDir.y;
+	float t5 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * invDir.z;
+	float t6 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * invDir.z;
+
+	float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+	float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+	//Ray is intersecting AABB, but whole AABB is behind us
+	if (tmax < 0)
+	{
+		return false;
+	}
+
+	//Ray doesn't intersect AABB
+	if (tmin > tmax)
+	{
+		return false;
+	}
+
+	//Return intersection true and distance to model
+	distance = tmin;
+	return true;
+#pragma endregion v3
 }
 
 bool GraphicsHandler::PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb)
