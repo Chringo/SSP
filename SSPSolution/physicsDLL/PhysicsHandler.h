@@ -11,6 +11,12 @@
 #include <vector>
 #include "BulletInterpreter.h"
 
+enum LinkType
+{
+	NORMAL,
+	PLAYERLINK
+};
+
 static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 
 struct ChainLink
@@ -18,6 +24,7 @@ struct ChainLink
 	float CL_lenght;
 	PhysicsComponent* CL_next;
 	PhysicsComponent* CL_previous;
+	LinkType segmentType;
 };
 
 struct Field
@@ -128,7 +135,7 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght);
+	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, LinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
@@ -155,12 +162,15 @@ public:
 	PHYSICSDLL_API void SyncAllPhyicsComponentsToBullet();
 	PHYSICSDLL_API void SyncBulletToPhysicsComponents();
 
-	PHYSICSDLL_API void DoChainPhysics(float dt);
-	PHYSICSDLL_API void DoChainAjustPhysics();
+	PHYSICSDLL_API void DoChainPhysics(float dt, bool isTicked);
+	PHYSICSDLL_API void DoChainAjustPhysics(bool isTicked);
 	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
+
+	PHYSICSDLL_API void ChainPhysicsCallback(ChainLink* link, float dt);
 
 	PHYSICSDLL_API void ClearCollisionNormals();
 	PHYSICSDLL_API void ProcessCallback(btScalar timestep);
+	PHYSICSDLL_API void AdjustChainLinkCallback(ChainLink* link);
 
 
 #ifdef _DEBUG
