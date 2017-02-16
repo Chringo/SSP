@@ -218,6 +218,10 @@ int System::Update(float deltaTime)
 	{
 		SoundHandler::instance().ReInitSoundEngine();
 	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
+	{
+		this->m_graphicsHandler->ToggleOverviewCamera();
+	}
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
