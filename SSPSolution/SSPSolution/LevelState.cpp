@@ -139,13 +139,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back("L1P1.level");
-	this->m_levelPaths.push_back("L1P2.level");
-	this->m_levelPaths.push_back("L2P1.level");
-	this->m_levelPaths.push_back("L3P1.level");
-	this->m_levelPaths.push_back("L4P1.level");
-	this->m_levelPaths.push_back("L5P1.level");
-	this->m_levelPaths.push_back("L6P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -1350,7 +1350,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1
-			2,	//EntityID Player2
+			3,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -2069,7 +2069,7 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_entityID = 2;	//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
@@ -2162,16 +2162,17 @@ int LevelState::LoadNext()
 	this->m_curLevel++;
 	this->m_clearedLevel = 0;
 
-	if (this->m_curLevel > this->m_levelPaths.size())
+	if (this->m_curLevel >= this->m_levelPaths.size())
 	{
 		//If the code comes here it means that the user finished the last level
-		//Behavior will be to start the first level until we can load into the first
+		//Behavior will be to start the first level
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
+		this->m_curLevel = 0;
 	}
 
 	Resources::Status st = Resources::Status::ST_OK;
-	std::string path = "";
+	std::string path = this->m_levelPaths.at(this->m_curLevel);
 
 	//We also need to clear the internal lists, lets have another function do that
 	this->UnloadLevel();
