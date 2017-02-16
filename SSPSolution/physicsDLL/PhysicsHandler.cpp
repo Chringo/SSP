@@ -2840,7 +2840,7 @@ void PhysicsHandler::UpdateStaticPlatforms(float dt)
 	}
 }
 
-PHYSICSDLL_API void PhysicsHandler::ChainPhysicsCallback(ChainLink* link, float dt)
+void PhysicsHandler::ChainPhysicsCallback(ChainLink* link, float dt)
 {
 	int type = 1;
 
@@ -2985,7 +2985,7 @@ void PhysicsHandler::ProcessCallback(btScalar timestep)
 
 }
 
-PHYSICSDLL_API void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
+void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
 {
 	btRigidBody* previous = this->m_bullet.GetRigidBody(link->CL_previous->PC_IndexRigidBody);
 	btRigidBody* next = this->m_bullet.GetRigidBody(link->CL_next->PC_IndexRigidBody);
