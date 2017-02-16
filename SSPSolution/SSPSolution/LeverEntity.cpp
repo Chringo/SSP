@@ -85,7 +85,6 @@ int LeverEntity::React(int entityID, EVENT reactEvent)
 			m_animationActive = true;
 			m_targetRot = 0;
 		}
-		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
 		this->SyncComponents();
 		
 	}

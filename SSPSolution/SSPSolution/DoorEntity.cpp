@@ -24,9 +24,7 @@ int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCompo
 	this->m_maxRotation += currentYRotation;
 	this->m_rotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_rotateTime;
 	this->SyncComponents();
-	//pComp->PC_OBB.ext[0] *= 0.2;
-	//pComp->PC_OBB.ext[1] *= 0.2;
-	//pComp->PC_OBB.ext[2] *= 0.2;
+
 	//Get pivot point
 
 	DirectX::XMVECTOR pivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f);
@@ -126,8 +124,6 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 
 		//Get pivot point, Which is at the bottom right of the door
 		DirectX::XMVECTOR localPivot = DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[1], -1.5f); // -Y
-		//Create a matrix for the graphical part, Since it is visually offset
-		//DirectX::XMMATRIX graphicsOffsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], -1.2f)));
 		
 		//move the pivot point to be relative to the bounding box, 
 		localPivot = DirectX::XMVectorAdd(localPivot, DirectX::XMVectorScale(this->m_pComp->PC_OBB.ort.r[2], 1.2f));// + Z
