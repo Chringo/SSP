@@ -56,6 +56,12 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_mainMenuButtons.push_back(button);
 	}
+	this->m_keymaps = cHandler->GetUIComponent();
+	this->m_keymaps->active = 0;
+	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 300.f);
+	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
+	this->m_keymaps->spriteID = 3;
+	this->m_keymaps->scale = 0.5f;
 	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
@@ -71,12 +77,6 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_optionsMenuButtons.push_back(button);
 	}
-	this->m_keymaps = cHandler->GetUIComponent();
-	this->m_keymaps->active = 0;
-	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 300.f);
-	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
-	this->m_keymaps->spriteID = 3;
-	this->m_keymaps->scale = 0.5f;
 	for (size_t i = 0; i < 3; i++) //Create the start game menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
