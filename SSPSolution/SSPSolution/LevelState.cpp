@@ -2060,6 +2060,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 int LevelState::UnloadLevel()
 {
 	int result = 0;
+	//Clear grabbing of balls
+	this->m_player1.SetGrabbed(nullptr);
+	this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 	//Clear components from GraphicsHandler.
 	this->m_cHandler->ResizeGraphicsDynamic(0);
 	this->m_cHandler->ResizeGraphicsStatic(0);
@@ -2134,7 +2137,7 @@ int LevelState::UnloadLevel()
 	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
 
@@ -2156,7 +2159,7 @@ int LevelState::UnloadLevel()
 	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
 
@@ -2303,7 +2306,6 @@ int LevelState::LoadNext()
 
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
-	//this->Update(0.0000000001f, inputHandler);
 	return 1;
 }
 
