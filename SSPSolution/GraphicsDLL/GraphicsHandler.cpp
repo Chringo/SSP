@@ -708,7 +708,7 @@ int GraphicsHandler::Render(float deltaTime)
 	context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
 
-	this->RenderOctree(&this->m_octreeRoot, &renderTest);
+	//this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 #endif // _DEBUG
 
