@@ -28,6 +28,8 @@ public:
 
 	//Retrieve next available component in the vector
 	AIDLL_API AIComponent* GetNextAvailableComponents();
+	AIDLL_API int UpdateAIComponentList();
+	AIDLL_API void WaypointTime();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
@@ -37,7 +39,8 @@ private:
 	// Helper functions
 	AIComponent* CreateAIComponent(int entityID);
 	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
+	float Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2);
 	void UpdatePosition(int i);
-
+	
 };
 #endif

@@ -1326,6 +1326,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);
 	}
+
+	m_cHandler->WaypointTime();
 	
 #pragma region
 	for (size_t i = 0; i < data->numCheckpoints; i++)

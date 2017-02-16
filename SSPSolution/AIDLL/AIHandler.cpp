@@ -35,12 +35,14 @@ int AIHandler::Initialize(int max)
 }
 int AIHandler::Update(float deltaTime)
 {
+	//float dt = deltaTime;
+
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
 		if (this->m_AIComponents[i] == nullptr)
 			break;
 		//TODO: Remove active from this statement
-		if (this->m_AIComponents[i]->AC_active == 1 && this->m_AIComponents[i]->AC_triggered && this->m_AIComponents[i]->AC_nrOfWaypoint != 0)
+		if (this->m_AIComponents[i]->AC_triggered)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
 			if (this->m_AIComponents[i]->AC_pattern == AI_ONEWAY)
@@ -212,6 +214,31 @@ AIComponent * AIHandler::GetNextAvailableComponents()
 	return this->m_AIComponents[this->m_nrOfAIComponents - 1];
 }
 
+int AIHandler::UpdateAIComponentList()
+{
+	int result = 0;
+
+	for (int i = 0; i < m_nrOfAIComponents - 1; i++)
+	{
+		if (!this->m_AIComponents[i]->AC_active)
+		{
+			AIComponent* tempComponentPtr = this->m_AIComponents[this->m_nrOfAIComponents - 1];
+			this->m_AIComponents[this->m_nrOfAIComponents - 1] = this->m_AIComponents[i];
+			this->m_AIComponents[i] = tempComponentPtr;
+			this->m_nrOfAIComponents--;
+			i--;
+			result++;
+		}
+	}
+	if (!this->m_AIComponents[this->m_nrOfAIComponents - 1]->AC_active)
+	{
+		this->m_nrOfAIComponents--;
+		result++;
+	}
+
+	return result;
+}
+
 AIComponent* AIHandler::CreateAIComponent(int entityID)
 {
 	AIComponent* newComponent = nullptr;
@@ -241,6 +268,17 @@ bool AIHandler::WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float
 	return true;
 }
 
+float AIHandler::Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2)
+{
+	DirectX::XMVECTOR vectorSub = DirectX::XMVectorSubtract(v1, v2);
+	DirectX::XMVECTOR length = DirectX::XMVector3Length(vectorSub);
+
+	float distance = 0.0f;
+	DirectX::XMStoreFloat(&distance, length);
+
+	return distance;
+}
+
 void AIHandler::UpdatePosition(int i)
 {
 	//When the platform has reached its destination, the WaypointUpdate is not updated (false). Then the platform is given a new Waypoint.
@@ -250,5 +288,28 @@ void AIHandler::UpdatePosition(int i)
 			this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
 			this->m_AIComponents[i]->AC_position));
 		this->m_AIComponents[i]->AC_WaypointUpdated = true;
+	}
+}
+
+void AIHandler::WaypointTime()
+{
+	float distance;
+	float speed;
+
+	for (size_t i = 0; i < this->m_nrOfAIComponents; i++)
+	{
+		for (size_t j = 0; j < this->m_AIComponents[i]->AC_nrOfWaypoint; j++)
+		{
+			DirectX::XMVECTOR v1 = this->m_AIComponents[i]->AC_waypoints[j];
+			DirectX::XMVECTOR v2 = this->m_AIComponents[i]->AC_waypoints[j + 1];
+
+			if (j == this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
+				v2 = this->m_AIComponents[i]->AC_waypoints[0];
+
+			distance = Distance(v1, v2);
+			speed = this->m_AIComponents[i]->AC_speed;
+
+			this->m_AIComponents[i]->AC_waypointsTime[j] = distance / speed;
+		}
 	}
 }
