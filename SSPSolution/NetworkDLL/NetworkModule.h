@@ -69,7 +69,7 @@ public:
 	
 	NETWORKDLL_API void	Update();				// Accept new clients and read incoming packets 
 	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
-	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
+	NETWORKDLL_API size_t GetNrOfConnectedClients();// Return the number of conencted clients
 	NETWORKDLL_API bool	IsHost();					//Return if whatever this client is Host or not
 	NETWORKDLL_API bool	IsClientReady();
 
@@ -77,7 +77,7 @@ public:
 	NETWORKDLL_API void SendFlagPacket(PacketTypes type);
 	NETWORKDLL_API void SendSyncPacket();
 	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMFLOAT4X4 newRotation/*, DirectX::XMVECTOR newRotationVelocity*/);
-	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed);
+	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 	NETWORKDLL_API void SendStateWheelPacket(unsigned int entityID, int rotationState, float rotationAmount);
 	NETWORKDLL_API void SendStateButtonPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendStateLeverPacket(unsigned int entityID, bool isActive);
