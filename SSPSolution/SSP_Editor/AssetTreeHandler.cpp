@@ -6,6 +6,33 @@ Ui::AssetTreeHandler::AssetTreeHandler()
 {
 }
 
+void Ui::AssetTreeHandler::AddSubCategories(QTreeWidgetItem * topLevel)
+{
+	QTreeWidgetItem* brick = new QTreeWidgetItem();
+	brick->setText(0, "Bricks");
+	brick->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(brick);
+	topLevel->insertChild(BRICK, brick);
+
+	QTreeWidgetItem* stone = new QTreeWidgetItem();
+	stone->setText(0, "Stones");
+	stone->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(stone);
+	topLevel->insertChild(STONE, stone);
+
+	QTreeWidgetItem* plaster = new QTreeWidgetItem();
+	plaster->setText(0, "Plaster");
+	plaster->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(plaster);
+	topLevel->insertChild(PLASTER, plaster);
+
+	QTreeWidgetItem* iron = new QTreeWidgetItem();
+	iron->setText(0, "Iron");
+	iron->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(iron);
+	topLevel->insertChild(IRON, iron);
+}
+
 
 Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 {
@@ -38,11 +65,30 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 	ceilings->setText(0, "Ceilings");
 	ceilings->setTextAlignment(0, Qt::AlignCenter);
 
-	QTreeWidgetItem* brick = new QTreeWidgetItem();
+	/*QTreeWidgetItem* brick = new QTreeWidgetItem();
 	brick->setText(0, "Bricks");
 	brick->setTextAlignment(0, Qt::AlignCenter);
 	ceilings->addChild(brick);
-	ceilings->insertChild(0, brick);
+	ceilings->insertChild(BRICK, brick);
+
+	QTreeWidgetItem* stone = new QTreeWidgetItem();
+	stone->setText(0, "Stones");
+	stone->setTextAlignment(0, Qt::AlignCenter);
+	ceilings->addChild(stone);
+	ceilings->insertChild(STONE, stone);
+
+	QTreeWidgetItem* plaster = new QTreeWidgetItem();
+	plaster->setText(0, "Plaster");
+	plaster->setTextAlignment(0, Qt::AlignCenter);
+	ceilings->addChild(plaster);
+	ceilings->insertChild(PLASTER, plaster);
+
+	QTreeWidgetItem* iron = new QTreeWidgetItem();
+	iron->setText(0, "Plaster");
+	iron->setTextAlignment(0, Qt::AlignCenter);
+	ceilings->addChild(iron);
+	ceilings->insertChild(IRON, iron);*/
+	this->AddSubCategories(ceilings);
 
 	m_tree->addTopLevelItem(ceilings);
 	m_tree->insertTopLevelItem(CEILINGS, ceilings);
@@ -53,8 +99,9 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 	/*Creating the "Walls" tab*/
 	QTreeWidgetItem* walls = new QTreeWidgetItem(tree);
 	walls->setText(0, "Walls");
-
 	walls->setTextAlignment(0, Qt::AlignCenter);
+	this->AddSubCategories(walls);
+
 	m_tree->addTopLevelItem(walls);
 	m_tree->insertTopLevelItem(WALLS, walls);
 

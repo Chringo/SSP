@@ -36,12 +36,14 @@ namespace Ui {
 			STONE,
 			PLASTER,
 			IRON,
-			NUM_CATEGORIES
+			NUM_SUB_CATEGORIES
 		};
 
 	private:
 		QTreeWidget* m_tree;
 		AssetTreeHandler();
+		void AddSubCategories(QTreeWidgetItem* topLevel);
+
 	public:
 		AssetTreeHandler(QTreeWidget* tree);
 		~AssetTreeHandler();
