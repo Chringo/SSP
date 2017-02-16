@@ -106,6 +106,7 @@ private:
 	unsigned int m_markedItem;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;
+	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
 	ComponentHandler* m_cHandlerPtr;

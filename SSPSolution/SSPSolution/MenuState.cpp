@@ -53,16 +53,22 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
 		this->m_optionsMenuButtons.push_back(button);
 	}
+	this->m_keymaps = cHandler->GetUIComponent();
+	this->m_keymaps->active = 0;
+	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 300.f);
+	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
+	this->m_keymaps->spriteID = 3;
+	this->m_keymaps->scale = 0.5f;
 	for (size_t i = 0; i < 3; i++) //Create the start game menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
@@ -202,6 +208,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(true);
 			}
+			this->m_keymaps->active = 1;
 		}
 		else if (this->m_mainMenuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -278,7 +285,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(false);
 			}
-			this->m_ipTextBox.SetActive(false);
+			this->m_keymaps->active = 0;
 		}
 		break;
 
