@@ -213,7 +213,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_mass = 10;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
@@ -274,7 +274,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//ballP->PC_Sphere.radius = 1;
 
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
@@ -298,7 +298,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_Sphere.radius = 0.25;
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
@@ -620,7 +620,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
 
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed);
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 			}
 
@@ -697,7 +697,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			if (closestBall != nullptr)	//If a ball was found
 			{				
 				this->m_player1.SetGrabbed(closestBall);
-				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
+				//Play the animation for player picking up the ball.
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 			}
 
 		}
@@ -902,6 +904,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
+		
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
@@ -943,6 +946,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	LeverSyncState* leverSync = nullptr;
 	for (LeverEntity* e : this->m_leverEntities)
 	{
+		e->Update(dt, inputHandler);
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
@@ -985,7 +989,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->m_TransitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 	}
 
 	#pragma endregion Send_Player_Animation_Update
@@ -1094,14 +1098,23 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_dynamicEntitys.push_back(chainLink);
 
 		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		
 		previous = next;
 
 	}
 	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
@@ -1131,13 +1144,21 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_dynamicEntitys.push_back(chainLink);
 
 		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+
 		previous = next;
 	}
 	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
 #pragma endregion Create_Chain_Link
 
 
@@ -1259,7 +1280,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.85f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
@@ -1355,6 +1376,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);
 	}
+
+	m_cHandler->WaypointTime();
 	
 #pragma region
 	for (size_t i = 0; i < data->numCheckpoints; i++)

@@ -75,6 +75,32 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	{
 		m_debugRender.Render(positions[T_WAYPOINT].at(i), numWaypoints.at(i), colors[T_WAYPOINT].at(i));
 	}
+	
+	
+
+		for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
+		{
+			Sphere sp;
+			sp.radius = 0.2f;
+
+
+			DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
+			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+			tpose = DirectX::XMMatrixInverse(&det, tpose);
+
+			DirectX::XMVECTOR zero ={ 0,0,0,0 };
+			DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
+			DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
+
+			DirectX::XMVECTOR pos   = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
+			joint = DirectX::XMMatrixMultiply(tpose,joint);
+			zero = DirectX::XMVector3TransformCoord(zero, joint);
+			zero = DirectX::XMVector3TransformCoord(zero, world);
+			
+			m_debugRender.Render(zero, sp);
+		}
+	
+
 	positions[T_WAYPOINT].clear();
 	colors[T_WAYPOINT].clear();
 	numWaypoints.clear();

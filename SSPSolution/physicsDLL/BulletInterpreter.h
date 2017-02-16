@@ -51,7 +51,16 @@ struct Plane
 {
 	DirectX::XMVECTOR PC_normal;
 };
-
+struct CollitionNormal
+{
+	DirectX::XMFLOAT3 CN_normal;
+	int lifeTime;
+	CollitionNormal(DirectX::XMFLOAT3 normal)
+	{
+		this->CN_normal = normal;
+		this->lifeTime = 0;
+	}
+};
 struct PhysicsComponent
 {
 	DirectX::XMVECTOR PC_pos;
@@ -77,9 +86,29 @@ struct PhysicsComponent
 	Plane PC_Plane;
 
 	std::vector<DirectX::XMFLOAT3> m_normals;
+	std::vector<CollitionNormal> m_collition_Normals;
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
+
+	void AddCollitionNormal(DirectX::XMFLOAT3 normal)
+	{
+		int nrOfNormals = this->m_collition_Normals.size();
+		for (int i = 0; i < nrOfNormals; i++)
+		{
+			float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
+				DirectX::XMLoadFloat3(&normal), 
+				DirectX::XMLoadFloat3(&this->m_collition_Normals.at(i).CN_normal)));
+			if (dot != 1)
+			{
+				this->m_collition_Normals.push_back(CollitionNormal(normal));
+			}
+			else
+			{
+				this->m_collition_Normals.at(i).lifeTime += 5;
+			}
+		}
+	}
 };
 
 #pragma endregion
@@ -107,8 +136,7 @@ private:
 	btVector3 m_GravityAcc;
 
 	void CreateDummyObjects();
-	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
-	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
+	
 
 	//apply changes to rigid bodys
 	void applyVelocityOnRigidbody(PhysicsComponent* src);
@@ -119,6 +147,7 @@ private:
 	DirectX::XMMATRIX GetNextFrameRotationMatrix(btTransform &transform);
 	
 	void IgnoreCollitionCheckOnPickupP1(PhysicsComponent* src);
+	void IgnoreCollitionCheckOnPickupP2(PhysicsComponent* src);
 
 	//force activation
 	void forceDynamicObjectsToActive(PhysicsComponent* src);
@@ -127,8 +156,8 @@ private:
 	btTransform GetLastRotationToBullet(btRigidBody* rb, PhysicsComponent* src);
 	btVector3 GetLastVelocityToBullet(btRigidBody* rb, PhysicsComponent* src);
 
-public:
 	std::vector<btRigidBody*> m_rigidBodies;
+public:
 	
 	PHYSICSDLL_API BulletInterpreter();
 	PHYSICSDLL_API virtual ~BulletInterpreter();
@@ -155,5 +184,8 @@ public:
 	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
 	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index);
+
+	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
+	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 };
 #endif
