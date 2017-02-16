@@ -17,9 +17,17 @@ namespace Ui {
 	public:
 		enum AssetCategories
 		{
-			MODELS = 0,
-			ANIMATIONS,
-			LEVELS,
+			/*things to add:
+			General Assets
+			Floors
+			Ceilings
+			Walls
+			*/
+			GENERAL_ASSETS = 0,
+			FLOORS,
+			CEILINGS,
+			WALLS,
+			INTERACTABLE,
 			NUM_CATEGORIES
 		};
 

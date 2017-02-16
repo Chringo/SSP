@@ -964,6 +964,7 @@ int GraphicsHandler::GenerateOctree()
 	}
 	//Fill the octree with the data
 	size_t i = 0;
+	int amountOfRotatedComponents = 0;
 	for ( i = 0; i < componentCount; i++)
 	{
 		//Fill the component with data
@@ -978,11 +979,13 @@ int GraphicsHandler::GenerateOctree()
 		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
 		//If the rotation isn't 0 create a bigger AABB
 #pragma region
-		if (this->m_octreeRoot.containedComponents[i]->ext.x != this->m_staticGraphicsComponents[i]->extensions.x || this->m_octreeRoot.containedComponents[i]->ext.y != this->m_staticGraphicsComponents[i]->extensions.y || this->m_octreeRoot.containedComponents[i]->ext.z != this->m_staticGraphicsComponents[i]->extensions.z)
+		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i]->ort))
+		//if (this->m_octreeRoot.containedComponents[i]->ext.x != this->m_staticGraphicsComponents[i]->extensions.x || this->m_octreeRoot.containedComponents[i]->ext.y != this->m_staticGraphicsComponents[i]->extensions.y || this->m_octreeRoot.containedComponents[i]->ext.z != this->m_staticGraphicsComponents[i]->extensions.z)
 		//if (this->m_staticGraphicsComponents[i]->rotation.x != 0 || this->m_staticGraphicsComponents[i]->rotation.y != 0 || this->m_staticGraphicsComponents[i]->rotation.z)
 		{
 			if (true)
 			{
+				amountOfRotatedComponents++;
 				DirectX::XMVECTOR quaternion;
 				DirectX::XMVECTOR translation;
 				DirectX::XMVECTOR scale;
@@ -1037,6 +1040,7 @@ int GraphicsHandler::GenerateOctree()
 				}
 
 				//this->m_octreeRoot.containedComponents[i]->ext = this->m_staticGraphicsComponents[i]->extensions;
+				DirectX::XMMATRIX tesefs = DirectX::XMMatrixIdentity();
 				this->m_octreeRoot.containedComponents[i]->ext.x = absExt.x;
 				this->m_octreeRoot.containedComponents[i]->ext.y = absExt.y;
 				this->m_octreeRoot.containedComponents[i]->ext.z = absExt.z;
@@ -1046,16 +1050,18 @@ int GraphicsHandler::GenerateOctree()
 		//Check for the lowest and highest values
 		if (this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x < minX)
 			minX = this->m_octreeRoot.containedComponents[i]->pos.x - this->m_octreeRoot.containedComponents[i]->ext.x;
-		else if (this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
+		if (this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x > maxX)
 			maxX = this->m_octreeRoot.containedComponents[i]->pos.x + this->m_octreeRoot.containedComponents[i]->ext.x;
 		if (this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y < minY)
 			minY = this->m_octreeRoot.containedComponents[i]->pos.y - this->m_octreeRoot.containedComponents[i]->ext.y;
-		else if (this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
+		if (this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y > maxY)
 			maxY = this->m_octreeRoot.containedComponents[i]->pos.y + this->m_octreeRoot.containedComponents[i]->ext.y;
 		if (this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z < minZ)
 			minZ = this->m_octreeRoot.containedComponents[i]->pos.z - this->m_octreeRoot.containedComponents[i]->ext.z;
-		else if (this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
+		if (this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z > maxZ)
 			maxZ = this->m_octreeRoot.containedComponents[i]->pos.z + this->m_octreeRoot.containedComponents[i]->ext.z;
+		if(minX < -9999999.0f || minY < -9999999.0f || minZ < -999999999.0f)
+			int g = 543;
 	}
 	//After having finished filling the octree with data, sort it
 	std::sort(this->m_octreeRoot.containedComponents.begin(), this->m_octreeRoot.containedComponents.end(), Sorting_on_modelID());

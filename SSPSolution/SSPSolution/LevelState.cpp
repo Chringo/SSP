@@ -604,7 +604,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
 
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed);
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 			}
 
@@ -683,9 +683,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
-				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f);
-				AnimationComponent* animComp = m_player1.GetAnimationComponent();
-				animComp->velocity = 1.0f;
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 			}
 
 		}
@@ -914,12 +912,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
+	//Lever require updates to animate
+	for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
-	//Doors require updates to change opening state
+	//Doors require updates to change opening state and animate
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
@@ -932,7 +935,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	LeverSyncState* leverSync = nullptr;
 	for (LeverEntity* e : this->m_leverEntities)
 	{
-		e->Update(dt, inputHandler);
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
@@ -975,7 +977,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 	}
 
 	#pragma endregion Send_Player_Animation_Update
@@ -1139,6 +1141,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		0);
 #pragma endregion preparations and variable
 
+#pragma region
 	//NETWORK SAFETY
 	/*
 	This is only a safety check if the network module was not initialized.
@@ -1162,7 +1165,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
-
+#pragma endregion Network
+#pragma region
 	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
@@ -1171,8 +1175,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
-
-
+#pragma endregion Checkpoints
 
 
 	for (size_t i = 0; i < data->numEntities; i++)
@@ -1348,6 +1351,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);
 	}
+
+	m_cHandler->WaypointTime();
+	
 #pragma endregion AI
 
 #pragma region
@@ -1435,7 +1441,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//Rotate the extension according the OBB ort
 		//And lastly store the result in graphics components as the model bounds used in culling
 		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
-		button1G->ort = button1P->PC_OBB.ort;
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
@@ -1443,6 +1448,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		button1P->PC_OBB.ort = rotate;
 		button1G->ort = button1P->PC_OBB.ort;
+		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
 
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
@@ -1515,6 +1521,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			lever1P->PC_AABB.ext[1] , lever1P->PC_AABB.ext[2] }, rotate);
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		lever1P->PC_OBB.ort = rotate;
+		lever1G->ort = lever1P->PC_OBB.ort;
+		DirectX::XMStoreFloat3(&lever1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(lever1P->PC_OBB.ext[0], lever1P->PC_OBB.ext[1], lever1P->PC_OBB.ext[2], 0.0f), lever1P->PC_OBB.ort));
 
 
 		lever1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);

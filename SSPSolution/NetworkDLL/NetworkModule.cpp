@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -314,6 +314,7 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, flo
 	packet.isLooping = isLooping;
 	packet.lockAnimation = lockAnimation;
 	packet.playingSpeed = playingSpeed;
+	packet.velocity = velocity;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -496,7 +497,7 @@ void NetworkModule::ReadMessagesFromClients()
 		while( data_read != data_length)
 		{
 			//Read the header (skip the first 4 bytes since it is virtual function information)
-			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
+			memcpy(&header, &network_data[data_read + PACKETOFFSET], sizeof(PacketTypes));
 
 			#pragma region
 		
