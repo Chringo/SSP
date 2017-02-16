@@ -601,7 +601,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
 
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed);
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 			}
 
@@ -680,9 +680,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
-				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f);
-				AnimationComponent* animComp = m_player1.GetAnimationComponent();
-				animComp->velocity = 1.0f;
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 			}
 
 		}
@@ -976,7 +974,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed);
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 	}
 
 	#pragma endregion Send_Player_Animation_Update

@@ -14,12 +14,8 @@
 #include "SelectionHandler.h"
 #include "LevelHandler.h"
 
-#pragma comment (lib,"GraphicsDLL-d.lib")
-#pragma comment (lib,"ResourceLib.lib")
-#pragma comment (lib,"physicsDLL.lib")
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
-
 
 struct Mouse
 {
