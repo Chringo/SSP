@@ -146,10 +146,11 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	newComponent.position = position;
 	newComponent.rotation = rotation;
 	newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(modelID);
-	if (newComponent.component.modelPtr == nullptr) {
-		unsigned int idTemp = 2307979665;
-		newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(idTemp);
-	}
+//	if (newComponent.component.modelPtr == nullptr) {
+//		//unsigned int idTemp = 2307979665;
+//		return Resources::Status::ST_RES_MISSING;
+//		//newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(idTemp);
+//	}
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
