@@ -36,14 +36,14 @@ Resources::Status FileImporter::ImportFromServer()
 				if (pathName == (dirPath.toStdString()+"/player1.model"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
 				else if (pathName == (dirPath.toStdString() + "/player2.model"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
@@ -71,7 +71,7 @@ Resources::Status FileImporter::ImportFromServer()
 				if (pathName != (dirPath.toStdString() + "/player1.model") && pathName != (dirPath.toStdString() + "/player2.model"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
