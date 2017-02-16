@@ -90,6 +90,9 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 	case WHEEL_INCREASING:
 		this->GetAIComponent()->AC_triggered = true;
 		break;
+	case WHEEL_DECREASING:
+		this->GetAIComponent()->AC_triggered = true;
+		break;
 	case WHEEL_RESET:
 		this->GetAIComponent()->AC_triggered = false;
 		break;
