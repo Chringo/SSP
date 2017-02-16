@@ -21,7 +21,6 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 	g_Assets->setTextAlignment(0, Qt::AlignCenter);
 	m_tree->addTopLevelItem(g_Assets);
 	m_tree->insertTopLevelItem(GENERAL_ASSETS, g_Assets);
-	//model->setExpanded(true);
 
 
 	/*Creating the "Floors" tab*/
@@ -29,7 +28,6 @@ Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 	floors->setText(0, "Floors");
 
 	floors->setTextAlignment(0, Qt::AlignCenter);
-	floors->setExpanded(true);
 	m_tree->addTopLevelItem(floors);
 	m_tree->insertTopLevelItem(FLOORS, floors);
 	m_tree->setHeaderLabels(QStringList() << "Resources");
