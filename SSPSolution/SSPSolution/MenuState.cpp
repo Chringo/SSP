@@ -50,7 +50,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->spriteID = 5;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -86,7 +86,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->spriteID = 5;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -98,6 +98,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_uiComp->spriteID = 5;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
