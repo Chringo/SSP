@@ -42,7 +42,7 @@ int AIHandler::Update(float deltaTime)
 		if (this->m_AIComponents[i] == nullptr)
 			break;
 		//TODO: Remove active from this statement
-		if (this->m_AIComponents[i]->AC_active == 1 && this->m_AIComponents[i]->AC_triggered && this->m_AIComponents[i]->AC_nrOfWaypoint != 0)
+		if (this->m_AIComponents[i]->AC_triggered)
 		{
 			// AIComponent logic/behavior, movement of e.g. platforms
 			if (this->m_AIComponents[i]->AC_pattern == AI_ONEWAY)
