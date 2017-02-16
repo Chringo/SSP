@@ -911,12 +911,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
+	//Lever require updates to animate
+	for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
-	//Doors require updates to change opening state
+	//Doors require updates to change opening state and animate
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
@@ -929,7 +934,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	LeverSyncState* leverSync = nullptr;
 	for (LeverEntity* e : this->m_leverEntities)
 	{
-		e->Update(dt, inputHandler);
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
@@ -1433,7 +1437,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//Rotate the extension according the OBB ort
 		//And lastly store the result in graphics components as the model bounds used in culling
 		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
-		button1G->ort = button1P->PC_OBB.ort;
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
@@ -1441,6 +1444,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		button1P->PC_OBB.ort = rotate;
 		button1G->ort = button1P->PC_OBB.ort;
+		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
 
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
@@ -1513,6 +1517,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			lever1P->PC_AABB.ext[1] , lever1P->PC_AABB.ext[2] }, rotate);
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		lever1P->PC_OBB.ort = rotate;
+		lever1G->ort = lever1P->PC_OBB.ort;
+		DirectX::XMStoreFloat3(&lever1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(lever1P->PC_OBB.ext[0], lever1P->PC_OBB.ext[1], lever1P->PC_OBB.ext[2], 0.0f), lever1P->PC_OBB.ort));
 
 
 		lever1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
