@@ -103,7 +103,7 @@ int NetworkModule::Initialize()
 
 int NetworkModule::Shutdown()
 {
-	int i = 0;
+	size_t i = 0;
 	i = this->connectedClients.size();
 
 	//DISCONNECT_REQUESTs should already have been sent on disconnect,
@@ -125,7 +125,7 @@ int NetworkModule::Shutdown()
 	}
 	
 	this->connectedClients.clear();	// Remove all connected clients
-	printf("%d Clients has been removed on server shutdown\n", i);
+	printf("%d Clients has been removed on server shutdown\n", (int)i);
 
 	closesocket(this->listenSocket);
 	WSACleanup();
@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -314,6 +314,7 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, flo
 	packet.isLooping = isLooping;
 	packet.lockAnimation = lockAnimation;
 	packet.playingSpeed = playingSpeed;
+	packet.velocity = velocity;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -927,7 +928,7 @@ std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
 	return result;
 }
 
-int NetworkModule::GetNrOfConnectedClients()
+size_t NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
 }
