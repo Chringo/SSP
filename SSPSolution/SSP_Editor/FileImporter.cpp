@@ -36,14 +36,14 @@ Resources::Status FileImporter::ImportFromServer()
 				if (pathName == (dirPath.toStdString()+"/player1.model"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
 				else if (pathName == (dirPath.toStdString() + "/player2.model"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
@@ -58,7 +58,115 @@ Resources::Status FileImporter::ImportFromServer()
 		perror("");
 	}
 
+#pragma region Models
 	/*importing the rest of the model files*/
+
+	/*Importing Floors*/
+	dirPath = pathToBbfFolder + "/Models/Floors";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				uiTree->AddItem(
+					Ui::AssetTreeHandler::AssetCategories::FLOORS, ent->d_name, QVariant(numModels));
+				numModels += 1;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*Importing Ceilings*/
+	dirPath = pathToBbfFolder + "/Models/Ceilings";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				uiTree->AddItem(
+					Ui::AssetTreeHandler::AssetCategories::CEILINGS, ent->d_name, QVariant(numModels));
+				numModels += 1;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*Importing Walls*/
+	dirPath = pathToBbfFolder + "/Models/Walls";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				uiTree->AddItem(
+					Ui::AssetTreeHandler::AssetCategories::WALLS, ent->d_name, QVariant(numModels));
+				numModels += 1;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*Importing Interactables*/
+	dirPath = pathToBbfFolder + "/Models/Interactable";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				uiTree->AddItem(
+					Ui::AssetTreeHandler::AssetCategories::INTERACTABLE, ent->d_name, QVariant(numModels));
+				numModels += 1;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+
+	/*Importing General Assets*/
+	dirPath = pathToBbfFolder + "/Models";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
 	{
 		/* append all the mesh names from the directory */
@@ -68,10 +176,12 @@ Resources::Status FileImporter::ImportFromServer()
 			{
 				std::string pathName = dirPath.toStdString() + "/";
 				pathName += ent->d_name;
-				if (pathName != (dirPath.toStdString() + "/player1.model") && pathName != (dirPath.toStdString() + "/player2.model"))
+				if (pathName != (dirPath.toStdString() + "/player1.model") && pathName != (dirPath.toStdString() + "/player2.model")
+					&& pathName != (dirPath.toStdString() + "/Interactable") && pathName != (dirPath.toStdString() + "/Ceilings")
+					&& pathName != (dirPath.toStdString() + "/Walls") && pathName != (dirPath.toStdString() + "/Floors"))
 				{
 					uiTree->AddItem(
-						Ui::AssetTreeHandler::AssetCategories::MODELS, ent->d_name, QVariant(numModels));
+						Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS, ent->d_name, QVariant(numModels));
 					numModels += 1;
 					m_filepaths.push_back(pathName);
 				}
@@ -85,7 +195,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-
+#pragma endregion
+#pragma region Meshes
 	/*importing the mesh files*/
 	dirPath = pathToBbfFolder + "/Meshes";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
@@ -108,7 +219,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-
+#pragma endregion
+#pragma region Skeletons
 	/*importing the skeleton files*/
 	dirPath = pathToBbfFolder + "/Skeletons";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
@@ -131,7 +243,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-
+#pragma endregion
+#pragma region Animations
 	/*importing the animation*/
 	dirPath = pathToBbfFolder + "/Animations";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
@@ -154,7 +267,8 @@ Resources::Status FileImporter::ImportFromServer()
 		/* could not open directory */
 		perror("");
 	}
-
+#pragma endregion
+#pragma region Materials
 	/*Load the material files*/
 	dirPath = pathToBbfFolder + "/Materials";
 	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
@@ -179,7 +293,7 @@ Resources::Status FileImporter::ImportFromServer()
 		perror("");
 	}
 	return Resources::ST_OK;
-
+#pragma endregion
 }
 
 void FileImporter::LoadImportedFiles()
