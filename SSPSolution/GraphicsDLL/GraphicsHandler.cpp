@@ -512,7 +512,7 @@ int GraphicsHandler::Render(float deltaTime)
 	Camera::C_Ray ray = this->m_camera->CastRay();
 	for (size_t i = 0; i < 8; i++)
 	{
-		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray);
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, false);
 	}
 
 	/*TEMP CBUFFER STUFF*/
@@ -1635,7 +1635,7 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
-void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray, bool pingRay)
 {
 	//Safety check
 	if (curNode != nullptr)
@@ -1656,16 +1656,23 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 					
 					if (originInNode)
 					{
-						TraverseOctreeRay(curNode->branches[i], ray);
+						TraverseOctreeRay(curNode->branches[i], ray, pingRay);
 					}
 					//Check the ray vs octree
 					else 
 					{
 						float distance = -1.0;
 						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-						if (intersectsRay && distance < 1.5f)
+						if (intersectsRay)
 						{
-							TraverseOctreeRay(curNode->branches[i], ray);
+							if (distance < 1.5f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+							}
+							else if (distance < 100.f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, true);
+							}
 						}
 					}
 				}
@@ -1676,7 +1683,14 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 			//Leaf
 			for each (OctreeBV* entityComponent in curNode->containedComponents)
 			{
-				entityComponent->isInRay = true;
+				if (!pingRay)
+				{
+					entityComponent->isInRay = true;
+				}
+				else
+				{
+					entityComponent->isInPingRay = true;
+				}
 			}
 		}
 	}

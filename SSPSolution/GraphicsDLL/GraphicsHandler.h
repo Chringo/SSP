@@ -114,6 +114,7 @@ private:
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
 		bool isInRay;
+		bool isInPingRay;
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	}; 
@@ -248,7 +249,7 @@ private:
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
-	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray);
+	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray, bool pingRay);
 	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance);
 	bool PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb);
 	void DeleteOctree(OctreeNode* curNode);
