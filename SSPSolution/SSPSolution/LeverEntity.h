@@ -15,11 +15,11 @@ private:
 	bool m_isActive;
 	float m_range;
 	float m_animSpeed  = 70.0f;
-	float m_targetRot;
-	float m_currRot;
-	bool m_animationActive;
+	float m_targetRot  = 0;
+	float m_currRot    = 0;
+	bool m_animationActive = false;
 	bool m_needSync;
-	float m_activatedRotation = 90.0f;
+	float m_activatedRotation = -90.0f;
 public:
 	LeverEntity();
 	virtual ~LeverEntity();

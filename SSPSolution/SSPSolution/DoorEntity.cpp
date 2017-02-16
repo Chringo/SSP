@@ -288,8 +288,8 @@ int DoorEntity::React(int entityID, EVENT reactEvent)
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//I, Kim, do not remember our old crazy solution.
 	int i = 0;
-	if (this->m_animationActive == true)
-		return 0;
+	//if (this->m_animationActive == true)
+	//	return 0;
 	for (std::vector<ElementState>::iterator element = this->m_subjectStates.begin(); element != this->m_subjectStates.end(); element++)
 	{
 		//Match the EntityID
