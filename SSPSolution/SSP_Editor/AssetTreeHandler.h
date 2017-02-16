@@ -43,6 +43,7 @@ namespace Ui {
 		QTreeWidget* m_tree;
 		AssetTreeHandler();
 		void AddSubCategories(QTreeWidgetItem* topLevel);
+		bool IsValidItem();
 
 	public:
 		AssetTreeHandler(QTreeWidget* tree);

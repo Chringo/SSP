@@ -33,6 +33,21 @@ void Ui::AssetTreeHandler::AddSubCategories(QTreeWidgetItem * topLevel)
 	topLevel->insertChild(IRON, iron);
 }
 
+bool Ui::AssetTreeHandler::IsValidItem()
+{
+	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Bricks"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Stones"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Plaster"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Iron"))
+		return false;
+	return true;
+}
+
 
 Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 {
@@ -131,8 +146,10 @@ bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVari
 	
 	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+	if (type == CEILINGS)
+	m_tree->topLevelItem((int)type)->child(0)->addChild(itm);
+	else
 	m_tree->topLevelItem((int)type)->addChild(itm);
-
 	return true;
 }
 
@@ -156,10 +173,13 @@ bool Ui::AssetTreeHandler::AddItem(AssetCategories type, QTreeWidgetItem * item)
 	return true;
 }
 
-void Ui::AssetTreeHandler::on_treeView_doubleClicked() {
+void Ui::AssetTreeHandler::on_treeView_doubleClicked() 
+{
+	//Qt::ItemFlag::ItemIsDropEnabled
+	
+	if (!this->IsValidItem()) 
+		return;		//If a category window is clicked
 
-	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
-		return;
 	QModelIndex index = m_tree->currentIndex();
 
 	//use index.r to get the right mesh
