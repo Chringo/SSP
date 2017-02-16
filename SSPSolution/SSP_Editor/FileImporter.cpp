@@ -525,7 +525,7 @@ bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheade
 		{
 			if (textureExists[i])
 				continue;
-			mbstowcs_s(&*textureNameLength[i], path[i], path_str[i].c_str(), *textureNameLength[i]);
+			mbstowcs(path[i], path_str[i].c_str(), *textureNameLength[i]);
 
 			HRESULT hr = DirectX::CreateDDSTextureFromFile(m_Device,
 				path[i],
