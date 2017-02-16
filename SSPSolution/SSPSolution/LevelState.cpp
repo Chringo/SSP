@@ -2045,6 +2045,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 int LevelState::UnloadLevel()
 {
 	int result = 0;
+	//Clear grabbing of balls
+	this->m_player1.SetGrabbed(nullptr);
+	this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 	//Clear components from GraphicsHandler.
 	this->m_cHandler->ResizeGraphicsDynamic(0);
 	this->m_cHandler->ResizeGraphicsStatic(0);
@@ -2119,7 +2122,7 @@ int LevelState::UnloadLevel()
 	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
 
@@ -2130,7 +2133,7 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_entityID = 2;	//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
@@ -2141,7 +2144,7 @@ int LevelState::UnloadLevel()
 	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
 
@@ -2273,7 +2276,6 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
-	//this->Update(0.0000000001f, inputHandler);
 	return 1;
 }
 
