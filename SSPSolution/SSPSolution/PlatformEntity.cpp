@@ -97,7 +97,26 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 		break;
 	case WHEEL_RESET:
 		printf("RESET\n");
+
 		this->GetAIComponent()->AC_triggered = false;
+
+		/*if (this->GetAIComponent()->AC_direction == 0)
+		{
+			this->GetAIComponent()->AC_direction = 1;
+
+			int i = this->GetAIComponent()->AC_nextWaypointID;
+			int k = this->GetAIComponent()->AC_latestWaypointID;
+
+			this->GetAIComponent()->AC_nextWaypointID = this->GetAIComponent()->AC_latestWaypointID;
+			this->GetAIComponent()->AC_latestWaypointID = this->GetAIComponent()->AC_nextWaypointID;
+		}
+		else
+		{
+			this->GetAIComponent()->AC_direction = 0;
+			this->GetAIComponent()->AC_nextWaypointID = this->GetAIComponent()->AC_latestWaypointID;
+			this->GetAIComponent()->AC_latestWaypointID = this->GetAIComponent()->AC_nextWaypointID;
+		}*/
+
 		break;
 	default:
 		break;
