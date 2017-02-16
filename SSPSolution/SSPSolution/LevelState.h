@@ -53,18 +53,21 @@ private:
 	
 	Entity* GetClosestBall(float minDist);
 
+	int m_curLevel;
 	int m_clearedLevel;
+	std::vector<std::string> m_levelPaths;
 public:
 	LevelState();
 	virtual ~LevelState();
 
 	int ShutDown();
-	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
+	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef, int levelToPlay = 0);
 	int Update(float dt, InputHandler * inputHandler);
+	//Return means. 1:Success ; -1:Failed to load file ; -2:Failed to load level ; -3:Failed to load lights
 	int CreateLevel(LevelData::Level* data);
 	int UnloadLevel();
 	//TEMP
-	int LoadNext(InputHandler* inputHandler);
+	int LoadNext();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
