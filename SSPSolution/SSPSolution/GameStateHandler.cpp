@@ -73,16 +73,18 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->PushStateToStack(levelSelect);
+		//this->PushStateToStack(levelSelect);
 
 		if (levelPath.length() < 2)
 			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 		else
 			levelSelect->LoadLevel(levelPath);
+		//Delete it. If it was successful it would have pushed a LevelState to the stack
+		delete levelSelect;
+		levelSelect = nullptr;
 	}
 	else
 	{
-		//Delete it
 		delete levelSelect;
 		levelSelect = nullptr;
 	}
@@ -168,7 +170,7 @@ GameState * GameStateHandler::PopStateFromStack()
 	this->m_stateStack.pop_back();
 
 	//Check if it wants to be manually managed after popping
-	if (result->GetManualRemoval())
+	if (!result->GetManualRemoval())
 	{
 		this->m_statesToRemove.push_back(result);
 	}

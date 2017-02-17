@@ -10,18 +10,18 @@ LevelSelectState::LevelSelectState()
 
 LevelSelectState::~LevelSelectState()
 {
-	delete m_currentLevel;
-	m_currentLevel = nullptr;
+	/*delete m_currentLevel;
+	m_currentLevel = nullptr;*/
 }
 
 int LevelSelectState::ShutDown()
 {
-	if (this->m_currentLevel != nullptr)
+	/*if (this->m_currentLevel != nullptr)
 	{
 		this->m_currentLevel->ShutDown();
 		delete this->m_currentLevel;
 		this->m_currentLevel = nullptr;
-	}
+	}*/
 	int result = 1;
 	return result;
 }
@@ -52,7 +52,7 @@ int LevelSelectState::Initialize(GameStateHandler * gsh, ComponentHandler* cHand
 int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 0;
-	if (this->m_currentLevel != nullptr)
+	/*if (this->m_currentLevel != nullptr)
 	{
 		result = this->m_currentLevel->Update(dt, inputHandler);
 	}
@@ -62,7 +62,7 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 		delete this->m_currentLevel;
 		this->m_currentLevel = nullptr;
 		this->m_gsh->PopStateFromStack();
-	}
+	}*/
 	return result;
 }
 
@@ -90,7 +90,7 @@ int LevelSelectState::LoadLevel(std::string path)
 		return 0;
 	//Create level
 	result = this->m_currentLevel->CreateLevel(level); 
-
+	this->m_gsh->PushStateToStack(this->m_currentLevel);
 
 	return result;
 }

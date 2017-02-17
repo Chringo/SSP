@@ -135,7 +135,7 @@ int LevelState::ShutDown()
 int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef, true);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
