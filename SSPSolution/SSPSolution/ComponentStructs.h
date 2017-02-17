@@ -45,4 +45,15 @@ enum EVENT
 	WHEEL_DISABLED				/*NOT	USED*/
 };
 
+enum ENTITYID : unsigned int
+{
+	DIRECTOR	= UINT_MAX,
+	PLAYERONE	= UINT_MAX - 1,
+	PLAYERTWO	= UINT_MAX - 2,
+	BALLONE		= UINT_MAX - 3,
+	BALLTWO		= UINT_MAX - 4,
+	CHAINONE	= UINT_MAX - 5,
+	CHAINTWO	= UINT_MAX - 6
+};
+
 #endif
