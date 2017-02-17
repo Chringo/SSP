@@ -166,7 +166,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;								//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.0, 0, 0); //Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
@@ -220,7 +220,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 2;	//Set Entity ID
-	playerP->PC_pos = { 0 };								//Set Position
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 10;
@@ -2156,7 +2156,7 @@ int LevelState::UnloadLevel()
 	//We then need to recreate the persistent components here
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 1;	//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 10;
@@ -2178,7 +2178,7 @@ int LevelState::UnloadLevel()
 	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
 	playerP->PC_entityID = 2;	//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 10;
