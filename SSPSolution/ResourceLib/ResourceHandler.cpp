@@ -236,7 +236,6 @@ Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelR
 	{
 		st = m_modelHandler->UnloadModel(levelRes->ids[i]);
 #ifdef _DEBUG
-		std::cout << "Model missing, loading" << std::endl;
 		if (st != ST_OK)
 		{
 			MessageBox(NULL, TEXT("Error in unloading model"), TEXT("ERROR"), MB_OK);
