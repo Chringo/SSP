@@ -556,7 +556,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 								LeverSyncState newState;
 								newState.entityID = itr->entityID;
 								newState.isActive = itr->isActive;
-								newState.isAnimationActive = itr->isAnimationActive;
 
 								lP->SetSyncState(&newState);
 
@@ -916,7 +915,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		leverSync = e->GetSyncState();
 		if (leverSync != nullptr)
 		{
-			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive, leverSync->isAnimationActive);
+			this->m_networkModule->SendStateLeverPacket(leverSync->entityID, leverSync->isActive);
 			delete leverSync;
 		}
 	}

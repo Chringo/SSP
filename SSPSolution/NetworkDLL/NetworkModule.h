@@ -88,7 +88,7 @@ public:
 	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 	NETWORKDLL_API void SendStateWheelPacket(unsigned int entityID, int rotationState, float rotationAmount);
 	NETWORKDLL_API void SendStateButtonPacket(unsigned int entityID, bool isActive);
-	NETWORKDLL_API void SendStateLeverPacket(unsigned int entityID, bool isActive, bool isAnimationActive);
+	NETWORKDLL_API void SendStateLeverPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);
 	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID);
 	NETWORKDLL_API void SendGrabPacket(unsigned int entityID, unsigned int grabbedID);
