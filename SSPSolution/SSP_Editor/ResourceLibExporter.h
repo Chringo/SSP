@@ -42,9 +42,10 @@ class ResourceLibExporter
 private:
 	enum OverWriting
 	{
-		ALL,
+		ONCE_FIRST,
+		ONCE,
 		NOTHING,
-		ONCE
+		ALL
 	};
 
 	ResourceLibExporter();
@@ -52,7 +53,8 @@ private:
 	std::vector<RegistryItem> m_Items;
 	std::ofstream* m_Output;
 	unsigned int m_Offset = sizeof(RegistryHeader);
-	OverWriting m_overWrite;
+	OverWriting m_overWrite = ONCE_FIRST;
+
 
 	DataHandler* m_Data = DataHandler::GetInstance();
 	FileImporter* m_FileImporter = nullptr;
@@ -71,6 +73,7 @@ private:
 	void HandleSceneData();
 	void WriteRegistry();
 	bool TextureExists(const std::string& filename);
+	bool overWrite(const std::string& filename);
 
 	bool Open();
 	bool Close();

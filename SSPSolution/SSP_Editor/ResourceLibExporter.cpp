@@ -222,6 +222,21 @@ bool ResourceLibExporter::TextureExists(const std::string& filename)
 	return false;
 }
 
+bool ResourceLibExporter::overWrite(const std::string & filename)
+{
+	size_t f = filename.rfind("/", filename.length());
+	std::string pAth = filename.substr(f + 1, filename.length());
+
+	std::string TexturePathName = ("Overwrite " + pAth + "?");
+	std::wstring stemp = std::wstring(TexturePathName.begin(), TexturePathName.end());
+	LPCWSTR sw = stemp.c_str();
+	if (MessageBox(NULL, sw, TEXT("Texture already exists"), MB_YESNO) == IDYES)
+	{
+		return true;
+	}
+	return false;
+}
+
 void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
 	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind("/")) + file->substr(file->rfind("/"));
@@ -229,20 +244,64 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 	std::wstring oldPath(file->begin(), file->end());
 	std::wstring newPath(newFilePath.begin(), newFilePath.end());
 
-	/*edit bool if the desire for a check exists*/
+	/*A check to see if the texture exists in the project folder
+	I------------------------------------------------------------I
+	I This check is based on the local variable m_overWrite		 I
+	I which not only controls wether the user wished to write	 I
+	I one file but also will check if they want to overwrite all I
+	I------------------------------------------------------------I
+	*/
 	if (m_overWrite != OverWriting::NOTHING)
 	{
 		if (TextureExists(newFilePath))
 		{
 			if (m_overWrite == OverWriting::ONCE)
 			{
-
+				if (overWrite(newFilePath))
+				{
+					CopyFile(oldPath.c_str(), newPath.c_str(), false);
+					return;
+				}
 			}
-			else if(m_overWrite == OverWriting::ALL)
+			else if (m_overWrite == OverWriting::ONCE_FIRST)
+			{
+				if (overWrite(newFilePath))
+				{
+					CopyFile(oldPath.c_str(), newPath.c_str(), false);
+				}
+
+				int msgboxID = MessageBox(
+					NULL,
+					(LPCWSTR)L"Do you wish to overwrite all textures being copied?\nPress cancel for manual inspection.",
+					(LPCWSTR)L"Overwrite all?",
+					MB_YESNOCANCEL | MB_DEFBUTTON3
+					);
+
+				switch (msgboxID)
+				{
+				case IDYES:
+					m_overWrite = OverWriting::ALL;
+					break;
+				case IDNO:
+					m_overWrite = OverWriting::NOTHING;
+					break;
+				case IDCANCEL:
+					m_overWrite = OverWriting::ONCE;
+					break;
+				}
+				return;
+			}
+			else if (m_overWrite == OverWriting::ALL)
+			{
 				CopyFile(oldPath.c_str(), newPath.c_str(), false);
+				return;
+			}
 		}
 		else
+		{
 			CopyFile(oldPath.c_str(), newPath.c_str(), false);
+			return;
+		}
 	}
 }
 
@@ -299,6 +358,7 @@ bool ResourceLibExporter::Close()
 {
 	m_Items.clear();
 	m_Output->close();
+	m_overWrite = ONCE_FIRST;
 	if(!m_Output->is_open())
 		return true;
 	return false;
