@@ -1241,7 +1241,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
-		
+
+		/*AnimationComponent* t_anim = nullptr;*/
+
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
 		if (modelPtr->GetSkeleton() != nullptr)
@@ -1397,11 +1399,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
 		// Adjust OBB in physics component - hack...
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ 
-			modelPtr->GetOBBData().position.x, 
-			modelPtr->GetOBBData().position.y,
-			modelPtr->GetOBBData().position.z 
-		});
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
+			, modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
 		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
@@ -1661,7 +1660,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		wheel1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		wheel1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime > 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
+		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime < 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
 		this->m_wheelEntities.push_back(tempEntity);
 	}
 	//Create the doors
