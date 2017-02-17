@@ -1724,7 +1724,7 @@ void PhysicsHandler::Update(float deltaTime)
 		int nrOfBodyParts = this->m_bodyPC.size();
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
-			this->m_bodyPC.at(i)->PC_gravityInfluence = 1.0f;
+			this->m_bodyPC.at(i)->PC_gravityInfluence = 0.1f;
 		}
 	}
 
@@ -1938,7 +1938,7 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 
 	if (link->PL_type == PL_BODY)
 	{
-		int type = 0;
+		int type = 1;
 		if (type == 0)
 		{
 			if (lenght >= link->PL_lenght)
@@ -1976,7 +1976,7 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 				v2_old[1] = DirectX::XMVectorGetY(pParallel);
 				v2_old[2] = DirectX::XMVectorGetZ(pParallel);
 
-				float e = 0.5;
+				float e = 0.1;
 
 				for (int i = 0; i < 3; i++)
 				{
@@ -1986,6 +1986,7 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 					v2_new[i] = (v1_old[i] * m1*(1 + e) + (m2 - e*m1)*v2_old[i]) / (m1 + m2);
 
 				}
+
 				v1_old[0] += DirectX::XMVectorGetX(pPerpendicular1);
 				v1_old[1] += DirectX::XMVectorGetY(pPerpendicular1);
 				v1_old[2] += DirectX::XMVectorGetZ(pPerpendicular1);
@@ -1993,6 +1994,9 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 				v2_old[0] += DirectX::XMVectorGetX(pPerpendicular2);
 				v2_old[1] += DirectX::XMVectorGetY(pPerpendicular2);
 				v2_old[2] += DirectX::XMVectorGetZ(pPerpendicular2);
+
+				//pPerpendicular1 = DirectX::XMVectorScale(pPerpendicular1, 1.0f);
+				//pPerpendicular2 = DirectX::XMVectorScale(pPerpendicular2, 1.0f);
 
 				v1_new[0] += DirectX::XMVectorGetX(pPerpendicular1);
 				v1_new[1] += DirectX::XMVectorGetY(pPerpendicular1);
@@ -2257,7 +2261,7 @@ PhysicsComponent * PhysicsHandler::CreateBodyPartPhysicsComponent(const DirectX:
 	newObject->PC_entityID = 0;
 	newObject->PC_is_Static = isStatic;
 	newObject->PC_steadfast = false;
-	newObject->PC_mass = 1.0f;
+	newObject->PC_mass = 2.0f;
 	newObject->PC_gravityInfluence = 1.0f;
 	newObject->PC_Sphere.radius = 0.3f;
 	newObject->PC_friction = 0.5f;
@@ -3159,23 +3163,23 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(Resources::Skeleton::Join
 	this->m_playerRagDoll.state = ANIMATED;
 	rightFoot->PC_entityID = -1;
 
-	//upperBody->PC_mass = 5;
-	//rightShoulder->PC_mass = 2.5f;
-	//rightElbow->PC_mass = 1.25f;
-	//rightHand->PC_mass = 0.625f;
+	upperBody->PC_mass = 5;
+	rightShoulder->PC_mass = 2.5f;
+	rightElbow->PC_mass = 1.25f;
+	rightHand->PC_mass = 0.625f;
 
-	//leftShoulder->PC_mass = 2.5f;
-	//leftElbow->PC_mass = 1.25f;
-	//leftHand->PC_mass = 0.625f;
+	leftShoulder->PC_mass = 2.5f;
+	leftElbow->PC_mass = 1.25f;
+	leftHand->PC_mass = 0.625f;
 
-	//lowerBody->PC_mass = 5;
-	//rightLeg->PC_mass = 2.5f;
-	//rightKnee->PC_mass = 1.25;
-	//rightFoot->PC_mass = 0.625;
+	lowerBody->PC_mass = 5;
+	rightLeg->PC_mass = 2.5f;
+	rightKnee->PC_mass = 1.25;
+	rightFoot->PC_mass = 0.625;
 
-	//leftLeg->PC_mass = 2.5f;
-	//leftKnee->PC_mass = 1.25;
-	//leftFoot->PC_mass = 0.625;
+	leftLeg->PC_mass = 2.5f;
+	leftKnee->PC_mass = 1.25;
+	leftFoot->PC_mass = 0.625;
 
 	//rightShoulder->PC_is_Static = true;
 	////rightElbow->PC_is_Static = true;
@@ -3381,6 +3385,7 @@ void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
 				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
 				//para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], 0.2));
 				bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
 			}
 		}
 		//constraint that keep the arm from bending weird ways if it belongs to the right arm
@@ -3402,6 +3407,7 @@ void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
 				DirectX::XMVector3ComponentsFromNormal(&para, &perp, diffVec, bodypart->center->PC_OBB.ort.r[2]);
 				//para = DirectX::XMVectorSubtract(para, DirectX::XMVectorScale(bodypart->center->PC_OBB.ort.r[2], -0.2));
 				bodypart->next->PC_pos = DirectX::XMVectorSubtract(bodypart->next->PC_pos, para);
+				bodypart->next2->PC_pos = DirectX::XMVectorSubtract(bodypart->next2->PC_pos, para);
 			}
 		}
 		

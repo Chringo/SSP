@@ -74,7 +74,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, false, false, 0, 1.0);
-			this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorSet(0, 1.3, 0, 0));
+			this->m_aComp->lockAnimation = false;
+			//this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorSet(0, 1.3, 0, 0));
 			this->m_ragdoll->state = ANIMATED;
 		}
 		if (this->m_ragdoll->state == RAGDOLL)
@@ -225,13 +226,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (m_grabbed != nullptr)
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+					SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 					this->m_aComp->previousState = PLAYER_BALL_IDLE;
 				}
 				else
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 					this->m_aComp->previousState = PLAYER_IDLE;
 				}
 			}
@@ -303,7 +304,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-
+				this->m_ragdoll->state = RAGDOLL;
 				this->SetGrabbed(nullptr);	//Release the entity
 			}
 		}
@@ -608,6 +609,11 @@ Entity * Player::GetGrabbed()
 Entity * Player::GetBall()
 {
 	return this->m_ball;
+}
+
+Ragdoll * Player::GetRagdoll()
+{
+	return this->m_ragdoll;
 }
 
 bool Player::isAnimationChanged()

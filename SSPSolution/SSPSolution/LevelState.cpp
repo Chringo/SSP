@@ -1070,6 +1070,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+	previous = this->m_player1.GetRagdoll()->rightLeg.next2;
 	PhysicsComponent* next = nullptr;
 
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)

@@ -58,6 +58,7 @@ public:
 	bool GetIsAming();
 	Entity* GetGrabbed();
 	Entity* GetBall();
+	Ragdoll* GetRagdoll();
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 
 private:
