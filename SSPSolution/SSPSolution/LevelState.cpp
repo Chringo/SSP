@@ -1342,7 +1342,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			ENTITYID::PLAYERONE,
-			ENTITYID::BALLONE,
+			ENTITYID::PLAYERTWO,
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
