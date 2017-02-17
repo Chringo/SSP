@@ -5,7 +5,6 @@
 struct LeverSyncState {
 	unsigned int entityID;
 	bool isActive;
-	bool isAnimationActive;
 };
 
 class LeverEntity :
