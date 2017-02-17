@@ -50,9 +50,9 @@ private:
 	
 	ID3D11DepthStencilView* dsv;
 public:
-	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,     DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
-	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,    DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
-	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB& box,        DirectX::XMVECTOR color = { 1.0f,0.0f,0.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,AABB& box,       DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
+	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos,Plane& plane,    DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR& pos, Sphere& sphere, DirectX::XMVECTOR color = { 0.0f,0.0f,1.0f });
 	GRAPHICSDLL_API void RenderBoundingVolume(DirectX::XMVECTOR * wayPoints, int numWaypoints, DirectX::XMVECTOR color = { 0.0f,1.0f,0.0f });
 private:

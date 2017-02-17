@@ -12,6 +12,9 @@ namespace Resources
 	class DLL_OPERATION ResourceHandler
 	{
 
+	
+
+
 	private:
 		struct LevelResources {
 			unsigned int *ids = nullptr;
@@ -50,6 +53,14 @@ namespace Resources
 
 	private:
 		Resources::Status UnloadLevel(LevelResources* levelRes); 
+
+#ifdef _DEBUG
+	private:
+		int queriesPerFrame = 0;
+	public:
+		void ResetQueryCounter();
+		int GetQueryCounter() { return queriesPerFrame; };
+#endif // _DEBUG
 	};
 }
 

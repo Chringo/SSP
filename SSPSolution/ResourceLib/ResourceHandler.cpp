@@ -2,6 +2,11 @@
 
 
 
+void Resources::ResourceHandler::ResetQueryCounter()
+{
+	queriesPerFrame = 0;
+}
+
 Resources::ResourceHandler::ResourceHandler()
 {
 
@@ -185,10 +190,15 @@ void Resources::ResourceHandler::SetContext(ID3D11DeviceContext * context)
 }
 
 
-Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& modelPtr) const
+Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& modelPtr) 
 {
 	ResourceContainer* modelCont = nullptr;
 	Status st = m_modelHandler->GetModel(id, modelCont);
+
+#ifdef _DEBUG
+	this->queriesPerFrame += 1;
+#endif // _DEBUG
+
 
 	switch (st)
 	{

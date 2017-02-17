@@ -1247,7 +1247,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+		//st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 
 
