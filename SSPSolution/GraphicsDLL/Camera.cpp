@@ -670,7 +670,7 @@ void Camera::m_calcDistance()
 {
 	const float EPSILON = 1e-5f;
 	static float targetDistance = m_maxDistance;
-	float intersectDistance = m_maxDistance;
+	float intersectDistance = m_maxDistance + 0.3;
 	float hitDistance = m_maxDistance;
 	float zoomSpeedFactor = 4.f;
 	bool newDistance = false;
@@ -694,7 +694,6 @@ void Camera::m_calcDistance()
 			}
 		}
 	}
-
 	
 	if (newDistance)
 	{
