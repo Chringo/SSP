@@ -618,6 +618,15 @@ int DeferredShader::Draw(Resources::Model * model)
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat     = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+#ifdef _DEBUG
+		MessageBox(NULL, TEXT("NO Material found when rendering model : " + model->GetId()), TEXT("Rendering error"), MB_OK);
+#endif // DEBUG
+		//return 1;
+	}
 	Resources::Texture** textures = mat->GetAllTextures();
 	ID3D11ShaderResourceView* resViews[5];
 	UINT numViews = 0;
@@ -656,6 +665,15 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+#ifdef _DEBUG
+		//MessageBox(NULL, TEXT("NO Material found when rendering model : " + model->GetId()), TEXT("Rendering error"), MB_OK);
+#endif // DEBUG
+		//return 1;
+	}
 	Resources::Texture** textures = mat->GetAllTextures();
 	ID3D11ShaderResourceView* resViews[5];
 	UINT numViews = 0;
@@ -719,6 +737,15 @@ int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 	if (iteration == 0)
 	{
 		Resources::Material * mat = model->GetMaterial();
+		if (mat == nullptr)
+		{
+			Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+			mat = model->GetMaterial();
+#ifdef _DEBUG
+			MessageBox(NULL, TEXT("NO Material found when rendering model : " + model->GetId()), TEXT("Rendering error"), MB_OK);
+#endif // DEBUG
+			//return 1;
+		}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;
