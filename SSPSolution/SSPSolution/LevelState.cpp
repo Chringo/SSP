@@ -273,7 +273,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = ENTITYID::BALLONE;					//Set Entity ID
-	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0 , 0,0,0);
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -303,7 +303,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = ENTITYID::BALLTWO;					//Set Entity ID
-	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
@@ -986,10 +986,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
 			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player2.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		}
 		else
 		{
@@ -999,10 +999,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
 			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player2.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		}
 
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
@@ -2199,7 +2199,7 @@ int LevelState::UnloadLevel()
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = ENTITYID::BALLONE;					//Set Entity ID
-	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -2218,7 +2218,7 @@ int LevelState::UnloadLevel()
 #pragma region
 	ballP = m_cHandler->GetPhysicsComponent();
 	ballP->PC_entityID = ENTITYID::BALLTWO;					//Set Entity ID
-	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
