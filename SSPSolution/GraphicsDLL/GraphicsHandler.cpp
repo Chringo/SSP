@@ -415,7 +415,7 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxDepth = OCTREE_NODE_MAX_DEPTH;
 	this->m_minDepth = OCTREE_NODE_MIN_DEPTH;
 	this->m_minContainment = OCTREE_NODE_MIN_CONTAINMENT;
-	this->m_minSize = 1.0f;
+	this->m_minSize = OCTREE_NODE_MIN_SIZE;
 }
 
 
