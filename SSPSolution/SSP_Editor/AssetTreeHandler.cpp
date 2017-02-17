@@ -6,29 +6,108 @@ Ui::AssetTreeHandler::AssetTreeHandler()
 {
 }
 
+void Ui::AssetTreeHandler::AddSubCategories(QTreeWidgetItem * topLevel)
+{
+	QTreeWidgetItem* brick = new QTreeWidgetItem();
+	brick->setText(0, "Bricks");
+	brick->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(brick);
+	topLevel->insertChild(BRICK, brick);
+
+	QTreeWidgetItem* stone = new QTreeWidgetItem();
+	stone->setText(0, "Stones");
+	stone->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(stone);
+	topLevel->insertChild(STONE, stone);
+
+	QTreeWidgetItem* plaster = new QTreeWidgetItem();
+	plaster->setText(0, "Plaster");
+	plaster->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(plaster);
+	topLevel->insertChild(PLASTER, plaster);
+
+	QTreeWidgetItem* iron = new QTreeWidgetItem();
+	iron->setText(0, "Iron");
+	iron->setTextAlignment(0, Qt::AlignCenter);
+	topLevel->addChild(iron);
+	topLevel->insertChild(IRON, iron);
+}
+
+bool Ui::AssetTreeHandler::IsValidItem()
+{
+	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Bricks"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Stones"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Plaster"))
+		return false;
+	if (m_tree->currentItem()->text(0) == QString("Iron"))
+		return false;
+	return true;
+}
+
 
 Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 {
+	/*Defining m_tree and disabling sorting for manual sorting*/
 	this->m_tree = tree;
+	m_tree->setSortingEnabled(false);
 
-	QTreeWidgetItem* model = new QTreeWidgetItem(tree);
-	model->setText(0, "Models");
 
-	model->setTextAlignment(0, Qt::AlignCenter);
-	m_tree->addTopLevelItem(model);
-	m_tree->insertTopLevelItem(MODELS, model);
-	model->setExpanded(true);
+	/*Creating the "General Assets" tab*/
+	QTreeWidgetItem* g_Assets = new QTreeWidgetItem(tree);
+	g_Assets->setText(0, "General Assets");
 
-	QTreeWidgetItem* anim = new QTreeWidgetItem(tree);
-	anim->setText(0, "Animations");
+	g_Assets->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(g_Assets);
+	m_tree->insertTopLevelItem(GENERAL_ASSETS, g_Assets);
 
-	anim->setTextAlignment(0, Qt::AlignCenter);
-	anim->setExpanded(true);
-	m_tree->addTopLevelItem(anim);
-	m_tree->insertTopLevelItem(ANIMATIONS, anim);
+
+	/*Creating the "Floors" tab also adding subcategories to this category*/
+	QTreeWidgetItem* floors = new QTreeWidgetItem(tree);
+	floors->setText(0, "Floors");
+	floors->setTextAlignment(0, Qt::AlignCenter);
+
+	this->AddSubCategories(floors);
+
+	m_tree->addTopLevelItem(floors);
+	m_tree->insertTopLevelItem(FLOORS, floors);
 	m_tree->setHeaderLabels(QStringList() << "Resources");
 
 
+	/*Creating the "Ceilings" tab also adding subcategories to this category*/
+	QTreeWidgetItem* ceilings = new QTreeWidgetItem(tree);
+	ceilings->setText(0, "Ceilings");
+	ceilings->setTextAlignment(0, Qt::AlignCenter);
+
+	this->AddSubCategories(ceilings);
+
+	m_tree->addTopLevelItem(ceilings);
+	m_tree->insertTopLevelItem(CEILINGS, ceilings);
+
+
+	/*Creating the "Walls" tab also adding subcategories to this category*/
+	QTreeWidgetItem* walls = new QTreeWidgetItem(tree);
+	walls->setText(0, "Walls");
+	walls->setTextAlignment(0, Qt::AlignCenter);
+
+	this->AddSubCategories(walls);
+
+	m_tree->addTopLevelItem(walls);
+	m_tree->insertTopLevelItem(WALLS, walls);
+
+
+	/*Creating the "Interactable" tab*/
+	QTreeWidgetItem* interactable = new QTreeWidgetItem(tree);
+	interactable->setText(0, "Interactable");
+
+	interactable->setTextAlignment(0, Qt::AlignCenter);
+	m_tree->addTopLevelItem(interactable);
+	m_tree->insertTopLevelItem(INTERACTABLE, interactable);
+
+	/*connecting the doubleclicked signal to the "on_treeview_doubleclicked function*/
 	connect(m_tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_treeView_doubleClicked()));
 
 }
@@ -40,12 +119,21 @@ Ui::AssetTreeHandler::~AssetTreeHandler()
 
 bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData)
 {
-
 	QTreeWidgetItem *itm = new QTreeWidgetItem();
 	
 	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	m_tree->topLevelItem((int)type)->addChild(itm);
+	return true;
+}
+
+bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData, AssetSubCategories subType)
+{
+	QTreeWidgetItem *itm = new QTreeWidgetItem();
+
+	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
+	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+	m_tree->topLevelItem((int)type)->child((int)subType)->addChild(itm);
 	return true;
 }
 
@@ -55,10 +143,13 @@ bool Ui::AssetTreeHandler::AddItem(AssetCategories type, QTreeWidgetItem * item)
 	return true;
 }
 
-void Ui::AssetTreeHandler::on_treeView_doubleClicked() {
+void Ui::AssetTreeHandler::on_treeView_doubleClicked() 
+{
+	//Qt::ItemFlag::ItemIsDropEnabled
+	
+	if (!this->IsValidItem()) 
+		return;		//If a category window is clicked
 
-	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
-		return;
 	QModelIndex index = m_tree->currentIndex();
 
 	//use index.r to get the right mesh

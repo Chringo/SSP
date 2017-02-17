@@ -44,6 +44,8 @@ public:
 	int ResizeGraphicsDynamic(size_t newCap);
 	int ResizeGraphicsPersistent(size_t newCap);
 
+	void WaypointTime();
+
 	//temporary function
 	PhysicsHandler* GetPhysicsHandler() const;
 	GraphicsHandler* GetGraphicsHandler() const;

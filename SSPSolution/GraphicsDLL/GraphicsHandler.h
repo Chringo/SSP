@@ -122,6 +122,8 @@ private:
 		DirectX::XMFLOAT3 ext;
 	};
 	OctreeNode m_octreeRoot;
+	Camera m_overviewCamera;
+	bool m_useOverview;
 	
 #ifdef _DEBUG
 	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
@@ -234,6 +236,7 @@ public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
+	GRAPHICSDLL_API void ToggleOverviewCamera();
 private:
 	void m_CreateTempsTestComponents();
 

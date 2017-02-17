@@ -75,7 +75,7 @@ public:
 	struct C_OBB {
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
-		DirectX::XMFLOAT3X3 ort;
+		DirectX::XMFLOAT4X4 ort;
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
@@ -85,16 +85,22 @@ public:
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
+	struct C_BOX {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 min;
+		DirectX::XMFLOAT3 max;
+	};
 
 	struct ViewFrustrum {
 		//Left, Right, Bottom, Top, Near, Far
 		Plane myPlanes[6];
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
+		CullingResult TestAgainstBox(C_BOX box);
 		//An conservative test is fast but may not cull all things that could be culled
-		int TestAgainstOBBConservative(C_OBB box);
+		CullingResult TestAgainstOBBConservative(C_OBB box);
 		//An exact test will always cull all things perfectly but is slow
-		int TestAgainstOBBExact(C_OBB box);
+		CullingResult TestAgainstOBBExact(C_OBB box);
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
