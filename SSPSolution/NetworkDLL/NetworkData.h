@@ -116,6 +116,7 @@ struct StatePacket : public Packet
 {
 	unsigned int entityID;
 	bool isActive;
+	bool isAnimationActive;
 
 	void serialize(char * data)
 	{

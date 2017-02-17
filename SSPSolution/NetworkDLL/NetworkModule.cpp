@@ -353,7 +353,7 @@ void NetworkModule::SendStateButtonPacket(unsigned int entityID, bool isActive)
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendStateLeverPacket(unsigned int entityID, bool isActive)
+void NetworkModule::SendStateLeverPacket(unsigned int entityID, bool isActive, bool isAnimationActive)
 {
 	const unsigned int packet_size = sizeof(StatePacket);
 	char packet_data[packet_size];
@@ -364,6 +364,7 @@ void NetworkModule::SendStateLeverPacket(unsigned int entityID, bool isActive)
 	packet.packet_type = UPDATE_LEVER_STATE;
 	packet.entityID = entityID;
 	packet.isActive = isActive;
+	packet.isAnimationActive = isAnimationActive;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
