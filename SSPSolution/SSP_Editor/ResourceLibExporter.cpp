@@ -200,7 +200,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				substring += '\0';
 				m_Items.at(j).byteSize = (unsigned int)substring.length() + sizeof(Resources::Resource::RawResourceData);
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				//CopyTextureFile(&textureName);
+				CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
 				m_Output->write((char*)substring.c_str(), substring.length());
@@ -216,7 +216,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 
 void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
-	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind(".")) + file->substr(file->rfind("/"));
+	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind("/")) + file->substr(file->rfind("/"));
 	
 	std::wstring oldPath(file->begin(), file->end());
 	std::wstring newPath(newFilePath.begin(), newFilePath.end());
