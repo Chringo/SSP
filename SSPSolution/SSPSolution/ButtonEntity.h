@@ -21,7 +21,7 @@ private:
 	bool m_animationActive = false;
 	float m_currOffsetValue  =  0; // equal to door and levers m_currRot variable
 	float m_animSpeed		 =  2.0f;
-	float m_activatedOffset  = -0.2f; 
+	float m_activatedOffset  = -0.35f; 
 	float m_targetOffset	 = 0;
 public:
 	ButtonEntity();

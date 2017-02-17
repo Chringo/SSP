@@ -21,6 +21,7 @@ enum PacketTypes {
 	UPDATE_GRAB,
 	SYNC_PHYSICS,
 	SYNC_READY,
+	SYNC_RESET,
 	TEST_PACKET,
 };
 
