@@ -1042,7 +1042,7 @@ int GraphicsHandler::GenerateOctree()
 		reachedMaxDepth = !(size > this->m_minSize);
 	}
 	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
-	this->m_maxDepth = OCTREE_NODE_MAX_DEPTH;
+	//this->m_maxDepth = OCTREE_NODE_MAX_DEPTH;
 	//Initialize the octree root
 	for (i = 0; i < 8; i++)
 	{
