@@ -957,7 +957,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_networkModule->PacketBuffer_GetResetPacket().size() != 0)
 	{
 
-		if (this->m_networkModule->PacketBuffer_GetResetPacket().size() == 0)	//If we clicked
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))	//If we clicked
 		{
 			this->m_networkModule->SendFlagPacket(SYNC_RESET);	//Send packet to other client
 		}
