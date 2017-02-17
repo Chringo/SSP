@@ -237,6 +237,16 @@ void FileImporter::LoadImportedFiles()
 			}
 		}
 	}
+	/*placing a placeholder Material on objects that have no material*/
+	std::vector<Resources::Model*>* m_Models = m_data->GetModels();
+	for (int i = 0; i < m_Models->size(); ++i)
+	{
+		if (m_Models->at(i)->GetMaterial() == nullptr)
+		{
+			GeneratePlaceholderMaterial(m_Models->at(i));
+		}
+	}
+
 }
 Resources::Status FileImporter::Initialize()
 {
@@ -358,10 +368,8 @@ void FileImporter::handleMat(char * m_bbf_object)
 		if (models->at(i)->GetRawModelData()->materialId == newMaterial->GetId())
 		{
 			models->at(i)->SetMaterial(newMaterial);
-			return;
 		}
 	}
-	printf("NU ÄR DET INGEN TEXTUR TILL EN MODEL!!!!!!!\n\n");
 
 
 }
@@ -486,6 +494,12 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 	
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
+
+}
+
+void FileImporter::GeneratePlaceholderMaterial(Resources::Model* m_Model)
+{
+	printf("Found mesh without material, generating a placeholder material\n");
 
 }
 
