@@ -46,7 +46,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			{
 				m_currOffsetValue += frameOffset;
 				
-				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[1], m_currOffsetValue));
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 
 				lastFrameOffsetValue = m_currOffsetValue;
 			}
@@ -58,7 +58,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				
 				
-				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[1], m_currOffsetValue));
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 
 			}
 		}
@@ -67,7 +67,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			if (m_currOffsetValue - frameOffset > m_targetOffset)
 			{
 				m_currOffsetValue -= frameOffset;
-				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[1], m_currOffsetValue));
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 				lastFrameOffsetValue = m_currOffsetValue;
 			}
 			else {
@@ -76,7 +76,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 				DirectX::XMFLOAT3 pos;
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[1], m_currOffsetValue));
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 				return 0;
 			}
 		}
