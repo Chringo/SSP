@@ -237,6 +237,16 @@ void FileImporter::LoadImportedFiles()
 			}
 		}
 	}
+	/*placing a placeholder Material on objects that have no material*/
+	std::vector<Resources::Model*>* m_Models = m_data->GetModels();
+	for (int i = 0; i < m_Models->size(); ++i)
+	{
+		if (m_Models->at(i)->GetMaterial() == nullptr)
+		{
+			GeneratePlaceholderMaterial(m_Models->at(i));
+		}
+	}
+
 }
 Resources::Status FileImporter::Initialize()
 {
@@ -360,6 +370,8 @@ void FileImporter::handleMat(char * m_bbf_object)
 			models->at(i)->SetMaterial(newMaterial);
 		}
 	}
+
+
 }
 
 void FileImporter::handleModel(char * m_bbf_object)
@@ -482,6 +494,23 @@ void FileImporter::AddListItem(ListItem category, std::string name)
 	
 	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
 	this->m_itemList->topLevelItem((int)category)->addChild(itm);
+
+}
+
+void FileImporter::GeneratePlaceholderMaterial(Resources::Model* m_Model)
+{
+	printf("Found mesh without material, generating a placeholder material\n");
+
+	Resources::Material* newMaterial = new Resources::Material();
+	Resources::Texture *placeholder_texture = m_data->GetTextureHandler()->GetPlaceHolderTextures();  
+																					   
+	newMaterial->SetTexture(&placeholder_texture[Resources::TEXTURE_ALBEDO		], Resources::TEXTURE_ALBEDO		);
+	newMaterial->SetTexture(&placeholder_texture[Resources::TEXTURE_SPECULAR	], Resources::TEXTURE_SPECULAR		);
+	newMaterial->SetTexture(&placeholder_texture[Resources::TEXTURE_ROUGHNESS	], Resources::TEXTURE_ROUGHNESS		);
+	newMaterial->SetTexture(&placeholder_texture[Resources::TEXTURE_NORMAL		], Resources::TEXTURE_NORMAL		);
+	newMaterial->SetTexture(&placeholder_texture[Resources::TEXTURE_AO			], Resources::TEXTURE_AO			);
+
+	m_Model->SetMaterial(newMaterial);
 
 }
 

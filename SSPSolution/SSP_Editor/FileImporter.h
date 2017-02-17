@@ -62,9 +62,11 @@ private:
 	void handleAnimation(char *m_bbf_object);
 
 	void AddListItem(ListItem category, std::string name);
+	void GeneratePlaceholderMaterial(Resources::Model* m_Model);
 	bool ImportTextures(char * m_bbf_object, MaterialHeader* m_Mheader, Resources::Material * newMaterial);
 	Resources::Status AppendFromFolder(QString * dirPath, DIR *dir, int & numModels, Ui::AssetTreeHandler* uiTree, SpecialImportCases Simp,
 		Ui::AssetTreeHandler::AssetCategories type, Ui::AssetTreeHandler::AssetSubCategories subType);
+	
 
 	bool HandlePathNotFound();
 	std::string SelectNewPath();

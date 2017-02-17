@@ -1,12 +1,10 @@
 #include "ResourceLibExporter.h"
 
 
-
 ResourceLibExporter::ResourceLibExporter()
 {
 	m_Output = new std::ofstream();
 }
-
 
 ResourceLibExporter::~ResourceLibExporter()
 {
@@ -20,9 +18,10 @@ ResourceLibExporter * ResourceLibExporter::GetInstance()
 	return &resourceLibExporter;
 }
 
-void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
+void ResourceLibExporter::Initialize(FileImporter * m_FileImporter, QProgressBar* m_ProgressBar)
 {
 	this->m_FileImporter = m_FileImporter;
+	this->m_ProgressBar = m_ProgressBar;
 }
 
 void ResourceLibExporter::ExportBPF()
@@ -120,6 +119,7 @@ void ResourceLibExporter::BuildRegistry()
 	I know! I'm going to put this file, which has nothing to do with our binary files in
 	the binary files folders! Smart. Really smart.*/
 	m_Header.numIds = m_Items.size();
+	this->m_ProgressBar->setMaximum(m_Header.numIds);
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 
@@ -200,7 +200,7 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 				substring += '\0';
 				m_Items.at(j).byteSize = (unsigned int)substring.length() + sizeof(Resources::Resource::RawResourceData);
 				m_Items.at(j).startBit = this->m_Output->tellp();
-				//CopyTextureFile(&textureName);
+				CopyTextureFile(&textureName);
 
 				m_Output->write((char*)&textureData, sizeof(Resources::Resource::RawResourceData));
 				m_Output->write((char*)substring.c_str(), substring.length());
@@ -214,15 +214,106 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	}
 }
 
+bool ResourceLibExporter::TextureExists(const std::string& filename)
+{
+	struct stat buf;
+	if (stat(filename.c_str(), &buf) != -1)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool ResourceLibExporter::overWrite(const std::string & filename)
+{
+	size_t f = filename.rfind("/", filename.length());
+	std::string pAth = filename.substr(f + 1, filename.length());
+
+	std::string TexturePathName = ("Overwrite " + pAth + "?");
+	std::wstring stemp = std::wstring(TexturePathName.begin(), TexturePathName.end());
+	LPCWSTR sw = stemp.c_str();
+	if (MessageBox(NULL, sw, TEXT("Texture already exists"), MB_YESNO) == IDYES)
+	{
+		return true;
+	}
+	return false;
+}
+
 void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
-	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind(".")) + file->substr(file->rfind("/"));
+	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind("/")) + file->substr(file->rfind("/"));
 	
 	std::wstring oldPath(file->begin(), file->end());
 	std::wstring newPath(newFilePath.begin(), newFilePath.end());
 
-	/*edit bool if the desire for a check exists*/
-	CopyFile(oldPath.c_str(), newPath.c_str(), false);
+	/*A check to see if the texture exists in the project folder
+	I------------------------------------------------------------I
+	I This check is based on the local variable m_overWrite		 I
+	I which not only controls wether the user wished to write	 I
+	I one file but also will check if they want to overwrite all I
+	I------------------------------------------------------------I
+	*/
+	
+	if (TextureExists(newFilePath))
+	{
+		/*this if-statement will not run if the uiser has selected to not overwrite anything*/
+		if (m_overWrite != OverWriting::NOTHING)
+		{
+			/*This if-statement will run if the user has selected to manually inspect each texture*/
+			if (m_overWrite == OverWriting::ONCE)
+			{
+				if (overWrite(newFilePath))
+				{
+					CopyFile(oldPath.c_str(), newPath.c_str(), false);
+					return;
+				}
+			}
+			/*This if-statement will only run the first time*/
+			else if (m_overWrite == OverWriting::ONCE_FIRST)
+			{
+				if (overWrite(newFilePath))
+				{
+					CopyFile(oldPath.c_str(), newPath.c_str(), false);
+				}
+
+				/*this messageBox will ask the user if he wants to overwrite the texture files*/
+				int msgboxID = MessageBox(
+					NULL,
+					(LPCWSTR)L"Do you wish to overwrite all textures being copied?\nPress cancel for manual inspection.",
+					(LPCWSTR)L"Overwrite all?",
+					MB_YESNOCANCEL | MB_DEFBUTTON3
+					);
+
+				/*will change the overwrite variable based on the users input*/
+				switch (msgboxID)
+				{
+				case IDYES:
+					m_overWrite = OverWriting::ALL;
+					break;
+				case IDNO:
+					m_overWrite = OverWriting::NOTHING;
+					break;
+				case IDCANCEL:
+					m_overWrite = OverWriting::ONCE;
+					break;
+				}
+				return;
+			}
+			/*This if-statement will run if the user chose to overwrite every texture*/
+			else if (m_overWrite == OverWriting::ALL)
+			{
+				CopyFile(oldPath.c_str(), newPath.c_str(), false);
+				return;
+			}
+		}
+	}
+	/*this else-statement will run if there's no duplicate texture in the project folder*/
+	else
+	{
+		CopyFile(oldPath.c_str(), newPath.c_str(), false);
+		return;
+	}
+	
 }
 
 void ResourceLibExporter::HandleSceneData()
@@ -241,15 +332,16 @@ void ResourceLibExporter::HandleSceneData()
 		{
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
-
 				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" 
 					|| dotName != ".mat" && dotName == ".skel" || dotName != ".mat" && dotName == ".anim")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
+					this->m_ProgressBar->setValue(this->m_ProgressBar->value() + 1);
 				}
 				else if (dotName == ".mat")
 				{
 					WriteMatToBPF(data, (const unsigned int)dataSize);
+					this->m_ProgressBar->setValue(this->m_ProgressBar->value() + 1);
 				}
 			}
 		}
@@ -269,8 +361,11 @@ void ResourceLibExporter::WriteRegistry()
 bool ResourceLibExporter::Open()
 {
 	m_Output->open(m_DestinationPath, std::fstream::binary);
-	if(m_Output->is_open())
+	if (m_Output->is_open())
+	{
+		this->m_ProgressBar->show();
 		return true;
+	}
 	return false;
 }
 
@@ -278,6 +373,9 @@ bool ResourceLibExporter::Close()
 {
 	m_Items.clear();
 	m_Output->close();
+	m_overWrite = ONCE_FIRST;
+	this->m_ProgressBar->reset();
+	this->m_ProgressBar->hide();
 	if(!m_Output->is_open())
 		return true;
 	return false;
