@@ -623,7 +623,7 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 			if (result > 0)
 			{
 				//Push it to the gamestate stack/vector
-				this->m_gsh->PushStateToStack(levelSelect);
+				//this->m_gsh->PushStateToStack(levelSelect);
 
 				#pragma region
 				switch (levelID)
@@ -641,12 +641,9 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				}
 				#pragma endregion Level_To_Load
 			}
-			else
-			{
-				//Delete it
-				delete levelSelect;
-				levelSelect = nullptr;
-			}
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
 			#pragma endregion Load_Level
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
