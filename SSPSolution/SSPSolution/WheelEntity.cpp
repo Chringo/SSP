@@ -273,11 +273,8 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 		}
 		else
 		{
-			if (this->m_rotationState == RotatingIncrease || this->m_rotationState == RotatingDecrease)
-			{
-				this->m_rotationState = Resting;
-				this->m_resetCountdown = this->m_timeUntilReset;
-			}
+			this->m_rotationState = Resting;
+			this->m_resetCountdown = this->m_timeUntilReset;
 		}
 	}
 	return result;

@@ -11,7 +11,7 @@ int Entity::SyncComponents()
 		if (this->m_aiComp != nullptr)
 		{
 			// Works for now since we're only handling platforms
-			if (this->m_aiComp->AC_triggered && !this->m_aiComp->AC_finished)
+			if (this->m_aiComp->AC_triggered)
 				this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
 			else
 				this->m_pComp->PC_velocity = { 0 };
