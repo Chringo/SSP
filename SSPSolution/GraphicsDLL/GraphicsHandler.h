@@ -113,6 +113,7 @@ private:
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
+		Resources::Model* modelPtr;
 	}; 
 	struct OctreeNode {
 		OctreeNode* branches[8] = { nullptr };

@@ -1,11 +1,14 @@
 #include "ResourceHandler.h"
 
 
+#ifdef  _DEBUG
+
 
 void Resources::ResourceHandler::ResetQueryCounter()
 {
 	queriesPerFrame = 0;
 }
+#endif //  _DEBUG
 
 Resources::ResourceHandler::ResourceHandler()
 {
@@ -93,6 +96,9 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 		UnloadLevel(m_CurrentLevel); //Unload the previous level
 	//m_CurrentLevel = ne;
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+#ifdef _DEBUG
+	this->ResetQueryCounter();
+#endif // _DEBUG
 	return Resources::Status::ST_OK;
 }
 
@@ -160,6 +166,9 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 		UnloadLevel(m_CurrentLevel); //Unload the previous level
 	m_CurrentLevel = newLevel;
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+#ifdef _DEBUG
+	this->ResetQueryCounter();
+#endif // _DEBUG
 	return Resources::Status::ST_OK;
 }
 

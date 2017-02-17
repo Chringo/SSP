@@ -526,15 +526,14 @@ int GraphicsHandler::Render(float deltaTime)
 
 	int amountOfModelsToRender = 0;
 	int componentsInTree = this->m_octreeRoot.containedComponents.size();
-	//struct InstanceData {
-	//	int modelID;
-	//	int amountOfInstances;
-	//	DirectX::XMFLOAT4X4* componentSpecific;
-	//};
+
 	std::vector<InstanceData> instancedRenderingList;
 	unsigned int firstRenderedModelID = UINT_MAX;
 	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
+	Resources::Model* lastModelPtr = nullptr;
+	Resources::Model* firstRenderedModelPtr = nullptr;
+	Resources::Model* firstRenderedInstancedModelPtr = nullptr;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
@@ -543,13 +542,15 @@ int GraphicsHandler::Render(float deltaTime)
 			if (i->modelID == lastModelID)
 			{
 				firstRenderedInstancedModelID = i->modelID;
+				firstRenderedInstancedModelPtr = i->modelPtr;
 				break;
 			}
-			
-			lastModelID = i->modelID;
+			lastModelPtr = i->modelPtr;
+			lastModelID  = i->modelID;
 			if (firstRenderedModelID == UINT_MAX)
 			{
 				firstRenderedModelID = i->modelID;
+				firstRenderedModelPtr = i->modelPtr;
 			}
 		}
 	}
@@ -558,7 +559,8 @@ int GraphicsHandler::Render(float deltaTime)
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	int amountOfModelOccurrencees = 0;
 	unsigned int lastComponentIndex = 0;
-	lastModelID = firstRenderedModelID;
+	lastModelID  = firstRenderedModelID;
+	lastModelPtr = firstRenderedModelPtr;
 	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
@@ -570,10 +572,10 @@ int GraphicsHandler::Render(float deltaTime)
 			{
 				if (amountOfModelOccurrencees > 1)
 				{
-
 					//Create the array
 					InstanceData instanceData;
-					instanceData.modelID = lastModelID;
+					instanceData.modelID  = lastModelID;
+					instanceData.modelPtr = lastModelPtr;
 					instanceData.amountOfInstances = amountOfModelOccurrencees;
 					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 					instancedRenderingList.push_back(instanceData);
@@ -588,6 +590,7 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 			}
 			//Prepare the data for the next model ID
+			lastModelPtr = i->modelPtr;
 			lastModelID = i->modelID;
 			lastComponentIndex = i->componentIndex;
 			lastRenderedComponent = i;
@@ -599,7 +602,8 @@ int GraphicsHandler::Render(float deltaTime)
 		if (amountOfModelOccurrencees > 1)
 		{
 			InstanceData instanceData;
-			instanceData.modelID = lastModelID;
+			instanceData.modelID  = lastModelID;
+			instanceData.modelPtr = lastModelPtr;
 			instanceData.amountOfInstances = amountOfModelOccurrencees;
 			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 			instancedRenderingList.push_back(instanceData);
@@ -615,7 +619,8 @@ int GraphicsHandler::Render(float deltaTime)
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	lastModelID = firstRenderedInstancedModelID;
+	lastModelID  = firstRenderedInstancedModelID;
+	lastModelPtr = firstRenderedInstancedModelPtr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
@@ -710,6 +715,10 @@ int GraphicsHandler::Render(float deltaTime)
 
 	//this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
+
+	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
+	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
 
 	this->m_uiHandler->DrawUI();
@@ -955,6 +964,8 @@ int GraphicsHandler::GenerateOctree()
 		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
 		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
 		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_octreeRoot.containedComponents[i]->modelID, this->m_octreeRoot.containedComponents[i]->modelPtr);
+		
 		//If the rotation isn't 0 create a bigger AABB
 #pragma region
 		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i]->ort))
@@ -1054,6 +1065,7 @@ int GraphicsHandler::GenerateOctree()
 
 	//Build the tree
 	this->OctreeExtend(&this->m_octreeRoot, 0);
+
 
 	return result;
 }

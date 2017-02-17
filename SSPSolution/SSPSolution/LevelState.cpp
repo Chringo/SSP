@@ -2039,6 +2039,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
+#ifdef _DEBUG
+	//This keeps track of any resource lib access outside of level loading. 
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
 	return 1;
 }
 
