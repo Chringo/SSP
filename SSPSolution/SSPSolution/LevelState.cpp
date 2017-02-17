@@ -63,7 +63,6 @@ Entity* LevelState::GetClosestBall(float minDist)
 
 LevelState::LevelState()
 {
-	this->m_clearedLevel = 0;
 }
 
 LevelState::~LevelState()
@@ -136,6 +135,23 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 {
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+
+	this->m_clearedLevel = 0;
+	this->m_curLevel = 0;
+
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+
+	if (this->m_curLevel > this->m_levelPaths.size())
+	{
+		this->m_curLevel = 0;
+	}
+
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 
@@ -402,8 +418,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (this->m_clearedLevel == 1)
 	{
-		this->m_clearedLevel = 0;
-		this->LoadNext(inputHandler);
+		this->LoadNext();
 	}
 
 	this->m_networkModule->Update();
@@ -814,7 +829,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	#pragma endregion Network_Send_Updates
 
-	#pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
 	{
 		// Reset player-position to spawn
@@ -850,7 +864,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
-	
+
+#pragma region
 	//Update all puzzle entities
 	#pragma region
 	//Commong variables needed for logic checks
@@ -969,7 +984,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-	#pragma region
+#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
 	if (this->m_player1.isAnimationChanged())
 	{
@@ -977,7 +992,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 	}
 
-	#pragma endregion Send_Player_Animation_Update
+#pragma endregion Send_Player_Animation_Update
 
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
@@ -987,7 +1002,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	// Reactionary level director acts
 	this->m_director.Update(dt);
 
-	#pragma region
+#pragma region
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 		{
 			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
@@ -998,7 +1013,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
 			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
 		}
-	#pragma endregion MUSIC_KEYS
+#pragma endregion MUSIC_KEYS
 
 	this->m_cameraRef->Update(dt);
 
@@ -1376,7 +1391,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1
-			2,	//EntityID Player2
+			3,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -2219,29 +2234,43 @@ int LevelState::UnloadLevel()
 	return 1;
 }
 
-int LevelState::LoadNext(InputHandler * inputHandler)
+int LevelState::LoadNext()
 {
 	int result = 0;
+	//Increase the level count and reset the cleared level flag
+	this->m_curLevel++;
+	this->m_clearedLevel = 0;
+
+	if (this->m_curLevel >= this->m_levelPaths.size())
+	{
+		//If the code comes here it means that the user finished the last level
+		//Behavior will be to start the first level
+		//Next behavior is to pop ourselves and go back to the menu
+		//The last behavior is to pop ourselves and push a Credit state
+		this->m_curLevel = 0;
+	}
+
 	Resources::Status st = Resources::Status::ST_OK;
-	std::string path = "";
+	std::string path = this->m_levelPaths.at(this->m_curLevel);
 
 	//We also need to clear the internal lists, lets have another function do that
 	this->UnloadLevel();
 
 	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
-	//Assume we are in level one and load level two
-	path = "../ResourceLib/AssetFiles/L2P1.level";
+	path = this->m_levelPaths.at(this->m_curLevel);
+
 	//Begin by clearing the current level data by calling UnloadLevel.
 	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
 #pragma region
-	printf("LOAD LEVEL 1\n");
+	printf("LOAD LEVEL %d\n", this->m_curLevel);
 	//Load LevelData from file
-	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
-																	   //if not successful
+	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
+	//if not successful
 	if (st != Resources::ST_OK)
 	{
 		//Error loading file.
 		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+		return -1;
 	}
 	//Load Resources of the level
 	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
@@ -2250,6 +2279,7 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 	{
 		//Error loading level from resource handler.
 		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+		return -2;
 	}
 
 	//Load Lights of the level
@@ -2258,7 +2288,7 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 	{
 		//Error loading lights through LightHandler.
 		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
-		
+		return -3;
 	}
 #pragma endregion Loading data
 
@@ -2277,5 +2307,15 @@ int LevelState::LoadNext(InputHandler * inputHandler)
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
 	return 1;
+}
+
+int LevelState::GetLevelIndex()
+{
+	return this->m_curLevel;
+}
+
+std::string LevelState::GetLevelPath()
+{
+	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel));
 }
 
