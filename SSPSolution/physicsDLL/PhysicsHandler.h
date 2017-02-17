@@ -145,7 +145,7 @@ private:
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
-	void CheckFieldIntersection();
+	//void CheckFieldIntersection();
 
 	bool IsPointInBox(DirectX::XMVECTOR point, OBB* &src, DirectX::XMVECTOR BoxPos);
 
@@ -197,7 +197,7 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, LinkType type);
+	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
@@ -254,15 +254,15 @@ public:
 	PHYSICSDLL_API void DoChainAjustPhysics(bool isTicked);
 	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
 
-	PHYSICSDLL_API void ChainPhysicsCallback(ChainLink* link, float dt);
+	PHYSICSDLL_API void ChainPhysicsCallback(PhysicsLink* link, float dt);
 
 	PHYSICSDLL_API void ClearCollisionNormals();
 	PHYSICSDLL_API void ProcessCallback(btScalar timestep);
-	PHYSICSDLL_API void AdjustChainLinkCallback(ChainLink* link);
-	PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
-	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
-	
-	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
+	PHYSICSDLL_API void AdjustChainLinkCallback(PhysicsLink* link);
+	//PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
+	//PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
+	//
+	//PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 	PHYSICSDLL_API void SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
 	PHYSICSDLL_API void SyncRagdollWithSkelton(Ragdoll* ragdoll);
 
@@ -271,6 +271,8 @@ public:
 	PHYSICSDLL_API DirectX::XMMATRIX CalcNewRotationAxises(PhysicsComponent* joint1, PhysicsComponent* joint2);
 
 	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
+
+	PHYSICSDLL_API void SetIgnoreCollisions();
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

@@ -185,7 +185,7 @@ void BulletInterpreter::Initialize()
 		this->m_collitionConfiguration
 	);
 
-	this->m_GravityAcc = btVector3(0, 0, 0);
+	this->m_GravityAcc = btVector3(0, -1, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
 	//this->timeStep = 0;
@@ -208,7 +208,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	#endif
 
 
-	btScalar fixedTimeStep = btScalar(1.0)/btScalar(200); 
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(120); 
 	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -585,10 +585,6 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 	int i = 0;
 }
 
-PHYSICSDLL_API void BulletInterpreter::AddConstraint(PhysicsComponent * src1, PhysicsComponent * src2)
-{
-}
-
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);
@@ -728,6 +724,14 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 {
 	return this->m_dynamicsWorld;
+}
+
+PHYSICSDLL_API void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * src1, PhysicsComponent * src2)
+{
+	btRigidBody* rigidBody1 = this->m_rigidBodies.at(src1->PC_IndexRigidBody);
+	btRigidBody* rigidBody2 = this->m_rigidBodies.at(src2->PC_IndexRigidBody);
+
+	rigidBody2->setIgnoreCollisionCheck(rigidBody1, true);
 }
 
 void BulletInterpreter::CreateDummyObjects()

@@ -203,6 +203,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
+	this->m_player1.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayerRagdoll());
 
 #pragma endregion Player1
 
@@ -1097,11 +1098,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
 		else
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
 		
 		previous = next;
@@ -1110,7 +1111,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
@@ -1142,11 +1143,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		next = PC_ptr;
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
 		else
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
 
 		previous = next;
@@ -1154,7 +1155,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
 	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 #pragma endregion Create_Chain_Link
 
 #pragma region
@@ -1197,7 +1198,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(10, 3, 0, 0);
+		//this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(10, 3, 0, 0);
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 	}
 	else
@@ -2035,7 +2036,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-	
+	this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //

@@ -133,10 +133,13 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 {
 	int result = 0;
 	//Constants for descriptive code
-	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
-	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS};
+	// was on dev
+	//enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	//enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS};
+	//---
 	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
-	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_INWARDS};
+	enum { PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS };
+
 	DirectX::XMMATRIX clipSpaceMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&this->m_viewMatrix), DirectX::XMLoadFloat4x4(&this->m_projectionMatrix));
 	DirectX::XMFLOAT4X4 M;
 	DirectX::XMStoreFloat4x4(&M, clipSpaceMatrix);
@@ -739,7 +742,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	CullingResult result = FRUSTRUM_INSIDE;
 
 #pragma region
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -794,7 +797,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 CullingResult Camera::ViewFrustrum::TestAgainstOBBConservative(C_OBB box)
 {
 	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 
 	C_BOX testWith;
 	//Get the new extensions after rotation the AABB

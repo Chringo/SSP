@@ -1682,18 +1682,29 @@ void PhysicsHandler::ShutDown()
 void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 1000000);
-	//dt = (deltaTime / 50000);
-	std::vector<PhysicsComponent*>::iterator toProcess = this->m_physicsComponents.begin();
+
 	int i = 0;
-	//if (this->m_playerRagDoll.state == ANIMATED_TRANSITION)
-	//{
-	//	//this->m_playerRagDoll.playerPC->PC_OBB.ort = this->m_playerRagDoll.lowerBody.center->PC_OBB.ort;
-	//	this->m_playerRagDoll.state = ANIMATED;
-	//}
+
+
+
+	
+	this->CheckFieldIntersection();
+
+	//Bullet <---- physicsComponent
+	this->SyncAllPhyicsComponentsToBullet();
+
+	//take a step in bullet engine, max 3 steps
+	this->m_bullet.UpdateBulletEngine(dt);
+
+	//PhysicsComponent -----> Bullet
+	this->SyncBulletToPhysicsComponents();
+
+	this->DoChainPhysics(dt, false);
+
 	if (this->m_playerRagDoll.state == ANIMATED)
 	{
 
-		this->SetRagdollToBindPose(&this->m_playerRagDoll, this->m_playerRagDoll.playerPC->PC_pos);
+		this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		float rightfootVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.rightLeg.next2->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_playerRagDoll.ballPC->PC_velocity));
 		if (rightfootVel > 0.7 && ballVel > 0.7)
@@ -1706,47 +1717,41 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		this->m_playerRagDoll.state = RAGDOLL;
 	}
-	int size = this->m_physicsComponents.size();
-	for (toProcess; toProcess != this->m_physicsComponents.end(); toProcess++)
+	if (this->m_playerRagDoll.state == RAGDOLL)
 	{
-		PhysicsComponent* temp = nullptr;
-		temp = *(toProcess);
-		this->m_bullet.SyncBulletWithGame((*(toProcess)));
+		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		this->AdjustRagdoll(&this->m_playerRagDoll, dt);
+		int nrOfBodyParts = this->m_bodyPC.size();
+		for (int i = 0; i < nrOfBodyParts; i++)
+		{
+			this->m_bodyPC.at(i)->PC_gravityInfluence = 1.0f;
+		}
 	}
-	
-	this->CheckFieldIntersection();
 
-	//Bullet <---- physicsComponent
-	this->SyncAllPhyicsComponentsToBullet();
-
-	//take a step in bullet engine, max 3 steps
-	this->m_bullet.UpdateBulletEngine(dt);
-
-	//PhysicsComponent -----> Bullet
-	this->SyncBulletToPhysicsComponents();
-	
-	//this->DoChainPhysics(dt, false);
-
-	//this->DoChainAjustPhysics(false);
+	this->DoChainAjustPhysics(false);
 
 	this->UpdateStaticPlatforms(dt);
 
 	this->ClearCollisionNormals();
-
-	int nrOfChainLinks = this->m_links.size();
 	if (this->m_playerRagDoll.state == RAGDOLL)
 	{
-		for (int i = 0; i < nrOfChainLinks; i++)
-		{
-			this->DoChainPhysics(&this->m_links.at(i), dt);
-		}
-		this->AdjustRagdoll(&this->m_playerRagDoll, dt);
-		for (int i = 0; i < nrOfChainLinks; i++)
-		{
-			this->AdjustChainLinkPosition(&this->m_links.at(i));
-		}
-		this->DoRagdollIntersection(dt);
+		this->SyncRagdollWithSkelton(&this->m_playerRagDoll);
 	}
+	//if (this->m_playerRagDoll.state == RAGDOLL)
+	//{
+	//	int nrOfChainLinks = this->m_links.size();
+	//	//for (int i = 0; i < nrOfChainLinks; i++)
+	//	//{
+	//	//	this->DoChainPhysics(&this->m_links.at(i), dt);
+	//	//}
+	//	this->AdjustRagdoll(&this->m_playerRagDoll, dt);
+	//	//for (int i = 0; i < nrOfChainLinks; i++)
+	//	//{
+	//	//	this->AdjustChainLinkPosition(&this->m_links.at(i));
+	//	//}
+
+	//	this->SyncRagdollWithSkelton(&this->m_playerRagDoll);
+	//}
 
 }
 
@@ -1759,7 +1764,7 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 	int nrOfStaticObjects = this->m_staticComponents.size();
 	if (this->m_playerRagDoll.state == RAGDOLL)
 	{
-		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.6, 0, 0));
+		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
@@ -1938,17 +1943,9 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 		{
 			if (lenght >= link->PL_lenght)
 			{
-				//force = DirectX::XMVectorScale(link->PL_next->PC_velocity, -0.5);
-				//DirectX::XMVECTOR para;
-				//DirectX::XMVECTOR perp;
-
-				//DirectX::XMVector3ComponentsFromNormal(&para, &perp, link->PL_next->PC_velocity, diffVec);
-				//link->PL_previous->PC_velocity = DirectX::XMVectorScale(para, 0.9);
-
 
 				DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->PL_lenght), 0.9);
 				force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->PL_previous->PC_velocity, link->PL_next->PC_velocity), 0.999));
-				//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(link->PL_next->PC_velocity,0.1));
 
 				this->ApplyForceToComponent(link->PL_next, force, dt);
 				force = DirectX::XMVectorScale(force, -1.0);
@@ -2126,7 +2123,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 	}
 	else if (link->PL_type == PL_CHAIN)
 	{
-		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
+		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->PL_lenght));
 		toMove = DirectX::XMVectorScale(toMove, 0.5f);
 
 		DirectX::XMVECTOR next_toMove = DirectX::XMVectorScale(toMove, -1);
@@ -2137,20 +2134,20 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 		//link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
 		//--
 
-		this->m_bullet.AddNormalFromCollisions(link->CL_previous, link->CL_previous->PC_IndexRigidBody);
-		int nrOfNormals = link->CL_previous->m_normals.size();
+		this->m_bullet.AddNormalFromCollisions(link->PL_previous, link->PL_previous->PC_IndexRigidBody);
+		int nrOfNormals = link->PL_previous->m_normals.size();
 		
 		//no collsion
 		if (nrOfNormals == 0)
 		{
-			link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
+			link->PL_previous->PC_pos = DirectX::XMVectorAdd(link->PL_previous->PC_pos, previous_toMove);
 		}
 		else
 		{
 			DirectX::XMVECTOR toMoveResult = previous_toMove;
 			for (int i = 0; i < nrOfNormals; i++)
 			{
-				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->CL_previous->m_normals.at(i));
+				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->m_normals.at(i));
 				float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 				if (dotProd < 0)
 				{
@@ -2161,21 +2158,21 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 					toMoveResult = DirectX::XMVectorSubtract(toMoveResult, paral);
 				}
 			}
-			link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, toMoveResult);
+			link->PL_previous->PC_pos = DirectX::XMVectorAdd(link->PL_previous->PC_pos, toMoveResult);
 		}
 
-		this->m_bullet.AddNormalFromCollisions(link->CL_next, link->CL_next->PC_IndexRigidBody);
-		nrOfNormals = link->CL_next->m_normals.size();
+		this->m_bullet.AddNormalFromCollisions(link->PL_next, link->PL_next->PC_IndexRigidBody);
+		nrOfNormals = link->PL_next->m_normals.size();
 		if (nrOfNormals == 0)
 		{
-			link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
+			link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, next_toMove);
 		}
 		else
 		{
 			DirectX::XMVECTOR toMoveResult = next_toMove;
 			for (int i = 0; i < nrOfNormals; i++)
 			{
-				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->CL_next->m_normals.at(i));
+				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->m_normals.at(i));
 				float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 				if (dotProd < 0)
 				{
@@ -2186,15 +2183,13 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 					toMoveResult = DirectX::XMVectorSubtract(toMoveResult, paral);
 				}
 			}
-			link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, toMoveResult);
+			link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, toMoveResult);
 		}
 
 
-		}
 	}
-
-
 }
+
 
 void PhysicsHandler::ApplyForceToComponent(PhysicsComponent * componentPtr, DirectX::XMVECTOR force, float dt)
 {
@@ -2257,7 +2252,6 @@ PhysicsComponent * PhysicsHandler::CreateBodyPartPhysicsComponent(const DirectX:
 	newObject->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_active = 1;
 	newObject->PC_collides = true;
 	newObject->PC_entityID = 0;
@@ -2265,7 +2259,7 @@ PhysicsComponent * PhysicsHandler::CreateBodyPartPhysicsComponent(const DirectX:
 	newObject->PC_steadfast = false;
 	newObject->PC_mass = 1.0f;
 	newObject->PC_gravityInfluence = 1.0f;
-	newObject->PC_Sphere.radius = 0.125f;
+	newObject->PC_Sphere.radius = 0.3f;
 	newObject->PC_friction = 0.5f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_Sphere;
@@ -2275,7 +2269,7 @@ PhysicsComponent * PhysicsHandler::CreateBodyPartPhysicsComponent(const DirectX:
 	newObject->PC_OBB.ext[1] = 0.25f;
 	newObject->PC_OBB.ext[2] = 0.25f;
 	this->m_bodyPC.push_back(newObject);
-	//this->m_physicsComponents.push_back(newObject);
+	this->m_physicsComponents.push_back(newObject);
 
 	return newObject;
 }
@@ -2346,13 +2340,13 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
-void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, LinkType type)
+void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
-	ChainLink link;
-	link.CL_lenght = linkLenght;
-	link.CL_next = next;
-	link.CL_previous = previous;
-	link.segmentType = type;
+	PhysicsLink link;
+	link.PL_lenght = linkLenght;
+	link.PL_next = next;
+	link.PL_previous = previous;
+	link.PL_type = type;
 
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
@@ -2395,73 +2389,73 @@ void PhysicsHandler::ResetRagdollToTPose(DirectX::XMVECTOR pos)
 	//legLenght = 1.0f;
 
 #pragma region
-	PhysicsComponent* upperBody = this->m_bodyPC.at(0);
-	upperBody->PC_pos = pos;
-	upperBody->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* upperBody = this->m_bodyPC.at(0);
+	//upperBody->PC_pos = pos;
+	//upperBody->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
-	PhysicsComponent* rightShoulder = this->m_bodyPC.at(1);
-	rightShoulder->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, 0, 0, 0));
-	rightShoulder->PC_OBB.ort = DirectX::XMMatrixIdentity();
-
-
-	PhysicsComponent* rightElbow = this->m_bodyPC.at(2);
-	rightElbow->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth + armLenght, 0, 0, 0));
-	rightElbow->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightShoulder = this->m_bodyPC.at(1);
+	//rightShoulder->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, 0, 0, 0));
+	//rightShoulder->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* rightHand = this->m_bodyPC.at(3);
-	rightHand->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth + armLenght * 2, 0, 0, 0));
-	rightHand->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightElbow = this->m_bodyPC.at(2);
+	//rightElbow->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth + armLenght, 0, 0, 0));
+	//rightElbow->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftShoulder = this->m_bodyPC.at(4);
-	leftShoulder->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, 0, 0, 0));
-	leftShoulder->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightHand = this->m_bodyPC.at(3);
+	//rightHand->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth + armLenght * 2, 0, 0, 0));
+	//rightHand->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftElbow = this->m_bodyPC.at(5);
-	leftElbow->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth - armLenght, 0, 0, 0));
-	leftElbow->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* leftShoulder = this->m_bodyPC.at(4);
+	//leftShoulder->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, 0, 0, 0));
+	//leftShoulder->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftHand = this->m_bodyPC.at(6);
-	leftHand->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth - armLenght * 2, 0, 0, 0));
-	leftHand->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* leftElbow = this->m_bodyPC.at(5);
+	//leftElbow->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth - armLenght, 0, 0, 0));
+	//leftElbow->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* lowerBody = this->m_bodyPC.at(7);
-	lowerBody->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0, -torsoHeight, 0, 0));
-	lowerBody->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* leftHand = this->m_bodyPC.at(6);
+	//leftHand->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth - armLenght * 2, 0, 0, 0));
+	//leftHand->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* rightLeg = this->m_bodyPC.at(8);
-	rightLeg->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight, 0, 0));
-	rightLeg->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* lowerBody = this->m_bodyPC.at(7);
+	//lowerBody->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0, -torsoHeight, 0, 0));
+	//lowerBody->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* rightKnee = this->m_bodyPC.at(9);
-	rightKnee->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight - legLenght, 0, 0));
-	rightKnee->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightLeg = this->m_bodyPC.at(8);
+	//rightLeg->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight, 0, 0));
+	//rightLeg->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* rightFoot = this->m_bodyPC.at(10);
-	rightFoot->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight - legLenght * 2, 0, 0));
-	rightFoot->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightKnee = this->m_bodyPC.at(9);
+	//rightKnee->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight - legLenght, 0, 0));
+	//rightKnee->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftLeg = this->m_bodyPC.at(11);
-	leftLeg->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight, 0, 0));
-	leftLeg->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* rightFoot = this->m_bodyPC.at(10);
+	//rightFoot->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(torsoWidth, -torsoHeight - legLenght * 2, 0, 0));
+	//rightFoot->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftKnee = this->m_bodyPC.at(12);
-	leftKnee->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight - legLenght, 0, 0));
-	leftKnee->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* leftLeg = this->m_bodyPC.at(11);
+	//leftLeg->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight, 0, 0));
+	//leftLeg->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 
-	PhysicsComponent* leftFoot = this->m_bodyPC.at(13);
-	leftFoot->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight - legLenght * 2, 0, 0));
-	leftFoot->PC_OBB.ort = DirectX::XMMatrixIdentity();
+	//PhysicsComponent* leftKnee = this->m_bodyPC.at(12);
+	//leftKnee->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight - legLenght, 0, 0));
+	//leftKnee->PC_OBB.ort = DirectX::XMMatrixIdentity();
+
+
+	//PhysicsComponent* leftFoot = this->m_bodyPC.at(13);
+	//leftFoot->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(-torsoWidth, -torsoHeight - legLenght * 2, 0, 0));
+	//leftFoot->PC_OBB.ort = DirectX::XMMatrixIdentity();
 
 #pragma endregion
 }
@@ -3234,28 +3228,29 @@ DirectX::XMVECTOR PhysicsHandler::AdjustBodyPartDistance(PhysicsComponent * prev
 
 
 
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(next->PC_pos, previous->PC_pos);
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
-	diffVec = DirectX::XMVector3Normalize(diffVec);
+	//DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(next->PC_pos, previous->PC_pos);
+	//float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+	//diffVec = DirectX::XMVector3Normalize(diffVec);
 
 
-	if (!DirectX::XMVector3NotEqual(next->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
-	{
-		next->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorScale(diffVec, lenght));
-		return DirectX::XMVectorSet(0, 0, 0, 0);
-	}
-	else
-	{
-		DirectX::XMVECTOR toMove = DirectX::XMVectorScale(diffVec, lenght - distance);
-		DirectX::XMVECTOR para;
-		DirectX::XMVECTOR perp;
+	//if (!DirectX::XMVector3NotEqual(next->PC_normalForce, DirectX::XMVectorSet(0, 0, 0, 0)))
+	//{
+	//	next->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorScale(diffVec, lenght));
+	//	return DirectX::XMVectorSet(0, 0, 0, 0);
+	//}
+	//else
+	//{
+	//	DirectX::XMVECTOR toMove = DirectX::XMVectorScale(diffVec, lenght - distance);
+	//	DirectX::XMVECTOR para;
+	//	DirectX::XMVECTOR perp;
 
-		DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, next->PC_normalForce);
-		next->PC_pos = DirectX::XMVectorAdd(next->PC_pos, perp);
-		previous->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorScale(para, -1));
-		previous->PC_normalForce = DirectX::XMVector3Normalize(DirectX::XMVectorAdd(previous->PC_normalForce, DirectX::XMVectorScale(diffVec, -1)));
-		return para;
-	}
+	//	DirectX::XMVector3ComponentsFromNormal(&para, &perp, toMove, next->PC_normalForce);
+	//	next->PC_pos = DirectX::XMVectorAdd(next->PC_pos, perp);
+	//	previous->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorScale(para, -1));
+	//	previous->PC_normalForce = DirectX::XMVector3Normalize(DirectX::XMVectorAdd(previous->PC_normalForce, DirectX::XMVectorScale(diffVec, -1)));
+	//	return para;
+	//}
+	return DirectX::XMVectorSet(0, 0, 0, 0);
 }
 
 void PhysicsHandler::AdjustBodyParts(BodyPart * bodypart, float dt)
@@ -4067,7 +4062,7 @@ void PhysicsHandler::SyncBulletToPhysicsComponents()
 	int size = this->m_physicsComponents.size();
 	for (int i = 0; i < size; i++)
 	{
-		PhysicsComponent* ptr = this->GetDynamicComponentAt(i);
+		PhysicsComponent* ptr = this->GetComponentAt(i);
 		this->m_bullet.SyncGameWithBullet(ptr);
 	}
 }
@@ -4141,12 +4136,12 @@ void PhysicsHandler::UpdateStaticPlatforms(float dt)
 	}
 }
 
-void PhysicsHandler::ChainPhysicsCallback(ChainLink* link, float dt)
+void PhysicsHandler::ChainPhysicsCallback(PhysicsLink* link, float dt)
 {
 	int type = 1;
 
-	btRigidBody* previous = this->m_bullet.GetRigidBody(link->CL_previous->PC_IndexRigidBody);
-	btRigidBody* next = this->m_bullet.GetRigidBody(link->CL_next->PC_IndexRigidBody);
+	btRigidBody* previous = this->m_bullet.GetRigidBody(link->PL_previous->PC_IndexRigidBody);
+	btRigidBody* next = this->m_bullet.GetRigidBody(link->PL_next->PC_IndexRigidBody);
 
 	DirectX::XMVECTOR pPos = this->m_bullet.crt_Vec3XMVEc(previous->getWorldTransform().getOrigin());
 	DirectX::XMVECTOR nPos = this->m_bullet.crt_Vec3XMVEc(next->getWorldTransform().getOrigin());
@@ -4160,106 +4155,108 @@ void PhysicsHandler::ChainPhysicsCallback(ChainLink* link, float dt)
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(pPos, nPos);
 	float lenght = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 	diffVec = DirectX::XMVector3Normalize(diffVec);
-
-	if (lenght > link->CL_lenght)
+	if (link->PL_type == PhysicsLinkType::PL_CHAIN)
 	{
-		//spring force
-		//if (type == 0)
-		//{
-		//	DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->CL_lenght), 0.2f);
-		//	//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->CL_previous->PC_velocity, link->CL_next->PC_velocity), 0.5));
-
-		//	this->ApplyForceToComponent(link->CL_next, force, dt);
-		//	force = DirectX::XMVectorScale(force, -1.0);
-		//	this->ApplyForceToComponent(link->CL_previous, force, dt);
-		//}
-
-		//this one seems to work good
-		if (type == 1)
+		if (lenght > link->PL_lenght)
 		{
-			DirectX::XMVECTOR pParallel;
-			DirectX::XMVECTOR pPerpendicular1;
-			DirectX::XMVECTOR pPerpendicular2;
-
-			float v1_old[3];
-			float v1_new[3];
-			float m1 = link->CL_previous->PC_mass;
-			DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular1, pVel, diffVec);
-			v1_old[0] = DirectX::XMVectorGetX(pParallel);
-			v1_old[1] = DirectX::XMVectorGetY(pParallel);
-			v1_old[2] = DirectX::XMVectorGetZ(pParallel);
-
-			float v2_old[3];
-			float v2_new[3];
-			float m2 = link->CL_next->PC_mass;
-			DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular2, nVel, diffVec);
-			v2_old[0] = DirectX::XMVectorGetX(pParallel);
-			v2_old[1] = DirectX::XMVectorGetY(pParallel);
-			v2_old[2] = DirectX::XMVectorGetZ(pParallel);
-
-			float e = 0.8f;
-
-			for (int i = 0; i < 3; i++)
-			{
-
-				v1_new[i] = (v1_old[i] * (m1 - m2*e) + m2*v2_old[i] * (1 + e)) / (m1 + m2);
-
-				v2_new[i] = (v1_old[i] * m1*(1 + e) + (m2 - e*m1)*v2_old[i]) / (m1 + m2);
-
-			}
-			v1_old[0] += DirectX::XMVectorGetX(pPerpendicular1);
-			v1_old[1] += DirectX::XMVectorGetY(pPerpendicular1);
-			v1_old[2] += DirectX::XMVectorGetZ(pPerpendicular1);
-
-			v2_old[0] += DirectX::XMVectorGetX(pPerpendicular2);
-			v2_old[1] += DirectX::XMVectorGetY(pPerpendicular2);
-			v2_old[2] += DirectX::XMVectorGetZ(pPerpendicular2);
-
-			v1_new[0] += DirectX::XMVectorGetX(pPerpendicular1);
-			v1_new[1] += DirectX::XMVectorGetY(pPerpendicular1);
-			v1_new[2] += DirectX::XMVectorGetZ(pPerpendicular1);
-
-			v2_new[0] += DirectX::XMVectorGetX(pPerpendicular2);
-			v2_new[1] += DirectX::XMVectorGetY(pPerpendicular2);
-			v2_new[2] += DirectX::XMVectorGetZ(pPerpendicular2);
-
-
-			float forceVec1[3];
-			float forceVec2[3];
-
-			for (int i = 0; i < 3; i++)
-			{
-				forceVec1[i] = (m1 * v1_new[i] - m1 * v1_old[i]) / dt;
-				forceVec2[i] = (m2 * v2_new[i] - m2 * v2_old[i]) / dt;
-			}
-
-			//apply new force on rigidboy previous
-			btVector3 newVelocity = previous->getLinearVelocity();
-			newVelocity = newVelocity + ((btVector3(forceVec1[0], forceVec1[1], forceVec1[2]) / link->CL_previous->PC_mass) * dt);
-
-
-			previous->setLinearVelocity(newVelocity);
-			
-			//apply force on rigidbody next
-			newVelocity = next->getLinearVelocity();
-
-			newVelocity = newVelocity + ((btVector3(forceVec2[0], forceVec2[1], forceVec2[2]) / link->CL_next->PC_mass) * dt);
-
-
-			next->setLinearVelocity(newVelocity);
-
-
-			//this->ApplyForceToComponent(link->CL_previous, DirectX::XMVectorSet(forceVec1[0], forceVec1[1], forceVec1[2], 0), dt);
-			//this->ApplyForceToComponent(link->CL_next, DirectX::XMVectorSet(forceVec2[0], forceVec2[1], forceVec2[2], 0), dt);
-
-			//if (!link->CL_previous->PC_is_Static)
+			//spring force
+			//if (type == 0)
 			//{
-			//	link->CL_previous->PC_velocity = DirectX::XMVectorSet(v1_new[0], v1_new[1], v1_new[2], 0);
+			//	DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->PL_lenght), 0.2f);
+			//	//force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->PL_previous->PC_velocity, link->PL_next->PC_velocity), 0.5));
+
+			//	this->ApplyForceToComponent(link->PL_next, force, dt);
+			//	force = DirectX::XMVectorScale(force, -1.0);
+			//	this->ApplyForceToComponent(link->PL_previous, force, dt);
 			//}
-			//if (!link->CL_next->PC_is_Static)
-			//{
-			//	link->CL_next->PC_velocity = DirectX::XMVectorSet(v2_new[0], v2_new[1], v2_new[2], 0);
-			//}
+
+			//this one seems to work good
+			if (type == 1)
+			{
+				DirectX::XMVECTOR pParallel;
+				DirectX::XMVECTOR pPerpendicular1;
+				DirectX::XMVECTOR pPerpendicular2;
+
+				float v1_old[3];
+				float v1_new[3];
+				float m1 = link->PL_previous->PC_mass;
+				DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular1, pVel, diffVec);
+				v1_old[0] = DirectX::XMVectorGetX(pParallel);
+				v1_old[1] = DirectX::XMVectorGetY(pParallel);
+				v1_old[2] = DirectX::XMVectorGetZ(pParallel);
+
+				float v2_old[3];
+				float v2_new[3];
+				float m2 = link->PL_next->PC_mass;
+				DirectX::XMVector3ComponentsFromNormal(&pParallel, &pPerpendicular2, nVel, diffVec);
+				v2_old[0] = DirectX::XMVectorGetX(pParallel);
+				v2_old[1] = DirectX::XMVectorGetY(pParallel);
+				v2_old[2] = DirectX::XMVectorGetZ(pParallel);
+
+				float e = 0.8f;
+
+				for (int i = 0; i < 3; i++)
+				{
+
+					v1_new[i] = (v1_old[i] * (m1 - m2*e) + m2*v2_old[i] * (1 + e)) / (m1 + m2);
+
+					v2_new[i] = (v1_old[i] * m1*(1 + e) + (m2 - e*m1)*v2_old[i]) / (m1 + m2);
+
+				}
+				v1_old[0] += DirectX::XMVectorGetX(pPerpendicular1);
+				v1_old[1] += DirectX::XMVectorGetY(pPerpendicular1);
+				v1_old[2] += DirectX::XMVectorGetZ(pPerpendicular1);
+
+				v2_old[0] += DirectX::XMVectorGetX(pPerpendicular2);
+				v2_old[1] += DirectX::XMVectorGetY(pPerpendicular2);
+				v2_old[2] += DirectX::XMVectorGetZ(pPerpendicular2);
+
+				v1_new[0] += DirectX::XMVectorGetX(pPerpendicular1);
+				v1_new[1] += DirectX::XMVectorGetY(pPerpendicular1);
+				v1_new[2] += DirectX::XMVectorGetZ(pPerpendicular1);
+
+				v2_new[0] += DirectX::XMVectorGetX(pPerpendicular2);
+				v2_new[1] += DirectX::XMVectorGetY(pPerpendicular2);
+				v2_new[2] += DirectX::XMVectorGetZ(pPerpendicular2);
+
+
+				float forceVec1[3];
+				float forceVec2[3];
+
+				for (int i = 0; i < 3; i++)
+				{
+					forceVec1[i] = (m1 * v1_new[i] - m1 * v1_old[i]) / dt;
+					forceVec2[i] = (m2 * v2_new[i] - m2 * v2_old[i]) / dt;
+				}
+
+				//apply new force on rigidboy previous
+				btVector3 newVelocity = previous->getLinearVelocity();
+				newVelocity = newVelocity + ((btVector3(forceVec1[0], forceVec1[1], forceVec1[2]) / link->PL_previous->PC_mass) * dt);
+
+
+				previous->setLinearVelocity(newVelocity);
+
+				//apply force on rigidbody next
+				newVelocity = next->getLinearVelocity();
+
+				newVelocity = newVelocity + ((btVector3(forceVec2[0], forceVec2[1], forceVec2[2]) / link->PL_next->PC_mass) * dt);
+
+
+				next->setLinearVelocity(newVelocity);
+
+
+				//this->ApplyForceToComponent(link->CL_previous, DirectX::XMVectorSet(forceVec1[0], forceVec1[1], forceVec1[2], 0), dt);
+				//this->ApplyForceToComponent(link->CL_next, DirectX::XMVectorSet(forceVec2[0], forceVec2[1], forceVec2[2], 0), dt);
+
+				//if (!link->CL_previous->PC_is_Static)
+				//{
+				//	link->CL_previous->PC_velocity = DirectX::XMVectorSet(v1_new[0], v1_new[1], v1_new[2], 0);
+				//}
+				//if (!link->CL_next->PC_is_Static)
+				//{
+				//	link->CL_next->PC_velocity = DirectX::XMVectorSet(v2_new[0], v2_new[1], v2_new[2], 0);
+				//}
+			}
 		}
 	}
 
@@ -4286,10 +4283,10 @@ void PhysicsHandler::ProcessCallback(btScalar timestep)
 
 }
 
-void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
+void PhysicsHandler::AdjustChainLinkCallback(PhysicsLink * link)
 {
-	btRigidBody* previous = this->m_bullet.GetRigidBody(link->CL_previous->PC_IndexRigidBody);
-	btRigidBody* next = this->m_bullet.GetRigidBody(link->CL_next->PC_IndexRigidBody);
+	btRigidBody* previous = this->m_bullet.GetRigidBody(link->PL_previous->PC_IndexRigidBody);
+	btRigidBody* next = this->m_bullet.GetRigidBody(link->PL_next->PC_IndexRigidBody);
 
 	DirectX::XMVECTOR pPos = this->m_bullet.crt_Vec3XMVEc(previous->getWorldTransform().getOrigin());
 	DirectX::XMVECTOR nPos = this->m_bullet.crt_Vec3XMVEc(next->getWorldTransform().getOrigin());
@@ -4297,29 +4294,28 @@ void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(nPos, pPos);
 
 	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
-
-	if (distance > link->CL_lenght)
+	if (link->PL_type == PhysicsLinkType::PL_CHAIN)
 	{
-		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->CL_lenght));
-		toMove = DirectX::XMVectorScale(toMove, 0.5f);
-
-		DirectX::XMVECTOR next_toMove = DirectX::XMVectorScale(toMove, -1);
-		DirectX::XMVECTOR previous_toMove = toMove;
-
-		//old
-		//link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
-		//link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
-		//--
-
-		this->m_bullet.AddNormalFromCollisions(link->CL_previous, link->CL_previous->PC_IndexRigidBody);
-		int nrOfNormals = link->CL_previous->m_normals.size();
-
-		if (link->segmentType != LinkType::PLAYERLINK)
+		if (distance > link->PL_lenght)
 		{
+			DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->PL_lenght));
+			toMove = DirectX::XMVectorScale(toMove, 0.5f);
+
+			DirectX::XMVECTOR next_toMove = DirectX::XMVectorScale(toMove, -1);
+			DirectX::XMVECTOR previous_toMove = toMove;
+
+			//old
+			//link->PL_previous->PC_pos = DirectX::XMVectorAdd(link->PL_previous->PC_pos, previous_toMove);
+			//link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, next_toMove);
+			//--
+
+			this->m_bullet.AddNormalFromCollisions(link->PL_previous, link->PL_previous->PC_IndexRigidBody);
+			int nrOfNormals = link->PL_previous->m_normals.size();
+
 			//no collsion
 			if (nrOfNormals == 0)
 			{
-				//link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, previous_toMove);
+				//link->PL_previous->PC_pos = DirectX::XMVectorAdd(link->PL_previous->PC_pos, previous_toMove);
 				btVector3 newPos = this->m_bullet.crt_xmvecVec3(pPos);
 				newPos += this->m_bullet.crt_xmvecVec3(previous_toMove);
 
@@ -4330,7 +4326,7 @@ void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
 				DirectX::XMVECTOR toMoveResult = previous_toMove;
 				for (int i = 0; i < nrOfNormals; i++)
 				{
-					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->CL_previous->m_normals.at(i));
+					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->m_normals.at(i));
 					float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 					if (dotProd < 0)
 					{
@@ -4346,50 +4342,45 @@ void PhysicsHandler::AdjustChainLinkCallback(ChainLink * link)
 
 				previous->getWorldTransform().setOrigin(newPos);
 
-				//link->CL_previous->PC_pos = DirectX::XMVectorAdd(link->CL_previous->PC_pos, toMoveResult);
+				//link->PL_previous->PC_pos = DirectX::XMVectorAdd(link->PL_previous->PC_pos, toMoveResult);
 			}
-		}
-		else
-		{
-			next_toMove = DirectX::XMVectorScale(next_toMove, 2);
-		}
-		
-		this->m_bullet.AddNormalFromCollisions(link->CL_next, link->CL_next->PC_IndexRigidBody);
-		nrOfNormals = link->CL_next->m_normals.size();
-		if (nrOfNormals == 0)
-		{
-			btVector3 newPos = this->m_bullet.crt_xmvecVec3(nPos);
-			newPos += this->m_bullet.crt_xmvecVec3(next_toMove);
 
-			next->getWorldTransform().setOrigin(newPos);
-
-			//link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, next_toMove);
-		}
-		else
-		{
-			DirectX::XMVECTOR toMoveResult = next_toMove;
-			for (int i = 0; i < nrOfNormals; i++)
+			this->m_bullet.AddNormalFromCollisions(link->PL_next, link->PL_next->PC_IndexRigidBody);
+			nrOfNormals = link->PL_next->m_normals.size();
+			if (nrOfNormals == 0)
 			{
-				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->CL_next->m_normals.at(i));
-				float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
-				if (dotProd < 0)
-				{
-					DirectX::XMVECTOR paral;
-					DirectX::XMVECTOR perp;
+				btVector3 newPos = this->m_bullet.crt_xmvecVec3(nPos);
+				newPos += this->m_bullet.crt_xmvecVec3(next_toMove);
 
-					DirectX::XMVector3ComponentsFromNormal(&paral, &perp, toMoveResult, collNorm);
-					toMoveResult = DirectX::XMVectorSubtract(toMoveResult, paral);
-				}
+				next->getWorldTransform().setOrigin(newPos);
+
+				//link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, next_toMove);
 			}
-			btVector3 newPos = this->m_bullet.crt_xmvecVec3(nPos);
-			newPos += this->m_bullet.crt_xmvecVec3(toMoveResult);
+			else
+			{
+				DirectX::XMVECTOR toMoveResult = next_toMove;
+				for (int i = 0; i < nrOfNormals; i++)
+				{
+					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->m_normals.at(i));
+					float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
+					if (dotProd < 0)
+					{
+						DirectX::XMVECTOR paral;
+						DirectX::XMVECTOR perp;
 
-			next->getWorldTransform().setOrigin(newPos);
+						DirectX::XMVector3ComponentsFromNormal(&paral, &perp, toMoveResult, collNorm);
+						toMoveResult = DirectX::XMVectorSubtract(toMoveResult, paral);
+					}
+				}
+				btVector3 newPos = this->m_bullet.crt_xmvecVec3(nPos);
+				newPos += this->m_bullet.crt_xmvecVec3(toMoveResult);
 
-			//link->CL_next->PC_pos = DirectX::XMVectorAdd(link->CL_next->PC_pos, toMoveResult);
+				next->getWorldTransform().setOrigin(newPos);
+
+				//link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, toMoveResult);
+			}
 		}
 	}
-
 }
 
 void PhysicsHandler::SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos)
@@ -4406,6 +4397,7 @@ void PhysicsHandler::SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR po
 		this->m_bodyPC.at(i)->PC_OBB.ort = ragdoll->playerPC->PC_OBB.ort;
 		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(DirectX::XMVector3Transform(ragdoll->jointMatrixes[i].r[3], ragdoll->playerPC->PC_OBB.ort), pos);
 		this->m_bodyPC.at(i)->PC_OBB.ort.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		this->m_bodyPC.at(i)->PC_gravityInfluence = 0.0f;
 	}
 	for (int i = 5; i < 9; i++)
 	{
@@ -4557,6 +4549,23 @@ PHYSICSDLL_API void PhysicsHandler::MovePhysicsJoint(DirectX::XMVECTOR toMove, i
 	for (int i = index; i < index + nrOfChildren; i++)
 	{
 		this->m_bodyPC.at(i)->PC_pos = DirectX::XMVectorAdd(this->m_bodyPC.at(i)->PC_pos, toMove);
+	}
+}
+
+PHYSICSDLL_API void PhysicsHandler::SetIgnoreCollisions()
+{
+	int nrOfBodyParts = this->m_bodyPC.size();
+	PhysicsComponent* ptr = nullptr;
+	PhysicsComponent* ptr2 = nullptr;
+	for (int i = 0; i < nrOfBodyParts; i++)
+	{
+		ptr = this->m_bodyPC.at(i);
+		this->m_bullet.SetIgnoreCollisions(this->m_playerRagDoll.playerPC, ptr);
+		for (int a = i+1; a < nrOfBodyParts; a++)
+		{
+			ptr2 = this->m_bodyPC.at(a);
+			this->m_bullet.SetIgnoreCollisions(ptr2, ptr);
+		}
 	}
 }
 

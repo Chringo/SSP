@@ -179,59 +179,60 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->EndTimer(1);
 
-	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+
 #ifdef _DEBUG
-	for (int i = 0; i < nrOfComponents; i++)
-	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-		if (temp->PC_BVtype == BV_AABB)
-		{
-			AABB* AABB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-		}
-		if (temp->PC_BVtype == BV_OBB)
-		{
-			OBB* OBB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+	//int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+	//for (int i = 0; i < nrOfComponents; i++)
+	//{
+	//	PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+	//	if (temp->PC_BVtype == BV_AABB)
+	//	{
+	//		AABB* AABB_holder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+	//	}
+	//	if (temp->PC_BVtype == BV_OBB)
+	//	{
+	//		OBB* OBB_holder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
 
-			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+	//		DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
 
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-			//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
-		}
-		if (temp->PC_BVtype == BV_Plane)
-		{
-			Plane* planeHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-		}
-		if (temp->PC_BVtype == BV_Sphere)
-		{
-			Sphere* sphereHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-			//AABB test;
-			//test.ext[0] = sphereHolder->radius;
-			//test.ext[1] = sphereHolder->radius;
-			//test.ext[2] = sphereHolder->radius;
-			//AABB* ptr = &test;
-			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
-		}
-	}
-	int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+	//		//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
+	//	}
+	//	if (temp->PC_BVtype == BV_Plane)
+	//	{
+	//		Plane* planeHolder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+	//	}
+	//	if (temp->PC_BVtype == BV_Sphere)
+	//	{
+	//		Sphere* sphereHolder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+	//		//AABB test;
+	//		//test.ext[0] = sphereHolder->radius;
+	//		//test.ext[1] = sphereHolder->radius;
+	//		//test.ext[2] = sphereHolder->radius;
+	//		//AABB* ptr = &test;
+	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+	//	}
+	//}
+	//int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
 
-	for (int i = 0; i < nrOfBodyParts; i++)
-	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
-		OBB* OBB_holder = nullptr;
-		OBB_holder = &temp->PC_OBB;
-		OBB_holder->ext[0] = temp->PC_Sphere.radius;
-		OBB_holder->ext[1] = temp->PC_Sphere.radius;
-		OBB_holder->ext[2] = temp->PC_Sphere.radius;
-		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+	//for (int i = 0; i < nrOfBodyParts; i++)
+	//{
+	//	PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
+	//	OBB* OBB_holder = nullptr;
+	//	OBB_holder = &temp->PC_OBB;
+	//	OBB_holder->ext[0] = temp->PC_Sphere.radius;
+	//	OBB_holder->ext[1] = temp->PC_Sphere.radius;
+	//	OBB_holder->ext[2] = temp->PC_Sphere.radius;
+	//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
 
-	}
+	//}
 #endif // _DEBUG
 
 	//CAM
@@ -299,45 +300,59 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
 
-	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+
 #ifdef _DEBUG
-	for (int i = 0; i < nrOfComponents; i++)
+	//int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+	//for (int i = 0; i < nrOfComponents; i++)
+	//{
+	//	PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+	//	if (temp->PC_BVtype == BV_AABB)
+	//	{
+	//		AABB* AABB_holder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+	//	}
+	//	if (temp->PC_BVtype == BV_OBB)
+	//	{
+	//		OBB* OBB_holder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+
+	//		DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+	//		//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
+	//	}
+	//	if (temp->PC_BVtype == BV_Plane)
+	//	{
+	//		Plane* planeHolder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+	//	}
+	//	if (temp->PC_BVtype == BV_Sphere)
+	//	{
+	//		Sphere* sphereHolder = nullptr;
+	//		this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+	//		//AABB test;
+	//		//test.ext[0] = sphereHolder->radius;
+	//		//test.ext[1] = sphereHolder->radius;
+	//		//test.ext[2] = sphereHolder->radius;
+	//		//AABB* ptr = &test;
+	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+	//	}
+	//}
+	int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+
+	for (int i = 0; i < nrOfBodyParts; i++)
 	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
-		if (temp->PC_BVtype == BV_AABB)
-		{
-			AABB* AABB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-		}
-		if (temp->PC_BVtype == BV_OBB)
-		{
-			OBB* OBB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+		PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
+		OBB* OBB_holder = nullptr;
+		OBB_holder = &temp->PC_OBB;
+		OBB_holder->ext[0] = temp->PC_Sphere.radius;
+		OBB_holder->ext[1] = temp->PC_Sphere.radius;
+		OBB_holder->ext[2] = temp->PC_Sphere.radius;
+		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
 
-			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
-
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-			//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
-		}
-		if (temp->PC_BVtype == BV_Plane)
-		{
-			Plane* planeHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-		}
-		if (temp->PC_BVtype == BV_Sphere)
-		{
-			Sphere* sphereHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-			//AABB test;
-			//test.ext[0] = sphereHolder->radius;
-			//test.ext[1] = sphereHolder->radius;
-			//test.ext[2] = sphereHolder->radius;
-			//AABB* ptr = &test;
-			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
-		}
 	}
 #endif // _DEBUG
 
