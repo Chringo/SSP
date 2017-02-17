@@ -815,42 +815,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_Send_Updates
 
 	#pragma region
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
-	{
-		// Reset player-position to spawn
-		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
-		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
-	{
-		//TODO: NOCLIP BOOOOIS
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
-		{
-			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
-			m_player1.GetPhysicsComponent()->PC_steadfast = false;
-		}
-		else
-		{
-			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
-			m_player1.GetPhysicsComponent()->PC_steadfast = true;
-		}
-		//Result: Sloppy teleport :(
-		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos,
-			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
-		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-	}
-	
+
 	//Update all puzzle entities
 	#pragma region
 	//Commong variables needed for logic checks
@@ -986,7 +951,46 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	// Reactionary level director acts
 	this->m_director.Update(dt);
+	
+	#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
+	{
+		// Reset player-position to spawn
+		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
+	{
+		//TODO: NOCLIP BOOOOIS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+		}
+		else
+		{
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+		}
+		//Result: Sloppy teleport :(
+		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos,
+			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+	}
 
+#pragma endregion Reset KEY
+	
 	#pragma region
 		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 		{
