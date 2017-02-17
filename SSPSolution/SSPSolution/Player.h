@@ -25,6 +25,7 @@ private:
 	DirectX::XMVECTOR m_rightDir;
 
 	irrklang::ISound* m_walkingSound;
+	int	m_oldAnimState;
 
 public:
 	Player();
@@ -47,7 +48,7 @@ public:
 	void SetRagdoll(Ragdoll* ragdoll);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 
 	float GetMaxSpeed();
 	float GetAcceleration();
@@ -57,6 +58,7 @@ public:
 	bool GetIsAming();
 	Entity* GetGrabbed();
 	Entity* GetBall();
+	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 
 private:
 

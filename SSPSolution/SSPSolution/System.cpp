@@ -4,8 +4,6 @@ System::System()
 	this->m_inputHandler = NULL;
 	this->m_window = NULL;
 }
-
-
 System::~System()
 {
 }
@@ -29,16 +27,11 @@ int System::Shutdown()
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
 	SoundHandler::instance().Shutdown();
-	//delete this->m_AIHandler;
-	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
 	DebugHandler::instance()->Shutdown();
-
-	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	
 	return result;
 }
 
@@ -109,7 +102,7 @@ int System::Initialize(std::string path)
 	//this->m_Anim = new Animation();
 
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
-	DebugHandler::instance()->CreateTimer(L"Update");
+	DebugHandler::instance()->CreateTimer(L"GS Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
@@ -153,10 +146,6 @@ int System::Run()
 		{
 			this->m_running = false;
 		}
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
-		{
-			this->FullscreenToggle();
-		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
 		{
 			DebugHandler::instance()->ToggleDebugInfo();
@@ -181,8 +170,6 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-
-	DebugHandler::instance()->StartTimer(0);
 
 	int result = 1;
 
@@ -286,23 +273,73 @@ int System::Update(float deltaTime)
 	{
 		SoundHandler::instance().ReInitSoundEngine();
 	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
+	{
+		this->m_graphicsHandler->ToggleOverviewCamera();
+	}
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
-	
+	DebugHandler::instance()->StartTimer(0);
+
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	enum {TOGGLE_FULLSCREEN = 511};
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
-
-
+	if (result == TOGGLE_FULLSCREEN)
+	{
+		this->FullscreenToggle();
+	}
+	DebugHandler::instance()->EndTimer(0);
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
-	DebugHandler::instance()->EndTimer(0);
 	//Render
 	//Frustrum cull
 	DebugHandler::instance()->StartTimer(3);
 	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
 	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
+
+	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+#ifdef _DEBUG
+	for (int i = 0; i < nrOfComponents; i++)
+	{
+		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
+		if (temp->PC_BVtype == BV_AABB)
+		{
+			AABB* AABB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+		}
+		if (temp->PC_BVtype == BV_OBB)
+		{
+			OBB* OBB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+
+			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+			//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
+		}
+		if (temp->PC_BVtype == BV_Plane)
+		{
+			Plane* planeHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+		}
+		if (temp->PC_BVtype == BV_Sphere)
+		{
+			Sphere* sphereHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+			//AABB test;
+			//test.ext[0] = sphereHolder->radius;
+			//test.ext[1] = sphereHolder->radius;
+			//test.ext[2] = sphereHolder->radius;
+			//AABB* ptr = &test;
+			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+		}
+	}
+#endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);
 	this->m_graphicsHandler->Render(deltaTime);

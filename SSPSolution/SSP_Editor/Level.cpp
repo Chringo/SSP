@@ -146,6 +146,11 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	newComponent.position = position;
 	newComponent.rotation = rotation;
 	newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(modelID);
+//	if (newComponent.component.modelPtr == nullptr) {
+//		//unsigned int idTemp = 2307979665;
+//		return Resources::Status::ST_RES_MISSING;
+//		//newComponent.component.modelPtr = DataHandler::GetInstance()->GetModel(idTemp);
+//	}
 	DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
@@ -493,7 +498,7 @@ unsigned int Level::GetNumLights()
 
 unsigned int Level::GetNumPuzzleElements()
 {
-	unsigned int amount;
+	unsigned int amount = 0;
 	for (size_t i = 0; i < m_puzzleElements.size(); i++)
 	{
 		amount += (unsigned int)m_puzzleElements.at(i).size();

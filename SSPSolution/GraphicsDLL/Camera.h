@@ -72,9 +72,14 @@ public:
 	struct C_OBB {
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
-		DirectX::XMFLOAT3 ort;
+		DirectX::XMFLOAT4X4 ort;
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
+	};
+	struct C_BOX {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 min;
+		DirectX::XMFLOAT3 max;
 	};
 
 	struct ViewFrustrum {
@@ -82,10 +87,11 @@ public:
 		Plane myPlanes[6];
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
+		CullingResult TestAgainstBox(C_BOX box);
 		//An conservative test is fast but may not cull all things that could be culled
-		int TestAgainstOBBConservative(C_OBB box);
+		CullingResult TestAgainstOBBConservative(C_OBB box);
 		//An exact test will always cull all things perfectly but is slow
-		int TestAgainstOBBExact(C_OBB box);
+		CullingResult TestAgainstOBBExact(C_OBB box);
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
@@ -95,16 +101,17 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
-	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720.f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
-	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
-
+	GRAPHICSDLL_API int Reset();
+	GRAPHICSDLL_API Ray CastRay();
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
@@ -134,6 +141,7 @@ public:
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMFLOAT4 newCamPos);
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMVECTOR newCamPos);
 	GRAPHICSDLL_API void SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance);
+	GRAPHICSDLL_API void SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMFLOAT4 newLookAt);
 	GRAPHICSDLL_API void SetLookAt(DirectX::XMVECTOR newLookAt);
 	GRAPHICSDLL_API void SetCameraUp(DirectX::XMFLOAT4 newCamUp);
