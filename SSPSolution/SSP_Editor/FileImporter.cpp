@@ -501,6 +501,17 @@ void FileImporter::GeneratePlaceholderMaterial(Resources::Model* m_Model)
 {
 	printf("Found mesh without material, generating a placeholder material\n");
 
+	Resources::Material* newMaterial = new Resources::Material();
+	Resources::Texture *placeholder_texture = m_data->GetTextureHandler()->GetPlaceHolderTextures();  
+																					   
+	newMaterial->SetTexture(&placeholder_texture[0], Resources::TEXTURE_ALBEDO);
+	newMaterial->SetTexture(&placeholder_texture[1], Resources::TEXTURE_SPECULAR);
+	newMaterial->SetTexture(&placeholder_texture[2], Resources::TEXTURE_ROUGHNESS);
+	newMaterial->SetTexture(&placeholder_texture[3], Resources::TEXTURE_NORMAL);
+	newMaterial->SetTexture(&placeholder_texture[4], Resources::TEXTURE_AO);
+
+	m_Model->SetMaterial(newMaterial);
+
 }
 
 bool FileImporter::ImportTextures(char * m_bbf_object, MaterialHeader * m_Mheader, Resources::Material * newMaterial)
