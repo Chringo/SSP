@@ -138,10 +138,10 @@ int System::Run()
 		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		/*if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			this->m_running = false;
-		}
+		}*/
 		if (!this->Update((float)elapsedTime.QuadPart))
 		{
 			this->m_running = false;

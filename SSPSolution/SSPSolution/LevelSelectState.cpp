@@ -1,22 +1,27 @@
 #include "LevelSelectState.h"
-
+#include "GameStateHandler.h"
 
 
 LevelSelectState::LevelSelectState()
 {
-	currentLevel = nullptr;
+	m_currentLevel = nullptr;
 }
 
 
 LevelSelectState::~LevelSelectState()
 {
-	delete currentLevel;
-	currentLevel = nullptr;
+	delete m_currentLevel;
+	m_currentLevel = nullptr;
 }
 
 int LevelSelectState::ShutDown()
 {
-	this->currentLevel->ShutDown();
+	if (this->m_currentLevel != nullptr)
+	{
+		this->m_currentLevel->ShutDown();
+		delete this->m_currentLevel;
+		this->m_currentLevel = nullptr;
+	}
 	int result = 1;
 	return result;
 }
@@ -24,30 +29,41 @@ int LevelSelectState::ShutDown()
 int LevelSelectState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	if(result <= 0)
 		return result;
 
-	this->currentLevel = new LevelState();
+	this->m_currentLevel = new LevelState();
 
 	//Create, Initialize and push a LevelState
-	result = currentLevel->Initialize(gsh, cHandler, cameraRef);
+	result = m_currentLevel->Initialize(gsh, cHandler, cameraRef);
 
 	//If the initialization was successful
 	if (result <= 0)
 	{
 		//Delete it
-		delete currentLevel;
-		currentLevel = nullptr;
+		delete m_currentLevel;
+		m_currentLevel = nullptr;
 	}
 	return result;
 }
 
 int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 {
-	this->currentLevel->Update(dt, inputHandler);
-	return 1;
+	int result = 0;
+	if (this->m_currentLevel != nullptr)
+	{
+		result = this->m_currentLevel->Update(dt, inputHandler);
+	}
+	if (result == -2)
+	{
+		this->m_currentLevel->ShutDown();
+		delete this->m_currentLevel;
+		this->m_currentLevel = nullptr;
+		this->m_gsh->PopStateFromStack();
+	}
+	return result;
 }
 
 int LevelSelectState::LoadLevel(std::string path)
@@ -73,7 +89,7 @@ int LevelSelectState::LoadLevel(std::string path)
 	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
 		return 0;
 	//Create level
-	result = this->currentLevel->CreateLevel(level); 
+	result = this->m_currentLevel->CreateLevel(level); 
 
 
 	return result;

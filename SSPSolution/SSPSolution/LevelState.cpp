@@ -1,4 +1,5 @@
 #include "LevelState.h"
+#include "GameStateHandler.h"
 
 inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
 {
@@ -134,7 +135,7 @@ int LevelState::ShutDown()
 int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, true);
 
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
@@ -1052,6 +1053,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+	{
+		this->m_gsh->PopStateFromStack();
+		result = -2;
+	}
+
 	return result;
 }
 

@@ -143,6 +143,7 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 	{
 		GameState* temp;
 		temp = this->m_statesToRemove.back();
+		temp->ShutDown();
 		delete temp;
 		temp = nullptr;
 		this->m_statesToRemove.pop_back();
@@ -157,4 +158,20 @@ int GameStateHandler::PushStateToStack(GameState * state)
 	this->m_stateStack.push_back(state);
 
 	return 1;
+}
+
+GameState * GameStateHandler::PopStateFromStack()
+{
+	GameState* result = nullptr;
+
+	result = this->m_stateStack.back();
+	this->m_stateStack.pop_back();
+
+	//Check if it wants to be manually managed after popping
+	if (result->GetManualRemoval())
+	{
+		this->m_statesToRemove.push_back(result);
+	}
+
+	return result;
 }

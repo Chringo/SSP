@@ -8,7 +8,7 @@ class LevelSelectState :
 	public GameState
 {
 private:
-	LevelState* currentLevel;
+	LevelState* m_currentLevel;
 public:
 	LevelSelectState();
 	~LevelSelectState();

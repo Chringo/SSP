@@ -14,9 +14,15 @@ GameState::~GameState()
 {
 }
 
-int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
+bool GameState::GetManualRemoval()
+{
+	return this->m_manualRemoval;
+}
+
+int GameState::InitializeBase(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef, bool manualRemoval)
 {
 	int result = 0;
+	this->m_manualRemoval = manualRemoval;
 	if (gsh == nullptr || cHandler == nullptr || cameraRef == nullptr)
 	{
 		this->m_gsh = nullptr;

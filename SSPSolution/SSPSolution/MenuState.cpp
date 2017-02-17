@@ -24,7 +24,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 {
 	int result = 0;
 
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
@@ -640,7 +640,6 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 
 				}
 				#pragma endregion Level_To_Load
-
 			}
 			else
 			{
