@@ -1,12 +1,10 @@
 #include "ResourceLibExporter.h"
 
 
-
 ResourceLibExporter::ResourceLibExporter()
 {
 	m_Output = new std::ofstream();
 }
-
 
 ResourceLibExporter::~ResourceLibExporter()
 {
@@ -214,6 +212,16 @@ void ResourceLibExporter::WriteMatToBPF(char * m_BBF_File, const unsigned int fi
 	}
 }
 
+bool ResourceLibExporter::TextureExists(const std::string& filename)
+{
+	struct stat buf;
+	if (stat(filename.c_str(), &buf) != -1)
+	{
+		return true;
+	}
+	return false;
+}
+
 void ResourceLibExporter::CopyTextureFile(std::string * file)
 {
 	std::string newFilePath = m_DestinationPath.substr(0, m_DestinationPath.rfind("/")) + file->substr(file->rfind("/"));
@@ -222,7 +230,20 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 	std::wstring newPath(newFilePath.begin(), newFilePath.end());
 
 	/*edit bool if the desire for a check exists*/
-	CopyFile(oldPath.c_str(), newPath.c_str(), false);
+	if (m_overWrite != OverWriting::NOTHING)
+	{
+		if (TextureExists(newFilePath))
+		{
+			if (m_overWrite == OverWriting::ONCE)
+			{
+
+			}
+			else if(m_overWrite == OverWriting::ALL)
+				CopyFile(oldPath.c_str(), newPath.c_str(), false);
+		}
+		else
+			CopyFile(oldPath.c_str(), newPath.c_str(), false);
+	}
 }
 
 void ResourceLibExporter::HandleSceneData()
