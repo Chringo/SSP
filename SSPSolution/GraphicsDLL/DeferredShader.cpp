@@ -618,6 +618,11 @@ int DeferredShader::Draw(Resources::Model * model)
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat     = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 	Resources::Texture** textures = mat->GetAllTextures();
 	ID3D11ShaderResourceView* resViews[5];
 	UINT numViews = 0;
@@ -656,6 +661,11 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 	Resources::Texture** textures = mat->GetAllTextures();
 	ID3D11ShaderResourceView* resViews[5];
 	UINT numViews = 0;
@@ -690,6 +700,11 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	this->m_deviceContext->IASetIndexBuffer(iBuf, DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 
 	Resources::Material * mat = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 	Resources::Texture** textures = mat->GetAllTextures();
 	ID3D11ShaderResourceView* resViews[5];
 	UINT numViews = 0;
@@ -719,6 +734,11 @@ int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 	if (iteration == 0)
 	{
 		Resources::Material * mat = model->GetMaterial();
+		if (mat == nullptr)
+		{
+			Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+			mat = model->GetMaterial();
+		}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;
