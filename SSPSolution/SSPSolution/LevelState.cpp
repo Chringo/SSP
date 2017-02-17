@@ -956,7 +956,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT) || 
 		this->m_networkModule->PacketBuffer_GetResetPacket().size() != 0)
 	{
-		this->m_networkModule->SendFlagPacket(SYNC_RESET);
+
+		if (this->m_networkModule->PacketBuffer_GetResetPacket().size() == 0)	//If we clicked
+		{
+			this->m_networkModule->SendFlagPacket(SYNC_RESET);	//Send packet to other client
+		}
+		
 		// Reset player-position to spawn
 		if (this->m_networkModule->IsHost())
 		{
