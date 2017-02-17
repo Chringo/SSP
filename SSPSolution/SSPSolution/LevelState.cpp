@@ -953,7 +953,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_director.Update(dt);
 	
 	#pragma region
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT) || 
+		this->m_networkModule->PacketBuffer_GetResetPacket().size() != 0)
 	{
 		// Reset player-position to spawn
 		if (this->m_networkModule->IsHost())
@@ -968,8 +969,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
 			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-			
-
 		}
 		else
 		{
@@ -983,14 +982,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
 			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		}
-
-		if (this->m_networkModule->GetNrOfConnectedClients() != 0)
-		{
-			PhysicsComponent* pp = this->m_player2.GetPhysicsComponent();
-			DirectX::XMFLOAT4X4 newrot;
-			DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
-			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update
 		}
 
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
