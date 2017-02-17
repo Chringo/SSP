@@ -55,15 +55,15 @@ private:
 	unsigned int m_Offset = sizeof(RegistryHeader);
 	OverWriting m_overWrite = ONCE_FIRST;
 
-
 	DataHandler* m_Data = DataHandler::GetInstance();
+	QProgressBar* m_ProgressBar = nullptr;
 	FileImporter* m_FileImporter = nullptr;
 public:
 	~ResourceLibExporter();
 
 	static ResourceLibExporter* GetInstance();
 	
-	void Initialize(FileImporter* m_FileImporter);
+	void Initialize(FileImporter* m_FileImporter, QProgressBar* m_ProgressBar);
 	void ExportBPF();
 private:
 	void BuildRegistry();

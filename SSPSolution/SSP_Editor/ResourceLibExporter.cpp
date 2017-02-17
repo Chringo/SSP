@@ -18,9 +18,10 @@ ResourceLibExporter * ResourceLibExporter::GetInstance()
 	return &resourceLibExporter;
 }
 
-void ResourceLibExporter::Initialize(FileImporter * m_FileImporter)
+void ResourceLibExporter::Initialize(FileImporter * m_FileImporter, QProgressBar* m_ProgressBar)
 {
 	this->m_FileImporter = m_FileImporter;
+	this->m_ProgressBar = m_ProgressBar;
 }
 
 void ResourceLibExporter::ExportBPF()
@@ -118,6 +119,7 @@ void ResourceLibExporter::BuildRegistry()
 	I know! I'm going to put this file, which has nothing to do with our binary files in
 	the binary files folders! Smart. Really smart.*/
 	m_Header.numIds = m_Items.size();
+	this->m_ProgressBar->setMaximum(m_Header.numIds);
 	m_Offset = m_Offset + (sizeof(RegistryItem)*m_Header.numIds);
 	m_Output->write((char*)&m_Header, sizeof(RegistryHeader));
 
@@ -251,10 +253,13 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 	I one file but also will check if they want to overwrite all I
 	I------------------------------------------------------------I
 	*/
-	if (m_overWrite != OverWriting::NOTHING)
+	
+	if (TextureExists(newFilePath))
 	{
-		if (TextureExists(newFilePath))
+		/*this if-statement will not run if the uiser has selected to not overwrite anything*/
+		if (m_overWrite != OverWriting::NOTHING)
 		{
+			/*This if-statement will run if the user has selected to manually inspect each texture*/
 			if (m_overWrite == OverWriting::ONCE)
 			{
 				if (overWrite(newFilePath))
@@ -263,6 +268,7 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 					return;
 				}
 			}
+			/*This if-statement will only run the first time*/
 			else if (m_overWrite == OverWriting::ONCE_FIRST)
 			{
 				if (overWrite(newFilePath))
@@ -270,6 +276,7 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 					CopyFile(oldPath.c_str(), newPath.c_str(), false);
 				}
 
+				/*this messageBox will ask the user if he wants to overwrite the texture files*/
 				int msgboxID = MessageBox(
 					NULL,
 					(LPCWSTR)L"Do you wish to overwrite all textures being copied?\nPress cancel for manual inspection.",
@@ -277,6 +284,7 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 					MB_YESNOCANCEL | MB_DEFBUTTON3
 					);
 
+				/*will change the overwrite variable based on the users input*/
 				switch (msgboxID)
 				{
 				case IDYES:
@@ -291,18 +299,21 @@ void ResourceLibExporter::CopyTextureFile(std::string * file)
 				}
 				return;
 			}
+			/*This if-statement will run if the user chose to overwrite every texture*/
 			else if (m_overWrite == OverWriting::ALL)
 			{
 				CopyFile(oldPath.c_str(), newPath.c_str(), false);
 				return;
 			}
 		}
-		else
-		{
-			CopyFile(oldPath.c_str(), newPath.c_str(), false);
-			return;
-		}
 	}
+	/*this else-statement will run if there's no duplicate texture in the project folder*/
+	else
+	{
+		CopyFile(oldPath.c_str(), newPath.c_str(), false);
+		return;
+	}
+	
 }
 
 void ResourceLibExporter::HandleSceneData()
@@ -321,15 +332,16 @@ void ResourceLibExporter::HandleSceneData()
 		{
 			if (fromServer->LoadFile(serverFiles->at(i), data, &dataSize) == Resources::Status::ST_OK)
 			{
-
 				if (dotName != ".mat" && dotName == ".model" || dotName != ".mat" && dotName == ".bbf" 
 					|| dotName != ".mat" && dotName == ".skel" || dotName != ".mat" && dotName == ".anim")
 				{
 					WriteToBPF(data, (const unsigned int)dataSize);
+					this->m_ProgressBar->setValue(this->m_ProgressBar->value() + 1);
 				}
 				else if (dotName == ".mat")
 				{
 					WriteMatToBPF(data, (const unsigned int)dataSize);
+					this->m_ProgressBar->setValue(this->m_ProgressBar->value() + 1);
 				}
 			}
 		}
@@ -349,8 +361,11 @@ void ResourceLibExporter::WriteRegistry()
 bool ResourceLibExporter::Open()
 {
 	m_Output->open(m_DestinationPath, std::fstream::binary);
-	if(m_Output->is_open())
+	if (m_Output->is_open())
+	{
+		this->m_ProgressBar->show();
 		return true;
+	}
 	return false;
 }
 
@@ -359,6 +374,8 @@ bool ResourceLibExporter::Close()
 	m_Items.clear();
 	m_Output->close();
 	m_overWrite = ONCE_FIRST;
+	this->m_ProgressBar->reset();
+	this->m_ProgressBar->hide();
 	if(!m_Output->is_open())
 		return true;
 	return false;
