@@ -320,6 +320,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
 
 	m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
@@ -422,6 +423,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	this->m_networkModule->Update();
+
+	this->m_cameraRef->UpdateDeltaTime(dt);
 
 	#pragma region 
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
@@ -629,7 +632,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma region
 		float yaw = inputHandler->GetMouseDelta().x;
 		float pitch = inputHandler->GetMouseDelta().y;
-		float mouseSens = 0.1f * dt;
+		float mouseSens = 0.1f;
 
 		if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 			this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
@@ -1044,7 +1047,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 #pragma endregion MUSIC_KEYS
 
-	this->m_cameraRef->Update(dt);
+	this->m_cameraRef->Update();
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;
@@ -2053,7 +2056,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-	
+
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //

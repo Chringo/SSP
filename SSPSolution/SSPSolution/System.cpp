@@ -179,9 +179,6 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->EndTimer(1);
 
-	//CAM
-	this->m_camera->Update(deltaTime);
-
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
@@ -287,7 +284,8 @@ int System::Update(float deltaTime)
 #endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);
-	this->m_graphicsHandler->Render(deltaTime);
+	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 	DebugHandler::instance()->EndTimer(2);
 
