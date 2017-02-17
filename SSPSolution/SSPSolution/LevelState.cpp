@@ -968,6 +968,36 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+
+		#pragma region
+		if (this->m_networkModule->GetNrOfConnectedClients != 0)
+		{
+			//Update Player1
+			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
+			DirectX::XMFLOAT4X4 newrot;
+			DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);
+			
+			//Update Player2
+			pp = this->m_player2.GetPhysicsComponent();
+			DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+			this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);//Send the update
+
+			//Update everything else
+			for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
+			{
+				ent = this->m_dynamicEntitys.at(i);
+
+				if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
+				{
+					pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
+					DirectX::XMFLOAT4X4 newrot;
+					DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update
+				}
+			}
+		}
+		#pragma endregion Update Client
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
