@@ -970,7 +970,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 		#pragma region
-		if (this->m_networkModule->GetNrOfConnectedClients != 0)
+		if (this->m_networkModule->GetNrOfConnectedClients() != 0)
 		{
 			//Update Player1
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
