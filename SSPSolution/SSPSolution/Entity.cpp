@@ -23,7 +23,7 @@ int Entity::SyncComponents()
 			//rotate and translate the obb in the game
 			if (this->m_pComp->PC_BVtype == BV_OBB)
 			{
-				if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
+				if (this->m_entityID == ENTITYID::PLAYERONE || this->m_entityID == ENTITYID::PLAYERTWO) // 1 or 2 == player
 				{
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
@@ -67,7 +67,7 @@ void Entity::UnsafeSyncComponents()
 	//rotate and translate the obb in the game
 	if (this->m_pComp->PC_BVtype == BV_OBB)
 	{
-		if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
+		if (this->m_entityID == ENTITYID::PLAYERONE || this->m_entityID == ENTITYID::PLAYERTWO) // 1 or 2 == player
 		{
 			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
