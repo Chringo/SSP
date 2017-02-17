@@ -165,8 +165,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = ENTITYID::PLAYERONE;				//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	playerP->PC_entityID = 1;								//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.0, 0, 0); //Set Rotation
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
@@ -219,8 +219,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = ENTITYID::PLAYERTWO;				//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_pos = { 0 };								//Set Position
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
 	playerP->PC_mass = 10;
@@ -272,8 +272,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = ENTITYID::BALLONE;					//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0 , 0,0,0);
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -289,7 +289,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	ball->Initialize(ENTITYID::BALLONE, ballP, ballG);
+	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 	m_player1.SetBall(ball);
 #pragma endregion Ball1
@@ -302,8 +302,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = ENTITYID::BALLTWO;					//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active
@@ -313,7 +313,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
-	ball2->Initialize(ENTITYID::BALLTWO, ballP, ballG);
+	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
 	#pragma endregion Ball2
@@ -327,6 +327,84 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		1.3f
 	);
 #pragma endregion Set_Camera
+//
+//#pragma region
+//	float linkLenght = 1.2f;
+//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+//	PhysicsComponent* next = nullptr;
+//
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35f;
+//		}
+//		unsigned int entityID = 5;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+//
+//	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	previous = this->m_player2.GetPhysicsComponent();
+//	next = nullptr;
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35;
+//		}
+//		unsigned int entityID = 6;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+//#pragma endregion Create_Chain_Link
 
 	this->m_director.Initialize();
 
@@ -368,7 +446,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					connecting player so they still have the same start position relative to eachother.
 					*/
 
-					if ((int)itr->entityID == ENTITYID::PLAYERONE)	//Packets for player2
+					if ((int)itr->entityID == 1)	//Packets for player2
 					{
 						pp = this->m_player2.GetPhysicsComponent();
 
@@ -378,7 +456,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 					}
-					else if ((int)itr->entityID == ENTITYID::PLAYERTWO)	//Packets for player1
+					else if ((int)itr->entityID == 2)	//Packets for player1
 					{
 						pp = this->m_player1.GetPhysicsComponent();
 
@@ -387,7 +465,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
-					else if ((int)itr->entityID == ENTITYID::BALLONE)	//Packets for ball1
+					else if ((int)itr->entityID == 3)	//Packets for ball1
 					{
 						pp = this->m_player2.GetBall()->GetPhysicsComponent();
 
@@ -396,7 +474,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
-					else if ((int)itr->entityID == ENTITYID::BALLTWO)	//Packets for ball2
+					else if ((int)itr->entityID == 4)	//Packets for ball2
 					{
 						pp = this->m_player1.GetBall()->GetPhysicsComponent();
 
@@ -908,10 +986,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
 			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player2.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		}
 		else
 		{
@@ -921,10 +999,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
 			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-			m_player1.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player2.GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		}
 
 		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
@@ -1018,7 +1096,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			linkLenght = 0.35f;
 		}
-		unsigned int entityID = ENTITYID::CHAINONE;
+		unsigned int entityID = 5;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
@@ -1064,7 +1142,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			linkLenght = 0.35f;
 		}
-		unsigned int entityID = ENTITYID::CHAINTWO;
+		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
@@ -1342,8 +1420,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
-			ENTITYID::PLAYERONE,
-			ENTITYID::PLAYERTWO,
+			1,	//EntityID Player1
+			3,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -2078,8 +2156,8 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = ENTITYID::PLAYERONE;					//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 10;
@@ -2100,8 +2178,8 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = ENTITYID::PLAYERTWO;					//Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
 	playerP->PC_mass = 10;
@@ -2121,8 +2199,8 @@ int LevelState::UnloadLevel()
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = ENTITYID::BALLONE;					//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -2140,8 +2218,8 @@ int LevelState::UnloadLevel()
 #pragma endregion ball1
 #pragma region
 	ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = ENTITYID::BALLTWO;					//Set Entity ID
-	ballP->PC_pos = DirectX::XMVectorSet(0, 0, 0, 0);		//Set Position
+	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
 	ballP->PC_active = true;								//Set Active

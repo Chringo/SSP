@@ -70,7 +70,7 @@ struct PhysicsComponent
 
 	double PC_gravityInfluence;
 	int PC_active;
-	unsigned int PC_entityID;
+	int PC_entityID;
 	float PC_mass;
 	bool PC_is_Static;
 	bool PC_collides;
