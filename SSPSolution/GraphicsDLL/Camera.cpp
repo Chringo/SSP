@@ -722,7 +722,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 	CullingResult result = FRUSTRUM_INSIDE;
 
 #pragma region
-	/*enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -768,58 +768,58 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 		{
 			result = FRUSTRUM_INTERSECT;
 		}
-	}*/
+	}
 #pragma endregion Uses only 2 corners
 
 #pragma region
-	for (int i = 0; i < 6; i++)
-	{
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
-		DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
-		//+Y
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		//-Y
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
+	//	DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
+	//	//+Y
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	//-Y
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
 
-		result = FRUSTRUM_OUTSIDE;
-	}
+	//	result = FRUSTRUM_OUTSIDE;
+	//}
 #pragma endregion uses all corners
 
 	return result;

@@ -20,7 +20,11 @@
 #endif
 
 const int ARRAY_INC = 5;
-
+const int OCTREE_NODE_MIN_CONTAINMENT = 1;
+const int OCTREE_NODE_MAX_DEPTH = 5;
+const int OCTREE_NODE_MIN_DEPTH = 1;
+const float OCTREE_NODE_MIN_SIZE = 2.0f;
+					  
 	
 class GraphicsHandler
 {
