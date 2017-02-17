@@ -204,7 +204,20 @@ Camera::C_Ray Camera::CastRay() //returns a ray projected from the camera origin
 	return ray;
 }
 
-int Camera::AddToIntersectCheck(DirectX::XMFLOAT3X3 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
+Camera::C_Ray Camera::CastRayFromMaxDistance()
+{
+	C_Ray ray;
+	DirectX::XMStoreFloat3(&ray.dir, this->m_Dir());
+
+	DirectX::XMStoreFloat3(&ray.origin, m_cameraMaxDistancePos);
+
+	//ray.RayDir = this->m_Dir();
+	//ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
+
+	return ray;
+}
+
+int Camera::AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
 {
 
 	C_OBB obb;
@@ -631,13 +644,18 @@ void Camera::m_updatePos()
 
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
+	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
 
 	float x = m_distance * cos(m_pitch) * sin(m_yaw);
 	float y = m_distance * sin(m_pitch);
 	float z = m_distance * cos(m_pitch) * cos(m_yaw);
 
-	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+	float mx = m_maxDistance * cos(m_pitch) * sin(m_yaw);
+	float my = m_maxDistance * sin(m_pitch);
+	float mz = m_maxDistance * cos(m_pitch) * cos(m_yaw);
 
+	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(m_cameraMaxDistancePos, DirectX::XMVectorSet(-mx, -my, -mz, 0.0f));
 
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
@@ -650,13 +668,13 @@ float lerp(float a, float b, float f)
 
 void Camera::m_calcDistance()
 {
-	DirectX::XMVECTOR campos = DirectX::XMLoadFloat4(&this->m_cameraPos);
-	
-	static float targetDistance = m_distance;
-	float intersectDistance = m_distance + 0.2;
-	float hitDistance = intersectDistance;
+	const float EPSILON = 1e-5f;
+	static float targetDistance = m_maxDistance;
+	float intersectDistance = m_maxDistance;
+	float hitDistance = m_maxDistance;
 	float zoomSpeedFactor = 4.f;
 	bool newDistance = false;
+	bool raycollision = false;
 
 	for (C_OBB i : m_intersectionOBBs)
 	{
@@ -665,11 +683,11 @@ void Camera::m_calcDistance()
 		obb.ext[1] = i.ext.y;
 		obb.ext[2] = i.ext.z;
 
-		obb.ort = DirectX::XMLoadFloat3x3(&i.ort);
+		obb.ort = DirectX::XMLoadFloat4x4(&i.ort);
 		
-		if (m_ph.IntersectRayOBB(campos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		if (m_IntersectRayOBB(m_cameraMaxDistancePos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
 		{
-			if (hitDistance < intersectDistance)
+			if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
 			{
 				newDistance = true;
 				intersectDistance = hitDistance;
@@ -677,24 +695,25 @@ void Camera::m_calcDistance()
 		}
 	}
 
-
+	
 	if (newDistance)
 	{
-		if (intersectDistance < targetDistance)
+		if ((intersectDistance < targetDistance) || (intersectDistance > targetDistance))
 			targetDistance = intersectDistance;
-		else if(intersectDistance > targetDistance)
-			targetDistance = intersectDistance;
-
 		if (targetDistance > this->m_maxDistance)
 			targetDistance = this->m_maxDistance;
 		else if (targetDistance < 0.05)
 			targetDistance = 0.05;
 	}
-	else if(targetDistance < m_maxDistance || m_distance > m_maxDistance)
+	else if(targetDistance < m_maxDistance || targetDistance > m_maxDistance)
 		targetDistance = m_maxDistance;
 
-	float diffFactor = abs(m_distance - targetDistance) * zoomSpeedFactor;
-	this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
+	if (!fabs(m_distance - targetDistance) < EPSILON)
+	{
+		float diffFactor = (abs(m_distance - targetDistance) * zoomSpeedFactor);
+		this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
+	}
+	
 }
 #pragma endregion setters
 
@@ -920,4 +939,101 @@ DirectX::XMVECTOR Camera::C_AABB::GetNegativeVertex(const DirectX::XMVECTOR & no
 		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorSubtract(pos, ext)));
 
 	return DirectX::XMVectorAdd(pos, result);
+}
+
+bool Camera::m_IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB & obj, const DirectX::XMVECTOR & obbPos, float & distanceToOBB)
+{
+	Ray ray;
+	ray.Origin = rayOrigin;
+	ray.RayDir = rayDir;
+
+
+	float t1, t2 = 0.0;
+	const int NR_OF_NORMALS = 3;
+
+	//Vec rayD = ray.d;
+	DirectX::XMVECTOR radD = ray.RayDir;
+
+	DirectX::XMVECTOR sideVector[NR_OF_NORMALS];
+
+	sideVector[0] = obj.ort.r[0];
+	sideVector[1] = obj.ort.r[1];
+	sideVector[2] = obj.ort.r[2];
+
+	float tMin;
+	float tMax;
+
+	tMin = -INFINITY;
+	tMax = INFINITY;
+
+	//Vec pointVec = this->Bcenter - ray.o;
+	DirectX::XMVECTOR pointVec = DirectX::XMVectorSubtract(obbPos, ray.Origin);
+
+	//rayD.Normalize();
+	ray.RayDir = DirectX::XMVector3Normalize(radD);
+
+	float temp;
+	float length[NR_OF_NORMALS];
+
+	length[0] = obj.ext[0];
+	length[1] = obj.ext[1];
+	length[2] = obj.ext[2];
+
+	float e = 0.0f;
+	float f = 0.0f;
+
+	distanceToOBB = 0;
+	for (int i = 0; i < NR_OF_NORMALS; i++)
+	{
+
+		e = DirectX::XMVector4Dot(sideVector[i], pointVec).m128_f32[0];
+		f = DirectX::XMVector4Dot(sideVector[i], ray.RayDir).m128_f32[0];
+
+		if (abs(f) > 1e-20f)
+		{
+			t1 = (e + length[i]) / f;
+			t2 = (e - length[i]) / f;
+
+			if (t1 > t2)
+			{
+				//swap
+				temp = t2;
+				t2 = t1;
+				t1 = temp;
+			}
+			if (t1 > tMin)
+			{
+				tMin = t1;
+			}
+			if (t2 < tMax)
+			{
+				tMax = t2;
+			}
+			if (tMin > tMax)
+			{
+				return false;
+			}
+			if (tMax < 0)
+			{
+				return false;
+			}
+		}
+		else if ((-e - length[i]) > 0 || (-e + length[i] < 0))
+		{
+			return false;
+		}
+	}
+
+	if (tMin > 0)
+	{
+		//min intersect
+		distanceToOBB = tMin;
+	}
+	else
+	{
+		//max intersect
+		distanceToOBB = tMax;
+	}
+
+	return true;
 }

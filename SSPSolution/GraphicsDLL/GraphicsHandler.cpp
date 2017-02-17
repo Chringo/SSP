@@ -468,7 +468,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	/*this->m_overviewCamera.SetCameraPos(camPos);
 	camPos = DirectX::XMVectorSet(10.f, 0.f, 0.f, 0.f);
 	this->m_overviewCamera.SetLookAt(camPos);*/
-	this->m_overviewCamera.Update(0.0f);
+	this->m_overviewCamera.Update();
 	this->m_useOverview = false;
 
 	//this->m_CreateTempsTestComponents();
@@ -505,7 +505,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 #pragma region CameraIntersectListCreation
 	m_camera->ClearIntersectList();
-	Camera::C_Ray ray = this->m_camera->CastRay();
+	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
 	for (size_t i = 0; i < 8; i++)
 	{
 		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray);
@@ -518,12 +518,12 @@ int GraphicsHandler::Render(float deltaTime)
 			result++;
 			
 			DirectX::XMMATRIX ortm;
-			DirectX::XMFLOAT3X3 ort;
+			DirectX::XMFLOAT4X4 ort;
 			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
 			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
 			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
 
-			DirectX::XMStoreFloat3x3(&ort, ortm);
+			DirectX::XMStoreFloat4x4(&ort, ortm);
 			this->m_camera->AddToIntersectCheck(
 				ort,
 				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
@@ -1651,7 +1651,7 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 					if (intersectsRay)
 					{
-						if (distance < m_camera->GetCameraMaxDistance())
+						if (distance < m_camera->GetCameraMaxDistance() + 0.3f)
 						{
 							TraverseOctreeRay(curNode->branches[i], ray);
 						}
