@@ -244,8 +244,8 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
 
-	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
+	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 	for (int i = 0; i < nrOfComponents; i++)
 	{
 		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
