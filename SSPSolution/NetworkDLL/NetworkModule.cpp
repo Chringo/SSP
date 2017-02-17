@@ -652,6 +652,18 @@ void NetworkModule::ReadMessagesFromClients()
 
 				break;
 
+			case SYNC_RESET:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Messages.push_back(p);
+
+				data_read += sizeof(Packet);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
 			case TEST_PACKET:
 
 				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
@@ -917,6 +929,28 @@ std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Grabbed.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<Packet> NetworkModule::PacketBuffer_GetResetPacket()
+{
+	std::list<Packet> result;
+	std::list<Packet>::iterator iter;
+
+	for (iter = this->packet_Buffer_Messages.begin(); iter != this->packet_Buffer_Messages.end();)
+	{
+		if (iter->packet_type == SYNC_RESET)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Messages.erase(iter);	//Returns the next element after the errased element
 		}
 		else
 		{

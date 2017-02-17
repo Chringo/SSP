@@ -412,10 +412,10 @@ GraphicsHandler::GraphicsHandler()
 	this->m_maxGraphicsComponents  = 5;
 	this->m_nrOfGraphicsAnimationComponents = 0;
 	this->m_maxGraphicsAnimationComponents = 5;
-	this->m_maxDepth = 5;
-	this->m_minDepth = 1;
-	this->m_minContainment = 0;
-	this->m_minSize = 1.0f;
+	this->m_maxDepth = OCTREE_NODE_MAX_DEPTH;
+	this->m_minDepth = OCTREE_NODE_MIN_DEPTH;
+	this->m_minContainment = OCTREE_NODE_MIN_CONTAINMENT;
+	this->m_minSize = OCTREE_NODE_MIN_SIZE;
 }
 
 
@@ -713,7 +713,7 @@ int GraphicsHandler::Render(float deltaTime)
 	context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
 
-	//this->RenderOctree(&this->m_octreeRoot, &renderTest);
+	this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
@@ -1053,15 +1053,37 @@ int GraphicsHandler::GenerateOctree()
 		reachedMaxDepth = !(size > this->m_minSize);
 	}
 	//this->m_maxDepth = int((largestSize / this->m_minSize) + 0.5f);
-	this->m_maxDepth = 8;
+	//this->m_maxDepth = OCTREE_NODE_MAX_DEPTH;
 	//Initialize the octree root
 	for (i = 0; i < 8; i++)
 	{
 		this->m_octreeRoot.branches[i] = nullptr;
 	}
-	this->m_octreeRoot.ext = DirectX::XMFLOAT3((largestSize) / 2.0f, (largestSize) / 2.0f, (largestSize) / 2.0f);
-	this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
-	
+	int option = 1;
+	switch (option)
+	{
+	case 0:
+		//This is the ordinary cubetree
+		this->m_octreeRoot.ext = DirectX::XMFLOAT3((maxX - minX) / 2.0f, (maxY - minY) / 2.0f, (maxZ - minZ) / 2.0f);
+		this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
+		break;
+	case 1:
+		//This version does not center the cubed octree
+		this->m_octreeRoot.ext = DirectX::XMFLOAT3((largestSize) / 2.0f, (largestSize) / 2.0f, (largestSize) / 2.0f);
+		this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
+		break;
+	case 2:
+		//This centers the cubed octree
+		this->m_octreeRoot.ext = DirectX::XMFLOAT3((maxX - minX) / 2.0f, (maxY - minY) / 2.0f, (maxZ - minZ) / 2.0f);
+		this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
+		this->m_octreeRoot.ext = DirectX::XMFLOAT3((largestSize) / 2.0f, (largestSize) / 2.0f, (largestSize) / 2.0f);
+		break;
+	default:
+		//This is the ordinary cubetree
+		this->m_octreeRoot.ext = DirectX::XMFLOAT3((maxX - minX) / 2.0f, (maxY - minY) / 2.0f, (maxZ - minZ) / 2.0f);
+		this->m_octreeRoot.pos = DirectX::XMFLOAT3(minX + this->m_octreeRoot.ext.x, minY + this->m_octreeRoot.ext.y, minZ + this->m_octreeRoot.ext.z);
+		break;
+	}
 
 	//Build the tree
 	this->OctreeExtend(&this->m_octreeRoot, 0);
