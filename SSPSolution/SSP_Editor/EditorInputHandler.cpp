@@ -65,7 +65,7 @@ void EditorInputHandler::KeyboardMovement(double dT)
 		if (this->m_KeysHeld[Bools::C] == true)
 			translateCameraY -= speed;
 		if (this->m_KeysHeld[Bools::SPACE] == true)
-			translateCameraY -= speed;
+			translateCameraY += speed;
 	
 			MouseZoom(dT);
 	}

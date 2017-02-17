@@ -358,8 +358,12 @@ void FileImporter::handleMat(char * m_bbf_object)
 		if (models->at(i)->GetRawModelData()->materialId == newMaterial->GetId())
 		{
 			models->at(i)->SetMaterial(newMaterial);
+			return;
 		}
 	}
+	printf("NU ÄR DET INGEN TEXTUR TILL EN MODEL!!!!!!!\n\n");
+
+
 }
 
 void FileImporter::handleModel(char * m_bbf_object)
