@@ -53,6 +53,7 @@ private:
 	std::list<CameraPacket>			packet_Buffer_Camera;
 	std::list<SyncPhysicPacket>		packet_Buffer_Physic;
 	std::list<GrabPacket>			packet_Buffer_Grabbed;
+	std::list<Packet>				packet_Buffer_Messages;
 
 	// Help functions
 	int		ReceiveData(unsigned int client_id, char * recvbuf);	// Recive the binary data and stores it into recvbuf
@@ -105,7 +106,7 @@ public:
 	NETWORKDLL_API std::list<CameraPacket>			PacketBuffer_GetCameraPackets();		//Get all packets in packet_Buffer_Camera
 	NETWORKDLL_API std::list<SyncPhysicPacket>		PacketBuffer_GetPhysicPacket();			//Get all packets in packet_Buffer_Physic
 	NETWORKDLL_API std::list<GrabPacket>			PacketBuffer_GetGrabPacket();			//Get all packets in packet_Buffer_Grabbed
-
+	NETWORKDLL_API std::list<Packet>				PacketBuffer_GetResetPacket();			//Get all packets in packet_Buffer_Grabbed
 };
 
 
