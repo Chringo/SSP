@@ -657,7 +657,7 @@ int GraphicsHandler::Render(float deltaTime)
 	lastModelID = firstRenderedInstancedModelID;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
-		//reset the 'isInRay' bool
+		//reset the 'isRendered' bool
 		if (i->isRendered)
 		{
 			//If it is time to change 
@@ -1692,10 +1692,10 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 							{
 								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
 							}
-							else if (distance < 100.f)
+							/*else if (distance < 100.f)
 							{
 								TraverseOctreeRay(curNode->branches[i], ray, true);
-							}
+							}*/
 						}
 					}
 				}
@@ -1710,10 +1710,10 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 				{
 					entityComponent->isInRay = true;
 				}
-				else
+				/*else
 				{
 					entityComponent->isInPingRay = true;
-				}
+				}*/
 			}
 		}
 	}
