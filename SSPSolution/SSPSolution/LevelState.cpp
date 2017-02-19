@@ -141,11 +141,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -208,7 +208,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
@@ -261,7 +261,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 	#pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
@@ -2066,7 +2066,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-
+	
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //
