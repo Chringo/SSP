@@ -35,6 +35,8 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
+	this->inFullscreen = false;
+
 	this->m_menuBG = cHandler->GetUIComponent();
 	this->m_menuBG->active = 1;
 	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -58,7 +60,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	}
 	this->m_keymaps = cHandler->GetUIComponent();
 	this->m_keymaps->active = 0;
-	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 300.f);
+	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 400.f);
 	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
 	this->m_keymaps->spriteID = 3;
 	this->m_keymaps->scale = 0.5f;
@@ -108,7 +110,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_mainMenuButtons[2].m_textComp->text = L"Quit Game";
 	this->m_mainMenuButtons[1].m_textComp->text = L"Options";
 
-	this->m_optionsMenuButtons[0].m_textComp->text = L"Toggle Fullscreen";
+	this->m_optionsMenuButtons[0].m_textComp->text = L"Fullscreen";
 	this->m_optionsMenuButtons[1].m_textComp->text = L"Go Back";
 
 	this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
@@ -278,6 +280,15 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			////Cheating by telling the system the user pressed F
 			//inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
 			result = 511;
+			if (!this->inFullscreen)
+			{
+				this->m_optionsMenuButtons.at(0).m_textComp->text = L"Windowed";
+			}
+			else
+			{
+				this->m_optionsMenuButtons.at(0).m_textComp->text = L"Fullscreen";
+			}
+			this->inFullscreen = !this->inFullscreen;
 		}
 		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
 		{

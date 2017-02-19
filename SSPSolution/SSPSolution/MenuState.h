@@ -107,6 +107,7 @@ private:
 	UIComponent* m_menuBG;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;
+	bool inFullscreen;
 	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
