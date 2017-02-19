@@ -254,7 +254,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         float lightPower = 0;
 
         lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
-        lightPower *= pointlights[i].intensity; //could add falloff factor
+        lightPower *= pointlights[i].intensity; 
         if (lightPower > 0.0f)
         {
             //PBR variables 

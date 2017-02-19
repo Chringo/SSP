@@ -78,6 +78,21 @@
 	 }
  }
 
+ void BulletInterpreter::IgnoreCollitionCheckOnPickupP2(PhysicsComponent * src)
+ {
+	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	 const btCollisionObject* playerShape = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+
+	 if (src->PC_active == false)
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, true);
+	 }
+	 else
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, false);
+	 }
+ }
+
  void BulletInterpreter::forceDynamicObjectsToActive(PhysicsComponent * src)
  {
 	 btRigidBody* rigidBody = nullptr;
@@ -193,7 +208,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	#endif
 
 
-	btScalar fixedTimeStep = btScalar(1.0)/btScalar(120); 
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(200); 
 	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -245,6 +260,12 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 		if (src->PC_IndexRigidBody == 2)
 		{
 			this->IgnoreCollitionCheckOnPickupP1(src);
+			this->IgnoreCollitionCheckOnPickupP2(src);
+		}
+		if (src->PC_IndexRigidBody == 3)
+		{
+			this->IgnoreCollitionCheckOnPickupP1(src);
+			this->IgnoreCollitionCheckOnPickupP2(src);
 		}
 	}
 }
@@ -500,8 +521,11 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 {
-	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
+
+	//this capule is ugly hacked, needs further research
+	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2, src->PC_OBB.ext[1] * 1.6, src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
+	
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
 	//creating a mothion state

@@ -20,7 +20,11 @@
 #endif
 
 const int ARRAY_INC = 5;
-
+const int OCTREE_NODE_MIN_CONTAINMENT = 1;
+const int OCTREE_NODE_MAX_DEPTH = 5;
+const int OCTREE_NODE_MIN_DEPTH = 1;
+const float OCTREE_NODE_MIN_SIZE = 2.0f;
+					  
 	
 class GraphicsHandler
 {
@@ -113,6 +117,7 @@ private:
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
+		bool isInRay;
 	}; 
 	struct OctreeNode {
 		OctreeNode* branches[8] = { nullptr };
@@ -121,6 +126,8 @@ private:
 		DirectX::XMFLOAT3 ext;
 	};
 	OctreeNode m_octreeRoot;
+	Camera m_overviewCamera;
+	bool m_useOverview;
 	
 #ifdef _DEBUG
 	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
@@ -233,13 +240,17 @@ public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
+	GRAPHICSDLL_API void ToggleOverviewCamera();
 private:
 	void m_CreateTempsTestComponents();
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
+	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray);
+	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance);
 	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
+	inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox);
 };
 
 #endif

@@ -19,7 +19,9 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	/*setting the filters and disabling the user from seeing any other files*/
 	this->m_model->setNameFilters(filters);
 	this->m_model->setNameFilterDisables(false);
-
+	
+	/*Hiding the progressbar for the bpf exporter*/
+	m_ui.BPF_progressBar->hide();
 	
 	/*connecting the rest of the buttons to the functions*/
 	connect(m_ui.actionNew_scene,  SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
@@ -30,7 +32,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_fileImporter    = new FileImporter(m_ui.assetTree);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
 	this->m_fileImporter->Initialize();
-	this->m_resourceLibExporter->Initialize(this->m_fileImporter);
+	this->m_resourceLibExporter->Initialize(this->m_fileImporter, m_ui.BPF_progressBar);
 
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);

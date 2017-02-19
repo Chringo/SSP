@@ -15,7 +15,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 {
 	int result = 0;
 
-	if (this->m_isActive)
+	if (this->m_isActive && this->m_resetTime > 0.0f)
 	{
 		this->m_elapsedResetTime -= dT;
 		if (this->m_elapsedResetTime <= 0.0f)
@@ -24,7 +24,8 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			this->m_elapsedResetTime = this->m_resetTime;
 			this->m_isActive = false;
 			this->m_subject.Notify(this->m_entityID, EVENT::BUTTON_DEACTIVE);
-
+			m_targetOffset = 0;
+			m_animationActive = true;
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
@@ -32,6 +33,57 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 
 			this->m_needSync = true;
 		}
+	}
+	if (m_animationActive)
+	{
+		static float lastFrameOffsetValue = 0;
+		PhysicsComponent* ptr = this->GetPhysicsComponent();
+		DirectX::XMMATRIX offsetMatrix;
+		float frameOffset = m_animSpeed * dT;
+		if (m_targetOffset == 0)
+		{
+			if (m_currOffsetValue + frameOffset < m_targetOffset)
+			{
+				m_currOffsetValue += frameOffset;
+				
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
+
+				lastFrameOffsetValue = m_currOffsetValue;
+			}
+			else {
+				m_animationActive = false;
+				m_currOffsetValue = m_targetOffset;
+				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				
+				
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
+
+			}
+		}
+		else
+		{
+			if (m_currOffsetValue - frameOffset > m_targetOffset)
+			{
+				m_currOffsetValue -= frameOffset;
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
+				lastFrameOffsetValue = m_currOffsetValue;
+			}
+			else {
+				m_animationActive = false;
+				m_currOffsetValue = m_targetOffset;
+				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
+				return 0;
+			}
+		}
+		this->SyncComponents();
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, offsetMatrix);
+		//ptr->PC_OBB.ort = DirectX::XMMatrixMultiply(ptr->PC_OBB.ort, rot);
+
 	}
 	return result;
 }
@@ -77,6 +129,14 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 		
+		if (m_isActive) {
+			m_targetOffset = m_activatedOffset;
+		}
+		else {
+			m_targetOffset = 0;
+		}
+		m_animationActive = true;
+
 		////Play sound
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
