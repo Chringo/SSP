@@ -1344,7 +1344,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_ac->AC_entityID = data->aiComponents[i].EntityID;
 		t_ac->AC_time = data->aiComponents[i].time;
 		t_ac->AC_speed = data->aiComponents[i].speed;
-		t_ac->AC_pattern = data->aiComponents[i].pattern;
+		t_ac->AC_pattern = AI_ROUNDTRIP;//data->aiComponents[i].pattern;
 		t_ac->AC_nrOfWaypoint = data->aiComponents[i].nrOfWaypoints;
 		for (int x = 0; x < t_ac->AC_nrOfWaypoint; x++)
 		{
