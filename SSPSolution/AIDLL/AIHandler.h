@@ -41,6 +41,7 @@ private:
 	bool WaypointApprox(DirectX::XMVECTOR c1, DirectX::XMVECTOR c2, float distance, int i);
 	float Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2);
 	void UpdatePosition(int i);
+	bool ChangeDirection(int i);
 	
 };
 #endif
