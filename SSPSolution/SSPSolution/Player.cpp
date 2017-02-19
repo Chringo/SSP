@@ -243,8 +243,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMFLOAT3 pos;
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-
+				
 				float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
+
+				//if the player is holding its own ball
+				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
+				{
+					strength = 2; //weak as föök if the player tries to throw himself
+				}
+
+				
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
