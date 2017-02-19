@@ -153,7 +153,7 @@ int System::Run()
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance()->ResetMinMax();
-			printf("Reseted min max on timers\n");
+			printf("Reset min max on timers\n");
 		}
 
 		DebugHandler::instance()->EndProgram();
