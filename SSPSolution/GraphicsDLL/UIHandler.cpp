@@ -18,7 +18,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		this->m_UIComponents.push_back(newUIComp);
 	}
 
-	this->m_maxTextComponents = 25;
+	this->m_maxTextComponents = 30;
 	this->m_nrOfTextComponents = 0;
 	for (unsigned int i = 0; i < this->m_maxTextComponents; i++)
 	{
@@ -30,7 +30,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_texture1);
 	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_texture2);
-	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_tests.png", nullptr, &this->m_texture3);
+	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_temp.png", nullptr, &this->m_texture3);
 	DirectX::CreateWICTextureFromFile(device, L"menubg.png", nullptr, &this->m_texture4);
 	DirectX::CreateWICTextureFromFile(device, L"button.png", nullptr, &this->m_texture5);
 }
