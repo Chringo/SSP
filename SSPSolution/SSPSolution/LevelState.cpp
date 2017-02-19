@@ -770,7 +770,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				1.3f
 			);
 		}
-#ifdef _DEBUG
+#ifdef DEVELOPMENTFUNCTIONS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
 		{
 			m_cameraRef->SetDistance(10.f);
@@ -782,7 +782,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_cameraRef->SetDistance(1.3f);
 
 		}
-#endif
+#endif // DEVELOPMENTFUNCTIONS
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -1012,6 +1012,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	}
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
 		//TODO: NOCLIP BOOOOIS
@@ -1031,21 +1032,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 #pragma endregion Reset KEY
 	
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-#pragma endregion MUSIC_KEYS
+#ifdef DEVELOPMENTFUNCTIONS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_cameraRef->Update();
 
