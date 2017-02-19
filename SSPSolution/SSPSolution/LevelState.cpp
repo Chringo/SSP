@@ -2063,7 +2063,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-
+	
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //

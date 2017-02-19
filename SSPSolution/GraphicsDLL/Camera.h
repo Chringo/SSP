@@ -78,16 +78,16 @@ public:
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
+	struct C_BOX {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 min;
+		DirectX::XMFLOAT3 max;
+	};
 	struct C_Ray {
 		DirectX::XMFLOAT3 origin;
 		DirectX::XMFLOAT3 dir;
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
-	};
-	struct C_BOX {
-		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 min;
-		DirectX::XMFLOAT3 max;
 	};
 
 	struct ViewFrustrum {

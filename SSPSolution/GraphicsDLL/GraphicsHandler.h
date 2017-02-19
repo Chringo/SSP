@@ -118,12 +118,17 @@ private:
 		DirectX::XMFLOAT3 ext;
 		bool isRendered;
 		bool isInRay;
+		bool isInPingRay;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	}; 
 	struct OctreeNode {
 		OctreeNode* branches[8] = { nullptr };
 		std::vector<OctreeBV*> containedComponents;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 ext;
+		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+		void operator delete(void* p) { _aligned_free(p); };
 	};
 	OctreeNode m_octreeRoot;
 	Camera m_overviewCamera;
@@ -241,13 +246,16 @@ public:
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 	GRAPHICSDLL_API void ToggleOverviewCamera();
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 private:
 	void m_CreateTempsTestComponents();
 
 	void OctreeExtend(OctreeNode* curNode, int depth);
 	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
-	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray);
-	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance);
+	void TraverseOctreeRay(OctreeNode* curNode, Camera::C_Ray ray, bool pingRay);
+	bool RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance);
+	bool PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb);
 	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
 	inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox);
