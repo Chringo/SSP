@@ -182,6 +182,7 @@ int System::Update(float deltaTime)
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+#ifdef DEVELOPMENTFUNCTIONS
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -219,6 +220,8 @@ int System::Update(float deltaTime)
 	{
 		this->m_graphicsHandler->ToggleOverviewCamera();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
