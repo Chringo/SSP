@@ -108,7 +108,6 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
-	DebugHandler::instance()->CreateCustomLabel(L"Components for ray", 0.0f);
 
 
 	return result;
@@ -180,51 +179,6 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->EndTimer(1);
 
-	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-#ifdef _DEBUG
-	for (int i = 0; i < nrOfComponents; i++)
-	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
-		if (temp->PC_BVtype == BV_AABB)
-		{
-			AABB* AABB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-		}
-		if (temp->PC_BVtype == BV_OBB)
-		{
-			OBB* OBB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
-
-			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
-
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-			//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
-		}
-		if (temp->PC_BVtype == BV_Plane)
-		{
-			Plane* planeHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-		}
-		if (temp->PC_BVtype == BV_Sphere)
-		{
-			Sphere* sphereHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-			//AABB test;
-			//test.ext[0] = sphereHolder->radius;
-			//test.ext[1] = sphereHolder->radius;
-			//test.ext[2] = sphereHolder->radius;
-			//AABB* ptr = &test;
-			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
-		}
-	}
-#endif // _DEBUG
-
-	//CAM
-	this->m_camera->Update();
-
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
@@ -286,6 +240,48 @@ int System::Update(float deltaTime)
 	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
 	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 	DebugHandler::instance()->EndTimer(3);
+
+	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+#ifdef _DEBUG
+	for (int i = 0; i < nrOfComponents; i++)
+	{
+		PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
+		if (temp->PC_BVtype == BV_AABB)
+		{
+			AABB* AABB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+		}
+		if (temp->PC_BVtype == BV_OBB)
+		{
+			OBB* OBB_holder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+
+			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+			//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
+		}
+		if (temp->PC_BVtype == BV_Plane)
+		{
+			Plane* planeHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+		}
+		if (temp->PC_BVtype == BV_Sphere)
+		{
+			Sphere* sphereHolder = nullptr;
+			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
+			//AABB test;
+			//test.ext[0] = sphereHolder->radius;
+			//test.ext[1] = sphereHolder->radius;
+			//test.ext[2] = sphereHolder->radius;
+			//AABB* ptr = &test;
+			//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
+		}
+	}
+#endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);
 	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);

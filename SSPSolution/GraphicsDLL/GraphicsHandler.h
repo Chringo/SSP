@@ -20,7 +20,11 @@
 #endif
 
 const int ARRAY_INC = 5;
-
+const int OCTREE_NODE_MIN_CONTAINMENT = 1;
+const int OCTREE_NODE_MAX_DEPTH = 5;
+const int OCTREE_NODE_MIN_DEPTH = 1;
+const float OCTREE_NODE_MIN_SIZE = 2.0f;
+					  
 	
 class GraphicsHandler
 {
@@ -254,6 +258,7 @@ private:
 	bool PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb);
 	void DeleteOctree(OctreeNode* curNode);
 	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
+	inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox);
 };
 
 #endif

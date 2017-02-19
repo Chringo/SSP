@@ -1,7 +1,7 @@
 #ifndef GRAPHICSDLL_CAMERA_H
 #define GRAPHICSDLL_CAMERA_H
 #include <DirectXMath.h>
-#include "../physicsDLL/PhysicsHandler.h"
+#include "../physicsDLL/PhysicsHandler.h" 
 
 //#define GRAPHICSDLL_EXPORTS
 #ifdef GRAPHICSDLL_EXPORTS
@@ -41,6 +41,7 @@ private:
 
 	DirectX::XMVECTOR * m_focusPoint;
 	DirectX::XMVECTOR m_focusPointOffset;
+	DirectX::XMVECTOR m_cameraMaxDistancePos;
 	//DirectX::XMVECTOR m_targetCameraPos;
 	//DirectX::XMVECTOR m_targetCameraRot;
 	//DirectX::XMVECTOR m_targetCameraUp;
@@ -54,6 +55,8 @@ private:
 	float m_screenAspect;
 	float m_fieldOfView;
 	float m_deltaTime;
+	float m_targetDistance;
+
 public:
 	struct Plane {
 		DirectX::XMFLOAT4 normal;
@@ -118,6 +121,9 @@ public:
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
 	GRAPHICSDLL_API C_Ray CastRay();
+	GRAPHICSDLL_API C_Ray CastRayFromMaxDistance();
+	GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos);
+	GRAPHICSDLL_API int ClearIntersectList();
 
 #pragma region
 	GRAPHICSDLL_API void GetViewMatrix(DirectX::XMMATRIX& storeIn);
@@ -137,6 +143,8 @@ public:
 	GRAPHICSDLL_API void GetCameraUp(DirectX::XMFLOAT3& storeIn);
 	GRAPHICSDLL_API DirectX::XMVECTOR GetCameraPivot();
 	GRAPHICSDLL_API float GetCameraDistance();
+	GRAPHICSDLL_API float GetCameraMaxDistance();
+	GRAPHICSDLL_API DirectX::XMVECTOR GetMaxDistanceCamPos() { return m_cameraMaxDistancePos; };
 
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
@@ -184,6 +192,9 @@ private:
 	DirectX::XMVECTOR m_Dir();
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
+	void m_calcDistance();
+	bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	std::vector<C_OBB> m_intersectionOBBs;
 };
 
 #endif
