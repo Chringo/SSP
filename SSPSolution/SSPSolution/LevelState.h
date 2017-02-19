@@ -24,6 +24,9 @@
 #define BALL2_ID 1
 #define CHAIN_ID 1
 
+// For testing
+//#define DEVELOPMENTFUNCTIONS
+
 class LevelState :
 	public GameState
 {
