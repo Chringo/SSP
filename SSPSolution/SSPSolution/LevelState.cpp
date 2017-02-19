@@ -141,11 +141,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
