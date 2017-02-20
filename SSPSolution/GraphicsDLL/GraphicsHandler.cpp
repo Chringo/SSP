@@ -135,6 +135,12 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
 		{
+		/*float distance = -1.0;
+		Camera::C_Ray ray = this->m_camera->CastRay();
+		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+		bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+		if (originInNode || (intersectsRay && distance < 1.5f))
+		{*/
 			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
 			/*myAABB.ext[0] *= 1.0f;
 			myAABB.ext[1] *= 1.0f;
@@ -468,7 +474,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	/*this->m_overviewCamera.SetCameraPos(camPos);
 	camPos = DirectX::XMVectorSet(10.f, 0.f, 0.f, 0.f);
 	this->m_overviewCamera.SetLookAt(camPos);*/
-	this->m_overviewCamera.Update(0.0f);
+	this->m_overviewCamera.Update();
 	this->m_useOverview = false;
 
 	//this->m_CreateTempsTestComponents();
@@ -495,12 +501,45 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
 	this->m_d3dHandler->ClearBlendState();
 	m_shaderControl->ClearFrame();
 	static float elapsedTime = 0.0f;
 	elapsedTime += deltaTime / 1000000;
+
+#pragma region CameraIntersectListCreation
+	m_camera->ClearIntersectList();
+	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
+	for (size_t i = 0; i < 8; i++)
+	{
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, false);
+	}
+
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	{
+		if (i->isInRay)
+		{
+			result++;
+			
+			DirectX::XMMATRIX ortm;
+			DirectX::XMFLOAT4X4 ort;
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+
+			DirectX::XMStoreFloat4x4(&ort, ortm);
+			this->m_camera->AddToIntersectCheck(
+				ort,
+				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
+				i->pos
+			);
+				i->isInRay = false;
+			//This component needs to be checked against the ray for camera intersection
+		}
+	}
+#pragma endregion
 
 
 	/*TEMP CBUFFER STUFF*/
@@ -724,7 +763,7 @@ int GraphicsHandler::Render(float deltaTime)
 	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
 	
-	return 0;
+	return result;
 }
 
 int GraphicsHandler::InitializeGrid()
@@ -1631,6 +1670,205 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray, bool pingRay)
+{
+	//Safety check
+	if (curNode != nullptr)
+	{
+		if (curNode->containedComponents.size() <= 0)
+		{
+			//Branch
+			for (int i = 0; i < 8; i++)
+			{
+				//For all non-culled branches
+				if (curNode->branches[i] != nullptr)
+				{
+					Camera::C_AABB branchBounds;
+					branchBounds.pos = curNode->branches[i]->pos;
+					branchBounds.ext = curNode->branches[i]->ext;
+					//Check the ray origin vs octree
+					bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+					
+					if (originInNode)
+					{
+						TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+					}
+					//Check the ray vs octree
+					else 
+					{
+						float distance = -1.0;
+						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+						if (intersectsRay)
+						{
+							if (distance < 1.5f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+							}
+							/*else if (distance < 100.f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, true);
+							}*/
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			//Leaf
+			for each (OctreeBV* entityComponent in curNode->containedComponents)
+			{
+				if (!pingRay)
+				{
+					entityComponent->isInRay = true;
+				}
+				/*else
+				{
+					entityComponent->isInPingRay = true;
+				}*/
+			}
+		}
+	}
+}
+
+bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance)
+{
+#pragma region
+	////double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
+	////double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
+	//double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
+	//double tx2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
+
+	//double tmin = min(tx1, tx2);
+	//double tmax = max(tx1, tx2);
+
+	////double ty1 = (b.min.y - r.x0.y)*r.n_inv.y;
+	////double ty2 = (b.max.y - r.x0.y)*r.n_inv.y;
+	//double ty1 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
+	//double ty2 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * (1.f / ray.dir.y);
+
+	//tmin = max(tmin, min(ty1, ty2));
+	//tmax = min(tmax, max(ty1, ty2));
+
+	//double tz1 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
+	//double tz2 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * (1.f / ray.dir.z);
+
+	//tmin = max(tmin, min(tz1, tz2));
+	//tmax = min(tmax, max(tz1, tz2));
+
+	//distance = tmax - tmin;
+	//return tmax >= tmin;
+#pragma endregion v1
+
+#pragma region
+	////Other implementation
+	//float tmin = FLT_MIN;
+	//float tmax = FLT_MAX;
+
+	////For x axis
+	//float invDir = 1.f / ray.dir.x;
+	//float min = bb.pos.x - bb.ext.x;
+	//float max = bb.pos.x + bb.ext.x;
+	//float t0 = (min - ray.origin.x) * invDir;
+	//float t1 = (max - ray.origin.x) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
+
+	////For y axis
+	//invDir = 1.f / ray.dir.y;
+	//min = bb.pos.y - bb.ext.y;
+	//max = bb.pos.y + bb.ext.y;
+	//t0 = (min - ray.origin.y) * invDir;
+	//t1 = (max - ray.origin.y) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
+
+	////For z axis
+	//invDir = 1.f / ray.dir.z;
+	//min = bb.pos.z - bb.ext.z;
+	//max = bb.pos.z + bb.ext.z;
+	//t0 = (min - ray.origin.z) * invDir;
+	//t1 = (max - ray.origin.z) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
+	//distance = tmax - tmin;
+	//return true;
+#pragma endregion v2
+
+#pragma region
+	//Implementation from 3dProject
+	DirectX::XMFLOAT3 invDir = DirectX::XMFLOAT3(1.f / ray.dir.x, 1.f / ray.dir.y, 1.f / ray.dir.z);
+	
+	float t1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * invDir.x;
+	float t2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * invDir.x;
+	float t3 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * invDir.y;
+	float t4 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * invDir.y;
+	float t5 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * invDir.z;
+	float t6 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * invDir.z;
+
+	float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+	float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+	//Ray is intersecting AABB, but whole AABB is behind us
+	if (tmax < 0)
+	{
+		return false;
+	}
+
+	//Ray doesn't intersect AABB
+	if (tmin > tmax)
+	{
+		return false;
+	}
+
+	//Return intersection true and distance to model
+	distance = tmin;
+	return true;
+#pragma endregion v3
+}
+
+bool GraphicsHandler::PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb)
+{
+	if (pos.x < bb.pos.x - bb.ext.x)
+		return false;
+	if (pos.x > bb.pos.x + bb.ext.x)
+		return false;
+	if (pos.y < bb.pos.y - bb.ext.y)
+		return false;
+	if (pos.y > bb.pos.y + bb.ext.y)
+		return false;
+	if (pos.z < bb.pos.z - bb.ext.z)
+		return false;
+	if (pos.z > bb.pos.z + bb.ext.z)
+		return false;
+
+	return true;
+}
+
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)
 {
 	for (int i = 0; i < 8; i++)
@@ -1656,4 +1894,27 @@ int GraphicsHandler::AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX:
 	//A one line version that does not use branch prediction
 	//return abs(pos1.x - pos2.x) > ext1.x + ext2.x * abs(pos1.y - pos2.y) > ext1.y + ext2.y * abs(pos1.z - pos2.z) > ext1.z + ext2.z;
 	return 1;
+}
+
+inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
+{
+	OBB obj;
+
+	obj.ext[0] = boundingBox.extension[0];
+	obj.ext[1] = boundingBox.extension[1];
+	obj.ext[2] = boundingBox.extension[2];
+
+
+	DirectX::XMMATRIX extensionMatrix;
+	extensionMatrix = DirectX::XMMatrixSet(
+		boundingBox.extensionDir[0].x, boundingBox.extensionDir[0].y, boundingBox.extensionDir[0].z, 0.0f,
+		boundingBox.extensionDir[1].x, boundingBox.extensionDir[1].y, boundingBox.extensionDir[1].z, 0.0f,
+		boundingBox.extensionDir[2].x, boundingBox.extensionDir[2].y, boundingBox.extensionDir[2].z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+
+	obj.ort = extensionMatrix;
+
+
+	return obj;
 }
