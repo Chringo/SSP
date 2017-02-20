@@ -25,7 +25,7 @@
 #define CHAIN_ID 1
 
 // For testing
-//#define DEVELOPMENTFUNCTIONS
+#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState
