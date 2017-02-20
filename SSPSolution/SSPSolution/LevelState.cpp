@@ -1067,7 +1067,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		this->m_gsh->PopStateFromStack();
-		result = -2;
+		result = 0;
 	}
 
 	return result;

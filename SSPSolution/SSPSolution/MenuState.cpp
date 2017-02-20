@@ -714,7 +714,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 		if (result > 0)
 		{
 			//Push it to the gamestate stack/vector
-			this->m_gsh->PushStateToStack(levelSelect);
+			//this->m_gsh->PushStateToStack(levelSelect);
 
 			#pragma region
 			switch (levelID)
@@ -734,12 +734,10 @@ void MenuState::Joining(InputHandler* inputHandler)
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
-		else
-		{
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
-		}
+
+		//Delete it
+		delete levelSelect;
+		levelSelect = nullptr;
 		#pragma endregion Load_Level
 
 		this->isJoining = false;
