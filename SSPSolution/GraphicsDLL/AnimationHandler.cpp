@@ -35,7 +35,7 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE)
+		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
 			SetAnimCompIndex(aCompIndex);
@@ -43,9 +43,6 @@ void AnimationHandler::Update(float dt)
 			/*If only one animation is playing, there should be no transition.*/
 			if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
 			{
-				/*If there is no source state, the program should make a assert.*/
-				assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
-
 				/*Increment source animation's local time and multiply by speed factor and velocity.*/
 				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
 				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
