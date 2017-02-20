@@ -1,6 +1,14 @@
 #include "ResourceHandler.h"
 
 
+#ifdef  _DEBUG
+
+
+void Resources::ResourceHandler::ResetQueryCounter()
+{
+	queriesPerFrame = 0;
+}
+#endif //  _DEBUG
 
 Resources::ResourceHandler::ResourceHandler()
 {
@@ -88,6 +96,9 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 		UnloadLevel(m_CurrentLevel); //Unload the previous level
 	//m_CurrentLevel = ne;
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+#ifdef _DEBUG
+	this->ResetQueryCounter();
+#endif // _DEBUG
 	return Resources::Status::ST_OK;
 }
 
@@ -155,6 +166,9 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 		UnloadLevel(m_CurrentLevel); //Unload the previous level
 	m_CurrentLevel = newLevel;
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+#ifdef _DEBUG
+	this->ResetQueryCounter();
+#endif // _DEBUG
 	return Resources::Status::ST_OK;
 }
 
@@ -185,10 +199,15 @@ void Resources::ResourceHandler::SetContext(ID3D11DeviceContext * context)
 }
 
 
-Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& modelPtr) const
+Resources::Status Resources::ResourceHandler::GetModel(unsigned int id, Model*& modelPtr) 
 {
 	ResourceContainer* modelCont = nullptr;
 	Status st = m_modelHandler->GetModel(id, modelCont);
+
+#ifdef _DEBUG
+	this->queriesPerFrame += 1;
+#endif // _DEBUG
+
 
 	switch (st)
 	{
@@ -217,7 +236,6 @@ Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelR
 	{
 		st = m_modelHandler->UnloadModel(levelRes->ids[i]);
 #ifdef _DEBUG
-		std::cout << "Model missing, loading" << std::endl;
 		if (st != ST_OK)
 		{
 			MessageBox(NULL, TEXT("Error in unloading model"), TEXT("ERROR"), MB_OK);
