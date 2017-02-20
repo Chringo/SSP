@@ -728,9 +728,9 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 
 int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 {
-	Resources::Model* model;
+	Resources::Model* model = data->modelPtr;
 	
-	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
+	//Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
 	if (iteration == 0)
 	{
 		Resources::Material * mat = model->GetMaterial();

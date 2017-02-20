@@ -1306,7 +1306,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+		//st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 
 
@@ -2101,6 +2101,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
+#ifdef _DEBUG
+	//This keeps track of any resource lib access outside of level loading. 
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
 	return 1;
 }
 

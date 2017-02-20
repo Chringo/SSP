@@ -157,6 +157,14 @@ void ButtonEntity::SetSyncState(ButtonSyncState * newSyncState)
 		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 
+		if (m_isActive) {
+			m_targetOffset = m_activatedOffset;
+		}
+		else {
+			m_targetOffset = 0;
+		}
+		m_animationActive = true;
+
 		//Play sound
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
