@@ -104,8 +104,11 @@ private:
 
 	unsigned int m_menuState; //0: Main menu, 1: Options Menu, 2: Start Menu
 	unsigned int m_markedItem;
+	UIComponent* m_menuBG;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;
+	bool inFullscreen;
+	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
 	ComponentHandler* m_cHandlerPtr;

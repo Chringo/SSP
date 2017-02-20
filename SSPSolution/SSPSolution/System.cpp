@@ -153,7 +153,7 @@ int System::Run()
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance()->ResetMinMax();
-			printf("Reseted min max on timers\n");
+			printf("Reset min max on timers\n");
 		}
 
 		DebugHandler::instance()->EndProgram();
@@ -179,12 +179,10 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->EndTimer(1);
 
-	//CAM
-	this->m_camera->Update(deltaTime);
-
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+#ifdef DEVELOPMENTFUNCTIONS
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -222,6 +220,8 @@ int System::Update(float deltaTime)
 	{
 		this->m_graphicsHandler->ToggleOverviewCamera();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
@@ -287,7 +287,8 @@ int System::Update(float deltaTime)
 #endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);
-	this->m_graphicsHandler->Render(deltaTime);
+	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 	DebugHandler::instance()->EndTimer(2);
 

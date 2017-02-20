@@ -141,11 +141,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -205,7 +205,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
@@ -258,7 +258,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 	#pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
@@ -320,6 +320,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
 
 	m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
@@ -422,6 +423,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	this->m_networkModule->Update();
+
+	this->m_cameraRef->UpdateDeltaTime(dt);
 
 	#pragma region 
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
@@ -629,7 +632,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma region
 		float yaw = inputHandler->GetMouseDelta().x;
 		float pitch = inputHandler->GetMouseDelta().y;
-		float mouseSens = 0.1f * dt;
+		float mouseSens = 0.1f;
 
 		if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 			this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
@@ -767,7 +770,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				1.3f
 			);
 		}
-#ifdef _DEBUG
+#ifdef DEVELOPMENTFUNCTIONS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
 		{
 			m_cameraRef->SetDistance(10.f);
@@ -779,7 +782,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_cameraRef->SetDistance(1.3f);
 
 		}
-#endif
+#endif // DEVELOPMENTFUNCTIONS
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -1009,6 +1012,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	}
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
 		//TODO: NOCLIP BOOOOIS
@@ -1028,23 +1032,28 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 #pragma endregion Reset KEY
 	
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-#pragma endregion MUSIC_KEYS
+#ifdef DEVELOPMENTFUNCTIONS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
+#endif // DEVELOPMENTFUNCTIONS
 
-	this->m_cameraRef->Update(dt);
+
+	this->m_cameraRef->Update();
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;
@@ -1241,9 +1250,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
-
-		/*AnimationComponent* t_anim = nullptr;*/
-
+		
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
 		if (modelPtr->GetSkeleton() != nullptr)
@@ -1399,8 +1406,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
 		// Adjust OBB in physics component - hack...
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
-			, modelPtr->GetOBBData().position.z });
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ 
+			modelPtr->GetOBBData().position.x, 
+			modelPtr->GetOBBData().position.y,
+			modelPtr->GetOBBData().position.z 
+		});
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
 		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
@@ -1420,7 +1430,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
 			1,	//EntityID Player1
-			3,	//EntityID Player2
+			2,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -1660,7 +1670,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		wheel1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		wheel1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime < 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
+		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime > 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
 		this->m_wheelEntities.push_back(tempEntity);
 	}
 	//Create the doors

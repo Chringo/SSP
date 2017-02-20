@@ -20,7 +20,7 @@ Player::~Player()
 	}
 }
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, ComponentHandler* cHandler)
 {
 	int result = 0;
 
@@ -31,6 +31,13 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+
+	//Controls overlay
+	this->m_controlsOverlay = cHandler->GetUIComponent();
+	this->m_controlsOverlay->active = 0;
+	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->scale = .6f;
 
 	return result;
 }
@@ -243,8 +250,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMFLOAT3 pos;
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-
+				
 				float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
+
+				//if the player is holding its own ball
+				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
+				{
+					strength = 2; //weak as föök if the player tries to throw himself
+				}
+
+				
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
@@ -376,6 +391,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			this->UnsafeSyncComponents();
 		}
+	}
+
+	//Controls overlay
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 1;
+	}
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 0;
 	}
 
 	//End the update

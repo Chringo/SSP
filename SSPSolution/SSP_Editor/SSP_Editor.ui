@@ -2977,6 +2977,13 @@ Header- color:rgb(48, 48, 48);
       </widget>
      </widget>
     </item>
+    <item row="4" column="2">
+     <widget class="QProgressBar" name="BPF_progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
