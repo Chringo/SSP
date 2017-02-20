@@ -142,11 +142,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -206,7 +206,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
@@ -259,7 +259,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 	#pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
@@ -771,7 +771,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				1.3f
 			);
 		}
-#ifdef _DEBUG
+#ifdef DEVELOPMENTFUNCTIONS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
 		{
 			m_cameraRef->SetDistance(10.f);
@@ -783,7 +783,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_cameraRef->SetDistance(1.3f);
 
 		}
-#endif
+#endif // DEVELOPMENTFUNCTIONS
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -1013,6 +1013,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	}
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
 		//TODO: NOCLIP BOOOOIS
@@ -1032,21 +1033,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 #pragma endregion Reset KEY
 	
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-#pragma endregion MUSIC_KEYS
+#ifdef DEVELOPMENTFUNCTIONS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_cameraRef->Update();
 
@@ -2066,7 +2072,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-
+	
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //
