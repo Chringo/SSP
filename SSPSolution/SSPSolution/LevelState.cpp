@@ -161,7 +161,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 885141774;
+	playerG->modelID = 1117267500;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -171,40 +171,41 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
-	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
-	playerP->PC_OBB.ext[0] = 0.5f;
-	playerP->PC_OBB.ext[1] = 1.25f;
-	playerP->PC_OBB.ext[2] = 0.5f;
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim1 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim1 = m_cHandler->GetAnimationComponent();
-
-	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim1->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		playerAnim1 = m_cHandler->GetAnimationComponent();
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
 
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
-		playerAnim1->source_State->isLooping = true; // TEMP TEST
-		playerAnim1->playingSpeed = 2.0f;
+		playerAnim1->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State->isLooping = true;
+			playerAnim1->playingSpeed = 2.0f;
+		}
 	}
 #pragma endregion Animation_Player1
 
@@ -218,7 +219,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 1117267500;
+	playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
@@ -234,32 +235,36 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim2 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim2 = m_cHandler->GetAnimationComponent();
-
-	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim2->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		playerAnim2 = m_cHandler->GetAnimationComponent();
+
+		playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
+
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+
+		playerAnim2->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
+			playerAnim2->source_State->isLooping = true;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
-
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
-		playerAnim2->source_State->isLooping = true; // TEMP TEST
-		playerAnim2->playingSpeed = 2.0f;
-	}
-	#pragma endregion Animation_Player2
+#pragma endregion Animation_Player2
 
 	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
