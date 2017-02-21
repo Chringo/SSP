@@ -17,11 +17,8 @@ cbuffer camera : register(b1)
 
 cbuffer shadow : register(b5)
 {
-    float4x4 ShadowViewMatrix;
+    float4x4 ShadowViewMatrix[6];
     float4x4 ShadowProjectionMatrix;
-
-    int numCasters;
-    float spadding1, spadding2, spadding3;
 }
 
 cbuffer LightInfo : register(b3)
@@ -32,6 +29,8 @@ cbuffer LightInfo : register(b3)
     uint   NUM_SPOTLIGHTS;
     float3 AMBIENT_COLOR;
     float  AMBIENT_INTENSITY;
+    uint   SHADOWLIGHT_INDEX;
+    uint    PADDING[3];
 }
 
 struct PointLight //Must be 16 bit aligned!

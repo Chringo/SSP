@@ -131,7 +131,7 @@ public:
 
 		struct light
 		{
-		private:
+		public:
 			struct pData
 			{
 				UINT NUM_POINTLIGHTS;
@@ -140,6 +140,8 @@ public:
 				UINT NUM_SPOTLIGHTS;
 				float AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
 				float AMBIENT_INTENSITY = 0.2f;
+				UINT   SHADOWLIGHT_INDEX;
+				UINT   PADDING[3];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

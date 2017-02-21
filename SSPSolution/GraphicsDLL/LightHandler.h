@@ -57,7 +57,7 @@ namespace LIGHTING
 		LightHandler();
 		~LightHandler();
 		ConstantBufferHandler::ConstantBuffer::shadow::cbData m_shadowCb;
-		LightBufferData m_constBufferData;
+		ConstantBufferHandler::ConstantBuffer::light::pData m_constBufferData;
 		LightArray				  m_lightData[NUM_LT];
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
