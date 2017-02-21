@@ -23,6 +23,9 @@
 #define BALL1_ID 1
 #define BALL2_ID 1
 #define CHAIN_ID 1
+const int GRAB_COOLDOWN = 1;	//Cooldown in seconds until player can grab something after a throw
+const int GRAB_RANGE = 3; //The range of the grab in meters
+
 
 // For testing
 #define DEVELOPMENTFUNCTIONS

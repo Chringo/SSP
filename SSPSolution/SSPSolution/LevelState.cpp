@@ -28,33 +28,55 @@ Entity* LevelState::GetClosestBall(float minDist)
 	Entity* closest = nullptr;
 	float closestDistance = FLT_MAX;
 	PhysicsComponent* pc = this->m_player1.GetPhysicsComponent();
-	
 	//Calc the distance for play1 ball;
-	DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
-
-	if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos)));
+	float distance1 = FLT_MAX;
+	if (!this->m_player2.GetBall()->IsGrabbed())
 	{
-		closest = this->m_player1.GetBall();
-		closestDistance = distance;
-		
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
-
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+		//If distance is less than hald the pickup distance, pickup player2's ball every time
+		if (distance < minDist / 1.8f )
 		{
 			closest = this->m_player2.GetBall();
 		}
 	}
-	else //If ball1 is already grabbed
+	if (closest == nullptr)
 	{
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+		//Calc the distance for play1 ball;
+		DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
 
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+		if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
 		{
-			closest = this->m_player2.GetBall();
+			closest = this->m_player1.GetBall();
+			closestDistance = distance;
+
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+			{
+				closest = this->m_player2.GetBall();
+			}
 		}
+		else //If ball1 is already grabbed
+		{
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+			{
+				closest = this->m_player2.GetBall();
+			}
+		}
+		//Some crazy Kim stuff. probably doesn't work
+		//if ((1.0f / distance) * this->m_player2.GetBall()->IsGrabbed() < (1.0f / DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos)))) * this->m_player1.GetBall()->IsGrabbed())
+		//{
+		//	//Player1's ball is closest 
+		//}
+		//else
+		//{
+		//	//Player2's ball is closest
+		//}
 	}
 
 
@@ -698,9 +720,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_player1.GetGrabbed() == nullptr && !inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) 
+			&& this->m_player1.GetGrabbed() == nullptr
+			&& this->m_player1.TimeSinceThrow() >= GRAB_COOLDOWN)
 		{
-			Entity* closestBall = this->GetClosestBall(3);
+			Entity* closestBall = this->GetClosestBall(GRAB_RANGE);
 			
 			if (closestBall != nullptr)	//If a ball was found
 			{				
