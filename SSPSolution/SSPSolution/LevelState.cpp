@@ -1021,7 +1021,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		else
 		{
-			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.0f, RAGDOLL_STATE, nullptr, false, 1.0f, 1.0f);
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+			//SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
 		}
 	}
 
