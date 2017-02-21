@@ -22,47 +22,13 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	DirectX::XMVECTOR pos = { 0.0f,3.0f,0.0f,1.0f };
 	DirectX::XMVECTOR spak = { 0.0001f,0.0001f, 0.0001f,1.0f };
 	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
-	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.85, 1.0f, 0.0005f, 9.0f);
-	m_shadowCb.cView = DirectX::XMMatrixLookAtLH(pos, spak, up);
-	m_shadowCb.cShadowCasterAmount = 3;
+	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
 
 
-	ConstantBufferHandler::GetInstance()->shadow.UpdateBuffer(&m_shadowCb);
+	Light temp;
+	temp.position = pos;
+	SetShadowCastingLight(&temp);
 
-///* TEMPORARY*/
-//Point* pointArray = new Point[3];
-//pointArray[0].color.r = 1.0f;
-//pointArray[0].color.g = 0.0f;
-//pointArray[0].color.b = 0.0f;
-//pointArray[0].position.m128_f32[0] = 10.0f;
-//pointArray[0].position.m128_f32[1] = -9.0f;
-//pointArray[0].position.m128_f32[2] = -3.0f;
-//pointArray[0].intensity = 5.0f;
-////pointArray[0].isActive = TRUE;
-//
-//pointArray[1].color.r = 0.0f;
-//pointArray[1].color.g = 1.0f;
-//pointArray[1].color.b = 0.0f;
-//pointArray[1].position.m128_f32[0] = 14.0f;
-//pointArray[1].position.m128_f32[1] = -9.0f;
-//pointArray[1].position.m128_f32[2] = -3.0f;
-//pointArray[1].intensity = 5.0f;
-//pointArray[1].isActive = TRUE;
-//
-//pointArray[2].color.r = 0.0f;
-//pointArray[2].color.g = 0.0f;
-//pointArray[2].color.b = 1.0f;
-//pointArray[2].position.m128_f32[0] = 18.0f;
-//pointArray[2].position.m128_f32[1] = -9.0f;
-//pointArray[2].position.m128_f32[2] = -3.0f;
-//pointArray[2].intensity = 5.0f;
-//pointArray[2].isActive = TRUE;
-//
-//this->SetLightData(pointArray, 3, LT_POINT);
-//
-//
-//this->UpdateStructuredBuffer(LT_POINT);
-	//////////////
 	
 }
 
@@ -285,6 +251,53 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		UpdateStructuredBuffer(LT_POINT);
 	}
 	return true;
+}
+
+ bool LIGHTING::LightHandler::SetShadowCastingLight(Light * light)
+ {
+	 //Look along each coordinate axis
+
+	 DirectX::XMVECTOR targets[6];
+	 
+		targets[0] = DirectX::XMVectorSet(light->position.m128_f32[0] + 1.0f, light->position.m128_f32[1]		 ,light->position.m128_f32[2]		,1.0f); // +X
+		targets[1] = DirectX::XMVectorSet(light->position.m128_f32[0] - 1.0f, light->position.m128_f32[1]		 ,light->position.m128_f32[2]		,1.0f); // -X
+		targets[2] = DirectX::XMVectorSet(light->position.m128_f32[0],		  light->position.m128_f32[1] + 1.0f ,light->position.m128_f32[2]		,1.0f); // +Y
+		targets[3] = DirectX::XMVectorSet(light->position.m128_f32[0],		  light->position.m128_f32[1] - 1.0f ,light->position.m128_f32[2]		,1.0f); // -Y
+		targets[4] = DirectX::XMVectorSet(light->position.m128_f32[0],		  light->position.m128_f32[1]		 ,light->position.m128_f32[2] + 1.0f,1.0f); // +Z
+		targets[5] = DirectX::XMVectorSet(light->position.m128_f32[0],		  light->position.m128_f32[1]		 ,light->position.m128_f32[2] - 1.0f,1.0f); // -Z
+
+	 
+
+	 /* use world up vector (0,1,0) for all directions except +Y/-Y, In these cases we need a different up vector*/
+		DirectX::XMVECTOR ups[6];
+	
+	 ups[0]= DirectX::XMVectorSet(0.0f, 1.0f, 0.0f ,1.0f  ); // +X
+	 ups[1]= DirectX::XMVectorSet(0.0f, 1.0f, 0.0f ,1.0f  ); // -X
+	 ups[2]= DirectX::XMVectorSet(0.0f, 0.0f, -1.0f,1.0f  ); // +Y
+	 ups[3]= DirectX::XMVectorSet(0.0f, 0.0f, +1.0f,1.0f  ); // -Y
+	 ups[4]= DirectX::XMVectorSet(0.0f, 1.0f, 0.0f ,1.0f  ); // +Z
+	 ups[5]= DirectX::XMVectorSet(0.0f, 1.0f, 0.0f ,1.0f  ); // -Z
+
+	 for (int i = 0; i < 6; i++)
+	 {
+
+		 m_shadowCb.cView[i] = DirectX::XMMatrixLookAtLH(light->position, targets[i], ups[i]);
+		
+
+
+	 }
+
+	 ConstantBufferHandler::GetInstance()->shadow.UpdateBuffer(&m_shadowCb);
+	return  true;
+}
+
+ bool LIGHTING::LightHandler::SetShadowCastingLight(int index)
+{
+	 if (m_lightData[LT_POINT].dataPtr == nullptr || m_lightData[LT_POINT].numItems <= index)
+		 return false;
+
+	 
+	return  SetShadowCastingLight(&m_lightData[LT_POINT].dataPtr[index]);
 }
 
 
