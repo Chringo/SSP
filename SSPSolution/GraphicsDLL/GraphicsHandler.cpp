@@ -135,6 +135,12 @@ int GraphicsHandler::RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * c
 		CullingResult cullingResult = cullingFrustrum->TestAgainstAABB(branchBounds);
 		if (cullingResult != CullingResult::FRUSTRUM_OUTSIDE)
 		{
+		/*float distance = -1.0;
+		Camera::C_Ray ray = this->m_camera->CastRay();
+		bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+		bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+		if (originInNode || (intersectsRay && distance < 1.5f))
+		{*/
 			renderColor = DirectX::XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f);
 			/*myAABB.ext[0] *= 1.0f;
 			myAABB.ext[1] *= 1.0f;
@@ -508,7 +514,7 @@ int GraphicsHandler::Render(float deltaTime)
 	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
 	for (size_t i = 0; i < 8; i++)
 	{
-		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray);
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, false);
 	}
 
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
@@ -559,15 +565,14 @@ int GraphicsHandler::Render(float deltaTime)
 
 	int amountOfModelsToRender = 0;
 	int componentsInTree = this->m_octreeRoot.containedComponents.size();
-	//struct InstanceData {
-	//	int modelID;
-	//	int amountOfInstances;
-	//	DirectX::XMFLOAT4X4* componentSpecific;
-	//};
+
 	std::vector<InstanceData> instancedRenderingList;
 	unsigned int firstRenderedModelID = UINT_MAX;
 	unsigned int firstRenderedInstancedModelID = 0;
 	unsigned int lastModelID = 0;
+	Resources::Model* lastModelPtr = nullptr;
+	Resources::Model* firstRenderedModelPtr = nullptr;
+	Resources::Model* firstRenderedInstancedModelPtr = nullptr;
 	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
@@ -576,13 +581,15 @@ int GraphicsHandler::Render(float deltaTime)
 			if (i->modelID == lastModelID)
 			{
 				firstRenderedInstancedModelID = i->modelID;
+				firstRenderedInstancedModelPtr = i->modelPtr;
 				break;
 			}
-			
-			lastModelID = i->modelID;
+			lastModelPtr = i->modelPtr;
+			lastModelID  = i->modelID;
 			if (firstRenderedModelID == UINT_MAX)
 			{
 				firstRenderedModelID = i->modelID;
+				firstRenderedModelPtr = i->modelPtr;
 			}
 		}
 	}
@@ -591,7 +598,8 @@ int GraphicsHandler::Render(float deltaTime)
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 	int amountOfModelOccurrencees = 0;
 	unsigned int lastComponentIndex = 0;
-	lastModelID = firstRenderedModelID;
+	lastModelID  = firstRenderedModelID;
+	lastModelPtr = firstRenderedModelPtr;
 	OctreeBV* lastRenderedComponent = nullptr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
@@ -603,10 +611,10 @@ int GraphicsHandler::Render(float deltaTime)
 			{
 				if (amountOfModelOccurrencees > 1)
 				{
-
 					//Create the array
 					InstanceData instanceData;
-					instanceData.modelID = lastModelID;
+					instanceData.modelID  = lastModelID;
+					instanceData.modelPtr = lastModelPtr;
 					instanceData.amountOfInstances = amountOfModelOccurrencees;
 					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 					instancedRenderingList.push_back(instanceData);
@@ -621,6 +629,7 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 			}
 			//Prepare the data for the next model ID
+			lastModelPtr = i->modelPtr;
 			lastModelID = i->modelID;
 			lastComponentIndex = i->componentIndex;
 			lastRenderedComponent = i;
@@ -632,7 +641,8 @@ int GraphicsHandler::Render(float deltaTime)
 		if (amountOfModelOccurrencees > 1)
 		{
 			InstanceData instanceData;
-			instanceData.modelID = lastModelID;
+			instanceData.modelID  = lastModelID;
+			instanceData.modelPtr = lastModelPtr;
 			instanceData.amountOfInstances = amountOfModelOccurrencees;
 			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 			instancedRenderingList.push_back(instanceData);
@@ -648,7 +658,8 @@ int GraphicsHandler::Render(float deltaTime)
 	//Fill the array with valuable data
 	int instancedRenderingIndex = 0;
 	int instancedModelCount = 0;
-	lastModelID = firstRenderedInstancedModelID;
+	lastModelID  = firstRenderedInstancedModelID;
+	lastModelPtr = firstRenderedInstancedModelPtr;
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//reset the 'isRendered' bool
@@ -743,6 +754,10 @@ int GraphicsHandler::Render(float deltaTime)
 
 	this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
+
+	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
+	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
 
 	this->m_uiHandler->DrawUI();
@@ -988,6 +1003,8 @@ int GraphicsHandler::GenerateOctree()
 		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
 		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
 		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		Resources::ResourceHandler::GetInstance()->GetModel(this->m_octreeRoot.containedComponents[i]->modelID, this->m_octreeRoot.containedComponents[i]->modelPtr);
+		
 		//If the rotation isn't 0 create a bigger AABB
 #pragma region
 		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i]->ort))
@@ -1109,6 +1126,7 @@ int GraphicsHandler::GenerateOctree()
 
 	//Build the tree
 	this->OctreeExtend(&this->m_octreeRoot, 0);
+
 
 	return result;
 }
@@ -1652,7 +1670,7 @@ void GraphicsHandler::TraverseOctree(OctreeNode * curNode, Camera::ViewFrustrum 
 	}
 }
 
-void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
+void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray, bool pingRay)
 {
 	//Safety check
 	if (curNode != nullptr)
@@ -1665,17 +1683,31 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 				//For all non-culled branches
 				if (curNode->branches[i] != nullptr)
 				{
-					//Do the check to see if the branch is within the view frustrum
 					Camera::C_AABB branchBounds;
-					branchBounds.pos = curNode->pos;
-					branchBounds.ext = curNode->ext;
-					double distance = -1.0;
-					bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
-					if (intersectsRay)
+					branchBounds.pos = curNode->branches[i]->pos;
+					branchBounds.ext = curNode->branches[i]->ext;
+					//Check the ray origin vs octree
+					bool originInNode = this->PointVSAABB(ray.origin, branchBounds);
+					
+					if (originInNode)
 					{
-						if (distance < m_camera->GetCameraMaxDistance() + 0.3f)
+						TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+					}
+					//Check the ray vs octree
+					else 
+					{
+						float distance = -1.0;
+						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
+						if (intersectsRay)
 						{
-							TraverseOctreeRay(curNode->branches[i], ray);
+							if (distance < 1.5f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+							}
+							/*else if (distance < 100.f)
+							{
+								TraverseOctreeRay(curNode->branches[i], ray, true);
+							}*/
 						}
 					}
 				}
@@ -1686,15 +1718,22 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray)
 			//Leaf
 			for each (OctreeBV* entityComponent in curNode->containedComponents)
 			{
-				entityComponent->isInRay = true;
+				if (!pingRay)
+				{
+					entityComponent->isInRay = true;
+				}
+				/*else
+				{
+					entityComponent->isInPingRay = true;
+				}*/
 			}
 		}
 	}
 }
 
-bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& distance)
+bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, float& distance)
 {
-#pragma region v1
+#pragma region
 	////double tx1 = (b.min.x - r.x0.x)*r.n_inv.x;
 	////double tx2 = (b.max.x - r.x0.x)*r.n_inv.x;
 	//double tx1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * (1.f / ray.dir.x);
@@ -1721,64 +1760,113 @@ bool GraphicsHandler::RayVSAABB(Camera::C_Ray ray, Camera::C_AABB bb, double& di
 	//return tmax >= tmin;
 #pragma endregion v1
 
-#pragma region v2
-	//Other implementation
-	float tmin = FLT_MIN;
-	float tmax = FLT_MAX;
+#pragma region
+	////Other implementation
+	//float tmin = FLT_MIN;
+	//float tmax = FLT_MAX;
 
-	//For x axis
-	float invDir = ray.dir.x;
-	float min = bb.pos.x - bb.ext.x;
-	float max = bb.pos.x + bb.ext.x;
-	float t0 = (min - ray.origin.x) * invDir;
-	float t1 = (max - ray.origin.x) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
+	////For x axis
+	//float invDir = 1.f / ray.dir.x;
+	//float min = bb.pos.x - bb.ext.x;
+	//float max = bb.pos.x + bb.ext.x;
+	//float t0 = (min - ray.origin.x) * invDir;
+	//float t1 = (max - ray.origin.x) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
 
-	//For y axis
-	invDir = ray.dir.y;
-	min = bb.pos.y - bb.ext.y;
-	max = bb.pos.y + bb.ext.y;
-	t0 = (min - ray.origin.y) * invDir;
-	t1 = (max - ray.origin.y) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
+	////For y axis
+	//invDir = 1.f / ray.dir.y;
+	//min = bb.pos.y - bb.ext.y;
+	//max = bb.pos.y + bb.ext.y;
+	//t0 = (min - ray.origin.y) * invDir;
+	//t1 = (max - ray.origin.y) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
 
-	//For z axis
-	invDir = ray.dir.z;
-	min = bb.pos.z - bb.ext.z;
-	max = bb.pos.z + bb.ext.z;
-	t0 = (min - ray.origin.z) * invDir;
-	t1 = (max - ray.origin.z) * invDir;
-	if (t0 > t1)
-	{
-		std::swap(t0, t1);
-	}
-	tmin = t0 > tmin ? t0 : tmin;
-	tmax = t1 < tmax ? t1 : tmax;
-	if (tmax <= tmin)
-	{
-		return false;
-	}
-	distance = tmax - tmin;
-	return true;
+	////For z axis
+	//invDir = 1.f / ray.dir.z;
+	//min = bb.pos.z - bb.ext.z;
+	//max = bb.pos.z + bb.ext.z;
+	//t0 = (min - ray.origin.z) * invDir;
+	//t1 = (max - ray.origin.z) * invDir;
+	//if (t0 > t1)
+	//{
+	//	std::swap(t0, t1);
+	//}
+	//tmin = t0 > tmin ? t0 : tmin;
+	//tmax = t1 < tmax ? t1 : tmax;
+	//if (tmax <= tmin)
+	//{
+	//	return false;
+	//}
+	//distance = tmax - tmin;
+	//return true;
 #pragma endregion v2
+
+#pragma region
+	//Implementation from 3dProject
+	DirectX::XMFLOAT3 invDir = DirectX::XMFLOAT3(1.f / ray.dir.x, 1.f / ray.dir.y, 1.f / ray.dir.z);
+	
+	float t1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * invDir.x;
+	float t2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * invDir.x;
+	float t3 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * invDir.y;
+	float t4 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * invDir.y;
+	float t5 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * invDir.z;
+	float t6 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * invDir.z;
+
+	float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+	float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+	//Ray is intersecting AABB, but whole AABB is behind us
+	if (tmax < 0)
+	{
+		return false;
+	}
+
+	//Ray doesn't intersect AABB
+	if (tmin > tmax)
+	{
+		return false;
+	}
+
+	//Return intersection true and distance to model
+	distance = tmin;
+	return true;
+#pragma endregion v3
+}
+
+bool GraphicsHandler::PointVSAABB(DirectX::XMFLOAT3 pos, Camera::C_AABB bb)
+{
+	if (pos.x < bb.pos.x - bb.ext.x)
+		return false;
+	if (pos.x > bb.pos.x + bb.ext.x)
+		return false;
+	if (pos.y < bb.pos.y - bb.ext.y)
+		return false;
+	if (pos.y > bb.pos.y + bb.ext.y)
+		return false;
+	if (pos.z < bb.pos.z - bb.ext.z)
+		return false;
+	if (pos.z > bb.pos.z + bb.ext.z)
+		return false;
+
+	return true;
 }
 
 void GraphicsHandler::DeleteOctree(OctreeNode * curNode)

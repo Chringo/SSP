@@ -78,16 +78,16 @@ public:
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
 	};
+	struct C_BOX {
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 min;
+		DirectX::XMFLOAT3 max;
+	};
 	struct C_Ray {
 		DirectX::XMFLOAT3 origin;
 		DirectX::XMFLOAT3 dir;
 		void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		void operator delete(void* p) { _aligned_free(p); };
-	};
-	struct C_BOX {
-		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 min;
-		DirectX::XMFLOAT3 max;
 	};
 
 	struct ViewFrustrum {
@@ -96,6 +96,7 @@ public:
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
 		CullingResult TestAgainstBox(C_BOX box);
+		CullingResult TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius);
 		//An conservative test is fast but may not cull all things that could be culled
 		CullingResult TestAgainstOBBConservative(C_OBB box);
 		//An exact test will always cull all things perfectly but is slow

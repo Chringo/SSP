@@ -10,6 +10,7 @@ Player::Player()
 	this->m_isAiming = false;
 	this->m_walkingSound = nullptr;
 	this->m_oldAnimState = 0;
+	this->m_timeSinceThrow = 0;
 }
 
 Player::~Player()
@@ -20,7 +21,7 @@ Player::~Player()
 	}
 }
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, ComponentHandler* cHandler)
 {
 	int result = 0;
 
@@ -31,6 +32,13 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+
+	//Controls overlay
+	this->m_controlsOverlay = cHandler->GetUIComponent();
+	this->m_controlsOverlay->active = 0;
+	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->scale = .6f;
 
 	return result;
 }
@@ -230,36 +238,46 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 
 	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-		if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
+	bool hasThrown = false;
+	if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_grabbed != nullptr)
+	{
+		//assumes grabbed is ALWAYS the ball
+		if (this->m_grabbed != nullptr)
 		{
-			//assumes grabbed is ALWAYS the ball
-			if (this->m_grabbed != nullptr)
+			this->m_oldAnimState = this->m_aComp->previousState;
+			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
+			this->m_aComp->velocity = 1.0f;
+			this->m_aComp->previousState = PLAYER_THROW;
+			//Play sound
+			DirectX::XMFLOAT3 pos;
+			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+				
+			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
+
+			//if the player is holding its own ball
+			if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
 			{
-				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
-				this->m_aComp->velocity = 1.0f;
-				this->m_aComp->previousState = PLAYER_THROW;
-				//Play sound
-				DirectX::XMFLOAT3 pos;
-				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-				
-				float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
-
-				//if the player is holding its own ball
-				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
-				{
-					strength = 2; //weak as föök if the player tries to throw himself
-				}
-
-				
-				m_grabbed->GetPhysicsComponent()->PC_active = true;
-				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
-				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-
-				this->SetGrabbed(nullptr);	//Release the entity
+				strength = 2; //weak as föök if the player tries to throw himself
 			}
+
+				
+			m_grabbed->GetPhysicsComponent()->PC_active = true;
+			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
+			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
+
+			this->SetGrabbed(nullptr);	//Release the entity
+
+			hasThrown = true;
+			this->m_timeSinceThrow = 0;
 		}
+	}
+
+	//Check if we have not thrown something
+	if (hasThrown == false)
+	{
+		this->m_timeSinceThrow += dT;	//Add time to timmer
+	}
 
 	//Check if player is grounded
 
@@ -384,6 +402,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			this->UnsafeSyncComponents();
 		}
+	}
+
+	//Controls overlay
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 1;
+	}
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 0;
 	}
 
 	//End the update
@@ -543,4 +571,9 @@ bool Player::isAnimationChanged()
 	}
 
 	return result;
+}
+
+float Player::TimeSinceThrow()
+{
+	return this->m_timeSinceThrow;
 }

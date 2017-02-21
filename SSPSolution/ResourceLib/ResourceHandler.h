@@ -9,8 +9,11 @@
 namespace Resources
 {
 
-	class DLL_OPERATION ResourceHandler
+	class  ResourceHandler
 	{
+
+	
+
 
 	private:
 		struct LevelResources {
@@ -31,25 +34,33 @@ namespace Resources
 		ResourceHandler();
 		ResourceHandler(ID3D11Device* device, ID3D11DeviceContext* context);
 	public:
-		virtual ~ResourceHandler();
+		DLL_OPERATION virtual ~ResourceHandler();
 
-		Resources::Status LoadLevel(unsigned int id);
-		Resources::Status LoadLevel(LevelData::ResourceHeader* levelResources, unsigned int numResources); 
+		DLL_OPERATION Resources::Status LoadLevel(unsigned int id);
+		DLL_OPERATION Resources::Status LoadLevel(LevelData::ResourceHeader* levelResources, unsigned int numResources); 
 
-		static ResourceHandler* GetInstance();
-		/* Set */
-		void SetDeviceAndContext(ID3D11Device* device, ID3D11DeviceContext* context);
-		void SetDevice(ID3D11Device* device);
-		void SetContext(ID3D11DeviceContext* context);
-		/* Get */
-		ID3D11Device* GetDevice()			   const { return this->m_device; };
-		ID3D11DeviceContext* GetContext()      const { return this->m_context; };
-	
-		Resources::Status  GetModel(unsigned int id, Model*& modelPtr) const;
+	DLL_OPERATION static ResourceHandler* GetInstance();
+	/* Set */
+	DLL_OPERATION void SetDeviceAndContext(ID3D11Device* device, ID3D11DeviceContext* context);
+	DLL_OPERATION void SetDevice(ID3D11Device* device);
+	DLL_OPERATION void SetContext(ID3D11DeviceContext* context);
+	/* Get */
+	DLL_OPERATION ID3D11Device* GetDevice()			   const { return this->m_device; };
+	DLL_OPERATION ID3D11DeviceContext* GetContext()      const { return this->m_context; };
+
+	DLL_OPERATION Resources::Status  GetModel(unsigned int id, Model*& modelPtr) ;
 
 
 	private:
 		Resources::Status UnloadLevel(LevelResources* levelRes); 
+
+#ifdef _DEBUG
+	private:
+		int queriesPerFrame = 0;
+	public:
+		DLL_OPERATION void ResetQueryCounter();
+		DLL_OPERATION int GetQueryCounter() { return queriesPerFrame; };
+#endif // _DEBUG
 	};
 }
 

@@ -28,33 +28,55 @@ Entity* LevelState::GetClosestBall(float minDist)
 	Entity* closest = nullptr;
 	float closestDistance = FLT_MAX;
 	PhysicsComponent* pc = this->m_player1.GetPhysicsComponent();
-	
 	//Calc the distance for play1 ball;
-	DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
-
-	if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos)));
+	float distance1 = FLT_MAX;
+	if (!this->m_player2.GetBall()->IsGrabbed())
 	{
-		closest = this->m_player1.GetBall();
-		closestDistance = distance;
-		
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
-
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+		//If distance is less than hald the pickup distance, pickup player2's ball every time
+		if (distance < minDist / 1.8f )
 		{
 			closest = this->m_player2.GetBall();
 		}
 	}
-	else //If ball1 is already grabbed
+	if (closest == nullptr)
 	{
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+		//Calc the distance for play1 ball;
+		DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
 
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+		if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
 		{
-			closest = this->m_player2.GetBall();
+			closest = this->m_player1.GetBall();
+			closestDistance = distance;
+
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+			{
+				closest = this->m_player2.GetBall();
+			}
 		}
+		else //If ball1 is already grabbed
+		{
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+			{
+				closest = this->m_player2.GetBall();
+			}
+		}
+		//Some crazy Kim stuff. probably doesn't work
+		//if ((1.0f / distance) * this->m_player2.GetBall()->IsGrabbed() < (1.0f / DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos)))) * this->m_player1.GetBall()->IsGrabbed())
+		//{
+		//	//Player1's ball is closest 
+		//}
+		//else
+		//{
+		//	//Player2's ball is closest
+		//}
 	}
 
 
@@ -141,11 +163,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L3P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
 	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -178,34 +200,38 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim1 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim1 = m_cHandler->GetAnimationComponent();
-
-	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim1->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		playerAnim1 = m_cHandler->GetAnimationComponent();
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
 
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
-		playerAnim1->source_State->isLooping = true; // TEMP TEST
-		playerAnim1->playingSpeed = 2.0f;
+		playerAnim1->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State->isLooping = true;
+			playerAnim1->playingSpeed = 2.0f;
+		}
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
@@ -215,7 +241,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 1117267500;
+	playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
@@ -231,34 +257,38 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim2 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim2 = m_cHandler->GetAnimationComponent();
-
-	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim2->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		playerAnim2 = m_cHandler->GetAnimationComponent();
+
+		playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
+
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+
+		playerAnim2->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
+			playerAnim2->source_State->isLooping = true;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
+#pragma endregion Animation_Player2
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
-		playerAnim2->source_State->isLooping = true; // TEMP TEST
-		playerAnim2->playingSpeed = 2.0f;
-	}
-	#pragma endregion Animation_Player2
-
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
@@ -689,12 +719,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_player1.GetGrabbed() == nullptr && !inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) 
+			&& this->m_player1.GetGrabbed() == nullptr
+			&& this->m_player1.TimeSinceThrow() >= GRAB_COOLDOWN)
 		{
-			Entity* closestBall = this->GetClosestBall(3);
+			Entity* closestBall = this->GetClosestBall(GRAB_RANGE);
 			
 			if (closestBall != nullptr)	//If a ball was found
 			{				
+				if (this->m_player1.GetBall()->IsGrabbed()						  //if our ball is grabbed
+					&& this->m_player1.GetGrabbed() != this->m_player1.GetBall()) //AND if the ball is not grabbed by us
+				{
+					//now we know that player 2 is holding our ball
+					
+					//drop the ball
+					this->m_player2.SetGrabbed(nullptr);
+
+					//send update packet to client 2
+					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+				}
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
@@ -738,7 +781,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else //Drop
 				{
-					this->m_player2.SetGrabbed(nullptr);
+					if (itr->entityID == 1)
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else if(itr->entityID == 2)
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
 				}
 
 			}
@@ -770,7 +820,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				1.3f
 			);
 		}
-#ifdef _DEBUG
+#ifdef DEVELOPMENTFUNCTIONS
 		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
 		{
 			m_cameraRef->SetDistance(10.f);
@@ -782,7 +832,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			m_cameraRef->SetDistance(1.3f);
 
 		}
-#endif
+#endif // DEVELOPMENTFUNCTIONS
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -1012,6 +1062,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 	}
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
 	{
 		//TODO: NOCLIP BOOOOIS
@@ -1031,21 +1082,26 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
 		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 #pragma endregion Reset KEY
 	
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-#pragma endregion MUSIC_KEYS
+#ifdef DEVELOPMENTFUNCTIONS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_cameraRef->Update();
 
@@ -1292,7 +1348,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+		//st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 
 
@@ -2057,7 +2113,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetDynamicComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-
+	
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //
@@ -2087,6 +2143,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
+#ifdef _DEBUG
+	//This keeps track of any resource lib access outside of level loading. 
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
 	return 1;
 }
 
