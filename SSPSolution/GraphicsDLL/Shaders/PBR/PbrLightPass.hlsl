@@ -263,9 +263,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             float LdotH = saturate((dot(L, H)));
             float NdotH = saturate((dot(N, H)));
-            float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+            float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
-
+  
             //DO SHADOW STUFF HERE
 
             //DIFFUSE
@@ -296,7 +296,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
     finalColor.rgb += ambient;
-    //finalColor.rgb *= AOSamp;
+    finalColor.rgb *= AOSamp;
 
     
     return saturate(finalColor);
