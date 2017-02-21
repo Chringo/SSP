@@ -881,6 +881,29 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	return result;
 }
 
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+{
+	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
+	float distance = 0.0f;
+	enum { NUMBER_OF_PLANES = 6 };
+	for (int i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		//Distance between point and plane
+		distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+		//Check distance against
+		if (distance > -radius)
+		{
+			return CullingResult::FRUSTRUM_OUTSIDE;
+		}
+		else if (distance > radius)
+		{
+			result = CullingResult::FRUSTRUM_INTERSECT;
+		}
+	}
+
+	return result;
+}
+
 CullingResult Camera::ViewFrustrum::TestAgainstOBBConservative(C_OBB box)
 {
 	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
