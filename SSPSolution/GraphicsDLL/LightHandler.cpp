@@ -24,7 +24,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
 	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
 
-
+	m_constBufferData.SHADOWLIGHT_INDEX = 0;
 	Light temp;
 	temp.position = pos;
 	SetShadowCastingLight(&temp);
@@ -296,7 +296,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	 if (m_lightData[LT_POINT].dataPtr == nullptr || m_lightData[LT_POINT].numItems <= index)
 		 return false;
 
-	 
+	 m_constBufferData.SHADOWLIGHT_INDEX = index;
 	return  SetShadowCastingLight(&m_lightData[LT_POINT].dataPtr[index]);
 }
 
