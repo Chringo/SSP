@@ -155,6 +155,7 @@ void ShaderControl::DrawInstanced(InstanceData * data)
 void ShaderControl::DrawFinal()
 {
 	this->m_activeShader = Shaders::FINAL;
+	((DeferredShader*)m_shaders[DEFERRED])->SetShadowDataToRead();
 	((FinalShader*)this->m_shaders[FINAL])->SetActive();
 	((FinalShader*)this->m_shaders[FINAL])->Draw();
 }

@@ -50,6 +50,7 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 	if (SUCCEEDED(hResult))
 	{
 		deviceContext->VSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
+		deviceContext->GSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
 		deviceContext->PSSetConstantBuffers(CB_FRAME_B1, 1, &frame.D3DBuffer);
 	}
 	else
@@ -96,6 +97,24 @@ int ConstantBufferHandler::Initialize(ID3D11Device * device, ID3D11DeviceContext
 		deviceContext->VSSetConstantBuffers(CB_SKELETON_B4, 1, &skeleton.D3DBuffer);
 	else
 		return	1;
+
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.ByteWidth = sizeof(ConstantBuffer::shadow::p);
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	hResult = device->CreateBuffer(&bufferDesc, nullptr, &shadow.D3DBuffer);
+	if (SUCCEEDED(hResult))
+	{
+		deviceContext->PSSetConstantBuffers(CB_SHADOW_B5, 1, &shadow.D3DBuffer);
+		deviceContext->GSSetConstantBuffers(CB_SHADOW_B5, 1, &shadow.D3DBuffer);
+	}
+	else
+		return	1;
+
 
 	return 0;
 }

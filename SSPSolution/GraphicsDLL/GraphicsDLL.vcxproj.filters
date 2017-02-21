@@ -46,6 +46,9 @@
     <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{eb269100-a0f1-43e1-b661-c735bf31ba23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Shadow">
+      <UniqueIdentifier>{eb19a108-95d4-45c9-ba66-e82f560b5826}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsHandler.h">
@@ -186,6 +189,15 @@
     </FxCompile>
     <FxCompile Include="Shaders\GBuffer\GBufferVS_Instanced.hlsl">
       <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow\ShadowShader.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow\ShadowShader_Instanced.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow\ShadowShader_Animation.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

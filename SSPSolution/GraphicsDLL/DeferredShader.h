@@ -17,8 +17,18 @@ class DeferredShader :
 {
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
-
-private:
+	static const int MAX_SHADOW_AMOUNT      = 2;
+	static const int SHADOW_WIDTH  = 1024;
+	static const int SHADOW_HEIGHT = 1024;
+	enum VERTEX_SHADERS {
+		VS_NORMAL,
+		VS_ANIMATED,
+		VS_INSTANCED_NORMAL,
+		VS_SHADOW_NORMAL,
+		VS_SHADOW_INSTANCED,
+		VS_SHADOW_ANIMATED,
+		VS_NUM_VERTEX_SHADERS
+	};
 	enum INPUT_LAYOUTS
 	{
 		IL_NORMAL,
@@ -27,24 +37,27 @@ private:
 		IL_TYPE_COUNT
 	};
 
-	ID3D11VertexShader*   m_vertexShader[IL_TYPE_COUNT];
+	ID3D11VertexShader*   m_vertexShader[VS_NUM_VERTEX_SHADERS];
 	ID3D11GeometryShader* m_geoShader;
+	ID3D11GeometryShader* m_ShadowGeoShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout[IL_TYPE_COUNT];
 
 	ID3D11PixelShader*	 m_gridPixelShader;
 	ID3D11SamplerState*  m_samplerState;
 
-	ID3D11RenderTargetView*		m_deferredRTV[BUFFER_COUNT];
+	ID3D11RenderTargetView*		m_deferredRTV[RTV_COUNT];
 	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
 	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
 
 	ID3D11Texture2D*		 m_depthStencilBuffer;
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
+	ID3D11DepthStencilView*	 m_shadowMapSV;
 
 	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;
+	bool m_shadowStateActive = false;
 public:
 	DeferredShader();
 	~DeferredShader();
@@ -54,6 +67,7 @@ public:
 	ID3D11ShaderResourceView** GetShaderResourceViews();
 	int SetActive();
 	int SetVariation(ShaderLib::ShaderVariations ShaderVariations);
+	void SetShadowDataToRead();
 	void Release();
 
 	

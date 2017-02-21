@@ -155,7 +155,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 
-	this->m_cHandler->ResizeGraphicsPersistent(2 + CHAIN_SEGMENTS * 2);
+	this->m_cHandler->ResizeGraphicsPersistent(2/* + CHAIN_SEGMENTS * 2*/);
 	// creating the player
 	//Player1
 #pragma region

@@ -19,6 +19,16 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 		this->CreateStructuredBuffer(LIGHT_TYPE(i),3); //Create all the structured buffers  and update the constant buffer
 	}
 
+	DirectX::XMVECTOR pos = { 0.0f,3.0f,0.0f,1.0f };
+	DirectX::XMVECTOR spak = { 0.0001f,0.0001f, 0.0001f,1.0f };
+	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
+	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.85, 1.0f, 0.0005f, 9.0f);
+	m_shadowCb.cView = DirectX::XMMatrixLookAtLH(pos, spak, up);
+	m_shadowCb.cShadowCasterAmount = 3;
+
+
+	ConstantBufferHandler::GetInstance()->shadow.UpdateBuffer(&m_shadowCb);
+
 ///* TEMPORARY*/
 //Point* pointArray = new Point[3];
 //pointArray[0].color.r = 1.0f;
@@ -191,6 +201,7 @@ bool LIGHTING::LightHandler::SetBuffersAsActive()
 {
 	for (size_t i = 0; i < NUM_LT; i++)
 	{
+		m_gDeviceContext->GSSetShaderResources(BUFFER_SHADER_SLOTS[i], 1, &m_structuredBuffers[i]);
 		m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[i], 1, &m_structuredBuffers[i]);
 	}
 	return true;

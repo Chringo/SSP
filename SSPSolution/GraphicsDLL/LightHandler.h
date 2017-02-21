@@ -42,12 +42,11 @@ namespace LIGHTING
 	private:
 		enum LIGHT_BUFFER_SLOTS // Determines the slots that the buffers are set in the shader
 		{
-			POINTLIGHT_BUFFER		 = 8, // IMPORTANT: In the shader, these buffers needs to be registered as a t buffer
-			DIRECTIONALLIGHT_BUFFER	 = 9, // not register(sX); BUT, register(tX); 
-			AREALIGHT_BUFFER		 = 10,
-			SPOTLIGHT_BUFFER		 = 11
+			POINTLIGHT_BUFFER		 = 6 , // IMPORTANT: In the shader, these buffers needs to be registered as a t buffer
+			DIRECTIONALLIGHT_BUFFER	 = 7 , // not register(sX); BUT, register(tX); 
+			AREALIGHT_BUFFER		 = 8,
+			SPOTLIGHT_BUFFER		 = 9
 		};
-		
 		struct LightArray {
 			Light* dataPtr = nullptr;
 			unsigned int numItems = 0;
@@ -57,6 +56,7 @@ namespace LIGHTING
 	private:
 		LightHandler();
 		~LightHandler();
+		ConstantBufferHandler::ConstantBuffer::shadow::cbData m_shadowCb;
 		LightBufferData m_constBufferData;
 		LightArray				  m_lightData[NUM_LT];
 		ID3D11Device*			  m_gDevice;

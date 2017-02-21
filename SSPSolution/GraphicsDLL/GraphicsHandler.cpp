@@ -557,6 +557,9 @@ int GraphicsHandler::Render(float deltaTime)
 	
 	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
+
+
+
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
@@ -565,7 +568,9 @@ int GraphicsHandler::Render(float deltaTime)
 
 	int amountOfModelsToRender = 0;
 	int componentsInTree = this->m_octreeRoot.containedComponents.size();
+	
 
+#pragma region
 	std::vector<InstanceData> instancedRenderingList;
 	unsigned int firstRenderedModelID = UINT_MAX;
 	unsigned int firstRenderedInstancedModelID = 0;
@@ -595,7 +600,7 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	
 	int amountOfModelOccurrencees = 0;
 	unsigned int lastComponentIndex = 0;
 	lastModelID  = firstRenderedModelID;
@@ -623,7 +628,12 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
+					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+					
+					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
 				}
@@ -649,7 +659,11 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 		else
 		{
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+
 			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
 		}
@@ -679,21 +693,32 @@ int GraphicsHandler::Render(float deltaTime)
 			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
+#pragma endregion Octree stuff
+
+
+	//Go through all components in the root node and render the ones that should be rendered
+	size_t renderCap = this->m_staticGraphicsComponents.size();
+	renderCap        = this->m_dynamicGraphicsComponents.size();
+
+#pragma region 
+	D3D11_VIEWPORT vP;
+	vP.Width = 1280.f;
+	vP.Height = 720.f;
+	vP.MinDepth = 0.0f;
+	vP.MaxDepth = 1.0f;
+	vP.TopLeftX = 0;
+	vP.TopLeftY = 0;
+	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
+#pragma region Render shadows for instanced objects
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow); //render shadows
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
 	{
 		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
 	}
-	//By all means it should be done by now
-	/*for (InstanceData& i : instancedRenderingList)
-	{
-		delete i.componentSpecific;
-	}*/
+#pragma endregion
+#pragma region Render shadows for normal (non instanced) geometry
 
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	//Go through all components in the root node and render the ones that should be rendered
-	size_t renderCap = this->m_staticGraphicsComponents.size();
-	renderCap = this->m_dynamicGraphicsComponents.size();
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_dynamicGraphicsComponents[i]->active)
@@ -702,8 +727,9 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
-	renderCap = this->m_persistantGraphicsComponents.size();
-	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	
+
+for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)
 		{
@@ -711,8 +737,52 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
-	
+#pragma endregion
+#pragma region Render shadows for animated geometry
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
+	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+	{
+		if (this->m_animGraphicsComponents[i]->active == false)
+			continue;
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 
+	}
+#pragma endregion
+#pragma endregion Shadow pass
+
+
+#pragma region
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_dynamicGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+		}
+
+	}
+
+	renderCap = this->m_persistantGraphicsComponents.size();
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_persistantGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+		}
+
+	}
+#pragma endregion Render non-instanced geometry
+
+#pragma region
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
+	for (size_t i = 0; i < instancedRenderingList.size(); i++)
+	{
+		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
+	}
+
+#pragma endregion Render Instanced objects
+
+#pragma region
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
 	{
@@ -721,20 +791,19 @@ int GraphicsHandler::Render(float deltaTime)
 		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 		
 	}
+#pragma endregion Render animated objects
+
+
 	m_LightHandler->SetBuffersAsActive();
 	m_shaderControl->DrawFinal();
 
-	/*TEMP CBUFFER STUFF*/
-
-	/*TEMP CBUFFER STUFF*/
-
-
+#pragma region
 	if (postProcessing)
 	{
-		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
-		ID3D11RenderTargetView* temp = nullptr;
-		context->OMSetRenderTargets(1, &temp, NULL);
 		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		ID3D11DeviceContext* context  = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp  = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
 		context->PSSetShaderResources(6,1,&srv);
 
 		m_shaderControl->PostProcess();
@@ -742,7 +811,9 @@ int GraphicsHandler::Render(float deltaTime)
 		tab[0] = NULL;
 		context->PSSetShaderResources(6, 1, tab);
 	}
+#pragma endregion Post Processing
 
+#pragma region
 #ifdef _DEBUG
 	Camera::ViewFrustrum renderTest;
 	this->m_camera->GetViewFrustrum(renderTest);
@@ -759,6 +830,8 @@ int GraphicsHandler::Render(float deltaTime)
 	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
+#pragma endregion Debug rendering
+
 
 	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
