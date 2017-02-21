@@ -204,27 +204,27 @@ public:
 		private:
 			struct pData
 			{
-				DirectX::XMFLOAT4X4 pView;
+				DirectX::XMFLOAT4X4 pView[6];
 				DirectX::XMFLOAT4X4 pProjection;
-				int pShadowCasterAmount;
-				float padding1 = 0.f, padding2 = 0.f, padding3 = 0.f;
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
 			struct cbData
 			{
-				DirectX::XMMATRIX cView;
+				DirectX::XMMATRIX cView[6];
 				DirectX::XMMATRIX cProjection;
-				int cShadowCasterAmount;
 			};
 			ID3D11Buffer * D3DBuffer = nullptr;
 			pData p;
 			cbData c;
 			pData GetPData()
 			{
-				DirectX::XMStoreFloat4x4(&p.pView, DirectX::XMMatrixTranspose(c.cView));
+				for (size_t i = 0; i < 6; i++)
+				{
+
+					DirectX::XMStoreFloat4x4(&p.pView[i], DirectX::XMMatrixTranspose(c.cView[i]));
+				}
 				DirectX::XMStoreFloat4x4(&p.pProjection, DirectX::XMMatrixTranspose(c.cProjection));
-				p.pShadowCasterAmount = c.cShadowCasterAmount;
 				return p;
 			};
 			template <typename T>

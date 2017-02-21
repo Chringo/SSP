@@ -701,7 +701,8 @@ int GraphicsHandler::Render(float deltaTime)
 	renderCap        = this->m_dynamicGraphicsComponents.size();
 
 #pragma region 
-	D3D11_VIEWPORT vP;
+	//TEMP Johans
+	D3D11_VIEWPORT vP; 
 	vP.Width = 1280.f;
 	vP.Height = 720.f;
 	vP.MinDepth = 0.0f;
