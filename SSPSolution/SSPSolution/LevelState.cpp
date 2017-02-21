@@ -1014,7 +1014,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+		
+		if (ap->blendFlag != RAGDOLL_STATE)
+		{
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+		}
+		else
+		{
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.0f, RAGDOLL_STATE, nullptr, false, 1.0f, 1.0f);
+		}
 	}
 
 	#pragma endregion Send_Player_Animation_Update
