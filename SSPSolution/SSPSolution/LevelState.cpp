@@ -633,7 +633,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-				if (itr->blendingType != RAGDOLL_STATE)
+				if (itr->newstate != RAGDOLL_STATE)
 				{
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
@@ -1015,7 +1015,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
 		
-		if (ap->blendFlag != RAGDOLL_STATE)
+		if (ap->previousState != RAGDOLL_STATE)
 		{
 			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 		}
