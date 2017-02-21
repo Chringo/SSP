@@ -475,11 +475,8 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 
 void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime)
 {
-	if (m_AnimComponentList[m_AnimCompIndex]->target_State != nullptr)
-	{
 		int animStateIndex = m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex;
-		if (animStateIndex >= 0)
-		{
+
 			const Resources::Animation::AnimationJoint* animatedJoints = m_AnimComponentList[m_AnimCompIndex]->animation_States->at(animStateIndex)->GetAllJoints();
 
 			int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
@@ -570,8 +567,6 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 					}
 				}
 			}
-		}
-	}
 	/*Incrementing the target animation's local time.*/
 	m_AnimComponentList[m_AnimCompIndex]->target_Time += globalTime;
 }
