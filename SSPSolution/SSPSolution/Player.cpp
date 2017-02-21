@@ -543,7 +543,7 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
-			this->m_aComp->source_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 			this->m_aComp->source_State->stateIndex = animationState;
 			this->m_aComp->blendFlag = blendingType;
 			this->m_aComp->source_State->isLooping = isLooping;
