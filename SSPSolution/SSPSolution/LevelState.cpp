@@ -203,7 +203,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
-	this->m_player1.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayerRagdoll());
+	this->m_player1.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayer1Ragdoll());
 
 #pragma endregion Player1
 
@@ -266,6 +266,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
+	this->m_player2.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayer2Ragdoll());
 	
 #pragma endregion Player2
 
@@ -413,10 +414,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
-	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
+	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1 ,((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
 		DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)) ,
 		this->m_player1.GetPhysicsComponent(),
 		this->m_player1.GetBall()->GetPhysicsComponent());
+
+
+	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(2, ((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
+		DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
+		this->m_player2.GetPhysicsComponent(),
+		this->m_player2.GetBall()->GetPhysicsComponent());
 
 	return result;
 }
@@ -1065,10 +1072,67 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion Update component list sizes
 
 #pragma region
-	float linkLenght = 1.2f;
+	DirectX::XMVECTOR rot;
+	DirectX::XMVECTOR pos;
+	rot.m128_f32[3] = 0.0f;	//Set w to 0
+	pos.m128_f32[3] = 0.0f;	//Set w to 0
+
+	DirectX::XMMATRIX translate;
+	DirectX::XMMATRIX rotate;
+	Resources::Model* modelPtr;
+	Resources::Status st = Resources::ST_OK;
+
+	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
+		data->spawns[0].position[0],
+		data->spawns[0].position[1],
+		data->spawns[0].position[2],
+		0);
+	this->m_player2_Spawn = DirectX::XMVectorSet(	//Store spawnPoint for player 2
+		data->spawns[1].position[0],
+		data->spawns[1].position[1],
+		data->spawns[1].position[2],
+		0);
+#pragma endregion preparations and variable
+
+#pragma region
+	//NETWORK SAFETY
+	/*
+	This is only a safety check if the network module was not initialized.
+	It should have been initialized in the menu state and have been connected
+	to the other player. By using isHost() function we know can determine if
+	we should switch the players ID and position or not.
+	*/
+	if (!this->m_networkModule)
+	{
+		this->m_networkModule = new NetworkModule();
+		this->m_networkModule->Initialize();
+	}
+
+	if (this->m_networkModule->IsHost())
+	{
+		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
+	}
+	else
+	{
+		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
+		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+	}
+#pragma endregion Network
+#pragma region
+	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+		DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
+	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+		DirectX::XMVectorAdd(
+			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
+
+
+#pragma region
+	float linkLenght = 1.5f;
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
 	previous = this->m_player1.GetRagdoll()->upperBody.center;
 	PhysicsComponent* next = nullptr;
@@ -1105,7 +1169,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
-		
+
 		previous = next;
 
 	}
@@ -1116,8 +1180,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
+	linkLenght = 1.5f;
 	previous = this->m_player2.GetPhysicsComponent();
+	previous = this->m_player2.GetRagdoll()->upperBody.center;
 	next = nullptr;
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
 	{
@@ -1159,62 +1225,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 #pragma endregion Create_Chain_Link
 
-#pragma region
-	DirectX::XMVECTOR rot;
-	DirectX::XMVECTOR pos;
-	rot.m128_f32[3] = 0.0f;	//Set w to 0
-	pos.m128_f32[3] = 0.0f;	//Set w to 0
 
-	DirectX::XMMATRIX translate;
-	DirectX::XMMATRIX rotate;
-	Resources::Model* modelPtr;
-	Resources::Status st = Resources::ST_OK;
 
-	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
-		data->spawns[0].position[0],
-		data->spawns[0].position[1],
-		data->spawns[0].position[2],
-		0);
-	this->m_player2_Spawn = DirectX::XMVectorSet(	//Store spawnPoint for player 2
-		data->spawns[1].position[0],
-		data->spawns[1].position[1],
-		data->spawns[1].position[2],
-		0);
-#pragma endregion preparations and variable
-
-#pragma region
-	//NETWORK SAFETY
-	/*
-	This is only a safety check if the network module was not initialized.
-	It should have been initialized in the menu state and have been connected
-	to the other player. By using isHost() function we know can determine if
-	we should switch the players ID and position or not.
-	*/
-	if (!this->m_networkModule)
-	{
-		this->m_networkModule = new NetworkModule();
-		this->m_networkModule->Initialize();
-	}
-
-	if (this->m_networkModule->IsHost())
-	{
-		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-		//this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(10, 3, 0, 0);
-		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
-	}
-	else
-	{
-		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
-		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-	}
-#pragma endregion Network
-#pragma region
-	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-		DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
-	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-		DirectX::XMVectorAdd(
-			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
 #pragma endregion Checkpoints

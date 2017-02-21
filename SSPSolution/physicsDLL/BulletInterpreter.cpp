@@ -728,7 +728,7 @@ btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 	return this->m_dynamicsWorld;
 }
 
-PHYSICSDLL_API void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * src1, PhysicsComponent * src2)
+void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * src1, PhysicsComponent * src2)
 {
 	btRigidBody* rigidBody1 = this->m_rigidBodies.at(src1->PC_IndexRigidBody);
 	btRigidBody* rigidBody2 = this->m_rigidBodies.at(src2->PC_IndexRigidBody);
@@ -736,7 +736,7 @@ PHYSICSDLL_API void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * sr
 	rigidBody2->setIgnoreCollisionCheck(rigidBody1, true);
 }
 
-PHYSICSDLL_API void BulletInterpreter::SetCollisionShapeLocalScaling(PhysicsComponent * src, btVector3 scale)
+void BulletInterpreter::SetCollisionShapeLocalScaling(PhysicsComponent * src, btVector3 scale)
 {
 	btRigidBody* rigidbody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 	btVector3 temp = rigidbody->getCollisionShape()->getLocalScaling();

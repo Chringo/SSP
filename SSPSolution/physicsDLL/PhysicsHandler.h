@@ -43,12 +43,14 @@ enum RagdollState
 	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
+const int BLEND_TIME = 10;
 struct Ragdoll
 {
 	RagdollState state;
 
 	float original_ext[3];
 	int key_frame_blend_stage;
+	int time_standil_still;
 
 	PhysicsComponent* playerPC;
 	PhysicsComponent* ballPC;
@@ -63,6 +65,7 @@ struct Ragdoll
 	Resources::Skeleton::Joint *Skeleton;
 
 	DirectX::XMMATRIX jointMatrixes[21];
+	DirectX::XMMATRIX bindPose[21];
 };
 enum LinkType
 {
@@ -106,14 +109,15 @@ private:
 
 	std::vector<PhysicsLink> m_links;
 
-	std::vector<PhysicsComponent*> m_bodyPC;
+	std::vector<PhysicsComponent*> m_player1BodyPC;
+	std::vector<PhysicsComponent*> m_player2BodyPC;
 
-	Ragdoll m_playerRagDoll;
+	Ragdoll m_player1RagDoll;
+	Ragdoll m_player2RagDoll;
 
 	std::vector<Field> m_fields;
 
 
-	DirectX::XMMATRIX TESTjointMatrixes[21];
 
 	DirectX::XMVECTOR m_gravity;
 	int m_ragdollNotMovingCounter;
@@ -179,6 +183,9 @@ public:
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
 
+
+	PHYSICSDLL_API void RagdollLogic(Ragdoll* ragdoll, float dt);
+
 	PHYSICSDLL_API void DoRagdollIntersection(float dt);
 
 	PHYSICSDLL_API void CheckFieldIntersection();
@@ -198,7 +205,7 @@ public:
 
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
-	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
+	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(int player, const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
 	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
@@ -207,11 +214,11 @@ public:
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
 
 	PHYSICSDLL_API void CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent* playerPC);
-	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
+	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
 
 	PHYSICSDLL_API void AdjustRagdoll(Ragdoll* ragdoll, float dt);
 	PHYSICSDLL_API DirectX::XMVECTOR AdjustBodyPartDistance(PhysicsComponent* previous, PhysicsComponent* next, float lenght);
-	PHYSICSDLL_API void AdjustBodyParts(BodyPart* bodypart, float dt);
+	PHYSICSDLL_API void AdjustBodyParts(Ragdoll * ragdoll, BodyPart* bodypart, float dt);
 
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
@@ -234,7 +241,8 @@ public:
 	PHYSICSDLL_API int GetNrOfBodyComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetBodyComponentAt(int index)const;
 
-	PHYSICSDLL_API Ragdoll* GetPlayerRagdoll();
+	PHYSICSDLL_API Ragdoll* GetPlayer1Ragdoll();
+	PHYSICSDLL_API Ragdoll* GetPlayer2Ragdoll();
 
 	PHYSICSDLL_API int GetNrOfMagnets()const;
 	//PHYSICSDLL_API Magnet* GetMagnetAt(int index);
@@ -267,7 +275,8 @@ public:
 	//PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
 	//
 	//PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
-	PHYSICSDLL_API void SetRagdollToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
+	PHYSICSDLL_API void SetRagdoll1ToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
+	PHYSICSDLL_API void SetRagdoll2ToBindPose(Ragdoll* ragdoll, DirectX::XMVECTOR pos);
 	PHYSICSDLL_API void SyncRagdollWithSkelton(Ragdoll* ragdoll);
 
 	PHYSICSDLL_API DirectX::XMMATRIX CalcTransformMatrix(PhysicsComponent* joint2, PhysicsComponent* joint3);

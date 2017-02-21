@@ -341,13 +341,26 @@ int System::Update(float deltaTime)
 	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 	//	}
 	//}
-	PhysicsComponent* ptr = this->m_physicsHandler.GetPlayerRagdoll()->playerPC;
-	OBB* OBB_holder = &ptr->PC_OBB;
-	OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
-	OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
-	OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
+	PhysicsComponent* ptr = this->m_physicsHandler.GetPlayer1Ragdoll()->playerPC;
+	if (ptr != nullptr)
+	{
+		OBB* OBB_holder = &ptr->PC_OBB;
+		OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
+		OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
+		OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
 
-	this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
+		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
+	}
+	ptr = this->m_physicsHandler.GetPlayer2Ragdoll()->playerPC;
+	if (ptr != nullptr)
+	{
+		OBB* OBB_holder = &ptr->PC_OBB;
+		OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
+		OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
+		OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
+
+		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
+	}
 
 	//int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
 	//for (int i = 0; i < nrOfBodyParts; i++)

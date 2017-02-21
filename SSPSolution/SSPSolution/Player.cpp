@@ -69,6 +69,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
+
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
@@ -303,7 +304,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-				this->m_ragdoll->state = RAGDOLL;
+				//this->m_ragdoll->state = RAGDOLL;
 				this->SetGrabbed(nullptr);	//Release the entity
 			}
 		}
