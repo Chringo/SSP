@@ -116,7 +116,7 @@ int AIHandler::Update(float deltaTime)
 
 				if (this->m_AIComponents[i]->AC_reset && this->m_AIComponents[i]->AC_direction == 0)
 				{
-					printf("-Returning\n");
+					//printf("-Returning\n");
 
 					this->ChangeDirection(i);
 					UpdatePosition(i);
@@ -142,11 +142,10 @@ int AIHandler::Update(float deltaTime)
 
 						if (this->m_AIComponents[i]->AC_latestWaypointID >= this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
 						{
-							printf("##LastWaypoint\n");
+							//printf("##LastWaypoint\n");
 							this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID];
 							this->m_AIComponents[i]->AC_nextWaypointID--;
 
-							//if (!this->m_AIComponents[i]->AC_increasing)
 							this->ChangeDirection(i);
 
 							this->m_AIComponents[i]->AC_triggered = false;
@@ -154,7 +153,7 @@ int AIHandler::Update(float deltaTime)
 					}
 					else
 					{
-						printf("-->\n");
+						//printf("-->\n");
 						UpdatePosition(i);
 					}
 						
@@ -173,20 +172,18 @@ int AIHandler::Update(float deltaTime)
 
 						if (this->m_AIComponents[i]->AC_latestWaypointID <= 0)
 						{
-							printf("#FirstWaypoint\n");
+							//printf("#FirstWaypoint\n");
 							this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[0];
 							this->m_AIComponents[i]->AC_nextWaypointID++;
 
-							//if (!this->m_AIComponents[i]->AC_increasing)
 							this->ChangeDirection(i);
 
 							this->m_AIComponents[i]->AC_triggered = false;
-							//this->m_AIComponents[i]->AC_reset = false;
 						}
 					}
 					else
 					{
-						printf("<--\n");
+						//printf("<--\n");
 						UpdatePosition(i);
 					}
 						
