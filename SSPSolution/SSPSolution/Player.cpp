@@ -82,9 +82,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			this->m_aComp;
 			this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			
 			if (!stateExists(RAGDOLL_STATE))
 			{
+				this->m_oldAnimState = this->m_aComp->previousState;
 				SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);	
+				this->m_aComp->previousState = RAGDOLL_STATE;
+				
 			}
 			for (int i = 0; i < 21; i++)
 			{
