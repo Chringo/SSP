@@ -25,6 +25,15 @@
 	It holds pointers to arrays of each individual light type.
 	If an update to the gpu is desired. Call UpdateStructuredBuffer()
 
+
+
+	Edit: 21/2 2017
+
+	The project decided that we should use cubemapping for shadows to point lights.
+	This changed the const buffer, the depth stencils and textures
+	When it comes to holding the data, this class holds the data in the game, however in the editor the light data is still held elsewhere
+
+
 */
 namespace LIGHTING
 {
