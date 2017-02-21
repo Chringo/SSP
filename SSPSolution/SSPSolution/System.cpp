@@ -178,7 +178,6 @@ int System::Update(float deltaTime)
 		if (myThreadID == 0)
 		{
 			//Do the physics
-			printf("Physics %d\n", myThreadID);
 #pragma region
 			DebugHandler::instance()->StartTimer(1);
 
@@ -190,7 +189,6 @@ int System::Update(float deltaTime)
 		else
 		{
 			//Render the objects from last frame
-			printf("Graphics %d\n", myThreadID);
 #pragma region
 			//Render
 			//Frustrum cull
