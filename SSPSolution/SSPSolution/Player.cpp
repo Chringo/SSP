@@ -547,13 +547,16 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 			this->m_aComp->velocity = velocity;
 		}
 
-		this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-		this->m_aComp->target_State->stateIndex = animationState;
-		this->m_aComp->blendFlag = blendingType;
-		this->m_aComp->target_State->isLooping = isLooping;
-		this->m_aComp->lockAnimation = lockAnimation;
-		this->m_aComp->playingSpeed = playingSpeed;
-		this->m_aComp->velocity = velocity;
+		else
+		{
+			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->target_State->stateIndex = animationState;
+			this->m_aComp->blendFlag = blendingType;
+			this->m_aComp->target_State->isLooping = isLooping;
+			this->m_aComp->lockAnimation = lockAnimation;
+			this->m_aComp->playingSpeed = playingSpeed;
+			this->m_aComp->velocity = velocity;
+		}
 	}
 
 	else
