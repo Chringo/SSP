@@ -2,7 +2,7 @@ Texture2D colorTex		   : register(t0);
 Texture2D metalRoughAo     : register(t1);
 Texture2D normalTex		   : register(t2);
 Texture2D wPosTex		   : register(t3);
-Texture2DArray shadowTex   : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
+textureCUBE shadowTex      : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler  : register(s1);
 
