@@ -74,8 +74,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
+			this->m_oldAnimState = this->m_aComp->previousState;
 			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
 			//this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorSet(0, 1.3, 0, 0));
+			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
 		if (this->m_ragdoll->state == RAGDOLL)
