@@ -633,9 +633,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+				if (itr->blendingType != RAGDOLL_STATE)
+				{
+					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+				}
+				else
+				{
+					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+				}
 			}
 
 		}
