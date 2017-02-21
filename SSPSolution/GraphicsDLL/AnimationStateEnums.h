@@ -9,8 +9,6 @@
 
 enum AnimationStates : int
 {
-	ANIMATION_ERROR = - 2,
-	RAGDOLL_STATE = - 1,
 	PLAYER_IDLE = 0, 
 	PLAYER_RUN_FORWARD,
 	PLAYER_RUN_BACKWARD,
@@ -23,6 +21,8 @@ enum AnimationStates : int
 	PLAYER_RUN_BACKWARD_BALL,
 	PLAYER_RUN_LEFT_BALL,
 	PLAYER_RUN_RIGHT_BALL,
+	RAGDOLL_STATE,
+	ANIMATION_ERROR
 };
 
 enum Blending
