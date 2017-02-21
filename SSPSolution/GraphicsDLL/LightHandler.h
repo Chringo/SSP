@@ -58,12 +58,12 @@ namespace LIGHTING
 		LightHandler();
 		~LightHandler();
 		LightBufferData m_constBufferData;
-		LightArray m_lightData[NUM_LT];
+		LightArray				  m_lightData[NUM_LT];
 		ID3D11Device*			  m_gDevice;
 		ID3D11DeviceContext*	  m_gDeviceContext;
 
-		ID3D11Buffer* m_lightBuffers[NUM_LT]					   = { nullptr,nullptr,nullptr,nullptr }; //Light constBuffers
-		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT] = { nullptr,nullptr,nullptr,nullptr }; //Data is handled in shader resource views
+		ID3D11Buffer* m_lightBuffers[NUM_LT]					    = { nullptr,nullptr,nullptr,nullptr }; //Light constBuffers
+		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT]		= { nullptr,nullptr,nullptr,nullptr }; //Data is handled in shader resource views
 
 	private:
 		GRAPHICSDLL_API bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
