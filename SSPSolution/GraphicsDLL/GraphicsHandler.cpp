@@ -701,6 +701,14 @@ int GraphicsHandler::Render(float deltaTime)
 	renderCap        = this->m_dynamicGraphicsComponents.size();
 
 #pragma region 
+	D3D11_VIEWPORT vP;
+	vP.Width = 1280.f;
+	vP.Height = 720.f;
+	vP.MinDepth = 0.0f;
+	vP.MaxDepth = 1.0f;
+	vP.TopLeftX = 0;
+	vP.TopLeftY = 0;
+	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
 #pragma region Render shadows for instanced objects
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow); //render shadows
 	for (size_t i = 0; i < instancedRenderingList.size(); i++)
@@ -709,6 +717,7 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 #pragma endregion
 #pragma region Render shadows for normal (non instanced) geometry
+
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
@@ -718,7 +727,9 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
-	for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL GEOMETRY
+	
+
+for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)
 		{
