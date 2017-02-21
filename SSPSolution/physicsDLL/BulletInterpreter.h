@@ -114,7 +114,12 @@ struct PhysicsComponent
 enum PhysicsLinkType
 {
 	PL_CHAIN,
-	PL_BODY
+	PL_BODY,
+	PL_BODY_LEFTLEG,
+	PL_BODY_RIGHTLEG,
+	PL_BODY_LEFTARM,
+	PL_BODY_RIGHTARM,
+	PL_BODY_CENTERBODY,
 };
 struct PhysicsLink
 {

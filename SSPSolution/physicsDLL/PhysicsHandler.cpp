@@ -1938,14 +1938,13 @@ void PhysicsHandler::DoChainPhysics(PhysicsLink * link, float dt)
 
 	if (link->PL_type == PL_BODY)
 	{
-		int type = 1;
+		int type = 0;
 		if (type == 0)
 		{
 			if (lenght >= link->PL_lenght)
 			{
-
-				DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->PL_lenght), 0.9);
-				force = DirectX::XMVectorAdd(force, DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->PL_previous->PC_velocity, link->PL_next->PC_velocity), 0.999));
+				// force = DirectX::XMVectorScale(DirectX::XMVectorScale(diffVec, lenght - link->PL_lenght), 0.0);
+				 DirectX::XMVECTOR force = DirectX::XMVectorScale(DirectX::XMVectorSubtract(link->PL_previous->PC_velocity, link->PL_next->PC_velocity), 0.5);
 
 				this->ApplyForceToComponent(link->PL_next, force, dt);
 				force = DirectX::XMVectorScale(force, -1.0);
