@@ -703,6 +703,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			
 			if (closestBall != nullptr)	//If a ball was found
 			{				
+				if (this->m_player1.GetBall()->IsGrabbed()						  //if our ball is grabbed
+					&& this->m_player1.GetGrabbed() != this->m_player1.GetBall()) //AND if the ball is not grabbed by us
+				{
+					//now we know that player 2 is holding our ball
+					
+					//drop the ball
+					this->m_player2.SetGrabbed(nullptr);
+
+					//send update packet to client 2
+					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+				}
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
@@ -746,7 +757,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else //Drop
 				{
-					this->m_player2.SetGrabbed(nullptr);
+					if (itr->entityID == 1)
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else if(itr->entityID == 2)
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
 				}
 
 			}
