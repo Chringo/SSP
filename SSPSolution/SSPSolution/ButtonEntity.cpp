@@ -153,7 +153,7 @@ void ButtonEntity::SetSyncState(ButtonSyncState * newSyncState)
 	if (newSyncState != nullptr)
 	{
 		//The player is always the cause of the state change
-		this->m_isActive = newSyncState->isActive;
+		this->m_isActive = !this->m_isActive;
 		this->m_elapsedResetTime = this->m_resetTime;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 
