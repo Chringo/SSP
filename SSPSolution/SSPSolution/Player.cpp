@@ -66,15 +66,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
-		this->m_ragdoll->state = ANIMATED_TRANSITION;
+		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
-			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, false, false, 0, 1.0);
-			this->m_aComp->lockAnimation = false;
+			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
 			//this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorSet(0, 1.3, 0, 0));
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -536,7 +535,17 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 {
 	if (animationState != RAGDOLL_STATE)
 	{
-		//this->m_aComp->m_TransitionDuration = transitionDuration;
+		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
+		{
+			this->m_aComp->source_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->source_State->stateIndex = animationState;
+			this->m_aComp->blendFlag = blendingType;
+			this->m_aComp->source_State->isLooping = isLooping;
+			this->m_aComp->lockAnimation = lockAnimation;
+			this->m_aComp->playingSpeed = playingSpeed;
+			this->m_aComp->velocity = velocity;
+		}
+
 		this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 		this->m_aComp->target_State->stateIndex = animationState;
 		this->m_aComp->blendFlag = blendingType;
@@ -548,12 +557,10 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 
 	else
 	{
-		//this->m_aComp->m_TransitionDuration = transitionDuration;
 		this->m_aComp->source_State->stateIndex = animationState;
 		this->m_aComp->blendFlag = blendingType;
 		this->m_aComp->lockAnimation = lockAnimation;
 		this->m_aComp->playingSpeed = playingSpeed;
-
 		this->m_aComp->target_State = nullptr;
 		this->m_aComp->target_Time = 0.f;
 		this->m_aComp->source_Time = 0.f;

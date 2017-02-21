@@ -220,6 +220,7 @@ public:
 	PHYSICSDLL_API btDynamicsWorld* GetBulletWorld();
 
 	PHYSICSDLL_API void SetIgnoreCollisions(PhysicsComponent* src1, PhysicsComponent* src2);
+	PHYSICSDLL_API void SetCollisionShapeLocalScaling(PhysicsComponent* src, btVector3 scale);
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body

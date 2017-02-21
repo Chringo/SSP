@@ -341,19 +341,26 @@ int System::Update(float deltaTime)
 	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 	//	}
 	//}
-	int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+	PhysicsComponent* ptr = this->m_physicsHandler.GetPlayerRagdoll()->playerPC;
+	OBB* OBB_holder = &ptr->PC_OBB;
+	OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
+	OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
+	OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
 
-	for (int i = 0; i < nrOfBodyParts; i++)
-	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
-		OBB* OBB_holder = nullptr;
-		OBB_holder = &temp->PC_OBB;
-		OBB_holder->ext[0] = temp->PC_Sphere.radius;
-		OBB_holder->ext[1] = temp->PC_Sphere.radius;
-		OBB_holder->ext[2] = temp->PC_Sphere.radius;
-		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+	this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
 
-	}
+	//int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+	//for (int i = 0; i < nrOfBodyParts; i++)
+	//{
+	//	PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
+	//	OBB* OBB_holder = nullptr;
+	//	OBB_holder = &temp->PC_OBB;
+	//	OBB_holder->ext[0] = temp->PC_Sphere.radius;
+	//	OBB_holder->ext[1] = temp->PC_Sphere.radius;
+	//	OBB_holder->ext[2] = temp->PC_Sphere.radius;
+	//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+
+	//}
 #endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);

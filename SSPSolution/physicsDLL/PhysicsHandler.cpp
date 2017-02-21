@@ -1720,11 +1720,43 @@ void PhysicsHandler::Update(float deltaTime)
 	if (this->m_playerRagDoll.state == RAGDOLL)
 	{
 		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+
+		float radius = this->m_playerRagDoll.upperBody.center->PC_Sphere.radius;
+		btVector3 scale = btVector3(radius, radius, radius);
+		this->m_bullet.SetCollisionShapeLocalScaling(this->m_playerRagDoll.playerPC, scale);
+
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[0] = radius;
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[1] = radius;
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[2] = radius;
+
 		this->AdjustRagdoll(&this->m_playerRagDoll, dt);
 		int nrOfBodyParts = this->m_bodyPC.size();
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
 			this->m_bodyPC.at(i)->PC_gravityInfluence = 0.1f;
+		}
+	}
+	if (this->m_playerRagDoll.state == KEYFRAMEBLEND)
+	{
+		//this->SetRagdollToBindPose(&this->m_playerRagDoll, DirectX::XMVectorAdd(this->m_playerRagDoll.playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+		this->m_playerRagDoll.ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		this->m_playerRagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_playerRagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
+		btVector3 ext;
+		ext.setX(1.0f / this->m_playerRagDoll.key_frame_blend_stage);
+		ext.setY(1.0f / this->m_playerRagDoll.key_frame_blend_stage);
+		ext.setZ(1.0f / this->m_playerRagDoll.key_frame_blend_stage);
+
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[0] = ext.getX() * this->m_playerRagDoll.original_ext[0];
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[1] = ext.getY() * this->m_playerRagDoll.original_ext[1];
+		this->m_playerRagDoll.playerPC->PC_OBB.ext[2] = ext.getZ() * this->m_playerRagDoll.original_ext[2];
+
+		this->m_playerRagDoll.key_frame_blend_stage--;
+		this->m_bullet.SetCollisionShapeLocalScaling(this->m_playerRagDoll.playerPC, ext);
+
+		if (this->m_playerRagDoll.key_frame_blend_stage == 0)
+		{
+			this->m_playerRagDoll.key_frame_blend_stage = 10;
+			this->m_playerRagDoll.state = ANIMATED_TRANSITION;
 		}
 	}
 
@@ -2979,6 +3011,11 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(Resources::Skeleton::Join
 	this->m_playerRagDoll.leftLeg.next2 = leftFoot;
 	this->m_playerRagDoll.leftLeg.next3 = leftFootEnd;
 
+	this->m_playerRagDoll.original_ext[0] = playerPC->PC_OBB.ext[0];
+	this->m_playerRagDoll.original_ext[1] = playerPC->PC_OBB.ext[1];
+	this->m_playerRagDoll.original_ext[2] = playerPC->PC_OBB.ext[2];
+
+	this->m_playerRagDoll.key_frame_blend_stage = 10;
 
 	for (int i = 0; i < 21; i++)
 	{

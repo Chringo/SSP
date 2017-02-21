@@ -40,11 +40,15 @@ enum RagdollState
 	ANIMATED,
 	RAGDOLL_TRANSITION,
 	RAGDOLL,
+	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
 struct Ragdoll
 {
 	RagdollState state;
+
+	float original_ext[3];
+	int key_frame_blend_stage;
 
 	PhysicsComponent* playerPC;
 	PhysicsComponent* ballPC;

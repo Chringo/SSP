@@ -188,6 +188,8 @@ void BulletInterpreter::Initialize()
 	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
+	btRigidBody* test = nullptr;
+
 	//this->timeStep = 0;
 	//this->m_dynamicsWorld->getWorldUserInfo()
 	//btInternalTickCallback* test = new btInternalTickCallback;
@@ -732,6 +734,13 @@ PHYSICSDLL_API void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * sr
 	btRigidBody* rigidBody2 = this->m_rigidBodies.at(src2->PC_IndexRigidBody);
 
 	rigidBody2->setIgnoreCollisionCheck(rigidBody1, true);
+}
+
+PHYSICSDLL_API void BulletInterpreter::SetCollisionShapeLocalScaling(PhysicsComponent * src, btVector3 scale)
+{
+	btRigidBody* rigidbody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	btVector3 temp = rigidbody->getCollisionShape()->getLocalScaling();
+	rigidbody->getCollisionShape()->setLocalScaling(scale);
 }
 
 void BulletInterpreter::CreateDummyObjects()
