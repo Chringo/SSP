@@ -287,7 +287,7 @@ int LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLO
 	if (type > 0 && type < NUM_LT)
 	{
 		//Loop the lights
-		for (int i = 0; i < this->m_lightData->numItems; i++)
+		for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
 		{
 			dist = 0.0f;
 			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[X], 2);		//X
