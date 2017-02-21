@@ -536,13 +536,13 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ShadowTexDesc.Width				= (UINT)SHADOW_WIDTH;	//Resolution
 	ShadowTexDesc.Height			= (UINT)SHADOW_HEIGHT;	//Resolution
 	ShadowTexDesc.MipLevels			= 1;
-	ShadowTexDesc.ArraySize			= MAX_SHADOW_AMOUNT;	//Maximum amounts of shadow maps
+	ShadowTexDesc.ArraySize			= 6;	//one for each axis
 	ShadowTexDesc.Format			= DXGI_FORMAT_R32_TYPELESS;
 	ShadowTexDesc.SampleDesc.Count  = 1;
 	ShadowTexDesc.Usage				= D3D11_USAGE_DEFAULT;
 	ShadowTexDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	ShadowTexDesc.CPUAccessFlags	= 0;
-	ShadowTexDesc.MiscFlags		    = 0;
+	ShadowTexDesc.MiscFlags		    = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	//Create the render target Texture
 
@@ -557,7 +557,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format						   = DXGI_FORMAT_D32_FLOAT;
 	descDSV.ViewDimension				   = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-	descDSV.Texture2DArray.ArraySize	   = MAX_SHADOW_AMOUNT;
+	descDSV.Texture2DArray.ArraySize	   = 6;
 	descDSV.Texture2DArray.FirstArraySlice = 0;
 	descDSV.Texture2DArray.MipSlice		   = 0;
 
@@ -568,8 +568,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	//Set up the shader resource view
 
 	resourceViewShadowDesc.Format						  = DXGI_FORMAT_R32_FLOAT;
-	resourceViewShadowDesc.ViewDimension				  = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-	resourceViewShadowDesc.Texture2DArray.ArraySize		  = MAX_SHADOW_AMOUNT;
+	resourceViewShadowDesc.ViewDimension				  = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	resourceViewShadowDesc.Texture2DArray.ArraySize		  = 6;
 	resourceViewShadowDesc.Texture2DArray.FirstArraySlice = 0;
 	resourceViewShadowDesc.Texture2DArray.MostDetailedMip = 0;
 	resourceViewShadowDesc.Texture2DArray.MipLevels		  = 1;
