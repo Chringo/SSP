@@ -24,11 +24,13 @@ private:
 	irrklang::ISound* m_walkingSound;
 	int	m_oldAnimState;
 
+	UIComponent* m_controlsOverlay;
+
 public:
 	Player();
 	~Player();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, ComponentHandler* cHandler);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
@@ -44,7 +46,7 @@ public:
 	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 
 	float GetMaxSpeed();
 	float GetAcceleration();

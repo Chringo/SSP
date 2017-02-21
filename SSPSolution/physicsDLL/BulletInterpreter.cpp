@@ -78,6 +78,21 @@
 	 }
  }
 
+ void BulletInterpreter::IgnoreCollitionCheckOnPickupP2(PhysicsComponent * src)
+ {
+	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	 const btCollisionObject* playerShape = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+
+	 if (src->PC_active == false)
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, true);
+	 }
+	 else
+	 {
+		 rigidBody->setIgnoreCollisionCheck(playerShape, false);
+	 }
+ }
+
  void BulletInterpreter::forceDynamicObjectsToActive(PhysicsComponent * src)
  {
 	 btRigidBody* rigidBody = nullptr;
@@ -193,7 +208,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	#endif
 
 
-	btScalar fixedTimeStep = btScalar(1.0)/btScalar(120); 
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(200); 
 	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -202,7 +217,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 
 void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 {
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
 		//get rigid body and transform
 #pragma region
@@ -229,7 +244,7 @@ void BulletInterpreter::SyncGameWithBullet(PhysicsComponent * src)
 
 void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 {
-	if (src->PC_IndexRigidBody != -1)
+	if (!src->PC_is_Static)
 	{
 		this->applyVelocityOnRigidbody(src);
 
@@ -245,6 +260,12 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 		if (src->PC_IndexRigidBody == 2)
 		{
 			this->IgnoreCollitionCheckOnPickupP1(src);
+			this->IgnoreCollitionCheckOnPickupP2(src);
+		}
+		if (src->PC_IndexRigidBody == 3)
+		{
+			this->IgnoreCollitionCheckOnPickupP1(src);
+			this->IgnoreCollitionCheckOnPickupP2(src);
 		}
 	}
 }
@@ -285,8 +306,20 @@ void BulletInterpreter::Shutdown()
 	int size = this->m_rigidBodies.size();
 	for (int i = 0; i < size; i++)
 	{
-		delete this->m_rigidBodies.at(i);
-		this->m_rigidBodies.at(i) = nullptr;
+		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
+		btMotionState* tempMSPtr = tempPtr->getMotionState();
+		if (tempMSPtr != nullptr)
+		{
+			delete tempMSPtr;
+		}
+		btCollisionShape* tempBPtr = tempPtr->getCollisionShape();
+		if (tempBPtr != nullptr)
+		{
+			delete tempBPtr;
+		}
+
+		delete tempPtr;
+		tempPtr = nullptr;
 	}
 	this->m_rigidBodies.clear();
 }
@@ -391,25 +424,43 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 	btTransform initialTransform = btTransform(test, startTrans);
 
-	btDefaultMotionState* boxMotionState = nullptr;
-	boxMotionState = new btDefaultMotionState(initialTransform);
+	btRigidBody* rigidBody = nullptr;
+	if (!src->PC_is_Static)
+	{
+		btDefaultMotionState* boxMotionState = nullptr;
+		boxMotionState = new btDefaultMotionState(initialTransform);
 
-	btVector3 interia(0, 0, 0);
-	if (src->PC_mass != 0)
+		btVector3 interia(0, 0, 0);
+		if (src->PC_mass != 0)
+		{
+
+			box->calculateLocalInertia(src->PC_mass, interia);
+		}
+
+		btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
+		(
+			src->PC_mass,  //mass
+			boxMotionState,
+			box,
+			interia
+		);
+
+		rigidBody = new btRigidBody(boxRigidBodyCI);
+	}
+	else
 	{
 		
-		box->calculateLocalInertia(src->PC_mass, interia);
+
+		btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
+		(
+			src->PC_mass,  //mass
+			nullptr,
+			box
+		);
+		boxRigidBodyCI.m_startWorldTransform = initialTransform;
+		rigidBody = new btRigidBody(boxRigidBodyCI);
 	}
-
-	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
-	(
-		src->PC_mass,  //mass
-		boxMotionState,
-		box,
-		interia		//Interia / masspunkt 
-	);
-
-	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
+	
 	rigidBody->setFriction(src->PC_friction);
 
 	if (index == 0 || index == 1)
@@ -447,16 +498,14 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	btQuaternion startTransQ = btQuaternion(0, 0, 0, 1.0f);
 	btTransform initialTransform = btTransform(startTransQ, startTrans);
 
-	btDefaultMotionState* boxMotionState = nullptr;
-	boxMotionState = new btDefaultMotionState(initialTransform);
-
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
 		0,  //mass
-		boxMotionState,
+		nullptr,
 		box,
 		btVector3(0, 0, 0)
 	);
+	boxRigidBodyCI.m_startWorldTransform = initialTransform;
 
 	btRigidBody* rigidBody = new btRigidBody(boxRigidBodyCI);
 
@@ -472,8 +521,11 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 {
-	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
+
+	//this capule is ugly hacked, needs further research
+	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2, src->PC_OBB.ext[1] * 1.6, src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
+	
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
 	//creating a mothion state
@@ -516,12 +568,13 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 	if (index == 0 || index == 1)
 	{
 		rigidBody->setAngularFactor(btVector3(0, 0, 0));
-
 	}
 
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
+	//Player is always active
+	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody);

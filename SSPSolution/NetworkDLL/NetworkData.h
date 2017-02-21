@@ -21,6 +21,7 @@ enum PacketTypes {
 	UPDATE_GRAB,
 	SYNC_PHYSICS,
 	SYNC_READY,
+	SYNC_RESET,
 	TEST_PACKET,
 };
 
@@ -83,6 +84,7 @@ struct AnimationPacket : public Packet
 	bool			isLooping;
 	bool			lockAnimation;
 	float			playingSpeed;
+	float			velocity;
 
 	void serialize(char * data)
 	{
