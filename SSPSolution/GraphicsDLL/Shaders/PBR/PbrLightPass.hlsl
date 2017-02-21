@@ -206,7 +206,7 @@ float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float c
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
-    return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
+   // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
     uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
