@@ -859,6 +859,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	#pragma endregion Aiming
 
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	{
+
+	}
+#pragma endregion Ping
+
 	#pragma region
 
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//There is connected players
@@ -1021,7 +1028,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-#pragma region
+	#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
 	if (this->m_player1.isAnimationChanged())
 	{
@@ -1106,6 +1113,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 #pragma endregion Reset KEY
 	
+
 #ifdef DEVELOPMENTFUNCTIONS
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))

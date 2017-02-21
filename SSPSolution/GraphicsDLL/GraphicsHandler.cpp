@@ -1722,10 +1722,10 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 				{
 					entityComponent->isInRay = true;
 				}
-				/*else
+				else
 				{
 					entityComponent->isInPingRay = true;
-				}*/
+				}
 			}
 		}
 	}
@@ -1917,4 +1917,39 @@ inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Conv
 
 
 	return obj;
+}
+
+float GraphicsHandler::Ping_GetDistanceToClosestOBB()
+{
+	float closestDist = 100;
+
+	//Cast a ray that sets hited OctreeBV isInPingRay to true
+	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
+	for (size_t i = 0; i < 8; i++)
+	{
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, true);
+	}
+
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	{
+		if (i->isInPingRay)
+		{
+			DirectX::XMMATRIX ortm;
+			DirectX::XMFLOAT4X4 ort;
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+
+			DirectX::XMStoreFloat4x4(&ort, ortm);
+			this->m_camera->AddToIntersectCheck(
+				ort,
+				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
+				i->pos
+			);
+			i->isInRay = false;
+			//This component needs to be checked against the ray for camera intersection
+		}
+	}
+
+	return closestDist;
 }
