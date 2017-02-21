@@ -83,8 +83,8 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.CPUAccessFlags	    = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags		    = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	lightBufferDesc.ByteWidth		    = structSize * amount; //total size of the buffer
-	lightBufferDesc.StructureByteStride = structSize;
+	lightBufferDesc.ByteWidth		    = (UINT)structSize * amount; //total size of the buffer
+	lightBufferDesc.StructureByteStride = (UINT)structSize;
 
 	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &m_lightBuffers[type]))) {
 #ifdef  _DEBUG
