@@ -640,7 +640,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else
 				{
-					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+					//this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+					this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
 				}
 			}
 
