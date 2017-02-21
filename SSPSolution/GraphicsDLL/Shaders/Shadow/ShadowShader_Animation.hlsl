@@ -58,8 +58,8 @@ VS_OUT VS_main(VS_IN input)
         }
     }
 
-    matrix WV = mul(viewMatrix, projectionMatrix);
-    matrix WVP = mul(worldMatrix, WV);
+   //matrix WV = mul(viewMatrix, projectionMatrix);
+   //matrix WVP = mul(worldMatrix, WV);
 
     output.position = mul(float4(skinnedPos, 1), worldMatrix);
   

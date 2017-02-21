@@ -56,11 +56,8 @@ cbuffer LightInfo : register(b3)
 }
 cbuffer shadow : register(b5)
 {
-    float4x4 ShadowViewMatrix;
+    float4x4 ShadowViewMatrix[6];
     float4x4 ShadowProjectionMatrix;
-
-    int numCasters;
-    float spadding1, spadding2, spadding3;
 }
 
 static const uint MAX_SHADOWMAP_AMOUNT = 1;
@@ -84,25 +81,21 @@ void GS_main(
 	//matrix combinedMatrix = mul(world, mul(view, projection));
     SHADOW_GS_OUT element;
     uint rt_index = 0; //Current shadow map to write to
-    float4x4 eachViewMatrix = ShadowViewMatrix;
-   // for (int eachLight = 0; eachLight < 1; eachLight++) // go through all the lights that casts shadows
-   // {
-   //     if (rt_index < MAX_SHADOWMAP_AMOUNT) //check that we havent reached maximum shadowmaps
-   //     {
-	//		
-   //         rt_index += 1; // add 1 to the shadowmap index.
-   //     }
-   // }
 
     [unroll]
-    for (int i = 0; i < 3; i++) //loop through the verts of the face
+    for (int j = 0; j < 6; j++) //render for all 6 axises
     {
-        element.rtIndex = 0;
-       // eachViewMatrix._44_34_24_14.xyz = pointlights[eachLight].position.xyz;
-        matrix combinedMatrix1 = mul(ShadowViewMatrix, ShadowProjectionMatrix);
-        //element.position.w = input[i].position;
-        element.position = mul(input[i].position, combinedMatrix1);
-        output.Append(element);
+
+         [unroll]
+        for (int i = 0; i < 3; i++) //loop through the verts of the face
+        {
+            element.rtIndex = j; // output to jth depthstencil
+         
+            matrix combinedMatrix1 = mul(ShadowViewMatrix[j], ShadowProjectionMatrix);
+            //element.position.w = input[i].position;
+            element.position = mul(input[i].position, combinedMatrix1);
+            output.Append(element);
+        }
+        output.RestartStrip();
     }
-    output.RestartStrip();
 }
