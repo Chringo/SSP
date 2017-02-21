@@ -141,7 +141,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_mainMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_mainMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -236,7 +236,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_optionsMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_optionsMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -317,7 +317,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_startMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_startMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 				this->m_ipTextBox.SetFocused(false);
 			}
 			else if (i != this->m_markedItem)

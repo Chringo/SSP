@@ -178,30 +178,34 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim1 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim1 = m_cHandler->GetAnimationComponent();
-
-	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim1->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		playerAnim1 = m_cHandler->GetAnimationComponent();
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
 
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
-		playerAnim1->source_State->isLooping = true; // TEMP TEST
-		playerAnim1->playingSpeed = 2.0f;
+		playerAnim1->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State->isLooping = true;
+			playerAnim1->playingSpeed = 2.0f;
+		}
 	}
 #pragma endregion Animation_Player1
 
@@ -215,7 +219,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 1117267500;
+	playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
@@ -231,32 +235,36 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
-	/*TEMP ANIM STUFF*/
 #pragma region
 	AnimationComponent* playerAnim2 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim2 = m_cHandler->GetAnimationComponent();
-
-	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim2->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		playerAnim2 = m_cHandler->GetAnimationComponent();
+
+		playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
+
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+
+		playerAnim2->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
+			playerAnim2->source_State->isLooping = true;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
-
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
-		playerAnim2->source_State->isLooping = true; // TEMP TEST
-		playerAnim2->playingSpeed = 2.0f;
-	}
-	#pragma endregion Animation_Player2
+#pragma endregion Animation_Player2
 
 	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
@@ -689,12 +697,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_player1.GetGrabbed() == nullptr && !inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) 
+			&& this->m_player1.GetGrabbed() == nullptr
+			&& this->m_player1.TimeSinceThrow() >= GRAB_COOLDOWN)
 		{
-			Entity* closestBall = this->GetClosestBall(3);
+			Entity* closestBall = this->GetClosestBall(GRAB_RANGE);
 			
 			if (closestBall != nullptr)	//If a ball was found
 			{				
+				if (this->m_player1.GetBall()->IsGrabbed()						  //if our ball is grabbed
+					&& this->m_player1.GetGrabbed() != this->m_player1.GetBall()) //AND if the ball is not grabbed by us
+				{
+					//now we know that player 2 is holding our ball
+					
+					//drop the ball
+					this->m_player2.SetGrabbed(nullptr);
+
+					//send update packet to client 2
+					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+				}
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
@@ -738,7 +759,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else //Drop
 				{
-					this->m_player2.SetGrabbed(nullptr);
+					if (itr->entityID == 1)
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else if(itr->entityID == 2)
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
 				}
 
 			}
@@ -1298,7 +1326,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+		//st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 
 
@@ -2093,6 +2121,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
+#ifdef _DEBUG
+	//This keeps track of any resource lib access outside of level loading. 
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
 	return 1;
 }
 
