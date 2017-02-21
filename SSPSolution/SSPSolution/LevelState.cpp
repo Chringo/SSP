@@ -1095,6 +1095,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		this->m_gsh->PopStateFromStack();
+
+		MenuState* menuState = new MenuState();
+		result = menuState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+
+		if (result > 0)
+		{
+			//Push it to the gamestate stack/vector
+			this->m_gsh->PushStateToStack(menuState);
+		}
+		else
+		{
+			//Delete it
+			delete menuState;
+			menuState = nullptr;
+		}
+
 		result = 1;
 	}
 
