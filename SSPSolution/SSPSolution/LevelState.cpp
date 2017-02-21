@@ -26,7 +26,7 @@ inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader
 Entity* LevelState::GetClosestBall(float minDist)
 {
 	Entity* closest = nullptr;
-	float closestDistance = 9999999999;
+	float closestDistance = FLT_MAX;
 	PhysicsComponent* pc = this->m_player1.GetPhysicsComponent();
 	
 	//Calc the distance for play1 ball;
@@ -135,13 +135,30 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 {
 	int result = 1;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+
+	this->m_clearedLevel = 0;
+	this->m_curLevel = 0;
+
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
+	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
+	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+
+	if (this->m_curLevel > this->m_levelPaths.size())
+	{
+		this->m_curLevel = 0;
+	}
+
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
-	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
-	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2);
-	// creating the player
 
-	#pragma region
+	this->m_cHandler->ResizeGraphicsPersistent(2/* + CHAIN_SEGMENTS * 2*/);
+	// creating the player
+	//Player1
+#pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 1117267500;
@@ -154,51 +171,55 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 1.0f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
-	/*TEMP ANIM STUFF*/
-	#pragma region
+#pragma region
 	AnimationComponent* playerAnim1 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim1 = m_cHandler->GetAnimationComponent();
-
-	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim1->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		playerAnim1 = m_cHandler->GetAnimationComponent();
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
 
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
-		playerAnim1->source_State->isLooping = true; // TEMP TEST
-		playerAnim1->playingSpeed = 2.0f;
+		playerAnim1->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State->isLooping = true;
+			playerAnim1->playingSpeed = 2.0f;
+		}
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
-	#pragma endregion Player1
+#pragma endregion Player1
 
 	//Player 2
-	#pragma region
+#pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	playerG->modelID = 1117267500;
+	playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
@@ -209,45 +230,49 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_mass = 10;
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_BVtype = BV_OBB;
-	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0] / 4;
+	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
-	/*TEMP ANIM STUFF*/
-	#pragma region
+#pragma region
 	AnimationComponent* playerAnim2 = nullptr;
 
-	((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
-
-	playerAnim2 = m_cHandler->GetAnimationComponent();
-
-	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
-	playerAnim2->active = 1;
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		playerAnim2 = m_cHandler->GetAnimationComponent();
+
+		playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
+
+		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
+
+		playerAnim2->active = 1;
+
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
+
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+
+			playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
+			playerAnim2->source_State->isLooping = true;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
+#pragma endregion Animation_Player2
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
-
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
-
-		playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
-		playerAnim2->source_State->isLooping = true; // TEMP TEST
-		playerAnim2->playingSpeed = 2.0f;
-	}
-	#pragma endregion Animation_Player2
-
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
 #pragma endregion Player2
 
-	#pragma region
+#pragma region
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
@@ -270,14 +295,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//ballP->PC_Sphere.radius = 1;
 
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball->Initialize(3, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball);
 	m_player1.SetBall(ball);
-	#pragma endregion Ball1
+#pragma endregion Ball1
 
-	#pragma region
+#pragma region
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
@@ -294,137 +319,101 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	ballP->PC_Sphere.radius = 0.25;
 
-	ballP->PC_mass = 50;
+	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
 	ball2->Initialize(4, ballP, ballG);
 	this->m_dynamicEntitys.push_back(ball2);
 	m_player2.SetBall(ball2);
 	#pragma endregion Ball2
-
 	
-
 #pragma region
-//	DynamicEntity* plat = new DynamicEntity();
-//	GraphicsComponent* platG = m_cHandler->GetGraphicsComponent();
-//	platG->modelID = 1337;
-//	platG->active = true;
-//	resHandler->GetModel(platG->modelID, platG->modelPtr);
-//	PhysicsComponent* platP = m_cHandler->GetPhysicsComponent();
-//	platP->PC_pos = DirectX::XMVectorSet(-3, 7, 40, 0);
-//	platP->PC_is_Static = false;
-//	platP->PC_steadfast = true;
-//	platP->PC_AABB.ext[0] = 5;
-//	platP->PC_AABB.ext[1] = 0.1f;
-//	platP->PC_AABB.ext[2] = 5;
-//	platP->PC_elasticity = 0;
-//	platP->PC_friction = 1.0f;
-//	platG->worldMatrix = DirectX::XMMatrixTranslationFromVector(platP->PC_pos);
-//	AIComponent* platA = m_cHandler->GetAIComponent();
-//#pragma region AIComp variables
-//	platA->AC_triggered = true;
-//	platA->AC_speed = 0.15f;
-//	platA->AC_position = platP->PC_pos;
-//	platA->AC_pattern = AI_ROUNDTRIP;
-//	platA->AC_nrOfWaypoint = 4;
-//	platA->AC_waypoints[0] = platP->PC_pos;
-//	platA->AC_waypoints[1] = DirectX::XMVectorSet(-3, 7, 0, 0);
-//	platA->AC_waypoints[2] = DirectX::XMVectorSet(-3, 18, 0, 0);
-//	platA->AC_waypoints[3] = DirectX::XMVectorSet(-3, 18, 40, 0);
-//#pragma endregion
-//	platP->PC_entityID = plat->GetEntityID();
-//	platA->AC_entityID = plat->GetEntityID();
-//	this->m_dynamicEntitys.push_back(plat);
-//	plat->Initialize(5, platP, platG, nullptr, platA);
-#pragma endregion AIComponent tests
-
-	#pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
 
 	m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
 		targetOffset,
 		1.3f
 	);
-	#pragma endregion Set_Camera
-
-#pragma region
-	int nrOfSegments = nrOfSegmentsPerPlayer;
-	float linkLenght = 1.2f;
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
-	PhysicsComponent* next = nullptr;
-
-	for (int i = 1; i <= nrOfSegments; i++)
-	{
-		if (i != 1)
-		{
-			linkLenght = 0.35f;
-		}
-		unsigned int entityID = 5;
-		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
-		PC_ptr->PC_entityID = entityID;
-		PC_ptr->PC_BVtype = BV_Sphere;
-		PC_ptr->PC_Sphere.radius = 0.1f;
-		PC_ptr->PC_mass = 0.2f;
-		PC_ptr->PC_friction = 1.0f;
-		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
-		GC_ptr->modelID = 1680427216;
-		GC_ptr->active = true;
-		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
-		DynamicEntity* chainLink = new DynamicEntity();
-		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
-		this->m_dynamicEntitys.push_back(chainLink);
-
-		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
-		previous = next;
-
-	}
-	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
-
-	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(nrOfSegments, nrOfSegments, nrOfSegments, nrOfSegments));
-	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
-	previous = this->m_player2.GetPhysicsComponent();
-	next = nullptr;
-	for (int i = 1; i <= nrOfSegments; i++)
-	{
-		if (i != 1)
-		{
-			linkLenght = 0.35;
-		}
-		unsigned int entityID = 6;
-		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
-		PC_ptr->PC_entityID = entityID;
-		PC_ptr->PC_BVtype = BV_Sphere;
-		PC_ptr->PC_Sphere.radius = 0.1f;
-		PC_ptr->PC_mass = 0.2f;
-		PC_ptr->PC_friction = 1.0f;
-		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
-		GC_ptr->modelID = 1680427216;
-		GC_ptr->active = true;
-		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
-		DynamicEntity* chainLink = new DynamicEntity();
-		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
-		this->m_dynamicEntitys.push_back(chainLink);
-
-		next = PC_ptr;
-		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
-		previous = next;
-
-	}
-	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
-	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
-	#pragma endregion Create_Chain_Link
+#pragma endregion Set_Camera
+//
+//#pragma region
+//	float linkLenght = 1.2f;
+//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+//	PhysicsComponent* next = nullptr;
+//
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35f;
+//		}
+//		unsigned int entityID = 5;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght);
+//
+//	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+//	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+//	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+//	previous = this->m_player2.GetPhysicsComponent();
+//	next = nullptr;
+//	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+//	{
+//		if (i != 1)
+//		{
+//			linkLenght = 0.35;
+//		}
+//		unsigned int entityID = 6;
+//		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+//		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, i));
+//		PC_ptr->PC_entityID = entityID;
+//		PC_ptr->PC_BVtype = BV_Sphere;
+//		PC_ptr->PC_Sphere.radius = 0.1f;
+//		PC_ptr->PC_mass = 0.2f;
+//		PC_ptr->PC_friction = 1.0f;
+//		GraphicsComponent* GC_ptr = this->m_cHandler->GetPersistentGraphicsComponent();
+//		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+//		GC_ptr->active = true;
+//		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+//		DynamicEntity* chainLink = new DynamicEntity();
+//		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+//		this->m_dynamicEntitys.push_back(chainLink);
+//
+//		next = PC_ptr;
+//		this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght);
+//		previous = next;
+//
+//	}
+//	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+//	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+//	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+//	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
+//#pragma endregion Create_Chain_Link
 
 	this->m_director.Initialize();
 
@@ -435,7 +424,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 	dt = dt / 1000000;
+
+	if (this->m_clearedLevel == 1)
+	{
+		this->LoadNext();
+	}
+
 	this->m_networkModule->Update();
+
+	this->m_cameraRef->UpdateDeltaTime(dt);
 
 	#pragma region 
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//Check so we are connected to a client
@@ -466,7 +463,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 					}
@@ -476,7 +473,25 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					}
+					else if ((int)itr->entityID == 3)	//Packets for ball1
+					{
+						pp = this->m_player2.GetBall()->GetPhysicsComponent();
+
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+					}
+					else if ((int)itr->entityID == 4)	//Packets for ball2
+					{
+						pp = this->m_player1.GetBall()->GetPhysicsComponent();
+
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else //For every other entity
@@ -493,7 +508,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 								// Update the component
 								pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-								pp->PC_rotation = DirectX::XMLoadFloat3(&itr->newRotation);
+								pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 								pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 							}
@@ -600,9 +615,32 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_update_States
 
 	#pragma region
+	if(this->m_networkModule->GetNrOfConnectedClients() != 0)
+	{
+		this->m_animationPacketList = this->m_networkModule->PacketBuffer_GetAnimationPackets();
+
+		if (this->m_animationPacketList.size() > 0)
+		{
+			std::list<AnimationPacket>::iterator itr;
+			for (itr = this->m_animationPacketList.begin(); itr != this->m_animationPacketList.end(); itr++)
+			{
+				/* We know that all packets will be sent to player2
+				since only player2 will send animation packets */
+
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+			}
+
+		}
+		this->m_animationPacketList.clear();
+
+	}
+	#pragma endregion Update_Animations
+
+	#pragma region
 		float yaw = inputHandler->GetMouseDelta().x;
 		float pitch = inputHandler->GetMouseDelta().y;
-		float mouseSens = 0.1f * dt;
+		float mouseSens = 0.1f;
 
 		if (inputHandler->GetMouseDelta().y || inputHandler->GetMouseDelta().x)
 			this->m_cameraRef->RotateCameraPivot(inputHandler->GetMouseDelta().y * mouseSens, inputHandler->GetMouseDelta().x * mouseSens);
@@ -633,6 +671,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			wasGrabbed->SyncComponents();	//Update the component
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);	//Send a release packet
+			DirectX::XMFLOAT4X4 newrot;
+			DirectX::XMStoreFloat4x4(&newrot, wasGrabbed->GetPhysicsComponent()->PC_OBB.ort);
+			this->m_networkModule->SendEntityUpdatePacket(wasGrabbed->GetPhysicsComponent()->PC_entityID, wasGrabbed->GetPhysicsComponent()->PC_pos, wasGrabbed->GetPhysicsComponent()->PC_velocity, newrot);	//Send the update data
 		}
 
 
@@ -648,25 +689,41 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			else
 			{
 				ent->Update(dt, inputHandler);	//Update the entity normaly
+				
 			}
 		}
 		//Sync other half of the components
 		this->m_player2.SyncComponents();
-	#pragma endregion Update/Syncing
+	#pragma endregion Update/Syncing Components
 
 	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_G))
+		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) 
+			&& this->m_player1.GetGrabbed() == nullptr
+			&& this->m_player1.TimeSinceThrow() >= GRAB_COOLDOWN)
 		{
-			Entity* closestBall = this->GetClosestBall(3);
+			Entity* closestBall = this->GetClosestBall(GRAB_RANGE);
 			
 			if (closestBall != nullptr)	//If a ball was found
 			{				
+				if (this->m_player1.GetBall()->IsGrabbed()						  //if our ball is grabbed
+					&& this->m_player1.GetGrabbed() != this->m_player1.GetBall()) //AND if the ball is not grabbed by us
+				{
+					//now we know that player 2 is holding our ball
+					
+					//drop the ball
+					this->m_player2.SetGrabbed(nullptr);
+
+					//send update packet to client 2
+					this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+				}
 				this->m_player1.SetGrabbed(closestBall);
-				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());	
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
+				//Play the animation for player picking up the ball.
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 			}
 
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_H))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_Q))
 		{
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
@@ -692,17 +749,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					if (itr->grabbedID == 3)
 					{
-						this->m_player2.SetGrabbed(this->m_player1.GetBall());
+						this->m_player2.SetGrabbed(this->m_player2.GetBall());
 					}
 					else if (itr->grabbedID == 4)
 					{
-						this->m_player2.SetGrabbed(this->m_player2.GetBall());
+						this->m_player2.SetGrabbed(this->m_player1.GetBall());
 					}
 
 				}
 				else //Drop
 				{
-					this->m_player2.SetGrabbed(nullptr);
+					if (itr->entityID == 1)
+					{
+						this->m_player2.SetGrabbed(nullptr);
+					}
+					else if(itr->entityID == 2)
+					{
+						this->m_player1.SetGrabbed(nullptr);
+					}
 				}
 
 			}
@@ -712,17 +776,41 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	#pragma region
 		//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_RIGHT) && !this->m_player1.GetIsAming())
+		if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			this->m_player1.SetAiming(true);
-			this->m_cameraRef->SetDistance(2);
+			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
+			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
+			targetOffset = DirectX::XMVectorAdd(targetOffset, { 0.0f, 1.25f, 0.0f, 0.0f });
+
+			m_cameraRef->SetCameraPivotOffset(
+				targetOffset,
+				.5f
+			);
 		}
 
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(false);
-			this->m_cameraRef->SetDistance(10);
+			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
+			m_cameraRef->SetCameraPivotOffset(
+				targetOffset,
+				1.3f
+			);
 		}
+#ifdef DEVELOPMENTFUNCTIONS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
+		{
+			m_cameraRef->SetDistance(10.f);
+			
+		}
+
+		if (inputHandler->IsKeyReleased(SDL_SCANCODE_C))
+		{
+			m_cameraRef->SetDistance(1.3f);
+
+		}
+#endif // DEVELOPMENTFUNCTIONS
 
 		if (this->m_player1.GetIsAming())
 		{
@@ -737,17 +825,33 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			PhysicsComponent* pp = this->m_player1.GetPhysicsComponent();
 			if (pp != nullptr)
 			{
-				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update data for the player
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update data for the player
+			}
+			
+			if (this->m_player1.GetGrabbed() != nullptr)
+			{
+				pp = this->m_player1.GetGrabbed()->GetPhysicsComponent();
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);
+			}
 
-				Entity* ent = nullptr;
+			Entity* ent = nullptr;
+			if (this->m_networkModule->IsHost())
+			{
+
 				for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)	//Change start and end with physics packet
 				{
 					ent = this->m_dynamicEntitys.at(i);
 
-					if (ent != this->m_player2.GetGrabbed())	//If it is not grabbed by player2
+					if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
 					{
 						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
-						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, pp->PC_rotation);	//Send the update
+						DirectX::XMFLOAT4X4 newrot;
+						DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+						this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update
 					}
 				}
 			}
@@ -757,42 +861,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_Send_Updates
 
 	#pragma region
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
-	{
-		// Reset player-position to spawn
-		m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
-		m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
-		m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-		m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
-			DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
-		m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
-		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
-		//this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-	}
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
-	{
-		//TODO: NOCLIP BOOOOIS
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
-		{
-			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
-			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = false;
-			m_player1.GetPhysicsComponent()->PC_steadfast = true;
-		}
-		else
-		{
-			//m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
-			//m_player1.GetPhysicsComponent()->PC_Bullet_AffectedByGravity = true;
-			m_player1.GetPhysicsComponent()->PC_steadfast = false;
-		}
-		//Result: Sloppy teleport :(
-		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos,
-			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
-	}
 
 	//Update all puzzle entities
 	#pragma region
@@ -800,7 +868,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 playerPos;
 	DirectX::XMStoreFloat3(&playerPos, this->m_player1.GetPhysicsComponent()->PC_pos);
 	//Buttons and levers require input for logical evaluation of activation
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_R))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_E))
 	{
 		//Iterator version of looping
 		/*for (std::vector<ButtonEntity*>::iterator i = this->m_buttonEntities.begin(); i != this->m_buttonEntities.end(); i++)
@@ -828,7 +896,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		
 	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_R))
+		
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_E))
 	{
 
 		int increasing = (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT)) ? -1 : 1;	//Only uses addition but branches, kind of
@@ -839,7 +908,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			(*i)->CheckPlayerInteraction(playerPos, increasing);
 		}
 	}
-	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_R))
+	else if (inputHandler->IsKeyReleased(SDL_SCANCODE_E))
 	{
 		for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 		{
@@ -851,12 +920,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
+	//Lever require updates to animate
+	for (std::vector<LeverEntity*>::iterator i = this->m_leverEntities.begin(); i != this->m_leverEntities.end(); i++)
+	{
+		(*i)->Update(dt, inputHandler);
+	}
 	//Wheels require updates to rotate based on state calculated in CheckPlayerInteraction
 	for (std::vector<WheelEntity*>::iterator i = this->m_wheelEntities.begin(); i != this->m_wheelEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
 	}
-	//Doors require updates to change opening state
+	//Doors require updates to change opening state and animate
 	for (std::vector<DoorEntity*>::iterator i = this->m_doorEntities.begin(); i != this->m_doorEntities.end(); i++)
 	{
 		(*i)->Update(dt, inputHandler);
@@ -906,63 +980,108 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 	#pragma endregion Update_Puzzle_Elements
 
-	this->m_cHandler->GetPhysicsHandler()->CheckFieldIntersection();
+#pragma region
+	// We only send updates for player1 since player2 will recive the updates from the network
+	if (this->m_player1.isAnimationChanged())
+	{
+		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+	}
+
+#pragma endregion Send_Player_Animation_Update
+
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
-		m_fieldEntities[i]->Update(dt, inputHandler);
+		int fieldActivated = m_fieldEntities[i]->Update(dt, inputHandler);
+		this->m_clearedLevel = fieldActivated;
 	}
 	// Reactionary level director acts
 	this->m_director.Update(dt);
-
+	
 	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-	#pragma endregion MUSIC_KEYS
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT) || 
+		this->m_networkModule->PacketBuffer_GetResetPacket().size() != 0)
+	{
 
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_J))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT))	//If we clicked
 		{
-			if (this->m_networkModule->GetNrOfConnectedClients() <= 0)	//If the network module is NOT connected to other clients
-			{
-				if (this->m_networkModule->Join(this->m_ip))				//If we succsefully connected
-				{
-					printf("Joined client with the ip %s\n", this->m_ip);
-
-					//TEMP SULOTION
-					//Move the camera to player 2 since we joined a game 
-					DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
-					m_cameraRef->SetCameraPivot(
-						&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(1)->PC_pos,
-						targetOffset,
-						1.3f
-					);
-				}
-				else
-				{
-					printf("Failed to connect to the client %s\n", this->m_ip);
-				}
-
-			}
-			else
-			{
-				printf("Join failed since this module is already connected to other clients\n");
-			}
+			this->m_networkModule->SendFlagPacket(SYNC_RESET);	//Send packet to other client
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_K))
+		
+		// Reset player-position to spawn
+		if (this->m_networkModule->IsHost())
 		{
-			this->m_networkModule->SendFlagPacket(DISCONNECT_REQUEST);
+			m_player1.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+			m_player2.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+			m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
 		}
-	#pragma endregion Network_Key_events
+		else
+		{
+			m_player1.GetPhysicsComponent()->PC_pos = m_player2_Spawn;
+			m_player2.GetPhysicsComponent()->PC_pos = m_player1_Spawn;
+			m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
+				DirectX::XMVectorAdd(m_player2_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+			m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
+				DirectX::XMVectorAdd(m_player1_Spawn, DirectX::XMVectorSet(0.0f, .11f, 1.5f, 0.f));
+			m_player1.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player1.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+			m_player2.GetBall()->GetPhysicsComponent()->PC_velocity = { 0 };
+		}
 
-	this->m_cameraRef->Update(dt);
+		// Iterate through chainlink list to reset velocity and position of players, chain links, and balls
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+
+	}
+#ifdef DEVELOPMENTFUNCTIONS
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_Y))
+	{
+		//TODO: NOCLIP BOOOOIS
+		if (inputHandler->IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 1;
+			m_player1.GetPhysicsComponent()->PC_steadfast = false;
+		}
+		else
+		{
+			m_player1.GetPhysicsComponent()->PC_gravityInfluence = 0;
+			m_player1.GetPhysicsComponent()->PC_steadfast = true;
+		}
+		//Result: Sloppy teleport :(
+		m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(
+			m_player1.GetPhysicsComponent()->PC_pos,
+			(DirectX::XMVectorScale(m_player1.GetLookDir(), 3.0f)));
+		this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
+	}
+#endif // DEVELOPMENTFUNCTIONS
+
+
+#pragma endregion Reset KEY
+	
+#ifdef DEVELOPMENTFUNCTIONS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
+#endif // DEVELOPMENTFUNCTIONS
+
+
+	this->m_cameraRef->Update();
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;
@@ -970,12 +1089,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
-
 	return result;
 }
 
 int LevelState::CreateLevel(LevelData::Level * data)
 {
+	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
+
+#pragma region
 	//Get how many static and dynamic components that will be needed in the level
 	int staticEntityCount = 0;
 	int dynamicEntityCount = 0;
@@ -988,18 +1109,111 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	//AI entities
 	dynamicEntityCount += data->numAI;
 	//Puzzle elements
-	staticEntityCount += data->numButton;
-	staticEntityCount += data->numLever;
-	staticEntityCount += data->numWheel;
+	dynamicEntityCount += data->numButton;
+	dynamicEntityCount += data->numLever;
+	dynamicEntityCount += data->numWheel;
 	dynamicEntityCount += data->numDoor;
+	dynamicEntityCount += CHAIN_SEGMENTS * 2;
 
 	this->m_cHandler->ResizeGraphicsStatic(staticEntityCount);
 	this->m_cHandler->ResizeGraphicsDynamic(dynamicEntityCount);
+#pragma endregion Update component list sizes
 
+#pragma region
+	float linkLenght = 1.2f;
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
+	PhysicsComponent* next = nullptr;
 
+	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+	{
+		if (i != 1)
+		{
+			linkLenght = 0.35f;
+		}
+		unsigned int entityID = 5;
+		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
+		PC_ptr->PC_entityID = entityID;
+		PC_ptr->PC_BVtype = BV_Sphere;
+		PC_ptr->PC_Sphere.radius = 0.1f;
+		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
+		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
+		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+		GC_ptr->active = true;
+		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+		DynamicEntity* chainLink = new DynamicEntity();
+		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+		this->m_dynamicEntitys.push_back(chainLink);
 
+		next = PC_ptr;
 
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		
+		previous = next;
 
+	}
+	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
+
+	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	diffVec = DirectX::XMVectorSet(1.0, 0, 0, 0);
+	previous = this->m_player2.GetPhysicsComponent();
+	next = nullptr;
+	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+	{
+		if (i != 1)
+		{
+			linkLenght = 0.35f;
+		}
+		unsigned int entityID = 6;
+		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
+		PC_ptr->PC_entityID = entityID;
+		PC_ptr->PC_BVtype = BV_Sphere;
+		PC_ptr->PC_Sphere.radius = 0.1f;
+		PC_ptr->PC_mass = 0.2f;
+		PC_ptr->PC_friction = 1.0f;
+		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
+		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
+		GC_ptr->active = true;
+		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
+		DynamicEntity* chainLink = new DynamicEntity();
+		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
+		this->m_dynamicEntitys.push_back(chainLink);
+
+		next = PC_ptr;
+		if (i == 1)
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+		else
+		{
+			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, LinkType::NORMAL);
+		}
+
+		previous = next;
+	}
+	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, LinkType::NORMAL);
+#pragma endregion Create_Chain_Link
+
+#pragma region
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR pos;
 	rot.m128_f32[3] = 0.0f;	//Set w to 0
@@ -1009,9 +1223,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	DirectX::XMMATRIX rotate;
 	Resources::Model* modelPtr;
 	Resources::Status st = Resources::ST_OK;
-	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-
-	std::vector<DynamicEntity*> aiEntities;
 
 	this->m_player1_Spawn = DirectX::XMVectorSet( //Store spawnPoint for player 1
 		data->spawns[0].position[0],
@@ -1023,7 +1234,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		data->spawns[1].position[1],
 		data->spawns[1].position[2],
 		0);
+#pragma endregion preparations and variable
 
+#pragma region
 	//NETWORK SAFETY
 	/*
 	This is only a safety check if the network module was not initialized.
@@ -1047,29 +1260,25 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
-
+#pragma endregion Network
+#pragma region
 	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
 	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
 			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
-	
+	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
+#pragma endregion Checkpoints
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player1.GetPhysicsComponent(), m_player1.GetBall()->GetPhysicsComponent(), 5, 2.0);
-	//this->m_cHandler->GetPhysicsHandler()->CreateChainLink(this->m_player2.GetPhysicsComponent(), m_player2.GetBall()->GetPhysicsComponent(), 5, 2.0);
-
-	//m_player1.GetPhysicsComponent()->PC_OBB = DirectX::XMMatrixMultiply(DirectX::XMMatrixIdentity(), DirectX::XMMatrixRotationY(1.52));
 
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
-
-		/*AnimationComponent* t_anim = nullptr;*/
-
+		
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
 		if (modelPtr->GetSkeleton() != nullptr)
@@ -1093,41 +1302,45 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		memcpy(pos.m128_f32, currEntity->position, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		memcpy(rot.m128_f32, currEntity->rotation, sizeof(float) * 3);	  //Convert from POD to DirectX Vector
 		translate = DirectX::XMMatrixTranslationFromVector(pos);
+#pragma region
+		//Create the rotation matrix
 		DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rot.m128_f32[1]));
 		DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rot.m128_f32[0]));
 		DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rot.m128_f32[2]));
-		//Create the rotation matrix
 		
 		DirectX::XMMATRIX rotate = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
+#pragma endregion Calculate rotation matrix
+		//Create the world matrix from a rotation and translation
 		t_gc->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 
 		//Create Physics component
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
 		t_pc->PC_entityID	   = currEntity->EntityID;		//Set Entity ID
+		//We cannot set pos directly because of bounding box vs model offsets
 		//t_pc->PC_pos		   = pos;						//Set Position
 		t_pc->PC_rotation	   = rot;						//Set Rotation
 		t_pc->PC_is_Static	   = currEntity->isStatic;		//Set IsStatic
 		t_pc->PC_active		   = true;						//Set Active
-		t_pc->PC_BVtype = BV_OBB;
+		t_pc->PC_BVtype		   = BV_OBB;
 		
 		//t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
-		st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
+		//st = Resources::ResourceHandler::GetInstance()->GetModel(currEntity->modelID, modelPtr);
 
 
 
-		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y
-			, modelPtr->GetOBBData().position.z });
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
 
 		t_pc->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&t_gc->pos, tempOBBPos.r[3]);
 		//t_pc->PC_pos.m128_f32[3] = 1.0f;
 
 		//get information from file
 		//static components should have the mass of 0
 		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 1.0f;
+		t_pc->PC_friction = 0.85f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
@@ -1137,6 +1350,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	
 		t_pc->PC_OBB.ort = DirectX::XMMatrixMultiply(t_pc->PC_OBB.ort, rotate);
 		t_pc->PC_OBB.ort = DirectX::XMMatrixTranspose(t_pc->PC_OBB.ort);
+		//This is where the final rotation is stores. We want to use this rotation matrix and get the extensions for the OBB
+		//Create a vector describing the extension of the AABB
+		//Rotate the extension according the OBB ort
+		//And lastly store the result in graphics components as the model bounds used in culling
+		DirectX::XMStoreFloat3(&t_gc->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(t_pc->PC_OBB.ext[0], t_pc->PC_OBB.ext[1], t_pc->PC_OBB.ext[2], 0.0f), t_pc->PC_OBB.ort));
+		t_gc->ort = t_pc->PC_OBB.ort;
+		
 
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
@@ -1150,6 +1370,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_dynamicEntitys.push_back(tde); //Push new entity to list
 		}
 	}
+#pragma region
 	for (size_t i = 0; i < data->numAI; i++)
 	{
 		AIComponent* t_ac = m_cHandler->GetAIComponent();
@@ -1193,14 +1414,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma endregion
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
-		t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
+		t_pc->PC_pos = t_ac->AC_position;
 		t_pc->PC_entityID = data->aiComponents[i].EntityID;
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
 		t_pc->PC_friction = 0.7f;
 		t_pc->PC_elasticity = 0.1f;
-		t_pc->PC_BVtype = BV_AABB;
+		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
 		t_pc->PC_AABB.ext[0] = modelPtr->GetOBBData().extension[0];
 		t_pc->PC_AABB.ext[1] = modelPtr->GetOBBData().extension[1];
@@ -1208,70 +1429,47 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ t_pc->PC_AABB.ext[0],
 			t_pc->PC_AABB.ext[1] , t_pc->PC_AABB.ext[2] }, rotate);
 		t_pc->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
-		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1])* 10;
+		t_pc->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		t_pc->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
 
-		//DirectX::XMVECTOR hejsan = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMVECTOR obbPos = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,1 };
-		////t_pc->PC_pos = DirectX::XMVectorAdd(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMVectorSubtract(t_ac->AC_position, DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z,0 });
-		//DirectX::XMMATRIX tempPos = t_pc->PC_OBB.ort;
-		//tempPos.r[3] = obbPos;
-		//DirectX::XMMATRIX tempBPos = DirectX::XMMatrixTranslationFromVector(t_ac->AC_position);
-		//tempPos = tempPos*tempBPos;
-
-		/*t_pc->PC_OBB.ort.r[3] = t_ac->AC_position;
-		t_pc->PC_OBB.ort.r[3].m128_f32[3] = 1.0f;*/
-		//t_pc->PC_OBB.ort.r[3] = hejsan;
-		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x*-1, modelPtr->GetOBBData().position.y*-1, modelPtr->GetOBBData().position.z*-1,1 };
-		//t_pc->PC_pos = hejsan;
-
-		/* DANGER ZONE */
-		//t_pc->PC_OBB.ort.r[3] = DirectX::XMVECTOR{ modelPtr->GetOBBData().position.x, modelPtr->GetOBBData().position.y, modelPtr->GetOBBData().position.z, 1.0f };
+		// Adjust OBB in physics component - hack...
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ 
+			modelPtr->GetOBBData().position.x, 
+			modelPtr->GetOBBData().position.y,
+			modelPtr->GetOBBData().position.z 
+		});
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, t_gc->worldMatrix);
+		t_pc->PC_OBB.ort = rotate;
 #pragma endregion
 
 		PlatformEntity* tpe = new PlatformEntity();
 		tpe->Initialize(t_pc->PC_entityID, t_pc, t_gc, t_ac);
 		this->m_platformEntities.push_back(tpe);
 	}
+
+	m_cHandler->WaypointTime();
 	
-#pragma region Creating Field
-	//for (size_t i = 0; i < data->numCheckpoints; i++)
-	//{
-	//	OBB* tOBB = new OBB();
-	//	memcpy(&tOBB->ort, &static_cast<DirectX::XMMATRIX>(data->checkpoints[i].ort), sizeof(float) * 16);
-	//	memcpy(&tOBB->ext, data->checkpoints[i].ext, sizeof(float) * 3);
-	//	DirectX::XMVECTOR tPos = {
-	//		data->checkpoints[i].position[0],
-	//		data->checkpoints[i].position[1],
-	//		data->checkpoints[i].position[2]
-	//	};
-	//	Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
-	//		tPos,
-	//		1,	//EntityID Player1
-	//		3,	//Temporary checking ball (entityID: 3) for Player1 as if it was Player2
-	//		tOBB
-	//	);
-	//	FieldEntity* tempFE = new FieldEntity();
-	//	tempFE->Initialize(data->checkpoints[i].entityID, tempField);
-	//	this->m_fieldEntities.push_back(tempFE);
-	//	this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
-	//	delete tOBB;
-	//}
+#pragma endregion AI
+
+#pragma region
+	for (size_t i = 0; i < data->numCheckpoints; i++)
+	{
+		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
+			data->checkpoints[i].position,
+			1,	//EntityID Player1
+			2,	//EntityID Player2
+			data->checkpoints[i].ext,
+			data->checkpoints[i].ort
+		);
+		FieldEntity* tempFE = new FieldEntity();
+		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		this->m_fieldEntities.push_back(tempFE);
+		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
+	}
 
 	// TODO: Field Data for States in Level Director
-	/*for (size_t k = 0; k < this->m_director.GetNrOfStates(); k++)
-	{
-		for (size_t i = 0; i < this->m_currentState->nrOfFields; i++)
-		{
-			this->m_currentState->fieldMap[i].FD_entityID = nullptr;
-			this->m_currentState->fieldMap[i].FD_first_inside = nullptr;
-			this->m_currentState->fieldMap[i].FD_second_inside = nullptr;
-		}
-	}*/
-
-#pragma endregion
+#pragma endregion Creating Fields
 
 	//Create the PuzzleElements
 #pragma region
@@ -1297,7 +1495,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* button1G = m_cHandler->GetStaticGraphicsComponent();
+		GraphicsComponent* button1G = m_cHandler->GetDynamicGraphicsComponent();
+
 		button1G->active = true;
 		button1G->modelID = tempHeader.modelID;
 		button1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1316,7 +1515,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		button1P->PC_steadfast = true;
 		//DirectX::XMQuaternionRotationMatrix
 
+		button1P->PC_BVtype = BV_OBB;
 		//Copy the bounding volume data from the model into the physics component for reference
+		button1P->PC_OBB = m_ConvertOBB(button1G->modelPtr->GetOBBData()); //Convert and insert OBB data
 		button1P->PC_AABB.ext[0] = button1G->modelPtr->GetOBBData().extension[0];
 		button1P->PC_AABB.ext[1] = button1G->modelPtr->GetOBBData().extension[1];
 		button1P->PC_AABB.ext[2] = button1G->modelPtr->GetOBBData().extension[2];
@@ -1324,22 +1525,27 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		button1P->PC_OBB.ext[1] = button1P->PC_AABB.ext[1] * 2.0f;
 		button1P->PC_OBB.ext[2] = button1P->PC_AABB.ext[2] * 2.0f;
 
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ button1G->modelPtr->GetOBBData().position.x, button1G->modelPtr->GetOBBData().position.y, button1G->modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, button1G->worldMatrix);
 
-		button1P->PC_BVtype = BV_OBB;
-		//Check for rotation, if found then set the bounding volume to OBB
-		float ignoreIfLess = 0.0000000001f;
-		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
-		{
-			//There is a rotation
-			button1P->PC_BVtype = BV_OBB;
-		}
+		button1P->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&button1G->pos, tempOBBPos.r[3]);
+
+		button1P->PC_OBB.ort = DirectX::XMMatrixMultiply(button1P->PC_OBB.ort, rotate);
+		button1P->PC_OBB.ort = DirectX::XMMatrixTranspose(button1P->PC_OBB.ort);
+		//This is where the final rotation is stored. We want to use this rotation matrix and get the extensions for the OBB
+		//Create a vector describing the extension of the AABB
+		//Rotate the extension according the OBB ort
+		//And lastly store the result in graphics components as the model bounds used in culling
+		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ button1P->PC_AABB.ext[0],
 			button1P->PC_AABB.ext[1] , button1P->PC_AABB.ext[2] }, rotate);
 		//Use the matrix that is used to rotate the extensions as the orientation for the OBB
 		button1P->PC_OBB.ort = rotate;
-
+		button1G->ort = button1P->PC_OBB.ort;
+		DirectX::XMStoreFloat3(&button1G->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(button1P->PC_OBB.ext[0], button1P->PC_OBB.ext[1], button1P->PC_OBB.ext[2], 0.0f), button1P->PC_OBB.ort));
 
 		button1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		button1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
@@ -1369,7 +1575,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* lever1G = m_cHandler->GetStaticGraphicsComponent();
+		GraphicsComponent* lever1G = m_cHandler->GetDynamicGraphicsComponent();
 		lever1G->active = true;
 		lever1G->modelID = tempHeader.modelID;
 		lever1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1434,7 +1640,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		rotate = DirectX::XMMatrixMultiply(rotate, rotationMatrixY);
 		//rotate    = DirectX::XMMatrixRotationRollPitchYawFromVector(rot);
 
-		GraphicsComponent* wheel1G = m_cHandler->GetStaticGraphicsComponent();
+		GraphicsComponent* wheel1G = m_cHandler->GetDynamicGraphicsComponent();
 		wheel1G->active = true;
 		wheel1G->modelID = tempHeader.modelID;
 		wheel1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
@@ -1463,13 +1669,24 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 		wheel1P->PC_BVtype = BV_OBB;
-		//Check for rotation, if found then set the bounding volume to OBB
-		float ignoreIfLess = 0.0000000001f;
-		if (abs(tempHeader.rotation[0]) > ignoreIfLess || abs(tempHeader.rotation[1]) > ignoreIfLess || abs(tempHeader.rotation[2]) > ignoreIfLess)
-		{
-			//There is a rotation
-			wheel1P->PC_BVtype = BV_OBB;
-		}
+		//Copy the bounding volume data from the model into the physics component for reference
+		wheel1P->PC_OBB = m_ConvertOBB(wheel1G->modelPtr->GetOBBData()); //Convert and insert OBB data
+		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+
+		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
+		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
+
+		wheel1P->PC_pos = tempOBBPos.r[3];
+		DirectX::XMStoreFloat3(&wheel1G->pos, tempOBBPos.r[3]);
+
+		wheel1P->PC_OBB.ort = DirectX::XMMatrixMultiply(wheel1P->PC_OBB.ort, rotate);
+		wheel1P->PC_OBB.ort = DirectX::XMMatrixTranspose(wheel1P->PC_OBB.ort);
+
 
 		//Calculate the actual OBB extension
 		DirectX::XMVECTOR tempRot = DirectX::XMVector3Transform(DirectX::XMVECTOR{ wheel1P->PC_AABB.ext[0],
@@ -1481,7 +1698,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = abs(tempRot.m128_f32[0]);
 		wheel1P->PC_AABB.ext[1] = abs(tempRot.m128_f32[1]);
 		wheel1P->PC_AABB.ext[2] = abs(tempRot.m128_f32[2]);
-		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime < 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
+		tempEntity->Initialize(tempHeader.EntityID, wheel1P, wheel1G, tempHeader.interactionDistance, tempHeader.min, tempHeader.max, tempHeader.time, tempHeader.resetTime > 0.0f, tempHeader.resetTime, tempHeader.resetDelay);
 		this->m_wheelEntities.push_back(tempEntity);
 	}
 	//Create the doors
@@ -1514,11 +1731,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		door1G->worldMatrix = DirectX::XMMatrixMultiply(rotate, translate);
 		resHandler->GetModel(door1G->modelID, door1G->modelPtr);
 		PhysicsComponent* door1P = m_cHandler->GetPhysicsComponent();
-		door1P->PC_entityID = tempHeader.EntityID;								//Set Entity ID
-		door1P->PC_pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorSet(0,2,2,1));														//Set Position
-		door1P->PC_rotation = rot;												//Set Rotation
-		door1P->PC_is_Static = false;												//Set IsStatic
-		door1P->PC_active = true;													//Set Active
+		door1P->PC_entityID = tempHeader.EntityID;			//Set Entity ID
+		door1P->PC_pos = pos;								//Set Position
+		door1P->PC_rotation = rot;							//Set Rotation
+		door1P->PC_is_Static = false;						//Set IsStatic
+		door1P->PC_active = true;							//Set Active
 		door1P->PC_gravityInfluence = 1.0f;
 		door1P->PC_mass = 0;
 		door1P->PC_friction = 0.00f;
@@ -1863,10 +2080,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	}
 #pragma endregion Connect puzzle entities
 
-
-
-	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
-
 	m_cHandler->GetPhysicsHandler()->SortComponents();
 	PhysicsHandler* ptr = nullptr;
 	ptr = m_cHandler->GetPhysicsHandler();
@@ -1879,19 +2092,301 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
 	
-	size = this->m_doorEntities.size();
-	//for (int i = 0; i < size; i++)
-	//{
-	//	PhysicsComponent* door;
-	//	
-	//	//this->m_dynamicEntitys.push_back
-	//	door = this->m_doorEntities.at(i)->GetPhysicsComponent();
-	//	ptr->TransferBoxesToBullet(door, index);
-	//	//this->m_player1.GetPhysicsComponent()->PC_pos = door->PC_pos;
-	//}
+	//Before generating the Octree, syn the physics data with the graphics data
+#pragma region 
+//
+//#pragma region
+//	for (ButtonEntity* i : this->m_buttonEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//	for (WheelEntity* i : this->m_wheelEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//	for (LeverEntity* i : this->m_leverEntities)
+//	{
+//		i->SyncComponents();
+//	}
+//#pragma endregion puzzle
+//
+//#pragma region
+//	for (Entity* i : this->m_staticEntitys)
+//	{
+//		i->SyncComponents();
+//	}
+//#pragma endregion static
+//
+#pragma endregion Sync components
 
 	m_cHandler->GetGraphicsHandler()->GenerateOctree();
 
+#ifdef _DEBUG
+	//This keeps track of any resource lib access outside of level loading. 
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
 	return 1;
+}
+
+int LevelState::UnloadLevel()
+{
+	int result = 0;
+	//Clear grabbing of balls
+	this->m_player1.SetGrabbed(nullptr);
+	this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+	//Clear components from GraphicsHandler.
+	this->m_cHandler->ResizeGraphicsDynamic(0);
+	this->m_cHandler->ResizeGraphicsStatic(0);
+	//Clear internal lists
+#pragma region
+	for (size_t i = 0; i < this->m_staticEntitys.size(); i++)
+	{
+		delete this->m_staticEntitys[i];
+		this->m_staticEntitys[i] = nullptr;
+	}
+	this->m_staticEntitys.clear();
+	//Clear the puzzle entities
+	for (size_t i = 0; i < this->m_doorEntities.size(); i++)
+	{
+		delete this->m_doorEntities[i];
+		this->m_doorEntities[i] = nullptr;
+	}
+	this->m_doorEntities.clear();
+	for (size_t i = 0; i < this->m_buttonEntities.size(); i++)
+	{
+		delete this->m_buttonEntities[i];
+		this->m_buttonEntities[i] = nullptr;
+	}
+	this->m_buttonEntities.clear();
+	for (size_t i = 0; i < this->m_leverEntities.size(); i++)
+	{
+		delete this->m_leverEntities[i];
+		this->m_leverEntities[i] = nullptr;
+	}
+	this->m_leverEntities.clear();
+	for (size_t i = 0; i < this->m_wheelEntities.size(); i++)
+	{
+		delete this->m_wheelEntities[i];
+		this->m_wheelEntities[i] = nullptr;
+	}
+	this->m_wheelEntities.clear();
+	for (size_t i = 0; i < this->m_fieldEntities.size(); i++)
+	{
+		delete this->m_fieldEntities[i];
+		this->m_fieldEntities[i] = nullptr;
+	}
+	this->m_fieldEntities.clear();
+
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
+	{
+		delete this->m_platformEntities[i];
+		this->m_platformEntities[i] = nullptr;
+	}
+	this->m_platformEntities.clear();
+#pragma endregion Clear entity lists
+	//In order to correctly load the components into the physics handler we need to flush the old ones because the Active variable doesn't work according to Axel.
+	//Shutdown PhysicsHandler and initialize it again.
+#pragma region
+	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
+	pHandler->ShutDown();
+	pHandler->Initialize();
+#pragma endregion Physics handler restart
+
+	this->m_director.Initialize();
+#pragma region
+#pragma region
+	//We then need to recreate the persistent components here
+	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
+	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic							
+	playerP->PC_mass = 10;
+	playerP->PC_BVtype = BV_OBB;
+
+	//Should be done
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+	playerP->PC_OBB.ext[0] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = this->m_player1.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
+
+	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_friction = 1.0f;
+	this->m_player1.SetPhysicsComponent(playerP);
+#pragma endregion Player 1
+#pragma region
+	//We then need to recreate the persistent components here
+	playerP = m_cHandler->GetPhysicsComponent();
+	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic							
+	playerP->PC_mass = 10;
+	playerP->PC_BVtype = BV_OBB;
+
+	//Should be done
+	/*playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];*/
+	playerP->PC_OBB.ext[0] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[0];
+	playerP->PC_OBB.ext[1] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[1];
+	playerP->PC_OBB.ext[2] = this->m_player2.GetGraphicComponent()->modelPtr->GetOBBData().extension[2];
+
+	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	playerP->PC_friction = 1.0f;
+	this->m_player2.SetPhysicsComponent(playerP);
+#pragma endregion Player 2
+#pragma region 
+	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_Sphere;
+	ballP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	ballP->PC_OBB.ext[0] = 0.5f;
+	ballP->PC_OBB.ext[1] = 0.5f;
+	ballP->PC_OBB.ext[2] = 0.5f;
+	ballP->PC_Sphere.radius = 0.25;
+	ballP->PC_mass = 50;
+	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
+	this->m_player1.GetBall()->SetPhysicsComponent(ballP);
+
+#pragma endregion ball1
+#pragma region
+	ballP = m_cHandler->GetPhysicsComponent();
+	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_pos = { 0 };									//Set Position
+	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
+	ballP->PC_is_Static = false;							//Set IsStatic
+	ballP->PC_active = true;								//Set Active
+	ballP->PC_BVtype = BV_Sphere;
+	ballP->PC_Sphere.radius = 0.25;
+	ballP->PC_OBB.ext[0] = 0.5f;
+	ballP->PC_OBB.ext[1] = 0.5f;
+	ballP->PC_OBB.ext[2] = 0.5f;
+	ballP->PC_mass = 50;
+	//We do not know the position of the ball in our dynamic components list. We need to flush this list too btw.
+	this->m_player2.GetBall()->SetPhysicsComponent(ballP);
+#pragma endregion ball2
+#pragma endregion 
+	//We have a special case with the dynamic entities, save the balls and Re-insert them into the dynamic list
+	DynamicEntity* ball1 = nullptr;
+	DynamicEntity* ball2 = nullptr;
+	ball1 = static_cast<DynamicEntity*>(this->m_player1.GetBall());
+	ball1->SyncComponents();
+	ball2 = static_cast<DynamicEntity*>(this->m_player2.GetBall());
+	ball2->SyncComponents();
+	//Sync components to make sure the values in the graphics components are somewhat sane
+
+
+
+	// Clear the dynamic entities. Don't delete the balls
+	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
+	{
+		if (this->m_dynamicEntitys[i] != ball1 && this->m_dynamicEntitys[i] != ball2)
+		{
+			delete this->m_dynamicEntitys[i];
+			this->m_dynamicEntitys[i] = nullptr;
+		}
+	}
+	this->m_dynamicEntitys.clear();
+
+
+
+	//Re-introduce them into our dynamic list
+	this->m_dynamicEntitys.push_back(ball1);
+	this->m_dynamicEntitys.push_back(ball2);
+
+	return 1;
+}
+
+int LevelState::LoadNext()
+{
+	int result = 0;
+	//Increase the level count and reset the cleared level flag
+	this->m_curLevel++;
+	this->m_clearedLevel = 0;
+
+	if (this->m_curLevel >= this->m_levelPaths.size())
+	{
+		//If the code comes here it means that the user finished the last level
+		//Behavior will be to start the first level
+		//Next behavior is to pop ourselves and go back to the menu
+		//The last behavior is to pop ourselves and push a Credit state
+		this->m_curLevel = 0;
+	}
+
+	Resources::Status st = Resources::Status::ST_OK;
+	std::string path = this->m_levelPaths.at(this->m_curLevel);
+
+	//We also need to clear the internal lists, lets have another function do that
+	this->UnloadLevel();
+
+	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
+	path = this->m_levelPaths.at(this->m_curLevel);
+
+	//Begin by clearing the current level data by calling UnloadLevel.
+	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
+#pragma region
+	printf("LOAD LEVEL %d\n", this->m_curLevel);
+	//Load LevelData from file
+	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading file.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+		return -1;
+	}
+	//Load Resources of the level
+	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading level from resource handler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+		return -2;
+	}
+
+	//Load Lights of the level
+
+	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+	{
+		//Error loading lights through LightHandler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
+		return -3;
+	}
+#pragma endregion Loading data
+
+
+#pragma region
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+
+	m_cameraRef->SetCameraPivot(
+		&this->m_cHandler->GetPhysicsHandler()->GetDynamicComponentAt(0)->PC_pos,
+		targetOffset,
+		1.3f
+	);
+
+#pragma endregion Set_Camera
+
+	//Call the CreateLevel with the level data.
+	result = this->CreateLevel(level);
+	return 1;
+}
+
+int LevelState::GetLevelIndex()
+{
+	return this->m_curLevel;
+}
+
+std::string LevelState::GetLevelPath()
+{
+	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel));
 }
 

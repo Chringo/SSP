@@ -4,8 +4,6 @@ System::System()
 	this->m_inputHandler = NULL;
 	this->m_window = NULL;
 }
-
-
 System::~System()
 {
 }
@@ -29,16 +27,11 @@ int System::Shutdown()
 	this->m_physicsHandler.ShutDown();
 	this->m_AIHandler.Shutdown();
 	SoundHandler::instance().Shutdown();
-	//delete this->m_AIHandler;
-	//this->m_AIHandler = nullptr;
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
 	DebugHandler::instance()->Shutdown();
-
-	/*Delete animation class ptr here.*/
-	//delete this->m_Anim;
-
+	
 	return result;
 }
 
@@ -153,10 +146,6 @@ int System::Run()
 		{
 			this->m_running = false;
 		}
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F))
-		{
-			this->FullscreenToggle();
-		}
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_GRAVE))
 		{
 			DebugHandler::instance()->ToggleDebugInfo();
@@ -164,7 +153,7 @@ int System::Run()
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance()->ResetMinMax();
-			printf("Reseted min max on timers\n");
+			printf("Reset min max on timers\n");
 		}
 
 		DebugHandler::instance()->EndProgram();
@@ -182,7 +171,6 @@ int System::Update(float deltaTime)
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
 
-
 	int result = 1;
 
 	DebugHandler::instance()->StartTimer(1);
@@ -190,6 +178,71 @@ int System::Update(float deltaTime)
 	this->m_physicsHandler.Update(deltaTime);
 
 	DebugHandler::instance()->EndTimer(1);
+
+	//AI
+	this->m_AIHandler.Update(deltaTime);
+
+#ifdef DEVELOPMENTFUNCTIONS
+	//Save progress
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
+	{
+		bool result = Progression::instance().WriteToFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with saving to file\n");
+		}
+		else
+		{
+			printf("Saved to file\n");
+		}
+	}
+	//Load
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
+	{
+		bool result = Progression::instance().ReadFromFile("Save1");
+
+		if (result == false)
+		{
+			printf("Error with loading from file\n");
+		}
+		else
+		{
+			printf("Loaded from file\n");
+		}
+	}
+
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+	{
+		SoundHandler::instance().ReInitSoundEngine();
+	}
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
+	{
+		this->m_graphicsHandler->ToggleOverviewCamera();
+	}
+#endif // DEVELOPMENTFUNCTIONS
+
+
+	this->m_AnimationHandler->Update(deltaTime);
+	
+	DebugHandler::instance()->StartTimer(0);
+
+	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
+	enum {TOGGLE_FULLSCREEN = 511};
+	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
+	if (result == TOGGLE_FULLSCREEN)
+	{
+		this->FullscreenToggle();
+	}
+	DebugHandler::instance()->EndTimer(0);
+
+	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
+	//Render
+	//Frustrum cull
+	DebugHandler::instance()->StartTimer(3);
+	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
+	DebugHandler::instance()->EndTimer(3);
 
 	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
@@ -233,66 +286,9 @@ int System::Update(float deltaTime)
 	}
 #endif // _DEBUG
 
-	//CAM
-	this->m_camera->Update(deltaTime);
-
-	//AI
-	this->m_AIHandler.Update(deltaTime);
-
-	//Save progress
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
-	{
-		bool result = Progression::instance().WriteToFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with saving to file\n");
-		}
-		else
-		{
-			printf("Saved to file\n");
-		}
-	}
-	//Load
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
-	{
-		bool result = Progression::instance().ReadFromFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with loading from file\n");
-		}
-		else
-		{
-			printf("Loaded from file\n");
-		}
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
-	{
-		SoundHandler::instance().ReInitSoundEngine();
-	}
-
-	this->m_AnimationHandler->Update(deltaTime);
-	
-	DebugHandler::instance()->StartTimer(0);
-
-	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
-
-	DebugHandler::instance()->EndTimer(0);
-
-
-	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
-	//Render
-	//Frustrum cull
-	DebugHandler::instance()->StartTimer(3);
-	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
-	DebugHandler::instance()->EndTimer(3);
-
 	DebugHandler::instance()->StartTimer(2);
-	this->m_graphicsHandler->Render(deltaTime);
+	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 	DebugHandler::instance()->EndTimer(2);
 

@@ -103,7 +103,7 @@ int NetworkModule::Initialize()
 
 int NetworkModule::Shutdown()
 {
-	int i = 0;
+	size_t i = 0;
 	i = this->connectedClients.size();
 
 	//DISCONNECT_REQUESTs should already have been sent on disconnect,
@@ -125,7 +125,7 @@ int NetworkModule::Shutdown()
 	}
 	
 	this->connectedClients.clear();	// Remove all connected clients
-	printf("%d Clients has been removed on server shutdown\n", i);
+	printf("%d Clients has been removed on server shutdown\n", (int)i);
 
 	closesocket(this->listenSocket);
 	WSACleanup();
@@ -278,7 +278,7 @@ void NetworkModule::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMFLOAT4X4 newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -289,7 +289,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
 	DirectX::XMStoreFloat3(&packet.newPos, newPos);
-	DirectX::XMStoreFloat3(&packet.newRotation, newRotation);
+	packet.newRotation = newRotation;
 	DirectX::XMStoreFloat3(&packet.newVelocity, newVelocity);
 	//packet.newRotationVelocity = newRotationVelocity;
 
@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -308,6 +308,13 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID)
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
+	packet.newstate = newState;
+	packet.transitionDuritation = transitionDuritation;
+	packet.blendingType = blendType;
+	packet.isLooping = isLooping;
+	packet.lockAnimation = lockAnimation;
+	packet.playingSpeed = playingSpeed;
+	packet.velocity = velocity;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -490,7 +497,7 @@ void NetworkModule::ReadMessagesFromClients()
 		while( data_read != data_length)
 		{
 			//Read the header (skip the first 4 bytes since it is virtual function information)
-			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
+			memcpy(&header, &network_data[data_read + PACKETOFFSET], sizeof(PacketTypes));
 
 			#pragma region
 		
@@ -638,6 +645,18 @@ void NetworkModule::ReadMessagesFromClients()
 				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
 				
 				this->clientIsReady = true;
+
+				data_read += sizeof(Packet);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
+			case SYNC_RESET:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+
+				this->packet_Buffer_Messages.push_back(p);
 
 				data_read += sizeof(Packet);
 				//DEBUG
@@ -921,7 +940,29 @@ std::list<GrabPacket> NetworkModule::PacketBuffer_GetGrabPacket()
 	return result;
 }
 
-int NetworkModule::GetNrOfConnectedClients()
+std::list<Packet> NetworkModule::PacketBuffer_GetResetPacket()
+{
+	std::list<Packet> result;
+	std::list<Packet>::iterator iter;
+
+	for (iter = this->packet_Buffer_Messages.begin(); iter != this->packet_Buffer_Messages.end();)
+	{
+		if (iter->packet_type == SYNC_RESET)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Messages.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+size_t NetworkModule::GetNrOfConnectedClients()
 {
 	return this->connectedClients.size();
 }

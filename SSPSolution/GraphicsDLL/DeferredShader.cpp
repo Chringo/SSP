@@ -830,6 +830,11 @@ int DeferredShader::Draw(Resources::Model * model)
 	if (!m_shadowStateActive)
 	{
 		Resources::Material * mat     = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;
@@ -871,6 +876,11 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsComponent * component
 	if (!m_shadowStateActive)
 	{
 		Resources::Material * mat = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;
@@ -908,6 +918,11 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 	if (!m_shadowStateActive)
 	{
 		Resources::Material * mat = model->GetMaterial();
+	if (mat == nullptr)
+	{
+		Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+		mat = model->GetMaterial();
+	}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;
@@ -932,12 +947,17 @@ int DeferredShader::Draw(Resources::Model * model, GraphicsAnimationComponent * 
 
 int DeferredShader::DrawInstanced(InstanceData* data , int iteration)
 {
-	Resources::Model* model;
+	Resources::Model* model = data->modelPtr;
 	
-	Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
+	//Resources::ResourceHandler::GetInstance()->GetModel(data->modelID, model);
 	if (iteration == 0 && m_shadowStateActive == false)
 	{
 		Resources::Material * mat = model->GetMaterial();
+		if (mat == nullptr)
+		{
+			Resources::ResourceHandler::GetInstance()->GetModel(1337, model);
+			mat = model->GetMaterial();
+		}
 		Resources::Texture** textures = mat->GetAllTextures();
 		ID3D11ShaderResourceView* resViews[5];
 		UINT numViews = 0;

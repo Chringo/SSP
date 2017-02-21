@@ -21,6 +21,7 @@ enum PacketTypes {
 	UPDATE_GRAB,
 	SYNC_PHYSICS,
 	SYNC_READY,
+	SYNC_RESET,
 	TEST_PACKET,
 };
 
@@ -61,7 +62,7 @@ struct EntityPacket: public Packet
 	unsigned int		entityID;					
 	DirectX::XMFLOAT3	newPos;				
 	DirectX::XMFLOAT3	newVelocity;
-	DirectX::XMFLOAT3	newRotation;
+	DirectX::XMFLOAT4X4	newRotation;
 	//DirectX::XMVECTOR	newRotationVelocity;
 
 	void serialize(char * data)
@@ -76,9 +77,14 @@ struct EntityPacket: public Packet
 
 struct AnimationPacket : public Packet
 {
-	unsigned int entityID;	
-	unsigned int state;		
-	unsigned int keyframe;	
+	unsigned int	entityID;	
+	int				newstate;
+	float			transitionDuritation;
+	int				blendingType;
+	bool			isLooping;
+	bool			lockAnimation;
+	float			playingSpeed;
+	float			velocity;
 
 	void serialize(char * data)
 	{

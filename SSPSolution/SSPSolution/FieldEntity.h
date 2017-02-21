@@ -16,8 +16,6 @@ public:
 	int React(int entityID, EVENT reactEvent);
 
 	Field* GetField();
-	//void SetField(Field* field);//Probably useless
 private:
-
 };
 #endif
