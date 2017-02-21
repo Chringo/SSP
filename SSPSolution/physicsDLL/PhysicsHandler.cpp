@@ -32,15 +32,15 @@ bool PhysicsHandler::IntersectAABB()
 
 
 
-	int nrOfComponents = this->m_physicsComponents.size();
+	size_t nrOfComponents = this->m_physicsComponents.size();
 	float vecToObj[3];
 
-	for (int i = 0; i < (nrOfComponents - this->m_nrOfStaticObjects); i++)
+	for (size_t i = 0; i < (nrOfComponents - this->m_nrOfStaticObjects); i++)
 	{
 		PC_toCheck = this->m_physicsComponents.at(i);
 		DirectX::XMStoreFloat3(&temp, PC_toCheck->PC_pos);
 
-		for (int j = i + 1; j < nrOfComponents; j++)
+		for (size_t j = i + 1; j < nrOfComponents; j++)
 		{
 			PC_ptr = this->m_physicsComponents.at(j);
 			DirectX::XMStoreFloat3(&temp2, PC_ptr->PC_pos);
