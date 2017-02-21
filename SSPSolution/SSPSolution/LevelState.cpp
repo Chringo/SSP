@@ -1017,12 +1017,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		
 		if (ap->previousState != RAGDOLL_STATE)
 		{
-			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+			if(this->m_player1.GetRagdoll()->state == ANIMATED_TRANSITION)
+				this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+
+			else
+				this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 		}
 		else
 		{
 			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
-			//SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
 		}
 	}
 
