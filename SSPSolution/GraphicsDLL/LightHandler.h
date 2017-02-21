@@ -81,6 +81,11 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
+
+		//Returns either an index to the internal lightdata or -1 for no lights found
+		GRAPHICSDLL_API int GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos);
+		//Stores either an index to the internal lightdata or -1 for no lights found
+		GRAPHICSDLL_API void GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos, int & storeIn);
 	};
 }
 #endif

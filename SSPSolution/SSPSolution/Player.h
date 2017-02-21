@@ -23,6 +23,7 @@ private:
 
 	irrklang::ISound* m_walkingSound;
 	int	m_oldAnimState;
+	float m_timeSinceThrow;
 
 	UIComponent* m_controlsOverlay;
 
@@ -57,6 +58,7 @@ public:
 	Entity* GetGrabbed();
 	Entity* GetBall();
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
+	float TimeSinceThrow();
 
 private:
 
