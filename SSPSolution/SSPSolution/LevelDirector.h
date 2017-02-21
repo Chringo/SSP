@@ -31,7 +31,7 @@ namespace FSMEnvironment
 		// Add function to attach either state or LD to an entity
 
 		unsigned int GetID() const { return this->m_directorID; }// Director's ID acts as an entity ID
-		int GetNrOfStates() const { return this->m_states.size(); }// Director's ID acts as an entity ID
+		size_t GetNrOfStates() const { return this->m_states.size(); }// Director's ID acts as an entity ID
 
 	private:	// Helper functions
 		// TODO: 
