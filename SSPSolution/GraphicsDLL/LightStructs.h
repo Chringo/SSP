@@ -49,6 +49,7 @@ namespace LIGHTING
 		float padding[3];	  //16 bit aligned
 		LightColor color;
 		float intensity = 1.0f;
+		DirectX::XMVECTOR position;
 
 		 void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 		 void* operator new[](size_t i) { return _aligned_malloc(i, 16); };
@@ -58,15 +59,12 @@ namespace LIGHTING
 
 	struct GRAPHICSDLL_API Point : Light
 	{
-		DirectX::XMVECTOR position;
 		float radius = 10.0f;
-		LightFalloff falloff;
-		
+		LightFalloff falloff;		
 	};
 
 	struct GRAPHICSDLL_API Area : Light
 	{
-		DirectX::XMVECTOR position;
 		DirectX::XMVECTOR direction;
 		DirectX::XMVECTOR up;
 		DirectX::XMVECTOR right;
@@ -88,7 +86,6 @@ namespace LIGHTING
 
 	struct GRAPHICSDLL_API Spot : Light
 	{
-		DirectX::XMVECTOR position;
 		DirectX::XMVECTOR direction;
 		LightFalloff falloff;
 		//cone stuff here

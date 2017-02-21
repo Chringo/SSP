@@ -161,6 +161,7 @@ bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 	return true;
 }
 
+
 bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 {
 	if (type >= LIGHT_TYPE::NUM_LT || m_lightBuffers[type] == nullptr)
@@ -273,6 +274,41 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		UpdateStructuredBuffer(LT_POINT);
 	}
 	return true;
+}
+
+
+int LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos)
+{
+	int result = -1;
+	float distClose = FLT_MAX;
+	float dist = 0.0f;
+	//Local descriptive constants.
+	enum { X = 0, Y = 1, Z = 2 };
+	if (type > 0 && type < NUM_LT)
+	{
+		//Loop the lights
+		for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
+		{
+			dist = 0.0f;
+			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[X], 2);		//X
+			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Y], 2);		//Y
+			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Z], 2);		//Z
+			//Square root it for actual length. We will use the non squared length because
+			//we don't care about actual length, only the relation between the lengths
+			if (dist < distClose)
+			{
+				result = i;
+			}
+
+		}
+	}
+	return result;
+}
+
+void LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos, int &storeIn)
+{
+	storeIn = this->GetClosestLightIndex(type, pos);
+	return;
 }
 
 
