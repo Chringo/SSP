@@ -45,11 +45,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	float rotationY = 0.0f;
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
-		this->m_ragdoll->state = RAGDOLL;
-		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(-0.5, 0, 0, 0);
-		//this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0.5, 0, 0, 0);
-		this->m_ragdoll->rightLeg.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
-		this->m_ragdoll->leftLeg.next2->PC_velocity = DirectX::XMVectorSet(0, -0.5, 0, 0);
+		this->m_ragdoll->state = ANIMATED;
+
+		this->m_oldAnimState = this->m_aComp->previousState;
+		SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);			
+		this->m_aComp->previousState = PLAYER_IDLE;
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
