@@ -77,6 +77,7 @@ static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 
 struct ChainLink
 {
+	bool active = true;
 	float CL_lenght;
 	PhysicsComponent* CL_next;
 	PhysicsComponent* CL_previous;

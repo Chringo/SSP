@@ -1755,22 +1755,31 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		float yOffSet = DirectX::XMVectorGetY(ragdoll->bindPose[0].r[3]);
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(ragdoll->upperBody.center->PC_pos, ragdoll->playerPC->PC_pos);
-			diffVec = DirectX::XMVectorSetIntY(diffVec, 0);
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorScale(diffVec, 0.5f));
-			this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			DirectX::XMVECTOR oldPos = ragdoll->upperBody.center->PC_pos;
+
+			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
+			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
+
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
+			//ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
+
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
 		{
-			//DirectX::XMVECTOR offSet = DirectX::XMVectorSubtract(ragdoll->bindPose[0].r[3], ragdoll->bindPose[2].r[3]);
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(ragdoll->upperBody.center->PC_pos, ragdoll->playerPC->PC_pos);
-			diffVec = DirectX::XMVectorSetIntY(diffVec, 0);
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorScale(diffVec, 0.5f));
-			this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			DirectX::XMVECTOR oldPos = ragdoll->upperBody.center->PC_pos;
+			//this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
+			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
+
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
+			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
-		if (ballVel > 10.0 && upperBodyVel > 10.0f)
+		if (ballVel > 10.0 )
 		{
 			ragdoll->state = RAGDOLL_TRANSITION;
 
@@ -1781,6 +1790,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
+			this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 			int nrOfBodyParts = this->m_player1BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
@@ -1789,6 +1799,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
 		{
+			this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 			int nrOfBodyParts = this->m_player2BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
@@ -2479,7 +2490,7 @@ void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * 
 
 	if (distance > linkLenght)
 	{
-		next->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorSet(1, 0, 0, 0));
+		next->PC_pos = DirectX::XMVectorAdd(previous->PC_pos, DirectX::XMVectorSet(0.2f, 0, 0, 0));
 	}
 
 	this->m_links.push_back(link);

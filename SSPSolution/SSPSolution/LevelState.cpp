@@ -1173,10 +1173,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		if (i != 1)
 		{
-			linkLenght = 0.35f;
+			linkLenght = 0.45f;
 		}
 		unsigned int entityID = 5;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		if (i == 1)
+		{
+			//this->m_cHandler->GetPhysicsHandler()->CreateLink(this->m_player1.GetPhysicsComponent(), PC_ptr, 4, PhysicsLinkType::PL_CHAIN);
+		}
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
@@ -1221,10 +1225,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		if (i != 1)
 		{
-			linkLenght = 0.35f;
+			linkLenght = 0.45f;
 		}
 		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
+		if (i == 1)
+		{
+			//this->m_cHandler->GetPhysicsHandler()->CreateLink(this->m_player2.GetPhysicsComponent(), PC_ptr, 2, PhysicsLinkType::PL_CHAIN);
+		}
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;

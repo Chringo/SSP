@@ -220,19 +220,19 @@ int System::Update(float deltaTime)
 	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 	//	}
 	//}
-	//int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+	int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
 
-	//for (int i = 0; i < nrOfBodyParts; i++)
-	//{
-	//	PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
-	//	OBB* OBB_holder = nullptr;
-	//	OBB_holder = &temp->PC_OBB;
-	//	OBB_holder->ext[0] = temp->PC_Sphere.radius;
-	//	OBB_holder->ext[1] = temp->PC_Sphere.radius;
-	//	OBB_holder->ext[2] = temp->PC_Sphere.radius;
-	//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+	for (int i = 0; i < nrOfBodyParts; i++)
+	{
+		PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
+		OBB* OBB_holder = nullptr;
+		OBB_holder = &temp->PC_OBB;
+		OBB_holder->ext[0] = temp->PC_Sphere.radius;
+		OBB_holder->ext[1] = temp->PC_Sphere.radius;
+		OBB_holder->ext[2] = temp->PC_Sphere.radius;
+		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
 
-	//}
+	}
 #endif // _DEBUG
 
 	//CAM
