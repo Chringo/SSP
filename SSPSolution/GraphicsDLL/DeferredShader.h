@@ -36,6 +36,7 @@ public:
 		IL_INSTANCED_NORMAL,
 		IL_TYPE_COUNT
 	};
+	D3D11_VIEWPORT*		  m_viewPort;
 
 	ID3D11VertexShader*   m_vertexShader[VS_NUM_VERTEX_SHADERS];
 	ID3D11GeometryShader* m_geoShader;
@@ -54,6 +55,7 @@ public:
 	ID3D11DepthStencilView*  m_DSV;
 	ID3D11DepthStencilState* m_DSS;
 	ID3D11DepthStencilView*	 m_shadowMapSV;
+	D3D11_VIEWPORT *		 m_shadowVP = nullptr;
 
 	ID3D11Buffer* m_instanceBuffer = nullptr;
 	UINT32 m_vertexSize;
@@ -62,7 +64,7 @@ public:
 	DeferredShader();
 	~DeferredShader();
 
-	int Initialize(ID3D11Device* device,ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int Initialize(ID3D11Device* device,ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort);
 	
 	ID3D11ShaderResourceView** GetShaderResourceViews();
 	int SetActive();

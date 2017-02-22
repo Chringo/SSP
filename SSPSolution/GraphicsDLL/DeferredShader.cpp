@@ -34,7 +34,7 @@ DeferredShader::~DeferredShader()
 {
 }
 
-int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT *viewPort)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer[VS_NUM_VERTEX_SHADERS] = { nullptr };
@@ -42,9 +42,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ID3D10Blob* geoShadowShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
-
+	this->m_viewPort = viewPort;
 	this->m_deviceContext = deviceContext;
-
 
 	//Insert shader path here
 	WCHAR* vsFilename         = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
@@ -412,10 +411,10 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 
 	//Initialize the render target texture description
 	ZeroMemory(&renderTextureDesc, sizeof(renderTextureDesc));
-
+	
 	//Setup the render target texture description
-	renderTextureDesc.Width = resolution.x;
-	renderTextureDesc.Height = resolution.y;
+	renderTextureDesc.Width = viewPort->Width;
+	renderTextureDesc.Height = viewPort->Height;
 	renderTextureDesc.MipLevels = 1;
 	renderTextureDesc.ArraySize = 1;
 	renderTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -468,8 +467,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
-	depthBufferDesc.Width = resolution.x;
-	depthBufferDesc.Height = resolution.y;
+	depthBufferDesc.Width = viewPort->Width;
+	depthBufferDesc.Height = viewPort->Height;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -581,6 +580,15 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	if (FAILED(hResult))
 		return 1;
 
+	this->m_shadowVP = new D3D11_VIEWPORT;
+	m_shadowVP->Width = SHADOW_WIDTH;
+	m_shadowVP->Height = SHADOW_HEIGHT;
+	m_shadowVP->MinDepth = 0.0f;
+	m_shadowVP->MaxDepth = 1.0f;
+	m_shadowVP->TopLeftX = 0;
+	m_shadowVP->TopLeftY = 0;
+	m_deviceContext->RSSetViewports(1, m_shadowVP);
+
 #pragma endregion
 
 	//-----------------------------------------------------------------------------------------------------------------------------------
@@ -641,15 +649,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 		m_shadowStateActive = false;
-
-		D3D11_VIEWPORT vP;
-		vP.Width = 1280.f;
-		vP.Height = 720.f;
-		vP.MinDepth = 0.0f;
-		vP.MaxDepth = 1.0f;
-		vP.TopLeftX = 0;
-		vP.TopLeftY = 0;
-		m_deviceContext->RSSetViewports(1, &vP);
+		m_deviceContext->RSSetViewports(1, m_viewPort);
 
 		break;
 	}
@@ -662,14 +662,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
-		D3D11_VIEWPORT vP;
-		vP.Width = 1280.f;
-		vP.Height = 720.f;
-		vP.MinDepth = 0.0f;
-		vP.MaxDepth = 1.0f;
-		vP.TopLeftX = 0;
-		vP.TopLeftY = 0;
-		m_deviceContext->RSSetViewports(1, &vP);
+		m_deviceContext->RSSetViewports(1, m_viewPort);
 
 		break;
 	case ShaderLib::Animated:
@@ -682,14 +675,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
-		D3D11_VIEWPORT vP;
-		vP.Width = 1280.f;
-		vP.Height = 720.f;
-		vP.MinDepth = 0.0f;
-		vP.MaxDepth = 1.0f;
-		vP.TopLeftX = 0;
-		vP.TopLeftY = 0;
-		m_deviceContext->RSSetViewports(1, &vP);
+		m_deviceContext->RSSetViewports(1, m_viewPort);
 		break;
 	}
 	case ShaderLib::InstancedAnimated:
@@ -704,7 +690,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
-
+		m_deviceContext->RSSetViewports(1, m_viewPort);
 		break;
 	}
 	case ShaderLib::Shadow:
@@ -721,15 +707,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		m_shadowStateActive = true;
-
-		D3D11_VIEWPORT vP;
-		vP.Width = SHADOW_WIDTH;
-		vP.Height = SHADOW_HEIGHT;
-		vP.MinDepth = 0.0f;
-		vP.MaxDepth = 1.0f;
-		vP.TopLeftX = 0;
-		vP.TopLeftY = 0;
-		m_deviceContext->RSSetViewports(1, &vP);
+		m_deviceContext->RSSetViewports(1, m_shadowVP);
 
 		break;
 	}
@@ -745,15 +723,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		m_shadowStateActive = true;
-
-		D3D11_VIEWPORT vP;
-		vP.Width = SHADOW_WIDTH;
-		vP.Height = SHADOW_HEIGHT;
-		vP.MinDepth = 0.0f;
-		vP.MaxDepth = 1.0f;
-		vP.TopLeftX = 0;
-		vP.TopLeftY = 0;
-		m_deviceContext->RSSetViewports(1, &vP);
+		m_deviceContext->RSSetViewports(1, m_shadowVP);
 
 		break;
 	}
@@ -769,6 +739,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
 		m_shadowStateActive = true;
+		m_deviceContext->RSSetViewports(1, m_shadowVP);
 
 		break;
 	}
@@ -861,6 +832,9 @@ void DeferredShader::Release()
 			this->m_gridPixelShader = nullptr;
 		}
 	}
+
+	if (this->m_shadowVP != nullptr)
+		delete this->m_shadowVP;
 }
 
 

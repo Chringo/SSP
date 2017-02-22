@@ -302,6 +302,11 @@ ID3D11ShaderResourceView * Direct3DHandler::GetBackbufferSRV()
 	return this->m_backBufferSRV;
 }
 
+D3D11_VIEWPORT * Direct3DHandler::GetViewPort()
+{
+	return m_viewport;
+}
+
 int Direct3DHandler::SetRasterizerState(D3D11_FILL_MODE mode)
 {
 	switch (mode)

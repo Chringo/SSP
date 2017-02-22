@@ -15,7 +15,7 @@ FinalShader::~FinalShader()
 {
 }
 
-int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
@@ -136,7 +136,10 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 
 
 	// Create the screen quad \\
-
+	
+	DirectX::XMINT2 resolution;
+	resolution.x = viewPort->Width;
+	resolution.y = viewPort->Height;
 	this->m_screenQuad = new ScreenQuad();
 	if (this->m_screenQuad->Initialize(device, resolution))
 	{

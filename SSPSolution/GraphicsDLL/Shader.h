@@ -22,7 +22,7 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	virtual int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution) = 0;
+	virtual int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort) = 0;
 	virtual int SetActive() = 0;
 	virtual int SetVariation(ShaderLib::ShaderVariations variation);
 	virtual void Release()  = 0;
