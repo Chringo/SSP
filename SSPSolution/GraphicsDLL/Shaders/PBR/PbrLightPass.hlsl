@@ -276,31 +276,30 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 
 		//16 samples == -2 till 2
 		//8 samples == -1 till 1
-		[unroll]
-    for (int k = -2; k < 2; k++)
-			[unroll]
-        for (int l = -2; l < 2; l++)
-            shadowSamples += shadowTex.Sample(pointSampler, float3(smTex + float2(dx * k, dx * l), 0)).r + bias < depth ? 0.0f : 1.0f;
+		//[unroll]
+  //  for (int k = -2; k < 2; k++)
+		//	[unroll]
+  //      for (int l = -2; l < 2; l++)
+  //          shadowSamples += shadowTex.Sample(pointSampler, float3(smTex + float2(dx * k, dx * l), 0)).r + bias < depth ? 0.0f : 1.0f;
 
+    float3 shadowUV = normalize(pointlights[SHADOWLIGHT_INDEX].position.xyz - worldPos.xyz);
+ 
+
+    shadowSamples = shadowTex.Sample(linearSampler, shadowUV);
     float shadowFactor = shadowSamples * 0.0625f; // division by 16.0f;    //0.125f;//division by 8      // 
 
-
+   
 		//tempCooef += shadowcooef;
 	
 	//shadowSample = shadowSample * tempCooef;
 	//shadowSample = saturate(shadowSample);
-    return shadowFactor;
+    return shadowSamples;
 }
 
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
-    float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
 
-    float3 shadowUV = normalize(pointlights[SHADOWLIGHT_INDEX].position.xyz - wPosSamp.xyz);
-    
-    float4 shadowSample = shadowTex.Sample(linearSampler, shadowUV);
-    return shadowSample;
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
     uint lightCount = NUM_POINTLIGHTS;
@@ -316,7 +315,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
-    //float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
+    float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
     float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
     float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
@@ -371,7 +370,7 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             if (i == 0)
             {
-               // shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
+                shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix[0], ShadowProjectionMatrix, 0);
                 lightPower *= shadowFactor;
 
             }
@@ -396,7 +395,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     }
 
 
-    //return shadowFactor;
+    return shadowFactor;
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
