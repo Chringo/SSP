@@ -260,29 +260,38 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 		//float2 lerps = frac(texelpos);
 		//float shadowcooef = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
-    float far_plane = 9.0f ;
-   // float near_plane = 0.0005;
+    //projection fp np , 1.0000556, -0.00050002779
+
+    float linearPlaneConst = 1 / ( 9.000 - 0.0005);
+   // float near_plane = ;
 
     float3 lightPosW = pointlights[SHADOWLIGHT_INDEX].position.xyz;
-    float3 pixToLight = worldPos.xyz - lightPosW;
+    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightView);
+    float4 posLightP = mul(posLightH, lightProj);
+    
 
-    float closestDepth = shadowTex.Sample(pointSampler, pixToLight).r;
-    //shadowUV = mul(float4(shadowUV, 1.0f), ShadowViewMatrix[0]);
+    float3 temp = (mul(float4(worldPos.xyz - pointlights[SHADOWLIGHT_INDEX].position.xyz, 1.0f), lightView));
 
-    //float4 posLightH = mul(, ShadowViewMatrix[0]);
-    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightProj);
+
+    float3 pixToLight = (worldPos.xyz / worldPos.w) - (lightPosW.xyz / worldPos.w);
+
+    float3 shadowUV = normalize(mul(float4(temp, 1.0), lightProj).xyz);
+    float closestDepth = shadowTex.Sample(linearSampler, shadowUV).r;
+
+
     //posLightH.xy /= posLightH.w;
 
-    float currentDepth = length(pixToLight) / far_plane;
+    float currentDepth = length(pixToLight) * linearPlaneConst;
     
     //posLightH.z / posLightH.w;
 
-    bias = 0.005001f;
+    bias = 0.00001f;
 
 
     shadowSamples = closestDepth + bias < currentDepth ? 0.0f : 1.0f;
 
     float shadowFactor = shadowSamples; // division by 16.0f;    //0.125f;//division by 8      // 
+    return shadowUV;
 
 
 
@@ -305,7 +314,6 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 	
 	//shadowSample = shadowSample * tempCooef;
 	//shadowSample = saturate(shadowSample);
-    return shadowSamples;
 }
 
 float4 PS_main(VS_OUT input) : SV_Target
