@@ -1762,7 +1762,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
-		if (ballVel > 10.0 && upperBodyVel > 5.0f)
+		if (ballVel > 10.0 && upperBodyVel > 10.0f)
 		{
 			ragdoll->state = RAGDOLL_TRANSITION;
 
