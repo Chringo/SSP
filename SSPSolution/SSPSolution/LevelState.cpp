@@ -633,16 +633,19 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-				if (itr->newstate != RAGDOLL_STATE)
-				{
-					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
-				}
-				else
-				{
-					//this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
-					this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
-				}
+				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+
+				//if (itr->newstate != RAGDOLL_STATE)
+				//{
+				//	this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+				//	this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+				//}
+				//else
+				//{
+				//	//this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+				//	this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+				//}
 			}
 
 		}
@@ -1025,7 +1028,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 		else
 		{
-			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+			//this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
 		}
 	}
 
