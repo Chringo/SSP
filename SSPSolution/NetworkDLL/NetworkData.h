@@ -84,6 +84,8 @@ struct AnimationPacket : public Packet
 	bool			lockAnimation;
 	float			playingSpeed;
 	float			velocity;
+	int				jointIndex;
+	DirectX::XMFLOAT4X4	finalJointTransform;
 
 	void serialize(char * data)
 	{

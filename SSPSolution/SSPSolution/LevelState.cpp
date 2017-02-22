@@ -633,19 +633,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
-
-				//if (itr->newstate != RAGDOLL_STATE)
-				//{
-				//	this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-				//	this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
-				//}
-				//else
-				//{
-				//	//this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
-				//	this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
-				//}
+				
+				if (itr->newstate == RAGDOLL_STATE)	//If the packet is for a ragdoll state
+				{
+					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
+					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
+				}
+				else
+				{
+					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+				}
 			}
 
 		}
@@ -1025,27 +1023,21 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (this->m_player1.isAnimationChanged())
 	{
 		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
-
-		if (ap->previousState != RAGDOLL_STATE)
+		if (ap->previousState == RAGDOLL_STATE)
 		{
-			//this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+			GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
 
-			//if (this->m_player1.GetRagdoll()->state == ANIMATED_TRANSITION)
-			//{
-			//	this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
-			//	//this->m_player1.GetRagdoll()->state = ANIMATED;
-			//}
-			//else
-			//{
-			//	this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
-			//}
+			for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
+			{
+				//Send a packet for E V E R Y joint
+				this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
+			}
 		}
 		else
 		{
-			//this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
-			//this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity);
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 		}
+
 	}
 
 	#pragma endregion Send_Player_Animation_Update
