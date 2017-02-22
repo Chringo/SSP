@@ -1752,12 +1752,17 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 {
 	if (ragdoll->state == ANIMATED)
 	{
+		float yOffSet = DirectX::XMVectorGetY(ragdoll->bindPose[0].r[3]);
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
 			this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
 		{
+			//DirectX::XMVECTOR offSet = DirectX::XMVectorSubtract(ragdoll->bindPose[0].r[3], ragdoll->bindPose[2].r[3]);
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(ragdoll->upperBody.center->PC_pos, ragdoll->playerPC->PC_pos);
+			diffVec = DirectX::XMVectorSetIntY(diffVec, 0);
+			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorScale(diffVec, 0.5f));
 			this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));

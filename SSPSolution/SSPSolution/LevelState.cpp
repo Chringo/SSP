@@ -1166,7 +1166,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
-	//previous = this->m_player1.GetRagdoll()->upperBody.center;
+	previous = this->m_player1.GetRagdoll()->upperBody.center;
 	PhysicsComponent* next = nullptr;
 
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
@@ -1215,7 +1215,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	linkLenght = 1.5f;
 	previous = this->m_player2.GetPhysicsComponent();
-	//previous = this->m_player2.GetRagdoll()->upperBody.center;
+	previous = this->m_player2.GetRagdoll()->upperBody.center;
 	next = nullptr;
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
 	{
