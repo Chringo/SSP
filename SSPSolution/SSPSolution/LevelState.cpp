@@ -187,6 +187,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
 	playerG->modelID = 1117267500;
+	//playerG->modelID = 885141774;
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -766,7 +767,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
-				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.25f, FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.50f, FROZEN_TRANSITION, false, true, 1.5f, 1.0f);
 			}
 
 		}
