@@ -239,11 +239,13 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  unsigned int two = 885141774; //player two
  unsigned int three = 1680427216; // chain
  unsigned int four = 1321651915; // ball
+ unsigned int five = 2539810394; // ping
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);
  LoadModel(three, temp);
  LoadModel(four, temp);
+ LoadModel(five, temp);
  FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 }
 
