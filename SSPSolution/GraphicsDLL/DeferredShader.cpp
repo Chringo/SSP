@@ -545,7 +545,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ShadowTexDesc.MiscFlags		    = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	//Create the render target Texture
-
+	
 	hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &m_deferredT2D[ShaderLib::Shadow]);
 	if (FAILED(hResult))
 	{
@@ -645,7 +645,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_NORMAL], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
-
+		m_deviceContext->OMSetDepthStencilState(m_DSS, 0);
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
 		m_shadowStateActive = false;
@@ -659,6 +659,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+		m_deviceContext->OMSetDepthStencilState(m_DSS, 0);
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
@@ -672,6 +673,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->VSSetShader(this->m_vertexShader[VERTEX_SHADERS::VS_ANIMATED], NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
+		m_deviceContext->OMSetDepthStencilState(m_DSS, 0);
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
@@ -687,6 +689,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_geoShader, NULL, 0);
 		m_deviceContext->PSSetShader(m_gridPixelShader, NULL, 0);
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
+		m_deviceContext->OMSetDepthStencilState(m_DSS, 0);
 		m_shadowStateActive = false;
 		//Set the render target views
 		this->m_deviceContext->OMSetRenderTargets(BUFFER_COUNT - 1, this->m_deferredRTV, this->m_DSV); // -1 because one is not used
@@ -700,7 +703,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
-
+		m_deviceContext->OMSetDepthStencilState(NULL, 0);
 		//Null the input of the shadowmap
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
@@ -718,7 +721,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::Vertex);
-
+		m_deviceContext->OMSetDepthStencilState(NULL, 0);
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil
@@ -734,7 +737,7 @@ int DeferredShader::SetVariation(ShaderLib::ShaderVariations ShaderVariations)
 		m_deviceContext->GSSetShader(this->m_ShadowGeoShader, NULL, 0);
 		m_deviceContext->PSSetShader(nullptr, NULL, 0); //no pixel shader is used for shadows
 		m_vertexSize = sizeof(Resources::Mesh::VertexAnim);
-
+		m_deviceContext->OMSetDepthStencilState(NULL, 0);
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		this->m_deviceContext->PSSetShaderResources(10, 1, nullSRV);
 		this->m_deviceContext->OMSetRenderTargets(0, NULL, m_shadowMapSV); // no rtv for shadow map, only stencil

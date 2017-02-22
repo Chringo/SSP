@@ -6,9 +6,6 @@ textureCUBE shadowTex      : register(t10); // 7,8,9 is taken up by light buffer
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler  : register(s1);
 
-
-
-
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
@@ -214,6 +211,21 @@ float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float c
     return attenuation;
 }
 
+float VecToDepth(float3 vec)
+{
+    float3 absVec = abs(vec);
+    float LocalZcomp = max(absVec.x, max(absVec.y, absVec.z));
+
+    const float f = 9.0f;
+    const float n = 0.0005f;
+
+    //float NormZComp = (f + n) / (f - n) - (2 * f * n) / (f - n) / LocalZcomp;
+
+    float NormZComp = -(f / (n - f) - (n * f) / (n - f) / LocalZcomp);
+
+    return NormZComp;
+}
+
 float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, int shadowMapIndex)
 {
 
@@ -261,37 +273,41 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 		//float shadowcooef = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
     //projection fp np , 1.0000556, -0.00050002779
-
     float linearPlaneConst = 1 / ( 9.000 - 0.0005);
-   // float near_plane = ;
+
+    lightView._44_34_24_14.xyz = pointlights[SHADOWLIGHT_INDEX].position.xyz;
 
     float3 lightPosW = pointlights[SHADOWLIGHT_INDEX].position.xyz;
     float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightView);
     float4 posLightP = mul(posLightH, lightProj);
+    posLightP /= posLightP.w;
+    posLightP = normalize(posLightP);
+
+
+    float3 temp = normalize((worldPos.xyz) - pointlights[SHADOWLIGHT_INDEX].position.xyz);
+    //temp /= worldPos.w;
+
+    float3 pixToLight = worldPos.xyz - lightPosW.xyz;
+
+    //float3 shadowUV = mul(temp, lightProj).xyz;
+    //float currentDepth = length(pixToLight); // * linearPlaneConst;
+
+    //float lDepth = VecToDepth(pixToLight);
+    float closestDepth = shadowTex.Sample(linearSampler, pixToLight);
+
     
-
-    float3 temp = (mul(float4(worldPos.xyz - pointlights[SHADOWLIGHT_INDEX].position.xyz, 1.0f), lightView));
-
-
-    float3 pixToLight = (worldPos.xyz / worldPos.w) - (lightPosW.xyz / worldPos.w);
-
-    float3 shadowUV = normalize(mul(float4(temp, 1.0), lightProj).xyz);
-    float closestDepth = shadowTex.Sample(linearSampler, shadowUV).r;
-
-
     //posLightH.xy /= posLightH.w;
 
-    float currentDepth = length(pixToLight) * linearPlaneConst;
     
     //posLightH.z / posLightH.w;
 
     bias = 0.00001f;
 
 
-    shadowSamples = closestDepth + bias < currentDepth ? 0.0f : 1.0f;
+    shadowSamples = closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.5f;
 
     float shadowFactor = shadowSamples; // division by 16.0f;    //0.125f;//division by 8      // 
-    return shadowUV;
+    return shadowFactor;
 
 
 
@@ -415,7 +431,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     }
 
 
-    return shadowFactor;
+    //return shadowFactor;
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
