@@ -1118,20 +1118,20 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_gsh->PopStateFromStack();
 
-		MenuState* menuState = new MenuState();
-		result = menuState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+		//MenuState* menuState = new MenuState();
+		//result = menuState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 
-		if (result > 0)
-		{
-			//Push it to the gamestate stack/vector
-			this->m_gsh->PushStateToStack(menuState);
-		}
-		else
-		{
-			//Delete it
-			delete menuState;
-			menuState = nullptr;
-		}
+		//if (result > 0)
+		//{
+		//	//Push it to the gamestate stack/vector
+		//	this->m_gsh->PushStateToStack(menuState);
+		//}
+		//else
+		//{
+		//	//Delete it
+		//	delete menuState;
+		//	menuState = nullptr;
+		//}
 
 		result = 1;
 	}
