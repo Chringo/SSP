@@ -443,17 +443,23 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	#pragma region
 	this->m_player1_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
 	this->m_player1_Ping.m_gComp->modelID = 2539810394;
-	this->m_player1_Ping.m_gComp->active = false;
+	this->m_player1_Ping.m_gComp->active = true;
 	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
 	resHandler->GetModel(this->m_player1_Ping.m_gComp->modelID, this->m_player1_Ping.m_gComp->modelPtr);
 	this->m_player1_Ping.m_pos = { 0, 0, 0 };
 
 	this->m_player2_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
 	this->m_player2_Ping.m_gComp->modelID = 2539810394;
-	this->m_player2_Ping.m_gComp->active = false;
+	this->m_player2_Ping.m_gComp->active = true;
 	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
 	resHandler->GetModel(this->m_player2_Ping.m_gComp->modelID, this->m_player2_Ping.m_gComp->modelPtr);
 	this->m_player2_Ping.m_pos = { 0, 0, 0 };
+
+	//Set them to inactive in the begining
+	this->m_player1_Ping.m_gComp->active = false;
+	this->m_player2_Ping.m_gComp->active = false;
+
+
 	#pragma endregion PingModels
 
 	this->m_director.Initialize();
