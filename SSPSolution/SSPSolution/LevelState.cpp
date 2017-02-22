@@ -645,6 +645,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetRagdoll()->state = ANIMATED;
 				}
 			}
 

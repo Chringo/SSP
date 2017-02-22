@@ -4167,13 +4167,13 @@ PhysicsComponent * PhysicsHandler::GetStaticComponentAt(int index) const
 
 int PhysicsHandler::GetNrOfBodyComponents() const
 {
-	return this->m_player1BodyPC.size();
+	return this->m_player2BodyPC.size();
 }
 PhysicsComponent * PhysicsHandler::GetBodyComponentAt(int index) const
 {
-	if (index >= 0 && index < this->m_player1BodyPC.size())
+	if (index >= 0 && index < this->m_player2BodyPC.size())
 	{
-		return this->m_player1BodyPC.at(index);
+		return this->m_player2BodyPC.at(index);
 	}
 	return nullptr;
 }
