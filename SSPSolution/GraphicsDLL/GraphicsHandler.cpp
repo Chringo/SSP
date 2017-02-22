@@ -1700,14 +1700,20 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 						if (intersectsRay)
 						{
-							if (distance < 1.5f)
+							if (pingRay == false)
 							{
-								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								if (distance < 1.5f)
+								{
+									TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								}
 							}
-							/*else if (distance < 100.f)
+							else 
 							{
-								TraverseOctreeRay(curNode->branches[i], ray, true);
-							}*/
+								if (distance < 100.f)
+								{
+									TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								}
+							}
 						}
 					}
 				}
@@ -1923,8 +1929,12 @@ float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 {
 	std::vector<Camera::C_OBB> OBBs;
 
-	//Cast a ray that sets hited OctreeBV isInPingRay to true
 	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
+
+	//Change dir of the ray
+	//ray.dir = DirectX::XMFLOAT3(ray.dir.x * -1, ray.dir.y * -1, ray.dir.z * -1);
+	
+	//Cast a ray that sets hited OctreeBV isInPingRay to true
 	for (size_t i = 0; i < 8; i++)
 	{
 		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, true);
