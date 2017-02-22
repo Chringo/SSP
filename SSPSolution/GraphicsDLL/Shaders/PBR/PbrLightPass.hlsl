@@ -6,6 +6,9 @@ textureCUBE shadowTex      : register(t10); // 7,8,9 is taken up by light buffer
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler  : register(s1);
 
+
+
+
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
@@ -257,22 +260,34 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 		//float2 lerps = frac(texelpos);
 		//float shadowcooef = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
+    float far_plane = 9.0f ;
+   // float near_plane = 0.0005;
+
+    float3 lightPosW = pointlights[SHADOWLIGHT_INDEX].position.xyz;
+    float3 pixToLight = worldPos.xyz - lightPosW;
+
+    float closestDepth = shadowTex.Sample(pointSampler, pixToLight).r;
+    //shadowUV = mul(float4(shadowUV, 1.0f), ShadowViewMatrix[0]);
+
+    //float4 posLightH = mul(, ShadowViewMatrix[0]);
+    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightProj);
+    //posLightH.xy /= posLightH.w;
+
+    float currentDepth = length(pixToLight) / far_plane;
+    
+    //posLightH.z / posLightH.w;
+
+    bias = 0.005001f;
+
+
+    shadowSamples = closestDepth + bias < currentDepth ? 0.0f : 1.0f;
+
+    float shadowFactor = shadowSamples; // division by 16.0f;    //0.125f;//division by 8      // 
 
 
 
-
-    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightView);
-    posLightH = mul(posLightH, lightProj);
-    posLightH.xy /= posLightH.w;
-
-    float2 smTex = float2(posLightH.x, -posLightH.y) * 0.5f + 0.5f;
-
-    float depth = posLightH.z / posLightH.w;
-
-    smTex -= float2(dx, dx) * 0.5f;
 
 		////////////////BIAS IS HERE
-    bias = 0.00001f;
 
 		//16 samples == -2 till 2
 		//8 samples == -1 till 1
@@ -280,15 +295,12 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
   //  for (int k = -2; k < 2; k++)
 		//	[unroll]
   //      for (int l = -2; l < 2; l++)
-  //          shadowSamples += shadowTex.Sample(pointSampler, float3(smTex + float2(dx * k, dx * l), 0)).r + bias < depth ? 0.0f : 1.0f;
+  //          
 
-    float3 shadowUV = normalize(pointlights[SHADOWLIGHT_INDEX].position.xyz - worldPos.xyz);
- 
 
-    shadowSamples = shadowTex.Sample(linearSampler, shadowUV);
-    float shadowFactor = shadowSamples * 0.0625f; // division by 16.0f;    //0.125f;//division by 8      // 
 
-   
+
+    
 		//tempCooef += shadowcooef;
 	
 	//shadowSample = shadowSample * tempCooef;
@@ -368,12 +380,12 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
 
             //DO SHADOW STUFF HERE
-            if (i == 0)
-            {
+            //if (i == 0)
+            //{
                 shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix[0], ShadowProjectionMatrix, 0);
                 lightPower *= shadowFactor;
 
-            }
+            //}
 
 
             //DIFFUSE
