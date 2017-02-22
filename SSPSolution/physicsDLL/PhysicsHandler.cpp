@@ -1752,6 +1752,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 {
 	if (ragdoll->state == ANIMATED)
 	{
+		this->m_links.at(0).PL_previous = ragdoll->playerPC;
 		float yOffSet = DirectX::XMVectorGetY(ragdoll->bindPose[0].r[3]);
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
@@ -1774,15 +1775,16 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
 			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
 			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		if (ballVel > 10.0 )
 		{
+			this->m_links.at(0).PL_previous = ragdoll->upperBody.center;
+			ragdoll->upperBody.center->PC_velocity = ragdoll->ballPC->PC_velocity;
 			ragdoll->state = RAGDOLL_TRANSITION;
-
 		}
 	}
 	if (ragdoll->state == RAGDOLL_TRANSITION)
