@@ -50,7 +50,7 @@ private:
 				this->m_time += dt;
 				if (this->m_time < m_maxTime)
 				{
-					printf("Showing the ping");
+					//printf("Showing the ping");
 					//If we want to do soemthing while it is shown
 				}
 				else

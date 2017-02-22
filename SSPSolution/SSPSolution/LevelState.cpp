@@ -868,7 +868,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Calculate the point using the camera dir vector
 			DirectX::XMVECTOR dir = this->m_cameraRef->GetDirection();
-			DirectX::XMVECTOR scaledDir = DirectX::XMVectorScale(dir, distance);
+			DirectX::XMVECTOR scaledDir = DirectX::XMVectorScale(dir, distance-1);	//-1 to get abit of distance from what we are hiting
 			DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos());
 
 			DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(camPos, scaledDir);
