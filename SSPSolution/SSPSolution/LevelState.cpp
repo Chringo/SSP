@@ -1021,9 +1021,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
-	if (this->m_player1.isAnimationChanged())
+	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+	if (this->m_player1.isAnimationChanged() || ap->previousState == RAGDOLL_STATE)
 	{
-		AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+		
 		if (ap->previousState == RAGDOLL_STATE)
 		{
 			GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
