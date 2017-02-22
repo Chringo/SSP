@@ -670,7 +670,7 @@ void Camera::m_calcDistance()
 {
 	const float EPSILON = 1e-5f;
 	static float targetDistance = m_maxDistance;
-	float intersectDistance = m_maxDistance + 0.3;
+	float intersectDistance = m_maxDistance + 0.3f;
 	float hitDistance = m_maxDistance;
 	float zoomSpeedFactor = 4.f;
 	bool newDistance = false;
@@ -701,8 +701,8 @@ void Camera::m_calcDistance()
 			targetDistance = intersectDistance;
 		if (targetDistance > this->m_maxDistance)
 			targetDistance = this->m_maxDistance;
-		else if (targetDistance < 0.05)
-			targetDistance = 0.05;
+		else if (targetDistance < 0.05f)
+			targetDistance = 0.05f;
 	}
 	else if(targetDistance < m_maxDistance || targetDistance > m_maxDistance)
 		targetDistance = m_maxDistance;
@@ -877,6 +877,29 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 		}
 	}
 #pragma endregion Uses only 2 corners
+
+	return result;
+}
+
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+{
+	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
+	float distance = 0.0f;
+	enum { NUMBER_OF_PLANES = 6 };
+	for (int i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		//Distance between point and plane
+		distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+		//Check distance against
+		if (distance > -radius)
+		{
+			return CullingResult::FRUSTRUM_OUTSIDE;
+		}
+		else if (distance > radius)
+		{
+			result = CullingResult::FRUSTRUM_INTERSECT;
+		}
+	}
 
 	return result;
 }
