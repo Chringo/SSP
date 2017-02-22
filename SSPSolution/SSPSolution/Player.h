@@ -26,6 +26,7 @@ private:
 	float m_timeSinceThrow;
 
 	UIComponent* m_controlsOverlay;
+	UIComponent* m_crosshair;
 
 public:
 	Player();
