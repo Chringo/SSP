@@ -121,6 +121,8 @@ int System::Run()
 	QueryPerformanceFrequency(&frequency);
 	//QueryPerformanceCounter(&prevTime);
 	QueryPerformanceCounter(&currTime);
+	//Enable nesting of threading so that things can thread inside the Physics and Graphics parallel sections
+	omp_set_nested(1);
 	while (this->m_running)
 	{
 		DebugHandler::instance()->StartProgram();
@@ -175,6 +177,8 @@ int System::Update(float deltaTime)
 #pragma omp parallel num_threads(2)
 	{
 		int myThreadID = omp_get_thread_num();
+		int amountOfThreads = omp_get_num_threads();
+		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
 		if (myThreadID == 0)
 		{
 			//Do the physics
