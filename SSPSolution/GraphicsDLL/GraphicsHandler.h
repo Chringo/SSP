@@ -236,6 +236,7 @@ public:
 	GRAPHICSDLL_API int GenerateOctree();
 	GRAPHICSDLL_API int FrustrumCullOctreeLeft();
 	GRAPHICSDLL_API int FrustrumCullOctreeRight();
+	GRAPHICSDLL_API int FrustrumCullOctreeNodeThreaded(int threadCount);
 	GRAPHICSDLL_API int FrustrumCullOctreeNode();
 	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
 	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);

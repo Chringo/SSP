@@ -174,7 +174,7 @@ int System::Update(float deltaTime)
 		deltaTime = 0.000001f;
 
 	int result = 1;
-#pragma omp parallel num_threads(2)
+#pragma omp parallel num_threads(3)
 	{
 		int myThreadID = omp_get_thread_num();
 		//int amountOfThreads = omp_get_num_threads();
@@ -190,7 +190,7 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(1);
 #pragma endregion Physics
 		}
-		else
+		else if (myThreadID == 1)
 		{
 			//Render the objects from last frame
 #pragma region
@@ -198,23 +198,9 @@ int System::Update(float deltaTime)
 			//Frustrum cull
 
 			DebugHandler::instance()->StartTimer(3);
-#pragma omp parallel num_threads(2)
-			{
-				int myThreadID = omp_get_thread_num();
-				int amountOfThreads = omp_get_num_threads();
-				if (myThreadID == 0)
-				{
-					//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
-					this->m_graphicsHandler->FrustrumCullOctreeLeft();
-				}
-				else if (myThreadID == 1)
-				{
-					//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
-					this->m_graphicsHandler->FrustrumCullOctreeRight();
-				}
-
-			}
-			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
+			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+			
 			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);
 
@@ -267,13 +253,20 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
 		}
+		else if (myThreadID == 2)
+		{
+#pragma region
+			//AI
+			this->m_AIHandler.Update(deltaTime);
+
+			this->m_AnimationHandler->Update(deltaTime);
+#pragma endregion AI And Animation
+		}
 
 	}
 	//Part of this will sync physics data with graphics data. Future improvement would be to have another step doing this and placing logic in the parallel part
 	//Sync data between the physics and graphics
 #pragma region
-	//AI
-	this->m_AIHandler.Update(deltaTime);
 
 #ifdef DEVELOPMENTFUNCTIONS
 	//Save progress
@@ -316,7 +309,8 @@ int System::Update(float deltaTime)
 #endif // DEVELOPMENTFUNCTIONS
 
 
-	this->m_AnimationHandler->Update(deltaTime);
+	//this->m_AIHandler.Update(deltaTime);
+	//this->m_AnimationHandler->Update(deltaTime);
 
 	DebugHandler::instance()->StartTimer(0);
 

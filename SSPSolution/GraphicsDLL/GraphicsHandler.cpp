@@ -1179,27 +1179,49 @@ int GraphicsHandler::FrustrumCullOctreeRight()
 	return result;
 }
 
+int GraphicsHandler::FrustrumCullOctreeNodeThreaded(int threadCount)
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+#pragma omp parallel num_threads(threadCount)
+	{
+		int i;
+#pragma omp for private(i)
+		for (i = 0; i < MAX_BRANCHES; i++)
+		{
+			if (this->m_octreeRoot.branches[i] != nullptr)
+			{
+				this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			}
+		}
+	}
+
+	int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		//this->m_octreeRoot.containedComponents[i]->isRendered = true;
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}
+	return result;
+}
 int GraphicsHandler::FrustrumCullOctreeNode()
 {
 	int result = 0;
 	enum {MAX_BRANCHES = 8};
 	Camera::ViewFrustrum currentFrustrum;
 	this->m_camera->GetViewFrustrum(currentFrustrum);
-//#pragma omp parallel num_threads(2)
-//	{
-//		int myThreadID = omp_get_thread_num();
-//		int amountOfThreads = omp_get_num_threads();
-//		//printf("%d", myThreadID);
-//		printf("My ID: %d out of%d\n", myThreadID, amountOfThreads);
-//#pragma omp for
-		/*for (int i = 0; i < MAX_BRANCHES; i++)
+	for (int i = 0; i < MAX_BRANCHES; i++)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
 		{
-			if (this->m_octreeRoot.branches[i] != nullptr)
-			{
-				this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
-			}
-		}*/
-	//}
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
 
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
