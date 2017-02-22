@@ -221,115 +221,39 @@ float VecToDepth(float3 vec)
 
     //float NormZComp = (f + n) / (f - n) - (2 * f * n) / (f - n) / LocalZcomp;
 
-    float NormZComp = -(f / (n - f) - (n * f) / (n - f) / LocalZcomp);
+    float NormZComp = -(f / (n - f) - (n * f) / (n - f) / LocalZcomp); //because this isnt opengl
 
     return NormZComp;
 }
 
 float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, int shadowMapIndex)
 {
+    static const float3 gCubeSampleOffset[8] =
+    {
+        { 0.875f, -0.375f, -0.125f },
+        { 0.625f, 0.625f, -0.625f },
+        { 0.375f, 0.125f, -0.875f },
+        { 0.125f, -0.875f, 0.125f },
+        { 0.125f, 0.875f, 0.375f },
+        { 0.375f, -0.625f, 0.625f },
+        { 0.625f, -0.125f, 0.875f },
+        { 0.875f, 0.375f, -0.375f }
+    };
 
-	//shadowmap stuff
-    float shadowSamples = 0.0f;
-
-    float4 shadowSample = float4(1, 1, 1, 1);
-    float tempCooef = 0;
-    float SMAP_SIZE = 1024.0f;
-	
-    float bias;
-    float dx = 1.0f / SMAP_SIZE;
-
-    float2 projectTexCoord;
-    float depthValue;
-    float lightDepthValue;
-    float lightIntensity;
-    float4 lightPos;
-		//worldPos.xyz = worldPos.xyz / worldPos.w;
-
-
-		//lightPos = mul(worldPos, lightView);
-		//lightPos = mul(lightPos, lightProj);
-
-		//projectTexCoord.x = lightPos.x / lightPos.w;
-		//projectTexCoord.y = lightPos.y / lightPos.w;
-
-		//lightDepthValue = lightPos.z / lightPos.w;
-
-		//projectTexCoord.x = projectTexCoord.x * 0.5f + 0.5f;
-		//projectTexCoord.y = projectTexCoord.y * -0.5f + 0.5f;
-		//
-
-		//depthValue = shadowTex.Sample(linearSampler, float3(projectTexCoord.xy, shadowMapIndex)).r + bias;
-
-		////float tempSample = shadowTex.Sample(samplerTypeState, float3(projectTexCoord, i)).r
-
-		//float s0 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
-		//float s1 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(dx, 0.0f, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
-		//float s2 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(0.0f, dx, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
-		//float s3 = (shadowTex.Sample(linearSampler, float3(projectTexCoord, shadowMapIndex) + float3(dx, dx, 0.0f)).r + bias < lightDepthValue) ? 0.0f : 1.0f;
-
-		//float2 texelpos = projectTexCoord * SMAP_SIZE;
-		//float2 lerps = frac(texelpos);
-		//float shadowcooef = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
-
-    //projection fp np , 1.0000556, -0.00050002779
-    float linearPlaneConst = 1 / ( 9.000 - 0.0005);
-
-    lightView._44_34_24_14.xyz = pointlights[SHADOWLIGHT_INDEX].position.xyz;
-
-    float3 lightPosW = pointlights[SHADOWLIGHT_INDEX].position.xyz;
-    float4 posLightH = mul(float4(worldPos.xyz, 1.0f), lightView);
-    float4 posLightP = mul(posLightH, lightProj);
-    posLightP /= posLightP.w;
-    posLightP = normalize(posLightP);
-
-
-    float3 temp = normalize((worldPos.xyz) - pointlights[SHADOWLIGHT_INDEX].position.xyz);
-    //temp /= worldPos.w;
-
-    float3 pixToLight = worldPos.xyz - lightPosW.xyz;
-
-    //float3 shadowUV = mul(temp, lightProj).xyz;
-    //float currentDepth = length(pixToLight); // * linearPlaneConst;
-
-    //float lDepth = VecToDepth(pixToLight);
-    float closestDepth = shadowTex.Sample(linearSampler, pixToLight);
-
+    float shadowFactor = 0.0f;
     
-    //posLightH.xy /= posLightH.w;
+    float bias = 0.0000018f;
+    float3 pixToLight = worldPos.xyz - pointlights[SHADOWLIGHT_INDEX].position.xyz;
 
-    
-    //posLightH.z / posLightH.w;
-
-    bias = 0.00001f;
-
-
-    shadowSamples = closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.5f;
-
-    float shadowFactor = shadowSamples; // division by 16.0f;    //0.125f;//division by 8      // 
-    return shadowFactor;
+    [unroll]
+    for (int i = 0; i < 8; i++)
+    {
+        float closestDepth = shadowTex.Sample(linearSampler, (pixToLight) + (gCubeSampleOffset[i] * 0.05));
+        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.25f;
+    }
 
 
-
-
-		////////////////BIAS IS HERE
-
-		//16 samples == -2 till 2
-		//8 samples == -1 till 1
-		//[unroll]
-  //  for (int k = -2; k < 2; k++)
-		//	[unroll]
-  //      for (int l = -2; l < 2; l++)
-  //          
-
-
-
-
-    
-		//tempCooef += shadowcooef;
-	
-	//shadowSample = shadowSample * tempCooef;
-	//shadowSample = saturate(shadowSample);
+    return min(shadowFactor, 1.0);
 }
 
 float4 PS_main(VS_OUT input) : SV_Target
