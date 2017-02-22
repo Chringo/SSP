@@ -1760,9 +1760,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		{
 			this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		}
-		float rightfootVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->rightLeg.next2->PC_velocity));
+		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
-		if (ballVel > 10.0)
+		if (ballVel > 10.0 && upperBodyVel > 5.0f)
 		{
 			ragdoll->state = RAGDOLL_TRANSITION;
 
