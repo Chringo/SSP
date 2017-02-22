@@ -35,6 +35,10 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
+		/*Go to the next component if the source state at the current frame is a nullptr.*/
+		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+			continue;
+
 		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE)
 		{
 			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
@@ -97,6 +101,11 @@ void AnimationHandler::Update(float dt)
 				else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 					|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 				{
+					/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+					if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+						|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+						continue;
+
 					/*Transition is complete. Swap the animations and remove the old animation.*/
 					if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 					{
