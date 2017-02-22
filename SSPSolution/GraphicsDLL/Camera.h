@@ -186,6 +186,8 @@ public:
 	GRAPHICSDLL_API void IncreaseDistance(float amount);
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
+	GRAPHICSDLL_API bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	
 #pragma endregion setters
 private:
 	DirectX::XMVECTOR Conjugate(DirectX::XMVECTOR quat);
@@ -194,7 +196,6 @@ private:
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
 	void m_calcDistance();
-	bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 	std::vector<C_OBB> m_intersectionOBBs;
 };
 

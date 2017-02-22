@@ -1919,9 +1919,9 @@ inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Conv
 	return obj;
 }
 
-float GraphicsHandler::Ping_GetDistanceToClosestOBB()
+float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 {
-	float closestDist = 100;
+	float closestDist = maxDistance;
 	std::vector<Camera::C_OBB> OBBs;
 
 	//Cast a ray that sets hited OctreeBV isInPingRay to true
