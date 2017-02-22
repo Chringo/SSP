@@ -12,7 +12,7 @@
 #include "UIHandler.h"
 #include "LightHandler.h"
 #include <algorithm>
-
+#include <omp.h>
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else

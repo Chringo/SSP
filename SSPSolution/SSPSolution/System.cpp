@@ -177,7 +177,7 @@ int System::Update(float deltaTime)
 #pragma omp parallel num_threads(2)
 	{
 		int myThreadID = omp_get_thread_num();
-		int amountOfThreads = omp_get_num_threads();
+		//int amountOfThreads = omp_get_num_threads();
 		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
 		if (myThreadID == 0)
 		{

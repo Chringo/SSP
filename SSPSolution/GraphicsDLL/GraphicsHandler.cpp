@@ -1137,14 +1137,22 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 	enum {MAX_BRANCHES = 8};
 	Camera::ViewFrustrum currentFrustrum;
 	this->m_camera->GetViewFrustrum(currentFrustrum);
-	for (int i = 0; i < MAX_BRANCHES; i++)
-	{
-		if (this->m_octreeRoot.branches[i] != nullptr)
+//#pragma omp parallel num_threads(2)
+//	{
+//		int myThreadID = omp_get_thread_num();
+//		int amountOfThreads = omp_get_num_threads();
+//		//printf("%d", myThreadID);
+//		printf("My ID: %d out of%d\n", myThreadID, amountOfThreads);
+//#pragma omp for
+		for (int i = 0; i < MAX_BRANCHES; i++)
 		{
-			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			if (this->m_octreeRoot.branches[i] != nullptr)
+			{
+				this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			}
 		}
-	}
-	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
+	//}
+
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
