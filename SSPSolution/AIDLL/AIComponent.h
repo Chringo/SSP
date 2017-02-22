@@ -34,6 +34,7 @@ __declspec(align(16)) struct AIComponent
 	bool AC_finished = false;	// Triggered by One Way pattern when reaching final destination
 
 	// Round trip
+	bool AC_increasing = false;
 	bool AC_reset = false;
 	bool AC_changedDirection = false;
 
