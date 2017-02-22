@@ -282,9 +282,6 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	 {
 
 		 m_shadowCb.cView[i] = DirectX::XMMatrixLookAtLH(light->position, targets[i], ups[i]);
-		
-
-
 	 }
 
 	 ConstantBufferHandler::GetInstance()->shadow.UpdateBuffer(&m_shadowCb);

@@ -138,7 +138,6 @@ float V_SmithGGXCorrelated(float NdotL, float NdotV, float alphaG)
     return 0.5f / (Lambda_GGXV + Lambda_GGXL);
 }
 
-
 float GGX(float NdotH, float m)
 {
     //divide by PI happens later
@@ -296,6 +295,12 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
+    float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
+
+    float3 shadowUV = normalize(pointlights[SHADOWLIGHT_INDEX].position.xyz - wPosSamp.xyz);
+    
+    float4 shadowSample = shadowTex.Sample(linearSampler, shadowUV);
+    return shadowSample;
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
     uint lightCount = NUM_POINTLIGHTS;
@@ -311,7 +316,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
-    float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
+    //float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
     float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
     float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
@@ -366,7 +371,7 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             if (i == 0)
             {
-                shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
+               // shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix, ShadowProjectionMatrix, 0);
                 lightPower *= shadowFactor;
 
             }

@@ -538,7 +538,8 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	ShadowTexDesc.MipLevels			= 1;
 	ShadowTexDesc.ArraySize			= 6;	//one for each axis
 	ShadowTexDesc.Format			= DXGI_FORMAT_R32_TYPELESS;
-	ShadowTexDesc.SampleDesc.Count  = 1;
+	ShadowTexDesc.SampleDesc.Count   = 1;
+	ShadowTexDesc.SampleDesc.Quality = 0;
 	ShadowTexDesc.Usage				= D3D11_USAGE_DEFAULT;
 	ShadowTexDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	ShadowTexDesc.CPUAccessFlags	= 0;
