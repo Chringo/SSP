@@ -1955,5 +1955,30 @@ float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 		}
 	}
 
-	return closestDist;
+	//Check distance to all marked OBBs
+	const float EPSILON = 1e-5f;
+	float targetDistance = maxDistance;	//Max distance?
+	float intersectDistance = maxDistance + 0.3f;	//Closest distance?
+	float hitDistance = maxDistance;	//Current hit distance
+
+	for (Camera::C_OBB i : OBBs)
+	{
+		OBB obb;
+		obb.ext[0] = i.ext.x;
+		obb.ext[1] = i.ext.y;
+		obb.ext[2] = i.ext.z;
+
+		obb.ort = DirectX::XMLoadFloat4x4(&i.ort);
+
+		if (this->m_camera->m_IntersectRayOBB(this->m_camera->GetMaxDistanceCamPos(), this->m_camera->GetDirection(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		{
+			if (hitDistance < intersectDistance && fabs(hitDistance - targetDistance) > EPSILON)
+			{
+				intersectDistance = hitDistance;
+			}
+		}
+	}
+
+
+	return intersectDistance;
 }
