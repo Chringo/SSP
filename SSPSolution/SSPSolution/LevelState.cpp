@@ -178,8 +178,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
 	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2 + 2);	//+2 for 
+	
 	// creating the player
-
 	this->m_cHandler->ResizeGraphicsPersistent(2 + CHAIN_SEGMENTS * 2);
 	// creating the player
 	//Player1
@@ -860,6 +860,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Aiming
 
 #pragma region
+
+	this->m_pingPacketList = this->m_networkModule->PacketBuffer_GetPingPacket();
+
+	//Check for updates
+	if (this->m_pingPacketList.size() != 0)
+	{
+		std::list<PingPacket>::iterator itr;
+
+		for (itr = this->m_pingPacketList.begin(); itr != this->m_pingPacketList.end(); itr++)
+		{
+			this->m_player2_Ping.SetPos(DirectX::XMLoadFloat3(&itr->newPos));
+			this->m_player2_Ping.m_gComp->active = true;
+			this->m_player2_Ping.m_time = 0;
+		}
+
+		this->m_pingPacketList.empty();
+	}
+
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	{
 		float distance = this->m_cHandler->GetGraphicsHandler()->Ping_GetDistanceToClosestOBB(PING_DISTANCE);
@@ -873,9 +891,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(camPos, scaledDir);
 
-			this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);	//Set the pos for the ping
+			this->m_player1_Ping.SetPos(newPos);;	//Set the pos for the ping
 			this->m_player1_Ping.m_gComp->active = true;
 			this->m_player1_Ping.m_time = 0;
+
+			this->m_networkModule->SendPingPacket(this->m_player1_Ping.m_pos);
 		}
 	}
 

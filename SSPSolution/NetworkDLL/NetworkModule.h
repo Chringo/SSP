@@ -54,6 +54,7 @@ private:
 	std::list<SyncPhysicPacket>		packet_Buffer_Physic;
 	std::list<GrabPacket>			packet_Buffer_Grabbed;
 	std::list<Packet>				packet_Buffer_Messages;
+	std::list<PingPacket>			packet_Buffer_Ping;
 
 	// Help functions
 	int		ReceiveData(unsigned int client_id, char * recvbuf);	// Recive the binary data and stores it into recvbuf
@@ -92,6 +93,7 @@ public:
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);
 	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID);
 	NETWORKDLL_API void SendGrabPacket(unsigned int entityID, unsigned int grabbedID);
+	NETWORKDLL_API void SendPingPacket(DirectX::XMFLOAT3 pos);
 
 	// Mutex functions
 	NETWORKDLL_API bool PacketBuffer_isLocked();
@@ -107,6 +109,8 @@ public:
 	NETWORKDLL_API std::list<SyncPhysicPacket>		PacketBuffer_GetPhysicPacket();			//Get all packets in packet_Buffer_Physic
 	NETWORKDLL_API std::list<GrabPacket>			PacketBuffer_GetGrabPacket();			//Get all packets in packet_Buffer_Grabbed
 	NETWORKDLL_API std::list<Packet>				PacketBuffer_GetResetPacket();			//Get all packets in packet_Buffer_Grabbed
+	NETWORKDLL_API std::list<PingPacket>			PacketBuffer_GetPingPacket();			//Get all packets in packet_Buffer_Grabbed
+
 };
 
 

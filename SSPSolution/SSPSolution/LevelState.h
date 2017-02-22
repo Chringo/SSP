@@ -43,6 +43,11 @@ private:
 		float m_time = 0;
 		float m_maxTime = 5;
 
+		void SetPos(DirectX::XMVECTOR newPos)
+		{
+			DirectX::XMStoreFloat3(&this->m_pos, newPos);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+		}
 		void Update(float dt)
 		{
 			if (this->m_gComp->active)
@@ -86,7 +91,8 @@ private:
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
-	
+	std::list<PingPacket> m_pingPacketList;	//List with all Ping updates from the network
+
 	Entity* GetClosestBall(float minDist);
 
 	int m_curLevel;
