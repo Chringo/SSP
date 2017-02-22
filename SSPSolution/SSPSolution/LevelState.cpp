@@ -732,6 +732,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
 		}
+		if (this->m_player1.GetRagdoll()->state == RAGDOLL)
+		{
+			if(this->m_player1.GetGrabbed() != nullptr)
+			{
+				this->m_player1.SetGrabbed(nullptr);
+				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+			}
+		}
 	#pragma endregion Grab/Release
 
 	#pragma region
