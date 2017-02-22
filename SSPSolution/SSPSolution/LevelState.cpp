@@ -900,6 +900,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	this->m_player1_Ping.Update(dt);
+	this->m_player2_Ping.Update(dt);
 #pragma endregion Ping
 
 	#pragma region
