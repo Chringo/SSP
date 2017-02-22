@@ -638,6 +638,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
+					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 				}
 				else
 				{
