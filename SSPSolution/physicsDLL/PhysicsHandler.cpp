@@ -1707,7 +1707,7 @@ void PhysicsHandler::Update(float deltaTime)
 	}
 	if (this->m_player2RagDoll.playerPC != nullptr)
 	{
-		this->RagdollLogic(&this->m_player2RagDoll, dt);
+		//this->RagdollLogic(&this->m_player2RagDoll, dt);
 	}
 
 	this->DoChainAjustPhysics(false);
@@ -1727,7 +1727,7 @@ void PhysicsHandler::Update(float deltaTime)
 	{
 		if (this->m_player2RagDoll.playerPC != nullptr)
 		{
-			this->SyncRagdollWithSkelton(&this->m_player2RagDoll);
+			//this->SyncRagdollWithSkelton(&this->m_player2RagDoll);
 		}
 	}
 	//if (this->m_player1RagDoll.state == RAGDOLL)
