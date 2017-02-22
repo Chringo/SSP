@@ -360,6 +360,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				this->m_pComp->PC_velocity = velocity;
 				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
+				this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
 				
 				/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
 				DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
