@@ -3,7 +3,6 @@
 Shader::Shader()
 {
 
-	
 }
 
 
