@@ -196,7 +196,24 @@ int System::Update(float deltaTime)
 #pragma region
 			//Render
 			//Frustrum cull
+
 			DebugHandler::instance()->StartTimer(3);
+#pragma omp parallel num_threads(2)
+			{
+				int myThreadID = omp_get_thread_num();
+				int amountOfThreads = omp_get_num_threads();
+				if (myThreadID == 0)
+				{
+					//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
+					this->m_graphicsHandler->FrustrumCullOctreeLeft();
+				}
+				else if (myThreadID == 1)
+				{
+					//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
+					this->m_graphicsHandler->FrustrumCullOctreeRight();
+				}
+
+			}
 			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
 			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);

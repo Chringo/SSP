@@ -234,6 +234,8 @@ public:
 	//Culling functions
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
 	GRAPHICSDLL_API int GenerateOctree();
+	GRAPHICSDLL_API int FrustrumCullOctreeLeft();
+	GRAPHICSDLL_API int FrustrumCullOctreeRight();
 	GRAPHICSDLL_API int FrustrumCullOctreeNode();
 	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
 	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
