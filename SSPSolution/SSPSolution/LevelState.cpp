@@ -862,8 +862,24 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
 	{
+		float distance = this->m_cHandler->GetGraphicsHandler()->Ping_GetDistanceToClosestOBB(PING_DISTANCE);
+		
+		if (distance < PING_DISTANCE)
+		{
+			//Calculate the point using the camera dir vector
+			DirectX::XMVECTOR dir = this->m_cameraRef->GetDirection();
+			DirectX::XMVECTOR scaledDir = DirectX::XMVectorScale(dir, distance);
+			DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos());
 
+			DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(camPos, scaledDir);
+
+			this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);	//Set the pos for the ping
+			this->m_player1_Ping.m_gComp->active = true;
+			this->m_player1_Ping.m_time = 0;
+		}
 	}
+
+	this->m_player1_Ping.Update(dt);
 #pragma endregion Ping
 
 	#pragma region

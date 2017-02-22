@@ -752,7 +752,7 @@ int GraphicsHandler::Render(float deltaTime)
 	context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
 
-	this->RenderOctree(&this->m_octreeRoot, &renderTest);
+	//this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
@@ -1921,7 +1921,6 @@ inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Conv
 
 float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 {
-	float closestDist = maxDistance;
 	std::vector<Camera::C_OBB> OBBs;
 
 	//Cast a ray that sets hited OctreeBV isInPingRay to true
@@ -1957,8 +1956,8 @@ float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 
 	//Check distance to all marked OBBs
 	const float EPSILON = 1e-5f;
-	float targetDistance = maxDistance;	//Max distance?
-	float intersectDistance = maxDistance + 0.3f;	//Closest distance?
+	float targetDistance = maxDistance;	//Max distance
+	float intersectDistance = maxDistance + 0.3f;	//Closest distance
 	float hitDistance = maxDistance;	//Current hit distance
 
 	for (Camera::C_OBB i : OBBs)
