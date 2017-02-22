@@ -37,7 +37,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_controlsOverlay = cHandler->GetUIComponent();
 	this->m_controlsOverlay->active = 0;
 	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
-	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->spriteID = Textures::Keymaps;
 	this->m_controlsOverlay->scale = .6f;
 
 	return result;

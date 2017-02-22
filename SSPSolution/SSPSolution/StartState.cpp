@@ -33,7 +33,7 @@ int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, 
 
 	this->m_gamelogoUIComp = cHandler->GetUIComponent();
 	this->m_gamelogoUIComp->active = 1;
-	this->m_gamelogoUIComp->spriteID = 2;
+	this->m_gamelogoUIComp->spriteID = Textures::Gamelogo;
 	this->m_gamelogoUIComp->position = DirectX::XMFLOAT2(115.f, 0.f);
 	this->m_gamelogoUIComp->size = DirectX::XMFLOAT2(800.f, 400.f);
 

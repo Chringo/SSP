@@ -29,7 +29,12 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	
-	this->m_textures.reserve(7);
+	this->m_nrOfTextures = 7;
+	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
+	{
+		ID3D11ShaderResourceView* newTexture = nullptr;
+		this->m_textures.push_back(newTexture);
+	}
 
 	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_textures.at(0));
 	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_textures.at(1));
@@ -56,7 +61,7 @@ void UIHandler::DrawUI()
 			}
 			else
 			{
-
+				this->m_spriteBatch->Draw(this->m_textures.at(0), tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
 			}
 		}
 	}
@@ -94,8 +99,11 @@ void UIHandler::Shutdown()
 	}
 	for (ID3D11ShaderResourceView* text : this->m_textures)
 	{
-		text->Release();
-		text = nullptr;
+		if (text != nullptr)
+		{
+			text->Release();
+			text = nullptr;
+		}
 	}
 }
 

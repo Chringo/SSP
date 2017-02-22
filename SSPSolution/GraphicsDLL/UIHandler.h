@@ -7,6 +7,17 @@
 #include "SpriteFont.h"
 #include "WICTextureLoader.h"
 
+enum Textures
+{
+	Cat = 0,
+	Gamelogo = 1,
+	Keymaps = 2,
+	MenuBG = 3,
+	Button = 4,
+	Crosshair = 5,
+	CrosshairAim = 6
+};
+
 class UIHandler
 {
 
@@ -20,6 +31,7 @@ private:
 	DirectX::SpriteBatch* m_spriteBatch;
 	DirectX::SpriteFont* m_spriteFont;
 	std::vector<ID3D11ShaderResourceView*> m_textures;
+	size_t m_nrOfTextures;
 
 public:
 	UIHandler();
