@@ -254,6 +254,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         float lightPower = 0;
 
         lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+        lightPower *= (AOSamp);
         lightPower *= pointlights[i].intensity; 
         if (lightPower > 0.0f)
         {
@@ -296,7 +297,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
     finalColor.rgb += ambient;
-    finalColor.rgb *= AOSamp;
+    //finalColor.rgb *= AOSamp;
 
     
     return saturate(finalColor);
