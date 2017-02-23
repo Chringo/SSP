@@ -172,6 +172,11 @@ int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
 	return size;
 }
 
+int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
+{
+	return this->m_graphicsHandler->RemoveUIComponentFromPtr(ptr);
+}
+
 void ComponentHandler::WaypointTime()
 {
 	m_aiHandler->WaypointTime();

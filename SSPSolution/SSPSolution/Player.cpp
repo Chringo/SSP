@@ -577,3 +577,8 @@ float Player::TimeSinceThrow()
 {
 	return this->m_timeSinceThrow;
 }
+
+void Player::Shutdown(ComponentHandler* cHandler)
+{
+	cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+}

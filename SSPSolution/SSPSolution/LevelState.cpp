@@ -171,6 +171,9 @@ int LevelState::ShutDown()
 	this->m_cHandler->GetPhysicsHandler()->ShutDown();
 	this->m_cHandler->GetPhysicsHandler()->Initialize();
 
+	this->m_player1.Shutdown(this->m_cHandler);
+	this->m_player2.Shutdown(this->m_cHandler);
+
 	return result;
 }
 

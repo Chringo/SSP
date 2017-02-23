@@ -43,6 +43,7 @@ public:
 	int ResizeGraphicsStatic(size_t newCap);
 	int ResizeGraphicsDynamic(size_t newCap);
 	int ResizeGraphicsPersistent(size_t newCap);
+	int RemoveUIComponentFromPtr(UIComponent* ptr);
 
 	void WaypointTime();
 

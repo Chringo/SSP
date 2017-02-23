@@ -1508,6 +1508,11 @@ void GraphicsHandler::UpdateUIComponents(DirectX::XMFLOAT2 mousePos)
 	this->m_uiHandler->UpdateUIComponentsclicked(mousePos);
 }
 
+int GraphicsHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
+{
+	return this->m_uiHandler->RemoveUIComponent(ptr);
+}
+
 TextComponent * GraphicsHandler::GetNextAvailableTextComponent()
 {
 	return this->m_uiHandler->GetNextTextComponent();

@@ -60,6 +60,8 @@ public:
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 	float TimeSinceThrow();
 
+	void Shutdown(ComponentHandler* cHandler);
+
 private:
 
 };

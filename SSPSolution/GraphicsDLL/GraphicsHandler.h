@@ -218,6 +218,7 @@ public:
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
+	GRAPHICSDLL_API int RemoveUIComponentFromPtr(UIComponent* ptr);
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
 	
