@@ -648,6 +648,13 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				}
 				else
 				{
+					if (this->m_player2.GetRagdoll()->state == RAGDOLL)
+					{
+
+						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
+						this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);
+						this->m_player2.GetAnimationComponent()->previousState = PLAYER_IDLE;
+					}
 					this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
