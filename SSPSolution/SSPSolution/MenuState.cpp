@@ -622,13 +622,44 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 int MenuState::EnterState()
 {
-	//Show buttons
-	size_t nrOfStartMenuitems = this->m_startMenuButtons.size();
-	for (size_t i = 0; i < nrOfStartMenuitems; i++)
+	size_t nrOfMenuitems;
+	switch(this->m_menuState)
 	{
-		this->m_startMenuButtons[i].SetActive(true);
+	case 0: /*/ Main menu /*/
+		//Show buttons
+		nrOfMenuitems = this->m_mainMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_mainMenuButtons[i].SetActive(true);
+		}
+
+		break;
+
+	case 1: /*/ Options menu /*/
+		//Show buttons
+		nrOfMenuitems = this->m_optionsMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_optionsMenuButtons[i].SetActive(true);
+		}
+
+		break;
+
+	case 2: /*/ Start game menu /*/
+
+		//Show buttons
+		nrOfMenuitems = this->m_startMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_startMenuButtons[i].SetActive(true);
+		}
+		this->m_ipTextBox.SetActive(true);
+		
+		break;
+	default:
+		break;
 	}
-	this->m_ipTextBox.SetActive(true);
+	
 	this->m_menuBG->active = 1;
 
 	this->isHosting = false;

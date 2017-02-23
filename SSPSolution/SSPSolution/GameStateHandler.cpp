@@ -159,6 +159,7 @@ int GameStateHandler::PushStateToStack(GameState * state)
 
 	this->m_stateStack.back()->LeaveState();
 	this->m_stateStack.push_back(state);
+	this->m_stateStack.back()->EnterState();
 
 	return 1;
 }
@@ -167,7 +168,9 @@ GameState * GameStateHandler::PopStateFromStack()
 {
 	GameState* result = nullptr;
 
+	this->m_stateStack.back()->LeaveState();
 	result = this->m_stateStack.back();
+
 	this->m_stateStack.pop_back();
 
 	//Check if it wants to be manually managed after popping
