@@ -1029,23 +1029,34 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
 	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-	if (this->m_player1.isAnimationChanged() || ap->previousState == RAGDOLL_STATE)
+	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 	{
-		
-		if (ap->previousState == RAGDOLL_STATE)
-		{
-			GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
+		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
 
-			for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
-			{
-				//Send a packet for E V E R Y joint
-				this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
-			}
-		}
-		else
+		for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
 		{
-			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+			//Send a packet for E V E R Y joint
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
 		}
+	}
+	else if (this->m_player1.isAnimationChanged())
+	{
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+
+		//if (ap->previousState == RAGDOLL_STATE)
+		//{
+		//	GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
+
+		//	for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
+		//	{
+		//		//Send a packet for E V E R Y joint
+		//		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
+		//	}
+		//}
+		//else
+		//{
+		//	
+		//}
 
 	}
 
