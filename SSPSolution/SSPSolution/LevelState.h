@@ -129,6 +129,8 @@ private:
 
 	void SendSyncForJoin();
 
+	UIComponent* m_controlsOverlay;
+
 public:
 	LevelState();
 	virtual ~LevelState();

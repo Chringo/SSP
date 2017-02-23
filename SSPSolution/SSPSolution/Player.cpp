@@ -21,7 +21,7 @@ Player::~Player()
 	}
 }
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, ComponentHandler* cHandler)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
 	int result = 0;
 
@@ -32,13 +32,6 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
-
-	//Controls overlay
-	this->m_controlsOverlay = cHandler->GetUIComponent();
-	this->m_controlsOverlay->active = 0;
-	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
-	this->m_controlsOverlay->spriteID = 3;
-	this->m_controlsOverlay->scale = .6f;
 
 	return result;
 }
@@ -404,16 +397,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 	}
 
-	//Controls overlay
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
-	{
-		this->m_controlsOverlay->active = 1;
-	}
-	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
-	{
-		this->m_controlsOverlay->active = 0;
-	}
-
 	//End the update
 	return result;
 }
@@ -576,9 +559,4 @@ bool Player::isAnimationChanged()
 float Player::TimeSinceThrow()
 {
 	return this->m_timeSinceThrow;
-}
-
-void Player::Shutdown(ComponentHandler* cHandler)
-{
-	cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
 }
