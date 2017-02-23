@@ -176,8 +176,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
+	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
 
-	this->m_cHandler->ResizeGraphicsPersistent(2 + CHAIN_SEGMENTS * 2);
+	this->m_cHandler->ResizeGraphicsPersistent(2 + 2);	//"2 balls + 2 PingObjects
+
 	// creating the player
 	//Player1
 #pragma region
@@ -441,6 +443,28 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 //	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 //#pragma endregion Create_Chain_Link
+
+	#pragma region
+	this->m_player1_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
+	this->m_player1_Ping.m_gComp->modelID = 2539810394;
+	this->m_player1_Ping.m_gComp->active = true;
+	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
+	resHandler->GetModel(this->m_player1_Ping.m_gComp->modelID, this->m_player1_Ping.m_gComp->modelPtr);
+	this->m_player1_Ping.m_pos = { 0, 0, 0 };
+
+	this->m_player2_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
+	this->m_player2_Ping.m_gComp->modelID = 2539810394;
+	this->m_player2_Ping.m_gComp->active = true;
+	this->m_player1_Ping.m_gComp->worldMatrix = DirectX::XMMatrixIdentity();
+	resHandler->GetModel(this->m_player2_Ping.m_gComp->modelID, this->m_player2_Ping.m_gComp->modelPtr);
+	this->m_player2_Ping.m_pos = { 0, 0, 0 };
+
+	//Set them to inactive in the begining
+	this->m_player1_Ping.m_gComp->active = false;
+	this->m_player2_Ping.m_gComp->active = false;
+
+
+	#pragma endregion PingModels
 
 	this->m_director.Initialize();
 
@@ -845,6 +869,53 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	#pragma endregion Aiming
 
+#pragma region
+
+	this->m_pingPacketList = this->m_networkModule->PacketBuffer_GetPingPacket();
+
+	//Check for updates
+	if (this->m_pingPacketList.size() != 0)
+	{
+		std::list<PingPacket>::iterator itr;
+
+		for (itr = this->m_pingPacketList.begin(); itr != this->m_pingPacketList.end(); itr++)
+		{
+			this->m_player2_Ping.SetPos(DirectX::XMLoadFloat3(&itr->newPos));
+			this->m_player2_Ping.m_gComp->active = true;
+			this->m_player2_Ping.m_time = 0;
+			SoundHandler::instance().PlaySound3D(Sounds3D::PING_EFFECT_SOUND, this->m_player2_Ping.m_pos, false, false);
+		}
+
+		this->m_pingPacketList.empty();
+	}
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_T))
+	{
+		float distance = this->m_cHandler->GetGraphicsHandler()->Ping_GetDistanceToClosestOBB(PING_DISTANCE);
+		
+		if (distance < PING_DISTANCE)
+		{
+			//Calculate the point using the camera dir vector
+			DirectX::XMVECTOR dir = this->m_cameraRef->GetDirection();
+			DirectX::XMVECTOR scaledDir = DirectX::XMVectorScale(dir, distance-1);	//-1 to get abit of distance from what we are hiting
+			DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_cameraRef->GetCameraPos());
+
+			DirectX::XMVECTOR newPos = DirectX::XMVectorAdd(camPos, scaledDir);
+
+			this->m_player1_Ping.SetPos(newPos);;	//Set the pos for the ping
+			this->m_player1_Ping.m_gComp->active = true;
+			this->m_player1_Ping.m_time = 0;
+
+			this->m_networkModule->SendPingPacket(this->m_player1_Ping.m_pos);
+
+			SoundHandler::instance().PlaySound3D(Sounds3D::PING_EFFECT_SOUND, this->m_player1_Ping.m_pos, false, false);
+		}
+	}
+
+	this->m_player1_Ping.Update(dt);
+	this->m_player2_Ping.Update(dt);
+#pragma endregion Ping
+
 	#pragma region
 
 		if (this->m_networkModule->GetNrOfConnectedClients() != 0)	//There is connected players
@@ -998,16 +1069,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	}
 #pragma endregion Puzzle elements synchronization 
-	//Lock the camera to the player
 
+#pragma region
 	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
 	{
 		this->m_platformEntities[i]->Update(dt, inputHandler);
 	}
-	
+#pragma endregion Platforms
+
 	#pragma endregion Update_Puzzle_Elements
 
-#pragma region
+	#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
 	if (this->m_player1.isAnimationChanged())
 	{
@@ -1092,6 +1164,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 #pragma endregion Reset KEY
 	
+
 #ifdef DEVELOPMENTFUNCTIONS
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
