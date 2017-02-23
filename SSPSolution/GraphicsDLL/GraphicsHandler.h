@@ -242,6 +242,9 @@ public:
 	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
 
 
+	GRAPHICSDLL_API int GenerateStaticSceneShadows();
+
+
 	//TEMP STUFF
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);

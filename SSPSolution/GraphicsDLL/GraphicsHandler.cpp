@@ -1318,6 +1318,33 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	return  result;
 }
 
+ int GraphicsHandler::GenerateStaticSceneShadows()
+{
+	 //For each light
+
+		// Set the light as active for shadow rendering
+		
+		// Render the static objects in the scene
+
+		// Save the textures to the light, (or to file)
+	 
+	//
+
+	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
+
+	lights->ReleaseShadowMaps(); //release the textures if there are any
+
+	lights->shadowMaps.reserve(lights->numItems); //allocate memory for the textures
+	
+	for (size_t i = 0; i < lights->numItems; i++)
+	{
+		m_LightHandler->SetLightData
+	}
+
+
+	 return  1;
+}
+
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
 	if (this->m_maxGraphicsComponents < newSize)

@@ -47,12 +47,29 @@ namespace LIGHTING
 			AREALIGHT_BUFFER		 = 8,
 			SPOTLIGHT_BUFFER		 = 9
 		};
+		unsigned int NUM_LIGHTS[NUM_LT] = { 0, 0, 0, 0 };
+		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
+
+	public:
 		struct LightArray {
 			Light* dataPtr = nullptr;
+			std::vector<ID3D11ShaderResourceView*> shadowMaps; //One should be generated for each light on load
 			unsigned int numItems = 0;
+			~LightArray() { //Destructor, 
+				ReleaseShadowMaps(); //Release the TextureBuffers
+			}
+			void ReleaseShadowMaps() {
+				for (size_t i = 0; i < shadowMaps.size(); i++)
+				{
+					if (shadowMaps[i] != nullptr)
+					{
+						shadowMaps[i]->Release();
+						shadowMaps[i] = nullptr;
+					}
+				}
+			}
 		};
-		unsigned int NUM_LIGHTS[NUM_LT]	   = { 0, 0, 0, 0};
-		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
+		
 	private:
 		LightHandler();
 		~LightHandler();
@@ -83,6 +100,7 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
 		GRAPHICSDLL_API bool SetShadowCastingLight(Light* light);
 		GRAPHICSDLL_API bool SetShadowCastingLight(int index);
+		
 
 		//Returns either an index to the internal lightdata or -1 for no lights found
 		GRAPHICSDLL_API int GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos);
