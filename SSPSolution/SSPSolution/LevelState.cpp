@@ -160,14 +160,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
-
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L2P1.level");
-	this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L4P1.level");
-	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L5P1.level");
-	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L6P1.level");
-	//this->m_levelPaths.push_back("../ResourceLib/AssetFiles/L1P2.level");
+	
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 77.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 46.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 46.0f });
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level, 46.0f}");
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L6P1.level, 46.0f}");
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L1P2.level, 46.0f}");
 
 	if (this->m_curLevel > this->m_levelPaths.size())
 	{
@@ -1192,7 +1193,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 int LevelState::CreateLevel(LevelData::Level * data)
 {
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-
+#pragma region
+	this->m_cameraRef->UpdateProjection(this->m_levelPaths[this->m_curLevel].farPlane);
+#pragma endregion Camera projection matrix update
 #pragma region
 	//Get how many static and dynamic components that will be needed in the level
 	int staticEntityCount = 0;
@@ -2419,13 +2422,13 @@ int LevelState::LoadNext()
 	}
 
 	Resources::Status st = Resources::Status::ST_OK;
-	std::string path = this->m_levelPaths.at(this->m_curLevel);
+	std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
 	//We also need to clear the internal lists, lets have another function do that
 	this->UnloadLevel();
 
 	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
-	path = this->m_levelPaths.at(this->m_curLevel);
+	path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
 	//Begin by clearing the current level data by calling UnloadLevel.
 	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
@@ -2484,6 +2487,6 @@ int LevelState::GetLevelIndex()
 
 std::string LevelState::GetLevelPath()
 {
-	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel));
+	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel)).levelPath;
 }
 
