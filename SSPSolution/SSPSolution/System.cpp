@@ -30,6 +30,7 @@ int System::Shutdown()
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
+	delete &Progression::instance();
 	DebugHandler::instance()->Shutdown();
 	
 	return result;
