@@ -50,6 +50,9 @@ public:
 
 	int ClearFrame();
 
+	ID3D11ShaderResourceView* GetShadowSRV()	 { return ((DeferredShader*)m_shaders[DEFERRED])->GetShadowSRV(); };
+	ID3D11Texture2D*          GetShadowTexture() { return ((DeferredShader*)m_shaders[DEFERRED])->GetShadowTexture(); };
+
 };
 
 

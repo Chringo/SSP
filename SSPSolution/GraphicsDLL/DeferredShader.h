@@ -48,8 +48,8 @@ public:
 	ID3D11SamplerState*  m_samplerState;
 
 	ID3D11RenderTargetView*		m_deferredRTV[RTV_COUNT];
-	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT];
-	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT];
+	ID3D11ShaderResourceView*	m_deferredSRV[BUFFER_COUNT]; //Use ShaderLib enum for access
+	ID3D11Texture2D*			m_deferredT2D[BUFFER_COUNT]; //Use ShaderLib enum for access
 
 	ID3D11Texture2D*		 m_depthStencilBuffer;
 	ID3D11DepthStencilView*  m_DSV;
@@ -84,6 +84,9 @@ public:
 	int DrawGrid(Resources::Model * model);
 	int DrawFromEditor(Resources::Model * model1);
 	ID3D11DepthStencilView*  GetDepthStencilView() const { return this->m_DSV; };
+
+	ID3D11ShaderResourceView* GetShadowSRV() { return m_deferredSRV[ShaderLib::Shadow]; };
+	ID3D11Texture2D* GetShadowTexture()      { return m_deferredT2D[ShaderLib::Shadow]; };
 private:
 };
 
