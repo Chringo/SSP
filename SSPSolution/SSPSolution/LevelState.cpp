@@ -151,6 +151,14 @@ int LevelState::ShutDown()
 	// Clear level director
 	this->m_director.Shutdown();
 
+	this->m_cHandler->ResizeGraphicsDynamic(0);
+	this->m_cHandler->ResizeGraphicsStatic(0);
+	this->m_cHandler->ResizeGraphicsPersistent(0);
+
+	//We need to add a function which empties the physics and bullet.
+	this->m_cHandler->GetPhysicsHandler()->ShutDown();
+	this->m_cHandler->GetPhysicsHandler()->Initialize();
+
 	return result;
 }
 
