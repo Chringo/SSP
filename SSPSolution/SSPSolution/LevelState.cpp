@@ -638,9 +638,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				if (itr->newstate == RAGDOLL_STATE)	//If the packet is for a ragdoll state
 				{
 					this->m_player2.GetRagdoll()->state = RAGDOLL;
-
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
-					//AnimationComponent* p = this->m_player2.GetAnimationComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
@@ -1037,12 +1035,12 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
 	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 	{
-		AnimationComponent* gp = this->m_player1.GetAnimationComponent();
+		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
 
-		for (int i = 0; i < gp->skeleton->GetSkeletonData()->jointCount; i++)	//Iterate all joints
+		for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
 		{
 			//Send a packet for E V E R Y joint
-			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0, i, gp->finalJointTransforms[i]);
 		}
 	}
 	else if (this->m_player1.isAnimationChanged())
