@@ -39,8 +39,15 @@ void AnimationHandler::Update(float dt)
 		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
 			continue;
 
-		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE && this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != RAGDOLL_STATE)
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
 		{
+			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
+			{
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				{
+					continue;
+				}
+			}
 			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
 			if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
 				(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
