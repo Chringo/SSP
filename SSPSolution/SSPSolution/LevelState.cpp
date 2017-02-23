@@ -510,6 +510,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 						// Update the component
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						//this->m_player1.GetRagdoll()->upperBody.center->PC_pos = pp->PC_pos;
 						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}

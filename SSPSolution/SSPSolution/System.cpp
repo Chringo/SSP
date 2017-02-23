@@ -296,6 +296,7 @@ int System::Update(float deltaTime)
 		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
 		}
 	ptr = this->m_physicsHandler.GetPlayer2Ragdoll()->playerPC;
+	ptr = this->m_physicsHandler.GetComponentAt(1);
 	if (ptr != nullptr)
 		{
 		OBB* OBB_holder = &ptr->PC_OBB;
