@@ -45,6 +45,7 @@ void AnimationHandler::Update(float dt)
 			{
 				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
 				{
+					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
 					continue;
 				}
 			}
