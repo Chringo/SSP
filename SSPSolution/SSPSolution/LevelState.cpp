@@ -528,13 +528,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp = this->m_player1.GetBall()->GetPhysicsComponent();
 
 						//if the opposite player is holding the current players ball, the syncing will not be done
-						if (this->m_player2.GetBall()->GetEntityID() != 4)
-						{
-							// Update the component
-							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-							pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
-							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-						}
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 					}
 					else //For every other entity

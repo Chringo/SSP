@@ -4266,10 +4266,15 @@ void PhysicsHandler::SortComponents()
 
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
-	if (src->PC_entityID == 1 || src->PC_entityID == 2)
+	/*if (src->PC_entityID == 1 || src->PC_entityID == 2)
+	{
+		this->m_bullet.CreatePlayer(src, index);
+	}*/
+	if (index == 0 || index == 1)
 	{
 		this->m_bullet.CreatePlayer(src, index);
 	}
+
 	else if (src->PC_BVtype == BV_AABB)
 	{
 		this->m_bullet.CreateAABB(src, index);
