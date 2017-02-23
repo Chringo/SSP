@@ -828,7 +828,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	RenderBoundingBoxes(false);
 
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
-	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
+	//assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
 #pragma endregion Debug rendering
@@ -850,6 +850,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 for (GraphicsComponent* comp : m_staticGraphicsComponents)
 		 m_shaderControl->Draw(comp->modelPtr, comp);
 
+	 
 	 return  1;
 }
 
@@ -1342,6 +1343,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		// Save the textures to the light, (or to file)
 	 
 	 //
+	 Render(0.0f);
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
@@ -1434,12 +1436,14 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 //#endif // _DEBUG
 
 	
-	for (size_t i = 0; i < lights->numItems; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
+		if (i == 2)
+			continue;
 		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
 		this->RenderStaticObjectShadows();						   //render statics
 	//	this->Render(0.1f);
-
+		//m_shaderControl->DrawFinal();
 		//ID3D11Resource* middleBuffer = nullptr;
 		//tempBufferTexture->GetResource(&middleBuffer);		   // Get the textureCubeArray
 		
@@ -1452,7 +1456,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		//((ID3D11Texture2D*)destinationRes)
 
 
-		context->CopyResource(tempBufferTexture,targetRes);	   //Copy from the shadowMap to the middleBuffer
+		//context->CopyResource(tempBufferTexture,targetRes);	   //Copy from the shadowMap to the middleBuffer
 
 
 
@@ -1463,23 +1467,32 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	//	hResult = context->Map(tempBufferTexture, 0, D3D11_MAP_READ, 0, &mappedResourceTarget);
 	//	if (FAILED(hResult))
 	//		return 1;
-		
+		D3D11_BOX srcBox;
+		srcBox.left = 0;
+		srcBox.right = srcBox.left + 512;
+		srcBox.top = 0;
+		srcBox.bottom = srcBox.top + 512;
+		srcBox.front = 0;
+		srcBox.back = 1;
+		for (size_t j = 0; j < 6; j++)
+		{
+			context->CopySubresourceRegion(tempTexture, j, 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL);
 
-		context->CopySubresourceRegion(destinationRes, i, 0, 0, 0, tempBufferTexture, 0,NULL);
+		}
 		//hResult = context->Map(destinationRes, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResourceDestination);
 		//if (FAILED(hResult))
 		//	return 1;
-		
+		m_shaderControl->DrawFinal();
 	//	memcpy(mappedResourceDestination.pData, mappedResourceTarget.pData, sizeof(mappedResourceTarget.pData));
-		
+		m_shaderControl->ClearFrame();
 		
 		//context->Unmap(targetRes, 0);
 		//context->Unmap(destinationRes, 0);
 
 	}
 
-	tempTexture->Release();
-	tempBufferTexture->Release();
+	//tempTexture->Release();
+	//tempBufferTexture->Release();
 	 return  1;
 }
 
