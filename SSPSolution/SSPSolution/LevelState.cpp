@@ -880,6 +880,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player2_Ping.SetPos(DirectX::XMLoadFloat3(&itr->newPos));
 			this->m_player2_Ping.m_gComp->active = true;
 			this->m_player2_Ping.m_time = 0;
+			SoundHandler::instance().PlaySound3D(Sounds3D::PING_EFFECT_SOUND, this->m_player2_Ping.m_pos, false, false);
 		}
 
 		this->m_pingPacketList.empty();
@@ -903,6 +904,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1_Ping.m_time = 0;
 
 			this->m_networkModule->SendPingPacket(this->m_player1_Ping.m_pos);
+
+			SoundHandler::instance().PlaySound3D(Sounds3D::PING_EFFECT_SOUND, this->m_player1_Ping.m_pos, false, false);
 		}
 	}
 
