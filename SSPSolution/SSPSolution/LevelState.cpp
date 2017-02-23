@@ -89,7 +89,7 @@ void LevelState::SendSyncForJoin()
 	unsigned int	startIndex = 0;
 	unsigned int	nrOfDynamics = 0;
 	bool			isHost = false;
-	unsigned int	levelID = 1;	//CHANGE LEVEL HERE NOW
+	unsigned int	levelID = this->m_curLevel;	//CHANGE LEVEL HERE NOW
 	unsigned int	checkpointID = 0;
 
 	this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
