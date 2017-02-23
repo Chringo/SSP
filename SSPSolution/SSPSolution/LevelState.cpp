@@ -519,18 +519,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp = this->m_player2.GetBall()->GetPhysicsComponent();
 
 						// Update the component
-						//pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						//pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
-						//pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else if ((int)itr->entityID == 4)	//Packets for ball2
 					{
 						pp = this->m_player1.GetBall()->GetPhysicsComponent();
 
 						// Update the component
-						//pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
-						//pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
-						//pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 					}
 					else //For every other entity
 					{
