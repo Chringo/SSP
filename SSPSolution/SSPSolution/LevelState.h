@@ -40,8 +40,10 @@ private:
 	{
 		GraphicsComponent* m_gComp;
 		DirectX::XMFLOAT3 m_pos;
-		float m_time = 0;
-		float m_maxTime = 5;
+		float m_time = 0.f;
+		float m_maxTime = 5.f;
+		float m_animHeight = 0.f;
+		bool m_dir = true;	//True = up, False = down
 
 		void SetPos(DirectX::XMVECTOR newPos)
 		{
@@ -57,11 +59,36 @@ private:
 				{
 					//printf("Showing the ping");
 					//If we want to do soemthing while it is shown
+					
+					if (this->m_dir == true)	//Going up
+					{
+						this->m_animHeight += dt;
+
+						if (this->m_animHeight >= 1)
+						{
+							this->m_dir = false;
+						}
+					}
+					else //Going down
+					{
+						this->m_animHeight -= dt;
+
+						if (this->m_animHeight <= 0)
+						{
+							this->m_dir = true;
+						}
+					}
+
+					//Update the position
+					DirectX::XMVECTOR  newPos = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(this->m_pos.x, this->m_pos.y + this->m_animHeight, this->m_pos.z));
+					this->SetPos(newPos);
 				}
 				else
 				{
 					this->m_gComp->active = false;
 					this->m_time = 0;
+					this->m_animHeight = 0;
+					this->m_dir = true;
 				}
 			}
 
