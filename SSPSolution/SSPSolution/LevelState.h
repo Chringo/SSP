@@ -62,6 +62,8 @@ private:
 	int m_curLevel;
 	int m_clearedLevel;
 	std::vector<std::string> m_levelPaths;
+
+	UIComponent* m_crosshair;
 public:
 	LevelState();
 	virtual ~LevelState();

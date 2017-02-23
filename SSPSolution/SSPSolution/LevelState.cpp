@@ -439,6 +439,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
+	//Crosshair overlay
+	this->m_crosshair = cHandler->GetUIComponent();
+	this->m_crosshair->active = 1;
+	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
+	this->m_crosshair->spriteID = Textures::Crosshair;
+	this->m_crosshair->scale = 0.8f;
+
 	return result;
 }
 
@@ -801,6 +808,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			this->m_player1.SetAiming(true);
+			//Crosshair overlay
+			this->m_crosshair->spriteID = Textures::CrosshairAim;
+			
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
 			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
 			targetOffset = DirectX::XMVectorAdd(targetOffset, { 0.0f, 1.25f, 0.0f, 0.0f });
@@ -814,6 +824,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(false);
+			//Crosshair overlay
+			this->m_crosshair->spriteID = Textures::Crosshair;
+		
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
 			m_cameraRef->SetCameraPivotOffset(
 				targetOffset,

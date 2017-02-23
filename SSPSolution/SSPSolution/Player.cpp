@@ -40,13 +40,6 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_controlsOverlay->spriteID = Textures::Keymaps;
 	this->m_controlsOverlay->scale = .6f;
 
-	//Crosshair overlay
-	this->m_crosshair = cHandler->GetUIComponent();
-	this->m_crosshair->active = 1;
-	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
-	this->m_crosshair->spriteID = Textures::Crosshair;
-	this->m_crosshair->scale = 0.8f;
-
 	return result;
 }
 
@@ -493,15 +486,6 @@ DirectX::XMVECTOR Player::SetRightDir(DirectX::XMVECTOR rightDir)
 void Player::SetAiming(bool isAming)
 {
 	this->m_isAiming = isAming;
-	//Crosshair overlay
-	if (!this->m_isAiming)
-	{
-		this->m_crosshair->spriteID = Textures::Crosshair;
-	}
-	else
-	{
-		this->m_crosshair->spriteID = Textures::CrosshairAim;
-	}
 }
 
 bool Player::stateExists(int animationState)
