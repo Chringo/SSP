@@ -46,6 +46,7 @@ public:
 	void SetAiming(bool isAming);
 	void SetBall(Entity* ball);
 	void SetRagdoll(Ragdoll* ragdoll);
+	void SetOldAnimState(int newOldState);
 
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);

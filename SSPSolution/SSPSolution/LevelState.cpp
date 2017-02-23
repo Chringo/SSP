@@ -639,13 +639,15 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
+					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 				}
 				else
 				{
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
-					this->m_player2.GetRagdoll()->state = ANIMATED;
+					//this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0] = this->m_player2.GetRagdoll()->original_ext[0];
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[1] = this->m_player2.GetRagdoll()->original_ext[1];
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2] = this->m_player2.GetRagdoll()->original_ext[2];

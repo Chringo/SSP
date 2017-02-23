@@ -589,6 +589,11 @@ void Player::SetRagdoll(Ragdoll * ragdoll)
 	this->m_ragdoll = ragdoll;
 }
 
+void Player::SetOldAnimState(int newOldState)
+{
+	this->m_oldAnimState = newOldState;
+}
+
 float Player::GetMaxSpeed()
 {
 	return this->m_maxSpeed;
