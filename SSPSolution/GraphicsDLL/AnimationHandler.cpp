@@ -29,12 +29,12 @@ void AnimationHandler::Initialize(GraphicsAnimationComponent ** graphicAnimCompo
 void AnimationHandler::Update(float dt)
 {
 	/*Convert the delta-time to be in seconds unit format.*/
-
 	float seconds = (dt / 1000000.f);
 
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
+		/*Only update the animation if the current iterating animation component is active and the source state is NOT a nullptr.*/
 		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
@@ -113,6 +113,20 @@ void AnimationHandler::Update(float dt)
 	}
 }
 
+void AnimationHandler::ClearAnimationComponents()
+{
+	/*Delete all content in the std::vector and the vector itself is cleared.*/
+	for (size_t i = 0; i < this->m_AnimComponentList.size(); i++)
+	{
+		delete this->m_AnimComponentList[i];
+	}
+
+	this->m_maxAnimComps = 16;
+	this->m_nrOfAnimComps = 0;
+	m_AnimComponentList.clear();
+	m_AnimComponentList.shrink_to_fit();
+}
+
 AnimationComponent* AnimationHandler::CreateAnimationComponent()
 {
 	/*Creates a empty animation component.*/
@@ -146,24 +160,6 @@ AnimationComponent * AnimationHandler::GetNextAvailableComponent()
 	}
 	this->m_nrOfAnimComps++;
 	return this->m_AnimComponentList[this->m_nrOfAnimComps - 1];
-}
-
-void AnimationHandler::UpdateAnimationComponents(float dt)
-{
-	/*Iterate each animation component to check if their active or not.*/
-	for (size_t compIndex = 0; compIndex < this->m_AnimComponentList.size(); compIndex++)
-	{
-		/*If the current iterating component is active, update component and data.*/
-		if (this->m_AnimComponentList[compIndex]->active >= 1)  // if active == true
-		{
-
-		}
-
-		else
-		{
-			/*Should something happen if their not active? Leave this for now!*/
-		}
-	}
 }
 
 void AnimationHandler::ShutDown()
