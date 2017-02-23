@@ -631,6 +631,9 @@ int MenuState::EnterState()
 	this->m_ipTextBox.SetActive(true);
 	this->m_menuBG->active = 1;
 
+	this->isHosting = false;
+	this->isJoining = false;
+
 	return 0;
 }
 
