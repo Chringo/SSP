@@ -50,6 +50,7 @@ private:
 			DirectX::XMStoreFloat3(&this->m_pos, newPos);
 			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
 		}
+
 		void Update(float dt)
 		{
 			if (this->m_gComp->active)
@@ -64,7 +65,7 @@ private:
 					{
 						this->m_animHeight += dt;
 
-						if (this->m_animHeight >= 1)
+						if (this->m_animHeight >= 0.5f)
 						{
 							this->m_dir = false;
 						}
@@ -73,7 +74,7 @@ private:
 					{
 						this->m_animHeight -= dt;
 
-						if (this->m_animHeight <= 0)
+						if (this->m_animHeight <= 0.f)
 						{
 							this->m_dir = true;
 						}
@@ -81,7 +82,7 @@ private:
 
 					//Update the position
 					DirectX::XMVECTOR  newPos = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(this->m_pos.x, this->m_pos.y + this->m_animHeight, this->m_pos.z));
-					this->SetPos(newPos);
+					this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
 				}
 				else
 				{
