@@ -634,13 +634,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-				
+				//if (itr->newstate == RAGDOLL_STATE)
+				//{
+				//	printf("RAGDOLL");
+				//}
+				//if (itr->newstate != RAGDOLL_STATE)
+				//{
+				//	printf("ANIMATION");
+				//}
 				if (itr->newstate == RAGDOLL_STATE)	//If the packet is for a ragdoll state
 				{
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+
 				}
 				else
 				{
