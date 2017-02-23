@@ -2452,6 +2452,8 @@ int LevelState::EnterState()
 
 int LevelState::LeaveState()
 {
+	this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+
 	return 0;
 }
 
