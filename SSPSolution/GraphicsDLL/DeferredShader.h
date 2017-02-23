@@ -18,8 +18,8 @@ class DeferredShader :
 public:
 	static const int MAX_INSTANCED_GEOMETRY = 100;
 	static const int MAX_SHADOW_AMOUNT      = 2;
-	static const int SHADOW_WIDTH  = 1024;
-	static const int SHADOW_HEIGHT = 1024;
+	static const int SHADOW_WIDTH  = 512;//Important! in order to bake static shadows, This value needs to be the same size as the shadowSize in GraphicsHandler
+	static const int SHADOW_HEIGHT = 512;//Important! in order to bake static shadows, This value needs to be the same size as the shadowSize in GraphicsHandler
 	enum VERTEX_SHADERS {
 		VS_NORMAL,
 		VS_ANIMATED,

@@ -1355,7 +1355,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ShadowTexDesc.Width				 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.Height			 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.MipLevels			 = 1;
-	ShadowTexDesc.ArraySize			 = 6 * lights->numItems;	//one for each axis
+	ShadowTexDesc.ArraySize			 = 6 * lights->numItems;	//one for each axis * number of lights
 	ShadowTexDesc.Format			 = DXGI_FORMAT_R32_TYPELESS;
 	ShadowTexDesc.SampleDesc.Count   = 1;
 	ShadowTexDesc.SampleDesc.Quality = 0;
@@ -1389,27 +1389,27 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		return 1;
 #pragma endregion
 
-	tempTexture->Release();
 
-#ifdef _DEBUG
-	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
-#endif // _DEBUG
+//#ifdef _DEBUG
+//	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+//#endif // _DEBUG
 
 	for (size_t i = 0; i < lights->numItems; i++)
 	{
 		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
-		//this->RenderStaticObjects(0.0f);						   //render statics
+		this->RenderStaticObjectShadows();						   //render statics
 	//	this->Render(0.1f);
-		ID3D11Resource** destinationRes = nullptr; 
-		lights->shadowMaps->GetResource(destinationRes);		   // Get the textureCubeArray
+		ID3D11Resource* destinationRes = nullptr; 
+		lights->shadowMaps->GetResource(&destinationRes);		   // Get the textureCubeArray
 
-		ID3D11Resource** targetRes = nullptr;
-		m_shaderControl->GetShadowSRV()->GetResource(targetRes);   //get the rendered ShadowResource
+		ID3D11Resource* targetRes = nullptr;
+		m_shaderControl->GetShadowSRV()->GetResource(&targetRes);   //get the rendered ShadowResource
 
-		context->CopyResource(destinationRes[i], *targetRes);	   //copy to the texturecube at i
+		context->CopyResource(&destinationRes[i], targetRes);	   //copy to the texturecube at i
 
 	}
 
+	tempTexture->Release();
 
 	 return  1;
 }
