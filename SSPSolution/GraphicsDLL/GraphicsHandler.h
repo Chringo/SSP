@@ -206,7 +206,7 @@ public:
 	GRAPHICSDLL_API ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
 	GRAPHICSDLL_API int Render(float deltaTime);
-	GRAPHICSDLL_API int RenderStaticObjects(float deltaTime);
+	GRAPHICSDLL_API int RenderStaticObjectShadows();
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
 	GRAPHICSDLL_API int SetAnimComponentArraySize(int newSize);
