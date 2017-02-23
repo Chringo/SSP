@@ -509,6 +509,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						pp = this->m_player1.GetPhysicsComponent();
 
 						// Update the component
+						DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&itr->newPos);
+						DirectX::XMVECTOR oldPos = this->m_player1.GetRagdoll()->upperBody.center->PC_pos = pp->PC_pos;
+
+						DirectX::XMVECTOR diffVec = DirectX::XMVectorScale(DirectX::XMVectorSubtract(newPos, oldPos), 0.5f);
+
 						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 						//this->m_player1.GetRagdoll()->upperBody.center->PC_pos = pp->PC_pos;
 						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);

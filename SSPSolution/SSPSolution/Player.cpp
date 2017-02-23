@@ -344,6 +344,19 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Check if the player should update its physics component
 		//if (this->m_pComp->PC_entityID == 0)
 		//{
+		if (forwards == 0)
+		{
+			DirectX::XMVECTOR velocity = this->m_pComp->PC_velocity;
+			DirectX::XMVECTOR para;
+			DirectX::XMVECTOR perp;
+			DirectX::XMVECTOR lookAtDir = this->m_lookDir;
+			lookAtDir.m128_f32[1] = 0.0f;
+			DirectX::XMVector3ComponentsFromNormal(&para, &perp, velocity, lookAtDir);
+			velocity = DirectX::XMVectorSubtract(velocity, para);
+			this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			
+		}
 		if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
