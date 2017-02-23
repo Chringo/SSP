@@ -49,7 +49,7 @@ namespace LIGHTING
 		};
 		unsigned int NUM_LIGHTS[NUM_LT] = { 0, 0, 0, 0 };
 		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
-		const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
+	
 
 	public:
 		struct LightArray {
