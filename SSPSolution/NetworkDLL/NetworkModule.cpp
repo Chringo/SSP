@@ -986,7 +986,7 @@ std::list<Packet> NetworkModule::PacketBuffer_GetResetPacket()
 	return result;
 }
 
-NETWORKDLL_API std::list<PingPacket> NetworkModule::PacketBuffer_GetPingPacket()
+std::list<PingPacket> NetworkModule::PacketBuffer_GetPingPacket()
 {
 	std::list<PingPacket> result;
 	std::list<PingPacket>::iterator iter;
