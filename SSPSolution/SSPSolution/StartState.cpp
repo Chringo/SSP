@@ -71,3 +71,13 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 
 	return result;
 }
+
+int StartState::EnterState()
+{
+	return 0;
+}
+
+int StartState::LeaveState()
+{
+	return 0;
+}

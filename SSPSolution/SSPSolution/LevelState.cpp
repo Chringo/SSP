@@ -2437,3 +2437,13 @@ std::string LevelState::GetLevelPath()
 	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel));
 }
 
+int LevelState::EnterState()
+{
+	return 0;
+}
+
+int LevelState::LeaveState()
+{
+	return 0;
+}
+

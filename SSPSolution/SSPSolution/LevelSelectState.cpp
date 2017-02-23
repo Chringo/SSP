@@ -94,3 +94,13 @@ int LevelSelectState::LoadLevel(std::string path)
 
 	return result;
 }
+
+int LevelSelectState::EnterState()
+{
+	return 0;
+}
+
+int LevelSelectState::LeaveState()
+{
+	return 0;
+}

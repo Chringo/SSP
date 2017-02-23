@@ -18,6 +18,9 @@ public:
 	int Update(float dt, InputHandler * inputHandler);
 	int LoadLevel(std::string path);
 
+	int EnterState();
+	int LeaveState();
+
 private:
 };
 

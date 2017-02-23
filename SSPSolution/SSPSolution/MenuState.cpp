@@ -99,10 +99,12 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_uiComp->scale = 0.6;
 	this->m_ipTextBox.m_uiComp->spriteID = 5;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
+	this->m_ipTextBox.m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 	this->m_ipTextBox.m_textComp->text = L"Enter IP...";
 
 	this->m_mainMenuButtons[0].m_textComp->text = L"Start Game";
@@ -616,6 +618,25 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	return result;
+}
+
+int MenuState::EnterState()
+{
+	//Show buttons
+	size_t nrOfStartMenuitems = this->m_startMenuButtons.size();
+	for (size_t i = 0; i < nrOfStartMenuitems; i++)
+	{
+		this->m_startMenuButtons[i].SetActive(true);
+	}
+	this->m_ipTextBox.SetActive(true);
+	this->m_menuBG->active = 1;
+
+	return 0;
+}
+
+int MenuState::LeaveState()
+{
+	return 0;
 }
 
 void MenuState::Hosting(float dt, InputHandler* inputHandler)

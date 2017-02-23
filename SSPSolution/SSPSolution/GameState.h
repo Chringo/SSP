@@ -31,6 +31,9 @@ public:
 
 	virtual int Update(float dt, InputHandler * inputHandler) = 0;
 
+	virtual int EnterState() = 0;
+	virtual int LeaveState() = 0;
+
 	bool GetManualRemoval();
 private:	//Helper functions
 };
