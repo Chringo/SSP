@@ -1336,7 +1336,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	 //
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
-
+	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
+	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 
 	lights->ReleaseShadowMaps(); //release the textures if there are any
 
@@ -1346,18 +1347,18 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ShadowTexDesc.Width				 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.Height			 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.MipLevels			 = 1;
-	ShadowTexDesc.ArraySize			 = 6;	//one for each axis
+	ShadowTexDesc.ArraySize			 = 6 * lights->numItems;	//one for each axis
 	ShadowTexDesc.Format			 = DXGI_FORMAT_R32_TYPELESS;
 	ShadowTexDesc.SampleDesc.Count   = 1;
 	ShadowTexDesc.SampleDesc.Quality = 0;
 	ShadowTexDesc.Usage				 = D3D11_USAGE_DEFAULT;
-	ShadowTexDesc.BindFlags			 = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	ShadowTexDesc.BindFlags			 = D3D11_BIND_SHADER_RESOURCE;
 	ShadowTexDesc.CPUAccessFlags	 = 0;
 	ShadowTexDesc.MiscFlags			 = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	//Create the render target Texture
-
-	hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &m_deferredT2D[ShaderLib::Shadow]);
+	ID3D11Texture2D* tempTexture;
+	HRESULT hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempTexture);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -1369,32 +1370,35 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	resourceViewShadowDesc.TextureCubeArray.NumCubes		 = lights->numItems;
 	resourceViewShadowDesc.TextureCubeArray.First2DArrayFace = 0;
 	resourceViewShadowDesc.TextureCubeArray.MostDetailedMip  = 0;
-	resourceViewShadowDesc.TextureCubeArray.MipLevels		 = 1;
+	resourceViewShadowDesc.TextureCubeArray.MipLevels		 = -1;
 
 
 
 	//Create the resourceView;
 
-	hResult = device->CreateShaderResourceView(m_deferredT2D[ShaderLib::Shadow], &resourceViewShadowDesc, &m_deferredSRV[ShaderLib::Shadow]);
+	hResult = device->CreateShaderResourceView(tempTexture, &resourceViewShadowDesc, &lights->shadowMaps);
 	if (FAILED(hResult))
 		return 1;
 #pragma endregion
 
-	ID3D11DeviceContext * device = this->m_d3dHandler->GetDeviceContext();
+	tempTexture->Release();
 
-	
+#ifdef _DEBUG
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
+
 	for (size_t i = 0; i < lights->numItems; i++)
 	{
 		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
-		this->RenderStaticObjects(0.0f);						   //render statics
-
-		ID3D11Resource** destinationRes; 
+		//this->RenderStaticObjects(0.0f);						   //render statics
+	//	this->Render(0.1f);
+		ID3D11Resource** destinationRes = nullptr; 
 		lights->shadowMaps->GetResource(destinationRes);		   // Get the textureCubeArray
 
-		ID3D11Resource** targetRes;
+		ID3D11Resource** targetRes = nullptr;
 		m_shaderControl->GetShadowSRV()->GetResource(targetRes);   //get the rendered ShadowResource
 
-		device->CopyResource(destinationRes[i], *targetRes);	   //copy to the texturecube at i
+		context->CopyResource(destinationRes[i], *targetRes);	   //copy to the texturecube at i
 
 	}
 
