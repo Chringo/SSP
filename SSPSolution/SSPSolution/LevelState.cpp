@@ -649,6 +649,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
+					this->m_player2.GetRagdoll()->state = RAGDOLL;
 
 				}
 				else
@@ -656,7 +657,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
-					//this->m_player2.GetRagdoll()->state = ANIMATED;
+					this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0] = this->m_player2.GetRagdoll()->original_ext[0];
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[1] = this->m_player2.GetRagdoll()->original_ext[1];
 					this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2] = this->m_player2.GetRagdoll()->original_ext[2];
