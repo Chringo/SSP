@@ -1130,8 +1130,86 @@ int GraphicsHandler::GenerateOctree()
 
 	return result;
 }
+int GraphicsHandler::FrustrumCullOctreeLeft()
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	for (int i = 0; i < MAX_BRANCHES; i += 2)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
 
-GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
+	/*int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}*/
+	return result;
+}
+int GraphicsHandler::FrustrumCullOctreeRight()
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	for (int i = 1; i < MAX_BRANCHES; i += 2)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
+
+	/*int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}*/
+	return result;
+}
+
+int GraphicsHandler::FrustrumCullOctreeNodeThreaded(int threadCount)
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+#pragma omp parallel num_threads(threadCount)
+	{
+		int i;
+#pragma omp for private(i)
+		for (i = 0; i < MAX_BRANCHES; i++)
+		{
+			if (this->m_octreeRoot.branches[i] != nullptr)
+			{
+				this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			}
+		}
+	}
+
+	int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		//this->m_octreeRoot.containedComponents[i]->isRendered = true;
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}
+	return result;
+}
+int GraphicsHandler::FrustrumCullOctreeNode()
 {
 	int result = 0;
 	enum {MAX_BRANCHES = 8};
@@ -1144,7 +1222,7 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
-	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
+
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{

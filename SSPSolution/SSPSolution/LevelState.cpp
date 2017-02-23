@@ -1065,13 +1065,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		}
 	}
 #pragma endregion Puzzle elements synchronization 
-	//Lock the camera to the player
 
+#pragma region
 	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
 	{
 		this->m_platformEntities[i]->Update(dt, inputHandler);
 	}
-	
+#pragma endregion Platforms
+
 	#pragma endregion Update_Puzzle_Elements
 
 	#pragma region
