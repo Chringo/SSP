@@ -1361,7 +1361,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ShadowTexDesc.SampleDesc.Quality = 0;
 	ShadowTexDesc.Usage				 = D3D11_USAGE_DEFAULT;
 	ShadowTexDesc.BindFlags			 = D3D11_BIND_SHADER_RESOURCE;
-	ShadowTexDesc.CPUAccessFlags	 = 0;
+	ShadowTexDesc.CPUAccessFlags	 = D3D11_CPU_ACCESS_WRITE;
 	ShadowTexDesc.MiscFlags			 = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	//Create the render target Texture
@@ -1388,29 +1388,98 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	if (FAILED(hResult))
 		return 1;
 #pragma endregion
+#pragma region Create buffer texture (The one that will be used to transfer data)
 
+	ShadowTexDesc.Width					= (UINT)STATIC_SHADOWMAP_RESOLUTION;
+	ShadowTexDesc.Height				= (UINT)STATIC_SHADOWMAP_RESOLUTION;
+	ShadowTexDesc.MipLevels				= 1;
+	ShadowTexDesc.ArraySize				= 6 ;	//one for each axis 
+	ShadowTexDesc.Format				= DXGI_FORMAT_R32_TYPELESS;
+	ShadowTexDesc.SampleDesc.Count      = 1;
+	ShadowTexDesc.SampleDesc.Quality    = 0;
+	ShadowTexDesc.Usage				    = D3D11_USAGE_STAGING;
+	ShadowTexDesc.BindFlags			    = 0;
+	ShadowTexDesc.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	ShadowTexDesc.MiscFlags				= D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	//Create the render target Texture
+	ID3D11Texture2D* tempBufferTexture;
+	 hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempBufferTexture);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+////Set up the shader resource view
+//resourceViewShadowDesc.Format						  = DXGI_FORMAT_R32_FLOAT;
+//resourceViewShadowDesc.ViewDimension				  = D3D11_SRV_DIMENSION_TEXTURECUBE;
+//resourceViewShadowDesc.Texture2DArray.ArraySize		  = 6;
+//resourceViewShadowDesc.Texture2DArray.FirstArraySlice = 0;
+//resourceViewShadowDesc.Texture2DArray.MostDetailedMip = 0;
+//resourceViewShadowDesc.Texture2DArray.MipLevels		  = 1;
+//
+//
+//
+//
+////Create the resourceView;
+//
+//hResult = device->CreateShaderResourceView(tempBufferTexture, &resourceViewShadowDesc, &lights->shadowMaps);
+//if (FAILED(hResult))
+//	return 1;
+
+
+#pragma endregion
 
 //#ifdef _DEBUG
 //	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 //#endif // _DEBUG
 
+	
 	for (size_t i = 0; i < lights->numItems; i++)
 	{
 		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
 		this->RenderStaticObjectShadows();						   //render statics
 	//	this->Render(0.1f);
+
+		//ID3D11Resource* middleBuffer = nullptr;
+		//tempBufferTexture->GetResource(&middleBuffer);		   // Get the textureCubeArray
+		
+
 		ID3D11Resource* destinationRes = nullptr; 
 		lights->shadowMaps->GetResource(&destinationRes);		   // Get the textureCubeArray
 
 		ID3D11Resource* targetRes = nullptr;
 		m_shaderControl->GetShadowSRV()->GetResource(&targetRes);   //get the rendered ShadowResource
+		//((ID3D11Texture2D*)destinationRes)
 
-		context->CopyResource(&destinationRes[i], targetRes);	   //copy to the texturecube at i
+
+		context->CopyResource(tempBufferTexture,targetRes);	   //Copy from the shadowMap to the middleBuffer
+
+
+
+
+		
+	//	D3D11_MAPPED_SUBRESOURCE mappedResourceTarget;
+	//	D3D11_MAPPED_SUBRESOURCE mappedResourceDestination;
+	//	hResult = context->Map(tempBufferTexture, 0, D3D11_MAP_READ, 0, &mappedResourceTarget);
+	//	if (FAILED(hResult))
+	//		return 1;
+		
+
+		context->CopySubresourceRegion(destinationRes, i, 0, 0, 0, tempBufferTexture, 0,NULL);
+		//hResult = context->Map(destinationRes, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResourceDestination);
+		//if (FAILED(hResult))
+		//	return 1;
+		
+	//	memcpy(mappedResourceDestination.pData, mappedResourceTarget.pData, sizeof(mappedResourceTarget.pData));
+		
+		
+		//context->Unmap(targetRes, 0);
+		//context->Unmap(destinationRes, 0);
 
 	}
 
 	tempTexture->Release();
-
+	tempBufferTexture->Release();
 	 return  1;
 }
 
