@@ -110,14 +110,14 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
-	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720.f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
+	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720.f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 46.0f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update();
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
-	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
+	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 46.0f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
