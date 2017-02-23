@@ -253,6 +253,7 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
 		}
+			//Do AI and Animation
 		else if (myThreadID == 2)
 		{
 #pragma region
