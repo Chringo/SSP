@@ -420,10 +420,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		this->m_player1.GetBall()->GetPhysicsComponent());
 
 
-	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(2, ((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
-		DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
-		this->m_player2.GetPhysicsComponent(),
-		this->m_player2.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(2, ((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
+	//	DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
+	//	this->m_player2.GetPhysicsComponent(),
+	//	this->m_player2.GetBall()->GetPhysicsComponent());
 
 	return result;
 }
@@ -1250,7 +1250,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	linkLenght = 1.5f;
 	previous = this->m_player2.GetPhysicsComponent();
-	previous = this->m_player2.GetRagdoll()->upperBody.center;
+	//previous = this->m_player2.GetRagdoll()->upperBody.center;
 	next = nullptr;
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
 	{

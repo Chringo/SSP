@@ -46,7 +46,7 @@ enum RagdollState
 const int BLEND_TIME = 10;
 struct Ragdoll
 {
-	RagdollState state;
+	RagdollState state = ANIMATED;
 
 	float original_ext[3];
 	int key_frame_blend_stage;
