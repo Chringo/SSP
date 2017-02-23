@@ -840,8 +840,16 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	return result;
 }
 
- int GraphicsHandler::RenderStaticObjects(float deltaTime)
+
+ int GraphicsHandler::RenderStaticObjectShadows()
 {
+
+	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
+
+	 for (GraphicsComponent* comp : m_staticGraphicsComponents)
+		 m_shaderControl->Draw(comp->modelPtr, comp);
+
 	 return  1;
 }
 
