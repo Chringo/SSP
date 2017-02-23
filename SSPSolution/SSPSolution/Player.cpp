@@ -59,9 +59,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_ragdoll->upperBody.center->PC_velocity = vel;
 		this->m_ragdoll->upperBody.next->PC_velocity   = vel;
 		this->m_ragdoll->upperBody.next2->PC_velocity  = vel;
-		//this->m_ragdoll->leftArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
-		//this->m_ragdoll->rightLeg.next2->PC_velocity = DirectX::XMVectorSet(1, 0, 0, 0);
-		//this->m_ragdoll->leftLeg.next2->PC_velocity = DirectX::XMVectorSet(-1, 0, 0, 0);
 		
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
@@ -76,7 +73,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
 			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
-			//this->m_pComp->PC_pos = DirectX::XMVectorAdd(this->m_pComp->PC_pos, DirectX::XMVectorSet(0, 1.3, 0, 0));
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -440,11 +436,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			if (this->m_ragdoll->state == RAGDOLL)
 			{
 				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.5, 0, 0)));
-				//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos);
-				//DirectX::XMMATRIX ragdollOffSet = DirectX::XMMatrixIdentity();
-				//ragdollOffSet = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(this->m_ragdoll->lowerBody.center->PC_OBB.ort.r[2], 1.7));
-				//this->m_gComp->worldMatrix *= ragdollOffSet;
-				//this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(this->m_ragdoll->lowerBody.center->PC_pos);
 			}
 		}
 	}
