@@ -177,10 +177,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
 	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
-	this->m_cHandler->ResizeGraphicsPersistent(2 + nrOfSegmentsPerPlayer * 2 + 2);	//+2 for 
-	
-	// creating the player
-	this->m_cHandler->ResizeGraphicsPersistent(2 + CHAIN_SEGMENTS * 2);
+
+	this->m_cHandler->ResizeGraphicsPersistent(2 + 2);	//"2 balls + 2 PingObjects
+
 	// creating the player
 	//Player1
 #pragma region
