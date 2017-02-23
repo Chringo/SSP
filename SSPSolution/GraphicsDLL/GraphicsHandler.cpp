@@ -840,6 +840,11 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	return result;
 }
 
+ int GraphicsHandler::RenderStaticObjects(float deltaTime)
+{
+	 return  1;
+}
+
 int GraphicsHandler::InitializeGrid()
 {
 
@@ -1328,17 +1333,27 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 		// Save the textures to the light, (or to file)
 	 
-	//
+	 //
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
 
 	lights->ReleaseShadowMaps(); //release the textures if there are any
 
-	lights->shadowMaps.reserve(lights->numItems); //allocate memory for the textures
+	ID3D11DeviceContext * device = this->m_d3dHandler->GetDeviceContext();
+
 	
 	for (size_t i = 0; i < lights->numItems; i++)
 	{
-		m_LightHandler->SetLightData
+		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
+		this->RenderStaticObjects(0.0f);
+
+		ID3D11Resource** destinationRes;
+		lights->shadowMaps->GetResource(destinationRes);
+
+		ID3D11Resource** targetRes;
+		m_shaderControl->GetShadowSRV()->GetResource(targetRes);
+		device->CopyResource(destinationRes[i], *targetRes);
+
 	}
 
 
