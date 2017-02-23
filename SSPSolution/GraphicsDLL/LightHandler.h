@@ -49,24 +49,23 @@ namespace LIGHTING
 		};
 		unsigned int NUM_LIGHTS[NUM_LT] = { 0, 0, 0, 0 };
 		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
+		const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
 
 	public:
 		struct LightArray {
 			Light* dataPtr = nullptr;
-			std::vector<ID3D11ShaderResourceView*> shadowMaps; //One should be generated for each light on load
+			ID3D11ShaderResourceView* shadowMaps; //One should be generated for each light on load
 			unsigned int numItems = 0;
+
 			~LightArray() { //Destructor, 
 				ReleaseShadowMaps(); //Release the TextureBuffers
 			}
 			void ReleaseShadowMaps() {
-				for (size_t i = 0; i < shadowMaps.size(); i++)
-				{
-					if (shadowMaps[i] != nullptr)
+					if (shadowMaps != nullptr)
 					{
-						shadowMaps[i]->Release();
-						shadowMaps[i] = nullptr;
+						shadowMaps->Release();
+						shadowMaps = nullptr;
 					}
-				}
 			}
 		};
 		

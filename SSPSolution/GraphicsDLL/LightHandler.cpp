@@ -234,7 +234,15 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		if (m_lightData[LT_POINT].dataPtr != nullptr)
 			delete m_lightData[LT_POINT].dataPtr;
 
+		m_lightData[LT_POINT].ReleaseShadowMaps();
 		m_lightData[LT_POINT].dataPtr = new LIGHTING::Point[level->numPointLights];
+		m_lightData[LT_POINT].shadowMaps.reserve(level->numPointLights);
+		for (size_t i = 0; i < level->numPointLights; i++)
+		{
+			//m_lightData[LT_POINT].shadowMaps.at(i)
+
+		}
+
 
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
