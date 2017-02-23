@@ -12,6 +12,7 @@
 #include "UIHandler.h"
 #include "LightHandler.h"
 #include <algorithm>
+#include "DirectXTex\DirectXTex.h"
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)

@@ -1343,7 +1343,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		// Save the textures to the light, (or to file)
 	 
 	 //
-	 Render(0.0f);
+	// Render(0.0f);
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
@@ -1436,7 +1436,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 //#endif // _DEBUG
 
 	
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < lights->numItems; i++)
 	{
 		if (i == 2)
 			continue;
@@ -1476,13 +1476,24 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		srcBox.back = 1;
 		for (size_t j = 0; j < 6; j++)
 		{
-			context->CopySubresourceRegion(tempTexture, j, 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL);
+			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL);
+
+		}
+		DirectX::ScratchImage image;
+		
+		hResult = DirectX::CaptureTexture(device, context, tempTexture, image);
+		if (SUCCEEDED(hResult))
+		{
+			
+			 wchar_t hej[9] = { L"yoyo.dds" };
+			hResult = DirectX::SaveToDDSFile(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::DDS_FLAGS::DDS_FLAGS_FORCE_RGB, hej);
+			if (FAILED(hResult))
+				std::cout << "help" << std::endl;
 
 		}
 		//hResult = context->Map(destinationRes, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResourceDestination);
 		//if (FAILED(hResult))
 		//	return 1;
-		m_shaderControl->DrawFinal();
 	//	memcpy(mappedResourceDestination.pData, mappedResourceTarget.pData, sizeof(mappedResourceTarget.pData));
 		m_shaderControl->ClearFrame();
 		
@@ -1490,6 +1501,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		//context->Unmap(destinationRes, 0);
 
 	}
+		m_shaderControl->DrawFinal();
 
 	//tempTexture->Release();
 	//tempBufferTexture->Release();
