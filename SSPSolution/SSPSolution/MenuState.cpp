@@ -26,7 +26,6 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
-	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
 	
 	//Workaround for camera trying to access nullptr
@@ -573,7 +572,32 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		
 		if (isHosting)	//If we have pressed the host button
 		{
+#ifndef HOST_DISABLE
 			this->Hosting(dt, inputHandler);	//Do the Host update
+#else
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				//this->PushStateToStack(levelSelect);
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+
+				//Delete it. If it was successful it would have pushed a LevelState to the stack
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			else
+			{
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			this->isHosting = false;
+#endif
 		}
 
 		if (isJoining)
@@ -648,7 +672,7 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 			#pragma region
 			//Create, Initialize and push a LevelSelectState
 			LevelSelectState* levelSelect = new LevelSelectState();
-			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 
 			//If the initialization was successful
 			if (result > 0)
@@ -708,7 +732,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 		#pragma region
 		//Create, Initialize and push a LevelSelectState
 		LevelSelectState* levelSelect = new LevelSelectState();
-		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 
 		//If the initialization was successful
 		if (result > 0)

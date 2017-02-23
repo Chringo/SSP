@@ -4,6 +4,8 @@
 #include "LevelSelectState.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 
+#define HOST_DISABLE
+
 const float TIMEOUT_TIME = 200;
 
 class MenuState :
@@ -111,7 +113,6 @@ private:
 	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
-	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
 	
