@@ -18,7 +18,7 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 	
 	this->m_meshHandler		=  new MeshHandler(modelAmount);
 	this->m_materialHandler =  new MaterialHandler(modelAmount);
-	this->m_skeletonHandler =  new SkeletonHandler(modelAmount);
+	this->m_skeletonHandler =  new SkeletonHandler(2); // start with a lower number on skeletons to save memory
 	if (device != nullptr) {
 		this->m_device = device;
 		m_meshHandler->SetDevice(device);
@@ -205,7 +205,7 @@ Resources::Status Resources::ModelHandler::UnloadModel(unsigned int & id)
 				m_models.erase(id);
 #ifdef _DEBUG
 				std::cout << "Model : " << id << ". Has been Unloaded" << std::endl;
-#endif // _DEBUG
+#endif //_DEBUG
 			}
 			break;
 		}
@@ -235,14 +235,16 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  m_skeletonHandler->SetDevice(device);
 
  ResourceContainer* temp;
- //unsigned int one = 2759249725;
- unsigned int one = 1117267500;
- unsigned int two = 1321651915;
- unsigned int three = 1680427216;
+ unsigned int one = 1117267500; // player one
+ //unsigned int one = 885141774;
+ unsigned int two = 885141774; //player two
+ unsigned int three = 1680427216; // chain
+ unsigned int four = 1321651915; // ball
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);
  LoadModel(three, temp);
+ LoadModel(four, temp);
  FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 }
 

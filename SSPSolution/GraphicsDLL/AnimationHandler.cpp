@@ -50,69 +50,67 @@ void AnimationHandler::Update(float dt)
 				}
 			}
 			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
-			if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
-				(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
-				this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
+			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+			if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 			{
 				/*Set the current animation component index.*/
 				SetAnimCompIndex(aCompIndex);
 
-			/*If only one animation is playing, there should be no transition.*/
-			if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
-			{
-				/*If there is no source state, the program should make a assert.*/
-				assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
-
-				/*Increment source animation's local time and multiply by speed factor and velocity.*/
-				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
-				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
+				/*If only one animation is playing, there should be no transition.*/
+				if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
+				{
+					/*Increment source animation's local time and multiply by speed factor and velocity.*/
+					float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
+					float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
 				
-				if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_IDLE
-					&& m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_BALL_IDLE)
-				{
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
-				}
-
-				else 
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * playingSpeed);
-					
-				/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
-				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
-				{
-					/*Animation is looping. Reset the local time of the source animation.*/
-					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
+					if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_IDLE
+						&& m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_BALL_IDLE)
 					{
-						m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
+						m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
 					}
-					else
+
+					else 
+						m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * playingSpeed);
+					
+					/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
+					if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 					{
-						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
-						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+						/*Animation is looping. Reset the local time of the source animation.*/
+						if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
+							if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+							{
+								SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+								m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							}
+							else
+							{
+								SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+								m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							}
+							/*All animations that are not looping gets it lock released, other animations can now contribute.*/
+							m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
 						}
-						/*All animations that are not looping gets it lock released, other animations can now contribute.*/
-						m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
 					}
+					/*Interpolate the keyframes of this animation.*/
+					InterpolateKeys(m_AnimComponentList[m_AnimCompIndex]->source_State, m_AnimComponentList[m_AnimCompIndex]->source_Time);
 				}
-				/*Interpolate the keyframes of this animation.*/
-				InterpolateKeys(m_AnimComponentList[m_AnimCompIndex]->source_State, m_AnimComponentList[m_AnimCompIndex]->source_Time);
-			}
 
 				/*If two animations are playing, there should be a SMOOTH transition or FROZEN transition.*/
 				else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 					|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 				{
-					/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
-					if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
-						|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
-						continue;
+						/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+						if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+							|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+							continue;
 
 					/*Transition is complete. Swap the animations and remove the old animation.*/
 					if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
@@ -136,9 +134,7 @@ void AnimationHandler::Update(float dt)
 				}
 			}
 			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
-			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE &&
-				this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == ANIMATION_ERROR &&
-				this->m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex == ANIMATION_ERROR)
+			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
 			{
 				continue;
 			}
@@ -492,98 +488,98 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 
 void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime)
 {
-		int animStateIndex = m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex;
+	int animStateIndex = m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex;
 
-			const Resources::Animation::AnimationJoint* animatedJoints = m_AnimComponentList[m_AnimCompIndex]->animation_States->at(animStateIndex)->GetAllJoints();
+	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimComponentList[m_AnimCompIndex]->animation_States->at(animStateIndex)->GetAllJoints();
 
-			int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
+	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
 
-			for (unsigned int jointIndex = 0; (int)jointIndex < jointCount; jointIndex++)
+	for (unsigned int jointIndex = 0; (int)jointIndex < jointCount; jointIndex++)
+	{
+		BlendKeyframe blendKey;
+
+		const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
+
+		/*The current time is at the first keyframe.*/
+		if (targetTime <= m_AnimComponentList[m_AnimCompIndex]->target_State->startTime)
+		{
+			int startFrame = (int)m_AnimComponentList[m_AnimCompIndex]->source_State->startTime;
+
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[startFrame].translation[0],
+				animatedJoint.keyframes[startFrame].translation[1], animatedJoint.keyframes[startFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[startFrame].scale[0],
+				animatedJoint.keyframes[startFrame].scale[1], animatedJoint.keyframes[startFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[startFrame].quaternion[0],
+				animatedJoint.keyframes[startFrame].quaternion[1], animatedJoint.keyframes[startFrame].quaternion[2],
+				animatedJoint.keyframes[startFrame].quaternion[3] };
+
+			DirectX::XMStoreFloat3(&blendKey.trans, trans);
+			DirectX::XMStoreFloat3(&blendKey.scale, scale);
+			DirectX::XMStoreFloat4(&blendKey.quat, quat);
+
+			blendKeysPerAnimation[1].push_back(blendKey);
+		}
+
+		/*The current time is at the last keyframe.*/
+		else if (targetTime >= m_AnimComponentList[m_AnimCompIndex]->target_State->endTime)
+		{
+			int endFrame = animatedJoint.keyframeCount - 1;
+
+			DirectX::XMVECTOR trans = { animatedJoint.keyframes[endFrame].translation[0],
+				animatedJoint.keyframes[endFrame].translation[1], animatedJoint.keyframes[endFrame].translation[2] };
+			DirectX::XMVECTOR scale = { animatedJoint.keyframes[endFrame].scale[0],
+				animatedJoint.keyframes[endFrame].scale[1], animatedJoint.keyframes[endFrame].scale[2] };
+			DirectX::XMVECTOR quat = { animatedJoint.keyframes[endFrame].quaternion[0],
+				animatedJoint.keyframes[endFrame].quaternion[1], animatedJoint.keyframes[endFrame].quaternion[2],
+				animatedJoint.keyframes[endFrame].quaternion[3] };
+
+			DirectX::XMStoreFloat3(&blendKey.trans, trans);
+			DirectX::XMStoreFloat3(&blendKey.scale, scale);
+			DirectX::XMStoreFloat4(&blendKey.quat, quat);
+
+			blendKeysPerAnimation[1].push_back(blendKey);
+		}
+
+		/*The current time is at between two keyframes.*/
+		else
+		{
+			int keyFrameCount = animatedJoint.keyframeCount;
+
+			for (int i = 0; i < keyFrameCount; i++)
 			{
-				BlendKeyframe blendKey;
+				float timeKeyframe1 = animatedJoint.keyframes[i].timeValue;
+				float timeKeyframe2 = animatedJoint.keyframes[i + 1].timeValue;
 
-				const Resources::Animation::AnimationJoint animatedJoint = animatedJoints[jointIndex];
-
-				/*The current time is at the first keyframe.*/
-				if (targetTime <= m_AnimComponentList[m_AnimCompIndex]->target_State->startTime)
+				/*Check if the current time is between two keyframes for each joint.*/
+				if (targetTime > timeKeyframe1 && targetTime < timeKeyframe2)
 				{
-					int startFrame = (int)m_AnimComponentList[m_AnimCompIndex]->source_State->startTime;
+					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
+					float lerpFactor = (targetTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
-					DirectX::XMVECTOR trans = { animatedJoint.keyframes[startFrame].translation[0],
-						animatedJoint.keyframes[startFrame].translation[1], animatedJoint.keyframes[startFrame].translation[2] };
-					DirectX::XMVECTOR scale = { animatedJoint.keyframes[startFrame].scale[0],
-						animatedJoint.keyframes[startFrame].scale[1], animatedJoint.keyframes[startFrame].scale[2] };
-					DirectX::XMVECTOR quat = { animatedJoint.keyframes[startFrame].quaternion[0],
-						animatedJoint.keyframes[startFrame].quaternion[1], animatedJoint.keyframes[startFrame].quaternion[2],
-						animatedJoint.keyframes[startFrame].quaternion[3] };
+					DirectX::XMVECTOR trans1 = { animatedJoint.keyframes[i].translation[0],
+						animatedJoint.keyframes[i].translation[1], animatedJoint.keyframes[i].translation[2] };
+					DirectX::XMVECTOR trans2 = { animatedJoint.keyframes[i + 1].translation[0],
+						animatedJoint.keyframes[i + 1].translation[1], animatedJoint.keyframes[i + 1].translation[2] };
+					DirectX::XMVECTOR scale1 = { animatedJoint.keyframes[i].scale[0],
+						animatedJoint.keyframes[i].scale[1], animatedJoint.keyframes[i].scale[2] };
+					DirectX::XMVECTOR scale2 = { animatedJoint.keyframes[i + 1].scale[0],
+						animatedJoint.keyframes[i + 1].scale[1], animatedJoint.keyframes[i + 1].scale[2] };
+					DirectX::XMVECTOR quat1 = { animatedJoint.keyframes[i].quaternion[0],
+						animatedJoint.keyframes[i].quaternion[1], animatedJoint.keyframes[i].quaternion[2],
+						animatedJoint.keyframes[i].quaternion[3] };
+					DirectX::XMVECTOR quat2 = { animatedJoint.keyframes[i + 1].quaternion[0],
+						animatedJoint.keyframes[i + 1].quaternion[1], animatedJoint.keyframes[i + 1].quaternion[2],
+						animatedJoint.keyframes[i + 1].quaternion[3] };
 
-					DirectX::XMStoreFloat3(&blendKey.trans, trans);
-					DirectX::XMStoreFloat3(&blendKey.scale, scale);
-					DirectX::XMStoreFloat4(&blendKey.quat, quat);
+					DirectX::XMStoreFloat3(&blendKey.trans, DirectX::XMVectorLerp(trans1, trans2, lerpFactor));
+					DirectX::XMStoreFloat3(&blendKey.scale, DirectX::XMVectorLerp(scale1, scale2, lerpFactor));
+					DirectX::XMStoreFloat4(&blendKey.quat, DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor));
 
 					blendKeysPerAnimation[1].push_back(blendKey);
-				}
-
-				/*The current time is at the last keyframe.*/
-				else if (targetTime >= m_AnimComponentList[m_AnimCompIndex]->target_State->endTime)
-				{
-					int endFrame = animatedJoint.keyframeCount - 1;
-
-					DirectX::XMVECTOR trans = { animatedJoint.keyframes[endFrame].translation[0],
-						animatedJoint.keyframes[endFrame].translation[1], animatedJoint.keyframes[endFrame].translation[2] };
-					DirectX::XMVECTOR scale = { animatedJoint.keyframes[endFrame].scale[0],
-						animatedJoint.keyframes[endFrame].scale[1], animatedJoint.keyframes[endFrame].scale[2] };
-					DirectX::XMVECTOR quat = { animatedJoint.keyframes[endFrame].quaternion[0],
-						animatedJoint.keyframes[endFrame].quaternion[1], animatedJoint.keyframes[endFrame].quaternion[2],
-						animatedJoint.keyframes[endFrame].quaternion[3] };
-
-					DirectX::XMStoreFloat3(&blendKey.trans, trans);
-					DirectX::XMStoreFloat3(&blendKey.scale, scale);
-					DirectX::XMStoreFloat4(&blendKey.quat, quat);
-
-					blendKeysPerAnimation[1].push_back(blendKey);
-				}
-
-				/*The current time is at between two keyframes.*/
-				else
-				{
-					int keyFrameCount = animatedJoint.keyframeCount;
-
-					for (int i = 0; i < keyFrameCount; i++)
-					{
-						float timeKeyframe1 = animatedJoint.keyframes[i].timeValue;
-						float timeKeyframe2 = animatedJoint.keyframes[i + 1].timeValue;
-
-						/*Check if the current time is between two keyframes for each joint.*/
-						if (targetTime > timeKeyframe1 && targetTime < timeKeyframe2)
-						{
-							/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
-							float lerpFactor = (targetTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
-
-							DirectX::XMVECTOR trans1 = { animatedJoint.keyframes[i].translation[0],
-								animatedJoint.keyframes[i].translation[1], animatedJoint.keyframes[i].translation[2] };
-							DirectX::XMVECTOR trans2 = { animatedJoint.keyframes[i + 1].translation[0],
-								animatedJoint.keyframes[i + 1].translation[1], animatedJoint.keyframes[i + 1].translation[2] };
-							DirectX::XMVECTOR scale1 = { animatedJoint.keyframes[i].scale[0],
-								animatedJoint.keyframes[i].scale[1], animatedJoint.keyframes[i].scale[2] };
-							DirectX::XMVECTOR scale2 = { animatedJoint.keyframes[i + 1].scale[0],
-								animatedJoint.keyframes[i + 1].scale[1], animatedJoint.keyframes[i + 1].scale[2] };
-							DirectX::XMVECTOR quat1 = { animatedJoint.keyframes[i].quaternion[0],
-								animatedJoint.keyframes[i].quaternion[1], animatedJoint.keyframes[i].quaternion[2],
-								animatedJoint.keyframes[i].quaternion[3] };
-							DirectX::XMVECTOR quat2 = { animatedJoint.keyframes[i + 1].quaternion[0],
-								animatedJoint.keyframes[i + 1].quaternion[1], animatedJoint.keyframes[i + 1].quaternion[2],
-								animatedJoint.keyframes[i + 1].quaternion[3] };
-
-							DirectX::XMStoreFloat3(&blendKey.trans, DirectX::XMVectorLerp(trans1, trans2, lerpFactor));
-							DirectX::XMStoreFloat3(&blendKey.scale, DirectX::XMVectorLerp(scale1, scale2, lerpFactor));
-							DirectX::XMStoreFloat4(&blendKey.quat, DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor));
-
-							blendKeysPerAnimation[1].push_back(blendKey);
-						}
-					}
 				}
 			}
+		}
+	}
 	/*Incrementing the target animation's local time.*/
 	m_AnimComponentList[m_AnimCompIndex]->target_Time += globalTime;
 }

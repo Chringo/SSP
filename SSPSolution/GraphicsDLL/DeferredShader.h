@@ -8,6 +8,7 @@
 
 struct InstanceData {
 	unsigned int modelID;
+	Resources::Model* modelPtr;
 	int amountOfInstances;
 	DirectX::XMFLOAT4X4 componentSpecific[100];
 };

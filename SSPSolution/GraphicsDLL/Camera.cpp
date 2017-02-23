@@ -43,6 +43,8 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	this->m_focusPointOffset = { 0.0 };
 	this->m_camRightvector = { 0.0 };
 	this->m_camDirvector = { 0.0 };
+	this->m_maxDistance = 1.0f;
+	this->m_distance = 1.0f;
 	//Define the basic view matrix used in rendering the second stage of deferred rendering.
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -61,41 +63,30 @@ int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, f
 	//Create the projection matrix
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
 
+
+	m_intersectionOBBs.reserve(150);
+
 	return result;
 }
 
-int Camera::Update(float dt)
+int Camera::Update()
 {
 	int result = 1;
 	this->m_updatePos();
 
-	//crash fix
-	//this->m_lookAt.z = 2;
-	//DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset);
-	//DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
-
-	//DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(DirectX::XMVectorScale(m_Dir(), -1.0), m_distance));
-	//
-
-	//DirectX::XMMATRIX hier = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(*m_focusPoint, m_focusPointOffset));
-
-	//m_focusVec = DirectX::XMVectorSubtract(camPosVec, finalFocus);
-
-
-
-	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-	//if (!DirectX::XMVector4NotEqual(DirectX::XMVectorEqual(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt)), DirectX::XMVectorSet(1, 1, 1, 1)))
-	//{
-	//	this->m_lookAt.y += 1;
-	//}
-
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
-	//DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
-	//
-	//view = DirectX::XMMatrixMultiply(hier, view);
-	//DirectX::XMStoreFloat4x4(&this->m_viewMatrix, view);
 
 	return result;
+}
+
+int Camera::UpdateDeltaTime(float dt)
+{
+	
+
+	//0.00150899997
+	//if (m_deltaTime > 0.01f)
+	this->m_deltaTime = dt;
+	return 0;
 }
 
 int Camera::UpdateView()
@@ -206,13 +197,51 @@ int Camera::Reset()
 	return result;
 }
 
-Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
+Camera::C_Ray Camera::CastRay() //returns a ray projected from the camera origin in the direction of the camrea
 {
-	Ray ray;
-	ray.RayDir = this->m_Dir();
-	ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
+	C_Ray ray;
+	DirectX::XMStoreFloat3(&ray.dir, this->m_Dir());
+	ray.origin = DirectX::XMFLOAT3(this->m_cameraPos.x, this->m_cameraPos.y, this->m_cameraPos.z);
+
+	//ray.RayDir = this->m_Dir();
+	//ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
 
 	return ray;
+}
+
+Camera::C_Ray Camera::CastRayFromMaxDistance()
+{
+	C_Ray ray;
+	DirectX::XMStoreFloat3(&ray.dir, this->m_Dir());
+
+	DirectX::XMStoreFloat3(&ray.origin, m_cameraMaxDistancePos);
+
+	//ray.RayDir = this->m_Dir();
+	//ray.Origin = DirectX::XMLoadFloat4(&this->m_cameraPos);
+
+	return ray;
+}
+
+int Camera::AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
+{
+
+	C_OBB obb;
+	obb.ort = ort;
+	obb.ext = ext;
+	obb.pos = pos;
+
+
+
+	this->m_intersectionOBBs.push_back(obb);
+	//this->m_intersectionOBBspos.push_back(pos);
+
+	return 0;
+}
+
+int Camera::ClearIntersectList()
+{
+	this->m_intersectionOBBs.clear();
+	return 0;
 }
 
 #pragma region
@@ -308,6 +337,10 @@ float Camera::GetCameraDistance()
 {
 	return this->m_distance;
 }
+float Camera::GetCameraMaxDistance()
+{
+	return this->m_maxDistance;
+}
 void Camera::GetCameraFrameData(cameraFrameData & storeIn)
 {
 	storeIn.pView = DirectX::XMLoadFloat4x4(&this->m_viewMatrix);
@@ -353,7 +386,8 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 
 
 	this->m_focusPoint = lockTarget;
-	this->m_distance = distance;
+	//this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	m_pitch = DirectX::XMConvertToRadians(-45.0);
@@ -362,7 +396,7 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 	this->m_camDirvector = m_Dir();
 	this->m_camRightvector = m_Right();
 	//DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
-
+	
 	m_updatePos();
 
 	return;
@@ -372,7 +406,8 @@ void Camera::SetCameraPivotOffset(DirectX::XMVECTOR targetOffset, float distance
 {
 	bool result = false;
 
-	this->m_distance = distance;
+	//this->m_distance = distance;
+	this->m_maxDistance = distance;
 	this->m_focusPointOffset = targetOffset;
 
 	this->m_camDirvector = m_Dir();
@@ -452,8 +487,9 @@ void Camera::MultiplyCameraUp(DirectX::XMFLOAT3 multiplyValue)
 void Camera::RotateCameraPivot(float pitch, float yaw)
 {
 
-	m_pitch += pitch;
-	m_yaw -= yaw;
+
+	this->m_pitch += pitch * this->m_deltaTime;
+	this->m_yaw -= yaw * this->m_deltaTime;
 
 	//1.48352986 is ~85 degrees in radians
 	if (m_pitch > 1.48352986f)
@@ -570,12 +606,6 @@ void Camera::IncreaseDistance(float amount)
 
 
 }
-Sphere Camera::GetCollisionSphere(DirectX::XMVECTOR & pos)
-{
-	pos = DirectX::XMLoadFloat3(&this->GetCameraPos());
-
-	return m_collisionSphere;
-}
 
 DirectX::XMVECTOR Camera::GetRight()
 {
@@ -613,19 +643,81 @@ DirectX::XMVECTOR Camera::m_Right()
 }
 void Camera::m_updatePos()
 {
+	this->m_calcDistance();
+
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
 
 	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
+	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
 
 	float x = m_distance * cos(m_pitch) * sin(m_yaw);
 	float y = m_distance * sin(m_pitch);
 	float z = m_distance * cos(m_pitch) * cos(m_yaw);
 
+	float mx = m_maxDistance * cos(m_pitch) * sin(m_yaw);
+	float my = m_maxDistance * sin(m_pitch);
+	float mz = m_maxDistance * cos(m_pitch) * cos(m_yaw);
+
 	camPosVec = DirectX::XMVectorAdd(camPosVec, DirectX::XMVectorSet(-x, -y, -z, 0.0f));
+	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(m_cameraMaxDistancePos, DirectX::XMVectorSet(-mx, -my, -mz, 0.0f));
+
 
 	DirectX::XMStoreFloat4(&this->m_lookAt, finalFocus);
 	DirectX::XMStoreFloat4(&this->m_cameraPos, camPosVec);
+}
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
+void Camera::m_calcDistance()
+{
+	const float EPSILON = 1e-5f;
+	static float targetDistance = m_maxDistance;
+	float intersectDistance = m_maxDistance + 0.3f;
+	float hitDistance = m_maxDistance;
+	float zoomSpeedFactor = 4.f;
+	bool newDistance = false;
+	bool raycollision = false;
+
+	for (C_OBB i : m_intersectionOBBs)
+	{
+		OBB obb;
+		obb.ext[0] = i.ext.x;
+		obb.ext[1] = i.ext.y;
+		obb.ext[2] = i.ext.z;
+
+		obb.ort = DirectX::XMLoadFloat4x4(&i.ort);
+		
+		if (m_IntersectRayOBB(m_cameraMaxDistancePos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		{
+			if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
+			{
+				newDistance = true;
+				intersectDistance = hitDistance;
+			}
+		}
+	}
+	
+	if (newDistance)
+	{
+		if ((intersectDistance < targetDistance) || (intersectDistance > targetDistance))
+			targetDistance = intersectDistance;
+		if (targetDistance > this->m_maxDistance)
+			targetDistance = this->m_maxDistance;
+		else if (targetDistance < 0.05f)
+			targetDistance = 0.05f;
+	}
+	else if(targetDistance < m_maxDistance || targetDistance > m_maxDistance)
+		targetDistance = m_maxDistance;
+
+	if (!fabs(m_distance - targetDistance) < EPSILON)
+	{
+		float diffFactor = (abs(m_distance - targetDistance) * zoomSpeedFactor);
+		this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
+	}
+	
 }
 #pragma endregion setters
 
@@ -634,7 +726,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 	CullingResult result = FRUSTRUM_INSIDE;
 
 #pragma region
-	/*enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -680,58 +772,58 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 		{
 			result = FRUSTRUM_INTERSECT;
 		}
-	}*/
+	}
 #pragma endregion Uses only 2 corners
 
 #pragma region
-	for (int i = 0; i < 6; i++)
-	{
-		DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
-		DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
-		//+Y
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		//-Y
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
-		v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
-		if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
-		{
-			continue;
-		}
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&this->myPlanes[i].normal);
+	//	DirectX::XMVECTOR v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, box.ext.z, 0.0f));
+	//	//+Y
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	//-Y
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, -box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
+	//	v0 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&box.pos), DirectX::XMVectorSet(-box.ext.x, -box.ext.y, box.ext.z, 0.0f));
+	//	if (DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(p, v0)) <= 0.0f)
+	//	{
+	//		continue;
+	//	}
 
-		result = FRUSTRUM_OUTSIDE;
-	}
+	//	result = FRUSTRUM_OUTSIDE;
+	//}
 #pragma endregion uses all corners
 
 	return result;
@@ -794,6 +886,29 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	return result;
 }
 
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+{
+	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
+	float distance = 0.0f;
+	enum { NUMBER_OF_PLANES = 6 };
+	for (int i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		//Distance between point and plane
+		distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+		//Check distance against
+		if (distance > -radius)
+		{
+			return CullingResult::FRUSTRUM_OUTSIDE;
+		}
+		else if (distance > radius)
+		{
+			result = CullingResult::FRUSTRUM_INTERSECT;
+		}
+	}
+
+	return result;
+}
+
 CullingResult Camera::ViewFrustrum::TestAgainstOBBConservative(C_OBB box)
 {
 	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
@@ -851,4 +966,101 @@ DirectX::XMVECTOR Camera::C_AABB::GetNegativeVertex(const DirectX::XMVECTOR & no
 		result = DirectX::XMVectorSetZ(result, DirectX::XMVectorGetZ(DirectX::XMVectorSubtract(pos, ext)));
 
 	return DirectX::XMVectorAdd(pos, result);
+}
+
+bool Camera::m_IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const DirectX::XMVECTOR & rayDir, const OBB & obj, const DirectX::XMVECTOR & obbPos, float & distanceToOBB)
+{
+	Ray ray;
+	ray.Origin = rayOrigin;
+	ray.RayDir = rayDir;
+
+
+	float t1, t2 = 0.0;
+	const int NR_OF_NORMALS = 3;
+
+	//Vec rayD = ray.d;
+	DirectX::XMVECTOR radD = ray.RayDir;
+
+	DirectX::XMVECTOR sideVector[NR_OF_NORMALS];
+
+	sideVector[0] = obj.ort.r[0];
+	sideVector[1] = obj.ort.r[1];
+	sideVector[2] = obj.ort.r[2];
+
+	float tMin;
+	float tMax;
+
+	tMin = -INFINITY;
+	tMax = INFINITY;
+
+	//Vec pointVec = this->Bcenter - ray.o;
+	DirectX::XMVECTOR pointVec = DirectX::XMVectorSubtract(obbPos, ray.Origin);
+
+	//rayD.Normalize();
+	ray.RayDir = DirectX::XMVector3Normalize(radD);
+
+	float temp;
+	float length[NR_OF_NORMALS];
+
+	length[0] = obj.ext[0];
+	length[1] = obj.ext[1];
+	length[2] = obj.ext[2];
+
+	float e = 0.0f;
+	float f = 0.0f;
+
+	distanceToOBB = 0;
+	for (int i = 0; i < NR_OF_NORMALS; i++)
+	{
+
+		e = DirectX::XMVector4Dot(sideVector[i], pointVec).m128_f32[0];
+		f = DirectX::XMVector4Dot(sideVector[i], ray.RayDir).m128_f32[0];
+
+		if (abs(f) > 1e-20f)
+		{
+			t1 = (e + length[i]) / f;
+			t2 = (e - length[i]) / f;
+
+			if (t1 > t2)
+			{
+				//swap
+				temp = t2;
+				t2 = t1;
+				t1 = temp;
+			}
+			if (t1 > tMin)
+			{
+				tMin = t1;
+			}
+			if (t2 < tMax)
+			{
+				tMax = t2;
+			}
+			if (tMin > tMax)
+			{
+				return false;
+			}
+			if (tMax < 0)
+			{
+				return false;
+			}
+		}
+		else if ((-e - length[i]) > 0 || (-e + length[i] < 0))
+		{
+			return false;
+		}
+	}
+
+	if (tMin > 0)
+	{
+		//min intersect
+		distanceToOBB = tMin;
+	}
+	else
+	{
+		//max intersect
+		distanceToOBB = tMax;
+	}
+
+	return true;
 }

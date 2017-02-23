@@ -254,7 +254,8 @@ float4 PS_main(VS_OUT input) : SV_Target
         float lightPower = 0;
 
         lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
-        lightPower *= pointlights[i].intensity; //could add falloff factor
+        lightPower *= (AOSamp);
+        lightPower *= pointlights[i].intensity; 
         if (lightPower > 0.0f)
         {
             //PBR variables 
@@ -263,9 +264,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             float LdotH = saturate((dot(L, H)));
             float NdotH = saturate((dot(N, H)));
-            float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+            float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
-
+  
             //DO SHADOW STUFF HERE
 
             //DIFFUSE

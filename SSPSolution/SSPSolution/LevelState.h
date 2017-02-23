@@ -23,6 +23,12 @@
 #define BALL1_ID 1
 #define BALL2_ID 1
 #define CHAIN_ID 1
+const int GRAB_COOLDOWN = 1;	//Cooldown in seconds until player can grab something after a throw
+const int GRAB_RANGE = 3; //The range of the grab in meters
+
+
+// For testing
+#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState
@@ -53,7 +59,9 @@ private:
 	
 	Entity* GetClosestBall(float minDist);
 
+	int m_curLevel;
 	int m_clearedLevel;
+	std::vector<std::string> m_levelPaths;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -61,10 +69,14 @@ public:
 	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
+	//Return means. 1:Success ; -1:Failed to load file ; -2:Failed to load level ; -3:Failed to load lights
 	int CreateLevel(LevelData::Level* data);
 	int UnloadLevel();
 	//TEMP
-	int LoadNext(InputHandler* inputHandler);
+	int LoadNext();
+
+	int GetLevelIndex();
+	std::string GetLevelPath();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

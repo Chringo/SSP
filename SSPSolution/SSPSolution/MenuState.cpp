@@ -35,29 +35,45 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
+	this->inFullscreen = false;
+
+	this->m_menuBG = cHandler->GetUIComponent();
+	this->m_menuBG->active = 1;
+	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_menuBG->size = DirectX::XMFLOAT2(1280.f, 720.f);
+	this->m_menuBG->spriteID = 4;
+
 	for (size_t i = 0; i < 3; i++) //Create the main menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 1;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = 5;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
 		this->m_mainMenuButtons.push_back(button);
 	}
+	this->m_keymaps = cHandler->GetUIComponent();
+	this->m_keymaps->active = 0;
+	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 400.f);
+	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
+	this->m_keymaps->spriteID = 3;
+	this->m_keymaps->scale = 0.5f;
 	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = 5;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -69,9 +85,10 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = 5;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(125.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -83,6 +100,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_uiComp->spriteID = 5;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
@@ -92,7 +110,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_mainMenuButtons[2].m_textComp->text = L"Quit Game";
 	this->m_mainMenuButtons[1].m_textComp->text = L"Options";
 
-	this->m_optionsMenuButtons[0].m_textComp->text = L"Toggle Fullscreen";
+	this->m_optionsMenuButtons[0].m_textComp->text = L"Fullscreen";
 	this->m_optionsMenuButtons[1].m_textComp->text = L"Go Back";
 
 	this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
@@ -123,7 +141,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_mainMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_mainMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -202,6 +220,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(true);
 			}
+			this->m_keymaps->active = 1;
 		}
 		else if (this->m_mainMenuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -217,7 +236,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_optionsMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_optionsMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 			}
 			else if (i != this->m_markedItem)
 			{
@@ -261,6 +280,15 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			////Cheating by telling the system the user pressed F
 			//inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
 			result = 511;
+			if (!this->inFullscreen)
+			{
+				this->m_optionsMenuButtons.at(0).m_textComp->text = L"Windowed";
+			}
+			else
+			{
+				this->m_optionsMenuButtons.at(0).m_textComp->text = L"Fullscreen";
+			}
+			this->inFullscreen = !this->inFullscreen;
 		}
 		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
 		{
@@ -278,7 +306,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(false);
 			}
-			this->m_ipTextBox.SetActive(false);
+			this->m_keymaps->active = 0;
 		}
 		break;
 
@@ -289,7 +317,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			if (this->m_startMenuButtons[i].m_uiComp->isHovered)
 			{
 				this->m_startMenuButtons[i].SetHovered(true);
-				this->m_markedItem = i;
+				this->m_markedItem = (unsigned int)i;
 				this->m_ipTextBox.SetFocused(false);
 			}
 			else if (i != this->m_markedItem)
@@ -367,6 +395,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 					this->m_startMenuButtons[i].SetActive(false);
 				}
 				this->m_ipTextBox.SetActive(false);
+				this->m_menuBG->active = 0;
 
 				#pragma endregion Hide Menu
 				
@@ -400,6 +429,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
+			this->m_menuBG->active = 0;
+
 			//Update the IP stored in Progression
 			if (!this->m_ipTextBox.firstChar)
 			{

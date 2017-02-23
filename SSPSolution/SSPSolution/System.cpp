@@ -153,7 +153,7 @@ int System::Run()
 		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_C))
 		{
 			DebugHandler::instance()->ResetMinMax();
-			printf("Reseted min max on timers\n");
+			printf("Reset min max on timers\n");
 		}
 
 		DebugHandler::instance()->EndProgram();
@@ -179,68 +179,10 @@ int System::Update(float deltaTime)
 
 	DebugHandler::instance()->EndTimer(1);
 
-
-#ifdef _DEBUG
-	//int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-	//for (int i = 0; i < nrOfComponents; i++)
-	//{
-	//	PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-	//	if (temp->PC_BVtype == BV_AABB)
-	//	{
-	//		AABB* AABB_holder = nullptr;
-	//		this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-	//	}
-	//	if (temp->PC_BVtype == BV_OBB)
-	//	{
-	//		OBB* OBB_holder = nullptr;
-	//		this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
-
-	//		DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
-
-	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-	//		//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
-	//	}
-	//	if (temp->PC_BVtype == BV_Plane)
-	//	{
-	//		Plane* planeHolder = nullptr;
-	//		this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-	//	}
-	//	if (temp->PC_BVtype == BV_Sphere)
-	//	{
-	//		Sphere* sphereHolder = nullptr;
-	//		this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-	//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-	//		//AABB test;
-	//		//test.ext[0] = sphereHolder->radius;
-	//		//test.ext[1] = sphereHolder->radius;
-	//		//test.ext[2] = sphereHolder->radius;
-	//		//AABB* ptr = &test;
-	//		//this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
-	//	}
-	//}
-	int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
-
-	for (int i = 0; i < nrOfBodyParts; i++)
-	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
-		OBB* OBB_holder = nullptr;
-		OBB_holder = &temp->PC_OBB;
-		OBB_holder->ext[0] = temp->PC_Sphere.radius;
-		OBB_holder->ext[1] = temp->PC_Sphere.radius;
-		OBB_holder->ext[2] = temp->PC_Sphere.radius;
-		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-
-	}
-#endif // _DEBUG
-
-	//CAM
-	this->m_camera->Update(deltaTime);
-
 	//AI
 	this->m_AIHandler.Update(deltaTime);
 
+#ifdef DEVELOPMENTFUNCTIONS
 	//Save progress
 	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
 	{
@@ -278,6 +220,8 @@ int System::Update(float deltaTime)
 	{
 		this->m_graphicsHandler->ToggleOverviewCamera();
 	}
+#endif // DEVELOPMENTFUNCTIONS
+
 
 	this->m_AnimationHandler->Update(deltaTime);
 	
@@ -343,17 +287,17 @@ int System::Update(float deltaTime)
 	//}
 	PhysicsComponent* ptr = this->m_physicsHandler.GetPlayer1Ragdoll()->playerPC;
 	if (ptr != nullptr)
-	{
+		{
 		OBB* OBB_holder = &ptr->PC_OBB;
 		OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
 		OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
 		OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
 
 		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
-	}
+		}
 	ptr = this->m_physicsHandler.GetPlayer2Ragdoll()->playerPC;
 	if (ptr != nullptr)
-	{
+		{
 		OBB* OBB_holder = &ptr->PC_OBB;
 		OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
 		OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
@@ -377,7 +321,8 @@ int System::Update(float deltaTime)
 #endif // _DEBUG
 
 	DebugHandler::instance()->StartTimer(2);
-	this->m_graphicsHandler->Render(deltaTime);
+	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 	DebugHandler::instance()->EndTimer(2);
 

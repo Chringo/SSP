@@ -93,8 +93,8 @@ struct PhysicsComponent
 
 	void AddCollitionNormal(DirectX::XMFLOAT3 normal)
 	{
-		int nrOfNormals = this->m_collition_Normals.size();
-		for (int i = 0; i < nrOfNormals; i++)
+		size_t nrOfNormals = this->m_collition_Normals.size();
+		for (size_t i = 0; i < nrOfNormals; i++)
 		{
 			float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
 				DirectX::XMLoadFloat3(&normal), 

@@ -10,6 +10,7 @@ Player::Player()
 	this->m_isAiming = false;
 	this->m_walkingSound = nullptr;
 	this->m_oldAnimState = 0;
+	this->m_timeSinceThrow = 0;
 	this->m_ragdoll = nullptr;
 }
 
@@ -21,7 +22,7 @@ Player::~Player()
 	}
 }
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
+int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, ComponentHandler* cHandler)
 {
 	int result = 0;
 
@@ -32,6 +33,13 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+
+	//Controls overlay
+	this->m_controlsOverlay = cHandler->GetUIComponent();
+	this->m_controlsOverlay->active = 0;
+	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->scale = .6f;
 
 	return result;
 }
@@ -46,7 +54,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = ANIMATED;
-
+	
 		this->m_oldAnimState = this->m_aComp->previousState;
 		SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);			
 		this->m_aComp->previousState = PLAYER_IDLE;
@@ -100,194 +108,195 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (this->m_ragdoll != nullptr && this->m_ragdoll->state == ANIMATED)
 	{
-		/*Run forward.*/
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
-		{
-			forwards++;
+	/*Run forward.*/
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
+	{
+		forwards++;
 
-			if (this->m_aComp->lockAnimation != true)
-			{
-				/*If the player is currently walking, dont update any information from here.*/
-				if (m_grabbed != nullptr)
-				{
-					if (!stateExists(PLAYER_RUN_FORWARD_BALL))
-					{
-						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-						this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
-					}
-				}
-				else
-				{
-					if (!stateExists(PLAYER_RUN_FORWARD))
-					{
-						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-						this->m_aComp->previousState = PLAYER_RUN_FORWARD;
-					}
-				}
-			}
-		}
-		/*Run backwards.*/
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
+		if (this->m_aComp->lockAnimation != true)
 		{
-			forwards--;
-
-			if (this->m_aComp->lockAnimation != true)
+			/*If the player is currently walking, dont update any information from here.*/
+			if (m_grabbed != nullptr)
 			{
-				if (m_grabbed != nullptr)
-				{
-					if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
-					{
-						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-						this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
-					}
-				}
-				else
-				{
-					if (!stateExists(PLAYER_RUN_BACKWARD))
-					{
-						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-						this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
-					}
-				}
-			}
-		}
-		/*Strafe run to the right.*/
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
-		{
-			sideways++;
-
-			if (this->m_aComp->lockAnimation != true)
-			{
-				if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_D) &
-					!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_D))
-				{
-					if (m_grabbed != nullptr)
-					{
-						if (!stateExists(PLAYER_RUN_RIGHT_BALL))
-						{
-							this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-							this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
-						}
-					}
-					else
-					{
-						if (!stateExists(PLAYER_RUN_RIGHT))
-						{
-							this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-							this->m_aComp->previousState = PLAYER_RUN_RIGHT;
-						}
-					}
-				}
-			}
-		}
-		/*Strafe run to the left.*/
-		if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
-		{
-			sideways--;
-
-			if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_A) &
-				!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_A))
-			{
-				if (this->m_aComp->lockAnimation != true)
-				{
-					if (m_grabbed != nullptr)
-					{
-						if (!stateExists(PLAYER_RUN_LEFT_BALL))
-						{
-							this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-							this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
-						}
-					}
-					else
-					{
-						if (!stateExists(PLAYER_RUN_LEFT))
-						{
-							this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
-							this->m_aComp->previousState = PLAYER_RUN_LEFT;
-						}
-					}
-				}
-			}
-		}
-
-		/*Releasing the any button for running with player will blend back to idle state with ball or not.*/
-		if (inputHandler->IsKeyReleased(SDL_SCANCODE_W) || inputHandler->IsKeyReleased(SDL_SCANCODE_D)
-			|| inputHandler->IsKeyReleased(SDL_SCANCODE_S) || inputHandler->IsKeyReleased(SDL_SCANCODE_A))
-		{
-			if (m_aComp->lockAnimation != true)
-			{
-				if (m_grabbed != nullptr)
+				if (!stateExists(PLAYER_RUN_FORWARD_BALL))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_RUN_FORWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.7f, this->m_aComp->velocity);
+					this->m_aComp->previousState = PLAYER_RUN_FORWARD_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_FORWARD))
+				{
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_RUN_FORWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.7f, this->m_aComp->velocity);
+					this->m_aComp->previousState = PLAYER_RUN_FORWARD;
+				}
+			}
+		}
+	}
+	/*Run backwards.*/
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_S))
+	{
+		forwards--;
+
+		if (this->m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
+				{
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
+				}
+			}
+			else
+			{
+				if (!stateExists(PLAYER_RUN_BACKWARD))
+				{
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
+				}
+			}
+		}
+	}
+	/*Strafe run to the right.*/
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_D))
+	{
+		sideways++;
+
+		if (this->m_aComp->lockAnimation != true)
+		{
+			if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_D) & 
+				!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_D))
+			{
+				if (m_grabbed != nullptr)
+				{
+					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
+					{
+						this->m_oldAnimState = this->m_aComp->previousState;
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
+					}
+				}
+				else
+				{
+					if (!stateExists(PLAYER_RUN_RIGHT))
+					{
+						this->m_oldAnimState = this->m_aComp->previousState;
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
+					}
+				}
+			}
+		}
+	}
+	/*Strafe run to the left.*/
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_A))
+	{
+		sideways--;
+
+		if (!inputHandler->IsKeyDown(SDL_SCANCODE_W) && inputHandler->IsKeyDown(SDL_SCANCODE_A) &
+			!inputHandler->IsKeyDown(SDL_SCANCODE_S) && inputHandler->IsKeyDown(SDL_SCANCODE_A))
+		{
+			if (this->m_aComp->lockAnimation != true)
+			{
+				if (m_grabbed != nullptr)
+				{
+					if (!stateExists(PLAYER_RUN_LEFT_BALL))
+					{
+						this->m_oldAnimState = this->m_aComp->previousState;
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
+					}
+				}
+				else
+				{
+					if (!stateExists(PLAYER_RUN_LEFT))
+					{
+						this->m_oldAnimState = this->m_aComp->previousState;
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						this->m_aComp->previousState = PLAYER_RUN_LEFT;
+					}
+				}
+			}
+		}
+	}
+
+	/*Releasing the any button for running with player will blend back to idle state with ball or not.*/
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_W) || inputHandler->IsKeyReleased(SDL_SCANCODE_D)
+		|| inputHandler->IsKeyReleased(SDL_SCANCODE_S) || inputHandler->IsKeyReleased(SDL_SCANCODE_A))
+	{
+		if (m_aComp->lockAnimation != true)
+		{
+			if (m_grabbed != nullptr)
+			{
+				this->m_oldAnimState = this->m_aComp->previousState;
 					SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
-					this->m_aComp->previousState = PLAYER_BALL_IDLE;
-				}
-				else
-				{
-					this->m_oldAnimState = this->m_aComp->previousState;
+				this->m_aComp->previousState = PLAYER_BALL_IDLE;
+			}
+			else
+			{
+				this->m_oldAnimState = this->m_aComp->previousState;
 					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
-					this->m_aComp->previousState = PLAYER_IDLE;
-				}
+				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 		}
+	}
 
-		if (this->m_grabbed != nullptr)
-		{
+	if (this->m_grabbed != nullptr)
+	{
 
-			//Set the ball to be between the two hands
+		//Set the ball to be between the two hands
+		
+		//left hand index  : 8
+		//right hand index : 12
 
-			//left hand index  : 8
-			//right hand index : 12
-
-			//Get left hand, multiply it by bind pose to correct position
-			DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
-			DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
+		//Get left hand, multiply it by bind pose to correct position
+		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
 			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
-			tpose = DirectX::XMMatrixInverse(&det, tpose);
-			joint = DirectX::XMMatrixMultiply(tpose, joint);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
 
-			//Get right hand, multiply it by its bind pose to correct the position
-			DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[12];
-			DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[12].invBindPose);
+		//Get right hand, multiply it by its bind pose to correct the position
+		DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[12];
+		DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[12].invBindPose);
 			det = DirectX::XMMatrixDeterminant(tposeTwo);
-			tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
-			jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
+		tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
+		jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
 
-			//Get world matrix of the character
-			DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
-
-			//Multiply the hand joints into world space
+		//Get world matrix of the character
+		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
+		
+		//Multiply the hand joints into world space
 			joint = DirectX::XMMatrixMultiply(joint, world);
-			jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);
+		jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);
 
-			//Get a vector from left hand to right hand
+		//Get a vector from left hand to right hand
 			DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3], joint.r[3]);
 
-			//Cut the vector in half
-			jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
+		//Cut the vector in half
+		jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
 
-			PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent();
+		PhysicsComponent* ptr = this->m_grabbed->GetPhysicsComponent(); 
 
-			//Final pos = left hand + half jointToJoint vector
-			ptr->PC_pos = DirectX::XMVectorAdd(joint.r[3], jointToJoint);
-
-
-			ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			ptr->PC_gravityInfluence = 1.0;
-		}
+		//Final pos = left hand + half jointToJoint vector
+		ptr->PC_pos = DirectX::XMVectorAdd(joint.r[3], jointToJoint);
 
 
-		//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
-		if (inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
+		ptr->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		ptr->PC_gravityInfluence = 1.0;
+	}
+
+
+	//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
+	bool hasThrown = false;
+	if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_grabbed != nullptr)
 		{
 			//assumes grabbed is ALWAYS the ball
 			if (this->m_grabbed != nullptr)
@@ -302,12 +311,29 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 
 				float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
+
+			//if the player is holding its own ball
+			if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
+			{
+				strength = 2; //weak as föök if the player tries to throw himself
+			}
+
+				
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 				this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
 				//this->m_ragdoll->state = RAGDOLL;
 				this->SetGrabbed(nullptr);	//Release the entity
+
+			hasThrown = true;
+			this->m_timeSinceThrow = 0;
+		}
 			}
+
+	//Check if we have not thrown something
+	if (hasThrown == false)
+	{
+		this->m_timeSinceThrow += dT;	//Add time to timmer
 		}
 	}
 	//Check if player is grounded
@@ -440,6 +466,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 	}
 
+	//Controls overlay
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 1;
+	}
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 0;
+	}
+
 	//End the update
 	return result;
 }
@@ -547,14 +583,14 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 
 		else
 		{
-			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-			this->m_aComp->target_State->stateIndex = animationState;
-			this->m_aComp->blendFlag = blendingType;
-			this->m_aComp->target_State->isLooping = isLooping;
-			this->m_aComp->lockAnimation = lockAnimation;
-			this->m_aComp->playingSpeed = playingSpeed;
-			this->m_aComp->velocity = velocity;
-		}
+	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+	this->m_aComp->target_State->stateIndex = animationState;
+	this->m_aComp->blendFlag = blendingType;
+	this->m_aComp->target_State->isLooping = isLooping;
+	this->m_aComp->lockAnimation = lockAnimation;
+	this->m_aComp->playingSpeed = playingSpeed;
+	this->m_aComp->velocity = velocity;
+}
 		//this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 		//this->m_aComp->target_State->stateIndex = animationState;
 		//this->m_aComp->blendFlag = blendingType;
@@ -648,4 +684,9 @@ bool Player::isAnimationChanged()
 	}
 
 	return result;
+}
+
+float Player::TimeSinceThrow()
+{
+	return this->m_timeSinceThrow;
 }
