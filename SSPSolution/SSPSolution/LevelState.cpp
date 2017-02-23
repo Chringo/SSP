@@ -84,6 +84,18 @@ Entity* LevelState::GetClosestBall(float minDist)
 	return closest;
 }
 
+void LevelState::SendSyncForJoin()
+{
+	unsigned int	startIndex = 0;
+	unsigned int	nrOfDynamics = 0;
+	bool			isHost = false;
+	unsigned int	levelID = 1;	//CHANGE LEVEL HERE NOW
+	unsigned int	checkpointID = 0;
+
+	this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
+
+}
+
 LevelState::LevelState()
 {
 }
@@ -486,7 +498,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->LoadNext();
 	}
 
+	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
+
+	//If someone has connected
+	if (prevConnects < this->m_networkModule->GetNrOfConnectedClients())
+	{
+		this->SendSyncForJoin();
+	}
 
 	this->m_cameraRef->UpdateDeltaTime(dt);
 

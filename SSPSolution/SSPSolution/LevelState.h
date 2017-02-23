@@ -126,6 +126,9 @@ private:
 	int m_curLevel;
 	int m_clearedLevel;
 	std::vector<std::string> m_levelPaths;
+
+	void SendSyncForJoin();
+
 public:
 	LevelState();
 	virtual ~LevelState();
