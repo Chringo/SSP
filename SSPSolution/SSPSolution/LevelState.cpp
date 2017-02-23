@@ -1217,6 +1217,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
 		this->m_gsh->PopStateFromStack();
 
 		//MenuState* menuState = new MenuState();

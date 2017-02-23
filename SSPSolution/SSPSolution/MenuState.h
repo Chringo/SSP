@@ -4,7 +4,7 @@
 #include "LevelSelectState.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 
-//#define HOST_DISABLE
+#define HOST_DISABLE
 
 const float TIMEOUT_TIME = 200;
 
