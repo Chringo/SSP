@@ -11,6 +11,7 @@ Player::Player()
 	this->m_walkingSound = nullptr;
 	this->m_oldAnimState = 0;
 	this->m_timeSinceThrow = 0;
+	this->m_ragdoll = nullptr;
 }
 
 Player::~Player()
@@ -44,7 +45,64 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
+	{
+		this->m_ragdoll->state = ANIMATED;
 	
+		this->m_oldAnimState = this->m_aComp->previousState;
+		SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);			
+		this->m_aComp->previousState = PLAYER_IDLE;
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
+	{
+		//this->m_ragdoll->state = RAGDOLL;
+		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
+		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
+		//this->m_ragdoll->upperBody.center->PC_velocity = vel;
+		//this->m_ragdoll->upperBody.next->PC_velocity   = vel;
+		//this->m_ragdoll->upperBody.next2->PC_velocity  = vel;
+		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
+		
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
+	{
+		this->m_ragdoll->state = KEYFRAMEBLEND;
+		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	}
+
+	if (this->m_ragdoll != nullptr)
+	{
+		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
+		{
+			this->m_oldAnimState = this->m_aComp->previousState;
+			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+			this->m_aComp->previousState = PLAYER_IDLE;
+			this->m_ragdoll->state = ANIMATED;
+		}
+		if (this->m_ragdoll->state == RAGDOLL)
+		{
+			this->m_aComp;
+			this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			
+			if (!stateExists(RAGDOLL_STATE))
+			{
+				this->m_oldAnimState = this->m_aComp->previousState;
+				SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);	
+				this->m_aComp->previousState = RAGDOLL_STATE;
+				
+			}
+			for (int i = 0; i < 21; i++)
+			{
+				this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorSetW(this->m_ragdoll->jointMatrixes[i].r[3], 1);
+
+				DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+
+				((GraphicsAnimationComponent*)this->m_gComp)->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, this->m_ragdoll->jointMatrixes[i]);
+			}
+		}
+	}
+	if (this->m_ragdoll != nullptr && this->m_ragdoll->state == ANIMATED)
+	{
 	if (m_chainSoundTimer < 1)
 		this->m_chainSoundTimer += dT;
 
@@ -175,13 +233,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			if (m_grabbed != nullptr)
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 				this->m_aComp->previousState = PLAYER_BALL_IDLE;
 			}
 			else
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 		}
@@ -198,14 +256,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Get left hand, multiply it by bind pose to correct position
 		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
 		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
-		DirectX::XMVECTOR det   = DirectX::XMMatrixDeterminant(tpose);
+				DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
 		tpose = DirectX::XMMatrixInverse(&det, tpose);
 		joint = DirectX::XMMatrixMultiply(tpose, joint);
 
 		//Get right hand, multiply it by its bind pose to correct the position
 		DirectX::XMMATRIX jointTwo = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[12];
 		DirectX::XMMATRIX tposeTwo = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[12].invBindPose);
-		det      = DirectX::XMMatrixDeterminant(tposeTwo);
+				det = DirectX::XMMatrixDeterminant(tposeTwo);
 		tposeTwo = DirectX::XMMatrixInverse(&det, tposeTwo);
 		jointTwo = DirectX::XMMatrixMultiply(tposeTwo, jointTwo);
 
@@ -213,11 +271,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
 		
 		//Multiply the hand joints into world space
-		joint    = DirectX::XMMatrixMultiply(joint,    world);
+				joint = DirectX::XMMatrixMultiply(joint, world);
 		jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);
 
 		//Get a vector from left hand to right hand
-		DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3] , joint.r[3]);
+				DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3], joint.r[3]);
 
 		//Cut the vector in half
 		jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
@@ -251,10 +309,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 			/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 			if (this->GetEntityID() == 2)
-				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 			else
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
-
+				
 			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
 
 			//if the player is holding its own ball
@@ -267,7 +325,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			m_grabbed->GetPhysicsComponent()->PC_active = true;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
-
+					//this->m_ragdoll->state = RAGDOLL;
 			this->SetGrabbed(nullptr);	//Release the entity
 
 			hasThrown = true;
@@ -280,7 +338,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	{
 		this->m_timeSinceThrow += dT;	//Add time to timmer
 	}
-
+	}
 	//Check if player is grounded
 
 	//Check if the player CAN	 update its physics component
@@ -289,6 +347,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Check if the player should update its physics component
 		//if (this->m_pComp->PC_entityID == 0)
 		//{
+		if (forwards == 0)
+		{
+			//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			//this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		}
 		if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
@@ -345,6 +408,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				this->m_pComp->PC_velocity = velocity;
 				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
+				this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
 				
 				/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
 				DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
@@ -377,7 +441,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					DirectX::XMFLOAT3 pos;
 					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 					if (this->GetEntityID() == 2)
-						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
 					else
 						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
 					pos.y = pos.y - 1;
@@ -404,7 +468,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (this->m_walkingSound != nullptr && !this->m_walkingSound->getIsPaused())
 				{
-					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound	
+					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
 				}
 				if (m_isAiming)
 				{
@@ -433,6 +497,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
+			if (this->m_ragdoll->state == RAGDOLL)
+			{
+				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.5, 0, 0)));
+			}
 		}
 	}
 
@@ -527,7 +595,22 @@ bool Player::stateExists(int animationState)
 
 void Player::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
-	this->m_aComp->transitionDuration = transitionDuration;
+	if (animationState != RAGDOLL_STATE)
+	{
+		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
+		{
+			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->source_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->source_State->stateIndex = animationState;
+			this->m_aComp->blendFlag = blendingType;
+			this->m_aComp->source_State->isLooping = isLooping;
+			this->m_aComp->lockAnimation = lockAnimation;
+			this->m_aComp->playingSpeed = playingSpeed;
+			this->m_aComp->velocity = velocity;
+		}
+
+		else
+		{
 	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
 	this->m_aComp->target_State->stateIndex = animationState;
 	this->m_aComp->blendFlag = blendingType;
@@ -536,10 +619,41 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 	this->m_aComp->playingSpeed = playingSpeed;
 	this->m_aComp->velocity = velocity;
 }
+		//this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+		//this->m_aComp->target_State->stateIndex = animationState;
+		//this->m_aComp->blendFlag = blendingType;
+		//this->m_aComp->target_State->isLooping = isLooping;
+		//this->m_aComp->lockAnimation = lockAnimation;
+		//this->m_aComp->playingSpeed = playingSpeed;
+		//this->m_aComp->velocity = velocity;
+	}
+
+	else
+	{
+		this->m_aComp->source_State->stateIndex = animationState;
+		this->m_aComp->blendFlag = blendingType;
+		this->m_aComp->lockAnimation = lockAnimation;
+		this->m_aComp->playingSpeed = playingSpeed;
+		this->m_aComp->target_State = nullptr;
+		this->m_aComp->target_Time = 0.f;
+		this->m_aComp->source_Time = 0.f;
+	}
+	
+}
 
 void Player::SetBall(Entity * ball)
 {
 	this->m_ball = ball;
+}
+
+void Player::SetRagdoll(Ragdoll * ragdoll)
+{
+	this->m_ragdoll = ragdoll;
+}
+
+void Player::SetOldAnimState(int newOldState)
+{
+	this->m_oldAnimState = newOldState;
 }
 
 float Player::GetMaxSpeed()
@@ -580,6 +694,11 @@ Entity * Player::GetGrabbed()
 Entity * Player::GetBall()
 {
 	return this->m_ball;
+}
+
+Ragdoll * Player::GetRagdoll()
+{
+	return this->m_ragdoll;
 }
 
 bool Player::isAnimationChanged()

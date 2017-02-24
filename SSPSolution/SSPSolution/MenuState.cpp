@@ -601,7 +601,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
 				delete levelSelect;
 				levelSelect = nullptr;
-			}
+		}
 			else
 			{
 				delete levelSelect;
@@ -770,15 +770,15 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 					break;
 
 				}
 				#pragma endregion Level_To_Load
 			}
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
 			#pragma endregion Load_Level
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
@@ -854,9 +854,9 @@ void MenuState::Joining(InputHandler* inputHandler)
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 
-		//Delete it
-		delete levelSelect;
-		levelSelect = nullptr;
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
 		#pragma endregion Load_Level
 
 		this->isJoining = false;
