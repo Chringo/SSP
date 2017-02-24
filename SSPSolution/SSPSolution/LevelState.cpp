@@ -196,6 +196,7 @@ int LevelState::ShutDown()
 	this->m_cHandler->GetPhysicsHandler()->Initialize();
 
 	this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+	this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
 
 	return result;
 }
