@@ -240,7 +240,7 @@ float sampleShadowStencils(float3 worldPos, float3 lpos)
     float shadowFactor = 0.0f;
     
     float bias = 0.0000018f;
-    float3 pixToLight = worldPos - float3(0.f,0.f,4.f);
+    float3 pixToLight = worldPos - lpos;
 
     [unroll]
     for (int i = 0; i < 8; i++)

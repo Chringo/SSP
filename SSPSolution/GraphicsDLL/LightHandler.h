@@ -35,7 +35,7 @@
 
 
 */
-#define LIGHT_CHECK_PAUSE_TIME (1.0f / 0.2f)
+#define LIGHT_CHECK_PAUSE_TIME (1.0f / 10.0f)
 //#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {
