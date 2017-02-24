@@ -1783,23 +1783,11 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 
 		}
-		if (ragdoll->playerPC->PC_entityID == 2)
-		{
-			//DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
-			////this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
-			////ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
-			//DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
-			//DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
-			////ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
-			////this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
-		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		if (ballVel > 10.0 )
 		{
-			//this->m_links.at(0).PL_previous = ragdoll->upperBody.center;
-			//ragdoll->upperBody.center->PC_velocity = ragdoll->ballPC->PC_velocity;
 			ragdoll->state = RAGDOLL_TRANSITION;
 		}
 	}
@@ -1812,19 +1800,10 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			int nrOfBodyParts = this->m_player1BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				//this->m_player1BodyPC.at(i)->PC_gravityInfluence = 1.0f;
 				this->m_player1BodyPC.at(i)->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			}
 		}
-		if (ragdoll->playerPC->PC_entityID == 2)
-		{
-			this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
-			int nrOfBodyParts = this->m_player2BodyPC.size();
-			for (int i = 0; i < nrOfBodyParts; i++)
-			{
-				//this->m_player2BodyPC.at(i)->PC_gravityInfluence = 1.0f;
-			}
-		}
+
 
 		ragdoll->state = RAGDOLL;
 	}

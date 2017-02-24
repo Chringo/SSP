@@ -386,7 +386,6 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 	rigidBody->setUserIndex((int)this->m_rigidBodies.size());
 	rigidBody->setUserIndex2((int)this->m_rigidBodies.size());
 	rigidBody->setAngularFactor(btVector3(0, 0, 0));
-	rigidBody->setRestitution(1.0f);
 	
 
 	this->m_rigidBodies.push_back(rigidBody);
