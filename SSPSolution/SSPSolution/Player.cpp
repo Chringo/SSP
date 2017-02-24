@@ -374,7 +374,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					DirectX::XMFLOAT3 pos;
 					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+					if (this->GetEntityID() == 2)
+						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+					else
+						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
 				}
 				else
 				{
