@@ -32,6 +32,7 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+	this->m_chainSoundTimer = 0.0f;
 
 	return result;
 }
@@ -44,6 +45,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
 	
+	if (m_chainSoundTimer < 1)
+		this->m_chainSoundTimer += dT;
+
 	/*Run forward.*/
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_W))
 	{
@@ -244,8 +248,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-				
+
+			/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
+			if (this->GetEntityID() == 2)
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+			else
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
+
 			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
 
 			//if the player is holding its own ball
@@ -361,19 +370,33 @@ int Player::Update(float dT, InputHandler* inputHandler)
 						0, 0, 0, 1.0f
 					);
 				}
-
 				//Play walking sounds
+				/*Playing the corresponding walk sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
 				{
 					DirectX::XMFLOAT3 pos;
 					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+					if (this->GetEntityID() == 2)
+						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
+					else
+						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
+					pos.y = pos.y - 1;
+					SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
 				}
 				else
 				{
 					if (this->m_walkingSound->getIsPaused())	//If the walking sound is paused
 					{
+						this->m_walkingSound->setPlayPosition(0);
 						this->m_walkingSound->setIsPaused(false);	//Un pause it
+						if (this->m_chainSoundTimer > 0.37f)
+						{
+							DirectX::XMFLOAT3 pos;
+							DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+							pos.y = pos.y - 1;
+							SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
+							this->m_chainSoundTimer = 0.0f;
+						}
 					}
 				}
 			}
@@ -381,10 +404,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				if (this->m_walkingSound != nullptr && !this->m_walkingSound->getIsPaused())
 				{
-					this->m_walkingSound->setPlayPosition(0);
-					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
+					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound	
 				}
-
 				if (m_isAiming)
 				{
 					DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));

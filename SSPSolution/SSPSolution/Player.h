@@ -22,6 +22,7 @@ private:
 	DirectX::XMVECTOR m_rightDir;
 
 	irrklang::ISound* m_walkingSound;
+	float m_chainSoundTimer;
 	int	m_oldAnimState;
 	float m_timeSinceThrow;
 
