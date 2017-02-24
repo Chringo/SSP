@@ -404,7 +404,7 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 		}
 		else
 		{
-			if (this->m_rotationState == RotatingIncrease || this->m_rotationState == RotatingDecrease)
+			if (newSyncState->rotationState == -2)
 			{
 				if (newSyncState->rotationState != oldState)
 					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
