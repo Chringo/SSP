@@ -370,6 +370,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 	 m_constBufferData.SHADOWLIGHT_INDEX = index;
 
+	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 	 Light* commonData = this->m_lightData[LIGHTING::LT_POINT].dataPtr;
 	 Point* specializedData = static_cast<Point*>(commonData);
 
