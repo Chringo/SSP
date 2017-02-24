@@ -25,13 +25,11 @@ private:
 	int	m_oldAnimState;
 	float m_timeSinceThrow;
 
-	UIComponent* m_controlsOverlay;
-
 public:
 	Player();
 	~Player();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, ComponentHandler* cHandler);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);

@@ -172,6 +172,18 @@ int ComponentHandler::ResizeGraphicsPersistent(size_t newCap)
 	return size;
 }
 
+int ComponentHandler::ClearAminationComponents()
+{
+	this->m_aHandler->ClearAnimationComponents();
+	this->m_graphicsHandler->ResetAnimationComponents();
+	return 0;
+}
+
+int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
+{
+	return this->m_graphicsHandler->RemoveUIComponentFromPtr(ptr);
+}
+
 void ComponentHandler::WaypointTime()
 {
 	m_aiHandler->WaypointTime();

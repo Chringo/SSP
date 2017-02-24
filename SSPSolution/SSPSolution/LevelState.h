@@ -24,7 +24,8 @@
 #define BALL2_ID 1
 #define CHAIN_ID 1
 const int GRAB_COOLDOWN = 1;	//Cooldown in seconds until player can grab something after a throw
-const int GRAB_RANGE = 3; //The range of the grab in meters
+const int GRAB_RANGE = 3;		//The range of the grab in meters
+const int PING_DISTANCE = 100;	//Distance for the ping ray
 
 
 // For testing
@@ -35,11 +36,73 @@ class LevelState :
 {
 private:
 
+	struct PingObject
+	{
+		GraphicsComponent* m_gComp;
+		DirectX::XMFLOAT3 m_pos;
+		float m_time = 0.f;
+		float m_maxTime = 5.f;
+		float m_animHeight = 0.f;
+		bool m_dir = true;	//True = up, False = down
+
+		void SetPos(DirectX::XMVECTOR newPos)
+		{
+			DirectX::XMStoreFloat3(&this->m_pos, newPos);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+		}
+
+		void Update(float dt)
+		{
+			if (this->m_gComp->active)
+			{
+				this->m_time += dt;
+				if (this->m_time < m_maxTime)
+				{
+					//printf("Showing the ping");
+					//If we want to do soemthing while it is shown
+					
+					if (this->m_dir == true)	//Going up
+					{
+						this->m_animHeight += dt;
+
+						if (this->m_animHeight >= 0.5f)
+						{
+							this->m_dir = false;
+						}
+					}
+					else //Going down
+					{
+						this->m_animHeight -= dt;
+
+						if (this->m_animHeight <= 0.f)
+						{
+							this->m_dir = true;
+						}
+					}
+
+					//Update the position
+					DirectX::XMVECTOR  newPos = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(this->m_pos.x, this->m_pos.y + this->m_animHeight, this->m_pos.z));
+					this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+				}
+				else
+				{
+					this->m_gComp->active = false;
+					this->m_time = 0;
+					this->m_animHeight = 0;
+					this->m_dir = true;
+				}
+			}
+
+		};
+	};
+
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
 	Player m_player2;
 	DirectX::XMVECTOR m_player1_Spawn;
 	DirectX::XMVECTOR m_player2_Spawn;
+	PingObject m_player1_Ping;
+	PingObject m_player2_Ping;
 
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	//Entities where no data needs to be moved between the components
@@ -56,12 +119,22 @@ private:
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
 	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
-	
+	std::list<PingPacket> m_pingPacketList;	//List with all Ping updates from the network
+
 	Entity* GetClosestBall(float minDist);
 
 	int m_curLevel;
 	int m_clearedLevel;
-	std::vector<std::string> m_levelPaths;
+	struct hardcodedLevelData {
+		std::string levelPath;
+		float farPlane;
+	};
+	std::vector<hardcodedLevelData> m_levelPaths;
+
+	void SendSyncForJoin();
+
+	UIComponent* m_controlsOverlay;
+
 
 	UIComponent* m_crosshair;
 public:
@@ -79,6 +152,11 @@ public:
 
 	int GetLevelIndex();
 	std::string GetLevelPath();
+
+	void SetCurrentLevelID(int currentLevelID);
+
+	int EnterState();
+	int LeaveState();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

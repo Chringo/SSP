@@ -235,15 +235,19 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  m_skeletonHandler->SetDevice(device);
 
  ResourceContainer* temp;
- unsigned int one = 1117267500; // player one
- unsigned int two = 885141774; //player two
+ //unsigned int one = 1117267500; // player one
+ unsigned int one = 885141774;
+// unsigned int two = 885141774; //player two
+ unsigned int two = 1117267500;
  unsigned int three = 1680427216; // chain
  unsigned int four = 1321651915; // ball
+ unsigned int five = 2539810394; // ping
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);
  LoadModel(three, temp);
  LoadModel(four, temp);
+ LoadModel(five, temp);
  FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 }
 

@@ -20,7 +20,7 @@ int StartState::ShutDown()
 int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
@@ -70,4 +70,14 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	return result;
+}
+
+int StartState::EnterState()
+{
+	return 0;
+}
+
+int StartState::LeaveState()
+{
+	return 0;
 }
