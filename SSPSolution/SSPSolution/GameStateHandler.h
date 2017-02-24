@@ -24,6 +24,7 @@ public:
 
 	//Push a state to the stack
 	int PushStateToStack(GameState* state);
+	GameState* PopStateFromStack();
 private:
 };
 

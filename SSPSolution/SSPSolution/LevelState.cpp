@@ -1,4 +1,5 @@
 #include "LevelState.h"
+#include "GameStateHandler.h"
 
 inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
 {
@@ -42,32 +43,32 @@ Entity* LevelState::GetClosestBall(float minDist)
 	if (closest == nullptr)
 	{
 		//Calc the distance for play1 ball;
-	DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+		DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+		float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
 
-	if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
-	{
-		closest = this->m_player1.GetBall();
-		closestDistance = distance;
-		
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
-
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+		if (this->m_player1.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
 		{
-			closest = this->m_player2.GetBall();
-		}
-	}
-	else //If ball1 is already grabbed
-	{
-		vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-		distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+			closest = this->m_player1.GetBall();
+			closestDistance = distance;
 
-		if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
-		{
-			closest = this->m_player2.GetBall();
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance < closestDistance)	//Is not grabbed and Closer
+			{
+				closest = this->m_player2.GetBall();
+			}
 		}
-	}
+		else //If ball1 is already grabbed
+		{
+			vec = DirectX::XMVectorSubtract(pc->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+			distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(vec));
+
+			if (this->m_player2.GetBall()->IsGrabbed() == false && distance <= minDist)	//Is not grabbed and close enoughe
+			{
+				closest = this->m_player2.GetBall();
+			}
+		}
 		//Some crazy Kim stuff. probably doesn't work
 		//if ((1.0f / distance) * this->m_player2.GetBall()->IsGrabbed() < (1.0f / DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(pc->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos)))) * this->m_player1.GetBall()->IsGrabbed())
 		//{
@@ -81,6 +82,41 @@ Entity* LevelState::GetClosestBall(float minDist)
 
 
 	return closest;
+}
+
+void LevelState::SendSyncForJoin()
+{
+	unsigned int	startIndex = 0;
+	unsigned int	nrOfDynamics = 0;
+	bool			isHost = false;
+	unsigned int	levelID = this->m_curLevel;	//CHANGE LEVEL HERE NOW
+	unsigned int	checkpointID = 0;
+
+	this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
+
+	//Update puzzle elements
+	//Check for state changes that should be sent over the network
+	for (LeverEntity* e : this->m_leverEntities)
+	{
+		this->m_networkModule->SendStateLeverPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	for (ButtonEntity* e : this->m_buttonEntities)
+	{
+		this->m_networkModule->SendStateButtonPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	WheelSyncState* wheelSync = nullptr;
+	for (WheelEntity* e : this->m_wheelEntities)
+	{
+		wheelSync = e->GetUnconditionalState();
+		if (wheelSync != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
+		}
+	}
+
 }
 
 LevelState::LevelState()
@@ -150,13 +186,24 @@ int LevelState::ShutDown()
 	// Clear level director
 	this->m_director.Shutdown();
 
+	this->m_cHandler->ResizeGraphicsDynamic(0);
+	this->m_cHandler->ResizeGraphicsStatic(0);
+	this->m_cHandler->ResizeGraphicsPersistent(0);
+	this->m_cHandler->ClearAminationComponents();
+
+	//We need to add a function which empties the physics and bullet.
+	this->m_cHandler->GetPhysicsHandler()->ShutDown();
+	this->m_cHandler->GetPhysicsHandler()->Initialize();
+
+	this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+
 	return result;
 }
 
 int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
@@ -209,33 +256,33 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-	playerAnim1 = m_cHandler->GetAnimationComponent();
+		playerAnim1 = m_cHandler->GetAnimationComponent();
 
-	playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
+		playerAnim1->skeleton = playerG->modelPtr->GetSkeleton();
 
 		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-	playerAnim1->active = 1;
+		playerAnim1->active = 1;
 
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
-	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
 
-		playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
 
-		playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
 			playerAnim1->source_State->isLooping = true;
-		playerAnim1->playingSpeed = 2.0f;
-	}
+			playerAnim1->playingSpeed = 2.0f;
+		}
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 	this->m_player1.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayer1Ragdoll());
@@ -269,33 +316,33 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	if (playerG->modelPtr->GetSkeleton() != nullptr)
 	{
-	playerAnim2 = m_cHandler->GetAnimationComponent();
+		playerAnim2 = m_cHandler->GetAnimationComponent();
 
-	playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
+		playerAnim2->skeleton = playerG->modelPtr->GetSkeleton();
 
 		((GraphicsAnimationComponent*)playerG)->jointCount = playerG->modelPtr->GetSkeleton()->GetSkeletonData()->jointCount;
 
-	playerAnim2->active = 1;
+		playerAnim2->active = 1;
 
-	for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
-	{
-		((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
-	}
+		for (int i = 0; i < ((GraphicsAnimationComponent*)playerG)->jointCount; i++)
+		{
+			((GraphicsAnimationComponent*)playerG)->finalJointTransforms[i] = DirectX::XMMatrixIdentity();
+		}
 
-	if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
-	{
-		int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
+		if (playerG->modelPtr->GetSkeleton()->GetNumAnimations() > 0)
+		{
+			int numAnimations = playerG->modelPtr->GetSkeleton()->GetNumAnimations();
 
-		playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
+			playerAnim2->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
 
 			playerAnim2->source_State = playerAnim2->animation_States->at(0)->GetAnimationStateData();
 			playerAnim2->source_State->isLooping = true;
-		playerAnim2->playingSpeed = 2.0f;
+			playerAnim2->playingSpeed = 2.0f;
+		}
 	}
-	}
-	#pragma endregion Animation_Player2
+#pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	this->m_player2.SetRagdoll(this->m_cHandler->GetPhysicsHandler()->GetPlayer2Ragdoll());
@@ -471,16 +518,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
-	//this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1 ,((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
-	//	DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)) ,
-	//	this->m_player1.GetPhysicsComponent(),
-	//	this->m_player1.GetBall()->GetPhysicsComponent());
-
-
-	//this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(2, ((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
-	//	DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
-	//	this->m_player2.GetPhysicsComponent(),
-	//	this->m_player2.GetBall()->GetPhysicsComponent());
+	//Controls overlay
+	this->m_controlsOverlay = cHandler->GetUIComponent();
+	this->m_controlsOverlay->active = 0;
+	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->scale = .6f;
 
 	return result;
 }
@@ -495,7 +538,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->LoadNext();
 	}
 
+	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
+
+	//If someone has connected
+	if (prevConnects < this->m_networkModule->GetNrOfConnectedClients())
+	{
+		this->SendSyncForJoin();
+	}
 
 	this->m_cameraRef->UpdateDeltaTime(dt);
 
@@ -723,7 +773,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
 				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 
-				}
+			}
 			}
 
 		}
@@ -863,8 +913,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					if (itr->entityID == 1)
 					{
-					this->m_player2.SetGrabbed(nullptr);
-				}
+						this->m_player2.SetGrabbed(nullptr);
+					}
 					else if(itr->entityID == 2)
 					{
 						this->m_player1.SetGrabbed(nullptr);
@@ -1022,7 +1072,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma endregion Network_Send_Updates
 
 	#pragma region
-	
+
 	//Update all puzzle entities
 	#pragma region
 	//Commong variables needed for logic checks
@@ -1176,7 +1226,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 	}
 
-	#pragma endregion Send_Player_Animation_Update
+#pragma endregion Send_Player_Animation_Update
 
 	for (size_t i = 0; i < m_fieldEntities.size(); i++)
 	{
@@ -1185,7 +1235,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	// Reactionary level director acts
 	this->m_director.Update(dt);
-
+	
 	#pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_INSERT) || 
 		this->m_networkModule->PacketBuffer_GetResetPacket().size() != 0)
@@ -1255,18 +1305,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	
 
 #ifdef DEVELOPMENTFUNCTIONS
-	#pragma region
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
-		{
-			SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
-		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
-		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
-		}
-	#pragma endregion MUSIC_KEYS
+#pragma region
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
+	{
+		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+	}
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->m_player2.GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, pos, true, false);
+	}
+#pragma endregion MUSIC_KEYS  
 #endif // DEVELOPMENTFUNCTIONS
 
 
@@ -1278,6 +1328,41 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+	{
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_gsh->PopStateFromStack();
+
+		//MenuState* menuState = new MenuState();
+		//result = menuState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+
+		//if (result > 0)
+		//{
+		//	//Push it to the gamestate stack/vector
+		//	this->m_gsh->PushStateToStack(menuState);
+		//}
+		//else
+		//{
+		//	//Delete it
+		//	delete menuState;
+		//	menuState = nullptr;
+		//}
+
+		result = 1;
+	}
+
+	//Controls overlay
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 1;
+	}
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 0;
+	}
+
 	return result;
 }
 
@@ -1494,7 +1579,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
-
+		
 		resHandler->GetModel(currEntity->modelID, modelPtr);
 
 		if (modelPtr->GetSkeleton() != nullptr)
@@ -1583,7 +1668,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			t_pc->PC_mass = 0;
 			t_pc->PC_friction = 0.0f;
 		}
-
+		
 
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
@@ -2565,7 +2650,7 @@ int LevelState::LoadNext()
 	printf("LOAD LEVEL %d\n", this->m_curLevel);
 	//Load LevelData from file
 	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
-																	   //if not successful
+	//if not successful
 	if (st != Resources::ST_OK)
 	{
 		//Error loading file.
@@ -2617,5 +2702,22 @@ int LevelState::GetLevelIndex()
 std::string LevelState::GetLevelPath()
 {
 	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel)).levelPath;
+}
+
+void LevelState::SetCurrentLevelID(int currentLevelID)
+{
+	this->m_curLevel = currentLevelID;
+}
+
+int LevelState::EnterState()
+{
+	return 0;
+}
+
+int LevelState::LeaveState()
+{
+	this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+
+	return 0;
 }
 

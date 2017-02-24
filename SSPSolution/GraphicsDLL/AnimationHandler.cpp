@@ -158,6 +158,12 @@ void AnimationHandler::ClearAnimationComponents()
 	this->m_nrOfAnimComps = 0;
 	m_AnimComponentList.clear();
 	m_AnimComponentList.shrink_to_fit();
+
+	//Create new empty components
+	for (int i = 0; i < this->m_maxAnimComps; i++)
+	{
+		this->m_AnimComponentList.push_back(CreateAnimationComponent());
+	}
 }
 
 AnimationComponent* AnimationHandler::CreateAnimationComponent()

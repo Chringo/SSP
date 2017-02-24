@@ -30,7 +30,7 @@ Resources::Status Communicator::Initialize(
 	oldCam = nullptr;
 	this->m_Camera->SetLookAt(DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
 	this->m_Camera->SetCameraPos(DirectX::XMVECTOR{ 0.0f, 0.0f, -1.0f, 1.0f });
-	this->m_Camera->UpdateProjection();
+	this->m_Camera->UpdateProjectionMat();
 	this->m_Camera->UpdateView();
 
 	if (!isPreview)
@@ -136,7 +136,7 @@ Resources::Status Communicator::RemoveModel(unsigned int modelID, unsigned int i
 void Communicator::ViewPortChanged(float height, float width)
 {
 	if (height != 0) {
-		this->m_Camera->UpdateProjection(width / height);
+		this->m_Camera->UpdateProjection(200.f,width / height);
 		this->m_Camera->UpdateView();
 		this->m_EditorInputHandler->ViewPortChanged(height, width);
 	}
