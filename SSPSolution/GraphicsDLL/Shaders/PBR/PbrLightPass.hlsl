@@ -254,7 +254,7 @@ float sampleStaticShadowStencils(float3 worldPos, float3 lpos, int shadowIndex)
 }
 
 
-float sampleShadowStencils(float3 worldPos, float3 lpos)
+float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFactor)
 {
     static const float3 gCubeSampleOffset[8] =
     {
@@ -279,9 +279,10 @@ float sampleShadowStencils(float3 worldPos, float3 lpos)
         float closestDepth = shadowTex.Sample(linearSampler, (pixToLight) + (gCubeSampleOffset[i] * 0.025));
         shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.125f;
     }
+    
 
-
-    return min(shadowFactor, 1.0);
+    return currentShadowFactor < shadowFactor ? currentShadowFactor : min(shadowFactor, 1.0);
+    
 }
 
 float4 PS_main(VS_OUT input) : SV_Target
@@ -360,12 +361,12 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             if (i == SHADOWLIGHT_INDEX)
             {
-				shadowFactor += sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz);
-                shadowFactor = min(shadowFactor, 1.0f);
+				shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz,shadowFactor);
             }
+              //  shadowFactor = max(shadowFactor, 0.0f);
 				lightPower *= shadowFactor;
 
-            }
+            
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);

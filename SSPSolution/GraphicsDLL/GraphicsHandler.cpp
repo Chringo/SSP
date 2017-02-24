@@ -633,8 +633,7 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
-					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+	
 					
 					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
@@ -664,8 +663,7 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 		else
 		{
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			
 			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
@@ -715,13 +713,7 @@ int GraphicsHandler::Render(float deltaTime)
 	vP.TopLeftX = 0;
 	vP.TopLeftY = 0;
 	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
-#pragma region Render shadows for instanced objects
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::InstancedShadow); //render shadows
-	for (size_t i = 0; i < instancedRenderingList.size(); i++)
-	{
-		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
-	}
-#pragma endregion
+
 #pragma region Render shadows for normal (non instanced) geometry
 
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows

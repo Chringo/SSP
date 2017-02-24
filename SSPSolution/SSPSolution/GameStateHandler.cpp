@@ -76,7 +76,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 		this->PushStateToStack(levelSelect);
 
 		if (levelPath.length() < 2)
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/lightsForKim.level"));
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/shadowmapmap.level"));
 		else
 			levelSelect->LoadLevel(levelPath);
 	}
