@@ -12,7 +12,7 @@
 #include "UIHandler.h"
 #include "LightHandler.h"
 #include <algorithm>
-
+#include <omp.h>
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
@@ -236,6 +236,9 @@ public:
 	//Culling functions
 	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
 	GRAPHICSDLL_API int GenerateOctree();
+	GRAPHICSDLL_API int FrustrumCullOctreeLeft();
+	GRAPHICSDLL_API int FrustrumCullOctreeRight();
+	GRAPHICSDLL_API int FrustrumCullOctreeNodeThreaded(int threadCount);
 	GRAPHICSDLL_API int FrustrumCullOctreeNode();
 	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
 	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
@@ -253,6 +256,7 @@ public:
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 	GRAPHICSDLL_API void ToggleOverviewCamera();
+	GRAPHICSDLL_API float Ping_GetDistanceToClosestOBB(int maxDistance);	//Used for the Ping
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:
