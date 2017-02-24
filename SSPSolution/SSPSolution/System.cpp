@@ -30,6 +30,7 @@ int System::Shutdown()
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
+	delete &Progression::instance();
 	DebugHandler::instance()->Shutdown();
 	
 	return result;
@@ -140,10 +141,10 @@ int System::Run()
 		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		/*if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			this->m_running = false;
-		}
+		}*/
 		if (!this->Update((float)elapsedTime.QuadPart))
 		{
 			this->m_running = false;
@@ -316,11 +317,15 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	enum { TOGGLE_FULLSCREEN = 511 };
+	enum {TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2};
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	if (result == TOGGLE_FULLSCREEN)
 	{
 		this->FullscreenToggle();
+	}
+	else if(result == EXIT_GAME)
+	{
+		result = 0;
 	}
 	DebugHandler::instance()->EndTimer(0);
 

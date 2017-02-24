@@ -23,6 +23,9 @@ public:
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
 
+	int EnterState();
+	int LeaveState();
+
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:

@@ -58,6 +58,8 @@ public:
 
 	void SetSyncState(WheelSyncState* newSyncState);
 	WheelSyncState* GetSyncState();
+	WheelSyncState* GetUnconditionalState();
+
 private:
 	//Functions
 };

@@ -430,3 +430,12 @@ WheelSyncState * WheelEntity::GetSyncState()
 
 	return result;
 }
+
+WheelSyncState * WheelEntity::GetUnconditionalState()
+{
+	WheelSyncState* result = nullptr;
+
+	result = new WheelSyncState{ this->m_entityID, this->m_rotationState, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) };
+
+	return result;
+}
