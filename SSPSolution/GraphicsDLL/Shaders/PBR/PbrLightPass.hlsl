@@ -240,7 +240,7 @@ float sampleShadowStencils(float3 worldPos, float3 lpos)
     float shadowFactor = 0.0f;
     
     float bias = 0.0000018f;
-    float3 pixToLight = worldPos - lpos;
+    float3 pixToLight = worldPos - float3(0.f,0.f,4.f);
 
     [unroll]
     for (int i = 0; i < 8; i++)
@@ -326,12 +326,12 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
   
             //DO SHADOW STUFF HERE
-            //if (i == 0)
-            //{
-            shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
-            lightPower *= shadowFactor;
+            if (i == SHADOWLIGHT_INDEX)
+            {
+				shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz);
+				lightPower *= shadowFactor;
 
-            //}
+            }
 
 
             //DIFFUSE
