@@ -17,7 +17,7 @@ cbuffer camera : register(b1)
 }
 
 
-
+#define SHADOW_BIAS  0.0000088f
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
@@ -239,7 +239,7 @@ float sampleStaticShadowStencils(float3 worldPos, float3 lpos, int shadowIndex)
 
     float shadowFactor = 0.0f;
     
-    float bias = 0.0000018f;
+    float bias = SHADOW_BIAS;
     float3 pixToLight = worldPos - lpos;
 
     [unroll]
@@ -270,7 +270,7 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
 
     float shadowFactor = 0.0f;
     
-    float bias = 0.0000018f;
+    float bias = SHADOW_BIAS;
     float3 pixToLight = worldPos - lpos;
 
     [unroll]
