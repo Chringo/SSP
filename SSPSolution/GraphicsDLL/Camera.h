@@ -150,7 +150,10 @@ public:
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
 	GRAPHICSDLL_API DirectX::XMVECTOR GetDirection();
-
+	GRAPHICSDLL_API DirectX::XMFLOAT3 GetFocusPoint();
+	GRAPHICSDLL_API DirectX::XMFLOAT3 GetFocusPointOffset();
+	GRAPHICSDLL_API void GetFocusPoint(DirectX::XMFLOAT3 &storeIn);
+	GRAPHICSDLL_API void GetFocusPointOffset(DirectX::XMFLOAT3 &storeIn);
 #pragma endregion getters
 #pragma region
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMFLOAT4 newCamPos);
