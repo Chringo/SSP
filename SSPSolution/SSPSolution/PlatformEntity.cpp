@@ -32,7 +32,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			m_gComp->modelPtr->GetOBBData().position.y,
 			m_gComp->modelPtr->GetOBBData().position.z, 0})));
 
-	if (this->GetAIComponent()->AC_triggered)
+	if (this->GetAIComponent()->AC_triggered && !this->GetAIComponent()->AC_finished)
 	{
 		if (this->m_ActiveSound == nullptr)
 		{
@@ -40,17 +40,24 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			this->m_ActiveSound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LIFT, pos, true, true);
 		}
-		if (this->GetAIComponent()->AC_finished)
-		{
-			this->m_ActiveSound->setPlayPosition(0);
-			this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
-		}
+		//if (this->GetAIComponent()->AC_finished)
+		//{
+		//	this->m_ActiveSound->setPlayPosition(0);
+		//	this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
+		//}
 		else
 		{
 			if (this->m_ActiveSound->getIsPaused())
 			{
 				this->m_ActiveSound->setIsPaused(false);
 			}
+			/*update the position of the platform sound*/
+			irrklang::vec3df newPos(
+				this->GetPhysicsComponent()->PC_pos.m128_f32[0],
+				this->GetPhysicsComponent()->PC_pos.m128_f32[1],
+				this->GetPhysicsComponent()->PC_pos.m128_f32[2]);
+
+			this->m_ActiveSound->setPosition(newPos);
 		}
 	}
 	else

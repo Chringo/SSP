@@ -398,7 +398,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (this->m_walkingSound != nullptr && !this->m_walkingSound->getIsPaused())
 				{
 					this->m_walkingSound->setPlayPosition(0);
-					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
+					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound	
 				}
 
 				if (m_isAiming)
