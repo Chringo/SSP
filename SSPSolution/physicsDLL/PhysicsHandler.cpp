@@ -2742,7 +2742,7 @@ void PhysicsHandler::SortComponents()
 
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
-	if (src->PC_entityID == 1 || src->PC_entityID == 2)
+	if (index == 1 || index == 2)
 	{
 		this->m_bullet.CreatePlayer(src, index);
 	}
