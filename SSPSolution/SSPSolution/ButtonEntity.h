@@ -23,6 +23,7 @@ private:
 	float m_animSpeed		 =  2.0f;
 	float m_activatedOffset  = -0.2f; 
 	float m_targetOffset	 = 0;
+	float m_lastFrameOffset;
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();

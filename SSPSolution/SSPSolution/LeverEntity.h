@@ -20,6 +20,7 @@ private:
 	float m_activatedRotation = -90.0f;
 	bool  m_animationActive = false;
 	bool  m_needSync;
+	float m_lastFrameRotValue;
 public:
 	LeverEntity();
 	virtual ~LeverEntity();

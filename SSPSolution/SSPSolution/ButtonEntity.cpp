@@ -36,7 +36,6 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	}
 	if (m_animationActive)
 	{
-		static float lastFrameOffsetValue = 0;
 		PhysicsComponent* ptr = this->GetPhysicsComponent();
 		DirectX::XMMATRIX offsetMatrix;
 		float frameOffset = m_animSpeed * dT;
@@ -48,7 +47,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 				
 				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 
-				lastFrameOffsetValue = m_currOffsetValue;
+				this->m_lastFrameOffset = m_currOffsetValue;
 			}
 			else {
 				m_animationActive = false;
@@ -68,7 +67,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			{
 				m_currOffsetValue -= frameOffset;
 				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
-				lastFrameOffsetValue = m_currOffsetValue;
+				this->m_lastFrameOffset = m_currOffsetValue;
 			}
 			else {
 				m_animationActive = false;
@@ -115,6 +114,7 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	this->m_range = interactionDistance;
 	this->m_resetTime = resetTime;
 	this->m_elapsedResetTime = 0.0f;
+	this->m_lastFrameOffset = 0;
 	this->SyncComponents();
 	return result;
 }
