@@ -40,7 +40,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuBG->active = 1;
 	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	this->m_menuBG->size = DirectX::XMFLOAT2(1280.f, 720.f);
-	this->m_menuBG->spriteID = 4;
+	this->m_menuBG->spriteID = Textures::MenuBG;
 	this->m_menuBG->layerDepth = 1.0f;
 
 	for (size_t i = 0; i < 3; i++) //Create the main menu buttons
@@ -49,8 +49,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->active = 1;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
-		tempUIComp->spriteID = 5;
 		tempUIComp->layerDepth = 0.5f;
+		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -63,7 +64,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_keymaps->active = 0;
 	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 400.f);
 	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
-	this->m_keymaps->spriteID = 3;
+	this->m_keymaps->spriteID = Textures::Keymaps;
 	this->m_keymaps->scale = 0.5f;
 	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
 	{
@@ -71,8 +72,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
-		tempUIComp->spriteID = 5;
 		tempUIComp->layerDepth = 0.5f;
+		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
@@ -87,8 +89,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
-		tempUIComp->spriteID = 5;
 		tempUIComp->layerDepth = 0.5f;
+		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -104,8 +107,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 	this->m_ipTextBox.m_uiComp->scale = 0.6;
-	this->m_ipTextBox.m_uiComp->spriteID = 5;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
+	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_uiComp->spriteID = Textures::Button;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
@@ -597,7 +601,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
 				delete levelSelect;
 				levelSelect = nullptr;
-			}
+		}
 			else
 			{
 				delete levelSelect;
@@ -766,15 +770,15 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 					break;
 
 				}
 				#pragma endregion Level_To_Load
 			}
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
 			#pragma endregion Load_Level
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
@@ -850,9 +854,9 @@ void MenuState::Joining(InputHandler* inputHandler)
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 
-		//Delete it
-		delete levelSelect;
-		levelSelect = nullptr;
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
 		#pragma endregion Load_Level
 
 		this->isJoining = false;

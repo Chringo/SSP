@@ -184,11 +184,11 @@ int System::Update(float deltaTime)
 		{
 			//Do the physics
 #pragma region
-			DebugHandler::instance()->StartTimer(1);
+	DebugHandler::instance()->StartTimer(1);
 
-			this->m_physicsHandler.Update(deltaTime);
+	this->m_physicsHandler.Update(deltaTime);
 
-			DebugHandler::instance()->EndTimer(1);
+	DebugHandler::instance()->EndTimer(1);
 #pragma endregion Physics
 		}
 		else if (myThreadID == 1)
@@ -209,7 +209,7 @@ int System::Update(float deltaTime)
 #ifdef _DEBUG
 			for (int i = 0; i < nrOfComponents; i++)
 			{
-				PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
+				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
 				if (temp->PC_BVtype == BV_AABB)
 				{
 					AABB* AABB_holder = nullptr;
@@ -237,12 +237,6 @@ int System::Update(float deltaTime)
 					Sphere* sphereHolder = nullptr;
 					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
 					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-																																  //AABB test;
-																																  //test.ext[0] = sphereHolder->radius;
-																																  //test.ext[1] = sphereHolder->radius;
-																																  //test.ext[2] = sphereHolder->radius;
-																																  //AABB* ptr = &test;
-																																  //this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 				}
 			}
 #endif // _DEBUG
@@ -258,8 +252,8 @@ int System::Update(float deltaTime)
 		else if (myThreadID == 2)
 		{
 #pragma region
-			//AI
-			this->m_AIHandler.Update(deltaTime);
+	//AI
+	this->m_AIHandler.Update(deltaTime);
 
 			this->m_AnimationHandler->Update(deltaTime);
 #pragma endregion AI And Animation
@@ -313,7 +307,7 @@ int System::Update(float deltaTime)
 
 	//this->m_AIHandler.Update(deltaTime);
 	//this->m_AnimationHandler->Update(deltaTime);
-
+	
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents

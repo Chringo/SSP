@@ -184,6 +184,11 @@ int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
 	return this->m_graphicsHandler->RemoveUIComponentFromPtr(ptr);
 }
 
+int ComponentHandler::RemoveLastUIComponent()
+{
+	return this->m_graphicsHandler->RemoveLastUIComponent();
+}
+
 void ComponentHandler::WaypointTime()
 {
 	m_aiHandler->WaypointTime();
