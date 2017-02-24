@@ -1544,7 +1544,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		//hResult = context->Map(destinationRes, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResourceDestination);
 		//if (FAILED(hResult))
 		//	return 1;
-		m_shaderControl->DrawFinal();
+	//	m_shaderControl->DrawFinal();
 	//	memcpy(mappedResourceDestination.pData, mappedResourceTarget.pData, sizeof(mappedResourceTarget.pData));
 		m_shaderControl->ClearFrame();
 		

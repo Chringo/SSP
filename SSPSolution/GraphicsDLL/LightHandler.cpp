@@ -167,7 +167,7 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 {
 
 
-	// m_gDeviceContext->PSSetShaderResources(11, this->m_lightData->numItems, &this->m_lightData->shadowMaps);
+	 m_gDeviceContext->PSSetShaderResources(11, 1, &this->m_lightData[LT_POINT].shadowMaps);
 	return true;
 }
 
