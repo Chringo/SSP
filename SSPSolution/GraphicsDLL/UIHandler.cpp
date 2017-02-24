@@ -120,6 +120,35 @@ UIComponent* UIHandler::GetNextUIComponent()
 	return nullptr;
 }
 
+int UIHandler::RemoveUIComponent(UIComponent * ptr)
+{
+	if (ptr)
+	{
+		size_t nrOfUIComps = this->m_UIComponents.size();
+		for (size_t i = 0; i < nrOfUIComps; i++)
+		{
+			if (ptr == this->m_UIComponents.at(i))
+			{
+				delete this->m_UIComponents.at(i);
+				this->m_UIComponents.at(i) = nullptr;
+				if (i < this->m_nrOfUIComponents - 1) 
+				{
+					for (size_t k = i; k < nrOfUIComps - 1; k++)
+					{
+						this->m_UIComponents.at(k) = this->m_UIComponents.at(k + 1);
+					}
+				}
+				UIComponent* newUIComp = new UIComponent;
+				this->m_UIComponents.at(this->m_nrOfUIComponents - 1) = newUIComp;
+				this->m_nrOfUIComponents--;
+				return 1;
+			}
+		}
+	}
+
+	return 0;
+}
+
 TextComponent* UIHandler::GetNextTextComponent()
 {
 	if (this->m_nrOfTextComponents < this->m_maxTextComponents)

@@ -1,4 +1,5 @@
 #include "LevelState.h"
+#include "GameStateHandler.h"
 
 inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
 {
@@ -83,6 +84,41 @@ Entity* LevelState::GetClosestBall(float minDist)
 	return closest;
 }
 
+void LevelState::SendSyncForJoin()
+{
+	unsigned int	startIndex = 0;
+	unsigned int	nrOfDynamics = 0;
+	bool			isHost = false;
+	unsigned int	levelID = this->m_curLevel;	//CHANGE LEVEL HERE NOW
+	unsigned int	checkpointID = 0;
+
+	this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
+
+	//Update puzzle elements
+	//Check for state changes that should be sent over the network
+	for (LeverEntity* e : this->m_leverEntities)
+	{
+		this->m_networkModule->SendStateLeverPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	for (ButtonEntity* e : this->m_buttonEntities)
+	{
+		this->m_networkModule->SendStateButtonPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	WheelSyncState* wheelSync = nullptr;
+	for (WheelEntity* e : this->m_wheelEntities)
+	{
+		wheelSync = e->GetUnconditionalState();
+		if (wheelSync != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
+		}
+	}
+
+}
+
 LevelState::LevelState()
 {
 }
@@ -150,13 +186,24 @@ int LevelState::ShutDown()
 	// Clear level director
 	this->m_director.Shutdown();
 
+	this->m_cHandler->ResizeGraphicsDynamic(0);
+	this->m_cHandler->ResizeGraphicsStatic(0);
+	this->m_cHandler->ResizeGraphicsPersistent(0);
+	this->m_cHandler->ClearAminationComponents();
+
+	//We need to add a function which empties the physics and bullet.
+	this->m_cHandler->GetPhysicsHandler()->ShutDown();
+	this->m_cHandler->GetPhysicsHandler()->Initialize();
+
+	this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+
 	return result;
 }
 
 int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Camera* cameraRef)
 {
 	int result = 1;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
@@ -235,7 +282,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player1
 
-	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1, cHandler);
+	this->m_player1.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim1);
 	this->m_player1.SetMaxSpeed(30.0f);
 	this->m_player1.SetAcceleration(5.0f);
 
@@ -293,7 +340,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 #pragma endregion Animation_Player2
 
-	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2, cHandler);
+	this->m_player2.Initialize(playerP->PC_entityID, playerP, playerG, playerAnim2);
 	this->m_player2.SetMaxSpeed(30.0f);
 	this->m_player2.SetAcceleration(5.0f);
 	
@@ -466,6 +513,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
+	//Controls overlay
+	this->m_controlsOverlay = cHandler->GetUIComponent();
+	this->m_controlsOverlay->active = 0;
+	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->scale = .6f;
+
 	return result;
 }
 
@@ -479,7 +533,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->LoadNext();
 	}
 
+	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
+
+	//If someone has connected
+	if (prevConnects < this->m_networkModule->GetNrOfConnectedClients())
+	{
+		this->SendSyncForJoin();
+	}
 
 	this->m_cameraRef->UpdateDeltaTime(dt);
 
@@ -1187,6 +1248,41 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	DirectX::XMFLOAT3 up;
 	this->m_cameraRef->GetCameraUp(up);
 	SoundHandler::instance().UpdateListnerPos(this->m_cameraRef->GetCameraPos(), dir, up);
+
+
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+	{
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_gsh->PopStateFromStack();
+
+		//MenuState* menuState = new MenuState();
+		//result = menuState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+
+		//if (result > 0)
+		//{
+		//	//Push it to the gamestate stack/vector
+		//	this->m_gsh->PushStateToStack(menuState);
+		//}
+		//else
+		//{
+		//	//Delete it
+		//	delete menuState;
+		//	menuState = nullptr;
+		//}
+
+		result = 1;
+	}
+
+	//Controls overlay
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 1;
+	}
+	if (inputHandler->IsKeyReleased(SDL_SCANCODE_F1))
+	{
+		this->m_controlsOverlay->active = 0;
+	}
+
 	return result;
 }
 
@@ -2488,5 +2584,22 @@ int LevelState::GetLevelIndex()
 std::string LevelState::GetLevelPath()
 {
 	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel)).levelPath;
+}
+
+void LevelState::SetCurrentLevelID(int currentLevelID)
+{
+	this->m_curLevel = currentLevelID;
+}
+
+int LevelState::EnterState()
+{
+	return 0;
+}
+
+int LevelState::LeaveState()
+{
+	this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+
+	return 0;
 }
 
