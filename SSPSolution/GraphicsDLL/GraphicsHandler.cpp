@@ -859,7 +859,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 int result = 0;
 	 //Convert deltaTime into seconds for easier timer management
 	 deltaTime = deltaTime / 1000000.0f;
-	 result = this->m_LightHandler->Update(deltaTime);
+	 result = this->m_LightHandler->Update(deltaTime, this->m_camera->GetFocusPoint());
 
 	 return result;
  }
