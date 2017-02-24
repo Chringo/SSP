@@ -570,7 +570,7 @@ void NetworkModule::ReadMessagesFromClients()
 				iter = this->connectedClients.end();
 				data_read = data_length;
 				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
-
+				didDisconnect = true;
 				break;
 
 			case UPDATE_ENTITY:
