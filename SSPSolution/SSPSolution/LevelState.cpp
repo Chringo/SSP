@@ -754,8 +754,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 			else
 			{
-				ent->Update(dt, inputHandler);	//Update the entity normaly
-				
+				//ent->Update(dt, inputHandler);	//Update the entity normaly
 			}
 		}
 		//Sync other half of the components
