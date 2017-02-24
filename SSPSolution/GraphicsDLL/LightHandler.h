@@ -35,7 +35,7 @@
 
 
 */
-#define LIGHT_CHECK_PAUSE_TIME = 1.0f / 10.0f
+#define LIGHT_CHECK_PAUSE_TIME 1.0f / 10.0f
 namespace LIGHTING
 {
 	class LightHandler
@@ -94,7 +94,7 @@ namespace LIGHTING
 
 		GRAPHICSDLL_API void Initialize(ID3D11Device*, ID3D11DeviceContext*);
 		GRAPHICSDLL_API static LightHandler* GetInstance();
-		GRAPHICSDLL_API int Update(float dT);
+		GRAPHICSDLL_API	int Update(float dT, DirectX::XMFLOAT3 pointOfInterest);
 
 
 	public: //dataFlow

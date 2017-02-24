@@ -30,6 +30,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	SetShadowCastingLight(&temp);
 
 	this->m_activeLightIndex = 0;
+	this->m_activeLightCheckTimer = 0.0f;
 }
 
 LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
@@ -38,12 +39,19 @@ LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
 	return &instance;
 }
 
-int LIGHTING::LightHandler::Update(float dT)
+int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 {
 	int result = 0;
 	this->m_activeLightCheckTimer += dT;
-	//
+	bool checkActiveLightForShadows = false;
+	//Modulus operation
+	int k = LIGHT_CHECK_PAUSE_TIME / this->m_activeLightCheckTimer;
+	this->m_activeLightCheckTimer -= k * LIGHT_CHECK_PAUSE_TIME;
+	checkActiveLightForShadows = k;
+	if (checkActiveLightForShadows)
+	{
 
+	}
 	return result;
 }
 
