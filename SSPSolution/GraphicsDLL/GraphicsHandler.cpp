@@ -828,7 +828,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	RenderBoundingBoxes(false);
 
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
-	//assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
+	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
 #pragma endregion Debug rendering
@@ -1343,6 +1343,11 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		// Save the textures to the light, (or to file)
 	 
 	 //
+#ifdef _DEBUG
+	 Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
+
+
 	 Render(0.0f);
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
@@ -1390,7 +1395,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	if (FAILED(hResult))
 		return 1;
 #pragma endregion
-#pragma region Create buffer texture (The one that will be used to transfer data)
+#pragma region Create buffer texture (The one that will be used to transfer data)  // This is under work, it might not be used in the future.
 
 	ShadowTexDesc.Width					= (UINT)STATIC_SHADOWMAP_RESOLUTION;
 	ShadowTexDesc.Height				= (UINT)STATIC_SHADOWMAP_RESOLUTION;
@@ -1404,38 +1409,17 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ShadowTexDesc.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
 	ShadowTexDesc.MiscFlags				= D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-	//Create the render target Texture
+	//Create the  Texture
 	ID3D11Texture2D* tempBufferTexture;
 	 hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempBufferTexture);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
-////Set up the shader resource view
-//resourceViewShadowDesc.Format						  = DXGI_FORMAT_R32_FLOAT;
-//resourceViewShadowDesc.ViewDimension				  = D3D11_SRV_DIMENSION_TEXTURECUBE;
-//resourceViewShadowDesc.Texture2DArray.ArraySize		  = 6;
-//resourceViewShadowDesc.Texture2DArray.FirstArraySlice = 0;
-//resourceViewShadowDesc.Texture2DArray.MostDetailedMip = 0;
-//resourceViewShadowDesc.Texture2DArray.MipLevels		  = 1;
-//
-//
-//
-//
-////Create the resourceView;
-//
-//hResult = device->CreateShaderResourceView(tempBufferTexture, &resourceViewShadowDesc, &lights->shadowMaps);
-//if (FAILED(hResult))
-//	return 1;
-
 
 #pragma endregion
 
-//#ifdef _DEBUG
-//	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
-//#endif // _DEBUG
 
-	
 	for (size_t i = 0; i < 1; i++)
 	{
 		if (i == 2)
