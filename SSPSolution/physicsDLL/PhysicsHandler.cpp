@@ -4262,10 +4262,6 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 	if (index == 1 || index == 2)
 	{
 		this->m_bullet.CreatePlayer(src, index);
-	}*/
-	if (index == 0 || index == 1)
-	{
-		this->m_bullet.CreatePlayer(src, index);
 	}
 
 	else if (src->PC_BVtype == BV_AABB)
