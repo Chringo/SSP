@@ -422,6 +422,21 @@ void NetworkModule::SendGrabPacket(unsigned int entityID, unsigned int grabbedID
 	this->SendToAll(packet_data, packet_size);
 }
 
+void NetworkModule::SendPingPacket(DirectX::XMFLOAT3 pos)
+{
+	const unsigned int packet_size = sizeof(PingPacket);
+	char packet_data[packet_size];
+
+	PingPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_PING;
+	packet.newPos = pos;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
@@ -479,6 +494,7 @@ void NetworkModule::ReadMessagesFromClients()
 	CameraPacket cP;
 	GrabPacket gP;
 	SyncPhysicPacket sPP;
+	PingPacket pP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
 	
@@ -628,6 +644,14 @@ void NetworkModule::ReadMessagesFromClients()
 
 				this->packet_Buffer_Grabbed.push_back(gP);
 				data_read += sizeof(GrabPacket);
+
+				break;
+
+			case UPDATE_PING:
+				pP.deserialize(&network_data[data_read]);
+
+				this->packet_Buffer_Ping.push_back(pP);
+				data_read += sizeof(PingPacket);
 
 				break;
 
@@ -953,6 +977,28 @@ std::list<Packet> NetworkModule::PacketBuffer_GetResetPacket()
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Messages.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<PingPacket> NetworkModule::PacketBuffer_GetPingPacket()
+{
+	std::list<PingPacket> result;
+	std::list<PingPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Ping.begin(); iter != this->packet_Buffer_Ping.end();)
+	{
+		if (iter->packet_type == UPDATE_PING)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Ping.erase(iter);	//Returns the next element after the errased element
 		}
 		else
 		{

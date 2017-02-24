@@ -2,6 +2,7 @@
 #define SSPAPPLICATION_CORE_SYSTEM_H
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include <omp.h>
 #include <iostream>
 #include "InputHandler.h"
 #include "GameStateHandler.h"

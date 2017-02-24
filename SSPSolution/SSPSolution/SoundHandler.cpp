@@ -409,6 +409,18 @@ void SoundHandler::LoadSounds()
 		printf("Failed to load sound");
 	}
 
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/PingEffect.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
 #pragma endregion 3D_Sounds
 	
 	sp = nullptr;
