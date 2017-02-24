@@ -1348,7 +1348,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 #endif // _DEBUG
 
 
-	 Render(0.0f);
+	Render(0.0f);
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
