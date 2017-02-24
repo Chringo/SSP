@@ -125,7 +125,11 @@ private:
 
 	int m_curLevel;
 	int m_clearedLevel;
-	std::vector<std::string> m_levelPaths;
+	struct hardcodedLevelData {
+		std::string levelPath;
+		float farPlane;
+	};
+	std::vector<hardcodedLevelData> m_levelPaths;
 
 	void SendSyncForJoin();
 
