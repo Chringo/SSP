@@ -94,6 +94,29 @@ void LevelState::SendSyncForJoin()
 
 	this->m_networkModule->SendPhysicSyncPacket(startIndex, nrOfDynamics, isHost, levelID, checkpointID);
 
+	//Update puzzle elements
+	//Check for state changes that should be sent over the network
+	for (LeverEntity* e : this->m_leverEntities)
+	{
+		this->m_networkModule->SendStateLeverPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	for (ButtonEntity* e : this->m_buttonEntities)
+	{
+		this->m_networkModule->SendStateButtonPacket(e->GetEntityID(), e->GetIsActive());
+	}
+
+	WheelSyncState* wheelSync = nullptr;
+	for (WheelEntity* e : this->m_wheelEntities)
+	{
+		wheelSync = e->GetUnconditionalState();
+		if (wheelSync != nullptr)
+		{
+			this->m_networkModule->SendStateWheelPacket(wheelSync->entityID, wheelSync->rotationState, wheelSync->rotationAmount);
+			delete wheelSync;
+		}
+	}
+
 }
 
 LevelState::LevelState()

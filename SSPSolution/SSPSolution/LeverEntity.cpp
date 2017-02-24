@@ -151,3 +151,8 @@ LeverSyncState * LeverEntity::GetSyncState()
 	}
 	return result;
 }
+
+bool LeverEntity::GetIsActive()
+{
+	return this->m_isActive;
+}

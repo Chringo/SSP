@@ -38,6 +38,8 @@ public:
 
 	void SetSyncState(ButtonSyncState* newSyncState);
 	ButtonSyncState* GetSyncState();
+	bool GetIsActive();
+
 private:
 	//Functions
 };

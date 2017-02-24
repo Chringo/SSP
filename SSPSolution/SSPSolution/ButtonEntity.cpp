@@ -182,3 +182,8 @@ ButtonSyncState * ButtonEntity::GetSyncState()
 	}
 	return result;
 }
+
+bool ButtonEntity::GetIsActive()
+{
+	return this->m_isActive;
+}

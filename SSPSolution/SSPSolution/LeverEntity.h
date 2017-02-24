@@ -34,6 +34,7 @@ public:
 
 	void SetSyncState(LeverSyncState* newSyncState);
 	LeverSyncState* GetSyncState();
+	bool GetIsActive();
 private:
 	//Functions
 };
