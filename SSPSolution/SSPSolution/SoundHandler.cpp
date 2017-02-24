@@ -294,6 +294,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(0.3f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -306,6 +307,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(0.3f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -318,6 +320,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(0.3f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -513,7 +516,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound2D(Sounds2D start_soundEnum, Sou
 		{
 			newActiveSound->grab();
 
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
@@ -543,7 +546,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound3D(Sounds3D start_soundEnum, Sou
 		{
 			newActiveSound->grab();
 
-			if (track == true)	//If we want the soundEngine to handle cleanup
+			if (track == false)	//If we want the soundEngine to handle cleanup
 			{
 				newActiveSound->setSoundStopEventReceiver(this);
 				return nullptr;
