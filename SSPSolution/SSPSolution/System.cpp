@@ -285,7 +285,6 @@ int System::Update(float deltaTime)
 		}
 	}
 #endif // _DEBUG
-	this->m_graphicsHandler->Update(deltaTime);
 	DebugHandler::instance()->StartTimer(2);
 	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
 	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
