@@ -3,7 +3,7 @@ Texture2D metalRoughAo           : register(t1);
 Texture2D normalTex		         : register(t2);
 Texture2D wPosTex		         : register(t3);
 TextureCube shadowTex            : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
-TextureCubeArray staticShadows   : register(t11);
+TextureCubeArray sShadowsTexA    : register(t11);
 SamplerState linearSampler       : register(s0);
 SamplerState pointSampler        : register(s1);
 
@@ -223,6 +223,37 @@ float VecToDepth(float3 vec)
     return NormZComp;
 }
 
+float sampleStaticShadowStencils(float3 worldPos, float3 lpos, int shadowIndex)
+{
+    static const float3 gCubeSampleOffset[8] =
+    {
+        { 0.875f, -0.375f, -0.125f },
+        { 0.625f, 0.625f, -0.625f },
+        { 0.375f, 0.125f, -0.875f },
+        { 0.125f, -0.875f, 0.125f },
+        { 0.125f, 0.875f, 0.375f },
+        { 0.375f, -0.625f, 0.625f },
+        { 0.625f, -0.125f, 0.875f },
+        { 0.875f, 0.375f, -0.375f }
+    };
+
+    float shadowFactor = 0.0f;
+    
+    float bias = 0.0000018f;
+    float3 pixToLight = worldPos - lpos;
+
+    [unroll]
+    for (int i = 0; i < 8; i++)
+    {
+        float closestDepth = sShadowsTexA.Sample(linearSampler, float4(pixToLight + (gCubeSampleOffset[i] * 0.025), float(shadowIndex)));
+        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.125f;
+    }
+
+
+    return min(shadowFactor, 1.0);
+}
+
+
 float sampleShadowStencils(float3 worldPos, float3 lpos)
 {
     static const float3 gCubeSampleOffset[8] =
@@ -328,7 +359,8 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             //if (i == 0)
             //{
-            shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
+            shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
+            //shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
             lightPower *= shadowFactor;
 
             //}
