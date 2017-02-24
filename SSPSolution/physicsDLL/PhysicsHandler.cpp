@@ -1675,6 +1675,8 @@ void PhysicsHandler::ShutDown()
 	this->m_staticComponents.clear();
 	this->m_fields.clear();
 	this->m_links.clear();
+	this->m_player1BodyPC.clear();
+	this->m_player2BodyPC.clear();
 
 	this->m_bullet.Shutdown();
 }
