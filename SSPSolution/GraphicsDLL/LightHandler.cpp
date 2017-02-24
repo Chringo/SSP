@@ -163,6 +163,14 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 	return true;
 }
 
+ bool LIGHTING::LightHandler::SetStaticShadowsToGPU()
+{
+
+
+	// m_gDeviceContext->PSSetShaderResources(11, this->m_lightData->numItems, &this->m_lightData->shadowMaps);
+	return true;
+}
+
 bool LIGHTING::LightHandler::SetBuffersAsActive()
 {
 	for (size_t i = 0; i < NUM_LT; i++)

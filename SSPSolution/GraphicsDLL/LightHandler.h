@@ -93,12 +93,14 @@ namespace LIGHTING
 	public: //dataFlow
 		GRAPHICSDLL_API LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };
 		GRAPHICSDLL_API bool UpdateStructuredBuffer (LIGHT_TYPE type);
+		GRAPHICSDLL_API bool SetStaticShadowsToGPU();
 		GRAPHICSDLL_API bool SetBuffersAsActive();
 		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights, LIGHT_TYPE type);
 		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
 		GRAPHICSDLL_API bool SetShadowCastingLight(Light* light);
 		GRAPHICSDLL_API bool SetShadowCastingLight(int index);
+
 		
 
 		//Returns either an index to the internal lightdata or -1 for no lights found

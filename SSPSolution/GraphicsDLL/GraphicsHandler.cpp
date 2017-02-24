@@ -1474,7 +1474,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		//context->Unmap(destinationRes, 0);
 
 	}
-
+	m_LightHandler->SetStaticShadowsToGPU();
 	//tempTexture->Release();
 	//tempBufferTexture->Release();
 	 return  1;
