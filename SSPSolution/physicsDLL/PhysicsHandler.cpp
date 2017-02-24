@@ -1768,21 +1768,22 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
+			ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
+			ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
 			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
 		{
-			DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
-			//this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
-			//ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
-			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
+			//DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
+			////this->SetRagdoll2ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			////ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
+			//DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
-			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
+			//DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
+			////ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			////this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 		}
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
@@ -1802,7 +1803,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			int nrOfBodyParts = this->m_player1BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.1f;
+				this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.5f;
 			}
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
@@ -1811,7 +1812,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			int nrOfBodyParts = this->m_player2BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.1f;
+				this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.5f;
 			}
 		}
 
@@ -4874,9 +4875,19 @@ void PhysicsHandler::SetIgnoreCollisions()
 	for (int i = 0; i < nrOfLinks; i++)
 	{
 		link = &this->m_links.at(i);
-		ptr = link->PL_previous;
-		ptr2 = link->PL_next;
-		this->m_bullet.SetIgnoreCollisions(ptr2, ptr);
+		if (link->PL_type == PL_CHAIN)
+		{
+			ptr = link->PL_previous;
+			ptr2 = link->PL_next;
+			this->m_bullet.SetIgnoreCollisions(ptr2, ptr);
+			this->m_bullet.SetIgnoreCollisions(this->m_player1RagDoll.playerPC, ptr);
+			this->m_bullet.SetIgnoreCollisions(ptr2, this->m_player1RagDoll.playerPC);
+			int nrOfBodyParts = this->m_player1BodyPC.size();
+			for (int a = 0; a < nrOfBodyParts; a++)
+			{
+				this->m_bullet.SetIgnoreCollisions(this->m_player1BodyPC.at(a), ptr);
+			}
+		}
 	}
 }
 

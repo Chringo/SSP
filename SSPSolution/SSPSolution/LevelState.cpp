@@ -198,7 +198,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
-	playerP->PC_friction = 1.0f;
+	playerP->PC_friction = 0.95f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 
 #pragma region
@@ -257,6 +257,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
 	playerP->PC_OBB.ext[1] = playerG->modelPtr->GetOBBData().extension[1];
 	playerP->PC_OBB.ext[2] = playerG->modelPtr->GetOBBData().extension[2];
+	playerP->PC_friction = 0.95f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
 														
 #pragma region
@@ -1465,8 +1466,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		//get information from file
 		//static components should have the mass of 0
-		t_pc->PC_mass = 0;
-		t_pc->PC_friction = 0.85f;
+		//t_pc->PC_mass = 0;
+		//t_pc->PC_friction = 0.55f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
 			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
@@ -1482,7 +1483,17 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//And lastly store the result in graphics components as the model bounds used in culling
 		DirectX::XMStoreFloat3(&t_gc->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(t_pc->PC_OBB.ext[0], t_pc->PC_OBB.ext[1], t_pc->PC_OBB.ext[2], 0.0f), t_pc->PC_OBB.ort));
 		t_gc->ort = t_pc->PC_OBB.ort;
-		
+		if (t_pc->PC_OBB.ext[1] < 0.5f && DirectX::XMVector3Equal(t_pc->PC_OBB.ort.r[1], DirectX::XMVectorSet(0,1,0,0)))
+		{
+			t_pc->PC_mass = 0;
+			t_pc->PC_friction = 1.0f;
+		}
+		else
+		{
+			t_pc->PC_mass = 0;
+			t_pc->PC_friction = 0.0f;
+		}
+
 
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();

@@ -296,13 +296,13 @@ int System::Update(float deltaTime)
 		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
 		}
 	ptr = this->m_physicsHandler.GetPlayer2Ragdoll()->playerPC;
-	ptr = this->m_physicsHandler.GetComponentAt(1);
+	ptr = this->m_physicsHandler.GetPlayer1Ragdoll()->upperBody.center;
 	if (ptr != nullptr)
 		{
 		OBB* OBB_holder = &ptr->PC_OBB;
-		OBB_holder->ext[0] = ptr->PC_OBB.ext[0];
-		OBB_holder->ext[1] = ptr->PC_OBB.ext[1];
-		OBB_holder->ext[2] = ptr->PC_OBB.ext[2];
+		OBB_holder->ext[0] = ptr->PC_Sphere.radius;
+		OBB_holder->ext[1] = ptr->PC_Sphere.radius;
+		OBB_holder->ext[2] = ptr->PC_Sphere.radius;
 
 		this->m_graphicsHandler->RenderBoundingVolume(ptr->PC_pos, *OBB_holder);
 	}

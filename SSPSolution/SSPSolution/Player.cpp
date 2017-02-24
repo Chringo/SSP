@@ -61,12 +61,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
-		this->m_ragdoll->state = RAGDOLL;
+		//this->m_ragdoll->state = RAGDOLL;
 		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
-		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 7);
-		this->m_ragdoll->upperBody.center->PC_velocity = vel;
-		this->m_ragdoll->upperBody.next->PC_velocity   = vel;
-		this->m_ragdoll->upperBody.next2->PC_velocity  = vel;
+		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
+		//this->m_ragdoll->upperBody.center->PC_velocity = vel;
+		//this->m_ragdoll->upperBody.next->PC_velocity   = vel;
+		//this->m_ragdoll->upperBody.next2->PC_velocity  = vel;
+		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
 		
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
@@ -344,6 +345,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//Check if the player should update its physics component
 		//if (this->m_pComp->PC_entityID == 0)
 		//{
+		if (forwards == 0)
+		{
+			//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			//this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		}
 		if (forwards != 0 || sideways != 0)
 			{
 				//Use those values for the player behaviour calculations
