@@ -95,7 +95,7 @@ int Camera::UpdateView()
 	return 1;
 }
 
-int Camera::UpdateProjection()
+int Camera::UpdateProjectionMat()
 {
 	int result = 1;
 	if (this->m_screenAspect <= 0 || this->m_fieldOfView <= 0)
