@@ -24,9 +24,8 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 {
 	int result = 0;
 
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
-	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
 	
 	//Workaround for camera trying to access nullptr
@@ -42,14 +41,16 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	this->m_menuBG->size = DirectX::XMFLOAT2(1280.f, 720.f);
 	this->m_menuBG->spriteID = 4;
+	this->m_menuBG->layerDepth = 1.0f;
 
 	for (size_t i = 0; i < 3; i++) //Create the main menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 1;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->spriteID = 5;
+		tempUIComp->layerDepth = 0.5f;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -69,8 +70,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->spriteID = 5;
+		tempUIComp->layerDepth = 0.5f;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
@@ -84,8 +86,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->spriteID = 5;
+		tempUIComp->layerDepth = 0.5f;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -99,11 +102,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
-	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(300.f, 100.f);
+	this->m_ipTextBox.m_uiComp->scale = 0.6;
 	this->m_ipTextBox.m_uiComp->spriteID = 5;
+	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
+	this->m_ipTextBox.m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 	this->m_ipTextBox.m_textComp->text = L"Enter IP...";
 
 	this->m_mainMenuButtons[0].m_textComp->text = L"Start Game";
@@ -573,7 +579,32 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		
 		if (isHosting)	//If we have pressed the host button
 		{
+#ifndef HOST_DISABLE
 			this->Hosting(dt, inputHandler);	//Do the Host update
+#else
+			//Create, Initialize and push a LevelSelectState
+			LevelSelectState* levelSelect = new LevelSelectState();
+			result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+
+			//If the initialization was successful
+			if (result > 0)
+			{
+				//Push it to the gamestate stack/vector
+				//this->PushStateToStack(levelSelect);
+
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+
+				//Delete it. If it was successful it would have pushed a LevelState to the stack
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			else
+			{
+				delete levelSelect;
+				levelSelect = nullptr;
+			}
+			this->isHosting = false;
+#endif
 		}
 
 		if (isJoining)
@@ -594,6 +625,60 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
+int MenuState::EnterState()
+{
+	size_t nrOfMenuitems;
+	switch(this->m_menuState)
+	{
+	case 0: /*/ Main menu /*/
+		//Show buttons
+		nrOfMenuitems = this->m_mainMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_mainMenuButtons[i].SetActive(true);
+		}
+
+		break;
+
+	case 1: /*/ Options menu /*/
+		//Show buttons
+		nrOfMenuitems = this->m_optionsMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_optionsMenuButtons[i].SetActive(true);
+		}
+
+		break;
+
+	case 2: /*/ Start game menu /*/
+
+		//Show buttons
+		nrOfMenuitems = this->m_startMenuButtons.size();
+		for (size_t i = 0; i < nrOfMenuitems; i++)
+		{
+			this->m_startMenuButtons[i].SetActive(true);
+		}
+		this->m_ipTextBox.SetActive(true);
+		
+		break;
+	default:
+		break;
+	}
+	
+	this->m_menuBG->active = 1;
+
+	this->isHosting = false;
+	this->isJoining = false;
+
+	return 0;
+}
+
+int MenuState::LeaveState()
+{
+	return 0;
+}
+
+//NOT IN USE
 void MenuState::Hosting(float dt, InputHandler* inputHandler)
 {
 	#pragma region
@@ -648,37 +733,48 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 			#pragma region
 			//Create, Initialize and push a LevelSelectState
 			LevelSelectState* levelSelect = new LevelSelectState();
-			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+			int result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 
 			//If the initialization was successful
 			if (result > 0)
 			{
 				//Push it to the gamestate stack/vector
-				this->m_gsh->PushStateToStack(levelSelect);
+				//this->m_gsh->PushStateToStack(levelSelect);
 
 				#pragma region
 				switch (levelID)
 				{
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+					break;
+
+				case 2:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					break;
+
+				case 3:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
+					break;
+
+				case 4:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
 				}
 				#pragma endregion Level_To_Load
-
 			}
-			else
-			{
-				//Delete it
-				delete levelSelect;
-				levelSelect = nullptr;
-			}
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
 			#pragma endregion Load_Level
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
@@ -696,7 +792,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 		
 	if (packets.size() != 0)	//We recive the syncpacket
 	{
-		printf("Recived SyncPhysicsPacket");
+		printf("Recived SyncPhysicsPacket\n");
 		std::list<SyncPhysicPacket>::iterator packet = packets.begin();
 
 		//Send Ready packet
@@ -712,25 +808,40 @@ void MenuState::Joining(InputHandler* inputHandler)
 		#pragma region
 		//Create, Initialize and push a LevelSelectState
 		LevelSelectState* levelSelect = new LevelSelectState();
-		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+		int result = levelSelect->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 
 		//If the initialization was successful
 		if (result > 0)
 		{
 			//Push it to the gamestate stack/vector
-			this->m_gsh->PushStateToStack(levelSelect);
+			//this->m_gsh->PushStateToStack(levelSelect);
 
 			#pragma region
 			switch (levelID)
 			{
+			case 0:
+				printf("LOAD LEVEL 0\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), 0);
+				break;
+
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
+				break;
+
+			case 2:
+				printf("LOAD LEVEL 2\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), 2);
+				break;
+
+			case 3:
+				printf("LOAD LEVEL 3\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), 3);
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
 				break;
 
 			}
@@ -738,12 +849,10 @@ void MenuState::Joining(InputHandler* inputHandler)
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
-		else
-		{
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
-		}
+
+		//Delete it
+		delete levelSelect;
+		levelSelect = nullptr;
 		#pragma endregion Load_Level
 
 		this->isJoining = false;
