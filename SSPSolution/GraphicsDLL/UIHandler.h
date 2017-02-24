@@ -32,6 +32,7 @@ private:
 	DirectX::SpriteFont* m_spriteFont;
 	std::vector<ID3D11ShaderResourceView*> m_textures;
 	size_t m_nrOfTextures;
+	ID3D11BlendState* m_blendState;
 
 public:
 	UIHandler();

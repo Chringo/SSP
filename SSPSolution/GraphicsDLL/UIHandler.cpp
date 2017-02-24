@@ -43,13 +43,25 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"button.png", nullptr, &this->m_textures.at(4));
 	DirectX::CreateWICTextureFromFile(device, L"crosshair.png", nullptr, &this->m_textures.at(5));
 	DirectX::CreateWICTextureFromFile(device, L"crosshair_aim.png", nullptr, &this->m_textures.at(6));
+
+	D3D11_BLEND_DESC BlendState;
+	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
+	BlendState.RenderTarget[0].BlendEnable = TRUE;
+	BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	BlendState.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendState.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	BlendState.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	BlendState.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendState.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	BlendState.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	device->CreateBlendState(&BlendState, &this->m_blendState);
 }
 
 void UIHandler::DrawUI()
 {
 	UIComponent* tempUIComp = nullptr;
 	TextComponent* tempTextComp = nullptr;
-	this->m_spriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_BackToFront);
+	this->m_spriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_BackToFront, this->m_blendState);
 	for (unsigned int i = 0; i < this->m_nrOfUIComponents; i++)
 	{
 		tempUIComp = this->m_UIComponents.at(i);
