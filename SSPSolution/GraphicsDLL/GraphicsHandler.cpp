@@ -824,7 +824,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
 
-	this->RenderOctree(&this->m_octreeRoot, &renderTest);
+	//this->RenderOctree(&this->m_octreeRoot, &renderTest);
 	RenderBoundingBoxes(false);
 
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
@@ -1218,8 +1218,86 @@ int GraphicsHandler::GenerateOctree()
 
 	return result;
 }
+int GraphicsHandler::FrustrumCullOctreeLeft()
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	for (int i = 0; i < MAX_BRANCHES; i += 2)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
 
-GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
+	/*int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}*/
+	return result;
+}
+int GraphicsHandler::FrustrumCullOctreeRight()
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+	for (int i = 1; i < MAX_BRANCHES; i += 2)
+	{
+		if (this->m_octreeRoot.branches[i] != nullptr)
+		{
+			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+		}
+	}
+
+	/*int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}*/
+	return result;
+}
+
+int GraphicsHandler::FrustrumCullOctreeNodeThreaded(int threadCount)
+{
+	int result = 0;
+	enum { MAX_BRANCHES = 8 };
+	Camera::ViewFrustrum currentFrustrum;
+	this->m_camera->GetViewFrustrum(currentFrustrum);
+#pragma omp parallel num_threads(threadCount)
+	{
+		int i;
+#pragma omp for private(i)
+		for (i = 0; i < MAX_BRANCHES; i++)
+		{
+			if (this->m_octreeRoot.branches[i] != nullptr)
+			{
+				this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
+			}
+		}
+	}
+
+	int cap = this->m_octreeRoot.containedComponents.size();
+	for (int i = 0; i < cap; i++)
+	{
+		//this->m_octreeRoot.containedComponents[i]->isRendered = true;
+		if (this->m_octreeRoot.containedComponents[i]->isRendered)
+		{
+			result++;
+		}
+	}
+	return result;
+}
+int GraphicsHandler::FrustrumCullOctreeNode()
 {
 	int result = 0;
 	enum {MAX_BRANCHES = 8};
@@ -1232,7 +1310,7 @@ GRAPHICSDLL_API int GraphicsHandler::FrustrumCullOctreeNode()
 			this->TraverseOctree(this->m_octreeRoot.branches[i], &currentFrustrum);
 		}
 	}
-	//int amountOfNodes = this->RenderOctree(&this->m_octreeRoot, &currentFrustrum);
+
 	int cap = this->m_octreeRoot.containedComponents.size();
 	for (int i = 0; i < cap; i++)
 	{
@@ -1936,14 +2014,20 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 						bool intersectsRay = this->RayVSAABB(ray, branchBounds, distance);
 						if (intersectsRay)
 						{
-							if (distance < 1.5f)
+							if (pingRay == false)
 							{
-								TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								if (distance < 1.5f)
+								{
+									TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								}
 							}
-							/*else if (distance < 100.f)
+							else 
 							{
-								TraverseOctreeRay(curNode->branches[i], ray, true);
-							}*/
+								if (distance < 100.f)
+								{
+									TraverseOctreeRay(curNode->branches[i], ray, pingRay);
+								}
+							}
 						}
 					}
 				}
@@ -1958,10 +2042,10 @@ void GraphicsHandler::TraverseOctreeRay(OctreeNode * curNode, Camera::C_Ray ray,
 				{
 					entityComponent->isInRay = true;
 				}
-				/*else
+				else
 				{
 					entityComponent->isInPingRay = true;
-				}*/
+				}
 			}
 		}
 	}
@@ -2153,4 +2237,71 @@ inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Conv
 
 
 	return obj;
+}
+
+float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
+{
+	std::vector<Camera::C_OBB> OBBs;
+
+	Camera::C_Ray ray = this->m_camera->CastRayFromMaxDistance();
+
+	//Change dir of the ray
+	//ray.dir = DirectX::XMFLOAT3(ray.dir.x * -1, ray.dir.y * -1, ray.dir.z * -1);
+	
+	//Cast a ray that sets hited OctreeBV isInPingRay to true
+	for (size_t i = 0; i < 8; i++)
+	{
+		this->TraverseOctreeRay(this->m_octreeRoot.branches[i], ray, true);
+	}
+
+	//Search for the results
+	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+	{
+		if (i->isInPingRay)
+		{
+			//Create the OBB
+			DirectX::XMMATRIX ortm;
+			DirectX::XMFLOAT4X4 ort;
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+
+			DirectX::XMStoreFloat4x4(&ort, ortm);
+
+			Camera::C_OBB obb;
+			obb.ort = ort;
+			obb.ext = DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext);
+			obb.pos = i->pos;
+
+			OBBs.push_back(obb);	//Push to the list of OBBs
+			i->isInPingRay = false;
+		}
+	}
+
+	//Check distance to all marked OBBs
+	const float EPSILON = 1e-5f;
+	float targetDistance = maxDistance;	//Max distance
+	float intersectDistance = maxDistance + 0.3f;	//Closest distance
+	float hitDistance = maxDistance;	//Current hit distance
+
+	for (Camera::C_OBB i : OBBs)
+	{
+		OBB obb;
+		obb.ext[0] = i.ext.x;
+		obb.ext[1] = i.ext.y;
+		obb.ext[2] = i.ext.z;
+
+		obb.ort = DirectX::XMLoadFloat4x4(&i.ort);
+
+		if (this->m_camera->m_IntersectRayOBB(this->m_camera->GetMaxDistanceCamPos(), this->m_camera->GetDirection(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		{
+			if (hitDistance < intersectDistance && fabs(hitDistance - targetDistance) > EPSILON)
+			{
+				intersectDistance = hitDistance;
+			}
+		}
+	}
+
+
+	return intersectDistance;
 }
