@@ -318,6 +318,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
 	ballP->PC_Sphere.radius = 0.25;
+	ballP->PC_friction = 0.1f;
 	//ballP->PC_Sphere.radius = 1;
 
 
@@ -344,6 +345,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_BVtype = BV_Sphere;
 
 	ballP->PC_Sphere.radius = 0.25;
+	ballP->PC_friction = 0.1f;
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
@@ -1483,12 +1485,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//And lastly store the result in graphics components as the model bounds used in culling
 		DirectX::XMStoreFloat3(&t_gc->extensions, DirectX::XMVector3Transform(DirectX::XMVectorSet(t_pc->PC_OBB.ext[0], t_pc->PC_OBB.ext[1], t_pc->PC_OBB.ext[2], 0.0f), t_pc->PC_OBB.ort));
 		t_gc->ort = t_pc->PC_OBB.ort;
+		//sets the friction of the static environment if extension in y is smaller than 0.5 we assume its the floor and give it a higher friction than the walls 
 		if (t_pc->PC_OBB.ext[1] < 0.5f && DirectX::XMVector3Equal(t_pc->PC_OBB.ort.r[1], DirectX::XMVectorSet(0,1,0,0)))
 		{
 			t_pc->PC_mass = 0;
 			t_pc->PC_friction = 1.0f;
 		}
-		else
+		else //walls get lower friction 
 		{
 			t_pc->PC_mass = 0;
 			t_pc->PC_friction = 0.0f;

@@ -1759,8 +1759,14 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == ANIMATED)
 	{
-		//this->m_links.at(0).PL_previous = ragdoll->playerPC;
-		float yOffSet = DirectX::XMVectorGetY(ragdoll->bindPose[0].r[3]);
+		int nrOfBodyParts = this->m_player1BodyPC.size();
+		for (int i = 0; i < nrOfBodyParts; i++)
+		{
+			if (i != 2)
+			{
+				this->m_player1BodyPC.at(i)->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			}
+		}
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
 			DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
@@ -1806,7 +1812,8 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			int nrOfBodyParts = this->m_player1BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.5f;
+				//this->m_player1BodyPC.at(i)->PC_gravityInfluence = 1.0f;
+				this->m_player1BodyPC.at(i)->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			}
 		}
 		if (ragdoll->playerPC->PC_entityID == 2)
@@ -1815,7 +1822,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			int nrOfBodyParts = this->m_player2BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.5f;
+				//this->m_player2BodyPC.at(i)->PC_gravityInfluence = 1.0f;
 			}
 		}
 
@@ -1827,11 +1834,11 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
 		btVector3 scale = btVector3(radius, radius, radius);
-		this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, scale);
+		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, scale);
 
-		ragdoll->playerPC->PC_OBB.ext[0] = radius;
-		ragdoll->playerPC->PC_OBB.ext[1] = radius;
-		ragdoll->playerPC->PC_OBB.ext[2] = radius;
+		//ragdoll->playerPC->PC_OBB.ext[0] = radius;
+		//ragdoll->playerPC->PC_OBB.ext[1] = radius;
+		//ragdoll->playerPC->PC_OBB.ext[2] = radius;
 
 		this->AdjustRagdoll(ragdoll, dt);
 
@@ -1857,16 +1864,16 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
 		btVector3 ext;
-		ext.setX(1.0f / ragdoll->key_frame_blend_stage);
-		ext.setY(1.0f / ragdoll->key_frame_blend_stage);
-		ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
+		//ext.setX(1.0f / ragdoll->key_frame_blend_stage);
+		//ext.setY(1.0f / ragdoll->key_frame_blend_stage);
+		//ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
 
-		ragdoll->playerPC->PC_OBB.ext[0] = ext.getX() * ragdoll->original_ext[0];
-		ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
-		ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
+		//ragdoll->playerPC->PC_OBB.ext[0] = ext.getX() * ragdoll->original_ext[0];
+		//ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
+		//ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
 
 		ragdoll->key_frame_blend_stage--;
-		this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, ext);
+		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, ext);
 
 		if (ragdoll->key_frame_blend_stage == 0)
 		{
@@ -1877,7 +1884,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 				int nrOfBodyParts = this->m_player1BodyPC.size();
 				for (int i = 0; i < nrOfBodyParts; i++)
 				{
-					this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.0f;
+					//this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.0f;
 				}
 			}
 			if (ragdoll->playerPC->PC_entityID == 2)
@@ -1885,7 +1892,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 				int nrOfBodyParts = this->m_player2BodyPC.size();
 				for (int i = 0; i < nrOfBodyParts; i++)
 				{
-					this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.0f;
+					//this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.0f;
 				}
 			}
 		}
@@ -2401,7 +2408,7 @@ PhysicsComponent * PhysicsHandler::CreateBodyPartPhysicsComponent(int player, co
 	newObject->PC_mass = 2.0f;
 	newObject->PC_gravityInfluence = 1.0f;
 	newObject->PC_Sphere.radius = 0.3f;
-	newObject->PC_friction = 0.5f;
+	newObject->PC_friction = 1.0f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_Sphere;
 
