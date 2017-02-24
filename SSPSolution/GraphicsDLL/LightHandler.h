@@ -36,6 +36,7 @@
 
 */
 #define LIGHT_CHECK_PAUSE_TIME 1.0f / 10.0f
+#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {
 	class LightHandler
@@ -83,7 +84,9 @@ namespace LIGHTING
 		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT]		= { nullptr,nullptr,nullptr,nullptr }; //Data is handled in shader resource views
 
 		//Timer variables
+		//Time since we last updated the light for shadow mapping
 		float m_activeLightCheckTimer;
+		//The light index for shadow mapping
 		int m_activeLightIndex;
 
 	private:

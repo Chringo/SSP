@@ -48,10 +48,41 @@ int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 	int k = LIGHT_CHECK_PAUSE_TIME / this->m_activeLightCheckTimer;
 	this->m_activeLightCheckTimer -= k * LIGHT_CHECK_PAUSE_TIME;
 	checkActiveLightForShadows = k;
+#ifndef CHECK_IF_EXITED_LIGHT_RADIUS
 	if (checkActiveLightForShadows)
 	{
-
+		//The time has exceeded the timer and we need to calculate a new active light for shadow mapping
+		int closestLightIndex = 0;
+		closestLightIndex = this->GetClosestLightIndex(LIGHTING::LT_POINT, pointOfInterest);
+		if (closestLightIndex > -1)
+		{
+			//We found a light close enough
+			m_constBufferData.SHADOWLIGHT_INDEX = closestLightIndex;
+			Light temp = this->m_lightData[LIGHTING::LT_POINT].dataPtr[closestLightIndex];
+			SetShadowCastingLight(&temp);
+		}
 	}
+#else
+	if (checkActiveLightForShadows)
+	{
+		bool hasExitedOldRadius = false;
+		Light temp = this->m_lightData[LIGHTING::LT_POINT].dataPtr[this->m_activeLightIndex];
+		
+		if (hasExitedOldRadius)
+		{
+			//The time has exceeded the timer and we need to calculate a new active light for shadow mapping
+			int closestLightIndex = 0;
+			closestLightIndex = this->GetClosestLightIndex(LIGHTING::LT_POINT, pointOfInterest);
+			if (closestLightIndex > -1)
+			{
+				//We found a light close enough
+				m_constBufferData.SHADOWLIGHT_INDEX = closestLightIndex;
+				temp = this->m_lightData[LIGHTING::LT_POINT].dataPtr[closestLightIndex];
+				SetShadowCastingLight(&temp);
+			}
+		}
+	}
+#endif
 	return result;
 }
 
@@ -335,40 +366,54 @@ int LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLO
 	enum { X = 0, Y = 1, Z = 2 };
 	if (type > 0 && type < NUM_LT)
 	{
-		//Loop the lights
-		for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
+		if (this->m_lightData->numItems > 0)
 		{
 			Light* commonData = this->m_lightData[type].dataPtr;
 			if (type == LIGHT_TYPE::LT_POINT)
 			{
-				Point* specializedData = static_cast<Point*>(commonData);
-				dist = 0.0f;
-				dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
-				dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
-				dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
-				//Reduce the distance with the radius
-				dist -= pow(specializedData[i].radius, 2);
-				//Square root it for actual length. We will use the non squared length because
-				//we don't care about actual length, only the relation between the lengths
-				if (dist < distClose)
+
+				for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
 				{
-					result = i;
+					Point* specializedData = static_cast<Point*>(commonData);
+					dist = 0.0f;
+					dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
+					dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+					dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+					//Reduce the distance with the radius
+					dist -= pow(specializedData[i].radius, 2);
+					//Square root it for actual length. We will use the non squared length because
+					//we don't care about actual length, only the relation between the lengths
+					if (dist < distClose)
+					{
+						result = i;
+					}
 				}
 			}
 			else
 			{
-				dist = 0.0f;
-				dist += pow(commonData[i].position.m128_f32[X] - pos.x, 2);		//X
-				dist += pow(commonData[i].position.m128_f32[Y] - pos.y, 2);		//Y
-				dist += pow(commonData[i].position.m128_f32[Z] - pos.z, 2);		//Z
-				//Square root it for actual length. We will use the non squared length because
-				//we don't care about actual length, only the relation between the lengths
-				if (dist < distClose)
+				for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
 				{
-					result = i;
+					dist = 0.0f;
+					dist += pow(commonData[i].position.m128_f32[X] - pos.x, 2);		//X
+					dist += pow(commonData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+					dist += pow(commonData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+					//Loop the lights
+					for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
+					{
+						dist = 0.0f;
+						dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[X], 2);		//X
+						dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Y], 2);		//Y
+						dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Z], 2);		//Z
+
+						//Square root it for actual length. We will use the non squared length because
+						//we don't care about actual length, only the relation between the lengths
+						if (dist < distClose)
+						{
+							result = i;
+						}
+					}
 				}
 			}
-
 		}
 	}
 	return result;
