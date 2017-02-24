@@ -363,8 +363,9 @@ float4 PS_main(VS_OUT input) : SV_Target
 				shadowFactor += sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz);
                 shadowFactor = min(shadowFactor, 1.0f);
             }
-            lightPower *= shadowFactor;
+				lightPower *= shadowFactor;
 
+            }
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);

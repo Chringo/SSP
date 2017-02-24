@@ -35,6 +35,8 @@
 
 
 */
+#define LIGHT_CHECK_PAUSE_TIME (1.0f / 10.0f)
+//#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {
 	class LightHandler
@@ -81,6 +83,12 @@ namespace LIGHTING
 		ID3D11Buffer* m_lightBuffers[NUM_LT]					    = { nullptr,nullptr,nullptr,nullptr }; //Light constBuffers
 		ID3D11ShaderResourceView*  m_structuredBuffers[NUM_LT]		= { nullptr,nullptr,nullptr,nullptr }; //Data is handled in shader resource views
 
+		//Timer variables
+		//Time since we last updated the light for shadow mapping
+		float m_activeLightCheckTimer;
+		//The light index for shadow mapping
+		int m_activeLightIndex;
+
 	private:
 		GRAPHICSDLL_API bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
 		GRAPHICSDLL_API bool ReleaseStructuredBuffer(LIGHT_TYPE type);
@@ -89,6 +97,8 @@ namespace LIGHTING
 
 		GRAPHICSDLL_API void Initialize(ID3D11Device*, ID3D11DeviceContext*);
 		GRAPHICSDLL_API static LightHandler* GetInstance();
+		GRAPHICSDLL_API	int Update(float dT, DirectX::XMFLOAT3 pointOfInterest);
+
 
 	public: //dataFlow
 		GRAPHICSDLL_API LightArray* Get_Light_List(LIGHT_TYPE type) { return (type >= LIGHT_TYPE::NUM_LT ? nullptr : &m_lightData[type]); };

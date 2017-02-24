@@ -861,6 +861,16 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 return  1;
 }
 
+ int GraphicsHandler::Update(float deltaTime)
+ {
+	 int result = 0;
+	 //Convert deltaTime into seconds for easier timer management
+	 deltaTime = deltaTime / 1000000.0f;
+	 result = this->m_LightHandler->Update(deltaTime, this->m_camera->GetFocusPoint());
+
+	 return result;
+ }
+
 int GraphicsHandler::InitializeGrid()
 {
 
