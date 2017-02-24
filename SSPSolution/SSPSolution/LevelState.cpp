@@ -125,7 +125,6 @@ LevelState::LevelState()
 
 LevelState::~LevelState()
 {
-	ShutDown();
 }
 
 int LevelState::ShutDown()
@@ -195,8 +194,10 @@ int LevelState::ShutDown()
 	this->m_cHandler->GetPhysicsHandler()->ShutDown();
 	this->m_cHandler->GetPhysicsHandler()->Initialize();
 
-	this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
-	this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
+	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
+	this->m_cHandler->RemoveLastUIComponent();
+	this->m_cHandler->RemoveLastUIComponent();
 
 	return result;
 }
@@ -518,7 +519,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_controlsOverlay = cHandler->GetUIComponent();
 	this->m_controlsOverlay->active = 0;
 	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
-	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->spriteID = Textures::Keymaps;
 	this->m_controlsOverlay->scale = .6f;
 
 	//Crosshair overlay

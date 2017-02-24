@@ -123,7 +123,8 @@ UIComponent* UIHandler::GetNextUIComponent()
 {
 	if (this->m_nrOfUIComponents < this->m_maxUIComponents)
 	{
-		return this->m_UIComponents.at(this->m_nrOfUIComponents++);
+		this->m_nrOfUIComponents++;
+		return this->m_UIComponents.at(this->m_nrOfUIComponents - 1);
 	}
 	return nullptr;
 }
@@ -155,6 +156,13 @@ int UIHandler::RemoveUIComponent(UIComponent * ptr)
 	}
 
 	return 0;
+}
+
+int UIHandler::RemoveLastUIComponent()
+{
+	this->m_nrOfUIComponents--;
+	this->m_UIComponents.at(this->m_nrOfUIComponents)->ResetValuesToDefault();
+	return this->m_nrOfUIComponents;
 }
 
 TextComponent* UIHandler::GetNextTextComponent()

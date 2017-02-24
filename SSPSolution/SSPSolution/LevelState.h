@@ -135,7 +135,6 @@ private:
 
 	UIComponent* m_controlsOverlay;
 
-
 	UIComponent* m_crosshair;
 public:
 	LevelState();
