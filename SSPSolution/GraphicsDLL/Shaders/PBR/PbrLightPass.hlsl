@@ -1,10 +1,11 @@
-Texture2D colorTex		   : register(t0);
-Texture2D metalRoughAo     : register(t1);
-Texture2D normalTex		   : register(t2);
-Texture2D wPosTex		   : register(t3);
-textureCUBE shadowTex      : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
-SamplerState linearSampler : register(s0);
-SamplerState pointSampler  : register(s1);
+Texture2D colorTex		         : register(t0);
+Texture2D metalRoughAo           : register(t1);
+Texture2D normalTex		         : register(t2);
+Texture2D wPosTex		         : register(t3);
+TextureCube shadowTex            : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
+TextureCubeArray staticShadows   : register(t11);
+SamplerState linearSampler       : register(s0);
+SamplerState pointSampler        : register(s1);
 
 cbuffer camera : register(b1)
 {
@@ -15,11 +16,7 @@ cbuffer camera : register(b1)
 
 }
 
-cbuffer shadow : register(b5)
-{
-    float4x4 ShadowViewMatrix[6];
-    float4x4 ShadowProjectionMatrix;
-}
+
 
 cbuffer LightInfo : register(b3)
 {
@@ -226,7 +223,7 @@ float VecToDepth(float3 vec)
     return NormZComp;
 }
 
-float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, int shadowMapIndex)
+float sampleShadowStencils(float3 worldPos, float3 lpos)
 {
     static const float3 gCubeSampleOffset[8] =
     {
@@ -243,13 +240,13 @@ float sampleShadowStencils(float4 worldPos, matrix lightView, matrix lightProj, 
     float shadowFactor = 0.0f;
     
     float bias = 0.0000018f;
-    float3 pixToLight = worldPos.xyz - pointlights[SHADOWLIGHT_INDEX].position.xyz;
+    float3 pixToLight = worldPos - lpos;
 
     [unroll]
     for (int i = 0; i < 8; i++)
     {
-        float closestDepth = shadowTex.Sample(linearSampler, (pixToLight) + (gCubeSampleOffset[i] * 0.05));
-        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.25f;
+        float closestDepth = shadowTex.Sample(linearSampler, (pixToLight) + (gCubeSampleOffset[i] * 0.025));
+        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.125f;
     }
 
 
@@ -331,8 +328,8 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             //if (i == 0)
             //{
-                shadowFactor = sampleShadowStencils(wPosSamp, ShadowViewMatrix[0], ShadowProjectionMatrix, 0);
-                lightPower *= shadowFactor;
+            shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
+            lightPower *= shadowFactor;
 
             //}
 

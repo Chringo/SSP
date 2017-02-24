@@ -21,7 +21,7 @@ Camera::~Camera()
 {
 }
 
-int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, float farPlane)
+int Camera::Initialize(float farPlane, float screenAspect, float fieldOfView, float nearPlane)
 {
 	int result = 1;
 
@@ -111,7 +111,7 @@ int Camera::UpdateProjection()
 	return result;
 }
 
-int Camera::UpdateProjection(float screenAspect, float fieldOfView, float nearPlane, float farPlane) {
+int Camera::UpdateProjection(float farPlane, float screenAspect, float fieldOfView, float nearPlane) {
 
 	//Update the projection matrix
 	this->m_screenAspect = screenAspect;

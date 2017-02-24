@@ -91,7 +91,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_BACKWARD_BALL))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.45f, this->m_aComp->velocity);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD_BALL;
 				}
 			}
@@ -100,7 +100,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (!stateExists(PLAYER_RUN_BACKWARD))
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+					SetAnimationComponent(PLAYER_RUN_BACKWARD, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.45f, this->m_aComp->velocity);
 					this->m_aComp->previousState = PLAYER_RUN_BACKWARD;
 				}
 			}
@@ -121,7 +121,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_RIGHT_BALL))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_RUN_RIGHT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.5f, this->m_aComp->velocity);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT_BALL;
 					}
 				}
@@ -130,7 +130,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_RIGHT))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_RUN_RIGHT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.5f, this->m_aComp->velocity);
 						this->m_aComp->previousState = PLAYER_RUN_RIGHT;
 					}
 				}
@@ -152,7 +152,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_LEFT_BALL))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_RUN_LEFT_BALL, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.5f, this->m_aComp->velocity);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT_BALL;
 					}
 				}
@@ -161,7 +161,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					if (!stateExists(PLAYER_RUN_LEFT))
 					{
 						this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.6f, this->m_aComp->velocity);
+						SetAnimationComponent(PLAYER_RUN_LEFT, 0.40f, Blending::SMOOTH_TRANSITION, true, false, 0.5f, this->m_aComp->velocity);
 						this->m_aComp->previousState = PLAYER_RUN_LEFT;
 					}
 				}
@@ -245,7 +245,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_THROW, 0.4f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
+			SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 			this->m_aComp->velocity = 1.0f;
 			this->m_aComp->previousState = PLAYER_THROW;
 			//Play sound
@@ -314,9 +314,27 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//Velocity now contains both forwards and sideways velocity
 				velocity = DirectX::XMVector3Normalize(velocity);
 
-				//Scale that velocity with speed and deltaTime
-				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
-				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+				/*When the player move backwards, the movement speed of the character should be slower with a down-scale factor.*/
+				if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD)
+				{
+					float scaleFactor = 0.80f;
+					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
+					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+				}
+				/*When the player move backwards with ball, the movement speed of the character should be slower with a down-scale factor.*/
+				else if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD_BALL)
+				{
+					float scaleFactor = 0.60f;
+					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
+					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+				}
+				/*When the player run forwards and strafe left to right, scale with the normal acceleration.*/
+				else
+				{
+					//Scale that velocity with speed and deltaTime
+					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
+					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+				}
 
 				//Add the velocity to our physicsComponent
 				float ySpeed = 0;

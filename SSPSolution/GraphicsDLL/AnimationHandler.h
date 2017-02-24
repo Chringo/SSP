@@ -72,12 +72,14 @@ public:
 	//Functions used outside the class.
 	GRAPHICSDLL_API AnimationHandler();
 	GRAPHICSDLL_API ~AnimationHandler();
+	/*Called specifically when the game is shutdown.*/
 	GRAPHICSDLL_API void ShutDown();
 	GRAPHICSDLL_API void Initialize(GraphicsAnimationComponent ** graphicAnimComponents, int * noActiveComponents);
 	GRAPHICSDLL_API void Update(float dt);
+	/*Same functionality as ShutDown() but for the function name, deletes and clear all animation components.*/
+	GRAPHICSDLL_API void ClearAnimationComponents();
 	GRAPHICSDLL_API AnimationComponent* CreateAnimationComponent();
 	GRAPHICSDLL_API AnimationComponent* GetNextAvailableComponent();
-	GRAPHICSDLL_API void UpdateAnimationComponents(float dt);
 	
 private:
 	//Functions only used in class.

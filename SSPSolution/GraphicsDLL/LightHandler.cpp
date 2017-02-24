@@ -27,7 +27,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	m_constBufferData.SHADOWLIGHT_INDEX = 0;
 	Light temp;
 	temp.position = pos;
-	SetShadowCastingLight(&temp);
+	//SetShadowCastingLight(&temp);
 
 	this->m_activeLightIndex = 0;
 	this->m_activeLightCheckTimer = 0.0f;
@@ -177,6 +177,14 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 	memcpy(mapRes.pData, (void*)m_lightData[type].dataPtr, GetStructByteSize(type)*NUM_LIGHTS[type]);
 	m_gDeviceContext->Unmap(m_lightBuffers[type], 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOTS[type], 1, &m_structuredBuffers[type]);
+	return true;
+}
+
+ bool LIGHTING::LightHandler::SetStaticShadowsToGPU()
+{
+
+
+	// m_gDeviceContext->PSSetShaderResources(11, this->m_lightData->numItems, &this->m_lightData->shadowMaps);
 	return true;
 }
 
@@ -330,15 +338,35 @@ int LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLO
 		//Loop the lights
 		for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
 		{
-			dist = 0.0f;
-			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[X], 2);		//X
-			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Y], 2);		//Y
-			dist += pow(this->m_lightData[type].dataPtr[i].position.m128_f32[Z], 2);		//Z
-			//Square root it for actual length. We will use the non squared length because
-			//we don't care about actual length, only the relation between the lengths
-			if (dist < distClose)
+			Light* commonData = this->m_lightData[type].dataPtr;
+			if (type == LIGHT_TYPE::LT_POINT)
 			{
-				result = i;
+				Point* specializedData = static_cast<Point*>(commonData);
+				dist = 0.0f;
+				dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
+				dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+				dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+				//Reduce the distance with the radius
+				dist -= pow(specializedData[i].radius, 2);
+				//Square root it for actual length. We will use the non squared length because
+				//we don't care about actual length, only the relation between the lengths
+				if (dist < distClose)
+				{
+					result = i;
+				}
+			}
+			else
+			{
+				dist = 0.0f;
+				dist += pow(commonData[i].position.m128_f32[X] - pos.x, 2);		//X
+				dist += pow(commonData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+				dist += pow(commonData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+				//Square root it for actual length. We will use the non squared length because
+				//we don't care about actual length, only the relation between the lengths
+				if (dist < distClose)
+				{
+					result = i;
+				}
 			}
 
 		}
