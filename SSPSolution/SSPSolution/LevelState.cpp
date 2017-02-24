@@ -125,7 +125,6 @@ LevelState::LevelState()
 
 LevelState::~LevelState()
 {
-	ShutDown();
 }
 
 int LevelState::ShutDown()
@@ -195,7 +194,10 @@ int LevelState::ShutDown()
 	this->m_cHandler->GetPhysicsHandler()->ShutDown();
 	this->m_cHandler->GetPhysicsHandler()->Initialize();
 
-	this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
+	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
+	this->m_cHandler->RemoveLastUIComponent();
+	this->m_cHandler->RemoveLastUIComponent();
 
 	return result;
 }
@@ -517,8 +519,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_controlsOverlay = cHandler->GetUIComponent();
 	this->m_controlsOverlay->active = 0;
 	this->m_controlsOverlay->position = DirectX::XMFLOAT2(0.f, 0.f);
-	this->m_controlsOverlay->spriteID = 3;
+	this->m_controlsOverlay->spriteID = Textures::Keymaps;
 	this->m_controlsOverlay->scale = .6f;
+
+	//Crosshair overlay
+	this->m_crosshair = cHandler->GetUIComponent();
+	this->m_crosshair->active = 1;
+	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
+	this->m_crosshair->spriteID = Textures::Crosshair;
+	this->m_crosshair->scale = 0.8f;
 
 	return result;
 }
@@ -889,6 +898,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 		{
 			this->m_player1.SetAiming(true);
+			//Crosshair overlay
+			this->m_crosshair->spriteID = Textures::CrosshairAim;
+			
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
 			targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
 			targetOffset = DirectX::XMVectorAdd(targetOffset, { 0.0f, 1.25f, 0.0f, 0.0f });
@@ -902,6 +914,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_RIGHT) && this->m_player1.GetIsAming())
 		{
 			this->m_player1.SetAiming(false);
+			//Crosshair overlay
+			this->m_crosshair->spriteID = Textures::Crosshair;
+		
 			DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
 			m_cameraRef->SetCameraPivotOffset(
 				targetOffset,

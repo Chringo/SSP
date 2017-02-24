@@ -49,6 +49,18 @@ struct UIComponent
 	float rotation = 0.f;
 	float layerDepth = 1.f;
 
+	void ResetValuesToDefault()
+	{
+		this->active = 0;
+		this->spriteID = -1;
+		this->wasClicked = false;
+		this->isHovered = false;
+		this->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+		this->size = DirectX::XMFLOAT2(10.0f, 10.0f);
+		this->scale = 1.f;
+		this->rotation = 0.f;
+		this->layerDepth = 1.f;
+	}
 	void UpdateClicked(DirectX::XMFLOAT2 mousePos)
 	{
 		if ((mousePos.x > this->position.x && mousePos.x < this->position.x + this->size.x)

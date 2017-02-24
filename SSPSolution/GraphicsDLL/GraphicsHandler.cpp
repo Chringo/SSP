@@ -1526,6 +1526,11 @@ int GraphicsHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
 	return this->m_uiHandler->RemoveUIComponent(ptr);
 }
 
+int GraphicsHandler::RemoveLastUIComponent()
+{
+	return this->m_uiHandler->RemoveLastUIComponent();
+}
+
 TextComponent * GraphicsHandler::GetNextAvailableTextComponent()
 {
 	return this->m_uiHandler->GetNextTextComponent();
