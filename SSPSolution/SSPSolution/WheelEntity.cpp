@@ -334,8 +334,8 @@ float WheelEntity::GetInteractionDistance()
 void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 {
 	if (newSyncState != nullptr)
-	{
-		int oldState = newSyncState->rotationState;
+	{	
+		int oldState = 0;
 		this->m_rotationState = newSyncState->rotationState;
 		this->m_resetCountdown = this->m_resetTime;
 
@@ -412,6 +412,8 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 				this->m_resetCountdown = this->m_timeUntilReset;
 			}
 		}
+
+		oldState = newSyncState->rotationState;
 	}
 }
 
