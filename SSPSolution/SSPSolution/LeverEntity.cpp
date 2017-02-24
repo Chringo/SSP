@@ -119,11 +119,16 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 {
 	if (newSyncState != nullptr)
 	{
+
+		if (this->m_isActive != newSyncState->isActive)
+		{
+			this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+		}
 		//The player is always the cause of the state change
-		this->m_isActive = !this->m_isActive;
+		this->m_isActive = newSyncState->isActive;
 		//this->m_animationActive = newSyncState->isAnimationActive;
 		this->m_animationActive = !this->m_animationActive;
-		//this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+		//
 
 		if (m_isActive){
 			m_targetRot = m_activatedRotation;
