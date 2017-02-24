@@ -79,7 +79,7 @@ int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 		dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
 		//Reduce the distance with the radius
 		dist -= specializedData[this->m_activeLightIndex].radius;
-		hasExitedOldRadius = dist <= 0;
+		hasExitedOldRadius = dist >= 0;
 		if (hasExitedOldRadius)
 		{
 			//The time has exceeded the timer and we need to calculate a new active light for shadow mapping
