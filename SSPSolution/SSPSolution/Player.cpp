@@ -251,6 +251,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+
+			/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 			if (this->GetEntityID() == 2)
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 			else
@@ -373,6 +375,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				}
 
 				//Play walking sounds
+				/*Playing the corresponding walk sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
 				{
 					DirectX::XMFLOAT3 pos;
