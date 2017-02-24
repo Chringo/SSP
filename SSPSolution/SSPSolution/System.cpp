@@ -30,6 +30,7 @@ int System::Shutdown()
 	this->m_AnimationHandler->ShutDown();
 	delete this->m_AnimationHandler;
 
+	delete &Progression::instance();
 	DebugHandler::instance()->Shutdown();
 	
 	return result;
@@ -140,10 +141,10 @@ int System::Run()
 		this->m_inputHandler->mouseMovement(m_window);
 		SDL_PumpEvents();
 		//Update game
-		if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		/*if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			this->m_running = false;
-		}
+		}*/
 		if (!this->Update((float)elapsedTime.QuadPart))
 		{
 			this->m_running = false;
@@ -183,11 +184,11 @@ int System::Update(float deltaTime)
 		{
 			//Do the physics
 #pragma region
-			DebugHandler::instance()->StartTimer(1);
+	DebugHandler::instance()->StartTimer(1);
 
-			this->m_physicsHandler.Update(deltaTime);
+	this->m_physicsHandler.Update(deltaTime);
 
-			DebugHandler::instance()->EndTimer(1);
+	DebugHandler::instance()->EndTimer(1);
 #pragma endregion Physics
 		}
 		else if (myThreadID == 1)
@@ -208,7 +209,7 @@ int System::Update(float deltaTime)
 #ifdef _DEBUG
 			for (int i = 0; i < nrOfComponents; i++)
 			{
-				PhysicsComponent* temp = this->m_physicsHandler.GetDynamicComponentAt(i);
+				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
 				if (temp->PC_BVtype == BV_AABB)
 				{
 					AABB* AABB_holder = nullptr;
@@ -236,12 +237,6 @@ int System::Update(float deltaTime)
 					Sphere* sphereHolder = nullptr;
 					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
 					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
-																																  //AABB test;
-																																  //test.ext[0] = sphereHolder->radius;
-																																  //test.ext[1] = sphereHolder->radius;
-																																  //test.ext[2] = sphereHolder->radius;
-																																  //AABB* ptr = &test;
-																																  //this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *ptr);
 				}
 			}
 #endif // _DEBUG
@@ -257,8 +252,8 @@ int System::Update(float deltaTime)
 		else if (myThreadID == 2)
 		{
 #pragma region
-			//AI
-			this->m_AIHandler.Update(deltaTime);
+	//AI
+	this->m_AIHandler.Update(deltaTime);
 
 			this->m_AnimationHandler->Update(deltaTime);
 #pragma endregion AI And Animation
@@ -312,15 +307,19 @@ int System::Update(float deltaTime)
 
 	//this->m_AIHandler.Update(deltaTime);
 	//this->m_AnimationHandler->Update(deltaTime);
-
+	
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	enum { TOGGLE_FULLSCREEN = 511 };
+	enum {TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2};
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	if (result == TOGGLE_FULLSCREEN)
 	{
 		this->FullscreenToggle();
+	}
+	else if(result == EXIT_GAME)
+	{
+		result = 0;
 	}
 	DebugHandler::instance()->EndTimer(0);
 
