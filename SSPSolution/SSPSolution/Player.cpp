@@ -251,8 +251,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
-				
+			if (this->GetEntityID() == 2)
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+			else
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
+
 			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
 
 			//if the player is holding its own ball
