@@ -366,10 +366,12 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 					for (int incIter = 1; incIter < percentIncDiff; ++incIter)
 					{
 						//EVENT::WHEEL_0 + percentIncOld to get the start value
+						this->m_needSync = true;
 						this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncOld + incIter * converter));
 					}
 				}
 				//The event to notify with is the WHEEL_0 event + the increment.
+				this->m_needSync = true;
 				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 			}
 		}
@@ -386,11 +388,11 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 				//If we were not already increasing 
 				if (newSyncState->rotationState != oldState)
 				{
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
 					this->m_needSync = true;
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+					this->m_rotationState = RotatingIncrease;
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
-				this->m_rotationState = RotatingIncrease;
-				this->m_resetCountdown = this->m_timeUntilReset;
 			}
 		}
 		else if (newSyncState->rotationState == -1)
@@ -405,38 +407,41 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 				//If we were not already dencreasing 
 				if (newSyncState->rotationState != oldState)
 				{
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 					this->m_needSync = true;
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					this->m_rotationState = RotatingDecrease;
+					this->m_resetCountdown = this->m_timeUntilReset;
 				}
-				this->m_rotationState = RotatingDecrease;
-				this->m_resetCountdown = this->m_timeUntilReset;
 			}
 		}
 		else if (newSyncState->rotationState == 2)
 		{
 			if (newSyncState->rotationState != oldState)
 			{
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
 				this->m_needSync = true;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
+				this->m_rotationState = MaxRotation;
+				this->m_resetCountdown = this->m_timeUntilReset;
 			}
-			this->m_rotationState = MaxRotation;
-			this->m_resetCountdown = this->m_timeUntilReset;
 		}
 		else if (newSyncState->rotationState == -2)
 		{
 			if (newSyncState->rotationState != oldState)
 			{
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 				this->m_needSync = true;
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
+				this->m_rotationState = Resetting;
+				this->m_resetCountdown = this->m_timeUntilReset;
 			}
-			this->m_rotationState = Resetting;
-			this->m_resetCountdown = this->m_timeUntilReset;
+			
 		}
 		else
 			int i = 0;
 
 		oldState = newSyncState->rotationState;
 	}
+	else
+		int i = 0;
 }
 
 WheelSyncState * WheelEntity::GetSyncState()
