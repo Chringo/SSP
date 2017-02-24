@@ -29,13 +29,22 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	temp.position = pos;
 	SetShadowCastingLight(&temp);
 
-	
+	this->m_activeLightIndex = 0;
 }
 
 LIGHTING::LightHandler* LIGHTING::LightHandler::GetInstance()
 {
 	static LightHandler instance;
 	return &instance;
+}
+
+int LIGHTING::LightHandler::Update(float dT)
+{
+	int result = 0;
+	this->m_activeLightCheckTimer += dT;
+	//
+
+	return result;
 }
 
 

@@ -854,6 +854,15 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 return  1;
 }
 
+ int GraphicsHandler::Update(float deltaTime)
+ {
+	 int result = 0;
+
+	 result = this->m_LightHandler->Update(deltaTime);
+
+	 return result;
+ }
+
 int GraphicsHandler::InitializeGrid()
 {
 
