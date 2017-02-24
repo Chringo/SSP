@@ -34,7 +34,24 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		/*Only update the animation if the current iterating animation component is active and the source state is NOT a nullptr.*/
+		/*Go to the next component if the source state at the current frame is a nullptr.*/
+		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+			continue;
+
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
+		{
+			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
+			{
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				{
+					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
+					continue;
+				}
+			}
+			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
+			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
+			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
 		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
@@ -89,6 +106,11 @@ void AnimationHandler::Update(float dt)
 			else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 				|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 			{
+						/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+						if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+							|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+							continue;
+
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 				{
@@ -109,6 +131,17 @@ void AnimationHandler::Update(float dt)
 				else
 					Blend(seconds);
 			}
+			}
+			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
+			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
+			{
+				continue;
+			}
+		}
+		/*Ragdoll physics is currently happening, continue to the next component in the list.*/
+		else
+		{
+			continue;
 		}
 	}
 }
@@ -125,6 +158,12 @@ void AnimationHandler::ClearAnimationComponents()
 	this->m_nrOfAnimComps = 0;
 	m_AnimComponentList.clear();
 	m_AnimComponentList.shrink_to_fit();
+
+	//Create new empty components
+	for (int i = 0; i < this->m_maxAnimComps; i++)
+	{
+		this->m_AnimComponentList.push_back(CreateAnimationComponent());
+	}
 }
 
 AnimationComponent* AnimationHandler::CreateAnimationComponent()

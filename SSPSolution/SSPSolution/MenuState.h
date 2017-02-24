@@ -4,6 +4,8 @@
 #include "LevelSelectState.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 
+#define HOST_DISABLE
+
 const float TIMEOUT_TIME = 200;
 
 class MenuState :
@@ -20,13 +22,13 @@ private:
 			m_hovered = hovered;
 			if (hovered)
 			{
-				m_uiComp->scale = 1.25f;
-				m_textComp->scale = DirectX::XMFLOAT2(1.25f, 1.25f);
+				m_uiComp->scale = 0.8f;
+				m_textComp->scale = DirectX::XMFLOAT2(0.8f, 0.8f);
 			}
 			else
 			{
-				m_uiComp->scale = 1.f;
-				m_textComp->scale = DirectX::XMFLOAT2(1.f, 1.f);
+				m_uiComp->scale = 0.6f;
+				m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 			}
 		}
 		void SetActive(bool active)
@@ -61,7 +63,7 @@ private:
 			}
 			else
 			{
-				m_uiComp->scale = 1.f;
+				m_uiComp->scale = 0.6f;
 				m_uiComp->active = 0;
 				m_textComp->active = 0;
 				m_focused = false;
@@ -71,12 +73,12 @@ private:
 		{
 			if (focused)
 			{
-				m_uiComp->scale = 1.25f;
+				m_uiComp->scale = 0.8f;
 				m_focused = true;
 			}
 			else
 			{
-				m_uiComp->scale = 1.f;
+				m_uiComp->scale = 0.6f;
 				m_focused = false;
 			}
 		}
@@ -111,7 +113,6 @@ private:
 	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
-	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
 	
@@ -131,6 +132,9 @@ public:
 	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
+
+	int EnterState();
+	int LeaveState();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

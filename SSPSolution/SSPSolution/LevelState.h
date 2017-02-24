@@ -130,6 +130,12 @@ private:
 		float farPlane;
 	};
 	std::vector<hardcodedLevelData> m_levelPaths;
+
+	void SendSyncForJoin();
+
+	UIComponent* m_controlsOverlay;
+
+	UIComponent* m_crosshair;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -145,6 +151,11 @@ public:
 
 	int GetLevelIndex();
 	std::string GetLevelPath();
+
+	void SetCurrentLevelID(int currentLevelID);
+
+	int EnterState();
+	int LeaveState();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

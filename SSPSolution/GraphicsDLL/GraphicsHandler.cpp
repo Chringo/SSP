@@ -46,6 +46,29 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	else
 		context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
+
+	for (size_t i = 0; i < m_animGraphicsComponents[1]->jointCount; i++)
+	{
+		Sphere sp;
+		sp.radius = 0.2f;
+
+
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[1]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+
+		DirectX::XMVECTOR zero = { 0,0,0,0 };
+		DirectX::XMMATRIX world = m_animGraphicsComponents[1]->worldMatrix;
+		DirectX::XMMATRIX joint = m_animGraphicsComponents[1]->finalJointTransforms[i];
+
+		DirectX::XMVECTOR pos = m_animGraphicsComponents[1]->finalJointTransforms[i].r[3];
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
+		zero = DirectX::XMVector3TransformCoord(zero, joint);
+		zero = DirectX::XMVector3TransformCoord(zero, world);
+
+		m_debugRender.Render(zero, sp);
+	}
+
 	for (size_t i = 0; i < obbBoxes.size(); i++)
 	{
 		m_debugRender.Render(*positions[T_OBB].at(i), *obbBoxes.at(i), colors[T_OBB].at(i));
@@ -78,27 +101,27 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	
 	
 
-		for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
-		{
-			Sphere sp;
-			sp.radius = 0.2f;
+	//for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
+	//{
+	//	Sphere sp;
+	//	sp.radius = 0.2f;
 
 
-			DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
-			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
-			tpose = DirectX::XMMatrixInverse(&det, tpose);
+	//	DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
+	//	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+	//	tpose = DirectX::XMMatrixInverse(&det, tpose);
 
-			DirectX::XMVECTOR zero ={ 0,0,0,0 };
-			DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
-			DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
+	//	DirectX::XMVECTOR zero ={ 0,0,0,0 };
+	//	DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
+	//	DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
 
-			DirectX::XMVECTOR pos   = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
-			joint = DirectX::XMMatrixMultiply(tpose,joint);
-			zero = DirectX::XMVector3TransformCoord(zero, joint);
-			zero = DirectX::XMVector3TransformCoord(zero, world);
-			
-			m_debugRender.Render(zero, sp);
-		}
+	//	DirectX::XMVECTOR pos   = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
+	//	joint = DirectX::XMMatrixMultiply(tpose,joint);
+	//	zero = DirectX::XMVector3TransformCoord(zero, joint);
+	//	zero = DirectX::XMVector3TransformCoord(zero, world);
+	//	
+	//	m_debugRender.Render(zero, sp);
+	//}
 	
 
 	positions[T_WAYPOINT].clear();
@@ -664,7 +687,7 @@ int GraphicsHandler::Render(float deltaTime)
 		else
 		{
 			
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 			lastRenderedComponent->isRendered = false;
@@ -787,9 +810,28 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
 		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+
 		
 	}
 #pragma endregion Render animated objects
+	//render joints
+
+	//for (int a = 0; a < 21; a++)
+	//{
+	//	Sphere sphere;
+	//	sphere.radius = 0.25;
+	//	DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[a].invBindPose);
+
+	//	DirectX::XMVECTOR pos = m_animGraphicsComponents[0]->worldMatrix.r[3];
+	//	DirectX::XMVECTOR offSet = DirectX::XMMatrixInverse(nullptr, *inverseBindPose).r[3];
+
+	//	pos = DirectX::XMVectorAdd(pos, offSet);
+	//	pos = DirectX::XMVectorSetW(pos, 1);
+
+	//	this->RenderBoundingVolume(offSet, sphere);
+	//}
+	//
+
 
 
 	m_LightHandler->SetBuffersAsActive();
@@ -1520,6 +1562,19 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	 return  1;
 }
 
+int GraphicsHandler::ResetAnimationComponents()
+{
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++) {
+		if (this->m_animGraphicsComponents[i])
+		{
+			delete this->m_animGraphicsComponents[i];
+		}
+		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
+	}
+	this->m_nrOfGraphicsAnimationComponents = 0;
+	return 0;
+}
+
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
 	if (this->m_maxGraphicsComponents < newSize)
@@ -1704,6 +1759,16 @@ UIComponent * GraphicsHandler::GetNextAvailableUIComponent()
 void GraphicsHandler::UpdateUIComponents(DirectX::XMFLOAT2 mousePos)
 {
 	this->m_uiHandler->UpdateUIComponentsclicked(mousePos);
+}
+
+int GraphicsHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
+{
+	return this->m_uiHandler->RemoveUIComponent(ptr);
+}
+
+int GraphicsHandler::RemoveLastUIComponent()
+{
+	return this->m_uiHandler->RemoveLastUIComponent();
 }
 
 TextComponent * GraphicsHandler::GetNextAvailableTextComponent()

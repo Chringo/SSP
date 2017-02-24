@@ -222,6 +222,8 @@ public:
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
+	GRAPHICSDLL_API int RemoveUIComponentFromPtr(UIComponent* ptr);
+	GRAPHICSDLL_API int RemoveLastUIComponent();
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
 	
@@ -247,6 +249,7 @@ public:
 	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResetAnimationComponents();
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();

@@ -20,7 +20,7 @@ int StartState::ShutDown()
 int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
 {
 	int result = 0;
-	result = GameState::InitializeBase(gsh, cHandler, cameraRef);
+	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
 
 	this->m_cHandlerPtr = cHandler;
 	this->m_cameraRef = cameraRef;
@@ -33,7 +33,7 @@ int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, 
 
 	this->m_gamelogoUIComp = cHandler->GetUIComponent();
 	this->m_gamelogoUIComp->active = 1;
-	this->m_gamelogoUIComp->spriteID = 2;
+	this->m_gamelogoUIComp->spriteID = Textures::Gamelogo;
 	this->m_gamelogoUIComp->position = DirectX::XMFLOAT2(115.f, 0.f);
 	this->m_gamelogoUIComp->size = DirectX::XMFLOAT2(800.f, 400.f);
 
@@ -70,4 +70,14 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 	}
 
 	return result;
+}
+
+int StartState::EnterState()
+{
+	return 0;
+}
+
+int StartState::LeaveState()
+{
+	return 0;
 }

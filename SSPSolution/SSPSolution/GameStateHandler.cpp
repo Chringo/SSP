@@ -73,16 +73,18 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 	if (result > 0)
 	{
 		//Push it to the gamestate stack/vector
-		this->PushStateToStack(levelSelect);
+		//this->PushStateToStack(levelSelect);
 
 		if (levelPath.length() < 2)
 			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 		else
 			levelSelect->LoadLevel(levelPath);
+		//Delete it. If it was successful it would have pushed a LevelState to the stack
+		delete levelSelect;
+		levelSelect = nullptr;
 	}
 	else
 	{
-		//Delete it
 		delete levelSelect;
 		levelSelect = nullptr;
 	}
@@ -143,6 +145,7 @@ int GameStateHandler::Update(float dt, InputHandler * inputHandler)
 	{
 		GameState* temp;
 		temp = this->m_statesToRemove.back();
+		temp->ShutDown();
 		delete temp;
 		temp = nullptr;
 		this->m_statesToRemove.pop_back();
@@ -154,7 +157,29 @@ int GameStateHandler::PushStateToStack(GameState * state)
 {
 	int result = 1;
 
+	this->m_stateStack.back()->LeaveState();
 	this->m_stateStack.push_back(state);
+	this->m_stateStack.back()->EnterState();
 
 	return 1;
+}
+
+GameState * GameStateHandler::PopStateFromStack()
+{
+	GameState* result = nullptr;
+
+	this->m_stateStack.back()->LeaveState();
+	result = this->m_stateStack.back();
+
+	this->m_stateStack.pop_back();
+
+	//Check if it wants to be manually managed after popping
+	if (!result->GetManualRemoval())
+	{
+		this->m_statesToRemove.push_back(result);
+	}
+
+	this->m_stateStack.back()->EnterState();
+
+	return result;
 }

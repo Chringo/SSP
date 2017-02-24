@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity,int jointIndex, DirectX::XMMATRIX finalJointTransform)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -315,6 +315,8 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, flo
 	packet.lockAnimation = lockAnimation;
 	packet.playingSpeed = playingSpeed;
 	packet.velocity = velocity;
+	packet.jointIndex = jointIndex;
+	DirectX::XMStoreFloat4x4(&packet.finalJointTransform, finalJointTransform);
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -495,6 +497,7 @@ void NetworkModule::ReadMessagesFromClients()
 	PingPacket pP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
+	bool didDisconnect = false;
 	
 	// Go through all clients
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end(); iter++)
@@ -554,6 +557,7 @@ void NetworkModule::ReadMessagesFromClients()
 				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 				iter = this->connectedClients.end();
+				didDisconnect = true;
 				data_read = data_length;
 				break;
 
@@ -568,7 +572,7 @@ void NetworkModule::ReadMessagesFromClients()
 				iter = this->connectedClients.end();
 				data_read = data_length;
 				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
-
+				didDisconnect = true;
 				break;
 
 			case UPDATE_ENTITY:
@@ -705,6 +709,10 @@ void NetworkModule::ReadMessagesFromClients()
 			#pragma endregion ALL_PACKETS
 		}
 
+		if (didDisconnect == true)
+		{
+			break;
+		}
 	}
 
 }
