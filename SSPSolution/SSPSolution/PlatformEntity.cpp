@@ -40,6 +40,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			this->m_ActiveSound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LIFT, pos, true, true);
 		}
+		/*leaving this code outcommented here in case everything breaks for some reason*/
 		//if (this->GetAIComponent()->AC_finished)
 		//{
 		//	this->m_ActiveSound->setPlayPosition(0);
