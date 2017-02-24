@@ -771,7 +771,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 		
 	if (packets.size() != 0)	//We recive the syncpacket
 	{
-		printf("Recived SyncPhysicsPacket");
+		printf("Recived SyncPhysicsPacket\n");
 		std::list<SyncPhysicPacket>::iterator packet = packets.begin();
 
 		//Send Ready packet

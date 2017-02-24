@@ -495,6 +495,7 @@ void NetworkModule::ReadMessagesFromClients()
 	PingPacket pP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
+	bool didDisconnect = false;
 	
 	// Go through all clients
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end(); iter++)
@@ -554,6 +555,7 @@ void NetworkModule::ReadMessagesFromClients()
 				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 				iter = this->connectedClients.end();
+				didDisconnect = true;
 				data_read = data_length;
 				break;
 
@@ -705,6 +707,10 @@ void NetworkModule::ReadMessagesFromClients()
 			#pragma endregion ALL_PACKETS
 		}
 
+		if (didDisconnect == true)
+		{
+			break;
+		}
 	}
 
 }
