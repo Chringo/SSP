@@ -1768,9 +1768,12 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
-			ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
-			ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
+		
+
+			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
+			//ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
 			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 
 		}
@@ -2259,7 +2262,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 
 
 	}
-	else if (link->PL_type == PL_CHAIN)
+	else if (link->PL_type == PL_CHAIN && distance > link->PL_lenght)
 	{
 		DirectX::XMVECTOR toMove = DirectX::XMVectorSubtract(diffVec, DirectX::XMVectorScale(DirectX::XMVector3Normalize(diffVec), link->PL_lenght));
 		toMove = DirectX::XMVectorScale(toMove, 0.5f);
