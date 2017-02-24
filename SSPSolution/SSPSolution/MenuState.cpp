@@ -587,7 +587,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//Push it to the gamestate stack/vector
 				//this->PushStateToStack(levelSelect);
 
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
 				delete levelSelect;
@@ -673,6 +673,7 @@ int MenuState::LeaveState()
 	return 0;
 }
 
+//NOT IN USE
 void MenuState::Hosting(float dt, InputHandler* inputHandler)
 {
 	#pragma region
@@ -740,7 +741,22 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 1:
 					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+					break;
+
+				case 2:
+					printf("LOAD LEVEL 1\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					break;
+
+				case 3:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
+					break;
+
+				case 4:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 					break;
 
 				default:
@@ -799,8 +815,23 @@ void MenuState::Joining(InputHandler* inputHandler)
 			switch (levelID)
 			{
 			case 1:
+				printf("LOAD LEVEL 0\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+				break;
+
+			case 2:
 				printf("LOAD LEVEL 1\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				break;
+
+			case 3:
+				printf("LOAD LEVEL 2\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
+				break;
+
+			case 4:
+				printf("LOAD LEVEL 3\n");
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 				break;
 
 			default:
