@@ -136,7 +136,6 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 		else{
 			m_targetRot = 0;
 		}
-		m_animationActive = true;
 		
 	}
 }
