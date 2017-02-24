@@ -117,7 +117,7 @@ public:
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjection();
-	GRAPHICSDLL_API int UpdateProjection(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f);
+	GRAPHICSDLL_API int UpdateProjection(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI * 5) / 12.0f, float nearPlane = 0.1f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
