@@ -369,6 +369,47 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 				this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 			}
 		}
+		else if (newSyncState->rotationState == 1)
+		{
+			//Check if max has been reached
+			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) >= this->m_maxRotation)
+			{
+				this->m_rotationState = MaxRotation;
+				this->m_resetCountdown = this->m_timeUntilReset;
+			}
+			else
+			{
+				//If we were not already increasing 
+				if (this->m_rotationState != 1)
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+				this->m_rotationState = RotatingIncrease;
+				this->m_resetCountdown = this->m_timeUntilReset;
+			}
+		}
+		else if (newSyncState->rotationState == -1)
+		{
+			//Check if min has been reached
+			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) <= this->m_minRotation)
+			{
+				this->m_rotationState = Resting;
+			}
+			else
+			{
+				//If we were not already dencreasing 
+				if (this->m_rotationState != -1)
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+				this->m_rotationState = RotatingDecrease;
+				this->m_resetCountdown = this->m_timeUntilReset;
+			}
+		}
+		else
+		{
+			if (this->m_rotationState == RotatingIncrease || this->m_rotationState == RotatingDecrease)
+			{
+				this->m_rotationState = Resting;
+				this->m_resetCountdown = this->m_timeUntilReset;
+			}
+		}
 	}
 }
 

@@ -76,7 +76,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 		this->PushStateToStack(levelSelect);
 
 		if (levelPath.length() < 2)
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
 		else
 			levelSelect->LoadLevel(levelPath);
 	}

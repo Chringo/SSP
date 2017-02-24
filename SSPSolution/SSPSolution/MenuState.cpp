@@ -661,12 +661,12 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
 					break;
 
 				}
@@ -725,12 +725,12 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Vertical_level_2.level"));
 				break;
 
 			}
