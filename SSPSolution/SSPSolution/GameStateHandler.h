@@ -5,7 +5,7 @@
 #include "LevelSelectState.h"
 #include <vector>
 
-#define START_WITHOUT_MENU
+//#define START_WITHOUT_MENU
 
 class GameStateHandler
 {
@@ -24,6 +24,7 @@ public:
 
 	//Push a state to the stack
 	int PushStateToStack(GameState* state);
+	GameState* PopStateFromStack();
 private:
 };
 
