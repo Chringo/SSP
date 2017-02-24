@@ -16,11 +16,7 @@ cbuffer camera : register(b1)
 
 }
 
-cbuffer shadow : register(b5)
-{
-    float4x4 ShadowViewMatrix[6];
-    float4x4 ShadowProjectionMatrix;
-}
+
 
 cbuffer LightInfo : register(b3)
 {
@@ -332,8 +328,8 @@ float4 PS_main(VS_OUT input) : SV_Target
             //DO SHADOW STUFF HERE
             //if (i == 0)
             //{
-                shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
-                lightPower *= shadowFactor;
+            shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz);
+            lightPower *= shadowFactor;
 
             //}
 
