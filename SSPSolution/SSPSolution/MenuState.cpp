@@ -814,22 +814,22 @@ void MenuState::Joining(InputHandler* inputHandler)
 			#pragma region
 			switch (levelID)
 			{
-			case 1:
+			case 0:
 				printf("LOAD LEVEL 0\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 				break;
 
-			case 2:
+			case 1:
 				printf("LOAD LEVEL 1\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 				break;
 
-			case 3:
+			case 2:
 				printf("LOAD LEVEL 2\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
 				break;
 
-			case 4:
+			case 3:
 				printf("LOAD LEVEL 3\n");
 				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 				break;
