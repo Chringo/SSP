@@ -75,11 +75,10 @@ int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 		Light temp = this->m_lightData[LIGHTING::LT_POINT].dataPtr[this->m_activeLightIndex];
 		float dist = 0.0f;
 		Point* specializedData = static_cast<Point*>(&temp);
-		dist += pow(specializedData[this->m_activeLightIndex].position.m128_f32[0] - pointOfInterest.x, 2);		//X
-		dist += pow(specializedData[this->m_activeLightIndex].position.m128_f32[1] - pointOfInterest.y, 2);		//Y
-		dist += pow(specializedData[this->m_activeLightIndex].position.m128_f32[2] - pointOfInterest.z, 2);		//Z
+		DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[this->m_activeLightIndex].position.m128_f32[0] - pointOfInterest.x, specializedData[this->m_activeLightIndex].position.m128_f32[1] - pointOfInterest.y, specializedData[this->m_activeLightIndex].position.m128_f32[2] - pointOfInterest.z, 0.0f);
+		dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
 		//Reduce the distance with the radius
-		dist -= pow(specializedData[this->m_activeLightIndex].radius, 2);
+		dist -= specializedData[this->m_activeLightIndex].radius;
 		hasExitedOldRadius = dist <= 0;
 		if (hasExitedOldRadius)
 		{
