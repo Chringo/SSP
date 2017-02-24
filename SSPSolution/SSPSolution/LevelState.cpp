@@ -903,14 +903,22 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update data for the player
 			}
 			
-			if (this->m_player1.GetGrabbed() != nullptr)
+			/*if (this->m_player1.GetGrabbed() != nullptr)*/
+			if(this->m_player1.GetBall() != nullptr &&
+				this->m_player2.GetGrabbed() != this->m_player1.GetBall()) //send update of player1 ball if player2 has not grabbed it
 			{
-				pp = this->m_player1.GetGrabbed()->GetPhysicsComponent();
+				pp = this->m_player1.GetBall()->GetPhysicsComponent();
 				DirectX::XMFLOAT4X4 newrot;
 				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
 				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);
 			}
-
+			if (this->m_player1.GetGrabbed() == this->m_player2.GetBall()) //send updates of player2 ball if player1 has grabbed it
+			{
+				pp = this->m_player2.GetBall()->GetPhysicsComponent();
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);
+			}
 			Entity* ent = nullptr;
 			if (this->m_networkModule->IsHost())
 			{
@@ -919,7 +927,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				{
 					ent = this->m_dynamicEntitys.at(i);
 
-					if (ent != this->m_player2.GetGrabbed() && ent->GetEntityID() != 5 && ent->GetEntityID() != 6)	//If it is not grabbed by player2 and is not a chain link
+					if (ent != this->m_player2.GetGrabbed() && 
+						ent->GetEntityID() != 5 && ent->GetEntityID() != 6 &&
+						ent->GetEntityID() != 4	&& ent->GetEntityID() != 3	//if the hosting player 
+						)
+						//If it is not grabbed by player2 and is not a chain link
 					{
 						pp = this->m_dynamicEntitys.at(i)->GetPhysicsComponent();
 						DirectX::XMFLOAT4X4 newrot;
