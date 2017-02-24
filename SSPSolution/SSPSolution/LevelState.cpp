@@ -2586,6 +2586,11 @@ std::string LevelState::GetLevelPath()
 	return this->m_levelPaths.at(min(this->m_levelPaths.size() -1, this->m_curLevel)).levelPath;
 }
 
+void LevelState::SetCurrentLevelID(int currentLevelID)
+{
+	this->m_curLevel = currentLevelID;
+}
+
 int LevelState::EnterState()
 {
 	return 0;

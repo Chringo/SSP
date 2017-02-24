@@ -66,7 +66,7 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
-int LevelSelectState::LoadLevel(std::string path)
+int LevelSelectState::LoadLevel(std::string path, int levelID)
 {
 
 	int result = 0;
@@ -90,6 +90,9 @@ int LevelSelectState::LoadLevel(std::string path)
 		return 0;
 	//Create level
 	result = this->m_currentLevel->CreateLevel(level); 
+
+	this->m_currentLevel->SetCurrentLevelID(levelID);
+
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
 
 	return result;

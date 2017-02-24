@@ -816,27 +816,27 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL 0\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), 0);
 				break;
 
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
 				break;
 
 			case 2:
 				printf("LOAD LEVEL 2\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), 2);
 				break;
 
 			case 3:
 				printf("LOAD LEVEL 3\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), 3);
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
 				break;
 
 			}

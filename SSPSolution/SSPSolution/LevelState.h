@@ -151,6 +151,8 @@ public:
 	int GetLevelIndex();
 	std::string GetLevelPath();
 
+	void SetCurrentLevelID(int currentLevelID);
+
 	int EnterState();
 	int LeaveState();
 
