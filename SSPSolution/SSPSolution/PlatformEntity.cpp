@@ -40,6 +40,11 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			this->m_ActiveSound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LIFT, pos, true, true);
 		}
+		if (this->GetAIComponent()->AC_finished)
+		{
+			this->m_ActiveSound->setPlayPosition(0);
+			this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
+		}
 		else
 		{
 			if (this->m_ActiveSound->getIsPaused())
