@@ -244,6 +244,7 @@ public:
 	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResetAnimationComponents();
 
 
 	//TEMP STUFF

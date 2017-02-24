@@ -1322,6 +1322,19 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	return  result;
 }
 
+int GraphicsHandler::ResetAnimationComponents()
+{
+	for (int i = 0; i < this->m_maxGraphicsAnimationComponents; i++) {
+		if (this->m_animGraphicsComponents[i])
+		{
+			delete this->m_animGraphicsComponents[i];
+		}
+		this->m_animGraphicsComponents[i] = new GraphicsAnimationComponent();
+	}
+	this->m_nrOfGraphicsAnimationComponents = 0;
+	return 0;
+}
+
 int GraphicsHandler::SetComponentArraySize(int newSize)
 {
 	if (this->m_maxGraphicsComponents < newSize)
