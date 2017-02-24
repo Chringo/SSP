@@ -501,6 +501,11 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+
+
+
+
+
 	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
@@ -847,8 +852,10 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
 
-	 for (GraphicsComponent* comp : m_staticGraphicsComponents)
+	for (GraphicsComponent* comp : m_staticGraphicsComponents)
 		 m_shaderControl->Draw(comp->modelPtr, comp);
+
+
 
 	 
 	 return  1;
@@ -1497,19 +1504,22 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 #pragma endregion
 
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
 	for (size_t i = 0; i < 1; i++)
 	{
 		if (i == 2)
 			continue;
-		m_LightHandler->SetShadowCastingLight(&lights->dataPtr[i]);
+		m_shaderControl->ClearFrame();
+
+		m_LightHandler->SetShadowCastingLight(i);
 		this->RenderStaticObjectShadows();						   //render statics
-	//	this->Render(0.1f);
+		//this->Render(0.1f);
 		//m_shaderControl->DrawFinal();
 		//ID3D11Resource* middleBuffer = nullptr;
 		//tempBufferTexture->GetResource(&middleBuffer);		   // Get the textureCubeArray
 		
-
+		
 		ID3D11Resource* destinationRes = nullptr; 
 		lights->shadowMaps->GetResource(&destinationRes);		   // Get the textureCubeArray
 
@@ -1546,7 +1556,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		//	return 1;
 	//	m_shaderControl->DrawFinal();
 	//	memcpy(mappedResourceDestination.pData, mappedResourceTarget.pData, sizeof(mappedResourceTarget.pData));
-		m_shaderControl->ClearFrame();
+		m_d3dHandler->PresentScene();
 		
 		//context->Unmap(targetRes, 0);
 		//context->Unmap(destinationRes, 0);
@@ -1554,7 +1564,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	}
 	m_LightHandler->SetStaticShadowsToGPU();
 	//tempTexture->Release();
-	//tempBufferTexture->Release();
+	tempBufferTexture->Release();
 	 return  1;
 }
 
