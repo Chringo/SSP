@@ -471,10 +471,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_director.Initialize();
 
-	this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1 ,((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
-		DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)) ,
-		this->m_player1.GetPhysicsComponent(),
-		this->m_player1.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1 ,((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
+	//	DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)) ,
+	//	this->m_player1.GetPhysicsComponent(),
+	//	this->m_player1.GetBall()->GetPhysicsComponent());
 
 
 	//this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(2, ((GraphicsAnimationComponent*)playerG)->modelPtr->GetSkeleton()->GetSkeletonData()->joints,
@@ -1350,11 +1350,21 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
+			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
+			this->m_player1.GetPhysicsComponent(),
+			this->m_player1.GetBall()->GetPhysicsComponent());
+
 		this->m_player2.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player2_Spawn, DirectX::XMVectorSet(0, 1, 0, 0));
 	}
 	else
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
+		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
+			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
+			this->m_player1.GetPhysicsComponent(),
+			this->m_player1.GetBall()->GetPhysicsComponent());
+
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
 #pragma endregion Network
