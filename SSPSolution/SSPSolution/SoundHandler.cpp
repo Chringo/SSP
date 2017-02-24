@@ -504,7 +504,7 @@ irrklang::ISound * SoundHandler::PlayRandomSound2D(Sounds2D start_soundEnum, Sou
 		end_soundEnum < (int)this->m_sounds2D.size() && end_soundEnum != Sounds2D::NO_SOUND2D)
 	{
 
-		int randomSoundID = (rand() % (end_soundEnum - start_soundEnum)) + start_soundEnum;	//Get a random sound between the two defined sounds
+		int randomSoundID = (rand() % ((end_soundEnum + 1) - start_soundEnum)) + start_soundEnum;	//Get a random sound between the defined sounds
 
 		irrklang::ISoundSource* sp = this->m_sounds2D.at(randomSoundID);
 		irrklang::ISound* newActiveSound = this->m_soundEngine->play2D(sp, loop, false, true);
