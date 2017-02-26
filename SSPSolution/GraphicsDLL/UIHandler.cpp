@@ -10,7 +10,7 @@ UIHandler::~UIHandler()
 
 void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	this->m_maxUIComponents = 15;
+	this->m_maxUIComponents = 20;
 	this->m_nrOfUIComponents = 0;
 	for (unsigned int i = 0; i < this->m_maxUIComponents; i++)
 	{
@@ -29,7 +29,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	
-	this->m_nrOfTextures = 7;
+	this->m_nrOfTextures = 11;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{
 		ID3D11ShaderResourceView* newTexture = nullptr;
@@ -43,6 +43,10 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"button.png", nullptr, &this->m_textures.at(4));
 	DirectX::CreateWICTextureFromFile(device, L"crosshair.png", nullptr, &this->m_textures.at(5));
 	DirectX::CreateWICTextureFromFile(device, L"crosshair_aim.png", nullptr, &this->m_textures.at(6));
+	DirectX::CreateWICTextureFromFile(device, L"level0.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"level1.png", nullptr, &this->m_textures.at(8));
+	DirectX::CreateWICTextureFromFile(device, L"level2.png", nullptr, &this->m_textures.at(9));
+	DirectX::CreateWICTextureFromFile(device, L"level5.png", nullptr, &this->m_textures.at(10));
 
 	D3D11_BLEND_DESC BlendState;
 	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
