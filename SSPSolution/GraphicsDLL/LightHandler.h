@@ -36,6 +36,7 @@
 
 */
 #define LIGHT_CHECK_PAUSE_TIME (1.0f / 10.0f)
+
 //#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {
@@ -51,20 +52,20 @@ namespace LIGHTING
 		};
 		unsigned int NUM_LIGHTS[NUM_LT] = { 0, 0, 0, 0 };
 		const unsigned int BUFFER_SHADER_SLOTS[NUM_LT] = { POINTLIGHT_BUFFER, DIRECTIONALLIGHT_BUFFER,  AREALIGHT_BUFFER,  SPOTLIGHT_BUFFER };
-	
+		
 
 	public:
 		struct LightArray {
 			Light* dataPtr = nullptr;
 			ID3D11ShaderResourceView* shadowMaps; //One should be generated for each light on load
-			unsigned int numItems = 0;
-
-			~LightArray() { //Destructor, 
+			unsigned int numItems		 = 0;
+			unsigned int numShadowLights = 0;
+			int shadowLightIndex[MAX_SHADOW_LIGHTS]; // An array of int that represents the indices of the lights that casts shadows
+			~LightArray() { //Destructor, s
 				ReleaseShadowMaps(); //Release the TextureBuffers
 			}
 			void ReleaseShadowMaps() {
-					if (shadowMaps != nullptr)
-					{
+					if (shadowMaps != nullptr){
 						shadowMaps->Release();
 						shadowMaps = nullptr;
 					}
@@ -93,8 +94,8 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool CreateStructuredBuffer (LIGHT_TYPE type,int amount);
 		GRAPHICSDLL_API bool ReleaseStructuredBuffer(LIGHT_TYPE type);
 		GRAPHICSDLL_API size_t GetStructByteSize    (LIGHT_TYPE type);
-	public: //inits etc
 
+	public: //inits etc
 		GRAPHICSDLL_API void Initialize(ID3D11Device*, ID3D11DeviceContext*);
 		GRAPHICSDLL_API static LightHandler* GetInstance();
 		GRAPHICSDLL_API	int Update(float dT, DirectX::XMFLOAT3 pointOfInterest);

@@ -19,17 +19,17 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 		this->CreateStructuredBuffer(LIGHT_TYPE(i),3); //Create all the structured buffers  and update the constant buffer
 	}
 
-	DirectX::XMVECTOR pos = { 2.0f,5.0f,-2.0f,1.0f };
+	DirectX::XMVECTOR pos  = { 2.0f,5.0f,-2.0f,1.0f };
 	DirectX::XMVECTOR spak = { 0.0001f,0.0001f, 0.0001f,1.0f };
-	DirectX::XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f};
+	DirectX::XMVECTOR up   = { 0.0f,1.0f,0.0f,0.0f};
 	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
-
-	m_constBufferData.SHADOWLIGHT_INDEX = 0;
+	
+	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
 	Light temp;
 	temp.position = pos;
 	//SetShadowCastingLight(&temp);
 
-	this->m_activeLightIndex = 0;
+	this->m_activeLightIndex	  = 0;
 	this->m_activeLightCheckTimer = 0.0f;
 }
 
@@ -148,15 +148,6 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 	case LIGHT_TYPE::LT_POINT:
 		m_constBufferData.NUM_POINTLIGHTS = amount;
 		break;
-	case LIGHT_TYPE::LT_SPOT:
-		m_constBufferData.NUM_SPOTLIGHTS = amount;
-		break;
-	case LIGHT_TYPE::LT_AREA:
-		m_constBufferData.NUM_AREALIGHTS = amount;
-		break;
-	case LIGHT_TYPE::LT_DIRECTIONAL:
-		m_constBufferData.NUM_DIRECTIONALLIGHTS = amount;
-		break;
 	}
 	
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
@@ -264,15 +255,6 @@ bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLi
 		case LIGHT_TYPE::LT_POINT:
 			m_constBufferData.NUM_POINTLIGHTS = numLights;
 			break;
-		case LIGHT_TYPE::LT_SPOT:
-			m_constBufferData.NUM_SPOTLIGHTS = numLights;
-			break;
-		case LIGHT_TYPE::LT_AREA:
-			m_constBufferData.NUM_AREALIGHTS = numLights;
-			break;
-		case LIGHT_TYPE::LT_DIRECTIONAL:
-			m_constBufferData.NUM_DIRECTIONALLIGHTS = numLights;
-			break;
 		}
 		ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 		return true;
@@ -305,14 +287,12 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 		m_lightData[LT_POINT].ReleaseShadowMaps();
 		m_lightData[LT_POINT].dataPtr = new LIGHTING::Point[level->numPointLights];
+		memset(m_lightData[LT_POINT].shadowLightIndex, int(-1), sizeof(int)* MAX_SHADOW_LIGHTS); //Reset the shadow casting array
 		
-
-
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
 			memcpy(&((Point*)m_lightData[LT_POINT].dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
 			memcpy(((Point*)m_lightData[LT_POINT].dataPtr)[i].position.m128_f32, level->pointLights[i].position, sizeof(float) * 3);
-
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].intensity		 = level->pointLights[i].intensity;
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.quadratic = level->pointLights[i].falloff_quadratic;
 			((Point*)m_lightData[LT_POINT].dataPtr)[i].falloff.constant  = level->pointLights[i].falloff_constant;
@@ -368,7 +348,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	 if (m_lightData[LT_POINT].dataPtr == nullptr || m_lightData[LT_POINT].numItems <= index)
 		 return false;
 
-	 m_constBufferData.SHADOWLIGHT_INDEX = index;
+	 m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = index;
 
 	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 	 Light* commonData = this->m_lightData[LIGHTING::LT_POINT].dataPtr;
