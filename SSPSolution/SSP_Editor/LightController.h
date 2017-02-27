@@ -24,6 +24,7 @@ public:
 	const Ambient * GetLevelAmbient() { return &this->m_levelAmbience; };
 	void DisplayLightRadius(bool display);
 	bool DisplayLightRadius();
+	void MakeShadowCaster();
 	void Destroy();
 private:
 	void m_updateAmbient();
@@ -31,6 +32,7 @@ private:
 	Ambient m_levelAmbience = Ambient();
 	std::vector<Light*> m_lights;
 	std::vector<LIGHTING::Point> pointLightData;
+	std::vector<int> shadowCasterIndexes;
 	bool m_displayLightRadius;
 
 
