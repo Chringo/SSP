@@ -4259,22 +4259,46 @@ void PhysicsHandler::SortComponents()
 
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
-	if (index == 1 || index == 2)
-	{
-		this->m_bullet.CreatePlayer(src, index);
-	}
+	int chainLinkCollides = CollitionTypes::COL_STATIC;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	int dynamicCollides = CollitionTypes::COL_PLAYER;
+	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER;
 
+	if (index == 0 || index == 1)
+	{
+		this->m_bullet.CreatePlayer(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
+	}
 	else if (src->PC_BVtype == BV_AABB)
 	{
-		this->m_bullet.CreateAABB(src, index);
+		if (src->PC_is_Static)
+			this->m_bullet.CreateAABB(src, index, CollitionTypes::COL_STATIC, staticCollides);
+		else
+			this->m_bullet.CreateAABB(src, index, CollitionTypes::COL_DYNAMIC, dynamicCollides);
 	}
 	else if (src->PC_BVtype == BV_OBB)
 	{
-		this->m_bullet.CreateOBB(src, index);
+		if (src->PC_is_Static)
+			this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_STATIC, staticCollides);
+		else
+			this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_DYNAMIC, dynamicCollides);
 	}
 	else if (src->PC_BVtype == BV_Sphere)
 	{
-		this->m_bullet.CreateSphere(src, index);
+		//if the PC is a chainLink
+		if (src->PC_entityID == 5 || src->PC_entityID == 6)
+		{
+			this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_CHAIN_LINK, chainLinkCollides);
+		}
+		//If the PC is the ball
+		else if (src->PC_entityID == 3 || src->PC_entityID == 4)
+		{
+			this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
+		}
+		//the rest will trigger if its the ragdoll
+		else
+		{
+			this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
+		}
 	}
 }
 

@@ -359,7 +359,7 @@ void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR 
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 }
 
-void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
 	btCollisionShape* sphereShape = new btSphereShape(src->PC_Sphere.radius);
 
@@ -389,23 +389,13 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 	
 
 	this->m_rigidBodies.push_back(rigidBody);
-
 	//add it into the world
-	if (src->PC_entityID == 5 || src->PC_entityID == 6)
-	{
-		int chainLinkCollides = CollitionTypes::COL_STATIC;
-
-		this->m_dynamicsWorld->addRigidBody(rigidBody, CollitionTypes::COL_CHAIN_LINK, chainLinkCollides);
-	}
-	else
-	{
-		this->m_dynamicsWorld->addRigidBody(rigidBody);
-	}
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	src->PC_IndexRigidBody = (int)this->m_rigidBodies.size() - 1;
 
 }
 
-void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
 	if (index == 3)
 	{
@@ -485,7 +475,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	int pos = this->m_rigidBodies.size() - 1;
 	src->PC_IndexRigidBody = pos;
 
@@ -494,7 +484,7 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 
 }
 
-void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
 	//this is always static
 	DirectX::XMVECTOR pos = src->PC_pos;
@@ -525,12 +515,12 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 
 
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
-void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
+void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, CollitionTypes collitionType, int mask)
 {
 
 	//this capule is ugly hacked, needs further research
@@ -588,7 +578,7 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	int pos = this->m_rigidBodies.size() - 1;
 	src->PC_IndexRigidBody = pos;
 

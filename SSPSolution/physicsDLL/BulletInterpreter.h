@@ -233,10 +233,10 @@ public:
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
-	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
 
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
