@@ -654,7 +654,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		for (size_t i = 0; i < NR_OF_LEVELS; i++) //Check if level has been selected
 		{
 			if (this->m_hostMenuButtons.at(i).m_uiComp->CheckClicked()) {
-				this->m_levelToHost = i + 1;
+				this->m_levelToHost = i;
 			}
 		}
 			
@@ -730,23 +730,23 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 				switch (this->m_levelToHost)
 				{
-				case 1:
-					printf("LOAD LEVEL 1\n");
+				case 0:
+					printf("LOAD LEVEL TUT\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
 					break;
 
-				case 2:
+				case 1:
 					printf("LOAD LEVEL 1\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), this->m_levelToHost);
 					break;
 
-				case 3:
-					printf("LOAD LEVEL 1\n");
+				case 2:
+					printf("LOAD LEVEL 2\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), this->m_levelToHost);
 					break;
 
-				case 4:
-					printf("LOAD LEVEL 1\n");
+				case 3:
+					printf("LOAD LEVEL 5\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), this->m_levelToHost);
 					break;
 
@@ -908,23 +908,23 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				#pragma region
 				switch (levelID)
 				{
-				case 1:
-					printf("LOAD LEVEL 1\n");
+				case 0:
+					printf("LOAD LEVEL TUT\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 					break;
 
-				case 2:
+				case 1:
 					printf("LOAD LEVEL 1\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
-				case 3:
-					printf("LOAD LEVEL 1\n");
+				case 2:
+					printf("LOAD LEVEL 2\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
 					break;
 
-				case 4:
-					printf("LOAD LEVEL 1\n");
+				case 3:
+					printf("LOAD LEVEL 5\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 					break;
 
