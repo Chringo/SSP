@@ -722,9 +722,8 @@ int GraphicsHandler::Render(float deltaTime)
 #pragma endregion Octree stuff
 
 
-	//Go through all components in the root node and render the ones that should be rendered
-	size_t renderCap = this->m_staticGraphicsComponents.size();
-	renderCap        = this->m_dynamicGraphicsComponents.size();
+	//Go through all components dynamic components
+	size_t renderCap = this->m_dynamicGraphicsComponents.size();
 
 #pragma region 
 	//TEMP Johans
