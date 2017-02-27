@@ -10,7 +10,7 @@ void Chain::CreateChain()
 {
 	btBoxShape * colShape = CreateBoxShape(btVector3(1,1,0.25));
 	
-	btTransform startTransform;
+	//btTransform startTransform;
 	startTransform.setIdentity();
 
 	btScalar mass(1.0f);
@@ -113,8 +113,13 @@ void Chain::Update()
 	CreateChain();
 }
 
-void Chain::SyncChainData()
+void Chain::SyncChainData(PhysicsComponent* ptr)
 {
+	PhysicsHandler* bajs;
+
+	
+	m_position = startTransform.getOrigin();
+
 	//POSITION
 	//Lenght
 	//
