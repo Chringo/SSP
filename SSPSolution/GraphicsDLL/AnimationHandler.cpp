@@ -348,7 +348,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime)
 {
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
-	
+
 	std::vector<DirectX::XMFLOAT4X4> localTransforms(jointCount);
 	std::vector<DirectX::XMFLOAT4X4> localScales(jointCount);
 

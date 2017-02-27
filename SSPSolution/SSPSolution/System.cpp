@@ -224,6 +224,7 @@ int System::Update(float deltaTime)
 					DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
 
 					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+					//this->m_graphicsHandler->RenderBoundingVolume(tempOBBpos, *OBB_holder);
 				}
 				if (temp->PC_BVtype == BV_Plane)
 				{
@@ -235,7 +236,7 @@ int System::Update(float deltaTime)
 				{
 					Sphere* sphereHolder = nullptr;
 					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); //Render SphereBoundingVolume doesn't work
 				}
 			}
 #endif // _DEBUG
