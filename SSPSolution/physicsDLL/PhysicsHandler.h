@@ -242,8 +242,13 @@ public:
 	PHYSICSDLL_API int GetNrOfBodyComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetBodyComponentAt(int index)const;
 
+	PHYSICSDLL_API int GetNrOfPhysicsLinks();
+	PHYSICSDLL_API PhysicsLink* GetPhysicsLinkAt(int index);
+
 	PHYSICSDLL_API Ragdoll* GetPlayer1Ragdoll();
 	PHYSICSDLL_API Ragdoll* GetPlayer2Ragdoll();
+
+
 
 	PHYSICSDLL_API int GetNrOfMagnets()const;
 	//PHYSICSDLL_API Magnet* GetMagnetAt(int index);

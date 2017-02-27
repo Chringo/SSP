@@ -114,7 +114,7 @@ public:
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update();	
-	GRAPHICSDLL_API int RagdollCameraUpdate(DirectX::XMVECTOR pos);
+	GRAPHICSDLL_API int RagdollCameraUpdate(DirectX::XMVECTOR pos, RagdollState state);
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjectionMat();

@@ -82,12 +82,19 @@ int Camera::Update()
 	return result;
 }
 
-GRAPHICSDLL_API int Camera::RagdollCameraUpdate(DirectX::XMVECTOR pos)
+int Camera::RagdollCameraUpdate(DirectX::XMVECTOR pos, RagdollState state)
 {
 	DirectX::XMFLOAT4 newLookAt;
 	DirectX::XMStoreFloat4(&newLookAt, pos);
 	
-	
+	if (state == RagdollState::KEYFRAMEBLEND)
+	{
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(pos, DirectX::XMLoadFloat4(&this->m_cameraPos));
+
+		DirectX::XMStoreFloat4(&this->m_cameraPos, DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMVectorScale(diffVec, 0.2f)));
+
+	}
+
 	this->SetLookAt(newLookAt);
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
