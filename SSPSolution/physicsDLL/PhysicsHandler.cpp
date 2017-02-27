@@ -4182,7 +4182,18 @@ PhysicsComponent * PhysicsHandler::GetBodyComponentAt(int index) const
 	}
 	return nullptr;
 }
-
+int PhysicsHandler::GetNrOfPhysicsLinks()
+{
+	return this->m_links.size();
+}
+PhysicsLink * PhysicsHandler::GetPhysicsLinkAt(int index)
+{
+	if (index >= 0 && index < this->m_links.size())
+	{
+		return &this->m_links.at(index);
+	}
+	return nullptr;
+}
 int PhysicsHandler::GetNrOfMagnets() const
 {
 	//return this->m_magnets.size();
@@ -4271,11 +4282,7 @@ void PhysicsHandler::SortComponents()
 
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
-	/*if (src->PC_entityID == 1 || src->PC_entityID == 2)
-	{
-		this->m_bullet.CreatePlayer(src, index);
-	}*/
-	if (index == 0 || index == 1)
+	if (index == 1 || index == 2)
 	{
 		this->m_bullet.CreatePlayer(src, index);
 	}
@@ -4972,6 +4979,9 @@ void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
 }
 
 #endif 
+
+
+
 Ragdoll * PhysicsHandler::GetPlayer1Ragdoll()
 {
 	return &this->m_player1RagDoll;
