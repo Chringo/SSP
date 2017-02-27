@@ -7,9 +7,9 @@ TextureCubeArray sShadowsTexA    : register(t11);
 SamplerState linearSampler       : register(s0);
 SamplerState pointSampler        : register(s1);
 
-
-#define MAX_SHADOW_LIGHTS 6  //must match ConstantBufferHandler.h define || //Must be 4 * n + 2
-
+//must match ConstantBufferHandler.h define || //Must be multiple of 4
+#define MAX_SHADOW_LIGHTS 4  
+#define SHADOW_BIAS  0.0000088f
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
@@ -20,16 +20,18 @@ cbuffer camera : register(b1)
 }
 
 
-#define SHADOW_BIAS  0.0000088f
+
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
     float3 AMBIENT_COLOR;
     float  AMBIENT_INTENSITY;
     uint   DYNAMIC_SHADOWLIGHT_INDEX;
-    int    SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be 4 * n + 2
+    uint     padding[2];
+    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
+
 
 struct PointLight //Must be 16 bit aligned!
 {
@@ -335,18 +337,15 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
-
-
-
     float shadowFactor = 1.0;
     int currentShadowLightIndex = 0;
-    //SHADOWCASTING_LIGHTS[0];
+
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
         float lightPower = 0;
 
-        lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+        lightPower  = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
         lightPower *= (AOSamp);
         lightPower *= pointlights[i].intensity; 
         if (lightPower > 0.0f)
@@ -360,32 +359,30 @@ float4 PS_main(VS_OUT input) : SV_Target
             float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
   
-            if (SHADOWCASTING_LIGHTS[currentShadowLightIndex] == i)
+            //SHADOW
+            if ( i == SHADOWCASTING_LIGHTS[currentShadowLightIndex] )
             {   
              shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
-             //DO SHADOW STUFF HERE
              if (i == DYNAMIC_SHADOWLIGHT_INDEX)
              {
                  shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
              }
-               //  shadowFactor = max(shadowFactor, 0.0f);
-			    	lightPower *= shadowFactor;
+			    lightPower *= shadowFactor;
+                currentShadowLightIndex++;
             }
 
-            
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
 
             //SPECULAR
-            float3 f = schlick(f0, f90, LdotH);
+            float3 f  = schlick(f0, f90, LdotH);
             float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
-            float d = GGX(NdotH, roughness); //roughness should be sRGB
+            float d   = GGX(NdotH, roughness); //roughness should be sRGB
 
             float3 fr = d * f * vis / Pi;
 
             specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
-
 
            // return diffuseLight;
         }

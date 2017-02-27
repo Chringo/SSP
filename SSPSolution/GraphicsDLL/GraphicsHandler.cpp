@@ -833,7 +833,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 
 
 
-	m_LightHandler->SetBuffersAsActive();
+	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 
 #pragma region
@@ -953,7 +953,7 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
-	m_LightHandler->SetBuffersAsActive();
+	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
 	RenderBoundingBoxes();
@@ -1478,7 +1478,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	Render(0.0f);
 
-	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
+	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
 	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 
