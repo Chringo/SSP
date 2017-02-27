@@ -1654,9 +1654,10 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
+//	this->m_chain = new Chain();
+//	this->m_chain->Initialize();
 
-
-	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
+ 	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
 	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
 
 	return true;
@@ -1690,7 +1691,8 @@ void PhysicsHandler::Update(float deltaTime)
 
 
 
-	
+	//this->m_chain->update();
+
 	this->CheckFieldIntersection();
 
 	//Bullet <---- physicsComponent
@@ -2420,6 +2422,12 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	PhysicsComponent* next = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(ballComponent->PC_pos, playerComponent->PC_pos);
+
+	DirectX::XMVECTOR lenght = DirectX::XMVector3Length(diffVec);
+
+	float some = 0.0f;
+
+	DirectX::XMStoreFloat(&some, lenght);
 	
 	if (!DirectX::XMVector3NotEqual(diffVec, DirectX::XMVectorSet(0, 0, 0, 0)))
 	{
@@ -2437,6 +2445,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 
 	DirectX::XMVECTOR nextPos = DirectX::XMVectorAdd(previous->PC_pos, diffVec);
 
+	//Iter over all of the different chain links.
 	for (int i = 1; i <= nrOfLinks; i++)
 	{
 		PhysicsLink link;
@@ -2451,8 +2460,6 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 		next->PC_active = true;
 		//next->PC_Sphere.radius = 0.35f;
 		//next->PC_friction = 0;
-
-
 		next->PC_OBB.ext[0] = 0.25f;
 		next->PC_OBB.ext[1] = 0.25f;
 		next->PC_OBB.ext[2] = 0.25f;
@@ -4881,6 +4888,58 @@ void PhysicsHandler::SetIgnoreCollisions()
 			}
 		}
 	}
+}
+
+void PhysicsHandler::InitSpline()
+{
+	for (int i = 0; i < (int)vp.size(); i++)
+	{
+		vp.push_back(vp[i]);
+	}
+}
+
+void PhysicsHandler::AddSplinePoint(DirectX::XMVECTOR & v)
+{
+	vp.push_back(v);
+	delta_t = (float)1 / (float)vp.size();
+}
+
+DirectX::XMVECTOR PhysicsHandler::GetInterpolatedSplinePoint(float t)
+{
+	int p = (int(t / delta_t));
+
+	int p0 = p - 1;
+	int p1 = p;
+	int p2 = p + 1;
+	int p3 = p + 2; 
+	float lt = (t - delta_t*(float)p) / delta_t;
+
+	return Equal(lt, vp[p0], vp[p1], vp[p2], vp[p3]);
+}
+
+int PhysicsHandler::GetNumPoint()
+{
+	return vp.size();
+}
+
+DirectX::XMVECTOR PhysicsHandler::GetNthPoint(int n)
+{
+	return vp[n];
+}
+
+DirectX::XMVECTOR PhysicsHandler::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
+{
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float b1 = 0.5f * (-t3 + 2 * t2 - t);
+	float b2 = 0.5f * (3 * t3 - 5 * t2 + 2);
+	float b3 = 0.5f * (-3 * t3 + 4 * t2 + t);
+	float b4 = 0.5f * (t3 - t2);
+
+
+
+	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);
 }
 
 #ifdef _DEBUG

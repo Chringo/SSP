@@ -25,7 +25,7 @@
 
 	 btVector3 bulletQuat;
 	 btQuaternion quaturnion;
-
+	 
 	 quaturnion = btQuaternion(
 		 DirectX::XMVectorGetX(quat),
 		 DirectX::XMVectorGetY(quat),

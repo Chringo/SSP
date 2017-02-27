@@ -14,6 +14,7 @@
 #include "../ResourceLib/Skeleton.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 #include "../GraphicsDLL/AnimationHandler.h"
+#include "Chain.h"
 
 enum BodyPartType
 {
@@ -117,6 +118,11 @@ private:
 	Ragdoll m_player2RagDoll;
 
 	std::vector<Field> m_fields;
+	Chain * m_chain;
+
+	std::vector<DirectX::XMVECTOR> vp;
+	float delta_t;
+
 
 
 
@@ -287,6 +293,14 @@ public:
 	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
 
 	PHYSICSDLL_API void SetIgnoreCollisions();
+	void InitSpline();
+	void AddSplinePoint(DirectX::XMVECTOR& v);
+	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t);
+	int GetNumPoint();
+	DirectX::XMVECTOR GetNthPoint(int n);
+	DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
+
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

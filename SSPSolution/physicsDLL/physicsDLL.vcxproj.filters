@@ -30,6 +30,9 @@
     <ClInclude Include="BulletInterpreter.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
+    <ClInclude Include="Chain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsHandler.cpp">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="BulletInterpreter.cpp">
       <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Chain.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
