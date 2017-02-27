@@ -299,10 +299,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		//assumes grabbed is ALWAYS the ball
 		if (this->m_grabbed != nullptr)
 		{
-			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
-			this->m_aComp->velocity = 1.0f;
-			this->m_aComp->previousState = PLAYER_THROW;
 			//Play sound
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
@@ -318,10 +314,24 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//if the player is holding its own ball
 			if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
 			{
+				/*Set the component to play the "release ball" animation for player IDLE.*/
+				this->m_oldAnimState = this->m_aComp->previousState;
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+
+				this->m_aComp->previousState = PLAYER_IDLE;
+
 				strength = 2; //weak as föök if the player tries to throw himself
 			}
 
-				
+			else
+			{
+				/*Set the component to play the animation for throwing the other player's ball.*/
+				this->m_oldAnimState = this->m_aComp->previousState;
+				SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
+				this->m_aComp->velocity = 1.0f;
+				this->m_aComp->previousState = PLAYER_THROW;
+			}
+
 			m_grabbed->GetPhysicsComponent()->PC_active = true;
 			this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
 			this->m_grabbed->GetPhysicsComponent()->PC_gravityInfluence = 1;
