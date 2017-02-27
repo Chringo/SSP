@@ -4260,9 +4260,10 @@ void PhysicsHandler::SortComponents()
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
 	int chainLinkCollides = CollitionTypes::COL_STATIC;
-	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC | CollitionTypes::COL_PLAYER;
 	int dynamicCollides = CollitionTypes::COL_PLAYER;
 	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER;
+	//int platformCollide = CollitionTypes::COL_PLAYER | CollitionTypes::COL_CHAIN_LINK;
 
 	if (index == 0 || index == 1)
 	{
@@ -4280,7 +4281,14 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 		if (src->PC_is_Static)
 			this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_STATIC, staticCollides);
 		else
-			this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_DYNAMIC, dynamicCollides);
+		{
+			//if (src->PC_steadfast)                   ** Code snippet for platforms **
+			//{
+			//	this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_PLATFORM, platformCollide);
+			//}
+			//else
+				this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_DYNAMIC, dynamicCollides);
+		}
 	}
 	else if (src->PC_BVtype == BV_Sphere)
 	{

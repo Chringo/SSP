@@ -23,6 +23,7 @@ enum CollitionTypes
 	COL_STATIC = BIT(1),
 	COL_CHAIN_LINK = BIT(2),
 	COL_PLAYER = BIT(3),
+	COL_PLATFORM = BIT(4),
 };
 enum BoundingVolumeType
 {
