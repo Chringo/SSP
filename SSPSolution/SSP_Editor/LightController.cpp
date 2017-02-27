@@ -199,9 +199,14 @@ bool LightController::DisplayLightRadius()
 	return m_displayLightRadius;
 }
 
+std::vector<int>* LightController::GetShadowCasterIndexList()
+{
+	return &shadowCasterIndexes;
+}
+
 void LightController::MakeShadowCaster(unsigned int internalID)
 {
-	for (int i = 0; m_lights.size() < i; i++)
+	for (int i = 0; i < m_lights.size(); i++)
 	{
 		if (m_lights[i]->internalID == internalID)
 		{
@@ -218,9 +223,31 @@ void LightController::RemoveShadowCaster(unsigned int internalID)
 {
 	for (int i = 0; i < m_lights.size(); i++)
 		if (m_lights[i]->internalID == internalID)
-			for (int j = 0; shadowCasterIndexes.size(); j++)
-				if (shadowCasterIndexes[j] == i)
+			for (int j = 0; j < shadowCasterIndexes.size(); j++)
+				if (shadowCasterIndexes.at(j) == i)
+				{
 					shadowCasterIndexes.erase(shadowCasterIndexes.begin() + j);
+					return;
+				}
+	return;
+}
+
+bool LightController::GetIsShadowCaster(unsigned int internalID)
+{
+
+	for (int i = 0; i < m_lights.size(); i++)
+	{
+		if (m_lights[i]->internalID == internalID)
+		{
+			for (int shadowCaster : shadowCasterIndexes)
+			{
+				if (i == shadowCaster)
+					return true;
+			}
+			return false;
+		}
+	}
+	return false;
 }
 
 void LightController::Destroy()

@@ -24,8 +24,11 @@ public:
 	const Ambient * GetLevelAmbient() { return &this->m_levelAmbience; };
 	void DisplayLightRadius(bool display);
 	bool DisplayLightRadius();
+	std::vector<int> * GetShadowCasterIndexList();
 	void MakeShadowCaster(unsigned int internalID);
 	void RemoveShadowCaster(unsigned int internalID);
+	bool GetIsShadowCaster(unsigned int internalID);
+
 
 	void Destroy();
 private:
