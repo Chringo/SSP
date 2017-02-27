@@ -51,7 +51,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -73,7 +73,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
@@ -89,7 +89,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -120,7 +120,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	tempUIComp->position = DirectX::XMFLOAT2(100.f, 600.f);
 	tempUIComp->layerDepth = 0.5f;
 	tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	tempUIComp->spriteID = Textures::Button;
+	tempUIComp->spriteID = Textures::TButton;
 	TextComponent* tempTextComp = cHandler->GetTextComponent();
 	tempTextComp->active = 0;
 	tempTextComp->position = DirectX::XMFLOAT2(100.f, 620.f);
@@ -137,7 +137,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->scale = 0.6;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	this->m_ipTextBox.m_uiComp->spriteID = Textures::Button;
+	this->m_ipTextBox.m_uiComp->spriteID = Textures::TButton;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));

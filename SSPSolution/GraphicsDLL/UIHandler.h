@@ -13,7 +13,7 @@ enum Textures
 	Gamelogo = 1,
 	Keymaps = 2,
 	MenuBG = 3,
-	Button = 4,
+	TButton = 4,
 	Crosshair = 5,
 	CrosshairAim = 6,
 	Level0 = 7,
