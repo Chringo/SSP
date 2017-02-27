@@ -2507,7 +2507,7 @@ Header- color:rgb(48, 48, 48);
            <item row="9" column="0" colspan="4">
             <widget class="QStackedWidget" name="LightWindows">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="None"/>
              <widget class="QWidget" name="Point">
