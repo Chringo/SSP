@@ -199,6 +199,30 @@ bool LightController::DisplayLightRadius()
 	return m_displayLightRadius;
 }
 
+void LightController::MakeShadowCaster(unsigned int internalID)
+{
+	for (int i = 0; m_lights.size() < i; i++)
+	{
+		if (m_lights[i]->internalID == internalID)
+		{
+			for (int shadowIndex : shadowCasterIndexes)
+				if (shadowIndex == i)
+					return;
+			shadowCasterIndexes.push_back(i);
+			return;
+		}
+	}
+}
+
+void LightController::RemoveShadowCaster(unsigned int internalID)
+{
+	for (int i = 0; i < m_lights.size(); i++)
+		if (m_lights[i]->internalID == internalID)
+			for (int j = 0; shadowCasterIndexes.size(); j++)
+				if (shadowCasterIndexes[j] == i)
+					shadowCasterIndexes.erase(shadowCasterIndexes.begin() + j);
+}
+
 void LightController::Destroy()
 {
 	for each (Light* container in m_lights)

@@ -24,7 +24,9 @@ public:
 	const Ambient * GetLevelAmbient() { return &this->m_levelAmbience; };
 	void DisplayLightRadius(bool display);
 	bool DisplayLightRadius();
-	void MakeShadowCaster();
+	void MakeShadowCaster(unsigned int internalID);
+	void RemoveShadowCaster(unsigned int internalID);
+
 	void Destroy();
 private:
 	void m_updateAmbient();
