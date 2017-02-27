@@ -634,6 +634,7 @@ int GraphicsHandler::Render(float deltaTime)
 	lastModelID  = firstRenderedModelID;
 	lastModelPtr = firstRenderedModelPtr;
 	OctreeBV* lastRenderedComponent = nullptr;
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
@@ -658,7 +659,6 @@ int GraphicsHandler::Render(float deltaTime)
 				{
 	
 					
-					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
@@ -687,7 +687,7 @@ int GraphicsHandler::Render(float deltaTime)
 		else
 		{
 			
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 			lastRenderedComponent->isRendered = false;
