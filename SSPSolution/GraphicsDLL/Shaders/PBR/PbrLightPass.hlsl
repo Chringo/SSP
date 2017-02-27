@@ -1,10 +1,11 @@
-Texture2D colorTex		: register(t0);
-Texture2D metalRoughAo  : register(t1);
-Texture2D normalTex		: register(t2);
-Texture2D wPosTex		: register(t3);
-
-SamplerState linearSampler : register(s0);
-SamplerState pointSampler : register(s1);
+Texture2D colorTex		         : register(t0);
+Texture2D metalRoughAo           : register(t1);
+Texture2D normalTex		         : register(t2);
+Texture2D wPosTex		         : register(t3);
+TextureCube shadowTex            : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
+TextureCubeArray sShadowsTexA    : register(t11);
+SamplerState linearSampler       : register(s0);
+SamplerState pointSampler        : register(s1);
 
 cbuffer camera : register(b1)
 {
@@ -14,6 +15,9 @@ cbuffer camera : register(b1)
     float4 camPos;
 
 }
+
+
+#define SHADOW_BIAS  0.0000088f
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
@@ -22,6 +26,8 @@ cbuffer LightInfo : register(b3)
     uint   NUM_SPOTLIGHTS;
     float3 AMBIENT_COLOR;
     float  AMBIENT_INTENSITY;
+    uint   SHADOWLIGHT_INDEX;
+    uint    PADDING[3];
 }
 
 struct PointLight //Must be 16 bit aligned!
@@ -38,7 +44,7 @@ struct PointLight //Must be 16 bit aligned!
 };
 
 
-StructuredBuffer<PointLight> pointlights : register(t8);
+StructuredBuffer<PointLight> pointlights : register(t6);
 
 struct VS_OUT
 {
@@ -129,7 +135,6 @@ float V_SmithGGXCorrelated(float NdotL, float NdotV, float alphaG)
     return 0.5f / (Lambda_GGXV + Lambda_GGXL);
 }
 
-
 float GGX(float NdotH, float m)
 {
     //divide by PI happens later
@@ -203,8 +208,89 @@ float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float c
     return attenuation;
 }
 
+float VecToDepth(float3 vec)
+{
+    float3 absVec = abs(vec);
+    float LocalZcomp = max(absVec.x, max(absVec.y, absVec.z));
+
+    const float f = 9.0f;
+    const float n = 0.0005f;
+
+    //float NormZComp = (f + n) / (f - n) - (2 * f * n) / (f - n) / LocalZcomp;
+
+    float NormZComp = -(f / (n - f) - (n * f) / (n - f) / LocalZcomp); //because this isnt opengl
+
+    return NormZComp;
+}
+
+float sampleStaticShadowStencils(float3 worldPos, float3 lpos, int shadowIndex)
+{
+    static const float3 gCubeSampleOffset[8] =
+    {
+        { 0.875f, -0.375f, -0.125f },
+        { 0.625f, 0.625f, -0.625f },
+        { 0.375f, 0.125f, -0.875f },
+        { 0.125f, -0.875f, 0.125f },
+        { 0.125f, 0.875f, 0.375f },
+        { 0.375f, -0.625f, 0.625f },
+        { 0.625f, -0.125f, 0.875f },
+        { 0.875f, 0.375f, -0.375f }
+    };
+
+    float shadowFactor = 0.0f;
+    
+    float bias = SHADOW_BIAS;
+    float3 pixToLight = worldPos - lpos;
+
+    [unroll]
+    for (int i = 0; i < 8; i++)
+    {
+        float closestDepth = sShadowsTexA.Sample(linearSampler, float4(pixToLight + (gCubeSampleOffset[i] * 0.025), float(shadowIndex)));
+        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.125f;
+    }
+
+
+    return min(shadowFactor, 1.0);
+}
+
+
+float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFactor)
+{
+    static const float3 gCubeSampleOffset[8] =
+    {
+        { 0.875f, -0.375f, -0.125f },
+        { 0.625f, 0.625f, -0.625f },
+        { 0.375f, 0.125f, -0.875f },
+        { 0.125f, -0.875f, 0.125f },
+        { 0.125f, 0.875f, 0.375f },
+        { 0.375f, -0.625f, 0.625f },
+        { 0.625f, -0.125f, 0.875f },
+        { 0.875f, 0.375f, -0.375f }
+    };
+
+    float shadowFactor = 0.0f;
+    
+    float bias = SHADOW_BIAS;
+    float3 pixToLight = worldPos - lpos;
+
+    [unroll]
+    for (int i = 0; i < 8; i++)
+    {
+        float closestDepth = shadowTex.Sample(linearSampler, (pixToLight) + (gCubeSampleOffset[i] * 0.025));
+        shadowFactor += closestDepth + bias < VecToDepth(pixToLight) ? 0.0f : 0.125f;
+    }
+    
+
+    return currentShadowFactor < shadowFactor ? currentShadowFactor : min(shadowFactor, 1.0);
+    
+}
+
 float4 PS_main(VS_OUT input) : SV_Target
 {
+
+
+   // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
+
     uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
@@ -248,6 +334,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
+
+
+
+    float shadowFactor = 1.0;
     //FOR EACH LIGHT
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
@@ -267,8 +357,16 @@ float4 PS_main(VS_OUT input) : SV_Target
             float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
   
+            shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
             //DO SHADOW STUFF HERE
+            if (i == SHADOWLIGHT_INDEX)
+            {
+				shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz,shadowFactor);
+            }
+              //  shadowFactor = max(shadowFactor, 0.0f);
+				lightPower *= shadowFactor;
 
+            
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
@@ -282,11 +380,13 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
+
            // return diffuseLight;
         }
     }
 
 
+    //return shadowFactor;
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);

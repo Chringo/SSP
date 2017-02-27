@@ -24,6 +24,7 @@ const int OCTREE_NODE_MIN_CONTAINMENT = 1;
 const int OCTREE_NODE_MAX_DEPTH = 5;
 const int OCTREE_NODE_MIN_DEPTH = 1;
 const float OCTREE_NODE_MIN_SIZE = 2.0f;
+const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
 					  
 	
 class GraphicsHandler
@@ -205,6 +206,9 @@ public:
 	GRAPHICSDLL_API ID3D11Device* GetDevice() { return this->m_d3dHandler->GetDevice(); };
 	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
 	GRAPHICSDLL_API int Render(float deltaTime);
+	GRAPHICSDLL_API int RenderStaticObjectShadows();
+	GRAPHICSDLL_API int Update(float deltaTime);
+
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
 	GRAPHICSDLL_API int SetAnimComponentArraySize(int newSize);
@@ -246,6 +250,9 @@ public:
 	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
 	GRAPHICSDLL_API int ResetAnimationComponents();
+
+
+	GRAPHICSDLL_API int GenerateStaticSceneShadows();
 
 
 	//TEMP STUFF

@@ -53,6 +53,7 @@ public:
 	ID3D11DeviceContext*	  GetDeviceContext();
 	ID3D11RenderTargetView*	  GetBackbufferRTV();
 	ID3D11ShaderResourceView* GetBackbufferSRV();
+	D3D11_VIEWPORT*			  GetViewPort();
 
 	int SetRasterizerState(D3D11_FILL_MODE mode);
 	int ClearBlendState();
