@@ -391,7 +391,16 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 	this->m_rigidBodies.push_back(rigidBody);
 
 	//add it into the world
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	if (src->PC_entityID == 5 || src->PC_entityID == 6)
+	{
+		int chainLinkCollides = CollitionTypes::COL_STATIC;
+
+		this->m_dynamicsWorld->addRigidBody(rigidBody, CollitionTypes::COL_CHAIN_LINK, chainLinkCollides);
+	}
+	else
+	{
+		this->m_dynamicsWorld->addRigidBody(rigidBody);
+	}
 	src->PC_IndexRigidBody = (int)this->m_rigidBodies.size() - 1;
 
 }

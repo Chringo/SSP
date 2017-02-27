@@ -8,6 +8,7 @@
 #else
 #define PHYSICSDLL_API __declspec(dllimport)
 #endif
+#define BIT(x) (1<<(x)) //used for collition types
 
 #include <DirectXMath.h>
 #include <vector>
@@ -15,6 +16,14 @@
 #include "bullet3-2.85.1\src\btBulletDynamicsCommon.h"
 #pragma warning(pop)
 
+enum CollitionTypes
+{
+	COL_NOTHING = 0,
+	COL_DYNAMIC = BIT(0),
+	COL_STATIC = BIT(1),
+	COL_CHAIN_LINK = BIT(2),
+	COL_PLAYER = BIT(3),
+};
 enum BoundingVolumeType
 {
 	BV_AABB,

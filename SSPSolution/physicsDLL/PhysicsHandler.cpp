@@ -4268,15 +4268,14 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 	{
 		this->m_bullet.CreateAABB(src, index);
 	}
-	else if(src->PC_BVtype == BV_OBB)
+	else if (src->PC_BVtype == BV_OBB)
 	{
-		this->m_bullet.CreateOBB(src,index);
+		this->m_bullet.CreateOBB(src, index);
 	}
 	else if (src->PC_BVtype == BV_Sphere)
 	{
 		this->m_bullet.CreateSphere(src, index);
 	}
-
 }
 
 void PhysicsHandler::SyncBulletToPhysicsComponents()
