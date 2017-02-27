@@ -524,11 +524,6 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
-
-
-
-
-
 	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
@@ -657,8 +652,6 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
-	
-					
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
@@ -1552,9 +1545,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		}
 
 		m_d3dHandler->PresentScene(); //Finish the renderCall
-		
-
 	}
+
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();
 	
