@@ -277,9 +277,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 			playerAnim1->animation_States = playerG->modelPtr->GetSkeleton()->GetAllAnimations();
 
-			playerAnim1->source_State = playerAnim1->animation_States->at(0)->GetAnimationStateData();
+			playerAnim1->source_State = playerAnim1->animation_States->at(12)->GetAnimationStateData();
 			playerAnim1->source_State->isLooping = true;
 			playerAnim1->playingSpeed = 2.0f;
+			playerAnim1->source_State->stateIndex = PLAYER_RISE_UP;
 		}
 	}
 #pragma endregion Animation_Player1
@@ -371,7 +372,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 0.1f;
+	ballP->PC_friction = 1.0f;
 	//ballP->PC_Sphere.radius = 1;
 
 
@@ -398,7 +399,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_BVtype = BV_Sphere;
 
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 0.1f;
+	ballP->PC_friction = 1.0f;
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
@@ -1450,7 +1451,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
+		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorSet(0, 3, 0, 0);
 		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
+			this->m_player1.GetAnimationComponent(),
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
 			this->m_player1.GetPhysicsComponent(),
 			this->m_player1.GetBall()->GetPhysicsComponent());
@@ -1461,6 +1464,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player2_Spawn;
 		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
+			this->m_player1.GetAnimationComponent(),
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
 			this->m_player1.GetPhysicsComponent(),
 			this->m_player1.GetBall()->GetPhysicsComponent());

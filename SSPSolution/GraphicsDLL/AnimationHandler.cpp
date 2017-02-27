@@ -768,11 +768,11 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		/*Calculates the relation between each child and parent when going to a new pose each frame.*/
 		int parentIndex = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[i].parentIndex;
 
-		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&localTransforms[i]);
+		DirectX::XMMATRIX child = DirectX::XMLoadFloat4x4(&localTransforms[i]);
 
-		DirectX::XMMATRIX parentToRoot = DirectX::XMLoadFloat4x4(&toRootTransform[parentIndex]);
+		DirectX::XMMATRIX parent = DirectX::XMLoadFloat4x4(&toRootTransform[parentIndex]);
 		
-		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(toParent, parentToRoot);
+		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(child, parent);
 
 		DirectX::XMStoreFloat4x4(&toRootTransform[i], toRoot);
 	}

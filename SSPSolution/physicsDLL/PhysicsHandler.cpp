@@ -1845,7 +1845,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		//this->SetRagdollToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
-		btVector3 ext;
+		//btVector3 ext;
 		//ext.setX(1.0f / ragdoll->key_frame_blend_stage);
 		//ext.setY(1.0f / ragdoll->key_frame_blend_stage);
 		//ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
@@ -1854,6 +1854,48 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		//ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
 		//ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
 
+		int animationIndex = PLAYER_RISE_UP;
+		for (int i = 0; i < 21; i++)
+		{
+			DirectX::XMMATRIX BindPose = DirectX::XMMatrixInverse(nullptr, static_cast<DirectX::XMMATRIX>(ragdoll->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose));
+			DirectX::XMMATRIX inverseBindPose = static_cast<DirectX::XMMATRIX>(ragdoll->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+
+			DirectX::XMVECTOR animPos;
+			animPos = DirectX::XMVectorSet(
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0],
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1],
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2],
+				1.0f);
+
+			DirectX::XMFLOAT4 quat = {
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[0] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[1] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[2] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[3] };
+
+			DirectX::XMVECTOR jointPos;
+			jointPos = DirectX::XMVectorSetW(this->m_player1BodyPC.at(i)->PC_pos, 1.0f);
+			//animPos = DirectX::XMVector3Transform(animPos, BindPose);
+			animPos = DirectX::XMVector3Transform(animPos, DirectX::XMMatrixTranslationFromVector(ragdoll->playerPC->PC_pos));
+			DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(animPos, jointPos);
+
+			//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(this->m_ragdoll->jointMatrixes[i].r[3], DirectX::XMVectorScale(diffVec, 0.01));
+			DirectX::XMVECTOR translation = DirectX::XMVectorAdd(jointPos, DirectX::XMVectorScale(diffVec, 0.01));
+			//DirectX::XMVECTOR translation = DirectX::XMVectorLerp(jointPos, animPos, 0.01f);
+
+
+			ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(translation), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
+			//ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector(animPos);
+
+
+			int parent = ragdoll->Skeleton[i].parentIndex;
+			if (parent != -1)
+			{
+				ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(ragdoll->jointMatrixes[i], ragdoll->jointMatrixes[parent]);
+			}
+
+		}
+
 		ragdoll->key_frame_blend_stage--;
 		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, ext);
 
@@ -1861,22 +1903,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		{
 			ragdoll->key_frame_blend_stage = BLEND_TIME;
 			ragdoll->state = ANIMATED_TRANSITION;
-			if (ragdoll->playerPC->PC_entityID == 1)
-			{
-				int nrOfBodyParts = this->m_player1BodyPC.size();
-				for (int i = 0; i < nrOfBodyParts; i++)
-				{
-					//this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.0f;
-				}
-			}
-			if (ragdoll->playerPC->PC_entityID == 2)
-			{
-				int nrOfBodyParts = this->m_player2BodyPC.size();
-				for (int i = 0; i < nrOfBodyParts; i++)
-				{
-					//this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.0f;
-				}
-			}
+
 		}
 	}
 }
@@ -2872,7 +2899,7 @@ void PhysicsHandler::CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent *
 
 }
 
-void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent * playerPC, PhysicsComponent* ball)
+void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, AnimationComponent* aComp, DirectX::XMVECTOR pos, PhysicsComponent * playerPC, PhysicsComponent* ball)
 {
 	float hitboxSize = 0.125f;
 	float torsoWidth = 0.125;
@@ -3141,6 +3168,7 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Sk
 		}
 
 		this->m_player1RagDoll.Skeleton = Skeleton;
+		this->m_player1RagDoll.m_aComp = aComp;
 		this->SetRagdoll1ToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(DirectX::XMVectorAdd(playerPC->PC_pos, pos), DirectX::XMVectorSet(0, 4, 0, 0)));
 
 	}
@@ -4160,13 +4188,13 @@ PhysicsComponent * PhysicsHandler::GetStaticComponentAt(int index) const
 
 int PhysicsHandler::GetNrOfBodyComponents() const
 {
-	return this->m_player2BodyPC.size();
+	return this->m_player1BodyPC.size();
 }
 PhysicsComponent * PhysicsHandler::GetBodyComponentAt(int index) const
 {
-	if (index >= 0 && index < this->m_player2BodyPC.size())
+	if (index >= 0 && index < this->m_player1BodyPC.size())
 	{
-		return this->m_player2BodyPC.at(index);
+		return this->m_player1BodyPC.at(index);
 	}
 	return nullptr;
 }
