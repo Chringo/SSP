@@ -505,6 +505,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 							this->m_startMenuButtons[i].SetActive(true);
 						}
 						this->m_ipTextBox.SetActive(true);
+						this->m_menuBG->active = 1;
 					}
 					else //If succeded to connect
 					{
