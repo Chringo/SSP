@@ -2428,11 +2428,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
 	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player1.GetPhysicsComponent(), this->m_player2.GetBall()->GetPhysicsComponent());
 	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player2.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
-	int test = this->m_cHandler->GetPhysicsHandler()->GetNrOfPhysicsLinks();
-	for (int i = 0; i < test; i++)
-	{
-		PhysicsLink* temp = this->m_cHandler->GetPhysicsHandler()->GetPhysicsLinkAt(i);
-	}
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //
