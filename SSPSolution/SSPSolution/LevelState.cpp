@@ -547,6 +547,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		this->LoadNext();
 	}
 
+
 	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
 
@@ -1334,8 +1335,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma endregion MUSIC_KEYS  
 #endif // DEVELOPMENTFUNCTIONS
 
-
-	this->m_cameraRef->Update();
+	if (this->m_player1.GetRagdoll()->state != RAGDOLL)
+	{
+		this->m_cameraRef->Update();
+	}
+	else
+	{
+		this->m_cameraRef->RagdollCameraUpdate(this->m_player1.GetPhysicsComponent()->PC_pos);
+	}
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;

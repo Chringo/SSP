@@ -72,11 +72,27 @@ int Camera::Initialize(float farPlane, float screenAspect, float fieldOfView, fl
 int Camera::Update()
 {
 	int result = 1;
-	this->m_updatePos();
+ 	this->m_updatePos();
+
+	//if player is thrown
+
 
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 
 	return result;
+}
+
+GRAPHICSDLL_API int Camera::RagdollCameraUpdate(DirectX::XMVECTOR pos)
+{
+	DirectX::XMFLOAT4 newLookAt;
+	DirectX::XMStoreFloat4(&newLookAt, pos);
+	
+	
+	this->SetLookAt(newLookAt);
+
+	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
+
+	return 1;
 }
 
 int Camera::UpdateDeltaTime(float dt)
