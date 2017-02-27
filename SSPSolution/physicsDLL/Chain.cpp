@@ -108,9 +108,16 @@ void Chain::CreateEmptyDynamicsWorld()
 
 }
 
-void Chain::update()
+void Chain::Update()
 {
 	CreateChain();
+}
+
+void Chain::SyncChainData()
+{
+	//POSITION
+	//Lenght
+	//
 }
 
 

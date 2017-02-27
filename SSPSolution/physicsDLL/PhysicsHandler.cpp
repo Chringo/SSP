@@ -1654,8 +1654,10 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
-//	this->m_chain = new Chain();
-//	this->m_chain->Initialize();
+	this->m_chain = new Chain();
+	this->m_chain->Initialize();
+
+	
 
  	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
 	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
@@ -2486,12 +2488,15 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 
 void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
+
+
 	PhysicsLink link;
 	link.PL_lenght = linkLenght;
 	link.PL_next = next;
 	link.PL_previous = previous;
 	link.PL_type = type;
 
+	//this->m_chain->CreateChain();
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
 	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
