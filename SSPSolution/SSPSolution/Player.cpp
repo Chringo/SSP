@@ -310,6 +310,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
 				
 			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
+			
 
 			//if the player is holding its own ball
 			if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
@@ -330,6 +331,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 				this->m_aComp->velocity = 1.0f;
 				this->m_aComp->previousState = PLAYER_THROW;
+
+				
 			}
 
 			m_grabbed->GetPhysicsComponent()->PC_active = true;
