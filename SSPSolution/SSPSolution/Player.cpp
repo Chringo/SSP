@@ -316,7 +316,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				/*Set the component to play the "release ball" animation for player IDLE.*/
 				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+				//SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::FROZEN_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+
 				this->m_aComp->previousState = PLAYER_IDLE;
 
 				strength = 2; //weak as föök if the player tries to throw himself
