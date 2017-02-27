@@ -32,7 +32,7 @@ private:
 public:
 	ShaderControl();
 	~ShaderControl();
-	bool Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, const DirectX::XMINT2& resolution);
+	bool Initialize(ID3D11Device* gDevice, ID3D11DeviceContext* gDeviceContext, D3D11_VIEWPORT * viewPort);
 	bool InitializeWireframe(ID3D11Device * device);
 	void Release();
 
@@ -49,6 +49,9 @@ public:
 	void DrawFinal();
 
 	int ClearFrame();
+
+	ID3D11ShaderResourceView* GetShadowSRV()	 { return ((DeferredShader*)m_shaders[DEFERRED])->GetShadowSRV(); };
+	ID3D11Texture2D*          GetShadowTexture() { return ((DeferredShader*)m_shaders[DEFERRED])->GetShadowTexture(); };
 
 };
 

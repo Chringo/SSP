@@ -361,6 +361,33 @@ DirectX::XMVECTOR Camera::GetDirection()
 {
 	return this->m_camDirvector;
 }
+
+DirectX::XMFLOAT3 Camera::GetFocusPoint()
+{
+	DirectX::XMFLOAT3 result;
+	DirectX::XMStoreFloat3(&result, *this->m_focusPoint);
+	return result;
+}
+
+DirectX::XMFLOAT3 Camera::GetFocusPointOffset()
+{
+	DirectX::XMFLOAT3 result;
+	DirectX::XMStoreFloat3(&result, this->m_focusPointOffset);
+	return result;
+}
+
+void Camera::GetFocusPoint(DirectX::XMFLOAT3 & storeIn)
+{
+	DirectX::XMStoreFloat3(&storeIn, *this->m_focusPoint);
+	return;
+}
+
+void Camera::GetFocusPointOffset(DirectX::XMFLOAT3 & storeIn)
+{
+	DirectX::XMStoreFloat3(&storeIn, this->m_focusPointOffset);
+	return;
+}
+
 #pragma endregion getters
 #pragma region
 

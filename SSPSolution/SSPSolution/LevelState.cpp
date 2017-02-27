@@ -2440,20 +2440,23 @@ int LevelState::CreateLevel(LevelData::Level * data)
 //#pragma endregion puzzle
 //
 //#pragma region
-//	for (Entity* i : this->m_staticEntitys)
-//	{
-//		i->SyncComponents();
-//	}
+	m_cHandler->GetGraphicsHandler()->GenerateOctree();
+//for (Entity* i : this->m_staticEntitys)
+//{
+//	i->SyncComponents();
+//}
 //#pragma endregion static
 //
 #pragma endregion Sync components
 
-	m_cHandler->GetGraphicsHandler()->GenerateOctree();
-
+	m_cHandler->GetGraphicsHandler()->GenerateStaticSceneShadows();
 #ifdef _DEBUG
 	//This keeps track of any resource lib access outside of level loading. 
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
+
+
+
 	return 1;
 }
 

@@ -15,7 +15,11 @@ enum Textures
 	MenuBG = 3,
 	Button = 4,
 	Crosshair = 5,
-	CrosshairAim = 6
+	CrosshairAim = 6,
+	Level0 = 7,
+	Level1 = 8,
+	Level2 = 9,
+	Level5 = 10
 };
 
 class UIHandler

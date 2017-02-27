@@ -229,8 +229,7 @@ void FileImporter::LoadImportedFiles()
 				break;
 			case Resources::ResourceType::RES_SOUND:
 				break;
-
-				//RES_UI
+			//RES_UI
 
 			default:
 				break;
