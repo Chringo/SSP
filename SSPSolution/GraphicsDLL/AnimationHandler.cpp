@@ -106,10 +106,10 @@ void AnimationHandler::Update(float dt)
 			else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 				|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 			{
-						/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
-						if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
-							|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
-							continue;
+				/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+				if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+					&& this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+					continue;
 
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
