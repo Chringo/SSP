@@ -358,19 +358,21 @@ float4 PS_main(VS_OUT input) : SV_Target
             float NdotH = saturate((dot(N, H)));
             float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
-  
+            
             //SHADOW
-          //if ( i == SHADOWCASTING_LIGHTS[currentShadowLightIndex].r )
-          //{   
-             shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
-             if (i == DYNAMIC_SHADOWLIGHT_INDEX)
-             {
-                 shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
-             }
-			    lightPower *= shadowFactor;
-                currentShadowLightIndex++;
-           // }
+            int bajs = SHADOWCASTING_LIGHTS[currentShadowLightIndex].x;
+            if (i == bajs)
+            {   
+                shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
 
+			   // lightPower *= shadowFactor;
+                currentShadowLightIndex++;
+            }
+            if (i == DYNAMIC_SHADOWLIGHT_INDEX)
+            {
+                shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
+                lightPower *= shadowFactor;
+            }
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
