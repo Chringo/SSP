@@ -10,7 +10,7 @@ struct GraphicsComponent
 {
 	int active = 0;
 	unsigned int modelID = 0;
-	Resources::Model* modelPtr;
+	Resources::Model* modelPtr = nullptr;
 	DirectX::XMMATRIX worldMatrix;
 	DirectX::XMMATRIX ort;
 	DirectX::XMFLOAT3 pos;
@@ -22,6 +22,9 @@ struct GraphicsComponent
 		this->modelID     = a.modelID;
 		this->modelPtr    = a.modelPtr;
 		this->worldMatrix = a.worldMatrix;
+		this->ort		  = a.ort;
+		this->pos		  = a.pos;
+		this->extensions  = a.extensions;
 	} // user-defined copy ctor
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

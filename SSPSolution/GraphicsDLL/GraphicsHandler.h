@@ -82,7 +82,8 @@ private:
 	int m_nrOfGraphicsAnimationComponents;
 	int m_maxGraphicsAnimationComponents;
 	//New way of saving graphics components which is not used yet
-	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
+	//std::vector<GraphicsComponent*> m_staticGraphicsComponents;
+	std::vector<GraphicsComponent> m_staticGraphicsComponents;
 	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
 	std::vector<GraphicsComponent*> m_persistantGraphicsComponents;
 	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;

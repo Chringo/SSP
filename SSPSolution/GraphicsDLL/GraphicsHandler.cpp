@@ -553,14 +553,14 @@ int GraphicsHandler::Render(float deltaTime)
 			
 			DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
-			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
-			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
-			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
 
 			DirectX::XMStoreFloat4x4(&ort, ortm);
 			this->m_camera->AddToIntersectCheck(
 				ort,
-				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
+				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData()).ext),
 				i->pos
 			);
 				i->isInRay = false;
@@ -659,7 +659,7 @@ int GraphicsHandler::Render(float deltaTime)
 	
 					
 					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
@@ -688,7 +688,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			
 			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
@@ -712,7 +712,7 @@ int GraphicsHandler::Render(float deltaTime)
 				instancedModelCount = 0;
 			}
 			//Get the data
-			DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex]->worldMatrix;
+			DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex].worldMatrix;
 			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
 			//Store the data
 			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
@@ -885,8 +885,8 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
 
-	for (GraphicsComponent* comp : m_staticGraphicsComponents)
-		 m_shaderControl->Draw(comp->modelPtr, comp);
+	for (GraphicsComponent comp : m_staticGraphicsComponents)
+		 m_shaderControl->Draw(comp.modelPtr, &comp);
 
 
 
@@ -1023,14 +1023,14 @@ void GraphicsHandler::Shutdown()
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
 	//Clear the memory for the components
-	for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+	/*for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
 	{
 		if (this->m_staticGraphicsComponents[i] != nullptr)
 		{
 			delete this->m_staticGraphicsComponents[i];
 			this->m_staticGraphicsComponents[i] = nullptr;
 		}
-	}
+	}*/
 	for (size_t i = 0; i < this->m_dynamicGraphicsComponents.size(); i++)
 	{
 		if (this->m_dynamicGraphicsComponents[i] != nullptr)
@@ -1135,24 +1135,24 @@ int GraphicsHandler::GenerateOctree()
 	for ( i = 0; i < componentCount; i++)
 	{
 		//Fill the component with data
-		this->m_octreeRoot.containedComponents[i]->pos = this->m_staticGraphicsComponents[i]->pos;
-		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i]->modelID;
+		this->m_octreeRoot.containedComponents[i]->pos = this->m_staticGraphicsComponents[i].pos;
+		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i].modelID;
 		this->m_octreeRoot.containedComponents[i]->componentIndex = i;
-		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
-		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
-		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[0];
+		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[1];
+		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[2];
 		Resources::ResourceHandler::GetInstance()->GetModel(this->m_octreeRoot.containedComponents[i]->modelID, this->m_octreeRoot.containedComponents[i]->modelPtr);
 		
 		//If the rotation isn't 0 create a bigger AABB
 #pragma region
-		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i]->ort))
+		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i].ort))
 		//if (this->m_octreeRoot.containedComponents[i]->ext.x != this->m_staticGraphicsComponents[i]->extensions.x || this->m_octreeRoot.containedComponents[i]->ext.y != this->m_staticGraphicsComponents[i]->extensions.y || this->m_octreeRoot.containedComponents[i]->ext.z != this->m_staticGraphicsComponents[i]->extensions.z)
 		//if (this->m_staticGraphicsComponents[i]->rotation.x != 0 || this->m_staticGraphicsComponents[i]->rotation.y != 0 || this->m_staticGraphicsComponents[i]->rotation.z)
 		{
 			DirectX::XMVECTOR quaternion;
 			DirectX::XMVECTOR translation;
 			DirectX::XMVECTOR scale;
-			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i]->worldMatrix);
+			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i].worldMatrix);
 			DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(quaternion);
 			DirectX::XMVECTOR corners[8];
 			//Define the 8 AABB corners (if we exclude the center)
@@ -1402,17 +1402,17 @@ int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 	//Delete all old components
 	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
 	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
-	std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+	//std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
 
 	this->m_staticGraphicsComponents.clear();
 
 	//Set size for the vector
-	this->m_staticGraphicsComponents.resize(new_cap, nullptr);
+	this->m_staticGraphicsComponents.resize(new_cap);
 	//Go through vector and make pointers point to a structure
 	size_t amountOfComponents = new_cap;
 	for (size_t i = 0; i < amountOfComponents; i++)
 	{
-		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
+		this->m_staticGraphicsComponents[i].active = false;
 	}
 
 	//Clear the Octree of contained components
@@ -1641,15 +1641,31 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 	//result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_Component);
 	if (this->m_staticGraphicsComponents.size() > 0)
 	{
-		result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
-			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		for (int i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+		{
+			if (this->m_staticGraphicsComponents[i].active == 0)
+			{
+				result = &this->m_staticGraphicsComponents[i];
+				break;
+			}
+		}
+		/*for (GraphicsComponent i : this->m_staticGraphicsComponents)
+		{
+			if (i.active == 0)
+			{
+				result = &i;
+				break;
+			}
+		}*/
 
+		/*result = std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
+		[](GraphicsComponent comp) { return (comp.active == 0); });*/
 		/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
 		return arg.first == new_id; }) != ...)*/
-		if (result != nullptr && result->active)
+		/*if (result != nullptr && result->active)
 		{
 			result = nullptr;
-		}
+		}*/
 	}
 	return result;
 	//Yea that happened
@@ -2288,15 +2304,15 @@ float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 			//Create the OBB
 			DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
-			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
-			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
-			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
 
 			DirectX::XMStoreFloat4x4(&ort, ortm);
 
 			Camera::C_OBB obb;
 			obb.ort = ort;
-			obb.ext = DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext);
+			obb.ext = DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData()).ext);
 			obb.pos = i->pos;
 
 			OBBs.push_back(obb);	//Push to the list of OBBs
