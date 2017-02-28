@@ -65,6 +65,7 @@ SSPSolution/SSP_Editor/GeneratedFiles/**
 # Visual Studio - Debug tools
 *.psess
 *.vspx
+*.diagsession
 
 # Git Extension
 *.orig
