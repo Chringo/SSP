@@ -476,7 +476,6 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index, CollitionTyp
 	src->PC_IndexRigidBody = pos;
 
 
-	int i = 0;
 
 }
 
@@ -595,7 +594,6 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, Collitio
 	src->PC_IndexRigidBody = pos;
 
 
-	int i = 0;
 }
 
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
