@@ -240,12 +240,14 @@ int System::Update(float deltaTime)
 			}
 
 			int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
+			DirectX::XMVECTOR* container;
 
 			for (size_t i = 0; i < totalChainLinks; i++)
 			{
-				/*this->m_graphicsHandler->RenderBoundingVolume(
-					container->at(i)->aiComponent.AC_waypoints,
-					container->at(i)->aiComponent.AC_nrOfWaypoint);*/
+				container = this->m_physicsHandler.GetVP(i);
+				this->m_graphicsHandler->RenderBoundingVolume(
+					container,
+					totalChainLinks);
 			}
 
 #endif // _DEBUG
