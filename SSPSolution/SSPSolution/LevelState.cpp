@@ -371,7 +371,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 0.1f;
+	ballP->PC_friction = 0.5f;
 	//ballP->PC_Sphere.radius = 1;
 
 
@@ -398,7 +398,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_BVtype = BV_Sphere;
 
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 0.1f;
+	ballP->PC_friction = 0.5f;
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
@@ -546,6 +546,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->LoadNext();
 	}
+
 
 	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
@@ -1334,8 +1335,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma endregion MUSIC_KEYS  
 #endif // DEVELOPMENTFUNCTIONS
 
-
-	this->m_cameraRef->Update();
+	if (this->m_player1.GetRagdoll()->state == RagdollState::ANIMATED)
+	{
+		this->m_cameraRef->Update();
+	}
+	else
+	{
+		this->m_cameraRef->RagdollCameraUpdate(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetRagdoll()->state);
+	}
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;

@@ -59,7 +59,7 @@ namespace LevelData {
 	struct SceneLightHeader 
 	{
 		unsigned int numPointLights		  = 0;
-		unsigned int numAreaLights		  = 0;
+		unsigned int numShadowCasters	  = 0;
 		unsigned int numSpotLights		  = 0;
 		unsigned int numDirectionalLights = 0;
 
@@ -172,6 +172,7 @@ namespace LevelData {
 		unsigned int numPointLights;
 		PointLightHeader* pointLights;
 
-		
+		int * shadowCastIndexes;
+
 	};
 }

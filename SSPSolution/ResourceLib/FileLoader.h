@@ -22,7 +22,7 @@ namespace Resources
 	when we had no BPF, Registry or level file.
 	The function reads the whole file and puts it into a char buffer.
 	*/
-
+#define MAX_SHADOW_CASTERS 20
 	class FileLoader
 	{
 	public:
