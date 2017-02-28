@@ -107,6 +107,7 @@ private:
 	TextComponent* m_pageFaultTextComp;
 	TextComponent* m_vramTextComp;
 	IDXGIAdapter3* m_adapter;
+	HANDLE m_currProcess;
 
 	DebugHandler();
 
