@@ -89,9 +89,8 @@ int LevelSelectState::LoadLevel(std::string path, int levelID)
 	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
 		return 0;
 	//Create level
-	result = this->m_currentLevel->CreateLevel(level); 
-
 	this->m_currentLevel->SetCurrentLevelID(levelID);
+	result = this->m_currentLevel->CreateLevel(level);
 
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
 
