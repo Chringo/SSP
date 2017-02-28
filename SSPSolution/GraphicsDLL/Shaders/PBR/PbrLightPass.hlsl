@@ -159,6 +159,22 @@ float pointIllumination(float3 P, float3 N, float3 lightCentre, float r, float c
     return attenuation;
 }
 
+float smoothAttenuationOpt(float distance, float range, float c, float l, float q)
+{
+	float la = l * distance;
+	float qa = q * distance * distance;
+
+
+
+	float attenuation = 1 / (c + la + qa);
+	//attenuation += 1.0f - smoothstep(range * c, range, distance);
+
+
+	float final = 1.0f - smoothstep(range * attenuation, range, distance);
+	// attenuation += 1.0f - smoothstep(range * qa, range, distance);
+
+	return max(final, 0);
+}
 float smoothAttenuation(float3 P, float3 lightCentre, float range, float c, float l, float q)
 {
     float3 L = lightCentre - P;
