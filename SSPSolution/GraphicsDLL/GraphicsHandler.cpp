@@ -719,15 +719,7 @@ int GraphicsHandler::Render(float deltaTime)
 	size_t renderCap = this->m_dynamicGraphicsComponents.size();
 
 #pragma region 
-	//TEMP Johans
-	D3D11_VIEWPORT vP; 
-	vP.Width = 1280.f;
-	vP.Height = 720.f;
-	vP.MinDepth = 0.0f;
-	vP.MaxDepth = 1.0f;
-	vP.TopLeftX = 0;
-	vP.TopLeftY = 0;
-	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
+
 
 #pragma region Render shadows for normal (non instanced) geometry
 
