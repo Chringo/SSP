@@ -49,7 +49,7 @@ const int BLEND_TIME = 10;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;
-	PhysicsLink* prevLink;
+	int link_index;
 
 	float original_ext[3];
 	int key_frame_blend_stage;
@@ -212,7 +212,7 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(int player, const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API PhysicsLink* CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
+	PHYSICSDLL_API int CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);

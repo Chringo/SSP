@@ -1762,7 +1762,6 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == ANIMATED)
 	{
-		ragdoll->prevLink->PL_previous = ragdoll->playerPC;
 		int nrOfBodyParts = this->m_player1BodyPC.size();
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
@@ -1805,8 +1804,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
-
-		
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;
 
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
@@ -1824,7 +1822,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
-		ragdoll->prevLink->PL_previous = ragdoll->upperBody.center;
+		
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
@@ -1855,6 +1853,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == KEYFRAMEBLEND)
 	{
+
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;
+
 		//this->SetRagdollToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
@@ -2369,17 +2370,17 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	this->CreateDefaultBB(pos, newObject);
 	this->m_physicsComponents.push_back(newObject);
 
-	PhysicsComponent* toSwap;
-	if (isStatic == false)
-	{
-		toSwap = this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1);
-		this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1) = newObject;
-		this->m_physicsComponents.at(this->m_physicsComponents.size() - 1) = toSwap;
-	}
-	else
-	{
-		this->m_nrOfStaticObjects++;
-	}
+	//PhysicsComponent* toSwap;
+	//if (isStatic == false)
+	//{
+	//	toSwap = this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1);
+	//	this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1) = newObject;
+	//	this->m_physicsComponents.at(this->m_physicsComponents.size() - 1) = toSwap;
+	//}
+	//else
+	//{
+	//	this->m_nrOfStaticObjects++;
+	//}
 
 	return newObject;
 }
@@ -2490,7 +2491,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
-PhysicsLink* PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
+int PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
 	PhysicsLink link;
 	link.PL_lenght = linkLenght;
@@ -2508,8 +2509,8 @@ PhysicsLink* PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComp
 	}
 
 	this->m_links.push_back(link);
-
-	return &link;
+	int size = this->m_links.size() - 1;
+	return size;
 }
 
 void PhysicsHandler::ResetChainLink()
