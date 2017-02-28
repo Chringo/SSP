@@ -25,6 +25,7 @@ void Chain::CreateChain()
 	for (int i = 0; i < TOTAL_CHAIN; ++i)
 	{
 		startTransform.setOrigin(btVector3(btScalar(0), btScalar(5 + i * 2), btScalar(0)));
+		
 		boxes.push_back(CreateRigidBody((i == lastBoxIndex) ? 0 : mass, startTransform, colShape));
 	}
 

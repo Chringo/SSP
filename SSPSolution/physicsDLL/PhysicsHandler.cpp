@@ -2488,8 +2488,6 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 
 void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
-
-
 	PhysicsLink link;
 	link.PL_lenght = linkLenght;
 	link.PL_next = next;
@@ -2498,8 +2496,22 @@ void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * 
 
 	//this->m_chain->CreateChain();
 
+	//previous == character pos(center of body) 
+	//next == ball pos, 
+
+	//Create 4 points out of the vector between the ball and the player 
+	//use those vectors to calculate the bezier line. 
+	
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+
+	
+	AddSplinePoint(diffVec);
+
+	DirectX::XMVECTOR bajs = GetInterpolatedSplinePoint(4);
+
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(bajs));
+
+	
 
 	if (distance > linkLenght)
 	{
@@ -4919,14 +4931,16 @@ void PhysicsHandler::AddSplinePoint(DirectX::XMVECTOR & v)
 DirectX::XMVECTOR PhysicsHandler::GetInterpolatedSplinePoint(float t)
 {
 	int p = (int(t / delta_t));
-
-	int p0 = p - 1;
-	int p1 = p;
-	int p2 = p + 1;
-	int p3 = p + 2; 
+#define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)vp.size()-1)pp = vp.size()-1;}
+	int p0 = p - 1;			BOUNDS(p0);
+	int p1 = p;				BOUNDS(p1);
+	int p2 = p + 1;			BOUNDS(p2);
+	int p3 = p + 2;			BOUNDS(p3);
 	float lt = (t - delta_t*(float)p) / delta_t;
 
-	return Equal(lt, vp[p0], vp[p1], vp[p2], vp[p3]);
+	DirectX::XMVECTOR test = Equal(lt, vp[p0], vp[p1], vp[p2], vp[p3]);
+
+	return test;
 }
 
 int PhysicsHandler::GetNumPoint()
@@ -4946,6 +4960,24 @@ DirectX::XMVECTOR PhysicsHandler::GetNthPoint(int n)
 
 DirectX::XMVECTOR PhysicsHandler::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
 {
+	//Bezier curve
+
+	float u = 1 - t;
+	float tt = t* t;
+	float uu = u*u;
+	float uuu = uu*u;
+	float ttt = tt*t;
+
+	float b1= uuu*p1; // first
+
+
+	float b2 = 3 * uu * t *p1; // 2nd
+	float b3 = 3 * u *tt*p2;
+	float b4 = ttt*p3;
+
+	return(p1*b1 + p2*b2 + p3*b3 + p4*b4);
+
+	/*CatMull Spline
 	float t2 = t * t;
 
 	float t3 = t2 * t;
@@ -4957,7 +4989,7 @@ DirectX::XMVECTOR PhysicsHandler::Equal(float t, DirectX::XMVECTOR p1, DirectX::
 
 
 
-	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);
+	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);*/
 }
 
 #ifdef _DEBUG
