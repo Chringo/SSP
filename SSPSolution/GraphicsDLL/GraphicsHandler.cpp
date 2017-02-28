@@ -524,11 +524,6 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
-
-
-
-
-
 	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
@@ -634,6 +629,7 @@ int GraphicsHandler::Render(float deltaTime)
 	lastModelID  = firstRenderedModelID;
 	lastModelPtr = firstRenderedModelPtr;
 	OctreeBV* lastRenderedComponent = nullptr;
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 	{
 		//If the component is to be rendered, increase the counter
@@ -656,10 +652,7 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
-	
-					
-					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
@@ -687,8 +680,8 @@ int GraphicsHandler::Render(float deltaTime)
 		else
 		{
 			
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
 			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
@@ -1552,9 +1545,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		}
 
 		m_d3dHandler->PresentScene(); //Finish the renderCall
-		
-
 	}
+
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();
 	
