@@ -185,7 +185,7 @@ void BulletInterpreter::Initialize()
 		this->m_collitionConfiguration
 	);
 
-	this->m_GravityAcc = btVector3(0, 0, 0);
+	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
 	btRigidBody* test = nullptr;

@@ -1654,8 +1654,6 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
-
-
 	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
 	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
 
@@ -1812,7 +1810,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
 		btVector3 scale = btVector3(radius, radius, radius);
@@ -1842,65 +1840,96 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == KEYFRAMEBLEND)
 	{
-		//this->SetRagdollToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+		////this->SetRagdollToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
-		//btVector3 ext;
-		//ext.setX(1.0f / ragdoll->key_frame_blend_stage);
-		//ext.setY(1.0f / ragdoll->key_frame_blend_stage);
-		//ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
+		////btVector3 ext;
+		////ext.setX(1.0f / ragdoll->key_frame_blend_stage);
+		////ext.setY(1.0f / ragdoll->key_frame_blend_stage);
+		////ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
 
-		//ragdoll->playerPC->PC_OBB.ext[0] = ext.getX() * ragdoll->original_ext[0];
-		//ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
-		//ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
+		////ragdoll->playerPC->PC_OBB.ext[0] = ext.getX() * ragdoll->original_ext[0];
+		////ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
+		////ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
 
-		int animationIndex = PLAYER_RISE_UP;
+		int animationIndex = PLAYER_RISE_UP; 
+		//int rootJoint = 0;
+		ragdoll->blendTime += dt;
+		//	DirectX::XMFLOAT4 animQuat = {
+		//		ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[0] ,
+		//		ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[1] ,
+		//		ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[2] ,
+		//		ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[3] };
+		//		
+		//DirectX::XMMATRIX jointRot = this->m_player1BodyPC.at(rootJoint)->PC_OBB.ort;
+		//jointRot.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+		//			
+		//DirectX::XMVECTOR jointQuat = DirectX::XMQuaternionRotationMatrix(jointRot);
+
+		//DirectX::XMVECTOR newQuat = DirectX::XMQuaternionSlerp(
+		//	jointQuat,
+		//	DirectX::XMLoadFloat4(&animQuat), 
+		//	(ragdoll->blendTime / (float)BLEND_TIME));
+
+		//newQuat = DirectX::XMVector4Normalize(newQuat);
+		//DirectX::XMVECTOR offSet = ragdoll->bindPose[rootJoint].r[3];
+		//ragdoll->jointMatrixes[rootJoint] = DirectX::XMMatrixRotationQuaternion(newQuat);
+		//ragdoll->jointMatrixes[rootJoint].r[3] = offSet;
+		//for (int i = 1; i < 21; i++)
+		//{
+		//	int parentIndex = ragdoll->Skeleton[i].parentIndex;
+		//	ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(ragdoll->jointMatrixes[i], ragdoll->jointMatrixes[parentIndex]);
+		//}
+
+
 		for (int i = 0; i < 21; i++)
 		{
-			DirectX::XMMATRIX BindPose = DirectX::XMMatrixInverse(nullptr, static_cast<DirectX::XMMATRIX>(ragdoll->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose));
-			DirectX::XMMATRIX inverseBindPose = static_cast<DirectX::XMMATRIX>(ragdoll->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
-
-			DirectX::XMVECTOR animPos;
-			animPos = DirectX::XMVectorSet(
-				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0],
-				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1],
-				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2],
-				1.0f);
-
-			DirectX::XMFLOAT4 quat = {
+			int parentIndex = ragdoll->Skeleton[i].parentIndex;
+			DirectX::XMFLOAT4 animQuat = {
 				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[0] ,
 				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[1] ,
 				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[2] ,
 				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[3] };
 
-			DirectX::XMVECTOR jointPos;
-			jointPos = DirectX::XMVectorSetW(this->m_player1BodyPC.at(i)->PC_pos, 1.0f);
-			//animPos = DirectX::XMVector3Transform(animPos, BindPose);
-			animPos = DirectX::XMVector3Transform(animPos, DirectX::XMMatrixTranslationFromVector(ragdoll->playerPC->PC_pos));
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(animPos, jointPos);
+			DirectX::XMMATRIX jointRot = this->m_player1BodyPC.at(i)->PC_OBB.ort;
+			jointRot.r[3] = DirectX::XMVectorSet(0, 0, 0, 1);
+				
+			DirectX::XMVECTOR jointQuat = DirectX::XMQuaternionRotationMatrix(jointRot);
 
-			//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(this->m_ragdoll->jointMatrixes[i].r[3], DirectX::XMVectorScale(diffVec, 0.01));
-			DirectX::XMVECTOR translation = DirectX::XMVectorAdd(jointPos, DirectX::XMVectorScale(diffVec, 0.01));
-			//DirectX::XMVECTOR translation = DirectX::XMVectorLerp(jointPos, animPos, 0.01f);
+			DirectX::XMVECTOR newQuat = DirectX::XMQuaternionSlerp(
+				jointQuat,
+				DirectX::XMLoadFloat4(&animQuat), 
+				(ragdoll->blendTime / (float)BLEND_TIME));
 
-
-			ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(translation), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
-			//ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector(animPos);
-
-
-			int parent = ragdoll->Skeleton[i].parentIndex;
-			if (parent != -1)
+			newQuat = DirectX::XMVector4Normalize(newQuat);
+			DirectX::XMMATRIX newRot = DirectX::XMMatrixRotationQuaternion(newQuat);
+			DirectX::XMVECTOR offSet = DirectX::XMVectorSet(0, 0, 0, 1);
+			if (parentIndex != -1)
 			{
-				ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(ragdoll->jointMatrixes[i], ragdoll->jointMatrixes[parent]);
+				offSet = DirectX::XMVectorSubtract(ragdoll->bindPose[i].r[3], ragdoll->bindPose[parentIndex].r[3]);
 			}
-
+			else
+			{
+				offSet = ragdoll->bindPose[i].r[3];
+			}
+			DirectX::XMMATRIX finalMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(offSet), newRot);
+			finalMatrix.r[3] = DirectX::XMVectorSetW(finalMatrix.r[3], 1);
+			//finalMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(offSet), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&animQuat)));
+			if (parentIndex != -1)
+			{
+				ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(finalMatrix, ragdoll->jointMatrixes[parentIndex]);
+			}
+			else
+			{
+				ragdoll->jointMatrixes[i] = finalMatrix;
+			}
 		}
-
 		ragdoll->key_frame_blend_stage--;
 		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, ext);
 
-		if (ragdoll->key_frame_blend_stage == 0)
+		if (ragdoll->blendTime >= BLEND_TIME)
 		{
+			ragdoll->blendTime = 0;
 			ragdoll->key_frame_blend_stage = BLEND_TIME;
 			ragdoll->state = ANIMATED_TRANSITION;
 

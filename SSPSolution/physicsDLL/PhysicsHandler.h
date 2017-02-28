@@ -44,7 +44,7 @@ enum RagdollState
 	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
-const int BLEND_TIME = 100;
+const float BLEND_TIME = 0.1f;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;
@@ -52,6 +52,7 @@ struct Ragdoll
 	float original_ext[3];
 	int key_frame_blend_stage;
 	int time_standil_still;
+	float blendTime = 0;
 
 	PhysicsComponent* playerPC;
 	PhysicsComponent* ballPC;

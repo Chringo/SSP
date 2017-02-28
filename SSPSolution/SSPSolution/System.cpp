@@ -239,9 +239,17 @@ int System::Update(float deltaTime)
 			//	}
 			//}
 			int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+			PhysicsComponent* temp = nullptr;
+			OBB* OBB_holder = nullptr;
+			temp = this->m_physicsHandler.GetPlayer1Ragdoll()->playerPC;
+			OBB_holder = &temp->PC_OBB;
+			if (temp != nullptr)
+			{
+				this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+			}
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
-				PhysicsComponent* temp = this->m_physicsHandler.GetBodyComponentAt(i);
+				temp = this->m_physicsHandler.GetBodyComponentAt(i);
 				Sphere* sphereHolder = nullptr;
 				sphereHolder = &temp->PC_Sphere;
 				this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 

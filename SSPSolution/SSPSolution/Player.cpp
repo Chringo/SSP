@@ -66,71 +66,72 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
-		this->m_ragdoll->state = KEYFRAMEBLEND;
+		this->m_ragdoll->state = RAGDOLL_TRANSITION;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		this->m_ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == KEYFRAMEBLEND)
 		{
-			int animationIndex = PLAYER_RISE_UP;
-			DirectX::XMMATRIX test[21];
-			for (int i = 0; i < 21; i++)
-			{
-				////DirectX::XMFLOAT3 translation = { 
-				////	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0] ,
-				////	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1] ,
-				////	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2] };
-				////
+			//int animationIndex = PLAYER_RISE_UP;
+			//DirectX::XMMATRIX test[21];
+			//for (int i = 0; i < 21; i++)
+			//{
+			//	//DirectX::XMFLOAT3 translation = { 
+			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0] ,
+			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1] ,
+			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2] };
+			//	//
 
-				//DirectX::XMMATRIX BindPose = DirectX::XMMatrixInverse(nullptr, static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose));
-				//DirectX::XMMATRIX inverseBindPose = static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
+			//	DirectX::XMMATRIX BindPose = DirectX::XMMatrixInverse(nullptr, static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose));
+			//	DirectX::XMMATRIX inverseBindPose = static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
 
-				//DirectX::XMVECTOR animPos;
-				//animPos = DirectX::XMVectorSet(
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0],
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1],
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2],
-				//	1.0f);
+			//	DirectX::XMVECTOR animPos;
+			//	animPos = DirectX::XMVectorSet(
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0],
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1],
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2],
+			//		1.0f);
 
-				//DirectX::XMFLOAT4 quat = {
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[0] ,
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[1] ,
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[2] ,
-				//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[3] };
+			//	DirectX::XMFLOAT4 quat = {
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[0] ,
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[1] ,
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[2] ,
+			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[3] };
 
-				//DirectX::XMVECTOR jointPos;
-				//jointPos = this->m_ragdoll->jointMatrixes[i].r[3];
-				////animPos = DirectX::XMVector3Transform(animPos, BindPose);
-				//DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(animPos, jointPos);
+			//	DirectX::XMVECTOR jointPos;
+			//	jointPos = this->m_ragdoll->jointMatrixes[i].r[3];
+			//	//animPos = DirectX::XMVector3Transform(animPos, BindPose);
+			//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(animPos, jointPos);
 
-				////this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(this->m_ragdoll->jointMatrixes[i].r[3], DirectX::XMVectorScale(diffVec, 0.01));
-				////DirectX::XMVECTOR translation = DirectX::XMVectorAdd(jointPos, DirectX::XMVectorScale(diffVec, 0.01));
-				//DirectX::XMVECTOR translation = DirectX::XMVectorLerp(jointPos, animPos, 0.01f);
+			//	//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(this->m_ragdoll->jointMatrixes[i].r[3], DirectX::XMVectorScale(diffVec, 0.01));
+			//	//DirectX::XMVECTOR translation = DirectX::XMVectorAdd(jointPos, DirectX::XMVectorScale(diffVec, 0.01));
+			//	DirectX::XMVECTOR translation = DirectX::XMVectorLerp(jointPos, animPos, 0.01f);
 
 
-				//this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(translation), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
-				//this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector(animPos);
-				////this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(animPos), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
+			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(translation), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
+			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector(animPos);
+			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(animPos), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
 
-				//test[i] = this->m_ragdoll->jointMatrixes[i];
+			//	test[i] = this->m_ragdoll->jointMatrixes[i];
 
-				//int parent = this->m_ragdoll->Skeleton[i].parentIndex;
+			//	int parent = this->m_ragdoll->Skeleton[i].parentIndex;
 
-				//if (parent != -1)
-				//{
-				//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(this->m_ragdoll->jointMatrixes[i], this->m_ragdoll->jointMatrixes[parent]);
-				//}
-			}
-			test[0];
-			int a = 0;
+			//	if (parent != -1)
+			//	{
+			//		this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(this->m_ragdoll->jointMatrixes[i], this->m_ragdoll->jointMatrixes[parent]);
+			//	}
+			//}
+			//test[0];
+			//int a = 0;
 
 		}
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 5.0f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 0.5f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -562,10 +563,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
-			if (this->m_ragdoll->state == RAGDOLL)
+			if (this->m_ragdoll->state == RAGDOLL || this->m_ragdoll->state == KEYFRAMEBLEND)
 			{
-				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.5, 0, 0)));
+				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
+				offSet = DirectX::XMVectorScale(offSet, -this->m_ragdoll->playerPC->PC_OBB.ext[1]);
+				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->upperBody.center->PC_pos, offSet));
 			}
+
 		}
 	}
 
