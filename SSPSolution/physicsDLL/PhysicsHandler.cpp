@@ -4272,8 +4272,9 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
 	int chainLinkCollides = CollitionTypes::COL_STATIC;
 	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC | CollitionTypes::COL_PLAYER;
-	int dynamicCollides = CollitionTypes::COL_PLAYER;
-	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER;
+	int dynamicCollides = CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int ragdollCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
 	//int platformCollide = CollitionTypes::COL_PLAYER | CollitionTypes::COL_CHAIN_LINK;
 
 	if (index == 0 || index == 1)
@@ -4311,7 +4312,15 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 		//the rest will trigger if its the ragdoll or the ball
 		else
 		{
-			this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
+			if (src->PC_entityID == 4 || src->PC_entityID == 5)	//Balls
+			{
+				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
+			}
+			else //Ragdoll
+			{
+				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_RAGDOLL, ragdollCollides);
+			}
+			
 		}
 	}
 }
