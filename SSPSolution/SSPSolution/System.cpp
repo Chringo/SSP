@@ -238,6 +238,16 @@ int System::Update(float deltaTime)
 					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
 				}
 			}
+
+			int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
+
+			for (size_t i = 0; i < totalChainLinks; i++)
+			{
+				/*this->m_graphicsHandler->RenderBoundingVolume(
+					container->at(i)->aiComponent.AC_waypoints,
+					container->at(i)->aiComponent.AC_nrOfWaypoint);*/
+			}
+
 #endif // _DEBUG
 
 			this->m_graphicsHandler->Update(deltaTime);

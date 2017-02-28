@@ -4934,6 +4934,11 @@ int PhysicsHandler::GetNumPoint()
 	return vp.size();
 }
 
+int PhysicsHandler::GetTotalChainLinks()
+{
+	return TOTAL_CHAIN;
+}
+
 DirectX::XMVECTOR PhysicsHandler::GetNthPoint(int n)
 {
 	return vp[n];
@@ -4942,6 +4947,7 @@ DirectX::XMVECTOR PhysicsHandler::GetNthPoint(int n)
 DirectX::XMVECTOR PhysicsHandler::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
 {
 	float t2 = t * t;
+
 	float t3 = t2 * t;
 
 	float b1 = 0.5f * (-t3 + 2 * t2 - t);
