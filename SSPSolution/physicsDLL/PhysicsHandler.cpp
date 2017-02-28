@@ -1692,7 +1692,6 @@ void PhysicsHandler::Update(float deltaTime)
 
 	
 	this->CheckFieldIntersection();
-
 	//Bullet <---- physicsComponent
 	this->SyncAllPhyicsComponentsToBullet();
 
@@ -1703,6 +1702,7 @@ void PhysicsHandler::Update(float deltaTime)
 	this->SyncBulletToPhysicsComponents();
 
 	this->DoChainPhysics(dt, false);
+
 
 	if (this->m_player1RagDoll.playerPC != nullptr)
 	{
@@ -1777,17 +1777,31 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
 
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
+			//diff for player
+			//DirectX::XMVECTOR diffVec = newPos - oldPos;
+			
+			//diff for upperbody
+			DirectX::XMVECTOR diffVec = oldPos - newPos;
+
+			diffVec.m128_f32[1] = 0.0f;
+
+			ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
+			ragdoll->playerPC->PC_velocity = ragdoll->upperBody.center->PC_velocity;
+			//ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//ragdoll->upperBody.center->PC_velocity = DirectX::XMVECTOR{0.0f, 0.0f, 0.0f, 0.0f};
+
+			//DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
 		
 
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
+
 			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
 			//ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
-			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
+			this->ApplyForceToComponent(ragdoll->upperBody.center, diffVec, 1.0);
 
 		}
 
-		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
+		//float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		if (ballVel > 10.0 )
 		{
@@ -4271,7 +4285,7 @@ void PhysicsHandler::SortComponents()
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
 	int chainLinkCollides = CollitionTypes::COL_STATIC;
-	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC | CollitionTypes::COL_PLAYER;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
 	int dynamicCollides = CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
 	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
 	int ragdollCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
