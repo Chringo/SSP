@@ -4952,9 +4952,12 @@ DirectX::XMVECTOR* PhysicsHandler::GetVP(int n)
 {
 	DirectX::XMVECTOR* temp = nullptr;
 
-	for (int i = 0; i < (int)vp.size(); i++)
+	if (vp.size() != 0)
 	{
-		temp = &vp.at(i);
+		for (int i = 0; i < (int)vp.size(); i++)
+		{
+			temp = &vp.at(i);
+		}
 	}
 
 	return temp;

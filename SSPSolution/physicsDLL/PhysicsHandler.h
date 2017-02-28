@@ -125,7 +125,7 @@ private:
 	std::vector<DirectX::XMVECTOR> vp;
 	float delta_t;
 
-	int TOTAL_CHAIN = 5;
+	int TOTAL_CHAIN = 2;
 
 
 

@@ -32,7 +32,7 @@ int System::Shutdown()
 
 	delete &Progression::instance();
 	DebugHandler::instance()->Shutdown();
-	
+
 	return result;
 }
 
@@ -184,11 +184,11 @@ int System::Update(float deltaTime)
 		{
 			//Do the physics
 #pragma region
-	DebugHandler::instance()->StartTimer(1);
+			DebugHandler::instance()->StartTimer(1);
 
-	this->m_physicsHandler.Update(deltaTime);
+			this->m_physicsHandler.Update(deltaTime);
 
-	DebugHandler::instance()->EndTimer(1);
+			DebugHandler::instance()->EndTimer(1);
 #pragma endregion Physics
 		}
 		else if (myThreadID == 1)
@@ -201,7 +201,7 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->StartTimer(3);
 			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
 			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-			
+
 			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);
 
@@ -235,20 +235,49 @@ int System::Update(float deltaTime)
 				{
 					Sphere* sphereHolder = nullptr;
 					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
 				}
 			}
 
-			int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
-			DirectX::XMVECTOR* container;
+			DirectX::XMVECTOR x = DirectX::XMVECTOR();
+			DirectX::XMVECTOR y = DirectX::XMVECTOR();
 
-			for (size_t i = 0; i < totalChainLinks; i++)
-			{
-				container = this->m_physicsHandler.GetVP(i);
-				this->m_graphicsHandler->RenderBoundingVolume(
-					container,
-					totalChainLinks);
-			}
+			x = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0.0f, 1.5f, 0.0f));
+			y = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0.0f, 2.0f, 0.0f));
+
+			/*std::vector<DirectX::XMVECTOR> points;
+			points.push_back(x);
+			points.push_back(y);*/
+
+
+			int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
+
+			//DirectX::XMVECTOR* container = this->m_physicsHandler.GetVP(0);
+
+			DirectX::XMVECTOR* container[2];
+			container[0] = &x;
+			container[1] = &y;
+
+			//container
+
+
+			//for (size_t i = 0; i < totalChainLinks; i++)
+			//{
+			//	//container = this->m_physicsHandler.GetVP(i);
+			//	this->m_graphicsHandler->RenderBoundingVolume(
+			//		*container,
+			//		2);
+			//}
+
+
+				//container = this->m_physicsHandler.GetVP(i);
+
+			this->m_graphicsHandler->RenderBoundingVolume(
+				container[0],
+				2);
+			this->m_graphicsHandler->RenderBoundingVolume(
+				container[1],
+				2);
 
 #endif // _DEBUG
 
@@ -261,12 +290,12 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
 		}
-			//Do AI and Animation
+		//Do AI and Animation
 		else if (myThreadID == 2)
 		{
 #pragma region
-	//AI
-	this->m_AIHandler.Update(deltaTime);
+			//AI
+			this->m_AIHandler.Update(deltaTime);
 
 			this->m_AnimationHandler->Update(deltaTime);
 #pragma endregion AI And Animation
@@ -320,17 +349,17 @@ int System::Update(float deltaTime)
 
 	//this->m_AIHandler.Update(deltaTime);
 	//this->m_AnimationHandler->Update(deltaTime);
-	
+
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	enum {TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2};
+	enum { TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2 };
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	if (result == TOGGLE_FULLSCREEN)
 	{
 		this->FullscreenToggle();
 	}
-	else if(result == EXIT_GAME)
+	else if (result == EXIT_GAME)
 	{
 		result = 0;
 	}
@@ -424,7 +453,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
-			
+
 			break;
 		}
 		case SDL_QUIT:
@@ -437,7 +466,7 @@ int System::HandleEvents()
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-			
+
 			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, true);
 			break;
 		}
@@ -481,10 +510,10 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 {
 	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos());
 	DirectX::XMVECTOR camLookAt = DirectX::XMLoadFloat3(&this->m_camera->GetLookAt());
-	PhysicsComponent* player= nullptr;
+	PhysicsComponent* player = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
-	
+
 	player = this->m_physicsHandler.GetDynamicComponentAt(0);
 
 	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
