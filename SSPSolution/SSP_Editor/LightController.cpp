@@ -67,7 +67,7 @@ void LightController::AddLight(Light* light, LIGHTING::Light * data, LIGHTING::L
 		this->m_lights.push_back(p);
 		this->pointLightData.push_back(*(LIGHTING::Point*)data);
 		p->Initialize(&this->pointLightData.back());
-		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), type);
+		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
 		//LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
 		break;
 	}
@@ -92,8 +92,8 @@ void LightController::AddLight(LIGHTING::Point * light)
 	p->CreateFromExisting(light);
 	p->internalID		  = GlobalIDHandler::GetInstance()->GetNewId();
 	this->m_lights.push_back(p);
-	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), LIGHTING::LT_POINT);
-	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 
 }
 
@@ -111,8 +111,8 @@ void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 		this->m_lights.push_back(container);
 		this->pointLightData.push_back(data);
 		container->Initialize(&this->pointLightData.back());
-		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), type);
-		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
+		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 		break;
 	case LIGHTING::LT_DIRECTIONAL:
 		break;
@@ -129,7 +129,7 @@ void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 
 void LightController::UpdateLights(LIGHTING::LIGHT_TYPE type)
 {
-	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
+	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 }
 
 void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
@@ -141,8 +141,8 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 	case LIGHTING::LT_POINT:
 		m_lights.erase(m_lights.begin() + index);
 		pointLightData.erase(pointLightData.begin() + index);
-		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), type);
-		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(type);
+		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 
 		break;
 	case LIGHTING::LT_DIRECTIONAL:
@@ -258,7 +258,7 @@ void LightController::Destroy()
 	}
 	this->GetLights()->clear();
 	this->pointLightData.clear();
-	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size(), LIGHTING::LT_POINT);
-	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 
 }
