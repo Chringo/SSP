@@ -341,10 +341,9 @@ float4 PS_main(VS_OUT input) : SV_Target
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
 
-		//float3 L = (pointlights[i].position.xyz - wPosSamp.xyz);
-		float distPow = (pointlights[i].position.x - wPosSamp.x) + (pointlights[i].position.y - wPosSamp.y) + (pointlights[i].position.z - wPosSamp.z);
-
-		if (distPow <= pow(pointlights[i].radius, 2.0))
+		float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
+		float distance = length(L);
+		if (distance < pointlights[i].radius)
 		{
 			float lightPower = 0;
 
