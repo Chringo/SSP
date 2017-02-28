@@ -589,6 +589,7 @@ int GraphicsHandler::Render(float deltaTime)
 	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
 	std::vector<InstanceData> instancedRenderingList;
+	std::vector<size_t> staticNormalRenderingList;
 	//Go through all components dynamic components
 	size_t renderCap = this->m_dynamicGraphicsComponents.size();
 #pragma omp parallel num_threads(2)
@@ -630,14 +631,15 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 			}
 
-			m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+			//m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
 			int amountOfModelOccurrencees = 0;
 			unsigned int lastComponentIndex = 0;
 			lastModelID = firstRenderedModelID;
 			lastModelPtr = firstRenderedModelPtr;
 			OctreeBV* lastRenderedComponent = nullptr;
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 			{
 				//If the component is to be rendered, increase the counter
@@ -660,8 +662,8 @@ int GraphicsHandler::Render(float deltaTime)
 						}
 						else
 						{
-							m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
-
+							//m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+							staticNormalRenderingList.push_back(lastComponentIndex);
 							lastRenderedComponent->isRendered = false;
 							amountOfModelOccurrencees = 0;
 						}
@@ -689,7 +691,9 @@ int GraphicsHandler::Render(float deltaTime)
 				{
 
 					//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+
+					//m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+					staticNormalRenderingList.push_back(lastComponentIndex);
 
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = -1;
@@ -725,6 +729,7 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 		else if (myThreadID == 1)
 		{
+			m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 
 #pragma region 
 
@@ -799,7 +804,11 @@ int GraphicsHandler::Render(float deltaTime)
 
 		}
 	}
-
+	//m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	//Render non-instanced static geometry
+	for(size_t lastComponentIndex : staticNormalRenderingList)
+		m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 #pragma region
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
