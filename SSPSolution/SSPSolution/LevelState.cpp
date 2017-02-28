@@ -1485,12 +1485,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 #pragma region
-	float linkLenght = 1.5f;
+	float linkLenght = 0.5f;
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
-	previous = this->m_player1.GetRagdoll()->upperBody.center;
+	//previous = this->m_player1.GetRagdoll()->upperBody.center;
 	PhysicsComponent* next = nullptr;
 
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
@@ -1501,10 +1501,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		}
 		unsigned int entityID = 5;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		if (i == 1)
-		{
-			//this->m_cHandler->GetPhysicsHandler()->CreateLink(this->m_player1.GetPhysicsComponent(), PC_ptr, 4, PhysicsLinkType::PL_CHAIN);
-		}
+
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
@@ -1523,7 +1520,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+			this->m_player1.GetRagdoll()->prevLink = this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+			int a = 0;
 		}
 		else
 		{
@@ -1541,7 +1539,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
-	linkLenght = 1.5f;
+	linkLenght = 0.5f;
 	previous = this->m_player2.GetPhysicsComponent();
 	//previous = this->m_player2.GetRagdoll()->upperBody.center;
 	next = nullptr;
@@ -1549,7 +1547,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		if (i != 1)
 		{
-			linkLenght = 0.85f;
+			linkLenght = 0.45f;
 		}
 		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
@@ -1587,9 +1585,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
 	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
+
 #pragma endregion Create_Chain_Link
-
-
 
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 

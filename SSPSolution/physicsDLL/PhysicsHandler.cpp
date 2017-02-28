@@ -1762,6 +1762,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == ANIMATED)
 	{
+		ragdoll->prevLink->PL_previous = ragdoll->playerPC;
 		int nrOfBodyParts = this->m_player1BodyPC.size();
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
@@ -1772,6 +1773,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
+
 			DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
 
 			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
@@ -1785,19 +1787,12 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 
 			diffVec.m128_f32[1] = 0.0f;
 
+
 			ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
-			ragdoll->playerPC->PC_velocity = ragdoll->upperBody.center->PC_velocity;
+
 			//ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
-			//ragdoll->upperBody.center->PC_velocity = DirectX::XMVECTOR{0.0f, 0.0f, 0.0f, 0.0f};
-
-			//DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(oldPos, newPos), 0);
-		
-
-			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
-
-			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
 			//ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
-			this->ApplyForceToComponent(ragdoll->upperBody.center, diffVec, 1.0);
+			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
 
 		}
 
@@ -1810,6 +1805,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
+
+		
+
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
@@ -1826,6 +1824,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
+		ragdoll->prevLink->PL_previous = ragdoll->upperBody.center;
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
@@ -2491,7 +2490,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
-void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
+PhysicsLink* PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
 	PhysicsLink link;
 	link.PL_lenght = linkLenght;
@@ -2509,6 +2508,8 @@ void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * 
 	}
 
 	this->m_links.push_back(link);
+
+	return &link;
 }
 
 void PhysicsHandler::ResetChainLink()
