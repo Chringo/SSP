@@ -62,6 +62,10 @@ SSPSolution/SSP_Editor/GeneratedFiles/**
 *.vcxproj.user
 *.VC.db
 
+# Visual Studio - Debug tools
+*.psess
+*.vspx
+
 # Git Extension
 *.orig
 
