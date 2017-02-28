@@ -4312,7 +4312,7 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 		//the rest will trigger if its the ragdoll or the ball
 		else
 		{
-			if (src->PC_entityID == 4 || src->PC_entityID == 5)	//Balls
+			if (src->PC_entityID == 3 || src->PC_entityID == 4)	//Balls
 			{
 				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, playerBasedCollides);
 			}

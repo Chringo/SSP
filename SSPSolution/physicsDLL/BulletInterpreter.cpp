@@ -258,16 +258,16 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 		
 		//the ball might be picked up or dropped, and need to ignore collition check
 		//for a short period of time for animation
-		if (src->PC_IndexRigidBody == 2)
-		{
-			this->IgnoreCollitionCheckOnPickupP1(src);
-			this->IgnoreCollitionCheckOnPickupP2(src);
-		}
-		if (src->PC_IndexRigidBody == 3)
-		{
-			this->IgnoreCollitionCheckOnPickupP1(src);
-			this->IgnoreCollitionCheckOnPickupP2(src);
-		}
+		//if (src->PC_IndexRigidBody == 2)
+		//{
+		//	this->IgnoreCollitionCheckOnPickupP1(src);
+		//	this->IgnoreCollitionCheckOnPickupP2(src);
+		//}
+		//if (src->PC_IndexRigidBody == 3)
+		//{
+		//	this->IgnoreCollitionCheckOnPickupP1(src);
+		//	this->IgnoreCollitionCheckOnPickupP2(src);
+		//}
 	}
 }
 
@@ -397,10 +397,7 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index, Collition
 
 void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
-	if (index == 3)
-	{
-		int i = 0;
-	}
+	
 
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* box = new btBoxShape(extends);
@@ -464,15 +461,14 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index, CollitionTyp
 	
 	rigidBody->setFriction(src->PC_friction);
 
-	if (index == 0 || index == 1)
-	{
-		rigidBody->setAngularFactor(btVector3(0, 0, 0));
-		
-	}
-
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
+
+	if (collitionType == CollitionTypes::COL_STATIC)
+	{
+		rigidBody->setActivationState(DISABLE_SIMULATION);
+	}
 
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
@@ -514,6 +510,11 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTy
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
 
+	if (collitionType == CollitionTypes::COL_STATIC)
+	{
+		rigidBody->setActivationState(DISABLE_SIMULATION);
+	}
+
 	this->m_rigidBodies.push_back(rigidBody);
 	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	
@@ -524,9 +525,19 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, Collitio
 {
 
 	//this capule is ugly hacked, needs further research
-	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2, src->PC_OBB.ext[1] * 1.6, src->PC_OBB.ext[2]);
+	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2f, src->PC_OBB.ext[1] * 1.6f, src->PC_OBB.ext[2]);
+	//btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1]*2, src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
+	//Capsule->setLocalScaling(btVector3(2, 1, 2));
+	//Capsule->setMargin(0.f);
+	/*const btVector3 tempPos = btVector3(src->PC_pos.m128_f32[0], src->PC_pos.m128_f32[1], src->PC_pos.m128_f32[2]);
+	btScalar * hejsan = new btScalar[2];
+	hejsan[0] = 2.f;
+	hejsan[1] = 2.f;
+	btCollisionShape* Capsule = new btMultiSphereShape(&tempPos, hejsan, 2);*/
 	
+	
+
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
 	//creating a mothion state
@@ -554,6 +565,7 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, Collitio
 	{
 		Capsule->calculateLocalInertia(src->PC_mass, interia);
 	}
+
 
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
