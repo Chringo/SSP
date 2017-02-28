@@ -360,8 +360,8 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
   
             //SHADOW
-            if ( i == SHADOWCASTING_LIGHTS[currentShadowLightIndex] )
-            {   
+          //if ( i == SHADOWCASTING_LIGHTS[currentShadowLightIndex].r )
+          //{   
              shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
              if (i == DYNAMIC_SHADOWLIGHT_INDEX)
              {
@@ -369,7 +369,7 @@ float4 PS_main(VS_OUT input) : SV_Target
              }
 			    lightPower *= shadowFactor;
                 currentShadowLightIndex++;
-            }
+           // }
 
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear

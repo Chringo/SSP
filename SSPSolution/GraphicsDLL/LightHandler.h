@@ -59,7 +59,7 @@ namespace LIGHTING
 
 	public:
 		struct LightArray {
-			Light* dataPtr = nullptr;
+			Point* dataPtr = nullptr;
 			ID3D11ShaderResourceView* shadowMaps; //One should be generated for each light on load
 			unsigned int numItems		 = 0;
 			unsigned int numShadowLights = 0;
@@ -108,10 +108,10 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool UpdateStructuredBuffer ();
 		GRAPHICSDLL_API bool SetStaticShadowsToGPU();
 		GRAPHICSDLL_API bool SetBufferAsActive();
-		GRAPHICSDLL_API bool SetLightData(Light* lightArray, unsigned int numLights);
+		GRAPHICSDLL_API bool SetLightData(Point* lightArray, unsigned int numLights);
 		GRAPHICSDLL_API void SetAmbientLight(float r, float g, float b, float intensity);
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
-		GRAPHICSDLL_API bool SetShadowCastingLight(Light* light);
+		GRAPHICSDLL_API bool SetShadowCastingLight(Point* light);
 		GRAPHICSDLL_API bool SetShadowCastingLight(int index);
 
 		//Returns either an index to the internal lightdata or -1 for no lights found

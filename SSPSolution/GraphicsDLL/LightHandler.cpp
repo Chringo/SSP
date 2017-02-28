@@ -209,12 +209,12 @@ bool LIGHTING::LightHandler::SetBufferAsActive()
 	return true;
 }
 
-bool LIGHTING::LightHandler::SetLightData(Light * lightArray, unsigned int numLights)
+bool LIGHTING::LightHandler::SetLightData(Point * lightArray, unsigned int numLights)
 {
 
 	if ( numLights < 1)
 		return false;
-	m_lightData.dataPtr = lightArray;
+	m_lightData.dataPtr  = lightArray;
 	m_lightData.numItems = numLights;
 	if (numLights > this->NUM_LIGHTS || numLights < this->NUM_LIGHTS)
 	{
@@ -276,14 +276,14 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		{
 			memcpy(&((Point*)m_lightData.dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
 			memcpy(((Point*)m_lightData.dataPtr)[i].position.m128_f32, level->pointLights[i].position, sizeof(float) * 3);
-			((Point*)m_lightData.dataPtr)[i].intensity		   = level->pointLights[i].intensity;
-			((Point*)m_lightData.dataPtr)[i].falloff.quadratic = level->pointLights[i].falloff_quadratic;
-			((Point*)m_lightData.dataPtr)[i].falloff.constant  = level->pointLights[i].falloff_constant;
-			((Point*)m_lightData.dataPtr)[i].falloff.linear	   = level->pointLights[i].falloff_linear;
-			((Point*)m_lightData.dataPtr)[i].radius			   = level->pointLights[i].radius;
-			((Point*)m_lightData.dataPtr)[i].padding[0]		   = 0.0f;
-			((Point*)m_lightData.dataPtr)[i].padding[1]		   = 0.0f;
-			((Point*)m_lightData.dataPtr)[i].padding[2]		   = 0.0f;
+			m_lightData.dataPtr[i].intensity		   = level->pointLights[i].intensity;
+			m_lightData.dataPtr[i].falloff.quadratic   = level->pointLights[i].falloff_quadratic;
+			m_lightData.dataPtr[i].falloff.constant    = level->pointLights[i].falloff_constant;
+			m_lightData.dataPtr[i].falloff.linear	   = level->pointLights[i].falloff_linear;
+			m_lightData.dataPtr[i].radius			   = level->pointLights[i].radius;
+			m_lightData.dataPtr[i].padding[0]		   = 0.0f;
+			m_lightData.dataPtr[i].padding[1]		   = 0.0f;
+			m_lightData.dataPtr[i].padding[2]		   = 0.0f;
 		}
 		SetLightData(m_lightData.dataPtr, level->numPointLights);
 		UpdateStructuredBuffer();
@@ -291,7 +291,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	return true;
 }
 
- bool LIGHTING::LightHandler::SetShadowCastingLight(Light * light)
+ bool LIGHTING::LightHandler::SetShadowCastingLight(Point * light)
  {
 	 //Look along each coordinate axis
 
@@ -334,8 +334,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	 m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = index;
 
 	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
-	 Light* commonData = this->m_lightData.dataPtr;
-	 Point* specializedData = static_cast<Point*>(commonData);
+	 Point* specializedData = this->m_lightData.dataPtr;
 
 	return  SetShadowCastingLight(&specializedData[index]);
 }
@@ -351,7 +350,7 @@ int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
 
 	if (this->m_lightData.numItems > 0)
 	{
-		Light* commonData = this->m_lightData.dataPtr;
+		Point* commonData = this->m_lightData.dataPtr;
 
 			for (unsigned int i = 0; i < this->m_lightData.numItems; i++)
 			{
@@ -359,7 +358,7 @@ int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
 				{
 					if (i == m_lightData.shadowLightIndex[j])
 					{
-						Point* specializedData = static_cast<Point*>(commonData);
+						Point* specializedData = commonData;
 						dist = 0.0f;
 						DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[i].position.m128_f32[X]- pos.x, specializedData[i].position.m128_f32[Y] - pos.y, specializedData[i].position.m128_f32[Z] - pos.z, 0.0f);
 						dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
