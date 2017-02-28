@@ -1486,9 +1486,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 #pragma region
 	float linkLenght = 1.5f;
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
-	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
+	//DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
+	//diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
 	previous = this->m_player1.GetRagdoll()->upperBody.center;
 	PhysicsComponent* next = nullptr;
@@ -1524,6 +1524,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		if (i == 1)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+			
 
 		}
 		else
@@ -1539,8 +1540,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 
-	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
-	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
+	//diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
+	//diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	linkLenght = 1.5f;
 	previous = this->m_player2.GetPhysicsComponent();
