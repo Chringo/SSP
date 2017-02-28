@@ -5,7 +5,7 @@
 #include "bullet3-2.85.1\src\LinearMath\btAlignedObjectArray.h"
 #include "bullet3-2.85.1\src\LinearMath\btVector3.h"
 #include "bullet3-2.85.1\src\btBulletDynamicsCommon.h"
-#include "PhysicsHandler.h"
+//#include "PhysicsHandler.h"
 
 class Chain
 {
@@ -13,10 +13,11 @@ public:
 
 	Chain();
 	void CreateChain();
+	int GetNrOfChains();
 	void Initialize();
 	void Update();
-	void SyncChainData(PhysicsComponent* ptr); // Bullet physics sync with game. It's only a game why you have to be mad 
-	
+	//void SyncGameData(PhysicsComponent* ptr); // Bullet physics sync with game. It's only a game why you have to be mad 
+	//void SyncChainData(PhysicsComponent* ptr);
 
 	~Chain();
 private:
@@ -31,6 +32,10 @@ private:
 	btBroadphaseInterface* m_broadphase;
 	btVector3 m_position;
 	btTransform startTransform;
+	//BulletInterpreter  m_bullet;
+	//PhysicsComponent* ptr;
+
+	
 };
 
 #endif // !CHAIN_H

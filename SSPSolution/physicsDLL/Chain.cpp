@@ -8,6 +8,10 @@ Chain::Chain()
 
 void Chain::CreateChain()
 {
+	//PhysicsHandler * hndl;
+
+	
+
 	btBoxShape * colShape = CreateBoxShape(btVector3(1,1,0.25));
 	
 	//btTransform startTransform;
@@ -36,12 +40,23 @@ void Chain::CreateChain()
 		m_dynamicsWorld->addConstraint(rightSpring);
 		
 	}
+	for (int i = 0; i < TOTAL_CHAIN; i++)
+	{
+	//	hndl->GetComponentAt(i);
+	}
+}
+
+int Chain::GetNrOfChains()
+{
+	return TOTAL_CHAIN;
 }
 
 void Chain::Initialize()
 {
+
 	CreateEmptyDynamicsWorld();
 	CreateChain();
+
 }
 
 btBoxShape* Chain::CreateBoxShape(const btVector3 & halfExtent)
@@ -54,7 +69,7 @@ btBoxShape* Chain::CreateBoxShape(const btVector3 & halfExtent)
 btRigidBody * Chain::CreateRigidBody(float mass, const btTransform & startTransform,
 	btCollisionShape * shape, const btVector4 & color)
 {
-	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
+	//btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
 	bool isDynamic = (mass != 0.0f);
 
@@ -113,17 +128,35 @@ void Chain::Update()
 	CreateChain();
 }
 
-void Chain::SyncChainData(PhysicsComponent* ptr)
-{
-	PhysicsHandler* bajs;
-
-	
-	m_position = startTransform.getOrigin();
-
-	//POSITION
-	//Lenght
-	//
-}
+//void Chain::SyncGameData(PhysicsComponent* ptr)
+//{
+//	/*if (!ptr->PC_is_Static)
+//	{
+//
+//		m_position = startTransform.getOrigin();
+//
+//		ptr->PC_pos = m_position();
+//	}
+//	PhysicsHandler* bajs;*/
+//
+//
+//	m_bullet.SyncBulletWithGame(ptr);
+//	
+//	
+//	
+//
+//	//POSITION
+//	//Lenght
+//	//
+//}
+//
+//void Chain::SyncChainData(PhysicsComponent * ptr)
+//{
+//	//fill ptr
+//	//give PhysicsComponent data
+//
+//
+//}
 
 
 Chain::~Chain()

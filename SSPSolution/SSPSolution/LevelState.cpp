@@ -1524,6 +1524,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		if (i == 1)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+
 		}
 		else
 		{

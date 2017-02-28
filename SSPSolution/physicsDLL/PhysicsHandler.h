@@ -298,6 +298,7 @@ public:
 	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
 
 	PHYSICSDLL_API void SetIgnoreCollisions();
+
 	void InitSpline();
 	void AddSplinePoint(DirectX::XMVECTOR& v);
 	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t);
