@@ -8,7 +8,7 @@ SamplerState linearSampler       : register(s0);
 SamplerState pointSampler        : register(s1);
 
 //must match ConstantBufferHandler.h define || //Must be multiple of 4
-#define MAX_SHADOW_LIGHTS 4  
+#define MAX_SHADOW_LIGHTS 20  
 #define SHADOW_BIAS  0.0000088f
 cbuffer camera : register(b1)
 {

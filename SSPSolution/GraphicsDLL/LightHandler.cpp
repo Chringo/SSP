@@ -53,6 +53,7 @@ int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 		//The time has exceeded the timer and we need to calculate a new active light for shadow mapping
 		int closestLightIndex = 0;
 		closestLightIndex = this->GetClosestLightIndex(pointOfInterest);
+
 		if (closestLightIndex > -1)
 		{
 			this->m_activeLightIndex = closestLightIndex;
@@ -258,8 +259,13 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 		m_lightData.ReleaseShadowMaps();
 		m_lightData.dataPtr = new LIGHTING::Point[level->numPointLights];
-		memset(m_lightData.shadowLightIndex, int(-1), sizeof(int)* MAX_SHADOW_LIGHTS); //Reset the shadow casting array
+	
+
+		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
+
+		memcpy(m_constBufferData.SHADOWCASTING_LIGHTS, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
 		
+	//	m_lightData.shadowLightIndex[0] = 1;
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
 			memcpy(&((Point*)m_lightData.dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
@@ -316,7 +322,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
  bool LIGHTING::LightHandler::SetShadowCastingLight(int index)
 {
-	 if (m_lightData.dataPtr == nullptr || m_lightData.numItems <= index)
+	 if (m_lightData.dataPtr == nullptr || m_lightData.numItems <= index || m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX == index)
 		 return false;
 
 	 m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = index;
@@ -343,22 +349,28 @@ int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
 
 			for (unsigned int i = 0; i < this->m_lightData.numItems; i++)
 			{
-				Point* specializedData = static_cast<Point*>(commonData);
-				dist = 0.0f;
-				DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[i].position.m128_f32[X]- pos.x, specializedData[i].position.m128_f32[Y] - pos.y, specializedData[i].position.m128_f32[Z] - pos.z, 0.0f);
-				dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
-				dist -= specializedData[i].radius;
-				//dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
-				//dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
-				//dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
-				////Reduce the distance with the radius
-				//dist -= pow(specializedData[i].radius, 2);
-				//Square root it for actual length. We will use the non squared length because
-				//we don't care about actual length, only the relation between the lengths
-				if (dist < distClose)
+				for (size_t j = 0; j < MAX_SHADOW_LIGHTS; j++) //make sure the light is a light that can cast shadows
 				{
-					result = i;
-					distClose = dist;
+					if (i == m_lightData.shadowLightIndex[j])
+					{
+						Point* specializedData = static_cast<Point*>(commonData);
+						dist = 0.0f;
+						DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[i].position.m128_f32[X]- pos.x, specializedData[i].position.m128_f32[Y] - pos.y, specializedData[i].position.m128_f32[Z] - pos.z, 0.0f);
+						dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
+						dist -= specializedData[i].radius;
+						//dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
+						//dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+						//dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+						////Reduce the distance with the radius
+						//dist -= pow(specializedData[i].radius, 2);
+						//Square root it for actual length. We will use the non squared length because
+						//we don't care about actual length, only the relation between the lengths
+						if (dist < distClose)
+						{
+							result = i;
+							distClose = dist;
+						}
+					}
 				}
 			}
 	}

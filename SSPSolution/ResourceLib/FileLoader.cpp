@@ -294,7 +294,8 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		{
 			size_t shadowCastSize = sizeof(int) * MAX_SHADOW_CASTERS;
 			file.read(data + offset, shadowCastSize);
-			level.shadowCastIndexes = (int*)(data + offset);
+			memcpy(level.shadowCastIndexes, (int*)(data + offset), shadowCastSize);
+			//level.shadowCastIndexes = (int*)(data + offset);
 			offset += shadowCastSize;
 		}
 	}

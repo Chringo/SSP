@@ -3,7 +3,7 @@
 #include "ShaderLib.h"
 
 #ifndef CONSTANT_BUFFER_HANDLER_H
-#define MAX_SHADOW_LIGHTS  4 //Must be 4 * n + 2
+#define MAX_SHADOW_LIGHTS  20 //Must be 4 * n + 2
 class ConstantBufferHandler
 {
 	enum CBufferType
@@ -141,7 +141,7 @@ public:
 				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
 				UINT padding[2];
 				INT	   SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
-				int paddinga[20];
+				int paddinga[68];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

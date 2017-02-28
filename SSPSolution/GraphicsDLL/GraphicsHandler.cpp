@@ -1478,7 +1478,13 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	Render(0.0f);
 
+	int numShadowCastingLights = 0;
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
+	for (size_t i = 0; i < MAX_SHADOW_CASTERS; i++)
+	{
+		if (lights->shadowLightIndex[i] != -1)
+			numShadowCastingLights += 1;
+	}
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
 	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 
@@ -1490,7 +1496,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ShadowTexDesc.Width				 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.Height			 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
 	ShadowTexDesc.MipLevels			 = 1;
-	ShadowTexDesc.ArraySize			 = 6 * lights->numItems;	//one for each axis * number of lights
+	ShadowTexDesc.ArraySize			 = 6 * numShadowCastingLights;	//one for each axis * number of lights
 	ShadowTexDesc.Format			 = DXGI_FORMAT_R32_TYPELESS;
 	ShadowTexDesc.SampleDesc.Count   = 1;
 	ShadowTexDesc.SampleDesc.Quality = 0;
@@ -1510,7 +1516,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewShadowDesc;
 	resourceViewShadowDesc.Format		 = DXGI_FORMAT_R32_FLOAT;
 	resourceViewShadowDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
-	resourceViewShadowDesc.TextureCubeArray.NumCubes		 = lights->numItems;
+	resourceViewShadowDesc.TextureCubeArray.NumCubes		 = numShadowCastingLights;
 	resourceViewShadowDesc.TextureCubeArray.First2DArrayFace = 0;
 	resourceViewShadowDesc.TextureCubeArray.MostDetailedMip  = 0;
 	resourceViewShadowDesc.TextureCubeArray.MipLevels		 = -1;
@@ -1534,13 +1540,12 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 //srcBox.front = 0;
 //srcBox.back = 1;
 
-	for (size_t i = 0; i < lights->numItems; i++) //for each light
+	for (size_t i = 0; i < numShadowCastingLights; i++) //for each light
 	{
-		//if (i == 2)
-		//	continue;
+
 		m_shaderControl->ClearFrame();
 
-		m_LightHandler->SetShadowCastingLight(i);
+		m_LightHandler->SetShadowCastingLight(lights->shadowLightIndex[i]);
 		this->RenderStaticObjectShadows();						   //render statics
 	
 		
@@ -1550,14 +1555,11 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
 
 		}
-
 		m_d3dHandler->PresentScene(); //Finish the renderCall
-		
-
 	}
 	m_LightHandler->SetStaticShadowsToGPU();
-	tempTexture->Release();
-	
+	tempTexture->Release();	
+
 	 return  1;
 }
 
