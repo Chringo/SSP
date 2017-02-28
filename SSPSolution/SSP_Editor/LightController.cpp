@@ -139,6 +139,7 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 	switch (type)
 	{
 	case LIGHTING::LT_POINT:
+		RemoveShadowCaster(m_lights.at(index)->internalID);
 		m_lights.erase(m_lights.begin() + index);
 		pointLightData.erase(pointLightData.begin() + index);
 		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
