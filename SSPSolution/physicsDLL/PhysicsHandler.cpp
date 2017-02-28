@@ -4866,11 +4866,11 @@ void PhysicsHandler::SetIgnoreCollisions()
 	PhysicsComponent* ptr = nullptr;
 	PhysicsComponent* ptr2 = nullptr;
 	PhysicsComponent* ball = nullptr;
-	ball = this->m_player1RagDoll.ballPC;
+	ball = this->m_player1RagDoll.ballPC;	//Ball
 	for (int i = 0; i < nrOfBodyParts; i++)
 	{
-		ptr = this->m_player1BodyPC.at(i);
-		this->m_bullet.SetIgnoreCollisions(this->m_player1RagDoll.playerPC, ptr);
+		ptr = this->m_player1BodyPC.at(i);	//Joints
+		this->m_bullet.SetIgnoreCollisions(this->m_player1RagDoll.playerPC, ptr);	//Player
 		for (int a = i+1; a < nrOfBodyParts; a++)
 		{
 			ptr2 = this->m_player1BodyPC.at(a);

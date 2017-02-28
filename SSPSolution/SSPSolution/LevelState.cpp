@@ -2425,9 +2425,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-	this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
-	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player1.GetPhysicsComponent(), this->m_player2.GetBall()->GetPhysicsComponent());
-	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player2.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
+	//this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player1.GetPhysicsComponent(), this->m_player2.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player2.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //
