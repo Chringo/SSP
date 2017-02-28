@@ -23,10 +23,10 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	DirectX::XMVECTOR up   = { 0.0f,1.0f,0.0f,0.0f};
 	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
 	
-	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
+	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = -1;
 	Light temp;
 	temp.position = pos;
-	//SetShadowCastingLight(&temp);
+	SetShadowCastingLight(-1);
 
 	this->m_activeLightIndex	  = 0;
 	this->m_activeLightCheckTimer = 0.0f;
@@ -59,10 +59,8 @@ int LIGHTING::LightHandler::Update(float dT, DirectX::XMFLOAT3 pointOfInterest)
 			this->m_activeLightIndex = closestLightIndex;
 			//We found a light close enough
 			//m_constBufferData.SHADOWLIGHT_INDEX = closestLightIndex;
-			Light temp = this->m_lightData.dataPtr[this->m_activeLightIndex];
-			//SetShadowCastingLight(&temp);
-			Light* commonData = this->m_lightData.dataPtr;
-			Point* specializedData = static_cast<Point*>(commonData);
+	
+			Point* specializedData = this->m_lightData.dataPtr;
 			
 			SetShadowCastingLight(this->m_activeLightIndex);
 			//SetShadowCastingLight(0);
@@ -348,21 +346,18 @@ int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
 	//Local descriptive constants.
 	enum { X = 0, Y = 1, Z = 2 };
 
-	if (this->m_lightData.numItems > 0)
+	if (this->m_lightData.numShadowLights > 0)
 	{
 		Point* commonData = this->m_lightData.dataPtr;
 
-			for (unsigned int i = 0; i < this->m_lightData.numItems; i++)
+			for (unsigned int i = 0; i < this->m_lightData.numShadowLights; i++)
 			{
-				for (size_t j = 0; j < MAX_SHADOW_LIGHTS; j++) //make sure the light is a light that can cast shadows
-				{
-					if (i == m_lightData.shadowLightIndex[j])
-					{
+				int lightIndex = m_lightData.shadowLightIndex[i];
 						Point* specializedData = commonData;
 						dist = 0.0f;
-						DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[i].position.m128_f32[X]- pos.x, specializedData[i].position.m128_f32[Y] - pos.y, specializedData[i].position.m128_f32[Z] - pos.z, 0.0f);
+						DirectX::XMVECTOR distanceVec = DirectX::XMVectorSet(specializedData[lightIndex].position.m128_f32[X]- pos.x, specializedData[lightIndex].position.m128_f32[Y] - pos.y, specializedData[lightIndex].position.m128_f32[Z] - pos.z, 0.0f);
 						dist = DirectX::XMVectorGetX(DirectX::XMVector3Length(distanceVec));
-						dist -= specializedData[i].radius;
+						dist -= specializedData[lightIndex].radius;
 						//dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
 						//dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
 						//dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
@@ -372,11 +367,9 @@ int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
 						//we don't care about actual length, only the relation between the lengths
 						if (dist < distClose)
 						{
-							result = i;
+							result = lightIndex;
 							distClose = dist;
-						}
-					}
-				}
+						}			
 			}
 	}
 	
