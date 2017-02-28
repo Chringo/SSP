@@ -308,7 +308,7 @@ public:
 	void AddSplinePoint(DirectX::XMVECTOR& v);
 	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t);
 	int GetNumPoint();
-	int GetTotalChainLinks();
+	PHYSICSDLL_API int GetTotalChainLinks();
 	DirectX::XMVECTOR GetNthPoint(int n);
 	DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
 
