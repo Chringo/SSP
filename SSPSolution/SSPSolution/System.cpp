@@ -107,6 +107,8 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Physics");
 	DebugHandler::instance()->CreateTimer(L"Render");
 	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
+	DebugHandler::instance()->CreateTimer(L"Thread 0");
+	DebugHandler::instance()->CreateTimer(L"Thread 1");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
 
@@ -175,216 +177,216 @@ int System::Update(float deltaTime)
 		deltaTime = 0.000001f;
 
 	int result = 1;
-//#pragma omp parallel num_threads(3)
-//	{
-//		int myThreadID = omp_get_thread_num();
-//		//int amountOfThreads = omp_get_num_threads();
-//		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
-//		if (myThreadID == 0)
-//		{
-//			//Do the physics
-//#pragma region
-//			DebugHandler::instance()->StartTimer(1);
-//
-//			this->m_physicsHandler.Update(deltaTime);
-//
-//			DebugHandler::instance()->EndTimer(1);
-//#pragma endregion Physics
-//		}
-//		else if (myThreadID == 1)
-//		{
-//			//Render the objects from last frame
-//#pragma region
-//			//Render
-//			//Frustrum cull
-//
-//			DebugHandler::instance()->StartTimer(3);
-//			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
-//			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-//
-//			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
-//			DebugHandler::instance()->EndTimer(3);
-//
-//			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-//#ifdef _DEBUG
-//			for (int i = 0; i < nrOfComponents; i++)
-//			{
-//				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-//				if (temp->PC_BVtype == BV_AABB)
-//				{
-//					AABB* AABB_holder = nullptr;
-//					this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-//					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-//				}
-//				if (temp->PC_BVtype == BV_OBB)
-//				{
-//					OBB* OBB_holder = nullptr;
-//					this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
-//
-//					DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
-//
-//					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-//				}
-//				if (temp->PC_BVtype == BV_Plane)
-//				{
-//					Plane* planeHolder = nullptr;
-//					this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-//					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-//				}
-//				if (temp->PC_BVtype == BV_Sphere)
-//				{
-//					Sphere* sphereHolder = nullptr;
-//					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-//					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
-//				}
-//			}
-//#endif // _DEBUG
-//
-//			this->m_graphicsHandler->Update(deltaTime);
-//
-//			DebugHandler::instance()->StartTimer(2);
-//			int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
-//			DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
-//
-//			DebugHandler::instance()->EndTimer(2);
-//#pragma endregion Graphics and rendering
-//		}
-//		//Do AI and Animation
-//		else if (myThreadID == 2)
-//		{
-//#pragma region
-//			//AI
-//			this->m_AIHandler.Update(deltaTime);
-//
-//			this->m_AnimationHandler->Update(deltaTime);
-//#pragma endregion AI And Animation
-//		}
-//
-//	}
-
-	
-	//Do the physics
-#pragma region
-	DebugHandler::instance()->StartTimer(1);
-
-	this->m_physicsHandler.Update(deltaTime);
-
-	DebugHandler::instance()->EndTimer(1);
-#pragma endregion Physics
-	
-	
-	//Render the objects from last frame
-#pragma region
-	//Render
-	//Frustrum cull
-
-	DebugHandler::instance()->StartTimer(3);
-	//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
-	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-
-	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
-	DebugHandler::instance()->EndTimer(3);
-
-	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-#ifdef _DEBUG
-	for (int i = 0; i < nrOfComponents; i++)
+#pragma omp parallel num_threads(2)
 	{
-		PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-		if (temp->PC_BVtype == BV_AABB)
+		int myThreadID = omp_get_thread_num();
+		//int amountOfThreads = omp_get_num_threads();
+		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
+		if (myThreadID == 0)
 		{
-			AABB* AABB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-		}
-		if (temp->PC_BVtype == BV_OBB)
-		{
-			OBB* OBB_holder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+			DebugHandler::instance()->StartTimer(4);
+			//Do the physics
+#pragma region
+			DebugHandler::instance()->StartTimer(1);
 
-			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+			this->m_physicsHandler.Update(deltaTime);
 
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+			DebugHandler::instance()->EndTimer(1);
+#pragma endregion Physics
+#pragma region
+			//AI
+			this->m_AIHandler.Update(deltaTime);
+
+			this->m_AnimationHandler->Update(deltaTime);
+#pragma endregion AI And Animation
+			DebugHandler::instance()->EndTimer(4);
 		}
-		if (temp->PC_BVtype == BV_Plane)
+		else if (myThreadID == 1)
 		{
-			Plane* planeHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-		}
-		if (temp->PC_BVtype == BV_Sphere)
-		{
-			Sphere* sphereHolder = nullptr;
-			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
-		}
-	}
+			DebugHandler::instance()->StartTimer(5);
+			//Render the objects from last frame
+#pragma region
+			//Render
+			//Frustrum cull
+
+			DebugHandler::instance()->StartTimer(3);
+			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
+			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+
+			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
+			DebugHandler::instance()->EndTimer(3);
+
+			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+#ifdef _DEBUG
+			for (int i = 0; i < nrOfComponents; i++)
+			{
+				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+				if (temp->PC_BVtype == BV_AABB)
+				{
+					AABB* AABB_holder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+				}
+				if (temp->PC_BVtype == BV_OBB)
+				{
+					OBB* OBB_holder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+
+					DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+				}
+				if (temp->PC_BVtype == BV_Plane)
+				{
+					Plane* planeHolder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+				}
+				if (temp->PC_BVtype == BV_Sphere)
+				{
+					Sphere* sphereHolder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
+				}
+			}
 #endif // _DEBUG
 
-	this->m_graphicsHandler->Update(deltaTime);
+			this->m_graphicsHandler->Update(deltaTime);
 
-	DebugHandler::instance()->StartTimer(2);
-	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
-	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
+			DebugHandler::instance()->StartTimer(2);
+			int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+			DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
-	DebugHandler::instance()->EndTimer(2);
+			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
+			DebugHandler::instance()->EndTimer(5);
+		}
+
+	}
+
 	
-	//Do AI and Animation
-#pragma region
-	//AI
-	this->m_AIHandler.Update(deltaTime);
-
-	this->m_AnimationHandler->Update(deltaTime);
-#pragma endregion AI And Animation
-	
-
-	//Part of this will sync physics data with graphics data. Future improvement would be to have another step doing this and placing logic in the parallel part
-	//Sync data between the physics and graphics
-#pragma region
-
-#ifdef DEVELOPMENTFUNCTIONS
-	//Save progress
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
-	{
-		bool result = Progression::instance().WriteToFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with saving to file\n");
-		}
-		else
-		{
-			printf("Saved to file\n");
-		}
-	}
-	//Load
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
-	{
-		bool result = Progression::instance().ReadFromFile("Save1");
-
-		if (result == false)
-		{
-			printf("Error with loading from file\n");
-		}
-		else
-		{
-			printf("Loaded from file\n");
-		}
-	}
-
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
-	{
-		SoundHandler::instance().ReInitSoundEngine();
-	}
-	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
-	{
-		this->m_graphicsHandler->ToggleOverviewCamera();
-	}
-#endif // DEVELOPMENTFUNCTIONS
-
-
-	//this->m_AIHandler.Update(deltaTime);
-	//this->m_AnimationHandler->Update(deltaTime);
+//	//Do the physics
+//#pragma region
+//	DebugHandler::instance()->StartTimer(1);
+//
+//	this->m_physicsHandler.Update(deltaTime);
+//
+//	DebugHandler::instance()->EndTimer(1);
+//#pragma endregion Physics
+//	
+//	
+//	//Render the objects from last frame
+//#pragma region
+//	//Render
+//	//Frustrum cull
+//
+//	DebugHandler::instance()->StartTimer(3);
+//	//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
+//	int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
+//
+//	DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
+//	DebugHandler::instance()->EndTimer(3);
+//
+//	int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
+//#ifdef _DEBUG
+//	for (int i = 0; i < nrOfComponents; i++)
+//	{
+//		PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+//		if (temp->PC_BVtype == BV_AABB)
+//		{
+//			AABB* AABB_holder = nullptr;
+//			this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+//			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+//		}
+//		if (temp->PC_BVtype == BV_OBB)
+//		{
+//			OBB* OBB_holder = nullptr;
+//			this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+//
+//			DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+//
+//			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+//		}
+//		if (temp->PC_BVtype == BV_Plane)
+//		{
+//			Plane* planeHolder = nullptr;
+//			this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+//			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+//		}
+//		if (temp->PC_BVtype == BV_Sphere)
+//		{
+//			Sphere* sphereHolder = nullptr;
+//			this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+//			this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
+//		}
+//	}
+//#endif // _DEBUG
+//
+//	this->m_graphicsHandler->Update(deltaTime);
+//
+//	DebugHandler::instance()->StartTimer(2);
+//	int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
+//	DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
+//
+//	DebugHandler::instance()->EndTimer(2);
+//#pragma endregion Graphics and rendering
+//	
+//	//Do AI and Animation
+//#pragma region
+//	//AI
+//	this->m_AIHandler.Update(deltaTime);
+//
+//	this->m_AnimationHandler->Update(deltaTime);
+//#pragma endregion AI And Animation
+//	
+//
+//	//Part of this will sync physics data with graphics data. Future improvement would be to have another step doing this and placing logic in the parallel part
+//	//Sync data between the physics and graphics
+//#pragma region
+//
+//#ifdef DEVELOPMENTFUNCTIONS
+//	//Save progress
+//	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F9))
+//	{
+//		bool result = Progression::instance().WriteToFile("Save1");
+//
+//		if (result == false)
+//		{
+//			printf("Error with saving to file\n");
+//		}
+//		else
+//		{
+//			printf("Saved to file\n");
+//		}
+//	}
+//	//Load
+//	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F10))
+//	{
+//		bool result = Progression::instance().ReadFromFile("Save1");
+//
+//		if (result == false)
+//		{
+//			printf("Error with loading from file\n");
+//		}
+//		else
+//		{
+//			printf("Loaded from file\n");
+//		}
+//	}
+//
+//	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_KP_5))
+//	{
+//		SoundHandler::instance().ReInitSoundEngine();
+//	}
+//	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
+//	{
+//		this->m_graphicsHandler->ToggleOverviewCamera();
+//	}
+//#endif // DEVELOPMENTFUNCTIONS
+//
+//
+//	//this->m_AIHandler.Update(deltaTime);
+//	//this->m_AnimationHandler->Update(deltaTime);
 	
 	DebugHandler::instance()->StartTimer(0);
 

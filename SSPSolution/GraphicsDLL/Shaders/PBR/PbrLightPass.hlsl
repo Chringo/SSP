@@ -314,8 +314,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 
     //METALNESS (F90)
-    float f90 = metalSamp;
-    f90 = 0.16f * metalSamp * metalSamp;
+    float f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     float linearRough = (saturate(roughSamp + EPSILON)).r;
