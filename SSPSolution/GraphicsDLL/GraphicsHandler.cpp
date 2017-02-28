@@ -652,7 +652,7 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
@@ -681,7 +681,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			
 			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
