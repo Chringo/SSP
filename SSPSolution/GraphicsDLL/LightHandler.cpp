@@ -265,6 +265,12 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 		memcpy(m_constBufferData.SHADOWCASTING_LIGHTS, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
 		
+		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
+		{
+			if (m_lightData.shadowLightIndex[i] != -1)
+				m_lightData.numShadowLights += 1;
+		}
+
 	//	m_lightData.shadowLightIndex[0] = 1;
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
