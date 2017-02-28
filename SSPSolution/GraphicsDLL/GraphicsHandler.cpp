@@ -582,201 +582,224 @@ int GraphicsHandler::Render(float deltaTime)
 	frame.cTimer = elapsedTime;
 
 
-
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 
 	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
-	int amountOfModelsToRender = 0;
-	int componentsInTree = this->m_octreeRoot.containedComponents.size();
-	
+	std::vector<InstanceData> instancedRenderingList;
+	//Go through all components dynamic components
+	size_t renderCap = this->m_dynamicGraphicsComponents.size();
+#pragma omp parallel num_threads(2)
+	{
+		int myThreadID = omp_get_thread_num();
+		//int amountOfThreads = omp_get_num_threads();
+		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
+		if (myThreadID == 0)
+		{
+			int amountOfModelsToRender = 0;
+			int componentsInTree = this->m_octreeRoot.containedComponents.size();
+
 
 #pragma region
-	std::vector<InstanceData> instancedRenderingList;
-	unsigned int firstRenderedModelID = UINT_MAX;
-	unsigned int firstRenderedInstancedModelID = 0;
-	unsigned int lastModelID = 0;
-	Resources::Model* lastModelPtr = nullptr;
-	Resources::Model* firstRenderedModelPtr = nullptr;
-	Resources::Model* firstRenderedInstancedModelPtr = nullptr;
-	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		if (i->isRendered)
-		{
-			if (i->modelID == lastModelID)
+			unsigned int firstRenderedModelID = UINT_MAX;
+			unsigned int firstRenderedInstancedModelID = 0;
+			unsigned int lastModelID = 0;
+			Resources::Model* lastModelPtr = nullptr;
+			Resources::Model* firstRenderedModelPtr = nullptr;
+			Resources::Model* firstRenderedInstancedModelPtr = nullptr;
+			//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 			{
-				firstRenderedInstancedModelID = i->modelID;
-				firstRenderedInstancedModelPtr = i->modelPtr;
-				break;
+				if (i->isRendered)
+				{
+					if (i->modelID == lastModelID)
+					{
+						firstRenderedInstancedModelID = i->modelID;
+						firstRenderedInstancedModelPtr = i->modelPtr;
+						break;
+					}
+					lastModelPtr = i->modelPtr;
+					lastModelID = i->modelID;
+					if (firstRenderedModelID == UINT_MAX)
+					{
+						firstRenderedModelID = i->modelID;
+						firstRenderedModelPtr = i->modelPtr;
+					}
+				}
 			}
-			lastModelPtr = i->modelPtr;
-			lastModelID  = i->modelID;
-			if (firstRenderedModelID == UINT_MAX)
-			{
-				firstRenderedModelID = i->modelID;
-				firstRenderedModelPtr = i->modelPtr;
-			}
-		}
-	}
 
-	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	
-	int amountOfModelOccurrencees = 0;
-	unsigned int lastComponentIndex = 0;
-	lastModelID  = firstRenderedModelID;
-	lastModelPtr = firstRenderedModelPtr;
-	OctreeBV* lastRenderedComponent = nullptr;
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		//If the component is to be rendered, increase the counter
-		if (i->isRendered)
-		{
-			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+			m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+
+			int amountOfModelOccurrencees = 0;
+			unsigned int lastComponentIndex = 0;
+			lastModelID = firstRenderedModelID;
+			lastModelPtr = firstRenderedModelPtr;
+			OctreeBV* lastRenderedComponent = nullptr;
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+			{
+				//If the component is to be rendered, increase the counter
+				if (i->isRendered)
+				{
+					//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+					if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+					{
+						if (amountOfModelOccurrencees > 1)
+						{
+							//Create the array
+							InstanceData instanceData;
+							instanceData.modelID = lastModelID;
+							instanceData.modelPtr = lastModelPtr;
+							instanceData.amountOfInstances = amountOfModelOccurrencees;
+							//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+							instancedRenderingList.push_back(instanceData);
+							amountOfModelOccurrencees = 0;
+
+						}
+						else
+						{
+							m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+
+							lastRenderedComponent->isRendered = false;
+							amountOfModelOccurrencees = 0;
+						}
+					}
+					//Prepare the data for the next model ID
+					lastModelPtr = i->modelPtr;
+					lastModelID = i->modelID;
+					lastComponentIndex = i->componentIndex;
+					lastRenderedComponent = i;
+					++amountOfModelOccurrencees;
+				}
+			}
+			if (componentsInTree > 0 && lastRenderedComponent != nullptr)
 			{
 				if (amountOfModelOccurrencees > 1)
 				{
-					//Create the array
 					InstanceData instanceData;
-					instanceData.modelID  = lastModelID;
+					instanceData.modelID = lastModelID;
 					instanceData.modelPtr = lastModelPtr;
 					instanceData.amountOfInstances = amountOfModelOccurrencees;
 					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 					instancedRenderingList.push_back(instanceData);
-					amountOfModelOccurrencees = 0;
-
 				}
-				else 
+				else
 				{
+
+					//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 					lastRenderedComponent->isRendered = false;
-					amountOfModelOccurrencees = 0;
+					amountOfModelOccurrencees = -1;
 				}
 			}
-			//Prepare the data for the next model ID
-			lastModelPtr = i->modelPtr;
-			lastModelID = i->modelID;
-			lastComponentIndex = i->componentIndex;
-			lastRenderedComponent = i;
-			++amountOfModelOccurrencees;
-		}
-	}
-	if (componentsInTree > 0 && lastRenderedComponent != nullptr)
-	{
-		if (amountOfModelOccurrencees > 1)
-		{
-			InstanceData instanceData;
-			instanceData.modelID  = lastModelID;
-			instanceData.modelPtr = lastModelPtr;
-			instanceData.amountOfInstances = amountOfModelOccurrencees;
-			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-			instancedRenderingList.push_back(instanceData);
-		}
-		else
-		{
-			
-			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
-			lastRenderedComponent->isRendered = false;
-			amountOfModelOccurrencees = -1;
-		}
-	}
-
-	//Fill the array with valuable data
-	int instancedRenderingIndex = 0;
-	int instancedModelCount = 0;
-	lastModelID  = firstRenderedInstancedModelID;
-	lastModelPtr = firstRenderedInstancedModelPtr;
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		//reset the 'isRendered' bool
-		if (i->isRendered)
-		{
-			//If it is time to change 
-			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+			//Fill the array with valuable data
+			int instancedRenderingIndex = 0;
+			int instancedModelCount = 0;
+			lastModelID = firstRenderedInstancedModelID;
+			lastModelPtr = firstRenderedInstancedModelPtr;
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 			{
-				instancedRenderingIndex++;
-				instancedModelCount = 0;
+				//reset the 'isRendered' bool
+				if (i->isRendered)
+				{
+					//If it is time to change 
+					if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+					{
+						instancedRenderingIndex++;
+						instancedModelCount = 0;
+					}
+					//Get the data
+					DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex].worldMatrix;
+					worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
+					//Store the data
+					DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
+					i->isRendered = false;
+				}
 			}
-			//Get the data
-			DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex].worldMatrix;
-			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
-			//Store the data
-			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-			i->isRendered = false;
-		}
-	}
 #pragma endregion Octree stuff
 
-
-	//Go through all components dynamic components
-	size_t renderCap = this->m_dynamicGraphicsComponents.size();
+		}
+		else if (myThreadID == 1)
+		{
 
 #pragma region 
 
-
 #pragma region Render shadows for normal (non instanced) geometry
 
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
-	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_dynamicGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
-		}
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
+			for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_dynamicGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+				}
 
-	}
-	
+			}
 
-for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
-	{
-		if (this->m_persistantGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
-		}
 
-	}
+			for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
+			{
+				if (this->m_persistantGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+				}
+
+			}
 #pragma endregion
 #pragma region Render shadows for animated geometry
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
-	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
-	{
-		if (this->m_animGraphicsComponents[i]->active == false)
-			continue;
-		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
+			for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+			{
+				if (this->m_animGraphicsComponents[i]->active == false)
+					continue;
+				m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 
-	}
+			}
 #pragma endregion
 #pragma endregion Shadow pass
 
 
 #pragma region
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_dynamicGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
-		}
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
+			for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_dynamicGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+				}
 
-	}
+			}
 
-	renderCap = this->m_persistantGraphicsComponents.size();
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_persistantGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
-		}
+			renderCap = this->m_persistantGraphicsComponents.size();
+			for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_persistantGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+				}
 
-	}
+			}
 #pragma endregion Render non-instanced geometry
+
+#pragma region
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+			for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+			{
+				if (this->m_animGraphicsComponents[i]->active == false)
+					continue;
+				m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+
+
+			}
+#pragma endregion Render animated objects
+
+		}
+	}
+
 
 #pragma region
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
@@ -787,17 +810,6 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 
 #pragma endregion Render Instanced objects
 
-#pragma region
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
-	{
-		if (this->m_animGraphicsComponents[i]->active == false)
-			continue;
-		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
-
-		
-	}
-#pragma endregion Render animated objects
 	//render joints
 
 	//for (int a = 0; a < 21; a++)
