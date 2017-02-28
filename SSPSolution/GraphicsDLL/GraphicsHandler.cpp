@@ -834,6 +834,7 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 
 
 	m_LightHandler->SetBufferAsActive();
+	m_LightHandler->SetStaticShadowsToGPU();
 	m_shaderControl->DrawFinal();
 
 #pragma region
