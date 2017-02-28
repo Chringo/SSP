@@ -24,11 +24,11 @@ cbuffer camera : register(b1)
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
+    uint   DYNAMIC_SHADOWLIGHT_INDEX;
+    uint   padding[2];
     float3 AMBIENT_COLOR;
     float  AMBIENT_INTENSITY;
-    uint   DYNAMIC_SHADOWLIGHT_INDEX;
-    uint     padding[2];
-    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    int    SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
 
@@ -341,7 +341,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     int currentShadowLightIndex = 0;
 
     //FOR EACH LIGHT
-    for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
+    for (int i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
         float lightPower = 0;
 
@@ -360,13 +360,12 @@ float4 PS_main(VS_OUT input) : SV_Target
             float VdotH = saturate((dot(V, H)));
             
             //SHADOW
-            int bajs = SHADOWCASTING_LIGHTS[currentShadowLightIndex].x;
+            int bajs = SHADOWCASTING_LIGHTS[currentShadowLightIndex];
             if (i == bajs)
             {   
                 shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
-
 			   // lightPower *= shadowFactor;
-                currentShadowLightIndex++;
+                currentShadowLightIndex += 1;
             }
             if (i == DYNAMIC_SHADOWLIGHT_INDEX)
             {

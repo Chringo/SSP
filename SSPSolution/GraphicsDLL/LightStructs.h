@@ -19,16 +19,16 @@ namespace LIGHTING
 		NUM_LT
 	};
 
-	struct LightBufferData 
-	{
-		UINT NUM_POINTLIGHTS;
-		UINT NUM_AREALIGHTS;
-		UINT NUM_DIRECTIONALLIGHTS;
-		UINT NUM_SPOTLIGHTS;
-		float AMBIENT_COLOR[3]  = { 1.0f,1.0f,1.0f };
-		float AMBIENT_INTENSITY = 0.2f;
-
-	};
+	//struct LightBufferData 
+	//{
+	//	UINT NUM_POINTLIGHTS;
+	//	UINT NUM_AREALIGHTS;
+	//	UINT NUM_DIRECTIONALLIGHTS;
+	//	UINT NUM_SPOTLIGHTS;
+	//	float AMBIENT_COLOR[3]  = { 1.0f,1.0f,1.0f };
+	//	float AMBIENT_INTENSITY = 0.2f;
+	//
+	//};
 
 	struct GRAPHICSDLL_API LightColor
 	{
@@ -46,7 +46,7 @@ namespace LIGHTING
 	{
 		BOOL isActive = TRUE; //16 bit aligned
 
-		float padding[3];	  //16 bit aligned
+		BOOL padding[3];	  //16 bit aligned
 		LightColor color;
 		float intensity = 1.0f;
 		DirectX::XMVECTOR position;
