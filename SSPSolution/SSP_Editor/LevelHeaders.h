@@ -171,8 +171,8 @@ namespace LevelData {
 
 		unsigned int numPointLights;
 		PointLightHeader* pointLights;
-
-		int  shadowCastIndexes[20];
+		
+		int shadowCastIndexes[20];
 
 	};
 }
