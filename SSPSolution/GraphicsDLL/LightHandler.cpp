@@ -117,6 +117,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(int amount)
 	
 	HRESULT hr;
 	D3D11_BUFFER_DESC lightBufferDesc;
+#ifndef USE_CONST_BUFFER_FOR_LIGHTS
 	ZeroMemory(&lightBufferDesc, sizeof(lightBufferDesc));
 	lightBufferDesc.BindFlags		    = D3D11_BIND_SHADER_RESOURCE;
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
@@ -144,10 +145,26 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(int amount)
 	}
 	this->m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
 
+#else
+	ZeroMemory(&lightBufferDesc, sizeof(lightBufferDesc));
+	lightBufferDesc.ByteWidth           = sizeof(Point) * MAX_LIGHT_AMOUNT;
+	lightBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.Usage		        = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags	        = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &m_lightBuffer);
+	if (SUCCEEDED(hr))
+	{
+		this->m_gDeviceContext->PSSetConstantBuffers(6, 1, &m_lightBuffer);
+	}
+	else
+		return 1;
+#endif
 
 	m_constBufferData.NUM_POINTLIGHTS = amount;
 
-	
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 
 	return true;

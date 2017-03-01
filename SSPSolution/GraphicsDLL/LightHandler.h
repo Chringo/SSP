@@ -39,7 +39,8 @@
 
 */
 #define LIGHT_CHECK_PAUSE_TIME (1.0f / 10.0f)
-
+#define USE_CONST_BUFFER_FOR_LIGHTS	//TEMP to test performance
+#define MAX_LIGHT_AMOUNT 60
 //#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {

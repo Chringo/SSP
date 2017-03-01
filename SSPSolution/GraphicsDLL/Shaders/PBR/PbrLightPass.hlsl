@@ -9,6 +9,7 @@ SamplerState pointSampler        : register(s1);
 
 //must match ConstantBufferHandler.h define || //Must be multiple of 4
 #define MAX_SHADOW_LIGHTS 20  
+#define MAX_LIGHT_AMOUNT 60
 #define SHADOW_BIAS  0.0000088f
 cbuffer camera : register(b1)
 {
@@ -42,8 +43,13 @@ struct PointLight //Must be 16 bit aligned!
     float quadraticFalloff;
 };
 
+cbuffer LightArrayBuffer : register(b6)
+{
+    
+    PointLight pointlights[MAX_LIGHT_AMOUNT];
 
-StructuredBuffer<PointLight> pointlights : register(t6);
+}
+//StructuredBuffer<PointLight> pointlights : register(t6);
 
 struct VS_OUT
 {
