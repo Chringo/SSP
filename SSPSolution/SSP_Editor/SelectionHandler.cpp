@@ -257,7 +257,7 @@ bool SelectionHandler::PickObjectSelection()
 		{
 			minHitDistance = hitDistance;
 			//update widget with the intersected obb
-			this->m_transformWidget.Select(light->pickSphere, light); //OVERLOAD AND HANLDE THIS
+			this->m_transformWidget.Select(light->pickSphere, light);
 			Container* cont = (Container*)light;
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
 

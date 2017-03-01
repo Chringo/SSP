@@ -764,6 +764,19 @@ struct Point : Light
 		this->type = LIGHT;
 	}
 
+	//Point(const Point &obj) {  // copy constructor
+	//	this->internalID = obj.internalID;
+	//	this->position = obj.position;
+	//	this->rotation = obj.rotation;
+	//	this->component = obj.component;
+	//	this->isDirty = obj.isDirty;
+	//	this->isStatic = obj.isStatic;
+	//	this->type = LIGHT;
+	//	this->pickSphere = obj.pickSphere;
+	//	this->pickSphere = obj.rangeSphere;
+	//}
+
+
 	void Initialize(LIGHTING::Point * data)
 	{
 		this->data = data;

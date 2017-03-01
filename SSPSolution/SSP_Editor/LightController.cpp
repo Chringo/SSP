@@ -23,8 +23,8 @@ LightController::~LightController()
 
 void LightController::Initialize()
 {
-	m_lights.reserve(100);
-	pointLightData.reserve(100);
+	m_lights.reserve(200);
+	pointLightData.reserve(200);
 
 	m_updateAmbient();
 }
@@ -144,7 +144,7 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 		pointLightData.erase(pointLightData.begin() + index);
 		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
 		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
-
+		
 		break;
 	case LIGHTING::LT_DIRECTIONAL:
 		break;
@@ -259,7 +259,9 @@ void LightController::Destroy()
 	}
 	this->GetLights()->clear();
 	this->pointLightData.clear();
+	m_lights.reserve(200);
+	pointLightData.reserve(200);
 	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
 	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
-
+	
 }
