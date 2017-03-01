@@ -355,7 +355,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
-	ballG->modelID = 1321651915;
+	ballG->modelID = 1256673809;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -371,7 +371,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_OBB.ext[1] = 0.5f;
 	ballP->PC_OBB.ext[2] = 0.5f;
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 1.0f;
+	ballP->PC_friction = 0.5f;
 	//ballP->PC_Sphere.radius = 1;
 
 
@@ -398,7 +398,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballP->PC_BVtype = BV_Sphere;
 
 	ballP->PC_Sphere.radius = 0.25;
-	ballP->PC_friction = 1.0f;
+	ballP->PC_friction = 0.5f;
 
 	ballP->PC_mass = 25;
 	ballG->worldMatrix = DirectX::XMMatrixIdentity();
@@ -546,6 +546,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->LoadNext();
 	}
+
 
 	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
@@ -1334,8 +1335,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma endregion MUSIC_KEYS  
 #endif // DEVELOPMENTFUNCTIONS
 
-
-	this->m_cameraRef->Update();
+	if (this->m_player1.GetRagdoll()->state == RagdollState::ANIMATED)
+	{
+		this->m_cameraRef->Update();
+	}
+	else
+	{
+		this->m_cameraRef->RagdollCameraUpdate(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetRagdoll()->state);
+	}
 
 	//Update the listner pos and direction for sound
 	DirectX::XMFLOAT3 dir;
@@ -1481,13 +1488,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 #pragma region
-	float linkLenght = 1.5f;
+	float linkLenght = 0.5f;
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(this->m_player1.GetPhysicsComponent()->PC_pos, this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
-	previous = this->m_player1.GetRagdoll()->upperBody.center;
+	//previous = this->m_player1.GetRagdoll()->upperBody.center;
 	PhysicsComponent* next = nullptr;
+	PhysicsComponent* PC_ptr = nullptr;
 
 	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
 	{
@@ -1496,11 +1504,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			linkLenght = 0.45f;
 		}
 		unsigned int entityID = 5;
-		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		if (i == 1)
-		{
-			//this->m_cHandler->GetPhysicsHandler()->CreateLink(this->m_player1.GetPhysicsComponent(), PC_ptr, 4, PhysicsLinkType::PL_CHAIN);
-		}
+		PC_ptr = this->m_cHandler->GetPhysicsComponent();
+
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
@@ -1516,10 +1521,13 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_dynamicEntitys.push_back(chainLink);
 
 		next = PC_ptr;
+		PC_ptr = nullptr;
 
 		if (i == 1)
 		{
-			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+			
+			this->m_player1.GetRagdoll()->link_index = this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
+			int a = 0;
 		}
 		else
 		{
@@ -1537,7 +1545,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
 	diffVec = DirectX::XMVectorDivide(diffVec, DirectX::XMVectorSet(CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS, CHAIN_SEGMENTS));
 	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
-	linkLenght = 1.5f;
+	linkLenght = 0.5f;
 	previous = this->m_player2.GetPhysicsComponent();
 	//previous = this->m_player2.GetRagdoll()->upperBody.center;
 	next = nullptr;
@@ -1545,14 +1553,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		if (i != 1)
 		{
-			linkLenght = 0.85f;
+			linkLenght = 0.45f;
 		}
 		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
-		if (i == 1)
-		{
-			//this->m_cHandler->GetPhysicsHandler()->CreateLink(this->m_player2.GetPhysicsComponent(), PC_ptr, 2, PhysicsLinkType::PL_CHAIN);
-		}
+
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
 		PC_ptr->PC_entityID = entityID;
 		PC_ptr->PC_BVtype = BV_Sphere;
@@ -1585,8 +1590,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 
 #pragma endregion Create_Chain_Link
-
-
 
 	this->m_cHandler->GetPhysicsHandler()->ResetChainLink();
 
@@ -2422,9 +2425,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PhysicsComponent* t_pc = ptr->GetComponentAt(index);
 		ptr->TransferBoxesToBullet(t_pc, index);
 	}
-	this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
-	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player1.GetPhysicsComponent(), this->m_player2.GetBall()->GetPhysicsComponent());
-	this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player2.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->SetIgnoreCollisions();
+	//this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player1.GetPhysicsComponent(), this->m_player2.GetBall()->GetPhysicsComponent());
+	//this->m_cHandler->GetPhysicsHandler()->GetBulletInterpreterRef()->SetIgnoreCollisions(this->m_player2.GetPhysicsComponent(), this->m_player1.GetBall()->GetPhysicsComponent());
 	//Before generating the Octree, syn the physics data with the graphics data
 #pragma region 
 //

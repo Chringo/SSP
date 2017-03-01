@@ -1686,7 +1686,6 @@ void PhysicsHandler::Update(float deltaTime)
 
 	
 	this->CheckFieldIntersection();
-
 	//Bullet <---- physicsComponent
 	this->SyncAllPhyicsComponentsToBullet();
 
@@ -1697,6 +1696,7 @@ void PhysicsHandler::Update(float deltaTime)
 	this->SyncBulletToPhysicsComponents();
 
 	this->DoChainPhysics(dt, false);
+
 
 	if (this->m_player1RagDoll.playerPC != nullptr)
 	{
@@ -1766,22 +1766,13 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
-			DirectX::XMVECTOR oldPos = ragdoll->playerPC->PC_pos;
 
-			//this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
-			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;
+			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;	//Get the position of the player
+			newPos.m128_f32[1] = 0.0f;	//Remove the Y value
 
-			DirectX::XMVECTOR diffVec = DirectX::XMVectorSetY(DirectX::XMVectorSubtract(newPos, oldPos), 0);
-		
-
-			ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, diffVec);
-			//ragdoll->upperBody.center->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, diffVec);
-			//ragdoll->upperBody.center->PC_pos = ragdoll->playerPC->PC_pos;
-			//this->ApplyForceToComponent(ragdoll->playerPC, diffVec, 1.0);
-
+			ragdoll->upperBody.center->PC_pos = newPos;	//Set the ragdoll center pos to the players pos
 		}
 
-		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		if (ballVel > 10.0 )
 		{
@@ -1790,6 +1781,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
+		//Change where the chain is attached
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;	//Set it to the ragdoll
+
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
@@ -1830,6 +1824,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == KEYFRAMEBLEND)
 	{
+		//Change where the chain is attached
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;	//Set it to the player
+
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		//move the player upp to avoid intersection with the floor
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
@@ -2335,12 +2332,10 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	PhysicsComponent* newObject = nullptr;
 	newObject = new PhysicsComponent;
 
-
 	newObject->PC_pos = pos;
 	newObject->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-//	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_active = 1;
 	newObject->PC_collides = true;
 	newObject->PC_entityID = 0;
@@ -2352,22 +2347,9 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_friction = 0.5f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
-	//newObject->PC_OBB.quat = DirectX::XMVectorSet(0, 0, 0, 1);
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_physicsComponents.push_back(newObject);
-
-	PhysicsComponent* toSwap;
-	if (isStatic == false)
-	{
-		toSwap = this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1);
-		this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1) = newObject;
-		this->m_physicsComponents.at(this->m_physicsComponents.size() - 1) = toSwap;
-	}
-	else
-	{
-		this->m_nrOfStaticObjects++;
-	}
 
 	return newObject;
 }
@@ -2478,7 +2460,7 @@ void PhysicsHandler::CreateChainLink(PhysicsComponent* playerComponent, PhysicsC
 	this->m_links.push_back(link);
 }
 
-void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
+int PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * next, float linkLenght, PhysicsLinkType type)
 {
 	PhysicsLink link;
 	link.PL_lenght = linkLenght;
@@ -2496,6 +2478,8 @@ void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * 
 	}
 
 	this->m_links.push_back(link);
+	int size = this->m_links.size() - 1;
+	return size;
 }
 
 void PhysicsHandler::ResetChainLink()
@@ -4172,7 +4156,18 @@ PhysicsComponent * PhysicsHandler::GetBodyComponentAt(int index) const
 	}
 	return nullptr;
 }
-
+int PhysicsHandler::GetNrOfPhysicsLinks()
+{
+	return this->m_links.size();
+}
+PhysicsLink * PhysicsHandler::GetPhysicsLinkAt(int index)
+{
+	if (index >= 0 && index < this->m_links.size())
+	{
+		return &this->m_links.at(index);
+	}
+	return nullptr;
+}
 int PhysicsHandler::GetNrOfMagnets() const
 {
 	//return this->m_magnets.size();
@@ -4261,24 +4256,52 @@ void PhysicsHandler::SortComponents()
 
 void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 {	
-	if (index == 1 || index == 2)
+	if (index == 0 || index == 1)
 	{
-		this->m_bullet.CreatePlayer(src, index);
+		this->m_bullet.CreatePlayer(src, index, CollitionTypes::COL_PLAYER, this->playerBasedCollides);
 	}
-
 	else if (src->PC_BVtype == BV_AABB)
 	{
-		this->m_bullet.CreateAABB(src, index);
+		if (src->PC_is_Static)
+			this->m_bullet.CreateAABB(src, index, CollitionTypes::COL_STATIC, this->staticCollides);
+		else
+			this->m_bullet.CreateAABB(src, index, CollitionTypes::COL_DYNAMIC, this->dynamicCollides);
 	}
-	else if(src->PC_BVtype == BV_OBB)
+	else if (src->PC_BVtype == BV_OBB)
 	{
-		this->m_bullet.CreateOBB(src,index);
+		if (src->PC_is_Static)
+			this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_STATIC, this->staticCollides);
+		else
+		{
+			//if (src->PC_steadfast)                   ** Code snippet for platforms **
+			//{
+			//	this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_PLATFORM, platformCollide);
+			//}
+			//else
+				this->m_bullet.CreateOBB(src, index, CollitionTypes::COL_DYNAMIC, this->dynamicCollides);
+		}
 	}
 	else if (src->PC_BVtype == BV_Sphere)
 	{
-		this->m_bullet.CreateSphere(src, index);
+		//if the PC is a chainLink
+		if (src->PC_entityID == 5 || src->PC_entityID == 6)
+		{
+			this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_CHAIN_LINK, this->chainLinkCollides);
+		}
+		//the rest will trigger if its the ragdoll or the ball
+		else
+		{
+			if (src->PC_entityID == 3 || src->PC_entityID == 4)	//Balls
+			{
+				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_PLAYER, this->playerBasedCollides);
+			}
+			else //Ragdoll
+			{
+				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_RAGDOLL, this->ragdollCollides);
 	}
 
+}
+	}
 }
 
 void PhysicsHandler::SyncBulletToPhysicsComponents()
@@ -4831,11 +4854,11 @@ void PhysicsHandler::SetIgnoreCollisions()
 	PhysicsComponent* ptr = nullptr;
 	PhysicsComponent* ptr2 = nullptr;
 	PhysicsComponent* ball = nullptr;
-	ball = this->m_player1RagDoll.ballPC;
+	ball = this->m_player1RagDoll.ballPC;	//Ball
 	for (int i = 0; i < nrOfBodyParts; i++)
 	{
-		ptr = this->m_player1BodyPC.at(i);
-		this->m_bullet.SetIgnoreCollisions(this->m_player1RagDoll.playerPC, ptr);
+		ptr = this->m_player1BodyPC.at(i);	//Joints
+		this->m_bullet.SetIgnoreCollisions(this->m_player1RagDoll.playerPC, ptr);	//Player
 		for (int a = i+1; a < nrOfBodyParts; a++)
 		{
 			ptr2 = this->m_player1BodyPC.at(a);
@@ -4906,6 +4929,9 @@ void PhysicsHandler::GetPhysicsComponentSphere(Sphere *& src, int index)
 }
 
 #endif 
+
+
+
 Ragdoll * PhysicsHandler::GetPlayer1Ragdoll()
 {
 	return &this->m_player1RagDoll;

@@ -45,6 +45,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
+	
+#pragma region
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = ANIMATED;
@@ -55,85 +57,19 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
-		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 30);
-
+		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
 		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
 		
 	}
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_H))
-	{
-		DirectX::XMVECTOR vel = DirectX::XMVectorSet(0, 0, 0, 0);
-
-		this->m_ragdoll->upperBody.center->PC_velocity = vel;
-		this->m_ragdoll->upperBody.next->PC_velocity = vel;
-		this->m_ragdoll->upperBody.next2->PC_velocity = vel;
-
-		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
-	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
-		this->m_ragdoll->state = RAGDOLL_TRANSITION;
+		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		this->m_ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	}
+#pragma endregion Ragdoll_Debug_Buttons
 
 	if (this->m_ragdoll != nullptr)
 	{
-		if (this->m_ragdoll->state == KEYFRAMEBLEND)
-		{
-			//int animationIndex = PLAYER_RISE_UP;
-			//DirectX::XMMATRIX test[21];
-			//for (int i = 0; i < 21; i++)
-			//{
-			//	//DirectX::XMFLOAT3 translation = { 
-			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0] ,
-			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1] ,
-			//	//	this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2] };
-			//	//
-
-			//	DirectX::XMMATRIX BindPose = DirectX::XMMatrixInverse(nullptr, static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose));
-			//	DirectX::XMMATRIX inverseBindPose = static_cast<DirectX::XMMATRIX>(this->m_aComp->skeleton->GetSkeletonData()->joints[i].invBindPose);
-
-			//	DirectX::XMVECTOR animPos;
-			//	animPos = DirectX::XMVectorSet(
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[0],
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[1],
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].translation[2],
-			//		1.0f);
-
-			//	DirectX::XMFLOAT4 quat = {
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[0] ,
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[1] ,
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[2] ,
-			//		this->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(i)->keyframes[0].quaternion[3] };
-
-			//	DirectX::XMVECTOR jointPos;
-			//	jointPos = this->m_ragdoll->jointMatrixes[i].r[3];
-			//	//animPos = DirectX::XMVector3Transform(animPos, BindPose);
-			//	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(animPos, jointPos);
-
-			//	//this->m_ragdoll->jointMatrixes[i].r[3] = DirectX::XMVectorAdd(this->m_ragdoll->jointMatrixes[i].r[3], DirectX::XMVectorScale(diffVec, 0.01));
-			//	//DirectX::XMVECTOR translation = DirectX::XMVectorAdd(jointPos, DirectX::XMVectorScale(diffVec, 0.01));
-			//	DirectX::XMVECTOR translation = DirectX::XMVectorLerp(jointPos, animPos, 0.01f);
-
-
-			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(translation), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
-			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixTranslationFromVector(animPos);
-			//	this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(DirectX::XMMatrixTranslationFromVector(animPos), DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&quat)));
-
-			//	test[i] = this->m_ragdoll->jointMatrixes[i];
-
-			//	int parent = this->m_ragdoll->Skeleton[i].parentIndex;
-
-			//	if (parent != -1)
-			//	{
-			//		this->m_ragdoll->jointMatrixes[i] = DirectX::XMMatrixMultiply(this->m_ragdoll->jointMatrixes[i], this->m_ragdoll->jointMatrixes[parent]);
-			//	}
-			//}
-			//test[0];
-			//int a = 0;
-
-		}
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
@@ -373,6 +309,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				
 			float strength = 25.0f; //stregth higher than 50 can cause problems pullinh through walls and such
 
+
 			//if the player is holding its own ball
 			if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
 			{
@@ -392,6 +329,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 				this->m_aComp->velocity = 1.0f;
 				this->m_aComp->previousState = PLAYER_THROW;
+
+				
 			}
 
 			m_grabbed->GetPhysicsComponent()->PC_active = true;
@@ -480,7 +419,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				this->m_pComp->PC_velocity = velocity;
 				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
-				this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
+				//this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
 				
 				/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
 				DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
@@ -589,6 +528,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 	}
 
+
 	//End the update
 	return result;
 }
@@ -696,15 +636,15 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 
 		else
 		{
-			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-			this->m_aComp->target_State->stateIndex = animationState;
+	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+	this->m_aComp->target_State->stateIndex = animationState;
 			this->m_aComp->transitionDuration = transitionDuration;
-			this->m_aComp->blendFlag = blendingType;
-			this->m_aComp->target_State->isLooping = isLooping;
-			this->m_aComp->lockAnimation = lockAnimation;
-			this->m_aComp->playingSpeed = playingSpeed;
-			this->m_aComp->velocity = velocity;
-		}
+	this->m_aComp->blendFlag = blendingType;
+	this->m_aComp->target_State->isLooping = isLooping;
+	this->m_aComp->lockAnimation = lockAnimation;
+	this->m_aComp->playingSpeed = playingSpeed;
+	this->m_aComp->velocity = velocity;
+}
 	}
 
 	else
