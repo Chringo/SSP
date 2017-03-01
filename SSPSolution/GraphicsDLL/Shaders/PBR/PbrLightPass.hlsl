@@ -359,12 +359,14 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 		float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
 		float distance = length(L);
-		if (distance <= pointlights[i].radius)
+		L = normalize(L);
+		float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+		if (distance <= pointlights[i].radius && NdotL >= 0.0f)
 		{
-			L = normalize(L);
-			float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-			if (NdotL >= 0.0f)
-			{
+			//L = normalize(L);
+			//float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+			//if ()
+			//{
 				float lightPower = 0.0f;
 				lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
 				//lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
@@ -407,7 +409,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 					// return diffuseLight;
 				}
-			}
+			//}
 		}
     }
 
