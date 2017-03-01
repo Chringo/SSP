@@ -452,3 +452,103 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //return normSamp;
 };
+
+//Please don't run this, it sucks in every way (phong shading)
+//float4 PS_main(VS_OUT input) : SV_TARGET
+//{
+//	uint lightCount = NUM_POINTLIGHTS;
+//	float3 diffColor;
+//	float3 ambientColor;
+
+//	float3 normal;
+//	float4 worldPos;
+//	float4 outputColor;
+//	float4 outputAmbient;
+//	float2 shadowUV;
+//	float4 positionLight;
+//	float lightDepthValue;
+//	float lightIntensity = 0.0f;
+//	float shadowCoeff = 1;
+
+//	float depthValue = 0;
+
+//	//float4 lightPos = (10.0f, 10.0f, 0.0f, 1.0f);
+
+//	// Set the bias value for fixing the floating point precision issues.
+//	float bias = 0.00002f;
+
+//	//Sample the diffuse texture from deferred render
+//	diffColor = (colorTex.Sample(pointSampler, input.UV)).rgb;
+
+//	//Sample the normal texture from deferred render
+//	normal = (normalTex.Sample(pointSampler, input.UV)).rgb;
+
+//	//Sample the texture with positions in world space from deferred render
+//	worldPos = wPosTex.Sample(pointSampler, input.UV);
+
+//	//Creathe the normalized vector from position to camera
+//	float3 viewDir = normalize(camPos - worldPos).xyz;
+
+//	for (uint i = 0; i < lightCount; i++)
+//	{
+//		if (pointlights[i].isActive != 0)
+//        {
+//			//Create the normalized vector from position to light source
+//			float3 outVec = pointlights[i].position.xyz - worldPos.xyz;
+//			float distToLight = length(outVec);
+//			if (distToLight <= pointlights[i].radius)
+//			{
+//				outVec = normalize(outVec);
+
+//				lightIntensity = smoothAttenuationOpt(distToLight, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+//				if (lightIntensity < 0)
+//				{
+//					lightIntensity = 0;
+//				}
+//				shadowCoeff = sampleStaticShadowStencils(worldPos.xyz, pointlights[i].position.xyz, i);
+//			//DO SHADOW STUFF HERE
+//				if (i == SHADOWLIGHT_INDEX)
+//				{
+//					shadowCoeff = sampleShadowStencils(worldPos.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz, shadowCoeff);
+//				}
+//			//  shadowFactor = max(shadowFactor, 0.0f);
+//				lightIntensity *= shadowCoeff;
+
+//				float atten = pointlights[i].constantFalloff + pointlights[i].linearFalloff * distToLight + pointlights[i].quadraticFalloff * distToLight * distToLight;
+//				float lumen = (1.0f / atten);
+//				lightIntensity = lightIntensity * lumen;
+
+//				outputColor += float4(((diffColor.rgb * pointlights[i].color) * lightIntensity), 1.0f);
+//			}
+//		}
+//	}
+//	outputAmbient = saturate(outputColor) * 0.5f;
+//	outputColor = saturate(outputColor + outputAmbient);
+//	//saturate(lightIntensity);
+//	//Create the normalized vector from position to light source
+//	////float3 outVec = normalize(lightPos.xyz - (worldPos).xyz);
+//	//float3 outVec = normalize(-Position[0]);
+
+//	////Create the normalized reflection vector
+//	//float3 refVec = normalize(reflect(-outVec, normal));
+
+//	////Creathe the normalized vector from position to camera
+//	//float3 viewDir = normalize(camPos - worldPos).xyz;
+
+//	//float specIntesity = saturate(dot(refVec, viewDir));
+//	//float shineFactor = 5.0f;
+//	//float lightSpecular = 0.65f;
+
+//	////Calculate the specular part
+//	//float4 specular = float4(specColor.rgb * lightSpecular * max(pow(specIntesity, shineFactor), 0.0f), 1.0f);
+
+//	//lightIntensity = dot(normal, outVec);
+//	//if (lightIntensity < 0) {
+//	//	lightIntensity = 0;
+//	//}
+
+//	//Combine everything for the output color
+//	//outputColor = saturate(((diffColor.rgba + specular.rgba) * lightIntensity * 0.8f) + ((ambientColor.rgba) * 0.2f));
+
+//	return outputColor;
+//}
