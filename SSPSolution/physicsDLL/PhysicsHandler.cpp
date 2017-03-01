@@ -1810,11 +1810,6 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
 		btVector3 scale = btVector3(radius, radius, radius);
-		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, scale);
-
-		//ragdoll->playerPC->PC_OBB.ext[0] = radius;
-		//ragdoll->playerPC->PC_OBB.ext[1] = radius;
-		//ragdoll->playerPC->PC_OBB.ext[2] = radius;
 
 		this->AdjustRagdoll(ragdoll, dt);
 
@@ -1839,20 +1834,11 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		//Change where the chain is attached
 		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;	//Set it to the player
 
-		//this->SetRagdollToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
 		btVector3 ext;
-		//ext.setX(1.0f / ragdoll->key_frame_blend_stage);
-		//ext.setY(1.0f / ragdoll->key_frame_blend_stage);
-		//ext.setZ(1.0f / ragdoll->key_frame_blend_stage);
-
-		//ragdoll->playerPC->PC_OBB.ext[0] = ext.getX() * ragdoll->original_ext[0];
-		//ragdoll->playerPC->PC_OBB.ext[1] = ext.getY() * ragdoll->original_ext[1];
-		//ragdoll->playerPC->PC_OBB.ext[2] = ext.getZ() * ragdoll->original_ext[2];
 
 		ragdoll->key_frame_blend_stage--;
-		//this->m_bullet.SetCollisionShapeLocalScaling(ragdoll->playerPC, ext);
 
 		if (ragdoll->key_frame_blend_stage == 0)
 		{
