@@ -262,7 +262,7 @@ Camera::C_Ray Camera::CastRayFromMaxDistance()
 //	return 0;
 //}
 
-int Camera::AddToIntersectCheck(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 ext)
+int Camera::AddToIntersectCheck(const DirectX::XMFLOAT3 pos, const DirectX::XMFLOAT3 ext)
 {
 	C_AABB aabb;
 	aabb.pos = pos;
@@ -1143,7 +1143,7 @@ bool Camera::m_IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const Direct
 	return true;
 }
 
-bool Camera::m_IntersectRayAABB(const C_Ray ray, const C_AABB bb, float & distance)
+bool Camera::m_IntersectRayAABB(const C_Ray& ray, const C_AABB& bb, float & distance)
 {
 	//Implementation from 3dProject
 	DirectX::XMFLOAT3 invDir = DirectX::XMFLOAT3(1.f / ray.dir.x, 1.f / ray.dir.y, 1.f / ray.dir.z);
