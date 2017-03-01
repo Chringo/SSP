@@ -125,6 +125,22 @@ void LightController::AddLight(LIGHTING::LIGHT_TYPE type)
 	default:
 		break;
 	}
+
+	printf("\n ---ADD LIGHT---\n");
+	printf("m_lights size: %d\n", m_lights.size());
+	printf("pointLightData size: %d\n", pointLightData.size());
+	for (size_t i = 0; i < m_lights.size(); i++)
+	{
+		printf("m_light[%i] address: %p\n", i, m_lights[i]);
+		printf("m_light[%i] data adress: %p\n", i, ((Point*)m_lights[i])->data);
+		printf("pointLightData[%i] address: %p\n", i, &pointLightData[i]);
+	}
+	printf("\n ---onlypointlihgtdata---\n");
+	for (size_t i = 0; i < m_lights.size(); i++)
+	{
+		printf("pointLightData[%i] address: %p\n", i, &pointLightData[i]);
+	}
+	printf("\n ---........---\n");
 }
 
 void LightController::UpdateLights(LIGHTING::LIGHT_TYPE type)
@@ -139,13 +155,46 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 	switch (type)
 	{
 	case LIGHTING::LT_POINT:
+	{
+
 		RemoveShadowCaster(m_lights.at(index)->internalID);
-		m_lights.erase(m_lights.begin() + index);
+
+
+		
+		//std::vector<Point*> kuk = ((std::vector<Point*>)m_lights);
+		//std::iterator<Point*> lightit = m_lights.begin() + index;
+
+		
+		m_lights.erase(m_lights.begin() + index); //typecast? in order to remove data ptr?
 		pointLightData.erase(pointLightData.begin() + index);
+
+		for (size_t i = index; i < pointLightData.size(); i++)
+		{
+			((Point*)m_lights[i])->data = &pointLightData[i];
+		}
+
 		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
 		LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
+		GlobalIDHandler::GetInstance()->ReturnRemovedIndex(index);
 		
+		printf("\n ---REMOVE LIGHT---\n");
+		printf("m_lights size: %d\n", m_lights.size());
+		printf("pointLightData size: %d\n", pointLightData.size());
+		for (size_t i = 0; i < m_lights.size(); i++)
+		{
+			printf("m_light[%i] address: %p\n", i, m_lights[i]);
+			printf("m_light[%i] data adress: %p\n", i, ((Point*)m_lights[i])->data);
+			printf("pointLightData[%i] address: %p\n", i, &pointLightData[i]);
+		}
+		printf("\n ---onlypointlihgtdata---\n");
+		for (size_t i = 0; i < m_lights.size(); i++)
+		{
+			printf("pointLightData[%i] address: %p\n", i, &pointLightData[i]);
+		}
+		printf("\n ---........---\n");
+
 		break;
+	}
 	case LIGHTING::LT_DIRECTIONAL:
 		break;
 	case LIGHTING::LT_AREA:
