@@ -129,6 +129,11 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 
 	m_HideLights = ui->HideLight;
 	connect(m_HideLights, SIGNAL(toggled(bool)), this, SLOT(on_HideLight_changed(bool)));
+	
+	m_CastShadows = ui->ShadowCheckbox;
+	connect(m_CastShadows, SIGNAL(toggled(bool)), this, SLOT(on_CastShadow_changed(bool)));
+
+	m_lightDropDown = ui->LightDropDown;
 
 #pragma endregion
 	m_RunLevel = ui->pushButton;
@@ -239,12 +244,17 @@ void Ui::BehaviourTypeHandler::SetSelection(Container *& selection)
 			m_LightIntSpinBoxes[CONSTANT]->setValue(((Point*)m_selection)->data->falloff.constant * 100);
 			m_LightIntSpinBoxes[LINEAR]->setValue(((Point*)m_selection)->data->falloff.linear * 100);
 			m_LightIntSpinBoxes[QUADRATIC]->setValue(((Point*)m_selection)->data->falloff.quadratic * 100);
+
+			m_CastShadows->setChecked(LightController::GetInstance()->GetIsShadowCaster(m_selection->internalID));
+
 			m_attributes_widget->setCurrentIndex(3);
+			m_lightDropDown->setCurrentIndex(1);
 			break;
 #pragma endregion
 		default:
 			m_BehaviourType->setCurrentIndex(NONE); //Close the window
 			m_Current_Type = NONE; //Update current type
+			m_lightDropDown->setCurrentIndex(NONE);
 		}
 	
 		
@@ -1103,5 +1113,18 @@ void Ui::BehaviourTypeHandler::on_Quadratic_changed(int val)
 void Ui::BehaviourTypeHandler::on_HideLight_changed(bool val)
 {
 	LightController::GetInstance()->DisplayLightRadius(val);
+}
+void Ui::BehaviourTypeHandler::on_CastShadow_changed(bool val)
+{
+	if (m_selection != nullptr)
+	{
+		if (m_selection->type == LIGHT)
+		{
+			if (val)
+				LightController::GetInstance()->MakeShadowCaster(m_selection->internalID);
+			else
+				LightController::GetInstance()->RemoveShadowCaster(m_selection->internalID);
+		}
+	}
 }
 #pragma endregion

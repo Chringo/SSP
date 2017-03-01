@@ -117,7 +117,24 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 		delete[] pointData;
 	}
 
+	if (sceneLights.numShadowCasters > 0)
+	{
+		size_t shadowListSize = sizeof(int) * sceneLights.numShadowCasters;
 
+		std::vector<int> sortVec = *LightController::GetInstance()->GetShadowCasterIndexList();
+		std::sort(sortVec.begin(), sortVec.end());
+
+		file.write((char*)sortVec.data(), shadowListSize);
+
+		int padding = -1;
+		for (int i = 0; i < (20 - sceneLights.numShadowCasters); i++)
+		{
+			file.write((char*)&padding, sizeof(int));
+		}
+
+
+
+	}
 
 	file.close();
 	//Cleanup
@@ -244,8 +261,21 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
 		delete pointData;
 		}
+		
+		if (lightHeader.numShadowCasters > 0) {
 
+			if (LightController::GetInstance()->GetShadowCasterIndexList()->size() > 0)
+				LightController::GetInstance()->GetShadowCasterIndexList()->clear();
 
+			char*data = new char[lightHeader.numShadowCasters * sizeof(int)];
+			file.read(data, lightHeader.numShadowCasters * sizeof(int));
+			
+			for (size_t i = 0; i < lightHeader.numShadowCasters; i++)
+			{
+				LightController::GetInstance()->GetShadowCasterIndexList()->push_back((int)data[i * sizeof(int)]);
+			}
+			delete data;
+		}
 	}
 	file.close();
 	delete modelData; //Cleanup
@@ -329,6 +359,7 @@ LevelData::SceneLightHeader LevelHandler::GetSceneLightHeader()
 	LevelData::SceneLightHeader data;
 
 	data.numPointLights = LightController::GetInstance()->GetPointLightData()->size();
+	data.numShadowCasters = LightController::GetInstance()->GetShadowCasterIndexList()->size();
 	
 	const Ambient* amb = LightController::GetInstance()->GetLevelAmbient();
 

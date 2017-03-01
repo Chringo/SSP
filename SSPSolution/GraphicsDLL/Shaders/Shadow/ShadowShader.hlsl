@@ -30,7 +30,7 @@ struct SHADOW_GS_OUT
     uint rtIndex : SV_RenderTargetArrayIndex;
 };
 
-
+#define MAX_SHADOW_LIGHTS 20  
 
 
 struct PointLight //Must be 16 bit aligned!
@@ -47,13 +47,15 @@ struct PointLight //Must be 16 bit aligned!
 };
 cbuffer LightInfo : register(b3)
 {
-    uint   NUM_POINTLIGHTS;
-    uint   NUM_AREALIGHTS;
-    uint   NUM_DIRECTIONALLIGHTS;
-    uint   NUM_SPOTLIGHTS;
+    uint NUM_POINTLIGHTS;
     float3 AMBIENT_COLOR;
-    float  AMBIENT_INTENSITY;
+    float AMBIENT_INTENSITY;
+    uint DYNAMIC_SHADOWLIGHT_INDEX;
+    uint padding[2];
+    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+
 }
+
 cbuffer shadow : register(b5)
 {
     float4x4 ShadowViewMatrix[6];
