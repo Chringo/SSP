@@ -522,20 +522,8 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTy
 
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, CollitionTypes collitionType, int mask)
 {
-
-	//this capule is ugly hacked, needs further research
-	//btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2f, src->PC_OBB.ext[1] * 1.6f, src->PC_OBB.ext[2]);
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1]*2, src->PC_OBB.ext[2]);
 	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.45);
-	//Capsule->setLocalScaling(btVector3(2, 1, 2));
-	//Capsule->setMargin(0.f);
-	/*const btVector3 tempPos = btVector3(src->PC_pos.m128_f32[0], src->PC_pos.m128_f32[1], src->PC_pos.m128_f32[2]);
-	btScalar * hejsan = new btScalar[2];
-	hejsan[0] = 2.f;
-	hejsan[1] = 2.f;
-	btCollisionShape* Capsule = new btMultiSphereShape(&tempPos, hejsan, 2);*/
-	
-	
 
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
