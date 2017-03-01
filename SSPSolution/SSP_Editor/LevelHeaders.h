@@ -176,7 +176,7 @@ namespace LevelData {
 
 		Level() {
 
-			memset(shadowCastIndexes, -1, sizeof(int) * 20);
+			std::memset(shadowCastIndexes, -1, sizeof(int) * 20);
 
 
 		}
