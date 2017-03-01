@@ -264,7 +264,7 @@ bool SelectionHandler::PickObjectSelection()
 			gotHit = result;
 		}
 	}
-
+	
 	//check the checkpoints
 	for each (CheckpointContainer* container in *m_checkpointPtr)
 	{

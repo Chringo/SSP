@@ -821,6 +821,8 @@ struct Point : Light
 		this->position = this->data->position;
 		pickSphere.radius = 0.25f;
 
+		this->isDirty = true;
+
 	}
 
 	void Update()
