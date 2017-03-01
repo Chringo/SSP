@@ -19,24 +19,20 @@ cbuffer camera : register(b1)
 
 }
 
-
-
 cbuffer LightInfo : register(b3)
 {
     uint   NUM_POINTLIGHTS;
     uint   DYNAMIC_SHADOWLIGHT_INDEX;
-    uint   padding[2];
     float3 AMBIENT_COLOR;
     float  AMBIENT_INTENSITY;
-    int    SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
-
 
 struct PointLight //Must be 16 bit aligned!
 {
     bool isActive;
-    float3 isActivePADDING;
+    float3 _PADDING;
     float3 color;
     float intensity;
     float4 position;
@@ -348,6 +344,18 @@ float4 PS_main(VS_OUT input) : SV_Target
         lightPower  = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
         lightPower *= (AOSamp);
         lightPower *= pointlights[i].intensity; 
+            //SHADOW
+       
+        if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex])
+         {   
+             shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
+             currentShadowLightIndex += 1;
+             if (i == DYNAMIC_SHADOWLIGHT_INDEX)
+             {
+                 shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
+             }
+         }
+
         if (lightPower > 0.0f)
         {
             //PBR variables 
@@ -359,19 +367,7 @@ float4 PS_main(VS_OUT input) : SV_Target
             float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
             
-            //SHADOW
-            int bajs = SHADOWCASTING_LIGHTS[currentShadowLightIndex];
-            if (i == bajs)
-            {   
-                shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
-			   // lightPower *= shadowFactor;
-                currentShadowLightIndex += 1;
-            }
-            if (i == DYNAMIC_SHADOWLIGHT_INDEX)
-            {
-                shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
-            }
-                lightPower *= shadowFactor;
+            lightPower *= shadowFactor;
             //DIFFUSE
             float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);

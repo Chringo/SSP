@@ -142,37 +142,43 @@ namespace LevelData {
 
 	struct Level {
 		SpawnHeader  spawns[2];
-		unsigned int numResources;
-		ResourceHeader* resources;
+		unsigned int numResources= 0;
+		ResourceHeader* resources = nullptr;
 
-		unsigned int numEntities;
-		EntityHeader* entities;
+		unsigned int numEntities = 0;
+		EntityHeader* entities = nullptr;
 
-		unsigned int numAI;
-		AiHeader* aiComponents;
+		unsigned int numAI = 0;
+		AiHeader* aiComponents = nullptr;
 		
-		unsigned int numCheckpoints;
-		CheckpointHeader* checkpoints;
+		unsigned int numCheckpoints = 0;
+		CheckpointHeader* checkpoints = nullptr;
 
-		unsigned int numButton;
-		ButtonHeader * buttons;
+		unsigned int numButton = 0;
+		ButtonHeader * buttons = nullptr;
 
-		unsigned int numDoor;
-		DoorHeader * doors;
+		unsigned int numDoor = 0;
+		DoorHeader * doors = nullptr;
 
-		unsigned int numLever;
-		LeverHeader * levers;
+		unsigned int numLever = 0;
+		LeverHeader * levers = nullptr;
 
-		unsigned int numWheel;
-		WheelHeader * wheels;
+		unsigned int numWheel = 0;
+		WheelHeader * wheels = nullptr;
 		
-		float  ambientColor[3];
-		float  ambientIntensity;
+		float  ambientColor[3]   = {1.0f,1.0f,1.0f};
+		float  ambientIntensity = 0.2f; ;
 
-		unsigned int numPointLights;
-		PointLightHeader* pointLights;
+		unsigned int numPointLights		= 0;
+		PointLightHeader* pointLights   =nullptr;
 		
 		int shadowCastIndexes[20];
 
+		Level() {
+
+			memset(shadowCastIndexes, -1, sizeof(int) * 20);
+
+
+		}
 	};
 }

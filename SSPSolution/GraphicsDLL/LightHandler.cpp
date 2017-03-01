@@ -261,7 +261,11 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
 
-		memcpy(m_constBufferData.SHADOWCASTING_LIGHTS, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
+		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
+		{
+
+			m_constBufferData.SHADOWCASTING_LIGHTS[i].index = level->shadowCastIndexes[i];
+		}
 		
 		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
 		{
