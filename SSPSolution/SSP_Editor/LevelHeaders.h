@@ -1,5 +1,4 @@
 #pragma once
-
 namespace LevelData {
 
 
@@ -175,8 +174,10 @@ namespace LevelData {
 		int shadowCastIndexes[20];
 
 		Level() {
-
-			memset(shadowCastIndexes, -1, sizeof(int) * 20);
+			for (size_t i = 0; i < 20; i++)
+			{
+				shadowCastIndexes[i] = -1;
+			}
 
 
 		}

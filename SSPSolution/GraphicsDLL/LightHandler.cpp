@@ -24,6 +24,11 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
 	
 	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = -1;
+	for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
+	{
+		m_constBufferData.SHADOWCASTING_LIGHTS[i].index = -1;
+	}
+
 	Light temp;
 	temp.position = pos;
 	SetShadowCastingLight(-1);
