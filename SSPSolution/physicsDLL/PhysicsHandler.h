@@ -7,6 +7,7 @@
 #define PHYSICSDLL_API __declspec(dllimport)
 #endif
 
+
 #include <DirectXMath.h>
 #include <vector>
 #include "BulletInterpreter.h"
@@ -15,6 +16,7 @@
 #include "../GraphicsDLL/GraphicsComponent.h"
 #include "../GraphicsDLL/AnimationHandler.h"
 #include "Chain.h"
+
 
 enum BodyPartType
 {
@@ -48,6 +50,7 @@ const int BLEND_TIME = 10;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;
+	int link_index;
 
 	float original_ext[3];
 	int key_frame_blend_stage;
@@ -140,6 +143,14 @@ private:
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
 
+	//Collision groups
+	int chainLinkCollides = CollitionTypes::COL_STATIC;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	int dynamicCollides = CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int ragdollCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	//int platformCollide = CollitionTypes::COL_PLAYER | CollitionTypes::COL_CHAIN_LINK;
+
 	//
 	bool OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Pos, OBB* &obb2, DirectX::XMVECTOR obb2Pos);
 	bool OBBAABBIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, AABB* &AABB, DirectX::XMVECTOR aabbPos);
@@ -219,7 +230,7 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(int player, const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
+	PHYSICSDLL_API int CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
