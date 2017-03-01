@@ -197,8 +197,6 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer()
 
  bool LIGHTING::LightHandler::SetStaticShadowsToGPU()
 {
-
-
 	 m_gDeviceContext->PSSetShaderResources(11, 1, &this->m_lightData.shadowMaps);
 	return true;
 }
@@ -219,7 +217,7 @@ bool LIGHTING::LightHandler::SetLightData(Point * lightArray, unsigned int numLi
 		return false;
 	m_lightData.dataPtr  = lightArray;
 	m_lightData.numItems = numLights;
-	if (numLights > this->NUM_LIGHTS || numLights < this->NUM_LIGHTS)
+	if (numLights != this->NUM_LIGHTS)
 	{
 		ReleaseStructuredBuffer();
 		CreateStructuredBuffer(numLights);
@@ -227,7 +225,6 @@ bool LIGHTING::LightHandler::SetLightData(Point * lightArray, unsigned int numLi
 		return true;
 	}
 	else {
-		NUM_LIGHTS = numLights;
 		
 		m_constBufferData.NUM_POINTLIGHTS = numLights;
 
