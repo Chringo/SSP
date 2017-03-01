@@ -124,7 +124,8 @@ public:
 	GRAPHICSDLL_API int Reset();
 	GRAPHICSDLL_API C_Ray CastRay();
 	GRAPHICSDLL_API C_Ray CastRayFromMaxDistance();
-	GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos);
+	//GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos);
+	GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 ext);
 	GRAPHICSDLL_API int ClearIntersectList();
 
 #pragma region
@@ -191,6 +192,7 @@ public:
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 	GRAPHICSDLL_API bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	GRAPHICSDLL_API bool m_IntersectRayAABB(const C_Ray ray, const C_AABB bb, float &distance);
 	
 #pragma endregion setters
 private:
@@ -200,7 +202,8 @@ private:
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
 	void m_calcDistance();
-	std::vector<C_OBB> m_intersectionOBBs;
+	//std::vector<C_OBB> m_intersectionOBBs;
+	std::vector<C_AABB> m_intersectionAABBs;
 };
 
 #endif

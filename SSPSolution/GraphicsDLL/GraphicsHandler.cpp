@@ -546,7 +546,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			result++;
 			
-			DirectX::XMMATRIX ortm;
+			/*DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
 			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
 			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
@@ -557,8 +557,11 @@ int GraphicsHandler::Render(float deltaTime)
 				ort,
 				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData()).ext),
 				i->pos
-			);
-				i->isInRay = false;
+			);*/
+
+			this->m_camera->AddToIntersectCheck(i->pos, i->ext);
+
+			i->isInRay = false;
 			//This component needs to be checked against the ray for camera intersection
 		}
 	}

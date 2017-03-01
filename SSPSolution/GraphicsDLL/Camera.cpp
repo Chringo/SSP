@@ -64,7 +64,8 @@ int Camera::Initialize(float farPlane, float screenAspect, float fieldOfView, fl
 	DirectX::XMStoreFloat4x4(&this->m_projectionMatrix, DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, nearPlane, farPlane));
 
 
-	m_intersectionOBBs.reserve(150);
+	//m_intersectionOBBs.reserve(150);
+	this->m_intersectionAABBs.reserve(50);
 
 	return result;
 }
@@ -245,25 +246,37 @@ Camera::C_Ray Camera::CastRayFromMaxDistance()
 	return ray;
 }
 
-int Camera::AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
+//int Camera::AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos)
+//{
+//
+//	C_OBB obb;
+//	obb.ort = ort;
+//	obb.ext = ext;
+//	obb.pos = pos;
+//
+//
+//
+//	this->m_intersectionOBBs.push_back(obb);
+//	//this->m_intersectionOBBspos.push_back(pos);
+//
+//	return 0;
+//}
+
+int Camera::AddToIntersectCheck(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 ext)
 {
+	C_AABB aabb;
+	aabb.pos = pos;
+	aabb.ext = ext;
 
-	C_OBB obb;
-	obb.ort = ort;
-	obb.ext = ext;
-	obb.pos = pos;
-
-
-
-	this->m_intersectionOBBs.push_back(obb);
-	//this->m_intersectionOBBspos.push_back(pos);
+	this->m_intersectionAABBs.push_back(aabb);
 
 	return 0;
 }
 
 int Camera::ClearIntersectList()
 {
-	this->m_intersectionOBBs.clear();
+	//this->m_intersectionOBBs.clear();
+	this->m_intersectionAABBs.clear();
 	return 0;
 }
 
@@ -731,7 +744,7 @@ void Camera::m_calcDistance()
 	bool newDistance = false;
 	bool raycollision = false;
 
-	for (C_OBB i : m_intersectionOBBs)
+	/*for (C_OBB i : m_intersectionOBBs)
 	{
 		OBB obb;
 		obb.ext[0] = i.ext.x;
@@ -741,6 +754,21 @@ void Camera::m_calcDistance()
 		obb.ort = DirectX::XMLoadFloat4x4(&i.ort);
 		
 		if (m_IntersectRayOBB(m_cameraMaxDistancePos, m_Dir(), obb, DirectX::XMLoadFloat3(&i.pos), hitDistance))
+		{
+			if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
+			{
+				newDistance = true;
+				intersectDistance = hitDistance;
+			}
+		}
+	}*/
+	for (C_AABB i : m_intersectionAABBs)
+	{
+		C_Ray ray;
+		DirectX::XMStoreFloat3(&ray.origin, this->m_cameraMaxDistancePos);
+		DirectX::XMStoreFloat3(&ray.dir, this->m_Dir());
+
+		if (m_IntersectRayAABB(ray, i, hitDistance)) 
 		{
 			if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
 			{
@@ -1112,5 +1140,37 @@ bool Camera::m_IntersectRayOBB(const DirectX::XMVECTOR & rayOrigin, const Direct
 		distanceToOBB = tMax;
 	}
 
+	return true;
+}
+
+bool Camera::m_IntersectRayAABB(const C_Ray ray, const C_AABB bb, float & distance)
+{
+	//Implementation from 3dProject
+	DirectX::XMFLOAT3 invDir = DirectX::XMFLOAT3(1.f / ray.dir.x, 1.f / ray.dir.y, 1.f / ray.dir.z);
+
+	float t1 = ((bb.pos.x - bb.ext.x) - ray.origin.x) * invDir.x;
+	float t2 = ((bb.pos.x + bb.ext.x) - ray.origin.x) * invDir.x;
+	float t3 = ((bb.pos.y - bb.ext.y) - ray.origin.y) * invDir.y;
+	float t4 = ((bb.pos.y + bb.ext.y) - ray.origin.y) * invDir.y;
+	float t5 = ((bb.pos.z - bb.ext.z) - ray.origin.z) * invDir.z;
+	float t6 = ((bb.pos.z + bb.ext.z) - ray.origin.z) * invDir.z;
+
+	float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+	float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+	//Ray is intersecting AABB, but whole AABB is behind us
+	if (tmax < 0)
+	{
+		return false;
+	}
+
+	//Ray doesn't intersect AABB
+	if (tmin > tmax)
+	{
+		return false;
+	}
+
+	//Return intersection true and distance to model
+	distance = tmin;
 	return true;
 }
