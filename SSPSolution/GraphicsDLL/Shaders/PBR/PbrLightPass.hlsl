@@ -324,6 +324,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
     float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
+	/*float3 metalRoughAoSamp = metalRoughAo.Sample(pointSampler, input.UV).rgb;
+	float metalSamp = metalRoughAoSamp.r;
+	float roughSamp = metalRoughAoSamp.g;
+	float AOSamp = metalRoughAoSamp.b;*/
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
     //return N.rgbr;
