@@ -26,6 +26,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 	
+#ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
 		NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
 		NULL, &this->m_gDeviceContext);
@@ -33,6 +34,15 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	{
 		return 1;
 	}
+#else
+	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
+		NULL, D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
+		NULL, &this->m_gDeviceContext);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+#endif
 	
 	// Create the swapchain \\
 
