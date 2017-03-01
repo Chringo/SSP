@@ -183,7 +183,7 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:
-	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t, float delta_t);
+	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t, std::vector<PhysicsComponent*>*list);
 	DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
 };
 

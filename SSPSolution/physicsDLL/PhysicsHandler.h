@@ -304,16 +304,6 @@ public:
 	PHYSICSDLL_API void SetIgnoreCollisions();
 
 
-	void InitSpline();
-	PHYSICSDLL_API void AddSplinePoint(DirectX::XMVECTOR& v);
-	PHYSICSDLL_API DirectX::XMVECTOR GetInterpolatedSplinePoint(float t);
-	int GetNumPoint();
-	PHYSICSDLL_API DirectX::XMVECTOR* GetVP(int n);
-	PHYSICSDLL_API int GetTotalChainLinks();
-	DirectX::XMVECTOR GetNthPoint(int n);
-	PHYSICSDLL_API DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
-
-
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

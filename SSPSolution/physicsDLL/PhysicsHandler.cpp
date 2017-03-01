@@ -2504,14 +2504,7 @@ void PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * 
 	
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
 
-	
-	AddSplinePoint(diffVec);
-
-	DirectX::XMVECTOR bajs = GetInterpolatedSplinePoint(4);
-
-	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(bajs));
-
-	
+	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));	
 
 	if (distance > linkLenght)
 	{

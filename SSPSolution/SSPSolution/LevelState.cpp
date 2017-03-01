@@ -228,10 +228,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	int nrCPs = (estLen / linkLen);
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2+(nrCPs*2)); //nrCps = number of graphicalLinks for both chains.
+	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2); 
 	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
 
-	this->m_cHandler->ResizeGraphicsPersistent(2 + 2);	//"2 balls + 2 PingObjects
+	this->m_cHandler->ResizeGraphicsPersistent(2 + 2 + (nrCPs * 2));	//"2 balls + 2 PingObjects + number of graphicallinks for both chains
 
 	// creating the player
 	//Player1
@@ -502,13 +502,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 //#pragma endregion Create_Chain_Link
 
-	
-	
-
 	for (size_t i = 0; i < nrCPs; ++i) // player 1 
 	{
-		GraphicsComponent * cp = cHandler->GetDynamicGraphicsComponent();
-		cp->modelID = 1680427216;
+		GraphicsComponent * cp = cHandler->GetPersistentGraphicsComponent();
+		cp->modelID = CHAIN_SEGMENT_MODEL_ID;
 		cp->active = true;
 		cp->worldMatrix = DirectX::XMMatrixIdentity();
 		resHandler->GetModel(cp->modelID,cp->modelPtr);
@@ -520,8 +517,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	}
 	for (size_t i = 0; i < nrCPs; ++i) // Player 2 
 	{
-		GraphicsComponent * cp = cHandler->GetDynamicGraphicsComponent();
-		cp->modelID = 1680427216;
+		GraphicsComponent * cp = cHandler->GetPersistentGraphicsComponent();
+		cp->modelID = CHAIN_SEGMENT_MODEL_ID;
 		cp->active = true;
 		cp->worldMatrix = DirectX::XMMatrixIdentity();
 		resHandler->GetModel(cp->modelID, cp->modelPtr);
@@ -1068,6 +1065,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player1_Ping.Update(dt);
 	this->m_player2_Ping.Update(dt);
 #pragma endregion Ping
+	
+	this->UpdateGraphicalLinks();
 
 	#pragma region
 
@@ -2790,47 +2789,69 @@ int LevelState::LeaveState()
 void LevelState::UpdateGraphicalLinks()
 {
 	//this->m_cHandler->GetPhysicsHandler()->AddSplinePoint(next->PC_pos); // create point for graphicalLink.
-	
+	DirectX::XMVECTOR temp = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0, 3, 0));
+
 	for (size_t i = 0; i < this->m_grapichalLinkListPlayer1.size(); i++)
 	{
-		
+		float t = (float)i / (float)this->m_grapichalLinkListPlayer1.size();
+		DirectX::XMVECTOR pos = this->GetInterpolatedSplinePoint(t,&this->m_Player1ChainPhysicsComp);
+		this->m_grapichalLinkListPlayer1.at(i).SetPos(pos);
 	}
-	
+	for (size_t i = 0; i < this->m_grapichalLinkListPlayer2.size(); i++)
+	{
+		float t = (float)i / (float)this->m_grapichalLinkListPlayer2.size();
+		DirectX::XMVECTOR pos = this->GetInterpolatedSplinePoint(t,&this->m_Player2ChainPhysicsComp);
+		this->m_grapichalLinkListPlayer2.at(i).SetPos(pos);
+	}
 }
-DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t, float delta_t)
+DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<PhysicsComponent*>*list)
 {
-	int p = (int(t / delta_t));
-#define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)vp.size()-1)pp = vp.size()-1;}
+	this->delta_t = 0.2f;
+	this->delta_t = 1.f / (float)list->size();
+
+	int p = (int(t / this->delta_t));
+#define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)list->size()-1)pp = list->size()-1;}
 	int p0 = p - 1;			BOUNDS(p0);
 	int p1 = p;				BOUNDS(p1);
 	int p2 = p + 1;			BOUNDS(p2);
 	int p3 = p + 2;			BOUNDS(p3);
+	
 	float lt = (t - delta_t*(float)p) / delta_t;
 
-	DirectX::XMVECTOR test = Equal(lt, vp[p0], vp[p1], vp[p2], vp[p3]);
+	DirectX::XMVECTOR pos = DirectX::XMVectorCatmullRom(list->at(p0)->PC_pos,
+		list->at(p1)->PC_pos,
+		list->at(p2)->PC_pos,
+		list->at(p3)->PC_pos,
+		lt);
 
-	return test;
+	//DirectX::XMVECTOR pos = Equal(lt,
+	//	list->at(p0)->PC_pos,
+	//	list->at(p1)->PC_pos,
+	//	list->at(p2)->PC_pos,
+	//	list->at(p3)->PC_pos); // we changed something here 
+	
+
+	return pos;
 }
 DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
 {
 	//Bezier curve
 
-	float u = 1 - t;
-	float tt = t* t;
-	float uu = u*u;
-	float uuu = uu*u;
-	float ttt = tt*t;
-	float uuuu = uuu*u;
+	//float u = 1 - t;
+	//float tt = t* t;
+	//float uu = u*u;
+	//float uuu = uu*u;
+	//float ttt = tt*t;
 
-	float b1 = uuu*p1; // first
-	float b2 = 3 * uu * t *p1; // 2nd
-	float b3 = 3 * u *tt*p2;
-	float b4 = ttt*p3;
-	float b5 = 
+	//float b1 = uuu*p1; // first
+	//float b2 = 3 * uu * t *p1; // 2nd
+	//float b3 = 3 * u *tt*p2;
+	//float b4 = ttt*p3;
 
-	return(p1*b1 + p2*b2 + p3*b3 + p4*b4);
 
-	/*CatMull Spline
+	//return(p1*b1 + p2*b2 + p3*b3 + p4*b4);
+
+	//CatMull Spline
 	float t2 = t * t;
 
 	float t3 = t2 * t;
@@ -2840,5 +2861,5 @@ DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVE
 	float b3 = 0.5f * (-3 * t3 + 4 * t2 + t);
 	float b4 = 0.5f * (t3 - t2);
 
-	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);*/
+	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);
 }

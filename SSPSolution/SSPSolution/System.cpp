@@ -250,13 +250,13 @@ int System::Update(float deltaTime)
 			points.push_back(y);*/
 
 
-			int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
+		//	int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
 
 			//DirectX::XMVECTOR* container = this->m_physicsHandler.GetVP(0);
 
-			DirectX::XMVECTOR* container[2];
-			container[0] = &x;
-			container[1] = &y;
+			//DirectX::XMVECTOR* container[2];
+			//container[0] = &x;
+			//container[1] = &y;
 
 			//container
 
@@ -272,12 +272,12 @@ int System::Update(float deltaTime)
 
 				//container = this->m_physicsHandler.GetVP(i);
 
-			this->m_graphicsHandler->RenderBoundingVolume(
-				container[0],
-				2);
-			this->m_graphicsHandler->RenderBoundingVolume(
-				container[1],
-				2);
+			//this->m_graphicsHandler->RenderBoundingVolume(
+			//	container[0],
+			//	2);
+			//this->m_graphicsHandler->RenderBoundingVolume(
+			//	container[1],
+			//	2);
 
 #endif // _DEBUG
 
