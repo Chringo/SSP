@@ -223,9 +223,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	{
 		this->m_curLevel = 0;
 	}
+	float linkLen = 1.67f;
+	float estLen = 3.25f + linkLen * 5; // 0,5+0,45*5+0,5
+	int nrCPs = (estLen / linkLen);
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
-	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
+	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2+(nrCPs*2)); //nrCps = number of graphicalLinks for both chains.
 	float nrOfSegmentsPerPlayer = 5; //more than 10 segments can lead to chain segments going through walls
 
 	this->m_cHandler->ResizeGraphicsPersistent(2 + 2);	//"2 balls + 2 PingObjects
@@ -417,6 +420,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		1.3f
 	);
 #pragma endregion Set_Camera
+
+
+
 //
 //#pragma region
 //	float linkLenght = 1.2f;
@@ -495,6 +501,36 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 //	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 //#pragma endregion Create_Chain_Link
+
+	
+	
+
+	for (size_t i = 0; i < nrCPs; ++i) // player 1 
+	{
+		GraphicsComponent * cp = cHandler->GetDynamicGraphicsComponent();
+		cp->modelID = 1680427216;
+		cp->active = true;
+		cp->worldMatrix = DirectX::XMMatrixIdentity();
+		resHandler->GetModel(cp->modelID,cp->modelPtr);
+		GraphicalLink link;
+		link.m_gComp = cp;
+		link.m_pos = { 0,0,0 };
+		this->m_grapichalLinkListPlayer1.push_back(link);
+	
+	}
+	for (size_t i = 0; i < nrCPs; ++i) // Player 2 
+	{
+		GraphicsComponent * cp = cHandler->GetDynamicGraphicsComponent();
+		cp->modelID = 1680427216;
+		cp->active = true;
+		cp->worldMatrix = DirectX::XMMatrixIdentity();
+		resHandler->GetModel(cp->modelID, cp->modelPtr);
+		GraphicalLink link;
+		link.m_gComp = cp;
+		link.m_pos = { 0,0,0 };
+		this->m_grapichalLinkListPlayer2.push_back(link);
+
+	}
 
 	#pragma region
 	this->m_player1_Ping.m_gComp = cHandler->GetPersistentGraphicsComponent();
@@ -1531,7 +1567,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
-		
+
+		this->m_Player1ChainPhysicsComp.push_back(PC_ptr);
+
 		previous = next;
 
 	}
@@ -1573,6 +1611,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
 		this->m_dynamicEntitys.push_back(chainLink);
 
+
 		next = PC_ptr;
 		if (i == 1)
 		{
@@ -1582,6 +1621,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
+
+		this->m_Player2ChainPhysicsComp.push_back(PC_ptr);
 
 		previous = next;
 	}
@@ -2746,3 +2787,58 @@ int LevelState::LeaveState()
 	return 0;
 }
 
+void LevelState::UpdateGraphicalLinks()
+{
+	//this->m_cHandler->GetPhysicsHandler()->AddSplinePoint(next->PC_pos); // create point for graphicalLink.
+	
+	for (size_t i = 0; i < this->m_grapichalLinkListPlayer1.size(); i++)
+	{
+		
+	}
+	
+}
+DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t, float delta_t)
+{
+	int p = (int(t / delta_t));
+#define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)vp.size()-1)pp = vp.size()-1;}
+	int p0 = p - 1;			BOUNDS(p0);
+	int p1 = p;				BOUNDS(p1);
+	int p2 = p + 1;			BOUNDS(p2);
+	int p3 = p + 2;			BOUNDS(p3);
+	float lt = (t - delta_t*(float)p) / delta_t;
+
+	DirectX::XMVECTOR test = Equal(lt, vp[p0], vp[p1], vp[p2], vp[p3]);
+
+	return test;
+}
+DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
+{
+	//Bezier curve
+
+	float u = 1 - t;
+	float tt = t* t;
+	float uu = u*u;
+	float uuu = uu*u;
+	float ttt = tt*t;
+	float uuuu = uuu*u;
+
+	float b1 = uuu*p1; // first
+	float b2 = 3 * uu * t *p1; // 2nd
+	float b3 = 3 * u *tt*p2;
+	float b4 = ttt*p3;
+	float b5 = 
+
+	return(p1*b1 + p2*b2 + p3*b3 + p4*b4);
+
+	/*CatMull Spline
+	float t2 = t * t;
+
+	float t3 = t2 * t;
+
+	float b1 = 0.5f * (-t3 + 2 * t2 - t);
+	float b2 = 0.5f * (3 * t3 - 5 * t2 + 2);
+	float b3 = 0.5f * (-3 * t3 + 4 * t2 + t);
+	float b4 = 0.5f * (t3 - t2);
+
+	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);*/
+}
