@@ -261,7 +261,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		m_lightData.dataPtr = new LIGHTING::Point[level->numPointLights];
 	
 
-		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
+		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) * MAX_SHADOW_LIGHTS);
 
 		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
 		{
@@ -275,7 +275,6 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 				m_lightData.numShadowLights += 1;
 		}
 
-	//	m_lightData.shadowLightIndex[0] = 1;
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
 			memcpy(&((Point*)m_lightData.dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
@@ -342,6 +341,13 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 	return  SetShadowCastingLight(&specializedData[index]);
 }
+
+  bool LIGHTING::LightHandler::UpdateActiveLightsToGPU(std::vector<int>* indices)
+ {
+
+
+	  return true;
+ }
 
 
 int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)
