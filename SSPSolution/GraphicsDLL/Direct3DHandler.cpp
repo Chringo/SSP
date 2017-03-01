@@ -52,8 +52,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferDesc.Height = resolution.y;
 	swapChainDesc.BufferDesc.Width = resolution.x;
-	swapChainDesc.BufferDesc.RefreshRate.Numerator = 60; //60hz
-	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	swapChainDesc.BufferDesc.RefreshRate.Numerator = 59994; //60hz
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1002;
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
