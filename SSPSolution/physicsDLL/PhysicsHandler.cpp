@@ -2317,12 +2317,10 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	PhysicsComponent* newObject = nullptr;
 	newObject = new PhysicsComponent;
 
-
 	newObject->PC_pos = pos;
 	newObject->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
-//	newObject->PC_normalForce = DirectX::XMVectorSet(0, 0, 0, 0);
 	newObject->PC_active = 1;
 	newObject->PC_collides = true;
 	newObject->PC_entityID = 0;
@@ -2334,22 +2332,9 @@ PhysicsComponent* PhysicsHandler::CreatePhysicsComponent(const DirectX::XMVECTOR
 	newObject->PC_friction = 0.5f;
 	newObject->PC_elasticity = 0.5f;
 	newObject->PC_BVtype = BV_AABB;
-	//newObject->PC_OBB.quat = DirectX::XMVectorSet(0, 0, 0, 1);
 
 	this->CreateDefaultBB(pos, newObject);
 	this->m_physicsComponents.push_back(newObject);
-
-	//PhysicsComponent* toSwap;
-	//if (isStatic == false)
-	//{
-	//	toSwap = this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1);
-	//	this->m_physicsComponents.at((this->m_physicsComponents.size() - this->m_nrOfStaticObjects) - 1) = newObject;
-	//	this->m_physicsComponents.at(this->m_physicsComponents.size() - 1) = toSwap;
-	//}
-	//else
-	//{
-	//	this->m_nrOfStaticObjects++;
-	//}
 
 	return newObject;
 }
