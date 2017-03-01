@@ -333,12 +333,13 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
-    float shadowFactor = 1.0;
+    
     int currentShadowLightIndex = 0;
 
     //FOR EACH LIGHT
     for (int i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
+        float shadowFactor = 1.0;
         float lightPower = 0;
 
         lightPower  = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
