@@ -284,9 +284,9 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 			m_lightData.dataPtr[i].falloff.constant    = level->pointLights[i].falloff_constant;
 			m_lightData.dataPtr[i].falloff.linear	   = level->pointLights[i].falloff_linear;
 			m_lightData.dataPtr[i].radius			   = level->pointLights[i].radius;
-			m_lightData.dataPtr[i].padding[0]		   = 0.0f;
-			m_lightData.dataPtr[i].padding[1]		   = 0.0f;
-			m_lightData.dataPtr[i].padding[2]		   = 0.0f;
+			m_lightData.dataPtr[i].padding[0]		   = FALSE;
+			m_lightData.dataPtr[i].padding[1]		   = FALSE;
+			m_lightData.dataPtr[i].padding[2]		   = FALSE;
 		}
 		SetLightData(m_lightData.dataPtr, level->numPointLights);
 		UpdateStructuredBuffer();
