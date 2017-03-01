@@ -234,7 +234,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_cHandler->ResizeGraphicsPersistent(2 + 2 + (nrCPs * 2));	//"2 balls + 2 PingObjects + number of graphicallinks for both chains
 
 	// creating the player
-	//Player1
+	//Player1skre
 #pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
@@ -512,6 +512,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		GraphicalLink link;
 		link.m_gComp = cp;
 		link.m_pos = { 0,0,0 };
+		link.xRot = 45.f * i;
+		link.m_rotMat = DirectX::XMMatrixIdentity();
+		link.SetRot(0.f, 0.f);
 		this->m_grapichalLinkListPlayer1.push_back(link);
 	
 	}
@@ -525,6 +528,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		GraphicalLink link;
 		link.m_gComp = cp;
 		link.m_pos = { 0,0,0 };
+		link.xRot = 45.f * i;
+		link.m_rotMat = DirectX::XMMatrixIdentity();
+		link.SetRot(0.f, 0.f);
 		this->m_grapichalLinkListPlayer2.push_back(link);
 
 	}
@@ -2792,18 +2798,54 @@ void LevelState::UpdateGraphicalLinks()
 {
 	//this->m_cHandler->GetPhysicsHandler()->AddSplinePoint(next->PC_pos); // create point for graphicalLink.
 	DirectX::XMVECTOR temp = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0, 3, 0));
+	GraphicalLink* lastComp = nullptr;
+	DirectX::XMVECTOR lastPos;
+	DirectX::XMVECTOR diffVec;
+	DirectX::XMVECTOR par; // ony used for storing uneeded value
+	DirectX::XMVECTOR per;
 
 	for (size_t i = 0; i < this->m_grapichalLinkListPlayer1.size(); i++)
 	{
 		float t = (float)i / (float)this->m_grapichalLinkListPlayer1.size();
 		DirectX::XMVECTOR pos = this->GetInterpolatedSplinePoint(t,&this->m_Player1ChainPhysicsComp);
+	
+		//Set rot before setting pos
+		
 		this->m_grapichalLinkListPlayer1.at(i).SetPos(pos);
+		if (i != 0)
+		{
+			lastComp = & this->m_grapichalLinkListPlayer1.at(i - 1);
+			lastPos = DirectX::XMLoadFloat3(&lastComp->m_pos);
+			diffVec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, lastPos));	//Towards current
+	
+			lastComp->m_rotMat.r[0] = diffVec;
+			DirectX::XMVector3ComponentsFromNormal(&par, &per, lastComp->m_rotMat.r[1], diffVec);
+			per = DirectX::XMVector3Normalize(per);
+			lastComp->m_rotMat.r[1] = per;
+			lastComp->m_rotMat.r[2] = DirectX::XMVector3Cross(diffVec, per);
+		}
+
 	}
 	for (size_t i = 0; i < this->m_grapichalLinkListPlayer2.size(); i++)
 	{
 		float t = (float)i / (float)this->m_grapichalLinkListPlayer2.size();
 		DirectX::XMVECTOR pos = this->GetInterpolatedSplinePoint(t,&this->m_Player2ChainPhysicsComp);
+		
+		
 		this->m_grapichalLinkListPlayer2.at(i).SetPos(pos);
+		if (i != 0)
+		{
+			lastComp = &this->m_grapichalLinkListPlayer2.at(i - 1);
+
+			lastPos = DirectX::XMLoadFloat3(&lastComp->m_pos);
+			diffVec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, lastPos));	//Towards current
+			lastComp->m_rotMat.r[0] = diffVec;
+			DirectX::XMVector3ComponentsFromNormal(&par, &per, lastComp->m_rotMat.r[1], diffVec);
+			per = DirectX::XMVector3Normalize(per);
+			lastComp->m_rotMat.r[1] = per;
+			//DirectX::XMVECTOR cross = DirectX::XMVector3Normalize();
+			lastComp->m_rotMat.r[2] = DirectX::XMVector3Cross(diffVec, per);
+		}
 	}
 }
 DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<PhysicsComponent*>*list)

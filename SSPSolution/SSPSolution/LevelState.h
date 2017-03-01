@@ -99,16 +99,26 @@ private:
 	{
 		GraphicsComponent* m_gComp;
 		DirectX::XMFLOAT3 m_pos;
+		DirectX::XMMATRIX m_rotMat;
+		float xRot;
 		
 		void SetPos(DirectX::XMVECTOR newPos)
 		{
 			DirectX::XMStoreFloat3(&this->m_pos, newPos);
 			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
-		}
-		void Update()
-		{
 
-		};
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
+		
+		void SetRot(float yRot, float zRot)
+		{
+			
+			this->m_rotMat = DirectX::XMMatrixRotationRollPitchYaw(this->xRot, yRot, zRot);
+
+//			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
 	};
 
 	FSMEnvironment::LevelDirector m_director;
