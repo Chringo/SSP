@@ -773,17 +773,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					{
 
 						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-						this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);
-						this->m_player2.GetAnimationComponent()->previousState = PLAYER_IDLE;
-						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_IDLE)->GetAnimationStateData();
-						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_IDLE;
+						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);
+						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
+						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
+						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
 					}
 					this->m_player2.GetRagdoll()->state = ANIMATED;
-				this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-				this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
 
-			}
+				}
 			}
 
 		}
@@ -1211,7 +1211,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	#pragma region
 	// We only send updates for player1 since player2 will recive the updates from the network
 	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
-	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
+	if (this->m_player1.GetRagdoll()->state == RAGDOLL || this->m_player1.GetRagdoll()->state == KEYFRAMEBLEND)
 	{
 		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
 
