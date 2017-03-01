@@ -355,7 +355,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
-	ballG->modelID = 1321651915;
+	ballG->modelID = 1256673809;
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
