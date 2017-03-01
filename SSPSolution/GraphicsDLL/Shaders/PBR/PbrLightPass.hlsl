@@ -361,59 +361,61 @@ float4 PS_main(VS_OUT input) : SV_Target
     for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
 		//Check if the light is active
-		
-		float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
-		float distance = length(L);
-		if (distance <= pointlights[i].radius)
-		{
-			L = normalize(L);
-			float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-			if (NdotL >= 0.0f)
-			{
-				float lightPower = 0.0f;
-				lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+		if(pointlights[i].isActive != 0)
+        {
+            float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
+            float distance = length(L);
+            if (distance <= pointlights[i].radius)
+            {
+                L = normalize(L);
+                float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+                if (NdotL >= 0.0f)
+                {
+                    float lightPower = 0.0f;
+                    lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
 				//lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
-				lightPower *= (AOSamp);
-				lightPower *= pointlights[i].intensity;
-				if (lightPower > 0.0f)
-				{
+                    lightPower *= (AOSamp);
+                    lightPower *= pointlights[i].intensity;
+                    if (lightPower > 0.0f)
+                    {
 					//PBR variables 
 					//float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
-					float3 H = normalize(V + L);
+                        float3 H = normalize(V + L);
 
-					float LdotH = saturate((dot(L, H)));
-					float NdotH = saturate((dot(N, H)));
-					NdotL = max(saturate(NdotL), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-					float VdotH = saturate((dot(V, H)));
+                        float LdotH = saturate((dot(L, H)));
+                        float NdotH = saturate((dot(N, H)));
+                        NdotL = max(saturate(NdotL), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+                        float VdotH = saturate((dot(V, H)));
 
-					shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
+                        shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, i);
 					//DO SHADOW STUFF HERE
-					if (i == SHADOWLIGHT_INDEX)
-					{
-						shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
-					}
+                        if (i == SHADOWLIGHT_INDEX)
+                        {
+                            shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
+                        }
 					//  shadowFactor = max(shadowFactor, 0.0f);
-					lightPower *= shadowFactor;
+                        lightPower *= shadowFactor;
 
 
 					//DIFFUSE
-					float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
-					diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
+                        diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
 
 					//SPECULAR
-					float3 f = schlick(f0, f90, LdotH);
-					float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
-					float d = GGX(NdotH, roughness); //roughness should be sRGB
+                        float3 f = schlick(f0, f90, LdotH);
+                        float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
+                        float d = GGX(NdotH, roughness); //roughness should be sRGB
 
-					float3 fr = d * f * vis / Pi;
+                        float3 fr = d * f * vis / Pi;
 
-					specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
+                        specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
 
 					// return diffuseLight;
-				}
-			}
-		}
+                    }
+                }
+            }
+        }
     }
 
     //return shadowFactor;

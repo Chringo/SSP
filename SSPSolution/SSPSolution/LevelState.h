@@ -29,7 +29,7 @@ const int PING_DISTANCE = 100;	//Distance for the ping ray
 
 
 // For testing
-//#define DEVELOPMENTFUNCTIONS
+#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState

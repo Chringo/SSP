@@ -567,6 +567,31 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 #pragma endregion
 
+	//Check lights against frustrum
+#pragma region
+	//Get the data and convert it into the specialized data we need
+	LIGHTING::LightHandler::LightArray* lightArrayPtr = this->m_LightHandler->Get_Light_List(LIGHTING::LIGHT_TYPE::LT_POINT);
+	LIGHTING::Point* specializedData = static_cast<LIGHTING::Point*>(lightArrayPtr->dataPtr);
+	//Loop the lights
+	Camera::ViewFrustrum frustrum;
+	this->m_camera->GetViewFrustrum(frustrum);
+	int lightsInFrustrum = 0;
+	for (int lightIndex = 0; lightIndex < lightArrayPtr->numItems; lightIndex++)
+	{
+		CullingResult culResult = frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius);
+		if (culResult > 0)
+		{
+			specializedData[lightIndex].isActive = TRUE;
+			lightsInFrustrum++;
+		}
+		else
+		{
+			specializedData[lightIndex].isActive = FALSE;
+		}
+	}
+	printf("Lights in frustrum %d\n", lightsInFrustrum);
+	this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
+#pragma endregion LightCulling
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -838,7 +863,6 @@ int GraphicsHandler::Render(float deltaTime)
 
 	//	this->RenderBoundingVolume(offSet, sphere);
 	//}
-	//
 
 
 

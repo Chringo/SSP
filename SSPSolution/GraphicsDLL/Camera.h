@@ -96,6 +96,7 @@ public:
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
 		CullingResult TestAgainstBox(C_BOX box);
+		CullingResult TestAgainstSphere(DirectX::XMVECTOR pos, float radius);
 		CullingResult TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius);
 		//An conservative test is fast but may not cull all things that could be culled
 		CullingResult TestAgainstOBBConservative(C_OBB box);

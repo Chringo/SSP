@@ -194,12 +194,12 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 	//Normalize the planes
 	for (int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
 	{
-		/*float denominator = 1.0f / (DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal))));
-		storeIn.myPlanes[planeIndex].normal.m128_f32[X] *= denominator;
-		storeIn.myPlanes[planeIndex].normal.m128_f32[Y] *= denominator;
-		storeIn.myPlanes[planeIndex].normal.m128_f32[Z] *= denominator;
-		storeIn.myPlanes[planeIndex].normal.m128_f32[W] *= denominator;*/
-		DirectX::XMStoreFloat4(&storeIn.myPlanes[planeIndex].normal, DirectX::XMVector4Normalize(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal)));
+		float denominator = 1.0f / (DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal))));
+		storeIn.myPlanes[planeIndex].normal.x *= denominator;
+		storeIn.myPlanes[planeIndex].normal.y *= denominator;
+		storeIn.myPlanes[planeIndex].normal.z *= denominator;
+		storeIn.myPlanes[planeIndex].normal.w *= denominator;
+		//DirectX::XMStoreFloat4(&storeIn.myPlanes[planeIndex].normal, DirectX::XMVector4Normalize(DirectX::XMLoadFloat4(&storeIn.myPlanes[planeIndex].normal)));
 		//storeIn.myPlanes[planeIndex].normal = DirectX::XMVector3Normalize(storeIn.myPlanes[planeIndex].normal);
 	}
 
@@ -964,25 +964,52 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	return result;
 }
 
-CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMVECTOR pos, float radius)
 {
 	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
-	float distance = 0.0f;
+	float distance1 = 0.0f;
+	float distance2 = 0.0f;
 	enum { NUMBER_OF_PLANES = 6 };
+
 	for (int i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		//Distance between point and plane
-		distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+		distance1 = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), pos));
+		distance2 = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), pos));
 		//Check distance against
-		if (distance > -radius)
+		if (distance1 > radius)
 		{
 			return CullingResult::FRUSTRUM_OUTSIDE;
 		}
-		else if (distance > radius)
+		/*else if (distance > -radius)
 		{
 			result = CullingResult::FRUSTRUM_INTERSECT;
-		}
+		}*/
 	}
+
+	return result;
+}
+
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+{
+	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
+	result = this->TestAgainstSphere(DirectX::XMLoadFloat3(&pos), radius);
+	//float distance = 0.0f;
+	//enum { NUMBER_OF_PLANES = 6 };
+	//for (int i = 0; i < NUMBER_OF_PLANES; i++)
+	//{
+	//	//Distance between point and plane
+	//	distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+	//	//Check distance against
+	//	if (distance > -radius)
+	//	{
+	//		return CullingResult::FRUSTRUM_OUTSIDE;
+	//	}
+	//	else if (distance > radius)
+	//	{
+	//		result = CullingResult::FRUSTRUM_INTERSECT;
+	//	}
+	//}
 
 	return result;
 }
