@@ -44,7 +44,7 @@ enum RagdollState
 	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
-const float BLEND_TIME = 0.1f;
+const float BLEND_TIME = 0.5f;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;

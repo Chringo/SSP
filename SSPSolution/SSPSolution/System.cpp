@@ -247,14 +247,14 @@ int System::Update(float deltaTime)
 			{
 				this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
 			}
-			for (int i = 0; i < nrOfBodyParts; i++)
-			{
-				temp = this->m_physicsHandler.GetBodyComponentAt(i);
-				Sphere* sphereHolder = nullptr;
-				sphereHolder = &temp->PC_Sphere;
-				this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
-			}
-#endif // _DEBUG
+			//for (int i = 0; i < nrOfBodyParts; i++)
+			//{
+			//	temp = this->m_physicsHandler.GetBodyComponentAt(i);
+			//	Sphere* sphereHolder = nullptr;
+			//	sphereHolder = &temp->PC_Sphere;
+			//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+			//}
+#endif  _DEBUG
 
 			this->m_graphicsHandler->Update(deltaTime);
 

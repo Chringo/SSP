@@ -55,20 +55,26 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
 	{
-		//this->m_ragdoll->state = RAGDOLL;
-		//this->m_ragdoll->rightArm.next2->PC_velocity = DirectX::XMVectorSet(0, 0.5, 0, 0);
-		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
-		//this->m_ragdoll->upperBody.center->PC_velocity = vel;
-		//this->m_ragdoll->upperBody.next->PC_velocity   = vel;
-		//this->m_ragdoll->upperBody.next2->PC_velocity  = vel;
+		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 30);
+
 		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
 		
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_H))
+	{
+		DirectX::XMVECTOR vel = DirectX::XMVectorSet(0, 0, 0, 0);
+
+		this->m_ragdoll->upperBody.center->PC_velocity = vel;
+		this->m_ragdoll->upperBody.next->PC_velocity = vel;
+		this->m_ragdoll->upperBody.next2->PC_velocity = vel;
+
+		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
 	}
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
 	{
 		this->m_ragdoll->state = RAGDOLL_TRANSITION;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		this->m_ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		this->m_ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0.1, 0, 0, 0);
 	}
 
 	if (this->m_ragdoll != nullptr)
@@ -131,7 +137,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 0.5f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 2.5f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -563,11 +569,21 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
-			if (this->m_ragdoll->state == RAGDOLL || this->m_ragdoll->state == KEYFRAMEBLEND)
+			if (this->m_ragdoll->state == RAGDOLL )
 			{
+				//offsets for when player ragdoll is in RAGDOLL stage
 				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
-				offSet = DirectX::XMVectorScale(offSet, -this->m_ragdoll->playerPC->PC_OBB.ext[1]);
+				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -1);
 				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->upperBody.center->PC_pos, offSet));
+			}
+			if (this->m_ragdoll->state == KEYFRAMEBLEND)
+			{
+				//offsets for when player ragdoll is in KEYFRAMEBLEND stage
+				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
+				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -0.0);
+				offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorSet(0, 0, -1.5, 0));
+				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, offSet));
+
 			}
 
 		}
