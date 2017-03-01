@@ -239,46 +239,6 @@ int System::Update(float deltaTime)
 				}
 			}
 
-			DirectX::XMVECTOR x = DirectX::XMVECTOR();
-			DirectX::XMVECTOR y = DirectX::XMVECTOR();
-
-			x = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0.0f, 1.5f, 0.0f));
-			y = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0.0f, 2.0f, 0.0f));
-
-			/*std::vector<DirectX::XMVECTOR> points;
-			points.push_back(x);
-			points.push_back(y);*/
-
-
-		//	int totalChainLinks = this->m_physicsHandler.GetTotalChainLinks();
-
-			//DirectX::XMVECTOR* container = this->m_physicsHandler.GetVP(0);
-
-			//DirectX::XMVECTOR* container[2];
-			//container[0] = &x;
-			//container[1] = &y;
-
-			//container
-
-
-			//for (size_t i = 0; i < totalChainLinks; i++)
-			//{
-			//	//container = this->m_physicsHandler.GetVP(i);
-			//	this->m_graphicsHandler->RenderBoundingVolume(
-			//		*container,
-			//		2);
-			//}
-
-
-				//container = this->m_physicsHandler.GetVP(i);
-
-			//this->m_graphicsHandler->RenderBoundingVolume(
-			//	container[0],
-			//	2);
-			//this->m_graphicsHandler->RenderBoundingVolume(
-			//	container[1],
-			//	2);
-
 #endif // _DEBUG
 
 			this->m_graphicsHandler->Update(deltaTime);
