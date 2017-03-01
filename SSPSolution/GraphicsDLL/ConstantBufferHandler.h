@@ -132,16 +132,20 @@ public:
 		struct light
 		{
 		public:
+			struct arrayIndex {
+				int index;
+				int _Padding[3];
+			};
 			struct pData
 			{
 				
 				UINT   NUM_POINTLIGHTS;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
+				UINT   padding[2];
 				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
 				float  AMBIENT_INTENSITY = 0.2f;
-				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
-				UINT padding[2];
-				INT	   SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
-				int paddinga[68];
+				arrayIndex	SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
+				//int paddinga[68];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
