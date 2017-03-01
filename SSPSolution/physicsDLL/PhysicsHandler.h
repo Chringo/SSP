@@ -133,6 +133,14 @@ private:
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
 
+	//Collision groups
+	int chainLinkCollides = CollitionTypes::COL_STATIC;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	int dynamicCollides = CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int ragdollCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	//int platformCollide = CollitionTypes::COL_PLAYER | CollitionTypes::COL_CHAIN_LINK;
+
 	//
 	bool OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Pos, OBB* &obb2, DirectX::XMVECTOR obb2Pos);
 	bool OBBAABBIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, AABB* &AABB, DirectX::XMVECTOR aabbPos);
