@@ -359,7 +359,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
 		float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
 		float distance = length(L);
-		if (distance < pointlights[i].radius)
+		if (distance <= pointlights[i].radius)
 		{
 			L = normalize(L);
 			float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
