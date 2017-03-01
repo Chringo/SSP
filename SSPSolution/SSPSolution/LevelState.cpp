@@ -2812,17 +2812,17 @@ void LevelState::UpdateGraphicalLinks()
 		//Set rot before setting pos
 		
 		this->m_grapichalLinkListPlayer1.at(i).SetPos(pos);
-		if (i != 0)
+		if (i != 0 && i <this->m_grapichalLinkListPlayer1.size() )
 		{
 			lastComp = & this->m_grapichalLinkListPlayer1.at(i - 1);
 			lastPos = DirectX::XMLoadFloat3(&lastComp->m_pos);
 			diffVec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, lastPos));	//Towards current
 	
-			lastComp->m_rotMat.r[0] = diffVec;
-			DirectX::XMVector3ComponentsFromNormal(&par, &per, lastComp->m_rotMat.r[1], diffVec);
+			lastComp->m_rotMat.r[0] = DirectX::XMVectorSetW(diffVec, 0.0f);
+			DirectX::XMVector3ComponentsFromNormal(&par, &per, lastComp->m_rotMat.r[2], diffVec);
 			per = DirectX::XMVector3Normalize(per);
-			lastComp->m_rotMat.r[1] = per;
-			lastComp->m_rotMat.r[2] = DirectX::XMVector3Cross(diffVec, per);
+			lastComp->m_rotMat.r[2] = DirectX::XMVectorSetW(per, 0.0f);
+			lastComp->m_rotMat.r[1] = DirectX::XMVectorSetW(DirectX::XMVector3Cross(diffVec, per),0.0f);
 		}
 
 	}
@@ -2833,18 +2833,18 @@ void LevelState::UpdateGraphicalLinks()
 		
 		
 		this->m_grapichalLinkListPlayer2.at(i).SetPos(pos);
-		if (i != 0)
+		if (i != 0 && i <this->m_grapichalLinkListPlayer2.size() )
 		{
 			lastComp = &this->m_grapichalLinkListPlayer2.at(i - 1);
 
 			lastPos = DirectX::XMLoadFloat3(&lastComp->m_pos);
 			diffVec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, lastPos));	//Towards current
-			lastComp->m_rotMat.r[0] = diffVec;
+			lastComp->m_rotMat.r[0] = DirectX::XMVectorSetW(diffVec, 0.0f);
 			DirectX::XMVector3ComponentsFromNormal(&par, &per, lastComp->m_rotMat.r[1], diffVec);
 			per = DirectX::XMVector3Normalize(per);
-			lastComp->m_rotMat.r[1] = per;
+			lastComp->m_rotMat.r[1] = DirectX::XMVectorSetW(per, 0.0f);
 			//DirectX::XMVECTOR cross = DirectX::XMVector3Normalize();
-			lastComp->m_rotMat.r[2] = DirectX::XMVector3Cross(diffVec, per);
+			lastComp->m_rotMat.r[2] = DirectX::XMVectorSetW(DirectX::XMVector3Cross(diffVec, per),0.0f);
 		}
 	}
 }
