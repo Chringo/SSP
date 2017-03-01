@@ -159,8 +159,6 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 
 		RemoveShadowCaster(m_lights.at(index)->internalID);
 
-
-		
 		//std::vector<Point*> kuk = ((std::vector<Point*>)m_lights);
 		//std::iterator<Point*> lightit = m_lights.begin() + index;
 
@@ -171,6 +169,12 @@ void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 		for (size_t i = index; i < pointLightData.size(); i++)
 		{
 			((Point*)m_lights[i])->data = &pointLightData[i];
+		}
+		for (size_t i = 0; i < shadowCasterIndexes.size(); i++)
+		{
+
+			if (shadowCasterIndexes.at(i) >= index)
+				shadowCasterIndexes.at(i) -= 1;
 		}
 
 		LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
