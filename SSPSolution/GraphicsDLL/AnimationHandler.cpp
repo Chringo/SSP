@@ -52,7 +52,7 @@ void AnimationHandler::Update(float dt)
 			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
 			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
 			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
-		if (this->m_AnimComponentList[m_AnimCompIndex]->active == true && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
+		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
 			SetAnimCompIndex(aCompIndex);
