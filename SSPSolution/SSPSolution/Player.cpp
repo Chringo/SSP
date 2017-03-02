@@ -35,11 +35,11 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_walkingSound = nullptr;
 	this->m_chainSoundTimer = 0.0f;
 
-	if (this->GetGraphicComponent()->modelID == 885141774)	//Studly Model ID
+	if (this->GetGraphicComponent()->modelID == 1117267500)	//Studly Model ID
 	{
 		this->isAbbington = false;
 	}
-	else
+	else if (this->GetGraphicComponent()->modelID == 885141774)
 	{
 		this->isAbbington = true;
 	}
