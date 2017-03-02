@@ -73,7 +73,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 3.0f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 1.0f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -326,7 +326,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					/*Set the component to play the animation for throwing the other player's ball.*/
 					this->m_oldAnimState = this->m_aComp->previousState;
-					SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, false, 2.0f, 1.0f);
+					SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 					this->m_aComp->velocity = 1.0f;
 					this->m_aComp->previousState = PLAYER_THROW;
 
