@@ -73,7 +73,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 3,0f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 3.0f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
