@@ -878,7 +878,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				this->m_player1.SetGrabbed(closestBall);
 				this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 				//Play the animation for player picking up the ball.
+				this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
 				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.50f, FROZEN_TRANSITION, false, true, 1.5f, 1.0f);
+				this->m_player1.GetAnimationComponent()->previousState = PLAYER_PICKUP;
 			}
 
 		}
