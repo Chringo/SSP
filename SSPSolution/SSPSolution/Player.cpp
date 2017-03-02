@@ -303,7 +303,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 				if (this->GetEntityID() == 2)
-				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+					SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 				else
 					SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
 					
@@ -312,26 +312,26 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				//if the player is holding its own ball
 				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
-			{
-				/*Set the component to play the "release ball" animation for player IDLE.*/
-				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+				{
+					/*Set the component to play the "release ball" animation for player IDLE.*/
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
 
-				this->m_aComp->previousState = PLAYER_IDLE;
+					this->m_aComp->previousState = PLAYER_IDLE;
 
-				strength = 2; //weak as föök if the player tries to throw himself
-			}
+					strength = 2; //weak as föök if the player tries to throw himself
+				}
 
 				else
-			{
-				/*Set the component to play the animation for throwing the other player's ball.*/
-				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
-				this->m_aComp->velocity = 1.0f;
-				this->m_aComp->previousState = PLAYER_THROW;
+				{
+					/*Set the component to play the animation for throwing the other player's ball.*/
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, false, 2.0f, 1.0f);
+					this->m_aComp->velocity = 1.0f;
+					this->m_aComp->previousState = PLAYER_THROW;
 
 				
-			}
+				}
 
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
