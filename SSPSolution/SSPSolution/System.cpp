@@ -175,7 +175,10 @@ int System::Update(float deltaTime)
 {
 	if (deltaTime < 0.000001f)
 		deltaTime = 0.000001f;
-
+	if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_F7))
+	{
+		this->m_graphicsHandler->ToggleOverviewCamera();
+	}
 	int result = 1;
 #pragma omp parallel num_threads(2)
 	{

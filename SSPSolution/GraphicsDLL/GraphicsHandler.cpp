@@ -489,7 +489,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), this->m_d3dHandler->GetViewPort());
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
-	this->m_overviewCamera.Initialize();
+	this->m_overviewCamera.Initialize(500.0f);
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(20.f, 1.f, -10.f, 0.f);
 	DirectX::XMVECTOR camOffset = DirectX::XMVectorSet(0.f, 50.f, 0.f, 0.f);
 	this->m_overviewCamera.SetCameraPivot(&camPos, camOffset, 2.0f);
@@ -575,14 +575,15 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		this->m_overviewCamera.GetCameraPos(frame.cPos);
 		this->m_overviewCamera.GetViewMatrix(frame.cView);
+		frame.cProjection = DirectX::XMLoadFloat4x4(this->m_overviewCamera.GetProjectionMatrix());
 	}
 	else
 	{
 		this->m_camera->GetCameraPos(frame.cPos);
 		this->m_camera->GetViewMatrix(frame.cView);
+		frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	}
 	
-	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
 
 
@@ -740,7 +741,7 @@ int GraphicsHandler::Render(float deltaTime)
 			//Loop the lights
 			Camera::ViewFrustrum frustrum;
 			this->m_camera->GetViewFrustrum(frustrum);
-			//int lightsInFrustrum = 0;
+			int lightsInFrustrum = 0;
 			for (int lightIndex = 0; lightIndex < lightArrayPtr->numItems; lightIndex++)
 			{
 				if (frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0)
@@ -752,7 +753,7 @@ int GraphicsHandler::Render(float deltaTime)
 			}
 			//printf("Lights in frustrum %d\n", lightsInFrustrum);
 			//Update light buffer
-			this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
+			//this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
 			this->m_activeLightIndices.clear();
 #pragma endregion LightCulling
 
