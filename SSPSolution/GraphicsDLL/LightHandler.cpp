@@ -199,16 +199,16 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer()
 	D3D11_MAPPED_SUBRESOURCE mapRes;
 	HRESULT hr = S_OK;
 	
-	//hr = m_gDeviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+	hr = m_gDeviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
 	if (FAILED(hr)) {
 #ifdef _DEBUG
 		MessageBox(NULL, L"Failed to update lights buffer", L"Error", MB_ICONERROR | MB_OK);
 #endif // _DEBUG	
 		return false;
 	}
-//	memset(mapRes.pData, 0, sizeof(Point) * NUM_LIGHTS);
-//	memcpy(mapRes.pData, (void*)m_lightData.dataPtr, sizeof(Point) * NUM_LIGHTS);
-//	m_gDeviceContext->Unmap(m_lightBuffer, 0);
+	memset(mapRes.pData, 0, sizeof(Point) * NUM_LIGHTS);
+	memcpy(mapRes.pData, (void*)m_lightData.dataPtr, sizeof(Point) * NUM_LIGHTS);
+	m_gDeviceContext->Unmap(m_lightBuffer, 0);
 	m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
 	return true;
 }
@@ -221,12 +221,14 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer()
 
 bool LIGHTING::LightHandler::SetBufferAsActive()
 {
-	
-		//m_gDeviceContext->GSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
-		//m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
+#ifdef  USE_CONST_BUFFER_FOR_LIGHTS
 		this->m_gDeviceContext->PSSetConstantBuffers(6, 1, &m_lightBuffer);
 		this->m_gDeviceContext->GSSetConstantBuffers(6, 1, &m_lightBuffer);
+#else
+		m_gDeviceContext->GSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
+		m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
 
+#endif // !1
 	
 	return true;
 }
@@ -310,7 +312,10 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 			m_lightData.dataPtr[i].padding[2]		   = FALSE;
 		}
 		SetLightData(m_lightData.dataPtr, level->numPointLights);
-		//UpdateStructuredBuffer();
+#ifndef USE_CONST_BUFFER_FOR_LIGHTS
+		UpdateStructuredBuffer();
+#endif // ! USE_CONST_BUFFER_FOR_LIGHTS
+
 	}
 	return true;
 }

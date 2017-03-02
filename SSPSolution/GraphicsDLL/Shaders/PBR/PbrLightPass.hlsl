@@ -11,6 +11,7 @@ SamplerState pointSampler        : register(s1);
 #define MAX_SHADOW_LIGHTS 20  
 #define MAX_LIGHT_AMOUNT 60
 #define SHADOW_BIAS  0.0000088f
+#define USE_CONST_BUFFER_FOR_LIGHTS
 cbuffer camera : register(b1)
 {
     float4x4 viewMatrix;
@@ -42,15 +43,16 @@ struct PointLight //Must be 16 bit aligned!
     float linearFalloff;
     float quadraticFalloff;
 };
-
+#ifdef USE_CONST_BUFFER_FOR_LIGHTS
 cbuffer LightArrayBuffer : register(b6)
 {
     
     PointLight pointlights[MAX_LIGHT_AMOUNT];
 
 }
-//StructuredBuffer<PointLight> pointlights : register(t6);
-
+#else
+    StructuredBuffer<PointLight> pointlights : register(t6);
+#endif
 struct VS_OUT
 {
     float4 Pos : SV_POSITION;
