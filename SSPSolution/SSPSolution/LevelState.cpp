@@ -773,7 +773,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					{
 
 						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);
+						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, true, false, 3.0f, 1.0f);
 						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
@@ -1224,22 +1224,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	else if (this->m_player1.isAnimationChanged())
 	{
 		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
-
-		//if (ap->previousState == RAGDOLL_STATE)
-		//{
-		//	GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
-
-		//	for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
-		//	{
-		//		//Send a packet for E V E R Y joint
-		//		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, i, gp->finalJointTransforms[i]);
-		//	}
-		//}
-		//else
-		//{
-		//	
-		//}
-
 	}
 
 #pragma endregion Send_Player_Animation_Update
