@@ -72,6 +72,7 @@ struct Ragdoll
 
 	DirectX::XMMATRIX jointMatrixes[21];
 	DirectX::XMMATRIX bindPose[21];
+	DirectX::XMVECTOR * m_AnklePos;
 };
 enum LinkType
 {
@@ -123,6 +124,10 @@ private:
 	Ragdoll m_player2RagDoll;
 
 	std::vector<Field> m_fields;
+
+
+
+
 
 
 
@@ -306,6 +311,8 @@ public:
 	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
 
 	PHYSICSDLL_API void SetIgnoreCollisions();
+
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

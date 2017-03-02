@@ -95,6 +95,31 @@ private:
 
 		};
 	};
+	struct GraphicalLink
+	{
+		GraphicsComponent* m_gComp;
+		DirectX::XMFLOAT3 m_pos;
+		DirectX::XMMATRIX m_rotMat;
+		float xRot;
+		
+		void SetPos(DirectX::XMVECTOR newPos)
+		{
+			DirectX::XMStoreFloat3(&this->m_pos, newPos);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
+		
+		void SetRot(float yRot, float zRot)
+		{
+			
+			this->m_rotMat = DirectX::XMMatrixRotationRollPitchYaw(this->xRot, yRot, zRot);
+
+//			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
+	};
 
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
@@ -121,6 +146,11 @@ private:
 	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
 	std::list<PingPacket> m_pingPacketList;	//List with all Ping updates from the network
 
+	std::vector<GraphicalLink> m_grapichalLinkListPlayer1;
+	std::vector<GraphicalLink> m_grapichalLinkListPlayer2;
+	std::vector<PhysicsComponent*> m_Player1ChainPhysicsComp;
+	std::vector<PhysicsComponent*> m_Player2ChainPhysicsComp;
+
 	Entity* GetClosestBall(float minDist);
 
 	int m_curLevel;
@@ -136,6 +166,7 @@ private:
 	UIComponent* m_controlsOverlay;
 
 	UIComponent* m_crosshair;
+	float delta_t;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -157,9 +188,13 @@ public:
 	int EnterState();
 	int LeaveState();
 
+	void UpdateGraphicalLinks();
+
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:
+	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t, std::vector<PhysicsComponent*>*list);
+	DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
 };
 
 #endif
