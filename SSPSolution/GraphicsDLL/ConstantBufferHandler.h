@@ -3,7 +3,7 @@
 #include "ShaderLib.h"
 
 #ifndef CONSTANT_BUFFER_HANDLER_H
-
+#define MAX_SHADOW_LIGHTS  20 //Must be 4 * n + 2
 class ConstantBufferHandler
 {
 	enum CBufferType
@@ -132,16 +132,20 @@ public:
 		struct light
 		{
 		public:
+			struct arrayIndex {
+				int index;
+				int _Padding[3];
+			};
 			struct pData
 			{
-				UINT NUM_POINTLIGHTS;
-				UINT NUM_AREALIGHTS;
-				UINT NUM_DIRECTIONALLIGHTS;
-				UINT NUM_SPOTLIGHTS;
-				float AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
-				float AMBIENT_INTENSITY = 0.2f;
-				UINT   SHADOWLIGHT_INDEX;
-				UINT   PADDING[3];
+				
+				UINT   NUM_POINTLIGHTS;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
+				UINT   padding[2];
+				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
+				float  AMBIENT_INTENSITY = 0.2f;
+				arrayIndex	SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
+				//int paddinga[68];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
@@ -154,7 +158,7 @@ public:
 			{
 				p = *(pData*)data;
 
-
+			
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 				memcpy(mappedResource.pData, &p, sizeof(pData));
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);

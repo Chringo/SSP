@@ -289,6 +289,15 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		file.read(data + offset, pointlightSize);
 		level.pointLights = (LevelData::PointLightHeader*) (data + offset);
 		offset += pointlightSize;
+
+		if (lightHeader->numShadowCasters > 0)
+		{
+			size_t shadowCastSize = sizeof(int) * MAX_SHADOW_CASTERS;
+			file.read(data + offset, shadowCastSize);
+			memcpy(level.shadowCastIndexes, (data + offset), shadowCastSize);
+			//level.shadowCastIndexes = (int*)(data + offset);
+			offset += shadowCastSize;
+		}
 	}
 	else
 	{

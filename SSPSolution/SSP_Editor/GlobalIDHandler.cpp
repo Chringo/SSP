@@ -64,3 +64,16 @@ void GlobalIDHandler::ResetIDs()
 	ids.clear();
 	currentID = 1;
 }
+
+bool GlobalIDHandler::ReturnRemovedIndex(int index)
+{
+	for (int i = 0; i < ids.size(); ++i)
+	{
+		if (index == ids.at(i))
+		{
+			ids.erase((ids.begin() + i));
+			return true;
+		}
+	}
+	return false;
+}
