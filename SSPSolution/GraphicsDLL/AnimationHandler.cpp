@@ -52,7 +52,7 @@ void AnimationHandler::Update(float dt)
 			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
 			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
 			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
-		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
+		if (this->m_AnimComponentList[m_AnimCompIndex]->active == true && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
 			SetAnimCompIndex(aCompIndex);
@@ -77,7 +77,7 @@ void AnimationHandler::Update(float dt)
 				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 				{
 					/*Animation is looping. Reset the local time of the source animation.*/
-					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
+					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == true)
 					{
 						m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
 					}

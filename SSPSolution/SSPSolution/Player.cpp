@@ -73,7 +73,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 1.0f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
@@ -231,13 +231,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (m_grabbed != nullptr)
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
+					SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 					this->m_aComp->previousState = PLAYER_BALL_IDLE;
 				}
 				else
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 			}
@@ -329,8 +329,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 					SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
 					this->m_aComp->velocity = 1.0f;
 					this->m_aComp->previousState = PLAYER_THROW;
-
-				
 				}
 
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
@@ -528,7 +526,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 	}
 
-
+	this->m_oldAnimState = this->m_aComp->previousState;
 	//End the update
 	return result;
 }

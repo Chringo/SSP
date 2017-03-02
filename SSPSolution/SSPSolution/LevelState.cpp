@@ -773,7 +773,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					{
 
 						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, false, true, 1.0f, 1.0f);
+						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
 						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
@@ -888,6 +888,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 		{
 			this->m_player1.SetGrabbed(nullptr);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+			this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
+			this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_player1.GetAnimationComponent()->velocity);
+			this->m_player1.GetAnimationComponent()->previousState = PLAYER_IDLE;
 		}
 		if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 		{
