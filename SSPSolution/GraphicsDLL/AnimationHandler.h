@@ -20,6 +20,7 @@ struct AnimationComponent
 	int active = 0;
 
 	/*Used to check if a state is either new or old.*/
+	int currentState = 0;
 	int previousState = 0;
 
 	/*Used to play one or two animations, for blending.*/

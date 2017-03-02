@@ -48,10 +48,7 @@ void AnimationHandler::Update(float dt)
 					continue;
 				}
 			}
-			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
-			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
-			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
-			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+
 		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
@@ -64,15 +61,8 @@ void AnimationHandler::Update(float dt)
 				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
 				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
 				
-				if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_IDLE
-					&& m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_BALL_IDLE)
-				{
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
-				}
-
-				else 
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * playingSpeed);
-					
+				m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
+	
 				/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 				{
@@ -86,13 +76,15 @@ void AnimationHandler::Update(float dt)
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_BALL_IDLE;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
+							SetAnimationComponent(PLAYER_BALL_IDLE, 0.55f, Blending::SMOOTH_TRANSITION, true, false, 0.9f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = PLAYER_BALL_IDLE;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_IDLE;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
+							SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = PLAYER_IDLE;
 						}
 
 						 
@@ -131,7 +123,7 @@ void AnimationHandler::Update(float dt)
 				else
 					Blend(seconds);
 			}
-			}
+		}
 			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
 			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
 			{
