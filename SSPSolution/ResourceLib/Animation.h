@@ -51,7 +51,7 @@ namespace Resources
 
 		DLL_OPERATION const unsigned int*   GetJointCount()		{ return &m_anim.jointCount; };
 		DLL_OPERATION const AnimationJoint* GetJoint(int& index)	{ return ((unsigned int)index < m_anim.jointCount ? &m_anim.joints[index] : nullptr); };
-		DLL_OPERATION const AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
+		DLL_OPERATION const Animation::AnimationJoint* GetAllJoints() const	{ return m_anim.joints; };
 		DLL_OPERATION AnimationState* GetAnimationStateData() { return &m_StateData; };
 
 		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr);

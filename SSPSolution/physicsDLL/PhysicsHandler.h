@@ -12,7 +12,8 @@
 #include <vector>
 #include "BulletInterpreter.h"
 //#include "..\ResourceLib\Skeleton.h"
-#include "../ResourceLib/Skeleton.h"
+//#include "../ResourceLib/Skeleton.h"
+//#include "../ResourceLib/Animation.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 #include "../GraphicsDLL/AnimationHandler.h"
 
@@ -45,7 +46,7 @@ enum RagdollState
 	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
-const int BLEND_TIME = 10;
+const float BLEND_TIME = 0.2f;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;
@@ -54,6 +55,7 @@ struct Ragdoll
 	float original_ext[3];
 	int key_frame_blend_stage;
 	int time_standil_still;
+	float blendTime = 0;
 
 	PhysicsComponent* playerPC;
 	PhysicsComponent* ballPC;
@@ -66,6 +68,7 @@ struct Ragdoll
 	BodyPart leftLeg;
 
 	Resources::Skeleton::Joint *Skeleton;
+	AnimationComponent* m_aComp;
 
 	DirectX::XMMATRIX jointMatrixes[21];
 	DirectX::XMMATRIX bindPose[21];
@@ -226,7 +229,7 @@ public:
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
 
 	PHYSICSDLL_API void CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent* playerPC);
-	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
+	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, AnimationComponent* aComp, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
 
 	PHYSICSDLL_API void AdjustRagdoll(Ragdoll* ragdoll, float dt);
 	PHYSICSDLL_API DirectX::XMVECTOR AdjustBodyPartDistance(PhysicsComponent* previous, PhysicsComponent* next, float lenght);

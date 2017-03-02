@@ -7,11 +7,7 @@
 
 void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep)
 {
-	//printf("hello callback, timewarp:  %f: ", float(timeStep));
-
-
 	PhysicsHandler* PH = static_cast<PhysicsHandler*>(world->getWorldUserInfo());
-	//PH->ProcessCallback(timeStep);
 
 	PH->DoChainPhysics(timeStep, true);
 
@@ -1654,8 +1650,6 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
-
-
 	btDynamicsWorld* tempWorld = this->m_bullet.GetBulletWorld();
 	tempWorld->setInternalTickCallback(BulletworldCallback, static_cast<void*>(this));
 
@@ -1772,7 +1766,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
-			
+
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;	//Get the position of the player
 			newPos.m128_f32[1] = 0.0f;	//Remove the Y value
 
@@ -1793,7 +1787,8 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
-			this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.4, 0, 0)));
+			//set the ragdolls PhysicsComponents in bindPose(T pose)
+			this->SetRagdoll1ToBindPose(ragdoll, DirectX::XMVectorAdd(ragdoll->playerPC->PC_pos, DirectX::XMVectorSet(0, -1.6, 0, 0)));
 			int nrOfBodyParts = this->m_player1BodyPC.size();
 			for (int i = 0; i < nrOfBodyParts; i++)
 			{
@@ -1806,10 +1801,8 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
+		//make the player position follow the ragdoll body
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
-
-		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
-		btVector3 scale = btVector3(radius, radius, radius);
 
 		this->AdjustRagdoll(ragdoll, dt);
 
@@ -1835,31 +1828,55 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;	//Set it to the player
 
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+		//move the player upp to avoid intersection with the floor
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
-		btVector3 ext;
+
+
+		int animationIndex = PLAYER_RISE_UP; 
+		int rootJoint = 0;
+
+		ragdoll->blendTime += dt;
+
+		DirectX::XMVECTOR animQuat = {
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[0] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[1] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[2] ,
+				ragdoll->m_aComp->skeleton->GetAnimation(animationIndex)->GetJoint(rootJoint)->keyframes[0].quaternion[3] };
+
+		for (int i = 0; i < 21; i++)
+		{
+			int parentIndex = ragdoll->Skeleton[i].parentIndex;
+
+			//get the rotation from the keyframe
+			DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationQuaternion(animQuat);
+
+			//get the target position we want to blend to from BindPose translated with the rotation 
+			DirectX::XMVECTOR targetPos = DirectX::XMVector3Transform(ragdoll->bindPose[i].r[3], rotMat);
+
+			//get current position
+			DirectX::XMVECTOR currentPos = ragdoll->jointMatrixes[i].r[3];
+
+			//blend between the 2 points
+			DirectX::XMVECTOR blendPos = DirectX::XMVectorLerp(
+				currentPos,
+				targetPos,
+				(ragdoll->blendTime / (float)BLEND_TIME));
+
+
+			//update joint matrix in ragdoll
+			ragdoll->jointMatrixes[i] = DirectX::XMMatrixIdentity();
+			ragdoll->jointMatrixes[i].r[3] = blendPos;
+		}
+
 
 		ragdoll->key_frame_blend_stage--;
 
-		if (ragdoll->key_frame_blend_stage == 0)
+		if (ragdoll->blendTime >= BLEND_TIME)
 		{
+			ragdoll->blendTime = 0;
 			ragdoll->key_frame_blend_stage = BLEND_TIME;
 			ragdoll->state = ANIMATED_TRANSITION;
-			if (ragdoll->playerPC->PC_entityID == 1)
-			{
-				int nrOfBodyParts = this->m_player1BodyPC.size();
-				for (int i = 0; i < nrOfBodyParts; i++)
-				{
-					//this->m_player1BodyPC.at(i)->PC_gravityInfluence = 0.0f;
-				}
-			}
-			if (ragdoll->playerPC->PC_entityID == 2)
-			{
-				int nrOfBodyParts = this->m_player2BodyPC.size();
-				for (int i = 0; i < nrOfBodyParts; i++)
-				{
-					//this->m_player2BodyPC.at(i)->PC_gravityInfluence = 0.0f;
-				}
-			}
+
 		}
 	}
 }
@@ -1946,8 +1963,6 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 	//}
 #pragma endregion
 }
-
-
 
 void PhysicsHandler::CheckFieldIntersection()
 {
@@ -2842,7 +2857,7 @@ void PhysicsHandler::CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent *
 
 }
 
-void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent * playerPC, PhysicsComponent* ball)
+void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, AnimationComponent* aComp, DirectX::XMVECTOR pos, PhysicsComponent * playerPC, PhysicsComponent* ball)
 {
 	float hitboxSize = 0.125f;
 	float torsoWidth = 0.125;
@@ -3111,6 +3126,7 @@ void PhysicsHandler::CreateRagdollBodyWithChainAndBall(int player, Resources::Sk
 		}
 
 		this->m_player1RagDoll.Skeleton = Skeleton;
+		this->m_player1RagDoll.m_aComp = aComp;
 		this->SetRagdoll1ToBindPose(&this->m_player1RagDoll, DirectX::XMVectorAdd(DirectX::XMVectorAdd(playerPC->PC_pos, pos), DirectX::XMVectorSet(0, 4, 0, 0)));
 
 	}
@@ -4130,13 +4146,13 @@ PhysicsComponent * PhysicsHandler::GetStaticComponentAt(int index) const
 
 int PhysicsHandler::GetNrOfBodyComponents() const
 {
-	return this->m_player2BodyPC.size();
+	return this->m_player1BodyPC.size();
 }
 PhysicsComponent * PhysicsHandler::GetBodyComponentAt(int index) const
 {
-	if (index >= 0 && index < this->m_player2BodyPC.size())
+	if (index >= 0 && index < this->m_player1BodyPC.size())
 	{
-		return this->m_player2BodyPC.at(index);
+		return this->m_player1BodyPC.at(index);
 	}
 	return nullptr;
 }
@@ -4282,9 +4298,9 @@ void PhysicsHandler::TransferBoxesToBullet(PhysicsComponent * src, int index)
 			else //Ragdoll
 			{
 				this->m_bullet.CreateSphere(src, index, CollitionTypes::COL_RAGDOLL, this->ragdollCollides);
-			}
-			
-		}
+	}
+
+}
 	}
 }
 
@@ -4924,3 +4940,9 @@ Ragdoll * PhysicsHandler::GetPlayer2Ragdoll()
 {
 	return &this->m_player2RagDoll;
 }
+
+
+
+
+/*      
+*/
