@@ -778,14 +778,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
 					}
-					/*Commented to test if the system have no bugs.*/
-					//if (itr->newstate == PLAYER_THROW || itr->newstate == PLAYER_PICKUP)
-					//{
-					//	//beacause PLAYER_THROW and PLAYER_PICKUP loops for some reason
-					//	int a = 0;
-					//	itr->isLooping = false;
-					//}
-
+					
 					this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
