@@ -2478,14 +2478,6 @@ int PhysicsHandler::CreateLink(PhysicsComponent * previous, PhysicsComponent * n
 	link.PL_previous = previous;
 	link.PL_type = type;
 
-	//this->m_chain->CreateChain();
-
-	//previous == character pos(center of body) 
-	//next == ball pos, 
-
-	//Create 4 points out of the vector between the ball and the player 
-	//use those vectors to calculate the bezier line. 
-
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(previous->PC_pos, next->PC_pos);
 
 	float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
