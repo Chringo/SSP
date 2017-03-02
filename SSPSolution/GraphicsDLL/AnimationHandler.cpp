@@ -86,16 +86,18 @@ void AnimationHandler::Update(float dt)
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
 							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_BALL_IDLE;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
+							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
 							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_IDLE;
 						}
-						/*All animations that are not looping gets it lock released, other animations can now contribute.*/
-						m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
+
+						 
 					}
 				}
 				/*Interpolate the keyframes of this animation.*/
@@ -585,17 +587,18 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 	m_AnimComponentList[m_AnimCompIndex]->target_Time += globalTime;
 }
 
-void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed)
+void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
 	/*Sets a current used animation component and updates the information.*/
 	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State = this->m_AnimComponentList[this->m_AnimCompIndex]->
 		animation_States->at(animationState)->GetAnimationStateData();
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->stateIndex = animationState;
-	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->blendFlag = blendingType;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->isLooping = isLooping;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->velocity = velocity;
 	
 }
 
