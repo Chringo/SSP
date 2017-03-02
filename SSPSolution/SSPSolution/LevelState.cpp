@@ -773,7 +773,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					{
 
 						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, true, false, 3.0f, 1.0f);
+						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, false, false, 3.0f, 1.0f);
 						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
