@@ -199,6 +199,22 @@ int LevelState::ShutDown()
 	this->m_cHandler->RemoveLastUIComponent();
 	this->m_cHandler->RemoveLastUIComponent();
 
+	/*for (size_t i = 0; i < this->m_Player1ChainPhysicsComp.size(); i++)
+	{
+		delete this->m_Player1ChainPhysicsComp[i];
+		this->m_Player1ChainPhysicsComp[i] = nullptr;
+	}
+	for (size_t i = 0; i < this->m_Player2ChainPhysicsComp.size(); i++)
+	{
+		delete this->m_Player2ChainPhysicsComp[i];
+		this->m_Player2ChainPhysicsComp[i] = nullptr;
+	}*/
+	this->m_Player1ChainPhysicsComp.clear();
+	this->m_Player2ChainPhysicsComp.clear();
+	this->m_grapichalLinkListPlayer1.clear();
+	this->m_grapichalLinkListPlayer2.clear();
+
+
 	return result;
 }
 
