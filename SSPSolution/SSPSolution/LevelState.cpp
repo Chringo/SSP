@@ -778,8 +778,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
 					}
-					if (itr->newstate == PLAYER_THROW)
+					if (itr->newstate == PLAYER_THROW || itr->newstate == PLAYER_PICKUP)
 					{
+						//beacause PLAYER_THROW and PLAYER_PICKUP loops for some reason
 						int a = 0;
 						itr->isLooping = false;
 					}
