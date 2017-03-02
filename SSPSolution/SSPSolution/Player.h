@@ -28,6 +28,7 @@ private:
 	float m_chainSoundTimer;
 	int	m_oldAnimState;
 	float m_timeSinceThrow;
+	bool isAbbington;
 
 public:
 	Player();
