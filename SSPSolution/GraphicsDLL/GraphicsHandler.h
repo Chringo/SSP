@@ -25,6 +25,7 @@ const int OCTREE_NODE_MAX_DEPTH = 5;
 const int OCTREE_NODE_MIN_DEPTH = 1;
 const float OCTREE_NODE_MIN_SIZE = 2.0f;
 const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
+const size_t MAX_ACTIVE_LIGHTS = 40;
 					  
 	
 class GraphicsHandler
@@ -87,6 +88,8 @@ private:
 	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
 	std::vector<GraphicsComponent*> m_persistantGraphicsComponents;
 	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
+
+	std::vector<int> m_activeLightIndices;
 
 
 	//temp

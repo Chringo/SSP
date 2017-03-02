@@ -500,6 +500,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_overviewCamera.Update();
 	this->m_useOverview = false;
 
+	this->m_activeLightIndices.reserve(MAX_ACTIVE_LIGHTS);
+
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
 #ifdef _DEBUG
@@ -741,11 +743,17 @@ int GraphicsHandler::Render(float deltaTime)
 			//int lightsInFrustrum = 0;
 			for (int lightIndex = 0; lightIndex < lightArrayPtr->numItems; lightIndex++)
 			{
-				specializedData[lightIndex].isActive = frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0;
+				if (frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0)
+				{
+					this->m_activeLightIndices.push_back(lightIndex);
+				}
+				//specializedData[lightIndex].isActive = frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0;
 				//lightsInFrustrum += specializedData[lightIndex].isActive;
 			}
 			//printf("Lights in frustrum %d\n", lightsInFrustrum);
+			//Update light buffer
 			this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
+			this->m_activeLightIndices.clear();
 #pragma endregion LightCulling
 
 
