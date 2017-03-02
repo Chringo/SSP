@@ -372,6 +372,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 			if (LightController::GetInstance()->GetLights()->at(i)->internalID == instanceID)
 			{
 				LightController::GetInstance()->RemoveLight(i, LIGHTING::LT_POINT);
+				return Resources::Status::ST_OK;
 			}
 		}
 

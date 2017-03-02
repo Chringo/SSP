@@ -75,6 +75,7 @@ namespace Ui {
 		QPushButton*		m_Down;
 		QPushButton*		m_AddCheckpoint;
 		QPushButton*		m_AddLightButton;
+		QCheckBox*			m_CastShadows;
 		QPushButton*		m_RunLevel;
 		QSpinBox*			m_CheckpointValue;
 
@@ -105,6 +106,7 @@ namespace Ui {
 		QDoubleSpinBox *  m_wheel_resetTime;
 		QSpinBox*			m_LightIntSpinBoxes[NUM_LINTSPIN];
 		QSpinBox*		  m_AmbientLightBoxes[4];
+		QComboBox*		m_lightDropDown;
 #pragma endregion
 
 
@@ -196,6 +198,7 @@ namespace Ui {
 		void on_Linear_changed(int val);
 		void on_Quadratic_changed(int val);
 		void on_HideLight_changed(bool val);
+		void on_CastShadow_changed(bool val);
 #pragma endregion
 #pragma region Lever callbacks
 		void on_lever_distance_changed(double val);

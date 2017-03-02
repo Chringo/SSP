@@ -16,6 +16,7 @@ private:
 public:
 	~GlobalIDHandler();
 	static GlobalIDHandler* GetInstance();
+	bool ReturnRemovedIndex(int index);
 	const unsigned int GetNewId();
 	const unsigned int AddExistingID(unsigned int id); //Used when loading file. If the id exists, it generates a new id. (This fixes old level files)
 	void ResetIDs();

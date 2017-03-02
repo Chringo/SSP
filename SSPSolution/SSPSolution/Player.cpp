@@ -45,39 +45,39 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
-	
-#pragma region
-	//if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
-	//{
-	//	this->m_ragdoll->state = ANIMATED;
-	//
-	//	this->m_oldAnimState = this->m_aComp->previousState;
-	//	SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);			
-	//	this->m_aComp->previousState = PLAYER_IDLE;
-	//}
-	//if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
-	//{
-	//	DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
-	//	this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
-	//	
-	//}
-	//if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
-	//{
-	//	this->m_ragdoll->state = KEYFRAMEBLEND;
-	//	this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-	//}
-#pragma endregion Ragdoll_Debug_Buttons
 
+	//extra buttons for testing ragdoll
+#ifdef DEVELOPMENTFUNCTIONS
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
+	{
+		this->m_ragdoll->state = ANIMATED;
+	
+		this->m_oldAnimState = this->m_aComp->previousState;
+		SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 2.0f, 1.0f);			
+		this->m_aComp->previousState = PLAYER_IDLE;
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_K))
+	{
+		DirectX::XMVECTOR vel = DirectX::XMVectorScale(this->m_lookDir, 25);
+		this->m_ball->GetPhysicsComponent()->PC_velocity = vel;
+		
+	}
+	if (inputHandler->IsKeyDown(SDL_SCANCODE_L))
+	{
+		this->m_ragdoll->state = KEYFRAMEBLEND;
+		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+	}
+#endif 
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
 		{
 			this->m_oldAnimState = this->m_aComp->previousState;
-			SetAnimationComponent(PLAYER_IDLE, 0, Blending::NO_TRANSITION, true, false, 0.8f, 1.0f);
+			SetAnimationComponent(PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
 			this->m_aComp->previousState = PLAYER_IDLE;
 			this->m_ragdoll->state = ANIMATED;
 		}
-		if (this->m_ragdoll->state == RAGDOLL)
+		if (this->m_ragdoll->state == RAGDOLL || this->m_ragdoll->state == KEYFRAMEBLEND)
 		{
 			this->m_aComp;
 			this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -231,13 +231,13 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				if (m_grabbed != nullptr)
 				{
 					this->m_oldAnimState = this->m_aComp->previousState;
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
+					SetAnimationComponent(PLAYER_BALL_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 					this->m_aComp->previousState = PLAYER_BALL_IDLE;
 				}
 				else
 			{
 				this->m_oldAnimState = this->m_aComp->previousState;
-						SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
+				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, 1.0f);
 				this->m_aComp->previousState = PLAYER_IDLE;
 			}
 			}
@@ -327,7 +327,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 				if (this->GetEntityID() == 2)
-				SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
+					SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 				else
 					SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
 					
@@ -336,26 +336,24 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 				//if the player is holding its own ball
 				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
-			{
-				/*Set the component to play the "release ball" animation for player IDLE.*/
-				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
+				{
+					/*Set the component to play the "release ball" animation for player IDLE.*/
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_aComp->velocity);
 
-				this->m_aComp->previousState = PLAYER_IDLE;
+					this->m_aComp->previousState = PLAYER_IDLE;
 
-				strength = 2; //weak as föök if the player tries to throw himself
-			}
+					strength = 2; //weak as föök if the player tries to throw himself
+				}
 
 				else
-			{
-				/*Set the component to play the animation for throwing the other player's ball.*/
-				this->m_oldAnimState = this->m_aComp->previousState;
-				SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
-				this->m_aComp->velocity = 1.0f;
-				this->m_aComp->previousState = PLAYER_THROW;
-
-				
-			}
+				{
+					/*Set the component to play the animation for throwing the other player's ball.*/
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_THROW, 0.25f, Blending::FROZEN_TRANSITION, false, true, 2.0f, 1.0f);
+					this->m_aComp->velocity = 1.0f;
+					this->m_aComp->previousState = PLAYER_THROW;
+				}
 
 				m_grabbed->GetPhysicsComponent()->PC_active = true;
 				this->m_grabbed->GetPhysicsComponent()->PC_velocity = DirectX::XMVectorScale(this->m_lookDir, strength);
@@ -532,13 +530,25 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
-			if (this->m_ragdoll->state == RAGDOLL)
+			if (this->m_ragdoll->state == RAGDOLL )
 			{
-				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, -1.5, 0, 0)));
+				//offsets for when player ragdoll is in RAGDOLL stage
+				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
+				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -1);
+				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->upperBody.center->PC_pos, offSet));
 			}
+			if (this->m_ragdoll->state == KEYFRAMEBLEND)
+			{
+				//offsets for when player ragdoll is in KEYFRAMEBLEND stage
+				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
+				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -0.0);
+				offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorSet(0, 0, -1.5, 0));
+				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, offSet));
+
+			}
+
 		}
 	}
-
 
 	//End the update
 	return result;
@@ -619,7 +629,6 @@ bool Player::stateExists(int animationState)
 	/*If the previous state is not equal to current state.*/
 	if (m_aComp->previousState != animationState)
 	{
-		//m_aComp->previousState = animationState;
 		return false;
 	}
 	/*If the previous state is equal to current state.*/
@@ -647,23 +656,16 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 
 		else
 		{
-	this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-	this->m_aComp->target_State->stateIndex = animationState;
-	this->m_aComp->blendFlag = blendingType;
-	this->m_aComp->target_State->isLooping = isLooping;
-	this->m_aComp->lockAnimation = lockAnimation;
-	this->m_aComp->playingSpeed = playingSpeed;
-	this->m_aComp->velocity = velocity;
-}
-		//this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
-		//this->m_aComp->target_State->stateIndex = animationState;
-		//this->m_aComp->blendFlag = blendingType;
-		//this->m_aComp->target_State->isLooping = isLooping;
-		//this->m_aComp->lockAnimation = lockAnimation;
-		//this->m_aComp->playingSpeed = playingSpeed;
-		//this->m_aComp->velocity = velocity;
+			this->m_aComp->target_State = this->m_aComp->animation_States->at(animationState)->GetAnimationStateData();
+			this->m_aComp->target_State->stateIndex = animationState;
+			this->m_aComp->transitionDuration = transitionDuration;
+			this->m_aComp->blendFlag = blendingType;
+			this->m_aComp->target_State->isLooping = isLooping;
+			this->m_aComp->lockAnimation = lockAnimation;
+			this->m_aComp->playingSpeed = playingSpeed;
+			this->m_aComp->velocity = velocity;
+		}
 	}
-
 	else
 	{
 		this->m_aComp->source_State->stateIndex = animationState;
@@ -674,7 +676,6 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 		this->m_aComp->target_Time = 0.f;
 		this->m_aComp->source_Time = 0.f;
 	}
-	
 }
 
 void Player::SetBall(Entity * ball)

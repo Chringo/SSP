@@ -32,7 +32,7 @@ int System::Shutdown()
 
 	delete &Progression::instance();
 	DebugHandler::instance()->Shutdown();
-
+	
 	return result;
 }
 
@@ -184,11 +184,11 @@ int System::Update(float deltaTime)
 		{
 			//Do the physics
 #pragma region
-			DebugHandler::instance()->StartTimer(1);
+	DebugHandler::instance()->StartTimer(1);
 
-			this->m_physicsHandler.Update(deltaTime);
+	this->m_physicsHandler.Update(deltaTime);
 
-			DebugHandler::instance()->EndTimer(1);
+	DebugHandler::instance()->EndTimer(1);
 #pragma endregion Physics
 		}
 		else if (myThreadID == 1)
@@ -201,45 +201,60 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->StartTimer(3);
 			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
 			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
-
+			
 			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);
 
 			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
-			for (int i = 0; i < nrOfComponents; i++)
+			//for (int i = 0; i < nrOfComponents; i++)
+			//{
+			//	PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+			//	if (temp->PC_BVtype == BV_AABB)
+			//	{
+			//		AABB* AABB_holder = nullptr;
+			//		this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+			//	}
+			//	if (temp->PC_BVtype == BV_OBB)
+			//	{
+			//		OBB* OBB_holder = nullptr;
+			//		this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+
+			//		DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+
+			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+			//	}
+			//	if (temp->PC_BVtype == BV_Plane)
+			//	{
+			//		Plane* planeHolder = nullptr;
+			//		this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+			//	}
+			//	if (temp->PC_BVtype == BV_Sphere)
+			//	{
+			//		Sphere* sphereHolder = nullptr;
+			//		this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+			//	}
+			//}
+			int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
+			PhysicsComponent* temp = nullptr;
+			OBB* OBB_holder = nullptr;
+			temp = this->m_physicsHandler.GetPlayer1Ragdoll()->playerPC;
+			OBB_holder = &temp->PC_OBB;
+			if (temp != nullptr)
 			{
-				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-				if (temp->PC_BVtype == BV_AABB)
-				{
-					AABB* AABB_holder = nullptr;
-					this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-				}
-				if (temp->PC_BVtype == BV_OBB)
-				{
-					OBB* OBB_holder = nullptr;
-					this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
-
-					DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
-
 					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
 				}
-				if (temp->PC_BVtype == BV_Plane)
-				{
-					Plane* planeHolder = nullptr;
-					this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-				}
-				if (temp->PC_BVtype == BV_Sphere)
-				{
-					Sphere* sphereHolder = nullptr;
-					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0));
-				}
-			}
-
-#endif // _DEBUG
+			//for (int i = 0; i < nrOfBodyParts; i++)
+			//{
+			//	temp = this->m_physicsHandler.GetBodyComponentAt(i);
+			//	Sphere* sphereHolder = nullptr;
+			//	sphereHolder = &temp->PC_Sphere;
+			//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+			//}
+#endif  _DEBUG
 
 			this->m_graphicsHandler->Update(deltaTime);
 
@@ -250,12 +265,12 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
 		}
-		//Do AI and Animation
+			//Do AI and Animation
 		else if (myThreadID == 2)
 		{
 #pragma region
-			//AI
-			this->m_AIHandler.Update(deltaTime);
+	//AI
+	this->m_AIHandler.Update(deltaTime);
 
 			this->m_AnimationHandler->Update(deltaTime);
 #pragma endregion AI And Animation
@@ -309,7 +324,7 @@ int System::Update(float deltaTime)
 
 	//this->m_AIHandler.Update(deltaTime);
 	//this->m_AnimationHandler->Update(deltaTime);
-
+	
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
@@ -413,7 +428,7 @@ int System::HandleEvents()
 #pragma endregion window events
 		case SDL_MOUSEMOTION:
 		{
-
+			
 			break;
 		}
 		case SDL_QUIT:
@@ -426,7 +441,7 @@ int System::HandleEvents()
 		case SDL_KEYDOWN:
 		{
 			//OnKeyDown(Event->key.keysym.sym, Event->key.keysym.mod, Event->key.keysym.scancode);
-
+			
 			this->m_inputHandler->SetKeyState(m_event.key.keysym.scancode, true);
 			break;
 		}
@@ -473,7 +488,7 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 	PhysicsComponent* player = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
-
+	
 	player = this->m_physicsHandler.GetDynamicComponentAt(0);
 
 	camPos = DirectX::XMVectorAdd(player->PC_pos, DirectX::XMVectorScale(diffVec, -3));
