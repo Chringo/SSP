@@ -6,7 +6,9 @@
 #include "GraphicsComponent.h"
 #include "ShaderLib.h"
 
-const int BUFFER_COUNT = 4; //color metal rough normal ao wpos
+const int BUFFER_COUNT = 5; //color metal  wpos RNAO SHADOW
+
+const int RTV_COUNT = 4; // shadow does not use RTVs
 
 class Shader
 {
@@ -20,7 +22,7 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	virtual int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution) = 0;
+	virtual int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort) = 0;
 	virtual int SetActive() = 0;
 	virtual int SetVariation(ShaderLib::ShaderVariations variation);
 	virtual void Release()  = 0;

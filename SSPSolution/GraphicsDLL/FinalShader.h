@@ -26,7 +26,7 @@ public:
 	FinalShader();
 	~FinalShader();
 
-	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort);
 	
 	int SetActive();
 	int SetRenderParameters(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView** gBuffers);

@@ -242,7 +242,7 @@ int NetworkModule::Join(char* ip)
 		printf("client %d has been connected to the this client\n", this->client_id);
 		this->client_id++;
 
-		this->isHost = false;	//If you joined another client, you are not host
+		//this->isHost = false;	//If you joined another client, you are not host
 		return 1;
 	}
 
@@ -272,7 +272,7 @@ void NetworkModule::SendSyncPacket()
 	packet.packet_type = CONNECTION_ACCEPTED;
 	packet.packet_ID = this->packet_ID;
 	packet.timestamp = this->GetTimeStamp();
-	packet.time_start = this->time_start;
+	packet.setHost = !isHost;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity,int jointIndex, DirectX::XMMATRIX finalJointTransform)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -315,6 +315,8 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, flo
 	packet.lockAnimation = lockAnimation;
 	packet.playingSpeed = playingSpeed;
 	packet.velocity = velocity;
+	packet.jointIndex = jointIndex;
+	DirectX::XMStoreFloat4x4(&packet.finalJointTransform, finalJointTransform);
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -527,16 +529,15 @@ void NetworkModule::ReadMessagesFromClients()
 				data_read += sizeof(Packet);
 				//DEBUG
 				//printf("Host received connection packet from client\n");
-
+				this->SendSyncPacket();
 				break;
 
 			case CONNECTION_ACCEPTED:
 
 				syP.deserialize(&network_data[data_read]);	// Read the binary data into the object
 
-				// Sync clock (Still not used)
-				this->time_current = (int)syP.timestamp;
-				this->time_start = syP.time_start;
+				this->isHost = syP.setHost;
+
 				data_read += sizeof(SyncPacket);
 				//DEBUG
 				//printf("Client received CONNECTION_ACCEPTED packet from Host\n");

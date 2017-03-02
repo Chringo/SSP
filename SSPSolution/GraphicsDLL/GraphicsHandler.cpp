@@ -46,6 +46,29 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	else
 		context->OMSetRenderTargets(1, &temp, this->dsv);
 	m_debugRender.SetActive();
+
+	for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
+	{
+		Sphere sp;
+		sp.radius = 0.2f;
+
+
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+
+		DirectX::XMVECTOR zero = { 0,0,0,0 };
+		DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
+		DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
+
+		DirectX::XMVECTOR pos = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
+		zero = DirectX::XMVector3TransformCoord(zero, joint);
+		zero = DirectX::XMVector3TransformCoord(zero, world);
+
+		m_debugRender.Render(zero, sp);
+	}
+
 	for (size_t i = 0; i < obbBoxes.size(); i++)
 	{
 		m_debugRender.Render(*positions[T_OBB].at(i), *obbBoxes.at(i), colors[T_OBB].at(i));
@@ -78,27 +101,27 @@ void GraphicsHandler::RenderBoundingBoxes(bool noClip)
 	
 	
 
-		for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
-		{
-			Sphere sp;
-			sp.radius = 0.2f;
+	//for (size_t i = 0; i < m_animGraphicsComponents[0]->jointCount; i++)
+	//{
+	//	Sphere sp;
+	//	sp.radius = 0.2f;
 
 
-			DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
-			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
-			tpose = DirectX::XMMatrixInverse(&det, tpose);
+	//	DirectX::XMMATRIX tpose = DirectX::XMMATRIX(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[i].invBindPose);
+	//	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+	//	tpose = DirectX::XMMatrixInverse(&det, tpose);
 
-			DirectX::XMVECTOR zero ={ 0,0,0,0 };
-			DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
-			DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
+	//	DirectX::XMVECTOR zero ={ 0,0,0,0 };
+	//	DirectX::XMMATRIX world = m_animGraphicsComponents[0]->worldMatrix;
+	//	DirectX::XMMATRIX joint = m_animGraphicsComponents[0]->finalJointTransforms[i];
 
-			DirectX::XMVECTOR pos   = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
-			joint = DirectX::XMMatrixMultiply(tpose,joint);
-			zero = DirectX::XMVector3TransformCoord(zero, joint);
-			zero = DirectX::XMVector3TransformCoord(zero, world);
-			
-			m_debugRender.Render(zero, sp);
-		}
+	//	DirectX::XMVECTOR pos   = m_animGraphicsComponents[0]->finalJointTransforms[i].r[3];
+	//	joint = DirectX::XMMatrixMultiply(tpose,joint);
+	//	zero = DirectX::XMVector3TransformCoord(zero, joint);
+	//	zero = DirectX::XMVector3TransformCoord(zero, world);
+	//	
+	//	m_debugRender.Render(zero, sp);
+	//}
 	
 
 	positions[T_WAYPOINT].clear();
@@ -461,9 +484,9 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	}
 	this->m_LightHandler = LIGHTING::LightHandler::GetInstance();
 	this->m_LightHandler->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext());
-
+	
 	this->m_shaderControl = new ShaderControl;
-	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
+	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), this->m_d3dHandler->GetViewPort());
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
 	this->m_overviewCamera.Initialize();
@@ -501,6 +524,11 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
+
+
+
+
+
 	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
@@ -557,6 +585,9 @@ int GraphicsHandler::Render(float deltaTime)
 	
 	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
+
+
+
 	/********************/
 
 	ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
@@ -565,7 +596,9 @@ int GraphicsHandler::Render(float deltaTime)
 
 	int amountOfModelsToRender = 0;
 	int componentsInTree = this->m_octreeRoot.containedComponents.size();
+	
 
+#pragma region
 	std::vector<InstanceData> instancedRenderingList;
 	unsigned int firstRenderedModelID = UINT_MAX;
 	unsigned int firstRenderedInstancedModelID = 0;
@@ -595,7 +628,7 @@ int GraphicsHandler::Render(float deltaTime)
 	}
 
 	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	
 	int amountOfModelOccurrencees = 0;
 	unsigned int lastComponentIndex = 0;
 	lastModelID  = firstRenderedModelID;
@@ -623,7 +656,11 @@ int GraphicsHandler::Render(float deltaTime)
 				}
 				else 
 				{
+	
+					
+					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
 					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+
 					lastRenderedComponent->isRendered = false;
 					amountOfModelOccurrencees = 0;
 				}
@@ -649,7 +686,10 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 		else
 		{
+			
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
 			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+
 			lastRenderedComponent->isRendered = false;
 			amountOfModelOccurrencees = -1;
 		}
@@ -679,21 +719,26 @@ int GraphicsHandler::Render(float deltaTime)
 			i->isRendered = false;
 		}
 	}
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced);
-	for (size_t i = 0; i < instancedRenderingList.size(); i++)
-	{
-		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
-	}
-	//By all means it should be done by now
-	/*for (InstanceData& i : instancedRenderingList)
-	{
-		delete i.componentSpecific;
-	}*/
+#pragma endregion Octree stuff
 
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
-	//Go through all components in the root node and render the ones that should be rendered
-	size_t renderCap = this->m_staticGraphicsComponents.size();
-	renderCap = this->m_dynamicGraphicsComponents.size();
+
+	//Go through all components dynamic components
+	size_t renderCap = this->m_dynamicGraphicsComponents.size();
+
+#pragma region 
+	//TEMP Johans
+	D3D11_VIEWPORT vP; 
+	vP.Width = 1280.f;
+	vP.Height = 720.f;
+	vP.MinDepth = 0.0f;
+	vP.MaxDepth = 1.0f;
+	vP.TopLeftX = 0;
+	vP.TopLeftY = 0;
+	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
+
+#pragma region Render shadows for normal (non instanced) geometry
+
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
 	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
 	{
 		if (this->m_dynamicGraphicsComponents[i]->active)
@@ -702,8 +747,9 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
-	renderCap = this->m_persistantGraphicsComponents.size();
-	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	
+
+for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
 	{
 		if (this->m_persistantGraphicsComponents[i]->active)
 		{
@@ -711,30 +757,93 @@ int GraphicsHandler::Render(float deltaTime)
 		}
 
 	}
-	
+#pragma endregion
+#pragma region Render shadows for animated geometry
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
+	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+	{
+		if (this->m_animGraphicsComponents[i]->active == false)
+			continue;
+		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 
+	}
+#pragma endregion
+#pragma endregion Shadow pass
+
+
+#pragma region
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_dynamicGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+		}
+
+	}
+
+	renderCap = this->m_persistantGraphicsComponents.size();
+	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+	{
+		if (this->m_persistantGraphicsComponents[i]->active)
+		{
+			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+		}
+
+	}
+#pragma endregion Render non-instanced geometry
+
+#pragma region
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
+	for (size_t i = 0; i < instancedRenderingList.size(); i++)
+	{
+		m_shaderControl->DrawInstanced(&instancedRenderingList.at(i));
+	}
+
+#pragma endregion Render Instanced objects
+
+#pragma region
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
 	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
 	{
 		if (this->m_animGraphicsComponents[i]->active == false)
 			continue;
 		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+
 		
 	}
-	m_LightHandler->SetBuffersAsActive();
+#pragma endregion Render animated objects
+	//render joints
+
+	//for (int a = 0; a < 21; a++)
+	//{
+	//	Sphere sphere;
+	//	sphere.radius = 0.25;
+	//	DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(m_animGraphicsComponents[0]->modelPtr->GetSkeleton()->GetSkeletonData()->joints[a].invBindPose);
+
+	//	DirectX::XMVECTOR pos = m_animGraphicsComponents[0]->worldMatrix.r[3];
+	//	DirectX::XMVECTOR offSet = DirectX::XMMatrixInverse(nullptr, *inverseBindPose).r[3];
+
+	//	pos = DirectX::XMVectorAdd(pos, offSet);
+	//	pos = DirectX::XMVectorSetW(pos, 1);
+
+	//	this->RenderBoundingVolume(offSet, sphere);
+	//}
+	//
+
+
+
+	m_LightHandler->SetBufferAsActive();
+	m_LightHandler->SetStaticShadowsToGPU();
 	m_shaderControl->DrawFinal();
 
-	/*TEMP CBUFFER STUFF*/
-
-	/*TEMP CBUFFER STUFF*/
-
-
+#pragma region
 	if (postProcessing)
 	{
-		ID3D11DeviceContext* context = m_d3dHandler->GetDeviceContext();
-		ID3D11RenderTargetView* temp = nullptr;
-		context->OMSetRenderTargets(1, &temp, NULL);
 		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
+		ID3D11DeviceContext* context  = m_d3dHandler->GetDeviceContext();
+		ID3D11RenderTargetView* temp  = nullptr;
+		context->OMSetRenderTargets(1, &temp, NULL);
 		context->PSSetShaderResources(6,1,&srv);
 
 		m_shaderControl->PostProcess();
@@ -742,7 +851,9 @@ int GraphicsHandler::Render(float deltaTime)
 		tab[0] = NULL;
 		context->PSSetShaderResources(6, 1, tab);
 	}
+#pragma endregion Post Processing
 
+#pragma region
 #ifdef _DEBUG
 	Camera::ViewFrustrum renderTest;
 	this->m_camera->GetViewFrustrum(renderTest);
@@ -759,12 +870,40 @@ int GraphicsHandler::Render(float deltaTime)
 	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
 #endif // _DEBUG
+#pragma endregion Debug rendering
+
 
 	this->m_uiHandler->DrawUI();
 	this->m_d3dHandler->PresentScene();
 	
 	return result;
 }
+
+
+ int GraphicsHandler::RenderStaticObjectShadows()
+{
+
+	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
+
+	for (GraphicsComponent* comp : m_staticGraphicsComponents)
+		 m_shaderControl->Draw(comp->modelPtr, comp);
+
+
+
+	 
+	 return  1;
+}
+
+ int GraphicsHandler::Update(float deltaTime)
+ {
+	 int result = 0;
+	 //Convert deltaTime into seconds for easier timer management
+	 deltaTime = deltaTime / 1000000.0f;
+	 result = this->m_LightHandler->Update(deltaTime, this->m_camera->GetFocusPoint());
+
+	 return result;
+ }
 
 int GraphicsHandler::InitializeGrid()
 {
@@ -815,7 +954,7 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
-	m_LightHandler->SetBuffersAsActive();
+	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
 	RenderBoundingBoxes();
@@ -1320,6 +1459,105 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		this->m_persistantGraphicsComponents[i] = new GraphicsComponent();
 	}
 	return  result;
+}
+
+ int GraphicsHandler::GenerateStaticSceneShadows()
+{
+	 //For each light
+
+		// Set the light as active for shadow rendering
+		
+		// Render the static objects in the scene
+
+		// Save the textures to the light, (or to file)
+	 
+	 //
+#ifdef _DEBUG
+	 Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
+
+
+	Render(0.0f);
+
+
+	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
+	
+	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
+	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
+
+	lights->ReleaseShadowMaps(); //release the textures if there are any
+
+#pragma region Create the textureCubeArray
+	D3D11_TEXTURE2D_DESC ShadowTexDesc;
+
+	ShadowTexDesc.Width				 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
+	ShadowTexDesc.Height			 = (UINT)STATIC_SHADOWMAP_RESOLUTION;	
+	ShadowTexDesc.MipLevels			 = 1;
+	ShadowTexDesc.ArraySize			 = 6 * lights->numShadowLights;	//one for each axis * number of lights
+	ShadowTexDesc.Format			 = DXGI_FORMAT_R32_TYPELESS;
+	ShadowTexDesc.SampleDesc.Count   = 1;
+	ShadowTexDesc.SampleDesc.Quality = 0;
+	ShadowTexDesc.Usage				 = D3D11_USAGE_DEFAULT;
+	ShadowTexDesc.BindFlags			 = D3D11_BIND_SHADER_RESOURCE;
+	ShadowTexDesc.CPUAccessFlags	 = D3D11_CPU_ACCESS_WRITE;
+	ShadowTexDesc.MiscFlags			 = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	//Create the render target Texture
+	ID3D11Texture2D* tempTexture;
+	HRESULT hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempTexture);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+ //Set up the shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewShadowDesc;
+	resourceViewShadowDesc.Format		 = DXGI_FORMAT_R32_FLOAT;
+	resourceViewShadowDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+	resourceViewShadowDesc.TextureCubeArray.NumCubes		 = lights->numShadowLights;
+	resourceViewShadowDesc.TextureCubeArray.First2DArrayFace = 0;
+	resourceViewShadowDesc.TextureCubeArray.MostDetailedMip  = 0;
+	resourceViewShadowDesc.TextureCubeArray.MipLevels		 = -1;
+
+
+
+	//Create the resourceView;
+
+	hResult = device->CreateShaderResourceView(tempTexture, &resourceViewShadowDesc, &lights->shadowMaps);
+	if (FAILED(hResult))
+		return 1;
+#pragma endregion
+
+
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+//D3D11_BOX srcBox; // box for the resourceCopy
+//srcBox.left = 0;
+//srcBox.right = srcBox.left + 512;
+//srcBox.top = 0;
+//srcBox.bottom = srcBox.top + 512;
+//srcBox.front = 0;
+//srcBox.back = 1;
+
+	for (size_t i = 0; i < lights->numShadowLights; i++) //for each light
+	{
+
+		m_shaderControl->ClearFrame();
+
+		m_LightHandler->SetShadowCastingLight(lights->shadowLightIndex[i]);
+		this->RenderStaticObjectShadows();						   //render statics
+	
+		
+	
+		for (size_t j = 0; j < 6; j++) //for each side of the cube map
+		{
+			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
+
+		}
+		m_d3dHandler->PresentScene(); //Finish the renderCall
+	}
+	m_LightHandler->SetStaticShadowsToGPU();
+	tempTexture->Release();	
+
+	 return  1;
 }
 
 int GraphicsHandler::ResetAnimationComponents()

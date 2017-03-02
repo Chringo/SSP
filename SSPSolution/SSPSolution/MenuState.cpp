@@ -35,6 +35,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
 	this->inFullscreen = false;
+	this->m_levelToHost = -1;
 
 	this->m_menuBG = cHandler->GetUIComponent();
 	this->m_menuBG->active = 1;
@@ -48,10 +49,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 1;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -71,10 +71,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
@@ -88,10 +87,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
 		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
-		tempUIComp->size = DirectX::XMFLOAT2(300.f, 100.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
@@ -100,6 +98,36 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_startMenuButtons.push_back(button);
 	}
+	for (size_t i = 0; i < NR_OF_LEVELS; i++) //Create the host game menu level select buttons
+	{
+		UIComponent* tempUIComp = cHandler->GetUIComponent();
+		tempUIComp->active = 0;
+		tempUIComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 200.f);
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 250.f);
+		tempUIComp->layerDepth = 0.5f;
+		tempUIComp->spriteID = Textures::Level0 + i;
+		TextComponent* tempTextComp = cHandler->GetTextComponent();
+		tempTextComp->active = 0;
+		tempTextComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 360.f);
+		MenuButton button;
+		button.m_uiComp = tempUIComp;
+		button.m_textComp = tempTextComp;
+		this->m_hostMenuButtons.push_back(button);
+	}
+	//Add go back button to level select
+	UIComponent* tempUIComp = cHandler->GetUIComponent();
+	tempUIComp->active = 0;
+	tempUIComp->position = DirectX::XMFLOAT2(100.f, 600.f);
+	tempUIComp->layerDepth = 0.5f;
+	tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
+	tempUIComp->spriteID = Textures::TButton;
+	TextComponent* tempTextComp = cHandler->GetTextComponent();
+	tempTextComp->active = 0;
+	tempTextComp->position = DirectX::XMFLOAT2(100.f, 620.f);
+	MenuButton button;
+	button.m_uiComp = tempUIComp;
+	button.m_textComp = tempTextComp;
+	this->m_hostMenuButtons.push_back(button);
 
 	//Init the ip text box
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
@@ -109,7 +137,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->scale = 0.6;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	this->m_ipTextBox.m_uiComp->spriteID = Textures::Button;
+	this->m_ipTextBox.m_uiComp->spriteID = Textures::TButton;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
@@ -127,6 +155,12 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_startMenuButtons[1].m_textComp->text = L"Join Game";
 	this->m_startMenuButtons[2].m_textComp->text = L"Go Back";
 
+	this->m_hostMenuButtons[0].m_textComp->text = L"Tutorial";
+	this->m_hostMenuButtons[1].m_textComp->text = L"Level 1";
+	this->m_hostMenuButtons[2].m_textComp->text = L"Level 2";
+	this->m_hostMenuButtons[3].m_textComp->text = L"Level 5";
+	this->m_hostMenuButtons[4].m_textComp->text = L"Go Back";
+
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
 
@@ -142,6 +176,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	size_t nrOfMainMenuItems = this->m_mainMenuButtons.size();
 	size_t nrOfOptionMenuitems = this->m_optionsMenuButtons.size();
 	size_t nrOfStartMenuitems = this->m_startMenuButtons.size();
+	size_t nrOfLevelMenuItems = this->m_hostMenuButtons.size();
 	switch (this->m_menuState)
 	{
 	case 0: /*/ Main menu /*/
@@ -393,40 +428,21 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (this->m_startMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Host Game was clicked
-		
-			if (isHosting == false)
+			//Switch visable buttons
+			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = 0;
+			this->m_menuState = 3;
+			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
 			{
-				inputHandler->SetMouseLocked(true);
-				printf("Hosting..\n");
-				#pragma region
-				//Hide buttons
-				for (size_t i = 0; i < nrOfStartMenuitems; i++)
-				{
-					this->m_startMenuButtons[i].SetActive(false);
-				}
-				this->m_ipTextBox.SetActive(false);
-				this->m_menuBG->active = 0;
-
-				#pragma endregion Hide Menu
-				
-				#pragma region
-
-				if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
-				{
-					this->m_networkModule = new NetworkModule();	//Create a new networkModule
-					int result = this->m_networkModule->Initialize();	// Try to init the networkModule
-
-					if (result != 1)	//If failed
-					{
-						this->m_networkModule = nullptr;	//Set the module pointer to nullptr
-					}
-				}
-
-				#pragma endregion Network_INIT
-
-
-				this->isHosting = true;
+				this->m_hostMenuButtons[i].SetActive(true);
 			}
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(false);
+			}
+			this->m_ipTextBox.SetActive(false);
+		
+			
 
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
@@ -489,6 +505,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 							this->m_startMenuButtons[i].SetActive(true);
 						}
 						this->m_ipTextBox.SetActive(true);
+						this->m_menuBG->active = 1;
 					}
 					else //If succeded to connect
 					{
@@ -581,6 +598,119 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 		
+		
+
+		if (isJoining)
+		{
+			this->Joining(inputHandler);
+		}
+
+		break;
+	case 3: /*/ Level Select /*/
+		for (size_t i = 0; i < nrOfLevelMenuItems; i++) //Mouse hover
+		{
+			this->m_hostMenuButtons[i].m_uiComp->UpdateHover(mousePos);
+			if (this->m_hostMenuButtons[i].m_uiComp->isHovered)
+			{
+				this->m_hostMenuButtons[i].SetHovered(true);
+				this->m_markedItem = (unsigned int)i;
+			}
+			else if (i != this->m_markedItem)
+			{
+				this->m_hostMenuButtons[i].SetHovered(false);
+			}
+		}
+
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		{
+			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
+			{
+				this->m_hostMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN)) //Select item with keyboard
+		{
+			this->m_hostMenuButtons[m_markedItem].m_uiComp->wasClicked = true;
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN)) //Hover down
+		{
+			if (this->m_markedItem < nrOfLevelMenuItems - 1)
+			{
+				this->m_hostMenuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem++;
+				this->m_hostMenuButtons[this->m_markedItem].SetHovered(true);
+			}
+		}
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP)) //Hover up
+		{
+			if (this->m_markedItem > 0)
+			{
+				this->m_hostMenuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem--;
+				this->m_hostMenuButtons[this->m_markedItem].SetHovered(true);
+			}
+		}
+
+		this->m_levelToHost = -1;
+		for (size_t i = 0; i < NR_OF_LEVELS; i++) //Check if level has been selected
+		{
+			if (this->m_hostMenuButtons.at(i).m_uiComp->CheckClicked()) {
+				this->m_levelToHost = i;
+			}
+		}
+			
+
+		if (isHosting == false && this->m_levelToHost != -1)
+		{
+			inputHandler->SetMouseLocked(true);
+			printf("Hosting..\n");
+#pragma region
+			//Hide buttons
+			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
+			{
+				this->m_hostMenuButtons[i].SetActive(false);
+			}
+			this->m_menuBG->active = 0;
+
+#pragma endregion Hide Menu
+
+#pragma region
+
+			if (this->m_networkModule == nullptr)	//If the networkModule isa not initialized
+			{
+				this->m_networkModule = new NetworkModule();	//Create a new networkModule
+				int result = this->m_networkModule->Initialize();	// Try to init the networkModule
+
+				if (result != 1)	//If failed
+				{
+					this->m_networkModule = nullptr;	//Set the module pointer to nullptr
+				}
+			}
+
+#pragma endregion Network_INIT
+
+
+			this->isHosting = true;
+		}
+		else if (this->m_hostMenuButtons[NR_OF_LEVELS].m_uiComp->CheckClicked())
+		{
+			//Go Back was clicked
+			//Switch visable buttons
+			this->m_hostMenuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = 0;
+			this->m_startMenuButtons[0].SetHovered(true);
+			this->m_menuState = 2;
+			for (size_t i = 0; i < nrOfStartMenuitems; i++)
+			{
+				this->m_startMenuButtons[i].SetActive(true);
+			}
+			this->m_ipTextBox.SetActive(true);
+			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
+			{
+				this->m_hostMenuButtons[i].SetActive(false);
+			}
+		}
+
 		if (isHosting)	//If we have pressed the host button
 		{
 #ifndef HOST_DISABLE
@@ -596,7 +726,38 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//Push it to the gamestate stack/vector
 				//this->PushStateToStack(levelSelect);
 
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+
+#pragma region
+				switch (this->m_levelToHost)
+				{
+				case 0:
+					printf("LOAD LEVEL TUT\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
+					break;
+
+				case 1:
+					printf("LOAD LEVEL 1\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), this->m_levelToHost);
+					break;
+
+				case 2:
+					printf("LOAD LEVEL 2\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), this->m_levelToHost);
+					break;
+
+				case 3:
+					printf("LOAD LEVEL 5\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), this->m_levelToHost);
+					break;
+
+				default:
+					printf("LOAD DEFUALT\n");
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
+					break;
+
+				}
+#pragma endregion Level_To_Load
 
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
 				delete levelSelect;
@@ -608,12 +769,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				levelSelect = nullptr;
 			}
 			this->isHosting = false;
+			this->m_levelToHost = -1;
 #endif
-		}
-
-		if (isJoining)
-		{
-			this->Joining(inputHandler);
 		}
 
 		break;
@@ -632,6 +789,10 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 int MenuState::EnterState()
 {
 	size_t nrOfMenuitems;
+	if (this->m_menuState > 2)
+	{
+		this->m_menuState = 2;
+	}
 	switch(this->m_menuState)
 	{
 	case 0: /*/ Main menu /*/
@@ -748,37 +909,37 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				#pragma region
 				switch (levelID)
 				{
-				case 1:
-					printf("LOAD LEVEL 1\n");
+				case 0:
+					printf("LOAD LEVEL TUT\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 					break;
 
-				case 2:
+				case 1:
 					printf("LOAD LEVEL 1\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
-				case 3:
-					printf("LOAD LEVEL 1\n");
+				case 2:
+					printf("LOAD LEVEL 2\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
 					break;
 
-				case 4:
-					printf("LOAD LEVEL 1\n");
+				case 3:
+					printf("LOAD LEVEL 5\n");
 					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 					break;
 
 				}
 				#pragma endregion Level_To_Load
 			}
-			//Delete it
-			delete levelSelect;
-			levelSelect = nullptr;
+				//Delete it
+				delete levelSelect;
+				levelSelect = nullptr;
 			#pragma endregion Load_Level
 
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
@@ -854,9 +1015,9 @@ void MenuState::Joining(InputHandler* inputHandler)
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 
-		//Delete it
-		delete levelSelect;
-		levelSelect = nullptr;
+			//Delete it
+			delete levelSelect;
+			levelSelect = nullptr;
 		#pragma endregion Load_Level
 
 		this->isJoining = false;

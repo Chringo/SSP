@@ -3,7 +3,7 @@
 #include "ShaderLib.h"
 
 #ifndef CONSTANT_BUFFER_HANDLER_H
-
+#define MAX_SHADOW_LIGHTS  20 //Must be 4 * n + 2
 class ConstantBufferHandler
 {
 	enum CBufferType
@@ -13,6 +13,7 @@ class ConstantBufferHandler
 		CB_MATERIAL_B2,
 		CB_LIGHT_B3, 
 		CB_SKELETON_B4,
+		CB_SHADOW_B5,
 
 		CB_TYPE_COUNT
 	};
@@ -130,15 +131,21 @@ public:
 
 		struct light
 		{
-		private:
+		public:
+			struct arrayIndex {
+				int index;
+				int _Padding[3];
+			};
 			struct pData
 			{
-				UINT NUM_POINTLIGHTS;
-				UINT NUM_AREALIGHTS;
-				UINT NUM_DIRECTIONALLIGHTS;
-				UINT NUM_SPOTLIGHTS;
-				float AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
-				float AMBIENT_INTENSITY = 0.2f;
+				
+				UINT   NUM_POINTLIGHTS;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
+				UINT   padding[2];
+				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
+				float  AMBIENT_INTENSITY = 0.2f;
+				arrayIndex	SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
+				//int paddinga[68];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:
@@ -151,7 +158,7 @@ public:
 			{
 				p = *(pData*)data;
 
-
+			
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 				memcpy(mappedResource.pData, &p, sizeof(pData));
 				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
@@ -198,6 +205,46 @@ public:
 			}
 		};
 
+		struct shadow
+		{
+		private:
+			struct pData
+			{
+				DirectX::XMFLOAT4X4 pView[6];
+				DirectX::XMFLOAT4X4 pProjection;
+			};
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+		public:
+			struct cbData
+			{
+				DirectX::XMMATRIX cView[6];
+				DirectX::XMMATRIX cProjection;
+			};
+			ID3D11Buffer * D3DBuffer = nullptr;
+			pData p;
+			cbData c;
+			pData GetPData()
+			{
+				for (size_t i = 0; i < 6; i++)
+				{
+
+					DirectX::XMStoreFloat4x4(&p.pView[i], DirectX::XMMatrixTranspose(c.cView[i]));
+				}
+				DirectX::XMStoreFloat4x4(&p.pProjection, DirectX::XMMatrixTranspose(c.cProjection));
+				return p;
+			};
+			template <typename T>
+			int UpdateBuffer(T* data) //Takes pointer to structs containing non-transposed XMVECTORS or XMMATRIX for transforms
+			{
+				c = *(cbData*)data;
+
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Map(D3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+				memcpy(mappedResource.pData, &GetPData(), sizeof(pData));
+				ConstantBufferHandler::GetInstance()->GetDeviceContext()->Unmap(D3DBuffer, 0);
+
+				return 0;
+			}
+		};
 	};
 
 private:
@@ -216,6 +263,7 @@ public:
 	ConstantBuffer::light light;
 	ConstantBuffer::material material;
 	ConstantBuffer::skeleton skeleton;
+	ConstantBuffer::shadow shadow;
 
 	int Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext);
 	int ResetConstantBuffers();

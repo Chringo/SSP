@@ -14,8 +14,11 @@ private:
 	float m_throwStrength;
 	bool m_isAiming;
 	Entity* m_ball;
+
+	Ragdoll* m_ragdoll;
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
+	DirectX::XMVECTOR m_anklePos;
 
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
@@ -25,6 +28,7 @@ private:
 	float m_chainSoundTimer;
 	int	m_oldAnimState;
 	float m_timeSinceThrow;
+	bool isAbbington;
 
 public:
 	Player();
@@ -44,6 +48,8 @@ public:
 	DirectX::XMVECTOR SetRightDir(DirectX::XMVECTOR rightDir);
 	void SetAiming(bool isAming);
 	void SetBall(Entity* ball);
+	void SetRagdoll(Ragdoll* ragdoll);
+	void SetOldAnimState(int newOldState);
 
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
@@ -56,8 +62,12 @@ public:
 	bool GetIsAming();
 	Entity* GetGrabbed();
 	Entity* GetBall();
+	Ragdoll* GetRagdoll();
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 	float TimeSinceThrow();
+
+	DirectX::XMVECTOR GetAnklePosition(); // position for where the chain is. 
+
 
 private:
 

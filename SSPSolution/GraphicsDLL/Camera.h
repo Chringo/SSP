@@ -113,7 +113,8 @@ public:
 	GRAPHICSDLL_API int Initialize(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
-	GRAPHICSDLL_API int Update();
+	GRAPHICSDLL_API int Update();	
+	GRAPHICSDLL_API int RagdollCameraUpdate(DirectX::XMVECTOR pos, RagdollState state);
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjectionMat();
@@ -150,7 +151,10 @@ public:
 	GRAPHICSDLL_API void GetCameraFrameData(cameraFrameData& storeIn);
 	GRAPHICSDLL_API cameraFrameData GetCameraFrameData();
 	GRAPHICSDLL_API DirectX::XMVECTOR GetDirection();
-
+	GRAPHICSDLL_API DirectX::XMFLOAT3 GetFocusPoint();
+	GRAPHICSDLL_API DirectX::XMFLOAT3 GetFocusPointOffset();
+	GRAPHICSDLL_API void GetFocusPoint(DirectX::XMFLOAT3 &storeIn);
+	GRAPHICSDLL_API void GetFocusPointOffset(DirectX::XMFLOAT3 &storeIn);
 #pragma endregion getters
 #pragma region
 	GRAPHICSDLL_API void SetCameraPos(DirectX::XMFLOAT4 newCamPos);

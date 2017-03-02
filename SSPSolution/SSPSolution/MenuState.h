@@ -5,6 +5,7 @@
 #include "../GraphicsDLL/GraphicsComponent.h"
 
 #define HOST_DISABLE
+#define NR_OF_LEVELS 4
 
 const float TIMEOUT_TIME = 200;
 
@@ -104,7 +105,7 @@ private:
 		}
 	};
 
-	unsigned int m_menuState; //0: Main menu, 1: Options Menu, 2: Start Menu
+	unsigned int m_menuState; //0: Main Menu, 1: Options Menu, 2: Start Menu, 3: Level Select
 	unsigned int m_markedItem;
 	UIComponent* m_menuBG;
 	std::vector<MenuButton> m_mainMenuButtons;
@@ -113,6 +114,8 @@ private:
 	UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
+	std::vector<MenuButton> m_hostMenuButtons;
+	int m_levelToHost;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
 	

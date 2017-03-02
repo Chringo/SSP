@@ -11,16 +11,16 @@ ShaderControl::~ShaderControl()
 {
 }
 
-bool ShaderControl::Initialize(ID3D11Device * gDevice, ID3D11DeviceContext * gDeviceContext, const DirectX::XMINT2& resolution)
+bool ShaderControl::Initialize(ID3D11Device * gDevice, ID3D11DeviceContext * gDeviceContext, D3D11_VIEWPORT * viewPort)
 {
 	this->m_Device		   = gDevice;
 	this->m_DeviceContext  = gDeviceContext;
 	m_shaders[DEFERRED]    = new DeferredShader();
-	m_shaders[DEFERRED]->Initialize(gDevice, gDeviceContext, resolution);
+	m_shaders[DEFERRED]->Initialize(gDevice, gDeviceContext, viewPort);
 	m_shaders[FINAL]	   = new FinalShader();
-	m_shaders[FINAL]->Initialize(gDevice, gDeviceContext, resolution);
+	m_shaders[FINAL]->Initialize(gDevice, gDeviceContext, viewPort);
 	m_shaders[POSTPROCESS] = new PostProcessShader();
-	m_shaders[POSTPROCESS]->Initialize(gDevice, gDeviceContext, resolution);
+	m_shaders[POSTPROCESS]->Initialize(gDevice, gDeviceContext, viewPort);
 	return true;
 }
 
@@ -155,6 +155,7 @@ void ShaderControl::DrawInstanced(InstanceData * data)
 void ShaderControl::DrawFinal()
 {
 	this->m_activeShader = Shaders::FINAL;
+	((DeferredShader*)m_shaders[DEFERRED])->SetShadowDataToRead();
 	((FinalShader*)this->m_shaders[FINAL])->SetActive();
 	((FinalShader*)this->m_shaders[FINAL])->Draw();
 }

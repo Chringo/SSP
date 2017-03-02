@@ -34,7 +34,24 @@ void AnimationHandler::Update(float dt)
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		/*Only update the animation if the current iterating animation component is active and the source state is NOT a nullptr.*/
+		/*Go to the next component if the source state at the current frame is a nullptr.*/
+		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+			continue;
+
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
+		{
+			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
+			{
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				{
+					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
+					continue;
+				}
+			}
+			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
+			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
+			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
 		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
@@ -60,7 +77,7 @@ void AnimationHandler::Update(float dt)
 				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 				{
 					/*Animation is looping. Reset the local time of the source animation.*/
-					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == TRUE)
+					if (m_AnimComponentList[m_AnimCompIndex]->source_State->isLooping == true)
 					{
 						m_AnimComponentList[m_AnimCompIndex]->source_Time = 0;
 					}
@@ -69,16 +86,16 @@ void AnimationHandler::Update(float dt)
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_BALL_IDLE;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, 2.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
+							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_IDLE;
 						}
-						/*All animations that are not looping gets it lock released, other animations can now contribute.*/
-						m_AnimComponentList[m_AnimCompIndex]->lockAnimation = false;
+
+						 
 					}
 				}
 				/*Interpolate the keyframes of this animation.*/
@@ -89,6 +106,11 @@ void AnimationHandler::Update(float dt)
 			else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 				|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 			{
+				/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+				if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+					&& this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+					continue;
+
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 				{
@@ -109,6 +131,17 @@ void AnimationHandler::Update(float dt)
 				else
 					Blend(seconds);
 			}
+			}
+			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
+			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
+			{
+				continue;
+			}
+		}
+		/*Ragdoll physics is currently happening, continue to the next component in the list.*/
+		else
+		{
+			continue;
 		}
 	}
 }
@@ -315,7 +348,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime)
 {
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
-
+	
 	std::vector<DirectX::XMFLOAT4X4> localTransforms(jointCount);
 	std::vector<DirectX::XMFLOAT4X4> localScales(jointCount);
 
@@ -552,17 +585,18 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 	m_AnimComponentList[m_AnimCompIndex]->target_Time += globalTime;
 }
 
-void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed)
+void AnimationHandler::SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
 {
 	/*Sets a current used animation component and updates the information.*/
 	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State = this->m_AnimComponentList[this->m_AnimCompIndex]->
 		animation_States->at(animationState)->GetAnimationStateData();
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->stateIndex = animationState;
-	this->m_AnimComponentList[this->m_AnimCompIndex]->transitionDuration = transitionDuration;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->blendFlag = blendingType;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->isLooping = isLooping;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->velocity = velocity;
 	
 }
 
@@ -735,11 +769,11 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		/*Calculates the relation between each child and parent when going to a new pose each frame.*/
 		int parentIndex = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[i].parentIndex;
 
-		DirectX::XMMATRIX toParent = DirectX::XMLoadFloat4x4(&localTransforms[i]);
+		DirectX::XMMATRIX child = DirectX::XMLoadFloat4x4(&localTransforms[i]);
 
-		DirectX::XMMATRIX parentToRoot = DirectX::XMLoadFloat4x4(&toRootTransform[parentIndex]);
+		DirectX::XMMATRIX parent = DirectX::XMLoadFloat4x4(&toRootTransform[parentIndex]);
 		
-		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(toParent, parentToRoot);
+		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(child, parent);
 
 		DirectX::XMStoreFloat4x4(&toRootTransform[i], toRoot);
 	}
