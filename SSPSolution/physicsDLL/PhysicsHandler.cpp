@@ -1792,7 +1792,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
 		//Change where the chain is attached
-		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;	//Set it to the ragdoll
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->lowerBody.center;	//Set it to the ragdoll
 
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)

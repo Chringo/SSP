@@ -730,3 +730,10 @@ float Player::TimeSinceThrow()
 {
 	return this->m_timeSinceThrow;
 }
+
+DirectX::XMVECTOR Player::GetAnklePosition()
+{
+
+	return this->m_ragdoll->leftLeg.next2->PC_pos;
+	
+}

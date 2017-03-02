@@ -65,6 +65,9 @@ public:
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 	float TimeSinceThrow();
 
+	DirectX::XMVECTOR GetAnklePosition(); // position for where the chain is. 
+
+
 private:
 
 };

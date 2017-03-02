@@ -1552,7 +1552,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PC_ptr->PC_friction = 1.0f;
 		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
 		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
-		GC_ptr->active = true;
+		GC_ptr->active = false;
 		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
 		DynamicEntity* chainLink = new DynamicEntity();
 		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
@@ -1609,7 +1609,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PC_ptr->PC_friction = 1.0f;
 		GraphicsComponent* GC_ptr = this->m_cHandler->GetDynamicGraphicsComponent();
 		GC_ptr->modelID = CHAIN_SEGMENT_MODEL_ID;
-		GC_ptr->active = true;
+		GC_ptr->active = false;
 		resHandler->GetModel(GC_ptr->modelID, GC_ptr->modelPtr);
 		DynamicEntity* chainLink = new DynamicEntity();
 		chainLink->Initialize(entityID, PC_ptr, GC_ptr);
@@ -2850,7 +2850,7 @@ void LevelState::UpdateGraphicalLinks()
 }
 DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<PhysicsComponent*>*list)
 {
-	this->delta_t = 0.2f;
+	//this->delta_t = 0.2f;
 	this->delta_t = 1.f / (float)list->size();
 
 	int p = (int(t / this->delta_t));
