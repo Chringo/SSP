@@ -16,9 +16,9 @@ private:
 	Entity* m_ball;
 
 	Ragdoll* m_ragdoll;
-
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
+	DirectX::XMVECTOR m_anklePos;
 
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
@@ -65,6 +65,9 @@ public:
 	Ragdoll* GetRagdoll();
 	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 	float TimeSinceThrow();
+
+	DirectX::XMVECTOR GetAnklePosition(); // position for where the chain is. 
+
 
 private:
 

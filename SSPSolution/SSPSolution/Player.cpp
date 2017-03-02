@@ -297,7 +297,31 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			ptr->PC_gravityInfluence = 1.0;
 		}
+#pragma region
+		
 
+		//Set the ball to be between the two hands
+
+		//left hand index  : 8
+		//right hand index : 12
+
+		//Get left hand, multiply it by bind pose to correct position
+		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
+
+		//Get world matrix of the character
+		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
+
+		//Multiply the hand joints into world space
+		joint = DirectX::XMMatrixMultiply(joint, world);
+
+		//Final pos = left hand + half jointToJoint vector
+		this->m_anklePos = joint.r[3];
+		
+#pragma endregion
 
 		//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 		bool hasThrown = false;
@@ -739,4 +763,11 @@ bool Player::isAnimationChanged()
 float Player::TimeSinceThrow()
 {
 	return this->m_timeSinceThrow;
+}
+
+DirectX::XMVECTOR Player::GetAnklePosition()
+{
+
+	return this->m_ragdoll->leftLeg.next2->PC_pos;
+	
 }
