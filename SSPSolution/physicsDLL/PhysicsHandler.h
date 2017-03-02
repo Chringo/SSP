@@ -15,7 +15,6 @@
 #include "../ResourceLib/Skeleton.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 #include "../GraphicsDLL/AnimationHandler.h"
-#include "Chain.h"
 
 
 enum BodyPartType
@@ -123,13 +122,8 @@ private:
 
 	std::vector<Field> m_fields;
 
-	// New Chain Stuff
-	Chain * m_chain;
 
-	std::vector<DirectX::XMVECTOR> vp;
-	
 
-	int TOTAL_CHAIN = 2;
 
 
 

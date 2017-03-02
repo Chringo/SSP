@@ -1654,8 +1654,8 @@ bool PhysicsHandler::Initialize()
 	this->m_isHost = true;
 	this->m_bullet.Initialize();
 
-	this->m_chain = new Chain();
-	this->m_chain->Initialize();
+
+
 
 	
 
@@ -1778,10 +1778,10 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		{
 			
 
-			DirectX::XMVECTOR newPos = ragdoll->leftLeg.next2->PC_pos;	//Get the position of the player
+			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;	//Get the position of the player
 			newPos.m128_f32[1] = 0.0f;	//Remove the Y value
 
-			ragdoll->leftLeg.next2->PC_pos = newPos;	//Set the ragdoll center pos to the players pos
+			ragdoll->upperBody.center->PC_pos = newPos;	//Set the ragdoll center pos to the players pos
 		}
 
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
@@ -1793,7 +1793,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
 		//Change where the chain is attached
-		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->leftLeg.next2;	//Set it to the ragdoll
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;	//Set it to the ragdoll
 
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
@@ -1811,9 +1811,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->leftLeg.next2->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
-		float radius = ragdoll->leftLeg.next2->PC_Sphere.radius;
+		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
 		btVector3 scale = btVector3(radius, radius, radius);
 
 		this->AdjustRagdoll(ragdoll, dt);
@@ -1843,7 +1843,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		
 
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->leftLeg.next2->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
 		btVector3 ext;
 
 		ragdoll->key_frame_blend_stage--;
@@ -1881,7 +1881,7 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 	int nrOfStaticObjects = this->m_staticComponents.size();
 	if (this->m_player1RagDoll.state == RAGDOLL)
 	{
-		this->m_player1RagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_player1RagDoll.leftLeg.next2->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		this->m_player1RagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_player1RagDoll.upperBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{

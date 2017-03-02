@@ -159,12 +159,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BulletInterpreter.h" />
-    <ClInclude Include="Chain.h" />
     <ClInclude Include="PhysicsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BulletInterpreter.cpp" />
-    <ClCompile Include="Chain.cpp" />
     <ClCompile Include="PhysicsHandler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
