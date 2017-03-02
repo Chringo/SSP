@@ -65,6 +65,7 @@ namespace LIGHTING
 			unsigned int numItems		 = 0;
 			unsigned int numShadowLights = 0;
 			int shadowLightIndex[MAX_SHADOW_LIGHTS]; // An array of int that represents the indices of the lights that casts shadows
+			int currentDynamicShadowIndex = 0;
 			~LightArray() { //Destructor, s
 				ReleaseShadowMaps(); //Release the TextureBuffers
 			}

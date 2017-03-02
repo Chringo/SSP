@@ -737,7 +737,7 @@ int GraphicsHandler::Render(float deltaTime)
 #pragma region
 			//Get the data and convert it into the specialized data we need
 			LIGHTING::LightHandler::LightArray* lightArrayPtr = this->m_LightHandler->Get_Light_List();
-			LIGHTING::Point* specializedData = static_cast<LIGHTING::Point*>(lightArrayPtr->dataPtr);
+			LIGHTING::Point* specializedData = lightArrayPtr->dataPtr;
 			//Loop the lights
 			Camera::ViewFrustrum frustrum;
 			this->m_camera->GetViewFrustrum(frustrum);
@@ -754,6 +754,7 @@ int GraphicsHandler::Render(float deltaTime)
 			//printf("Lights in frustrum %d\n", lightsInFrustrum);
 			//Update light buffer
 			//this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
+			this->m_LightHandler->UpdateActiveLightsToGPU(&m_activeLightIndices);
 			this->m_activeLightIndices.clear();
 #pragma endregion LightCulling
 

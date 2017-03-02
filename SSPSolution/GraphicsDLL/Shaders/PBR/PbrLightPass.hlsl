@@ -22,11 +22,11 @@ cbuffer camera : register(b1)
 
 cbuffer LightInfo : register(b3)
 {
-    uint    NUM_POINTLIGHTS;
-    uint    DYNAMIC_SHADOWLIGHT_INDEX;
-    float3  AMBIENT_COLOR;
-    float   AMBIENT_INTENSITY;
-    int     SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    uint     NUM_POINTLIGHTS;
+    uint     DYNAMIC_SHADOWLIGHT_INDEX;
+    float3   AMBIENT_COLOR;
+    float    AMBIENT_INTENSITY;
+    int2     SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
 
@@ -312,15 +312,14 @@ float4 PS_main(VS_OUT input) : SV_Target
 
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
-    uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 
     float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
 
-    LIGHT light[3]; 
-    light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
+   //LIGHT light[3]; 
+   //light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
     //light[1] = initCustomLight(float3(14.0, -9.0, -3.0), pointlights[1].color); //float3(0.0, 0.0, -3.5), float3(1., 1., 1.));   pointlights[1].position.xyz
     //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
@@ -362,7 +361,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     int currentShadowLightIndex = 0;
 
     //FOR EACH LIGHT
-    for (int i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
+    for (int i = 0; i < NUM_POINTLIGHTS; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
         float shadowFactor = 1.0;
         float lightPower = 0;
@@ -380,16 +379,16 @@ float4 PS_main(VS_OUT input) : SV_Target
                 lightPower *= pointlights[i].intensity;
             //SHADOW
        
-                if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex])
+                if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex].x)
                 {
-                    shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
+                    shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, SHADOWCASTING_LIGHTS[currentShadowLightIndex].y);
                     currentShadowLightIndex += 1;
+
                     if (i == DYNAMIC_SHADOWLIGHT_INDEX)
                     {
                         shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
                     }
                 }
-
                 if (lightPower > 0.0f)
                 {
             //PBR variables 

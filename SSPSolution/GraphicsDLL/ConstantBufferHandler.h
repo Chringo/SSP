@@ -134,13 +134,14 @@ public:
 		public:
 			struct arrayIndex {
 				int index;
-				int _Padding[3];
+				int shadowMapIndex;
+				int _Padding[2];
 			};
 			struct pData
 			{
 				
-				UINT   NUM_POINTLIGHTS;
-				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
+				UINT   NUM_POINTLIGHTS    = 0;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX = 0;
 				UINT   padding[2];
 				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
 				float  AMBIENT_INTENSITY = 0.2f;
