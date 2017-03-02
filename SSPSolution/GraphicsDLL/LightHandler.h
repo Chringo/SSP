@@ -39,7 +39,8 @@
 
 */
 #define LIGHT_CHECK_PAUSE_TIME (1.0f / 10.0f)
-
+#define USE_CONST_BUFFER_FOR_LIGHTS	//TEMP to test performance
+#define MAX_LIGHT_AMOUNT 60
 //#define CHECK_IF_EXITED_LIGHT_RADIUS
 namespace LIGHTING
 {
@@ -113,6 +114,7 @@ namespace LIGHTING
 		GRAPHICSDLL_API bool LoadLevelLight(LevelData::Level* level);
 		GRAPHICSDLL_API bool SetShadowCastingLight(Point* light);
 		GRAPHICSDLL_API bool SetShadowCastingLight(int index);
+		GRAPHICSDLL_API bool UpdateActiveLightsToGPU(std::vector<int>* indices);
 
 		//Returns either an index to the internal lightdata or -1 for no lights found
 		GRAPHICSDLL_API int GetClosestLightIndex( DirectX::XMFLOAT3 pos);

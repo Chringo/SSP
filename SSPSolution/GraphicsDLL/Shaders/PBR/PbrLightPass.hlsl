@@ -9,6 +9,7 @@ SamplerState pointSampler        : register(s1);
 
 //must match ConstantBufferHandler.h define || //Must be multiple of 4
 #define MAX_SHADOW_LIGHTS 20  
+#define MAX_LIGHT_AMOUNT 60
 #define SHADOW_BIAS  0.0000088f
 cbuffer camera : register(b1)
 {
@@ -21,11 +22,11 @@ cbuffer camera : register(b1)
 
 cbuffer LightInfo : register(b3)
 {
-    uint   NUM_POINTLIGHTS;
-    uint   DYNAMIC_SHADOWLIGHT_INDEX;
-    float3 AMBIENT_COLOR;
-    float  AMBIENT_INTENSITY;
-    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    uint    NUM_POINTLIGHTS;
+    uint    DYNAMIC_SHADOWLIGHT_INDEX;
+    float3  AMBIENT_COLOR;
+    float   AMBIENT_INTENSITY;
+    int     SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
 
@@ -42,8 +43,13 @@ struct PointLight //Must be 16 bit aligned!
     float quadraticFalloff;
 };
 
+cbuffer LightArrayBuffer : register(b6)
+{
+    
+    PointLight pointlights[MAX_LIGHT_AMOUNT];
 
-StructuredBuffer<PointLight> pointlights : register(t6);
+}
+//StructuredBuffer<PointLight> pointlights : register(t6);
 
 struct VS_OUT
 {
@@ -351,6 +357,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //N = normalize(N);
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
+    
     
     int currentShadowLightIndex = 0;
 
