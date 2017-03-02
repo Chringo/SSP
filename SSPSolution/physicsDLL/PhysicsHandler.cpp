@@ -1837,7 +1837,10 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	if (ragdoll->state == KEYFRAMEBLEND)
 	{
 		//Change where the chain is attached
+		
 		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;	//Set it to the player
+		
+		
 
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->leftLeg.next2->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
@@ -1878,7 +1881,7 @@ void PhysicsHandler::DoRagdollIntersection(float dt)
 	int nrOfStaticObjects = this->m_staticComponents.size();
 	if (this->m_player1RagDoll.state == RAGDOLL)
 	{
-		this->m_player1RagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_player1RagDoll.lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		this->m_player1RagDoll.playerPC->PC_pos = DirectX::XMVectorAdd(this->m_player1RagDoll.leftLeg.next2->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{

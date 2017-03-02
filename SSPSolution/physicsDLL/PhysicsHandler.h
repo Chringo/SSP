@@ -70,6 +70,7 @@ struct Ragdoll
 
 	DirectX::XMMATRIX jointMatrixes[21];
 	DirectX::XMMATRIX bindPose[21];
+	DirectX::XMVECTOR * m_AnklePos;
 };
 enum LinkType
 {

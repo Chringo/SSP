@@ -224,8 +224,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		this->m_curLevel = 0;
 	}
 	float linkLen = 1.67f;
-	float estLen = 3.25f + linkLen * 5; // 0,5+0,45*5+0,5
-	int nrCPs = 25;//(estLen / );
+	float estLen = 3.25f + linkLen * 25; // 0,5+0,45*5+0,5
+	int nrCPs = 22;//(estLen / );
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
 	this->m_cHandler->GetGraphicsHandler()->ResizeDynamicComponents(2);
@@ -255,6 +255,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerP->PC_velocity = DirectX::XMVectorSet(0,0,0,0);
 	playerP->PC_friction = 0.95f;
 	playerG->worldMatrix = DirectX::XMMatrixIdentity();		//FIX THIS
+
 
 #pragma region
 	AnimationComponent* playerAnim1 = nullptr;
@@ -502,7 +503,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 //	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght);
 //#pragma endregion Create_Chain_Link
 
-	for (size_t i = 0; i < nrCPs; ++i) // player 1 
+	for (size_t i = 0; i < nrCPs; i++) // player 1 
 	{
 		GraphicsComponent * cp = cHandler->GetPersistentGraphicsComponent();
 		cp->modelID = CHAIN_SEGMENT_MODEL_ID;
@@ -518,7 +519,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 		this->m_grapichalLinkListPlayer1.push_back(link);
 	
 	}
-	for (size_t i = 0; i < nrCPs; ++i) // Player 2 
+	for (size_t i = 0; i < nrCPs; i++) // Player 2 
 	{
 		GraphicsComponent * cp = cHandler->GetPersistentGraphicsComponent();
 		cp->modelID = CHAIN_SEGMENT_MODEL_ID;
@@ -578,6 +579,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 int LevelState::Update(float dt, InputHandler * inputHandler)
 {
+
 	int result = 1;
 	dt = dt / 1000000;
 
@@ -585,7 +587,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->LoadNext();
 	}
-
+	this->UpdateGraphicalLinks();
 
 	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
@@ -1072,7 +1074,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	this->m_player2_Ping.Update(dt);
 #pragma endregion Ping
 
-	this->UpdateGraphicalLinks();
+	
 
 	#pragma region
 
@@ -1535,11 +1537,11 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	PhysicsComponent* next = nullptr;
 	PhysicsComponent* PC_ptr = nullptr;
 	this->m_Player1ChainPhysicsComp.push_back(this->m_player1.GetPhysicsComponent());
-	for (int i = 1; i <= CHAIN_SEGMENTS; i++)
+	for (int i = 0; i < CHAIN_SEGMENTS; i++)
 	{
-		if (i != 1)
+		if (i != 0)
 		{
-			linkLenght = 0.45f;
+			linkLenght = 0.5f;
 		}
 		unsigned int entityID = 5;
 		PC_ptr = this->m_cHandler->GetPhysicsComponent();
@@ -1562,11 +1564,10 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		this->m_Player1ChainPhysicsComp.push_back(PC_ptr);
 		PC_ptr = nullptr;
 
-		if (i == 1)
+		if (i == 0)
 		{
 			
 			this->m_player1.GetRagdoll()->link_index = this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
-			int a = 0;
 		}
 		else
 		{
@@ -1579,9 +1580,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	}
 	this->m_Player1ChainPhysicsComp.push_back(this->m_player1.GetBall()->GetPhysicsComponent());
 
-	linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	//linkLenght = this->m_player1.GetPhysicsComponent()->PC_OBB.ext[0];
+	//linkLenght += this->m_player1.GetPhysicsComponent()->PC_OBB.ext[2];
+	//linkLenght += this->m_player1.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 
 	//diffVec = DirectX::XMVectorSubtract(this->m_player2.GetPhysicsComponent()->PC_pos, this->m_player2.GetBall()->GetPhysicsComponent()->PC_pos);
@@ -1596,7 +1597,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		if (i != 1)
 		{
-			linkLenght = 0.45f;
+			linkLenght = 0.50f;
 		}
 		unsigned int entityID = 6;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
@@ -1617,6 +1618,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 		next = PC_ptr;
+		this->m_Player2ChainPhysicsComp.push_back(PC_ptr);
 		if (i == 1)
 		{
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
@@ -1626,15 +1628,14 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, next, linkLenght, PhysicsLinkType::PL_CHAIN);
 		}
 
-		this->m_Player2ChainPhysicsComp.push_back(PC_ptr);
 
 		previous = next;
 	}
 	this->m_Player2ChainPhysicsComp.push_back(this->m_player2.GetBall()->GetPhysicsComponent());
 
-	linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
-	linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
-	linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
+	//linkLenght = this->m_player2.GetPhysicsComponent()->PC_OBB.ext[0];
+	//linkLenght += this->m_player2.GetPhysicsComponent()->PC_OBB.ext[2];
+	//linkLenght += this->m_player2.GetBall()->GetPhysicsComponent()->PC_Sphere.radius;
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player2.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
 
 #pragma endregion Create_Chain_Link
@@ -2853,10 +2854,11 @@ DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<Phy
 	//this->delta_t = 0.2f;
 	this->delta_t = 1.f / (float)list->size();
 
-	int p = (int(t / this->delta_t));
+	int p = (float((float)t / this->delta_t));
+
 #define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)list->size()-1)pp = list->size()-1;}
 	int p0 = p - 1;			BOUNDS(p0);
-	int p1 = p;				BOUNDS(p1);
+	int p1 = p; 			BOUNDS(p1);
 	int p2 = p + 1;			BOUNDS(p2);
 	int p3 = p + 2;			BOUNDS(p3);
 	
@@ -2879,6 +2881,7 @@ DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<Phy
 }
 DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
 {
+
 	//Bezier curve
 
 	//float u = 1 - t;
