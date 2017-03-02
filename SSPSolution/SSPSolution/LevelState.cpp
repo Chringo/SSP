@@ -235,8 +235,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player1 = Player();
 	GraphicsComponent* playerG = m_cHandler->GetGraphicsAnimationComponent();
-	//playerG->modelID = 1117267500;
-	playerG->modelID = 885141774;
+	
+	if (this->m_networkModule->IsHost())
+	{
+		playerG->modelID = 885141774;
+	}
+	else
+	{
+		playerG->modelID = 1117267500;
+	}
+	
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
@@ -295,8 +303,16 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	this->m_player2 = Player();
 	playerG = m_cHandler->GetGraphicsAnimationComponent();
-	//playerG->modelID = 885141774;
-	playerG->modelID = 1117267500;
+	
+	if (this->m_networkModule->IsHost())
+	{
+		playerG->modelID = 1117267500;
+	}
+	else
+	{
+		playerG->modelID = 885141774;
+	}
+	
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();

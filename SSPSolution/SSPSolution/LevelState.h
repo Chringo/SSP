@@ -104,6 +104,8 @@ private:
 	PingObject m_player1_Ping;
 	PingObject m_player2_Ping;
 
+	bool m_changeBody;
+
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	//Entities where no data needs to be moved between the components
 	std::vector<StaticEntity*>	m_staticEntitys;
