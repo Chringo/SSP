@@ -101,7 +101,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				}
 			}
 
-			this->m_UpdateOBB(true);
+			this->m_UpdateOBB(true, dT);
 
 			this->SyncComponents();
 		}
@@ -153,7 +153,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				}
 			}
 
-			this->m_UpdateOBB(true);
+			this->m_UpdateOBB(false, dT);
 
 			this->SyncComponents();
 		}
@@ -206,7 +206,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				}
 
 			}
-			this->m_UpdateOBB(false);
+			this->m_UpdateOBB(false, dT);
 
 			this->SyncComponents();
 		}
@@ -447,14 +447,14 @@ WheelSyncState * WheelEntity::GetUnconditionalState()
 	return result;
 }
 
-void WheelEntity::m_UpdateOBB(bool inc)
+void WheelEntity::m_UpdateOBB(bool inc, float dT)
 {
 	DirectX::XMMATRIX Ortho = this->m_pComp->PC_OBB.ort;
 	DirectX::XMVECTOR rotVec = Ortho.r[0];
 
 	//get the rotation from the physics component
-	//float rotate = this->m_rotatePerSec * dT;
-	float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+	float rotate = this->m_rotatePerSec * dT * 50;
+	//float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
 	float radian = rotate * (3.14 / 180);
 	
 	//if the wheel is spinning to orginal state, decreasing
