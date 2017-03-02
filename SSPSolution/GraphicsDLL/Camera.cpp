@@ -770,28 +770,35 @@ void Camera::m_calcDistance()
 
 		if (m_IntersectRayAABB(ray, i, hitDistance)) 
 		{
-			if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
+			if (hitDistance > 0.0f && hitDistance < this->m_maxDistance + 0.6f)
 			{
-				newDistance = true;
-				intersectDistance = hitDistance;
+				hitDistance = (this->m_maxDistance + 0.6f) - hitDistance;
+				if (hitDistance < intersectDistance && fabs(hitDistance - m_targetDistance) > EPSILON)
+				{
+					newDistance = true;
+					intersectDistance = hitDistance;
+				}
 			}
 		}
 	}
 	
 	if (newDistance)
 	{
-		if ((intersectDistance < targetDistance) || (intersectDistance > targetDistance))
-			targetDistance = intersectDistance;
-		if (targetDistance > this->m_maxDistance)
+		//if ((intersectDistance < targetDistance) || (intersectDistance > targetDistance))
+		targetDistance = intersectDistance;
+		if (targetDistance - 0.6f > this->m_maxDistance)
 			targetDistance = this->m_maxDistance;
 		else if (targetDistance < 0.05f)
 			targetDistance = 0.05f;
+		/*else
+			targetDistance -= 0.3f;*/
 	}
 	else if(targetDistance < m_maxDistance || targetDistance > m_maxDistance)
 		targetDistance = m_maxDistance;
 
 	if (!fabs(m_distance - targetDistance) < EPSILON)
 	{
+		zoomSpeedFactor = 4.f + (fabs(m_distance - targetDistance) * 10.f);
 		float diffFactor = (abs(m_distance - targetDistance) * zoomSpeedFactor);
 		this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
 	}
@@ -1198,6 +1205,9 @@ bool Camera::m_IntersectRayAABB(const C_Ray& ray, const C_AABB& bb, float & dist
 	}
 
 	//Return intersection true and distance to model
-	distance = tmin;
+	//if (tmin < 0.0f) //If we are inside model, return tmax
+		distance = tmax;
+	//else
+		//distance = tmin;
 	return true;
 }
