@@ -223,8 +223,6 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	{
 		this->m_curLevel = 0;
 	}
-	float linkLen = 1.67f;
-	float estLen = 3.25f + linkLen * 25; // 0,5+0,45*5+0,5
 	int nrCPs = 22;//(estLen / );
 
 	Resources::ResourceHandler* resHandler = Resources::ResourceHandler::GetInstance();
@@ -2879,26 +2877,8 @@ DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t,std::vector<Phy
 
 	return pos;
 }
-DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4)
+DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4) // unused
 {
-
-	//Bezier curve
-
-	//float u = 1 - t;
-	//float tt = t* t;
-	//float uu = u*u;
-	//float uuu = uu*u;
-	//float ttt = tt*t;
-
-	//float b1 = uuu*p1; // first
-	//float b2 = 3 * uu * t *p1; // 2nd
-	//float b3 = 3 * u *tt*p2;
-	//float b4 = ttt*p3;
-
-
-	//return(p1*b1 + p2*b2 + p3*b3 + p4*b4);
-
-	//CatMull Spline
 	float t2 = t * t;
 
 	float t3 = t2 * t;
