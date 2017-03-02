@@ -361,8 +361,78 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
   bool LIGHTING::LightHandler::UpdateActiveLightsToGPU(std::vector<int>* indices)
  {
+#pragma region 
+	  /*
+	  make an array of Point[indices.size()]
+	  make a vector of ints for the new shadow indices. No set size. We don't know how many of the lights will cast shadows
+	  for each item in indices
+		{	
+			copy the light at m_lightData.dataPtr[item] 
+
+			for each shadowIndex in m_lightData.shadowLightIndex
+				
+				Check if this light is a light that casts shadows
+				if( item == shadowIndex)
+					pushback the shadowvector with the current index in the new Point array
+	  
+	  }
+
+	  Update lightBuffer with the lights
+	  Update LightInfo buffer with numLights and shadowcasting lights
+	  */
+#pragma endregion PSUEDO
+
+#pragma region
 
 
+	  static std::vector<Point> lightArray;
+	  static std::vector<int>	shadowIndices;
+
+	  for (int i = 0; i < (int)indices->size(); i++) //for each index sent into this function
+	  {
+		  lightArray.push_back(m_lightData.dataPtr[indices->at(i)]); // pushback the light data
+
+		  for (int shadowIndex = 0; shadowIndex < (int)m_lightData.numShadowLights; shadowIndex++) //go through the shadow array
+		  {
+			  if (indices->at(i) == m_lightData.shadowLightIndex[shadowIndex]) {	// if this light index resides in the shdaowIndex array
+				  shadowIndices.push_back(i);									    // pushback the current index in the new Lightarray (The new index in the const buffer)
+				  break;
+			  }
+			  else if (m_lightData.shadowLightIndex[shadowIndex] == -1) //if we've reached a -1 value in the array, we've reached the end of available shadows indices
+				  break;
+		  }
+	  }
+
+	 D3D11_MAPPED_SUBRESOURCE mapRes;
+	 HRESULT hr = m_gDeviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+	  if (FAILED(hr)) {
+#ifdef _DEBUG
+		  MessageBox(NULL, L"Failed to update lights buffer", L"Error", MB_ICONERROR | MB_OK);
+#endif // _DEBUG	
+		  return false;
+  }
+#ifdef USE_CONST_BUFFER_FOR_LIGHTS
+	  memset(mapRes.pData, 0, sizeof(Point) * MAX_LIGHT_AMOUNT); //Null the data in the buffer
+#else
+	  memset(mapRes.pData, 0, sizeof(Point) * NUM_LIGHTS);
+#endif
+	  memcpy(mapRes.pData, (void*)lightArray.data(), sizeof(Point) * lightArray.size()); //copy the lights
+	  m_gDeviceContext->Unmap(m_lightBuffer, 0);
+
+	  m_constBufferData.NUM_POINTLIGHTS = lightArray.size();	//Update Num pointLights
+
+	  //Update the shadowIndices array
+	  memset(m_constBufferData.SHADOWCASTING_LIGHTS, -1, sizeof(int) * MAX_SHADOW_LIGHTS); //Null the data in the buffer
+	  memcpy(m_constBufferData.SHADOWCASTING_LIGHTS, (void*)shadowIndices.data(), sizeof(int) * shadowIndices.size()); //copy the shadow indices
+	
+	  ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData); // update the lightInfo buffer
+
+
+	  //update structured buffer
+
+	  lightArray.clear();
+	  shadowIndices.clear();
+#pragma endregion Implementation
 	  return true;
  }
 

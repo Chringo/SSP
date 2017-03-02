@@ -22,11 +22,11 @@ cbuffer camera : register(b1)
 
 cbuffer LightInfo : register(b3)
 {
-    uint   NUM_POINTLIGHTS;
-    uint   DYNAMIC_SHADOWLIGHT_INDEX;
-    float3 AMBIENT_COLOR;
-    float  AMBIENT_INTENSITY;
-    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    uint    NUM_POINTLIGHTS;
+    uint    DYNAMIC_SHADOWLIGHT_INDEX;
+    float3  AMBIENT_COLOR;
+    float   AMBIENT_INTENSITY;
+    int     SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
 
