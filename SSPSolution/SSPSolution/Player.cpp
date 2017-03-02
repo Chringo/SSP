@@ -45,8 +45,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Map the user input to values
 	int sideways = 0, forwards = 0;
 	float rotationY = 0.0f;
-	
-#pragma region
+
+	//extra buttons for testing ragdoll
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = ANIMATED;
@@ -66,8 +67,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
-#pragma endregion Ragdoll_Debug_Buttons
-
+#endif 
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
