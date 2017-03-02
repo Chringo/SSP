@@ -35,6 +35,15 @@ int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent
 	this->m_walkingSound = nullptr;
 	this->m_chainSoundTimer = 0.0f;
 
+	if (this->GetGraphicComponent()->modelID == 1117267500)	//Studly Model ID
+	{
+		this->isAbbington = false;
+	}
+	else if (this->GetGraphicComponent()->modelID == 885141774)
+	{
+		this->isAbbington = true;
+	}
+
 	return result;
 }
 
@@ -288,7 +297,31 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			ptr->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
 			ptr->PC_gravityInfluence = 1.0;
 		}
+#pragma region
+		
 
+		//Set the ball to be between the two hands
+
+		//left hand index  : 8
+		//right hand index : 12
+
+		//Get left hand, multiply it by bind pose to correct position
+		DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
+		DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
+		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+		tpose = DirectX::XMMatrixInverse(&det, tpose);
+		joint = DirectX::XMMatrixMultiply(tpose, joint);
+
+		//Get world matrix of the character
+		DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
+
+		//Multiply the hand joints into world space
+		joint = DirectX::XMMatrixMultiply(joint, world);
+
+		//Final pos = left hand + half jointToJoint vector
+		this->m_anklePos = joint.r[3];
+		
+#pragma endregion
 
 		//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 		bool hasThrown = false;
@@ -302,7 +335,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 
 				/*Playing the corresponding throw sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
-				if (this->GetEntityID() == 2)
+				if (this->isAbbington == false)
 					SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_THROW_1, Sounds3D::STUDLEY_THROW_3, pos, false, false);
 				else
 					SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_THROWING_1, Sounds3D::ABBINGTON_THROWING_3, pos, false, false);
@@ -447,7 +480,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					DirectX::XMFLOAT3 pos;
 					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-					if (this->GetEntityID() == 2)
+					if (this->isAbbington == false)
 					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
 					else
 						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
@@ -725,4 +758,11 @@ bool Player::isAnimationChanged()
 float Player::TimeSinceThrow()
 {
 	return this->m_timeSinceThrow;
+}
+
+DirectX::XMVECTOR Player::GetAnklePosition()
+{
+
+	return this->m_ragdoll->leftLeg.next2->PC_pos;
+	
 }

@@ -25,7 +25,7 @@
 
 	 btVector3 bulletQuat;
 	 btQuaternion quaturnion;
-
+	 
 	 quaturnion = btQuaternion(
 		 DirectX::XMVectorGetX(quat),
 		 DirectX::XMVectorGetY(quat),
@@ -523,7 +523,7 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTy
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, CollitionTypes collitionType, int mask)
 {
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1]*2, src->PC_OBB.ext[2]);
-	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.45);
+	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.30);
 
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 

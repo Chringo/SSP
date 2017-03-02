@@ -207,37 +207,37 @@ int System::Update(float deltaTime)
 
 			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
 #ifdef _DEBUG
-			//for (int i = 0; i < nrOfComponents; i++)
-			//{
-			//	PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
-			//	if (temp->PC_BVtype == BV_AABB)
-			//	{
-			//		AABB* AABB_holder = nullptr;
-			//		this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
-			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
-			//	}
-			//	if (temp->PC_BVtype == BV_OBB)
-			//	{
-			//		OBB* OBB_holder = nullptr;
-			//		this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
+			for (int i = 0; i < nrOfComponents; i++)
+			{
+				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
+				if (temp->PC_BVtype == BV_AABB)
+				{
+					AABB* AABB_holder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentAABB(AABB_holder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *AABB_holder);
+				}
+				if (temp->PC_BVtype == BV_OBB)
+				{
+					OBB* OBB_holder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentOBB(OBB_holder, i);
 
-			//		DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
+					DirectX::XMVECTOR tempOBBpos = DirectX::XMVectorAdd(temp->PC_pos, OBB_holder->ort.r[3]);
 
-			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-			//	}
-			//	if (temp->PC_BVtype == BV_Plane)
-			//	{
-			//		Plane* planeHolder = nullptr;
-			//		this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
-			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
-			//	}
-			//	if (temp->PC_BVtype == BV_Sphere)
-			//	{
-			//		Sphere* sphereHolder = nullptr;
-			//		this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
-			//		this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
-			//	}
-			//}
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+				}
+				if (temp->PC_BVtype == BV_Plane)
+				{
+					Plane* planeHolder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentPlane(planeHolder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *planeHolder);
+				}
+				if (temp->PC_BVtype == BV_Sphere)
+				{
+					Sphere* sphereHolder = nullptr;
+					this->m_physicsHandler.GetPhysicsComponentSphere(sphereHolder, i);
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
+				}
+			}
 			int nrOfBodyParts = this->m_physicsHandler.GetNrOfBodyComponents();
 			PhysicsComponent* temp = nullptr;
 			OBB* OBB_holder = nullptr;
@@ -245,8 +245,8 @@ int System::Update(float deltaTime)
 			OBB_holder = &temp->PC_OBB;
 			if (temp != nullptr)
 			{
-				this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
-			}
+					this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *OBB_holder);
+				}
 			//for (int i = 0; i < nrOfBodyParts; i++)
 			//{
 			//	temp = this->m_physicsHandler.GetBodyComponentAt(i);
@@ -328,13 +328,13 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->StartTimer(0);
 
 	//Update the logic and transfer the data from physicscomponents to the graphicscomponents
-	enum {TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2};
+	enum { TOGGLE_FULLSCREEN = 511, EXIT_GAME = -2 };
 	result = this->m_gsh.Update(deltaTime, this->m_inputHandler);
 	if (result == TOGGLE_FULLSCREEN)
 	{
 		this->FullscreenToggle();
 	}
-	else if(result == EXIT_GAME)
+	else if (result == EXIT_GAME)
 	{
 		result = 0;
 	}
@@ -485,7 +485,7 @@ void System::LockCameraToPlayer(float translateCameraX, float translateCameraY, 
 {
 	DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&this->m_camera->GetCameraPos());
 	DirectX::XMVECTOR camLookAt = DirectX::XMLoadFloat3(&this->m_camera->GetLookAt());
-	PhysicsComponent* player= nullptr;
+	PhysicsComponent* player = nullptr;
 
 	DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(camLookAt, camPos);
 	
