@@ -1777,6 +1777,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		if (ragdoll->playerPC->PC_entityID == 1)
 		{
 			
+
 			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;	//Get the position of the player
 			newPos.m128_f32[1] = 0.0f;	//Remove the Y value
 
@@ -1792,7 +1793,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	if (ragdoll->state == RAGDOLL_TRANSITION)
 	{
 		//Change where the chain is attached
-		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->lowerBody.center;	//Set it to the ragdoll
+		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;	//Set it to the ragdoll
 
 		ragdoll->time_standil_still = 0;
 		if (ragdoll->playerPC->PC_entityID == 1)
@@ -1810,7 +1811,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == RAGDOLL)
 	{
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
 
 		float radius = ragdoll->upperBody.center->PC_Sphere.radius;
 		btVector3 scale = btVector3(radius, radius, radius);
@@ -1839,7 +1840,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->playerPC;	//Set it to the player
 
 		ragdoll->ballPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
+		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->upperBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
 		btVector3 ext;
 
 		ragdoll->key_frame_blend_stage--;
