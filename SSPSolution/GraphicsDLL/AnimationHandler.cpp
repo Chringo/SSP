@@ -87,13 +87,11 @@ void AnimationHandler::Update(float dt)
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
 							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
 							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_BALL_IDLE;
 						}
 						else
 						{
 							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->blendFlag = SMOOTH_TRANSITION;
 							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_IDLE;
 						}
 

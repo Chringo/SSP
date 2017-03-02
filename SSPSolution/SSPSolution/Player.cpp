@@ -246,6 +246,16 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_grabbed != nullptr)
 		{
 
+			if (forwards == 0 && sideways == 0)
+			{
+				if (this->m_oldAnimState != PLAYER_BALL_IDLE && this->m_aComp->previousState == PLAYER_BALL_IDLE)
+				{
+					this->m_oldAnimState = this->m_aComp->previousState;
+					SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
+					this->m_aComp->previousState = PLAYER_BALL_IDLE;
+				}
+			}
+
 			//Set the ball to be between the two hands
 			
 			//left hand index  : 8
@@ -526,8 +536,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 	}
 
-	this->m_oldAnimState = this->m_aComp->previousState;
-
 	//End the update
 	return result;
 }
@@ -607,7 +615,6 @@ bool Player::stateExists(int animationState)
 	/*If the previous state is not equal to current state.*/
 	if (m_aComp->previousState != animationState)
 	{
-		//m_aComp->previousState = animationState;
 		return false;
 	}
 	/*If the previous state is equal to current state.*/
