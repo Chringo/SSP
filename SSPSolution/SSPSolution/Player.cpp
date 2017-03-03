@@ -346,10 +346,14 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				//if the player is holding its own ball
 				if (this->m_ball->GetEntityID() == this->m_grabbed->GetEntityID())
 				{
-					/*Set the component to play the "release ball" animation for player IDLE.*/
-					this->m_aComp->previousState = this->m_aComp->currentState;
-					SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
-					this->m_aComp->currentState = PLAYER_IDLE;
+					/*Set the component to play the animation for IDLE state, only if the player stands still and drops the ball.*/
+					if (forwards == 0 && sideways == 0)
+					{
+						/*Set the component to play the "release ball" animation for player IDLE.*/
+						this->m_aComp->previousState = this->m_aComp->currentState;
+						SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+						this->m_aComp->currentState = PLAYER_IDLE;
+					}
 
 					strength = 2; //weak as föök if the player tries to throw himself
 				}
@@ -393,117 +397,118 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		}
 		if (forwards != 0 || sideways != 0)
+		{
+			//Use those values for the player behaviour calculations
+			//Get the rotation around the Y-axis, also called the Yaw axis
+			//float yaw = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+
+			//Define a quaternion rotation so we can rotate the velocity vector
+			//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
+			float forwardsVel = 0.0f, sidewaysVel = 0.0f;
+			//DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
+			DirectX::XMVECTOR velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+			DirectX::XMVECTOR lookAtDir = this->m_lookDir;
+			lookAtDir.m128_f32[1] = 0.0f;
+			lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
+			//Scale lookDir with forwards
+			velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(forwards)));
+
+			this->m_rightDir.m128_f32[1] = 0.0f;
+			lookAtDir = this->m_rightDir;
+			lookAtDir.m128_f32[1] = 0.0f;
+			lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
+			//Scale lookAtDir / m_rightDir with sideways
+			velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(sideways)));
+
+			//Velocity now contains both forwards and sideways velocity
+			velocity = DirectX::XMVector3Normalize(velocity);
+
+			/*When the player move backwards, the movement speed of the character should be slower with a down-scale factor.*/
+			if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD)
 			{
-				//Use those values for the player behaviour calculations
-				//Get the rotation around the Y-axis, also called the Yaw axis
-				//float yaw = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
+				float scaleFactor = 0.80f;
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
+				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+			}
+			/*When the player move backwards with ball, the movement speed of the character should be slower with a down-scale factor.*/
+			else if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD_BALL)
+			{
+				float scaleFactor = 0.60f;
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
+				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+			}
+			/*When the player run forwards and strafe left to right, scale with the normal acceleration.*/
+			else
+			{
+				//Scale that velocity with speed and deltaTime
+				velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
+				velocity = DirectX::XMVectorSetW(velocity, 1.0f);
+			}
 
-				//Define a quaternion rotation so we can rotate the velocity vector
-				//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
-				float forwardsVel = 0.0f, sidewaysVel = 0.0f;
-				//DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
-				DirectX::XMVECTOR velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-				DirectX::XMVECTOR lookAtDir = this->m_lookDir;
-				lookAtDir.m128_f32[1] = 0.0f;
-				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
-				//Scale lookDir with forwards
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(forwards)));
+			//Add the velocity to our physicsComponent
+			float ySpeed = 0;
+			ySpeed = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
+			//ySpeed += DirectX::XMVectorGetY(velocity);
 
-				this->m_rightDir.m128_f32[1] = 0.0f;
-				lookAtDir = this->m_rightDir;
-				lookAtDir.m128_f32[1] = 0.0f;
-				lookAtDir = DirectX::XMVector3Normalize(lookAtDir);
-				//Scale lookAtDir / m_rightDir with sideways
-				velocity = DirectX::XMVectorAdd(velocity, DirectX::XMVectorScale(lookAtDir, float(sideways)));
+			this->m_pComp->PC_velocity = velocity;
 
-				//Velocity now contains both forwards and sideways velocity
-				velocity = DirectX::XMVector3Normalize(velocity);
+			this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
+			//this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
 
-				/*When the player move backwards, the movement speed of the character should be slower with a down-scale factor.*/
-				if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD)
-				{
-					float scaleFactor = 0.80f;
-					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
-					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
-				}
-				/*When the player move backwards with ball, the movement speed of the character should be slower with a down-scale factor.*/
-				else if (this->m_aComp->source_State->stateIndex == PLAYER_RUN_BACKWARD_BALL)
-				{
-					float scaleFactor = 0.60f;
-					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration * scaleFactor);
-					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
-				}
-				/*When the player run forwards and strafe left to right, scale with the normal acceleration.*/
-				else
-				{
-					//Scale that velocity with speed and deltaTime
-					velocity = DirectX::XMVectorScale(velocity, this->m_acceleration);
-					velocity = DirectX::XMVectorSetW(velocity, 1.0f);
-				}
+			/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
+			DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
+			this->m_aComp->velocity = DirectX::XMVectorGetX(velocityAnimation);
 
-				//Add the velocity to our physicsComponent
-				float ySpeed = 0;
-				ySpeed = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
-				//ySpeed += DirectX::XMVectorGetY(velocity);
+			//Rotates the player to run in the direction that the camera faces.
+			DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0f,1.0f,0.0f,0.0f }));
+			this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+				-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+				0.f, 1.f, 0.f, 0.0f,
+				-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
+				0, 0, 0, 1.0f
+			);
+			//If the player is grabbing the ball, the ball entity should also rotate in the direction of the camera. 
+			if (this->m_grabbed != nullptr)
+			{
+				PhysicsComponent* physicComp = this->m_grabbed->GetPhysicsComponent();
 
-				this->m_pComp->PC_velocity = velocity;
-				this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
-				//this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
-				
-				/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
-				DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
-				this->m_aComp->velocity = DirectX::XMVectorGetX(velocityAnimation);
-				
-				//Rotates the player to run in the direction that the camera faces.
-				DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0f,1.0f,0.0f,0.0f }));
-				this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+				physicComp->PC_OBB.ort = DirectX::XMMatrixSet(
 					-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
 					0.f, 1.f, 0.f, 0.0f,
-					-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,		
+					-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
 					0, 0, 0, 1.0f
 				);
-				//If the player is grabbing the ball, the ball entity should also rotate in the direction of the camera. 
-				if (this->m_grabbed != nullptr)
-				{
-					PhysicsComponent* physicComp = this->m_grabbed->GetPhysicsComponent();
-
-					physicComp->PC_OBB.ort = DirectX::XMMatrixSet(
-						-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
-						0.f, 1.f, 0.f, 0.0f,
-						-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
-						0, 0, 0, 1.0f
-					);
-				}
-				//Play walking sounds
-				/*Playing the corresponding walk sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
-				if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
-				{
-					DirectX::XMFLOAT3 pos;
-					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-					if (this->isAbbington == false)
+			}
+			//Play walking sounds
+			/*Playing the corresponding walk sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
+			if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
+			{
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				if (this->isAbbington == false)
 					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::STUDLEY_WALK, pos, true, true);
-					else
-						this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
-					pos.y = pos.y - 1;
-					SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
-				}
 				else
+					this->m_walkingSound = SoundHandler::instance().PlaySound3D(Sounds3D::ABBINGTON_WALK, pos, true, true);
+				pos.y = pos.y - 1;
+				SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
+			}
+			else
+			{
+				if (this->m_walkingSound->getIsPaused())	//If the walking sound is paused
 				{
-					if (this->m_walkingSound->getIsPaused())	//If the walking sound is paused
+					this->m_walkingSound->setPlayPosition(0);
+					this->m_walkingSound->setIsPaused(false);	//Un pause it
+					if (this->m_chainSoundTimer > 0.37f)
 					{
-						this->m_walkingSound->setPlayPosition(0);
-						this->m_walkingSound->setIsPaused(false);	//Un pause it
-						if (this->m_chainSoundTimer > 0.37f)
-						{
-							DirectX::XMFLOAT3 pos;
-							DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-							pos.y = pos.y - 1;
-							SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
-							this->m_chainSoundTimer = 0.0f;
-						}
+						DirectX::XMFLOAT3 pos;
+						DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+						pos.y = pos.y - 1;
+						SoundHandler::instance().PlayRandomSound3D(Sounds3D::GENERAL_CHAIN_DRAG_1, Sounds3D::GENERAL_CHAIN_DRAG_3, pos, false, false);
+						this->m_chainSoundTimer = 0.0f;
 					}
 				}
 			}
+		}
 			else
 			{
 				if (this->m_walkingSound != nullptr && !this->m_walkingSound->getIsPaused())

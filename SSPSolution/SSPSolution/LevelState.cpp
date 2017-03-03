@@ -864,9 +864,14 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetGrabbed(nullptr);
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+
+		/*Set the component to play the animation for IDLE if the player is standing still when PCs velocity is under 1.*/
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Length(this->m_player1.GetPhysicsComponent()->PC_velocity)) < 1.0f )
+		{
 			this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
 			this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
 			this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
+		}
 	}
 	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 	{
