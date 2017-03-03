@@ -48,27 +48,39 @@ struct AnimationComponent
 	std::vector<Resources::Animation*>* animation_States = nullptr;
 };
 
+enum BlendingIndex
+{
+	SOURCE_ANIMATION = 0,
+	TARGET_ANIMATION = 1
+};
+
 struct BlendKeyframe
 {
-	DirectX::XMFLOAT3 trans;
-	DirectX::XMFLOAT3 scale;
-	DirectX::XMFLOAT4 quat;
+	DirectX::XMVECTOR trans;
+	DirectX::XMVECTOR scale;
+	DirectX::XMVECTOR quat;
+};
+
+struct VectorData
+{
+	std::vector<DirectX::XMMATRIX> localTransforms;
+	std::vector<DirectX::XMMATRIX> localScales;
+	std::vector<DirectX::XMMATRIX> relationTransform;
+	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
 };
 
 class AnimationHandler
 {
 private:
 
-	std::vector<DirectX::XMFLOAT4X4> localTransforms;
-	std::vector<DirectX::XMFLOAT4X4> localScales;
-	std::vector<DirectX::XMFLOAT4X4> relationTransform;
-	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
-
 	//Variables used only in class.
+	std::vector<VectorData> m_transformData;
+
 	int m_nrOfAnimComps;
 	int m_maxAnimComps;
-
 	int m_AnimCompIndex;
+
+	bool m_extractOnce;
 
 	/*List with animations components*/
 	std::vector<AnimationComponent*> m_AnimComponentList;
@@ -103,4 +115,3 @@ private:
 };
 
 #endif
-
