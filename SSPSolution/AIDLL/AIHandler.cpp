@@ -33,7 +33,7 @@ int AIHandler::Initialize(int max)
 
 	return SUCCESS;
 }
-AIDLL_API int AIHandler::ClearAIComponents()
+int AIHandler::ClearAIComponents()
 {
 	for (size_t i = 0; i < m_nrOfAIComponents; i++)
 	{
