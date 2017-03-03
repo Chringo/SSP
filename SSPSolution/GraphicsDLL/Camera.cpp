@@ -40,6 +40,7 @@ int Camera::Initialize(float farPlane, float screenAspect, float fieldOfView, fl
 	this->m_yaw = 0.0f;
 	this->m_pitch = 0.0f;
 	this->m_focusPoint = nullptr;
+	this->m_standardFocusPoint = DirectX::XMVectorSet(616.0f, 0.0f, 0.0f, 0.0f);
 	this->m_focusPointOffset = { 0.0 };
 	this->m_camRightvector = { 0.0 };
 	this->m_camDirvector = { 0.0 };
@@ -354,7 +355,10 @@ void Camera::GetCameraUp(DirectX::XMFLOAT3 & storeIn)
 }
 DirectX::XMVECTOR Camera::GetCameraPivot()
 {
-	return *this->m_focusPoint;
+	if (this->m_focusPoint != nullptr)
+		return *this->m_focusPoint;
+	else
+		return this->m_standardFocusPoint;
 }
 float Camera::GetCameraDistance()
 {
@@ -388,7 +392,11 @@ DirectX::XMVECTOR Camera::GetDirection()
 DirectX::XMFLOAT3 Camera::GetFocusPoint()
 {
 	DirectX::XMFLOAT3 result;
-	DirectX::XMStoreFloat3(&result, *this->m_focusPoint);
+	if(this->m_focusPoint != nullptr)
+		DirectX::XMStoreFloat3(&result, *this->m_focusPoint);
+	else
+		DirectX::XMStoreFloat3(&result, this->m_standardFocusPoint);
+
 	return result;
 }
 
@@ -401,7 +409,10 @@ DirectX::XMFLOAT3 Camera::GetFocusPointOffset()
 
 void Camera::GetFocusPoint(DirectX::XMFLOAT3 & storeIn)
 {
-	DirectX::XMStoreFloat3(&storeIn, *this->m_focusPoint);
+	if (this->m_focusPoint != nullptr)
+		DirectX::XMStoreFloat3(&storeIn, *this->m_focusPoint);
+	else
+		DirectX::XMStoreFloat3(&storeIn, this->m_standardFocusPoint);
 	return;
 }
 
@@ -696,8 +707,9 @@ void Camera::m_updatePos()
 	this->m_calcDistance();
 
 	DirectX::XMVECTOR oldTarget = DirectX::XMLoadFloat4(&m_lookAt);
-
-	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
+	DirectX::XMVECTOR finalFocus = DirectX::XMVectorAdd(this->m_standardFocusPoint, this->m_focusPointOffset);
+	if(this->m_focusPoint != nullptr)
+		finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
 	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
 
