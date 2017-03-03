@@ -162,6 +162,14 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+		if (!this->m_isActive)
+		{
+			if (!this->m_timer_sound->getIsPaused())
+			{
+				this->m_timer_sound->setPlaybackSpeed(1.0f);
+				this->m_timer_sound->setIsPaused(true);
+			}
+		}
 		
 		this->m_needSync = true;
 	}
