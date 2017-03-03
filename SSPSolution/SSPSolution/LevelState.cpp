@@ -215,7 +215,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 77.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0P1.level", 77.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 46.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5P1.level", 46.0f });
