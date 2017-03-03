@@ -218,6 +218,9 @@ public:
 	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
 	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
 
+	PHYSICSDLL_API void ClearBullet();
+
+
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1
 };

@@ -4910,6 +4910,26 @@ void PhysicsHandler::SetIgnoreCollisions()
 	}
 }
 
+PHYSICSDLL_API void PhysicsHandler::ClearPhysicsHandler()
+{
+	int size = this->m_physicsComponents.size();
+	for (int i = 0; i < size; i++)
+	{
+		delete this->m_physicsComponents.at(i);
+		this->m_physicsComponents.at(i) = nullptr;
+	}
+	this->m_physicsComponents.clear();
+	this->m_dynamicComponents.clear();
+	this->m_staticComponents.clear();
+	this->m_fields.clear();
+	this->m_links.clear();
+	this->m_player1BodyPC.clear();
+	this->m_player1RagDoll.playerPC = nullptr;
+	this->m_player2BodyPC.clear();
+
+	this->m_bullet.ClearBullet();
+}
+
 
 
 #ifdef _DEBUG

@@ -56,7 +56,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	float rotationY = 0.0f;
 
 	//extra buttons for testing ragdoll
-#ifdef DEVELOPMENTFUNCTIONS
+//#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = ANIMATED;
@@ -76,7 +76,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
-#endif 
+//#endif 
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
@@ -322,7 +322,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_anklePos = joint.r[3];
 		
 #pragma endregion
-
+		if (forwards == 0 && sideways == 0)
+		{
+			float yVel = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
+			this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, yVel, 0, 0);
+		}
 		//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 		bool hasThrown = false;
 		if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_grabbed != nullptr)

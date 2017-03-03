@@ -2496,8 +2496,9 @@ int LevelState::UnloadLevel()
 	//Shutdown PhysicsHandler and initialize it again.
 #pragma region
 	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
-	pHandler->ShutDown();
-	pHandler->Initialize();
+	//pHandler->ShutDown();
+	//pHandler->Initialize();
+	pHandler->ClearPhysicsHandler();
 #pragma endregion Physics handler restart
 
 	this->m_director.Initialize();
