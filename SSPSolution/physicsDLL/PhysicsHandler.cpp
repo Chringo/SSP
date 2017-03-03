@@ -4928,6 +4928,7 @@ PHYSICSDLL_API void PhysicsHandler::ClearPhysicsHandler()
 	this->m_player2BodyPC.clear();
 
 	this->m_bullet.ClearBullet();
+
 }
 
 

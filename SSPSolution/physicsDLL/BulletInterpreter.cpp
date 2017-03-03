@@ -600,7 +600,9 @@ void BulletInterpreter::ClearBullet()
 		{
 			delete tempBPtr;
 		}
-
+		//removes the rigidbody from the dynamic world
+		this->m_dynamicsWorld->removeRigidBody(tempPtr);
+		
 		delete tempPtr;
 		tempPtr = nullptr;
 	}

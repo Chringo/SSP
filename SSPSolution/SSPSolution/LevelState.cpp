@@ -2496,8 +2496,7 @@ int LevelState::UnloadLevel()
 	//Shutdown PhysicsHandler and initialize it again.
 #pragma region
 	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
-	//pHandler->ShutDown();
-	//pHandler->Initialize();
+
 	pHandler->ClearPhysicsHandler();
 #pragma endregion Physics handler restart
 
@@ -2524,6 +2523,13 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player1.SetPhysicsComponent(playerP);
+
+	//reset player1 animation component to idle animation
+	this->m_player1.GetAnimationComponent()->source_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	this->m_player1.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	this->m_player1.GetAnimationComponent()->source_State->isLooping = true;
+	this->m_player1.GetAnimationComponent()->playingSpeed = 2.0f;
+
 #pragma endregion Player 1
 #pragma region
 	//We then need to recreate the persistent components here
@@ -2546,6 +2552,13 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player2.SetPhysicsComponent(playerP);
+
+	//reset player2 animation component to idle animation
+	this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	this->m_player2.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	this->m_player2.GetAnimationComponent()->source_State->isLooping = true;
+	this->m_player2.GetAnimationComponent()->playingSpeed = 2.0f;
+
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -2610,6 +2623,9 @@ int LevelState::UnloadLevel()
 	//Re-introduce them into our dynamic list
 	this->m_dynamicEntitys.push_back(ball1);
 	this->m_dynamicEntitys.push_back(ball2);
+
+	this->m_Player1ChainPhysicsComp.clear();
+	this->m_Player2ChainPhysicsComp.clear();
 
 	return 1;
 }
