@@ -189,6 +189,7 @@ int LevelState::ShutDown()
 	this->m_cHandler->ResizeGraphicsStatic(0);
 	this->m_cHandler->ResizeGraphicsPersistent(0);
 	this->m_cHandler->ClearAminationComponents();
+	this->m_cHandler->ClearAIComponents();
 
 	//We need to add a function which empties the physics and bullet.
 	this->m_cHandler->GetPhysicsHandler()->ShutDown();
