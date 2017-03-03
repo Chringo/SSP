@@ -425,7 +425,7 @@ void SoundHandler::LoadSounds()
 		printf("Failed to load sound");
 	}
 
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Wheel_Click.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Wheel_Clicked.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
