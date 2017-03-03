@@ -2500,6 +2500,8 @@ int LevelState::UnloadLevel()
 	pHandler->Initialize();
 #pragma endregion Physics handler restart
 
+	this->m_cHandler->ClearAIComponents();
+
 	this->m_director.Initialize();
 #pragma region
 #pragma region

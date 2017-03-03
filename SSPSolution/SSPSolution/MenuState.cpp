@@ -726,7 +726,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//Push it to the gamestate stack/vector
 				//this->PushStateToStack(levelSelect);
 
-				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 
 #pragma region
 				switch (this->m_levelToHost)
@@ -754,7 +754,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
 					break;
 
 				}
@@ -933,7 +933,7 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				}
@@ -988,7 +988,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL 0\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), 0);
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), 0);
 				break;
 
 			case 1:
