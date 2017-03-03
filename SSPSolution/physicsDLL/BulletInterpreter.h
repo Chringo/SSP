@@ -96,30 +96,11 @@ struct PhysicsComponent
 	Sphere PC_Sphere;
 	Plane PC_Plane;
 
-	std::vector<DirectX::XMFLOAT3> m_normals;
-	std::vector<CollitionNormal> m_collition_Normals;
+	std::vector<DirectX::XMFLOAT3> PC_normals;
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 
-	void AddCollitionNormal(DirectX::XMFLOAT3 normal)
-	{
-		size_t nrOfNormals = this->m_collition_Normals.size();
-		for (size_t i = 0; i < nrOfNormals; i++)
-		{
-			float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
-				DirectX::XMLoadFloat3(&normal), 
-				DirectX::XMLoadFloat3(&this->m_collition_Normals.at(i).CN_normal)));
-			if (dot != 1)
-			{
-				this->m_collition_Normals.push_back(CollitionNormal(normal));
-			}
-			else
-			{
-				this->m_collition_Normals.at(i).lifeTime += 5;
-			}
-		}
-	}
 };
 
 enum PhysicsLinkType

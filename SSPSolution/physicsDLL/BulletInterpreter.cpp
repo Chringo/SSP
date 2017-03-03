@@ -717,7 +717,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 			if (obj1->getUserIndex() == index)
@@ -737,7 +737,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 
