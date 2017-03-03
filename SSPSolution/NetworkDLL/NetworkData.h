@@ -46,7 +46,7 @@ struct Packet
 
 struct SyncPacket: public Packet
 {
-	std::clock_t time_start;
+	bool setHost;
 
 	virtual void serialize(char * data)
 	{			

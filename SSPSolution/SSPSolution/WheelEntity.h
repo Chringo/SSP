@@ -62,6 +62,7 @@ public:
 
 private:
 	//Functions
+	void m_UpdateOBB(bool inc, float dT);
 };
 
 #endif
