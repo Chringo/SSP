@@ -1305,7 +1305,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		SoundHandler::instance().PlaySound2D(Sounds2D::MENU, false, false);
+		//SoundHandler::instance().PlaySound2D(Sounds2D::MENU, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
