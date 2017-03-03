@@ -33,6 +33,18 @@ int AIHandler::Initialize(int max)
 
 	return SUCCESS;
 }
+AIDLL_API int AIHandler::ClearAIComponents()
+{
+	for (size_t i = 0; i < m_nrOfAIComponents; i++)
+	{
+		this->m_AIComponents[i]->AC_triggered = false;
+		this->m_AIComponents[i]->AC_active = false;
+	}
+
+	m_nrOfAIComponents = 0;
+
+	return 0;
+}
 int AIHandler::Update(float deltaTime)
 {
 	//float dt = deltaTime;
