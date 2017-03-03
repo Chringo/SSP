@@ -2529,6 +2529,8 @@ int LevelState::UnloadLevel()
 	this->m_player1.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
 	this->m_player1.GetAnimationComponent()->source_State->isLooping = true;
 	this->m_player1.GetAnimationComponent()->playingSpeed = 2.0f;
+	this->m_player1.GetAnimationComponent()->target_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	this->m_player1.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
 
 #pragma endregion Player 1
 #pragma region
@@ -2558,6 +2560,8 @@ int LevelState::UnloadLevel()
 	this->m_player2.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
 	this->m_player2.GetAnimationComponent()->source_State->isLooping = true;
 	this->m_player2.GetAnimationComponent()->playingSpeed = 2.0f;
+	this->m_player2.GetAnimationComponent()->target_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	this->m_player2.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
 
 #pragma endregion Player 2
 #pragma region 
