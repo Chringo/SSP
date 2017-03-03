@@ -130,6 +130,12 @@ LevelState::~LevelState()
 int LevelState::ShutDown()
 {
 	int result = 1;
+	this->UnloadLevel();
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
+	//Get the Camera Pivot and delete it before supplimenting our own
+
+	this->m_cameraRef->SetCameraPivot(nullptr, targetOffset, 1.3f);
 	// Clear the dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
@@ -217,8 +223,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 77.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5P1.level", 46.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 40.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L6P1.level, 46.0f}");
@@ -434,8 +440,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 	//this->m_dynamicEntitys
-
-	m_cameraRef->SetCameraPivot(
+	//Get the Camera Pivot and delete it before supplimenting our own
+	
+	this->m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
 		targetOffset,
 		1.3f
@@ -2499,8 +2506,6 @@ int LevelState::UnloadLevel()
 	pHandler->ShutDown();
 	pHandler->Initialize();
 #pragma endregion Physics handler restart
-
-	this->m_cHandler->ClearAIComponents();
 
 	this->m_director.Initialize();
 #pragma region
