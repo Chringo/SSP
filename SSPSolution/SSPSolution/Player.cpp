@@ -56,7 +56,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	float rotationY = 0.0f;
 
 	//extra buttons for testing ragdoll
-//#ifdef DEVELOPMENTFUNCTIONS
+#ifdef DEVELOPMENTFUNCTIONS
 	if (inputHandler->IsKeyDown(SDL_SCANCODE_O))
 	{
 		this->m_ragdoll->state = ANIMATED;
@@ -76,7 +76,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		this->m_ragdoll->state = KEYFRAMEBLEND;
 		this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
-//#endif 
+#endif 
 	if (this->m_ragdoll != nullptr)
 	{
 		if (this->m_ragdoll->state == ANIMATED_TRANSITION)
