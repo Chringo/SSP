@@ -2525,12 +2525,16 @@ int LevelState::UnloadLevel()
 	this->m_player1.SetPhysicsComponent(playerP);
 
 	//reset player1 animation component to idle animation
-	this->m_player1.GetAnimationComponent()->source_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
-	this->m_player1.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
-	this->m_player1.GetAnimationComponent()->source_State->isLooping = true;
-	this->m_player1.GetAnimationComponent()->playingSpeed = 2.0f;
-	this->m_player1.GetAnimationComponent()->target_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
-	this->m_player1.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	//this->m_player1.GetAnimationComponent()->source_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	//this->m_player1.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	//this->m_player1.GetAnimationComponent()->source_State->isLooping = true;
+	//this->m_player1.GetAnimationComponent()->playingSpeed = 2.0f;
+	//this->m_player1.GetAnimationComponent()->target_State = this->m_player1.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	//this->m_player1.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
+
+	this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+	this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
 
 #pragma endregion Player 1
 #pragma region
@@ -2556,12 +2560,17 @@ int LevelState::UnloadLevel()
 	this->m_player2.SetPhysicsComponent(playerP);
 
 	//reset player2 animation component to idle animation
-	this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
-	this->m_player2.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
-	this->m_player2.GetAnimationComponent()->source_State->isLooping = true;
-	this->m_player2.GetAnimationComponent()->playingSpeed = 2.0f;
-	this->m_player2.GetAnimationComponent()->target_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
-	this->m_player2.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	//this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	//this->m_player2.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_IDLE;
+	//this->m_player2.GetAnimationComponent()->source_State->isLooping = true;
+	//this->m_player2.GetAnimationComponent()->playingSpeed = 2.0f;
+	//this->m_player2.GetAnimationComponent()->target_State = this->m_player2.GetAnimationComponent()->animation_States->at(0)->GetAnimationStateData();
+	//this->m_player2.GetAnimationComponent()->target_State->stateIndex = AnimationStates::PLAYER_IDLE;
+
+	this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+	this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player2.GetAnimationComponent()->currentState = PLAYER_IDLE;
+
 
 #pragma endregion Player 2
 #pragma region 
