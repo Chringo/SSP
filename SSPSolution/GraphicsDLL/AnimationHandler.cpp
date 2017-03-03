@@ -571,6 +571,8 @@ void AnimationHandler::SetAnimationComponent(int animationState, float transitio
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->velocity = velocity;
+
+	std::cout << animationState << ": ANIMCOMP SENT!" << std::endl;
 }
 
 void AnimationHandler::Blend(float secondsElapsed)
