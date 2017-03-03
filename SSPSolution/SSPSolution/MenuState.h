@@ -118,6 +118,10 @@ private:
 	int m_levelToHost;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
+
+	//music variables
+	irrklang::ISound* m_Menu_Music;
+	irrklang::ISound* m_Level_Music;
 	
 	//Network related functions and variables
 	bool isHosting;
