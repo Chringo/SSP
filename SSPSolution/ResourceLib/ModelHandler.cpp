@@ -101,6 +101,10 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			 Status mSt= m_meshHandler->LoadMesh(meshID,meshPtr); //load the mesh
 			 if (mSt != ST_OK){
 				newModel->SetMesh( m_meshHandler->GetPlaceHolderMesh());
+#ifdef _DEBUG
+				std::cout << "Could not load mesh, Using placeholder for model ID : " << id << std::endl;
+#endif // _DEBUG
+
 			 }
 			 else
 				newModel->SetMesh((Mesh*)meshPtr->resource);
@@ -128,8 +132,13 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 		case Status::ST_RES_MISSING:
 		{
 			Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
-			if (mSt != ST_OK)
+			if (mSt != ST_OK) {
+
 				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
+#ifdef _DEBUG
+				std::cout << "Could not load Material, Using placeholder for model ID : " << id << std::endl;
+#endif // _DEBUG
+			}
 			else
 				newModel->SetMaterial((Material*)matPtr->resource);
 			break;
@@ -144,7 +153,6 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			return st;
 		}
 
-		//newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
 #pragma endregion
 
 		
@@ -196,8 +204,14 @@ Resources::Status Resources::ModelHandler::UnloadModel(unsigned int & id)
 				Skeleton* skel = mod->GetSkeleton();
 				if(mesh != nullptr)
 					m_meshHandler->UnloadMesh(mesh->GetId());
-				if(mat  != nullptr)
-					m_materialHandler->UnloadMaterial(mat->GetId());
+				if (mat != nullptr) {
+					Status matStat = m_materialHandler->UnloadMaterial(mat->GetId());
+					if (matStat != ST_OK) {
+#ifdef _DEBUG
+						std::cout << "No material with id : " << mat->GetId() << " to unload, Was it using placeholder material? \n" << "Model ID: " << id << std::endl;
+#endif // _DEBUG
+					}
+				}
 				if(skel != nullptr)
 					m_skeletonHandler->UnloadSkeleton(skel->GetId());
 				mod->Destroy();

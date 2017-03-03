@@ -2610,6 +2610,8 @@ int LevelState::UnloadLevel()
 	this->m_dynamicEntitys.push_back(ball1);
 	this->m_dynamicEntitys.push_back(ball2);
 
+	Resources::ResourceHandler::GetInstance()->UnloadCurrentLevel();
+
 	return 1;
 }
 

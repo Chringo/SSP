@@ -94,8 +94,9 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 			st = m_textureHandler->GetTexture(matData.textureIDs[i], temp);
 			if (st == ST_RES_MISSING) {
 				st = m_textureHandler->LoadTexture(matData.textureIDs[i], temp);
-				if (st != ST_OK)
+				if (st != ST_OK) {
 					newMaterial->SetTexture(&m_textureHandler->GetPlaceHolderTextures()[i], TextureType(i));
+				}
 				else
 					newMaterial->SetTexture((Texture*)temp->resource, TextureType(i));
 			}
@@ -148,9 +149,7 @@ Resources::Status Resources::MaterialHandler::UnloadMaterial( const unsigned int
 #endif // _DEBUG
 		}
 	default:
-#ifdef _DEBUG
-		std::cout << "No material with id : " << id << " to unload, Was it using placeholder material?" << std::endl;
-#endif // _DEBUG
+
 		return st;
 	}
 	return Status::ST_OK;

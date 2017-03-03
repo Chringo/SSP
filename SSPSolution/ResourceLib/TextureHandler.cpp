@@ -79,8 +79,14 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 	size_t size = 0;
 	
 	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
-	if (st != ST_OK)
+	if (st != ST_OK) {
+
+#ifdef _DEBUG
+		std::cout << "No texture found with the ID: " << id << std::endl;
+#endif // _DEBUG
+
 		return st;
+	}
 
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	if (resData->m_resType != RES_TEXTURE)

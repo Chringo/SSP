@@ -17,8 +17,8 @@ namespace Resources
 
 	private:
 		struct LevelResources {
-			unsigned int *ids = nullptr;
-			unsigned int numResources;
+			unsigned int *ids	      = nullptr;
+			unsigned int numResources = 0;
 			LevelResources() {};
 			~LevelResources(){
 				delete ids; 
@@ -38,6 +38,7 @@ namespace Resources
 
 		DLL_OPERATION Resources::Status LoadLevel(unsigned int id);
 		DLL_OPERATION Resources::Status LoadLevel(LevelData::ResourceHeader* levelResources, unsigned int numResources); 
+		DLL_OPERATION Resources::Status UnloadCurrentLevel();
 
 	DLL_OPERATION static ResourceHandler* GetInstance();
 	/* Set */
