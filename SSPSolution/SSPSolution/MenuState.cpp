@@ -14,6 +14,8 @@ MenuState::~MenuState()
 {
 	if (this->m_Menu_Music != nullptr)
 		this->m_Menu_Music->drop();
+	if (this->m_Level_Music != nullptr)
+		this->m_Level_Music->drop();
 }
 
 int MenuState::ShutDown()
@@ -167,6 +169,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_mainMenuButtons[0].SetHovered(true);
 
 	this->m_Menu_Music = nullptr;
+	this->m_Level_Music = nullptr;
 
 	return result;
 }
@@ -608,6 +611,15 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		{
 			//disable the menu music
 			this->m_Menu_Music->setIsPaused(true);
+			if (this->m_Level_Music == nullptr)
+			{
+				this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			}
+			else
+			{
+				this->m_Level_Music->setPlayPosition(0);
+				this->m_Level_Music->setIsPaused(false);
+			}
 			this->Joining(inputHandler);
 		}
 
@@ -733,8 +745,17 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//this->PushStateToStack(levelSelect);
 
 				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
-				//disable the menu music
+				//disable the menu music and enable level music
 				this->m_Menu_Music->setIsPaused(true);
+				if (this->m_Level_Music == nullptr)
+				{
+					this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+				}
+				else
+				{
+					this->m_Level_Music->setPlayPosition(0);
+					this->m_Level_Music->setIsPaused(false);
+				}
 #pragma region
 				switch (this->m_levelToHost)
 				{
@@ -833,6 +854,7 @@ int MenuState::EnterState()
 
 		if (this->m_Menu_Music->getIsPaused())
 		{
+			this->m_Level_Music->setIsPaused(true);
 			this->m_Menu_Music->setPlayPosition(0);
 			this->m_Menu_Music->setIsPaused(false);
 		}
