@@ -189,7 +189,6 @@ int LevelState::ShutDown()
 	this->m_cHandler->ResizeGraphicsStatic(0);
 	this->m_cHandler->ResizeGraphicsPersistent(0);
 	this->m_cHandler->ClearAminationComponents();
-	this->m_cHandler->ClearAIComponents();
 
 	//We need to add a function which empties the physics and bullet.
 	this->m_cHandler->GetPhysicsHandler()->ShutDown();
@@ -2500,6 +2499,8 @@ int LevelState::UnloadLevel()
 	pHandler->ShutDown();
 	pHandler->Initialize();
 #pragma endregion Physics handler restart
+
+	this->m_cHandler->ClearAIComponents();
 
 	this->m_director.Initialize();
 #pragma region
