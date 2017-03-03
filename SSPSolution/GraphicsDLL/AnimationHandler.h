@@ -20,6 +20,7 @@ struct AnimationComponent
 	int active = 0;
 
 	/*Used to check if a state is either new or old.*/
+	int currentState = 0;
 	int previousState = 0;
 
 	/*Used to play one or two animations, for blending.*/
@@ -90,8 +91,7 @@ private:
 	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
 	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
 	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed);
-	void CheckPlayerFootPosSynch(int player, int runningState, int foot, int keyframeIndex);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 };
 
 #endif

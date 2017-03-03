@@ -1,7 +1,7 @@
 #ifndef GRAPHICSDLL_GRAPHICSCOMPONENT_H
 #define GRAPHICSDLL_GRAPHICSCOMPONENT_H
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <DirectXMath.h>
 #include <string>
 #include "../ResourceLib/Model.h"

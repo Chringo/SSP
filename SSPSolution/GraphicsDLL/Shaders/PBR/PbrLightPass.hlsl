@@ -314,33 +314,25 @@ float4 PS_main(VS_OUT input) : SV_Target
 
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
-    float Pi = 3.14159265359;
-    float EPSILON = 1e-5f;
+    static const float Pi = 3.14159265359;
+    static const float EPSILON = 1e-5f;
 
     float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
-
-   //LIGHT light[3]; 
-   //light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
-    //light[1] = initCustomLight(float3(14.0, -9.0, -3.0), pointlights[1].color); //float3(0.0, 0.0, -3.5), float3(1., 1., 1.));   pointlights[1].position.xyz
-    //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
     float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
     float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
-	/*float3 metalRoughAoSamp = metalRoughAo.Sample(pointSampler, input.UV).rgb;
-	float metalSamp = metalRoughAoSamp.r;
-	float roughSamp = metalRoughAoSamp.g;
-	float AOSamp = metalRoughAoSamp.b;*/
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
     //return N.rgbr;
 
 
     //METALNESS (F90)
-    float f90 = 0.16f * metalSamp * metalSamp;
+    float f90 = metalSamp;
+    f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     float linearRough = (saturate(roughSamp + EPSILON)).r;

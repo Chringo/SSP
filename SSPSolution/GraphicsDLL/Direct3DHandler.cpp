@@ -24,8 +24,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the Device \\
 
-	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-	
+	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
+
 #ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
 		NULL, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
@@ -44,56 +44,97 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	}
 #endif
 	
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
+
+	rasterizerDesc.AntialiasedLineEnable = false;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK; //Enable backface culling
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.MultisampleEnable = false;
+	rasterizerDesc.ScissorEnable = false;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+
+	hResult = this->m_gDevice->CreateRasterizerState(&rasterizerDesc, &this->m_rasterizerState);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	this->m_gDeviceContext->RSSetState(this->m_rasterizerState); //Set the rasterstate
+
 	// Create the swapchain \\
 
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferDesc.Height = resolution.y;
-	swapChainDesc.BufferDesc.Width = resolution.x;
-	swapChainDesc.BufferDesc.RefreshRate.Numerator = 59994; //60hz
-	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1002;
-	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.Height = resolution.y;
+	swapChainDesc.Width = resolution.x;
+	swapChainDesc.Stereo = false;
+	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+	//swapChainDesc.RefreshRate.Numerator = 60; //60hz
+	//swapChainDesc.RefreshRate.Denominator = 1;
+	//swapChainDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChainDesc.Scaling = DXGI_SCALING_NONE;
 
 	swapChainDesc.SampleDesc.Count = 1; //No MSAA
 	swapChainDesc.SampleDesc.Quality = 0;
 	
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
-	swapChainDesc.BufferCount = 1;
-	swapChainDesc.OutputWindow = *windowHandle;
-	swapChainDesc.Windowed = true; //Hardcoded windowed mode
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDesc.Flags = 0;
+	swapChainDesc.BufferCount = 2;
+	//swapChainDesc.OutputWindow = *windowHandle;
+	//swapChainDesc.Windowed = true; //Hardcoded windowed mode
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH /*DXGI_PRESENT_RESTART*/;
 
-	IDXGIDevice* dxgiDevice = nullptr;
-	hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
+	fullScreenDesc.RefreshRate.Numerator = 60;
+	fullScreenDesc.RefreshRate.Denominator = 1;
+	fullScreenDesc.Windowed = true;
+	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+	IDXGIDevice1* dxgiDevice = nullptr;
+	hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+	
+
+
+	IDXGIAdapter2* dxgiAdapter = nullptr;
+	hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter2), (void**)&dxgiAdapter);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
 
-	IDXGIAdapter* dxgiAdapter = nullptr;
-	hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
+	//IDXGIFactory1* dxgiFactory = nullptr;
+	//hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory1),
+	//	reinterpret_cast<void**>(&dxgiFactory));
+	//if (FAILED(hResult))
+	//{
+	//	return 1;
+	//}
+
+	IDXGIFactory2* dxgiFactory2 = nullptr;
+	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
-
-	IDXGIFactory* dxgiFactory = nullptr;
-	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory);
+	
+	hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
-
-	hResult = dxgiFactory->CreateSwapChain(this->m_gDevice, &swapChainDesc, &this->m_swapChain);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
-
+	
 	// Create the backbuffer render target view \\
 
 	ID3D11Texture2D* backBufferPrt = nullptr;
@@ -117,27 +158,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the rasterizer state \\
 
-	D3D11_RASTERIZER_DESC rasterizerDesc;
-	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 
-	rasterizerDesc.AntialiasedLineEnable = false;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK; //Enable backface culling
-	rasterizerDesc.DepthBias = 0;
-	rasterizerDesc.DepthBiasClamp = 0.0f;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.FrontCounterClockwise = false;
-	rasterizerDesc.MultisampleEnable = false;
-	rasterizerDesc.ScissorEnable = false;
-	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-	hResult = this->m_gDevice->CreateRasterizerState(&rasterizerDesc, &this->m_rasterizerState);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
-
-	this->m_gDeviceContext->RSSetState(this->m_rasterizerState); //Set the rasterstate
 
 	
 	this->m_viewport = new D3D11_VIEWPORT;
@@ -208,7 +229,11 @@ int Direct3DHandler::InitializeGridRasterizer()
 
 int Direct3DHandler::PresentScene()
 {
-	this->m_swapChain->Present(0, 0);
+	//RECT dirtyRectPrev, dirtyRectCurrent, dirtyRectCopy;
+	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
+
+
+	this->m_swapChain->Present(1, 0);
 
 	/*
 	Uncomment this to find out vram

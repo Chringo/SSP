@@ -116,7 +116,11 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 	- Unload the last level, decrement the reference counterof all the resources.
 	- if a reference counter hits 0, unload the resource
 	*/
-
+	if (m_CurrentLevel != nullptr) {
+		UnloadLevel(m_CurrentLevel); //Unload the previous level
+		delete m_CurrentLevel;
+		m_CurrentLevel = nullptr;
+	}
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
 	{
@@ -127,6 +131,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 	LevelResources* newLevel = new LevelResources;
 	newLevel->ids = new unsigned int[numResources];
 	newLevel->numResources = numResources;
+	m_CurrentLevel = newLevel;
 
 	// for each model in level
 	Status st;
@@ -162,16 +167,30 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 			break;
 		}
 	}
-	if (m_CurrentLevel != nullptr)
-		UnloadLevel(m_CurrentLevel); //Unload the previous level
-	m_CurrentLevel = newLevel;
+	
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+	//this->ClearUnusedMemory();
 #ifdef _DEBUG
 	this->ResetQueryCounter();
 #endif // _DEBUG
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::ResourceHandler::UnloadCurrentLevel()
+{
+	Resources::Status status = ST_OK;
+	if (m_CurrentLevel != nullptr) {
+
+		UnloadLevel(m_CurrentLevel); //Unload the previous level
+	}
+	else
+		status = Status::ST_RES_MISSING;
+	return  status;
+}
+Resources::Status Resources::ResourceHandler::ClearUnusedMemory()
+{
+	return  m_modelHandler->ClearUnusedMemory();
+}
 Resources::ResourceHandler * Resources::ResourceHandler::GetInstance()
 {
 	static ResourceHandler instance;
@@ -244,7 +263,7 @@ Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelR
 #endif // _DEBUG
 	}
 	
-	delete levelRes;
+
 
 	return Resources::Status::ST_OK;
 }

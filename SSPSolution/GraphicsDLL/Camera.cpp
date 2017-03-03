@@ -88,13 +88,13 @@ int Camera::RagdollCameraUpdate(DirectX::XMVECTOR pos, RagdollState state)
 	DirectX::XMFLOAT4 newLookAt;
 	DirectX::XMStoreFloat4(&newLookAt, pos);
 	
-	if (state == RagdollState::KEYFRAMEBLEND)
+	/*if (state == RagdollState::KEYFRAMEBLEND)
 	{
 		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(pos, DirectX::XMLoadFloat4(&this->m_cameraPos));
 
 		DirectX::XMStoreFloat4(&this->m_cameraPos, DirectX::XMVectorAdd(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMVectorScale(diffVec, 0.2f)));
 
-	}
+	}*/
 
 	this->SetLookAt(newLookAt);
 
@@ -445,8 +445,6 @@ void Camera::SetCameraPos(DirectX::XMVECTOR newCamPos)
 void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR targetOffset, float distance)
 {
 	bool result = false;
-
-
 
 	this->m_focusPoint = lockTarget;
 	//this->m_distance = distance;
