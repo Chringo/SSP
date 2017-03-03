@@ -291,16 +291,11 @@ float4 PS_main(VS_OUT input) : SV_Target
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
     uint lightCount = NUM_POINTLIGHTS;
-    float Pi = 3.14159265359;
-    float EPSILON = 1e-5f;
+    static const float Pi = 3.14159265359;
+    static const float EPSILON = 1e-5f;
 
     float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
-
-    LIGHT light[3]; 
-    light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
-    //light[1] = initCustomLight(float3(14.0, -9.0, -3.0), pointlights[1].color); //float3(0.0, 0.0, -3.5), float3(1., 1., 1.));   pointlights[1].position.xyz
-    //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);

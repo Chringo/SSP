@@ -1,7 +1,7 @@
 #ifndef GRAPHICSDLL_DIRECT3DHANDLER_H
 #define GRAPHICSDLL_DIRECT3DHANDLER_H
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <DirectXMath.h>
 #include "../ResourceLib/ResourceHandler.h"
 
@@ -15,7 +15,7 @@ class Direct3DHandler
 private:
 	ID3D11Device*			  m_gDevice;
 	ID3D11DeviceContext*	  m_gDeviceContext;
-	IDXGISwapChain*			  m_swapChain;
+	IDXGISwapChain1*			  m_swapChain;
 	ID3D11RenderTargetView*   m_backBufferRTV;
 	ID3D11ShaderResourceView* m_backBufferSRV; //for post processing
 	HWND*					  m_activeWindow;

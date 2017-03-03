@@ -1,7 +1,7 @@
 #ifndef GRAPHICSDLL_SHADERS_SHADERLIB_H
 #define GRAPHICSDLL_SHADERS_SHADERLIB_H
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <DirectXMath.h>
 
 namespace ShaderLib
