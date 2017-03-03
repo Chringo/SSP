@@ -832,8 +832,10 @@ int MenuState::EnterState()
 	case 2: /*/ Start game menu /*/
 
 		if (this->m_Menu_Music->getIsPaused())
+		{
+			this->m_Menu_Music->setPlayPosition(0);
 			this->m_Menu_Music->setIsPaused(false);
-
+		}
 		//Show buttons
 		nrOfMenuitems = this->m_startMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
