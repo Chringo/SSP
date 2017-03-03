@@ -48,6 +48,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
+		sp->setDefaultVolume(0.1f);
 		this->m_sounds2D.push_back(sp);
 	}
 	else
