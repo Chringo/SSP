@@ -38,11 +38,11 @@ void AnimationHandler::Update(float dt)
 		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
 			continue;
 
-		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != AnimationStates::RAGDOLL_STATE )
 		{
 			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
 			{
-				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == AnimationStates::RAGDOLL_STATE)
 				{
 					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
 					continue;
@@ -77,14 +77,14 @@ void AnimationHandler::Update(float dt)
 						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
 						{
 							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.55f, Blending::SMOOTH_TRANSITION, true, false, 0.9f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->currentState = PLAYER_BALL_IDLE;
+							SetAnimationComponent(AnimationStates::PLAYER_BALL_IDLE, 0.55f, Blending::SMOOTH_TRANSITION, true, false, 0.9f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = AnimationStates::PLAYER_BALL_IDLE;
 						}
 						else
 						{
 							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
-							SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->currentState = PLAYER_IDLE;
+							SetAnimationComponent(AnimationStates::PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = AnimationStates::PLAYER_IDLE;
 						}
 
 						 
@@ -106,7 +106,7 @@ void AnimationHandler::Update(float dt)
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 				{
-					m_AnimComponentList[m_AnimCompIndex]->blendFlag = NO_TRANSITION;
+					m_AnimComponentList[m_AnimCompIndex]->blendFlag = Blending::NO_TRANSITION;
 					m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete = false;
 
 					/*After the blending is finished, the target state will simply become the new source state.*/
