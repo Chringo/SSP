@@ -179,6 +179,12 @@ int ComponentHandler::ClearAminationComponents()
 	return 0;
 }
 
+int ComponentHandler::ClearAIComponents()
+{
+	this->m_aiHandler->ClearAIComponents();
+	return 0;
+}
+
 int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
 {
 	return this->m_graphicsHandler->RemoveUIComponentFromPtr(ptr);
