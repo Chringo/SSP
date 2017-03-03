@@ -19,6 +19,11 @@ void AnimationHandler::Initialize(GraphicsAnimationComponent ** graphicAnimCompo
 
 	this->m_AnimCompIndex = 0;
 
+	this->localTransforms.resize(JOINT_COUNT);
+	this->localScales.resize(JOINT_COUNT);
+	this->relationTransform.resize(JOINT_COUNT);
+	blendKeysPerAnimation.resize(2);
+
 	/*Initialize and reserve storage for a total of 16 animation components in the initialize.*/
 	for (int i = 0; i < this->m_maxAnimComps; i++)
 	{
@@ -211,9 +216,6 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 {
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
 
-	std::vector<DirectX::XMFLOAT4X4> localTransforms(jointCount);
-	std::vector<DirectX::XMFLOAT4X4> localScales(jointCount);
-
 	const Resources::Animation::AnimationJoint* animatedJoints = m_AnimComponentList[m_AnimCompIndex]->animation_States->at(animState->stateIndex)->GetAllJoints();
 
 	for ( int jointIndex = 0; jointIndex < jointCount; jointIndex++)
@@ -240,8 +242,8 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
-			DirectX::XMStoreFloat4x4(&localScales[jointIndex], scaleMat);
-			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
+			DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
+			DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is at the last keyframe.*/
 		else if (currentTime >= animState->endTime)
@@ -263,8 +265,8 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
-			DirectX::XMStoreFloat4x4(&localScales[jointIndex], scaleMat);
-			DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
+			DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
+			DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 		}
 		/*The current time is at between two keyframes.*/
 		else
@@ -309,36 +311,32 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 					/*Update the local transform for each joint in the skeleton.*/
-					DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
-
+					DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 					/*Storing the scale transformations for handling scaling of joints individually.*/
-					DirectX::XMStoreFloat4x4(&localScales[jointIndex], scaleMat);
+					DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
 				}
 			}
 		}
 	}
 
 	/*Calculate the final matrices for each joint in the skeleton hierarchy.*/
-	CalculateFinalTransform(localTransforms, localScales);
+	CalculateFinalTransform();
 }
 
-void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime)
+void AnimationHandler::BlendKeys(float transitionTime)
 {
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
-	
-	std::vector<DirectX::XMFLOAT4X4> localTransforms(jointCount);
-	std::vector<DirectX::XMFLOAT4X4> localScales(jointCount);
 
 	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++)
 	{
-		DirectX::XMVECTOR transAnim1 = DirectX::XMLoadFloat3(&blendKeysPerAnimation[0][jointIndex].trans);
-		DirectX::XMVECTOR transAnim2 = DirectX::XMLoadFloat3(&blendKeysPerAnimation[1][jointIndex].trans);
+		DirectX::XMVECTOR transAnim1 = DirectX::XMLoadFloat3(&this->blendKeysPerAnimation[0][jointIndex].trans);
+		DirectX::XMVECTOR transAnim2 = DirectX::XMLoadFloat3(&this->blendKeysPerAnimation[1][jointIndex].trans);
 
-		DirectX::XMVECTOR scaleAnim1 = DirectX::XMLoadFloat3(&blendKeysPerAnimation[0][jointIndex].scale);
-		DirectX::XMVECTOR scaleAnim2 = DirectX::XMLoadFloat3(&blendKeysPerAnimation[1][jointIndex].scale);
+		DirectX::XMVECTOR scaleAnim1 = DirectX::XMLoadFloat3(&this->blendKeysPerAnimation[0][jointIndex].scale);
+		DirectX::XMVECTOR scaleAnim2 = DirectX::XMLoadFloat3(&this->blendKeysPerAnimation[1][jointIndex].scale);
 
-		DirectX::XMVECTOR quatAnim1 = DirectX::XMLoadFloat4(&blendKeysPerAnimation[0][jointIndex].quat);
-		DirectX::XMVECTOR quatAnim2 = DirectX::XMLoadFloat4(&blendKeysPerAnimation[1][jointIndex].quat);
+		DirectX::XMVECTOR quatAnim1 = DirectX::XMLoadFloat4(&this->blendKeysPerAnimation[0][jointIndex].quat);
+		DirectX::XMVECTOR quatAnim2 = DirectX::XMLoadFloat4(&this->blendKeysPerAnimation[1][jointIndex].quat);
 
 		/*Normalized blend factor between 0 to 1 is calculated here.*/
 		float blendFactor = transitionTime / m_AnimComponentList[m_AnimCompIndex]->transitionDuration;
@@ -353,16 +351,16 @@ void AnimationHandler::BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKe
 
 		DirectX::XMMATRIX localTransform = XMMatrixMultiply(transMat, quatMat);
 
-		DirectX::XMStoreFloat4x4(&localTransforms[jointIndex], localTransform);
+		DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 
 		/*Storing the scale transformations for handling scaling of joints individually.*/
-		DirectX::XMStoreFloat4x4(&localScales[jointIndex], scaleMat);
+		DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
 	}
 
-	CalculateFinalTransform(localTransforms, localScales);
+	CalculateFinalTransform();
 }
 
-void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime)
+void AnimationHandler::ExtractSourceKeys(float sourceTime, float globalTime)
 {
 	int animStateIndex = m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex;
 
@@ -393,7 +391,7 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 			DirectX::XMStoreFloat3(&blendKey.scale, scale);
 			DirectX::XMStoreFloat4(&blendKey.quat, quat);
 
-			blendKeysPerAnimation[0].push_back(blendKey);
+			this->blendKeysPerAnimation[0].push_back(blendKey);
 		}
 
 		/*The current time is at the last keyframe.*/
@@ -413,7 +411,7 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 			DirectX::XMStoreFloat3(&blendKey.scale, scale);
 			DirectX::XMStoreFloat4(&blendKey.quat, quat);
 
-			blendKeysPerAnimation[0].push_back(blendKey);
+			this->blendKeysPerAnimation[0].push_back(blendKey);
 		}
 
 		/*The current time is at between two keyframes.*/
@@ -451,7 +449,7 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 					DirectX::XMStoreFloat3(&blendKey.scale, DirectX::XMVectorLerp(scale1, scale2, lerpFactor));
 					DirectX::XMStoreFloat4(&blendKey.quat, DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor));
 
-					blendKeysPerAnimation[0].push_back(blendKey);
+					this->blendKeysPerAnimation[0].push_back(blendKey);
 				}
 			}
 		}
@@ -464,7 +462,7 @@ void AnimationHandler::ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>
 		m_AnimComponentList[m_AnimCompIndex]->source_Time += globalTime;
 }
 
-void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime)
+void AnimationHandler::ExtractTargetKeys(float targetTime, float globalTime)
 {
 	int animStateIndex = m_AnimComponentList[m_AnimCompIndex]->target_State->stateIndex;
 
@@ -495,7 +493,7 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 			DirectX::XMStoreFloat3(&blendKey.scale, scale);
 			DirectX::XMStoreFloat4(&blendKey.quat, quat);
 
-			blendKeysPerAnimation[1].push_back(blendKey);
+			this->blendKeysPerAnimation[1].push_back(blendKey);
 		}
 
 		/*The current time is at the last keyframe.*/
@@ -515,7 +513,7 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 			DirectX::XMStoreFloat3(&blendKey.scale, scale);
 			DirectX::XMStoreFloat4(&blendKey.quat, quat);
 
-			blendKeysPerAnimation[1].push_back(blendKey);
+			this->blendKeysPerAnimation[1].push_back(blendKey);
 		}
 
 		/*The current time is at between two keyframes.*/
@@ -553,7 +551,7 @@ void AnimationHandler::ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>
 					DirectX::XMStoreFloat3(&blendKey.scale, DirectX::XMVectorLerp(scale1, scale2, lerpFactor));
 					DirectX::XMStoreFloat4(&blendKey.quat, DirectX::XMQuaternionSlerp(quat1, quat2, lerpFactor));
 
-					blendKeysPerAnimation[1].push_back(blendKey);
+					this->blendKeysPerAnimation[1].push_back(blendKey);
 				}
 			}
 		}
@@ -592,15 +590,13 @@ void AnimationHandler::Blend(float secondsElapsed)
 	/*Transition is still proceeding. Update both animations and blend between them.*/
 	else
 	{
-		std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation(2);
-
 		/*Extract source animation's keyframes.*/
-		ExtractSourceKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->source_Time, secondsElapsed);
+		ExtractSourceKeys(m_AnimComponentList[m_AnimCompIndex]->source_Time, secondsElapsed);
 		/*Extract target animation's keyframes.*/
-		ExtractTargetKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->target_Time, secondsElapsed);
+		ExtractTargetKeys(m_AnimComponentList[m_AnimCompIndex]->target_Time, secondsElapsed);
 
 		/*Blend the both the two extracted animations' keyframes together.*/
-		BlendKeys(blendKeysPerAnimation, m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft);
+		BlendKeys(m_AnimComponentList[m_AnimCompIndex]->transitionTimeLeft);
 	}
 }
 
@@ -610,27 +606,14 @@ void AnimationHandler::SetAnimCompIndex(int animCompIndex)
 	this->m_AnimCompIndex = animCompIndex;
 }
 
-void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localTransforms, std::vector<DirectX::XMFLOAT4X4> localScales)
+void AnimationHandler::CalculateFinalTransform()
 {
 	int jointCount = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->jointCount;
-
-	std::vector<DirectX::XMFLOAT4X4> toRootTransform(jointCount);
 
 	/*The root joint does not have a parent, which means it's local transform is not changed with a parent/child relation.*/
 	if (m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[0].parentIndex == -1)
 	{
-		//if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_IDLE)
-		//{
-		//	//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
-		//	toRootTransform[0] = localTransforms[0];
-		//}
-		//else
-		//{
-		//	toRootTransform[0] = localTransforms[0];
-		//}
-
-		//DirectX::XMStoreFloat4x4(&toRootTransform[0], DirectX::XMMatrixIdentity());
-		toRootTransform[0] = localTransforms[0];
+		this->relationTransform[0] = this->localTransforms[0];
 	}
 
 	for (int i = 1; i < jointCount; i++)
@@ -638,13 +621,13 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		/*Calculates the relation between each child and parent when going to a new pose each frame.*/
 		int parentIndex = m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[i].parentIndex;
 
-		DirectX::XMMATRIX child = DirectX::XMLoadFloat4x4(&localTransforms[i]);
+		DirectX::XMMATRIX child = DirectX::XMLoadFloat4x4(&this->localTransforms[i]);
 
-		DirectX::XMMATRIX parent = DirectX::XMLoadFloat4x4(&toRootTransform[parentIndex]);
+		DirectX::XMMATRIX parent = DirectX::XMLoadFloat4x4(&this->relationTransform[parentIndex]);
 		
 		DirectX::XMMATRIX toRoot = DirectX::XMMatrixMultiply(child, parent);
 
-		DirectX::XMStoreFloat4x4(&toRootTransform[i], toRoot);
+		DirectX::XMStoreFloat4x4(&this->relationTransform[i], toRoot);
 	}
 
 	for (int i = 0; i < jointCount; i++)
@@ -652,11 +635,11 @@ void AnimationHandler::CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> 
 		/*Multiplying the child and parent local matrices with inverse bindpose to go to global space.*/
 		DirectX::XMMATRIX* inverseBindPose = &static_cast<DirectX::XMMATRIX>(m_AnimComponentList[m_AnimCompIndex]->skeleton->GetSkeletonData()->joints[i].invBindPose);
 
-		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&toRootTransform[i]);
+		DirectX::XMMATRIX toRoot = DirectX::XMLoadFloat4x4(&this->relationTransform[i]);
 
 		/*The scale matrix is applied after the skeleton hierarchy have been traversed, hence we only want to apply scale to an individual joint without inheritance.*/
 		DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScalingFromVector(
-			DirectX::XMVECTOR{localScales[i].m[0][0], localScales[i].m[1][1], localScales[i].m[2][2]});
+			DirectX::XMVECTOR{ this->localScales[i].m[0][0], this->localScales[i].m[1][1], this->localScales[i].m[2][2]});
 
 		DirectX::XMMATRIX finalMat = DirectX::XMMatrixMultiply(scaleMat, toRoot);
 

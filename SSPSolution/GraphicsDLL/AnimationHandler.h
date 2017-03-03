@@ -8,6 +8,8 @@
 #include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
 
+#define JOINT_COUNT 21
+
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
@@ -56,6 +58,12 @@ struct BlendKeyframe
 class AnimationHandler
 {
 private:
+
+	std::vector<DirectX::XMFLOAT4X4> localTransforms;
+	std::vector<DirectX::XMFLOAT4X4> localScales;
+	std::vector<DirectX::XMFLOAT4X4> relationTransform;
+	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
+
 	//Variables used only in class.
 	int m_nrOfAnimComps;
 	int m_maxAnimComps;
@@ -85,12 +93,12 @@ public:
 private:
 	//Functions only used in class.
 	void SetAnimCompIndex(int animCompIndex);
-	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices, std::vector<DirectX::XMFLOAT4X4> localScales);
+	void CalculateFinalTransform();
 	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
 	void Blend(float secondsElapsed);
-	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
-	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
-	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
+	void BlendKeys(float transitionTime);
+	void ExtractSourceKeys(float sourceTime, float globalTime);
+	void ExtractTargetKeys(float targetTime, float globalTime);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 };
 
