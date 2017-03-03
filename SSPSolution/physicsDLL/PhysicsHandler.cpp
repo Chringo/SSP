@@ -1753,22 +1753,14 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 	}
 	if (ragdoll->state == ANIMATED)
 	{
+
+
 		int nrOfBodyParts = this->m_player1BodyPC.size();
 		for (int i = 0; i < nrOfBodyParts; i++)
 		{
-			if (i != 2)
-			{
-				this->m_player1BodyPC.at(i)->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			}
-		}
-		if (ragdoll->playerPC->PC_entityID == 1)
-		{
+			this->m_player1BodyPC.at(i)->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+			this->m_player1BodyPC.at(i)->PC_pos = ragdoll->playerPC->PC_pos;
 
-
-			DirectX::XMVECTOR newPos = ragdoll->upperBody.center->PC_pos;	//Get the position of the player
-			newPos.m128_f32[1] = 0.0f;	//Remove the Y value
-
-			ragdoll->upperBody.center->PC_pos = newPos;	//Set the ragdoll center pos to the players pos
 		}
 
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
@@ -1807,7 +1799,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		float upperBodyVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->upperBody.center->PC_velocity));
-		if (ballVel < 0.05 && upperBodyVel < 0.05)
+		if (ballVel < 1.0 && upperBodyVel < 1.0)
 		{
 			ragdoll->time_standil_still++;
 			if (ragdoll->time_standil_still > 20)
@@ -2264,7 +2256,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 		//--
 
 		this->m_bullet.AddNormalFromCollisions(link->PL_previous, link->PL_previous->PC_IndexRigidBody);
-		int nrOfNormals = link->PL_previous->m_normals.size();
+		int nrOfNormals = link->PL_previous->PC_normals.size();
 
 		//no collsion
 		if (nrOfNormals == 0)
@@ -2276,7 +2268,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 			DirectX::XMVECTOR toMoveResult = previous_toMove;
 			for (int i = 0; i < nrOfNormals; i++)
 			{
-				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->m_normals.at(i));
+				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->PC_normals.at(i));
 				float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 				if (dotProd < 0)
 				{
@@ -2291,7 +2283,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 		}
 
 		this->m_bullet.AddNormalFromCollisions(link->PL_next, link->PL_next->PC_IndexRigidBody);
-		nrOfNormals = link->PL_next->m_normals.size();
+		nrOfNormals = link->PL_next->PC_normals.size();
 		if (nrOfNormals == 0)
 		{
 			link->PL_next->PC_pos = DirectX::XMVectorAdd(link->PL_next->PC_pos, next_toMove);
@@ -2301,7 +2293,7 @@ void PhysicsHandler::AdjustChainLinkPosition(PhysicsLink * link)
 			DirectX::XMVECTOR toMoveResult = next_toMove;
 			for (int i = 0; i < nrOfNormals; i++)
 			{
-				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->m_normals.at(i));
+				DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->PC_normals.at(i));
 				float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 				if (dotProd < 0)
 				{
@@ -4522,9 +4514,9 @@ void PhysicsHandler::ClearCollisionNormals()
 
 	for (int i = 0; i < size; i++)
 	{
-		if (this->m_dynamicComponents.at(i)->m_normals.size() > 0)
+		if (this->m_dynamicComponents.at(i)->PC_normals.size() > 0)
 		{
-			this->m_dynamicComponents.at(i)->m_normals.clear();
+			this->m_dynamicComponents.at(i)->PC_normals.clear();
 		}
 	}
 }
@@ -4566,7 +4558,7 @@ void PhysicsHandler::AdjustChainLinkCallback(PhysicsLink * link)
 			//--
 
 			this->m_bullet.AddNormalFromCollisions(link->PL_previous, link->PL_previous->PC_IndexRigidBody);
-			int nrOfNormals = link->PL_previous->m_normals.size();
+			int nrOfNormals = link->PL_previous->PC_normals.size();
 
 			//no collsion
 			if (nrOfNormals == 0)
@@ -4582,7 +4574,7 @@ void PhysicsHandler::AdjustChainLinkCallback(PhysicsLink * link)
 				DirectX::XMVECTOR toMoveResult = previous_toMove;
 				for (int i = 0; i < nrOfNormals; i++)
 				{
-					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->m_normals.at(i));
+					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_previous->PC_normals.at(i));
 					float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 					if (dotProd < 0)
 					{
@@ -4602,7 +4594,7 @@ void PhysicsHandler::AdjustChainLinkCallback(PhysicsLink * link)
 			}
 
 			this->m_bullet.AddNormalFromCollisions(link->PL_next, link->PL_next->PC_IndexRigidBody);
-			nrOfNormals = link->PL_next->m_normals.size();
+			nrOfNormals = link->PL_next->PC_normals.size();
 			if (nrOfNormals == 0)
 			{
 				btVector3 newPos = this->m_bullet.crt_xmvecVec3(nPos);
@@ -4617,7 +4609,7 @@ void PhysicsHandler::AdjustChainLinkCallback(PhysicsLink * link)
 				DirectX::XMVECTOR toMoveResult = next_toMove;
 				for (int i = 0; i < nrOfNormals; i++)
 				{
-					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->m_normals.at(i));
+					DirectX::XMVECTOR collNorm = DirectX::XMLoadFloat3(&link->PL_next->PC_normals.at(i));
 					float dotProd = DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVector3Normalize(collNorm), DirectX::XMVector3Normalize(toMoveResult)));
 					if (dotProd < 0)
 					{
@@ -4908,6 +4900,27 @@ void PhysicsHandler::SetIgnoreCollisions()
 			}
 		}
 	}
+}
+
+void PhysicsHandler::ClearPhysicsHandler()
+{
+	int size = this->m_physicsComponents.size();
+	for (int i = 0; i < size; i++)
+	{
+		delete this->m_physicsComponents.at(i);
+		this->m_physicsComponents.at(i) = nullptr;
+	}
+	this->m_physicsComponents.clear();
+	this->m_dynamicComponents.clear();
+	this->m_staticComponents.clear();
+	this->m_fields.clear();
+	this->m_links.clear();
+	this->m_player1BodyPC.clear();
+	this->m_player1RagDoll.playerPC = nullptr;
+	this->m_player2BodyPC.clear();
+
+	this->m_bullet.ClearBullet();
+
 }
 
 
