@@ -299,8 +299,8 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
-    float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
-    float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
+    float metalSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).r);
+    float roughSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).g + EPSILON);
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
@@ -309,23 +309,30 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //METALNESS (F90)
     float f90 = metalSamp;
-    f90 = 0.16f * metalSamp * metalSamp;
+    //f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
-    float linearRough = (saturate(roughSamp + EPSILON)).r;
-    float roughness =  linearRough * linearRough;
+    float linearRough = (saturate(roughSamp)).r;
+    float roughness =  pow(linearRough, 4);
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
     //AO
     float AO = AOSamp;
 
     //DIFFUSE & SPECULAR
-    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, f90);
+    float3 diffuseColor = colorSamp.rgb * (1 - metalSamp);
     float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, f90);
     float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
     //N = normalize(N);
-    float3 V = normalize(camPos.xyz - wPosSamp.xyz);
+    float3 vPos = mul(wPosSamp, viewMatrix).xyz;
+    //float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;
+    float3 vCamPos = viewMatrix._14_24_34;
+    float3 vCamDir = viewMatrix._13_23_33;
+
+
+    float3 V = normalize(vCamPos - vPos);  //;
+    
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     int currentShadowLightIndex = 0;
@@ -339,8 +346,8 @@ float4 PS_main(VS_OUT input) : SV_Target
         lightPower  = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
         lightPower *= (AOSamp);
         lightPower *= pointlights[i].intensity; 
-            //SHADOW
-       
+
+        //SHADOW
         if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex])
          {   
              shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, currentShadowLightIndex);
@@ -354,17 +361,17 @@ float4 PS_main(VS_OUT input) : SV_Target
         if (lightPower > 0.0f)
         {
             //PBR variables 
-            float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
+            float3 L = normalize(pointlights[i].position.xyz - vPos);
             float3 H = normalize(V + L);
 
             float LdotH = saturate((dot(L, H)));
             float NdotH = saturate((dot(N, H)));
-            float NdotL = max(saturate((dot(N, L))), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+            float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
             
-            lightPower *= shadowFactor;
+            lightPower *= saturate(shadowFactor+0.25);
             //DIFFUSE
-            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
+            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
 
             //SPECULAR
@@ -379,7 +386,7 @@ float4 PS_main(VS_OUT input) : SV_Target
            // return diffuseLight;
         }
     }
-
+    return N.xyzx;
 
     //return shadowFactor;
     //COMPOSITE

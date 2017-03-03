@@ -12,6 +12,17 @@ cbuffer worldMatrix : register(b0)
     float4x4 worldMatrix;
 }
 
+cbuffer camera : register(b1)
+{
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+
+    float4 camPos;
+    float timer,
+    padding1, padding2, padding3;
+
+}
+
 struct VS_OUT
 {
     float4 Pos : SV_POSITION;
@@ -93,14 +104,14 @@ void GS_main(triangle VS_OUT input[3],
     for (uint vertex = 0; vertex < 3; vertex++)
     {
         element.Pos = input[vertex].Pos;
-        element.Normal = input[vertex].Normal; //mul(float4(input[vertex].Normal, 0.0), worldMatrix).rgb;
+        element.Normal = mul(float4(input[vertex].Normal, 1.0), viewMatrix); //mul(float4(input[vertex].Normal, 0.0), worldMatrix).rgb;
 		//element.Normal = newNormal.xyz;
         element.UV = input[vertex].UV;
        
         element.wPos = input[vertex].wPos;
 
         //element.tangent = input[vertex].Tangent; //mul(float4(input[vertex].Tangent, 0.0), worldMatrix);
-        element.tangent = tangent;
+        element.tangent = mul(float4(tangent, 1.0), viewMatrix);;
 
         //element.biTangent = -cross(element.Normal, element.tangent);
 
@@ -126,7 +137,7 @@ PS_OUT PS_main(GS_OUT input)
     output.metalRoughAo.b = aoTex.Sample(linearSampler, input.UV).r;
     //output.normal = normalSamp;
     //output.normal = input.tangent;
-    output.normal = normalToWorldSpace(normalSamp, input.Normal, float3(input.tangent.x, input.tangent.y, input.tangent.z));
+    output.normal = -normalToWorldSpace(normalSamp, input.Normal, float3(input.tangent.x, input.tangent.y, input.tangent.z));
     //output.normal = mul(float4(output.normal, 0), worldMatrix).rgb;
     output.wPosition = input.wPos;
    
