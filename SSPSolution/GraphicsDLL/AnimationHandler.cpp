@@ -38,20 +38,17 @@ void AnimationHandler::Update(float dt)
 		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
 			continue;
 
-		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != AnimationStates::RAGDOLL_STATE )
 		{
 			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
 			{
-				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == AnimationStates::RAGDOLL_STATE)
 				{
 					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
 					continue;
 				}
 			}
-			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
-			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
-			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
-			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+
 		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
@@ -64,15 +61,8 @@ void AnimationHandler::Update(float dt)
 				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
 				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
 				
-				if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_IDLE
-					&& m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex != PLAYER_BALL_IDLE)
-				{
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
-				}
-
-				else 
-					m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * playingSpeed);
-					
+				m_AnimComponentList[m_AnimCompIndex]->source_Time += (seconds * velocity) * playingSpeed;
+	
 				/*If the animation reaches the last frame, either reset animation or switch to two different idle states.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->source_Time >= m_AnimComponentList[m_AnimCompIndex]->source_State->endTime)
 				{
@@ -84,15 +74,17 @@ void AnimationHandler::Update(float dt)
 					else
 					{
 						/*If the player picks up the ball, go to player ball idle, otherwise regular idle.*/
-						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == PLAYER_PICKUP)
+						if (m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == AnimationStates::PLAYER_PICKUP)
 						{
-							SetAnimationComponent(PLAYER_BALL_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_BALL_IDLE;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
+							SetAnimationComponent(AnimationStates::PLAYER_BALL_IDLE, 0.55f, Blending::SMOOTH_TRANSITION, true, false, 0.9f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = AnimationStates::PLAYER_BALL_IDLE;
 						}
 						else
 						{
-							SetAnimationComponent(PLAYER_IDLE, 0.5f, SMOOTH_TRANSITION, true, false, 2.0f, 1.0f);
-							m_AnimComponentList[m_AnimCompIndex]->previousState = PLAYER_IDLE;
+							m_AnimComponentList[m_AnimCompIndex]->previousState = m_AnimComponentList[m_AnimCompIndex]->currentState;
+							SetAnimationComponent(AnimationStates::PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+							m_AnimComponentList[m_AnimCompIndex]->currentState = AnimationStates::PLAYER_IDLE;
 						}
 
 						 
@@ -114,7 +106,7 @@ void AnimationHandler::Update(float dt)
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 				{
-					m_AnimComponentList[m_AnimCompIndex]->blendFlag = NO_TRANSITION;
+					m_AnimComponentList[m_AnimCompIndex]->blendFlag = Blending::NO_TRANSITION;
 					m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete = false;
 
 					/*After the blending is finished, the target state will simply become the new source state.*/
@@ -131,7 +123,7 @@ void AnimationHandler::Update(float dt)
 				else
 					Blend(seconds);
 			}
-			}
+		}
 			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
 			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
 			{
@@ -177,7 +169,7 @@ AnimationComponent* AnimationHandler::CreateAnimationComponent()
 	animComp->target_Time = 0.f;
 	animComp->transitionDuration = 0.f;
 	animComp->transitionTimeLeft = 0.f;
-	animComp->blendFlag = NO_TRANSITION;
+	animComp->blendFlag = Blending::NO_TRANSITION;
 	animComp->skeleton = nullptr;
 	animComp->animation_States = nullptr;
 
@@ -287,21 +279,6 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 				/*Check if the current time is between two keyframes for each joint.*/
 				if (currentTime > timeKeyframe1 && currentTime < timeKeyframe2)
 				{
-					/*Checks which foot is on the ground when a player is running in any direction to synch foot sound.*/
-					/*if (	
-							m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_FORWARD 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_FORWARD_BALL 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_BACKWARD 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_BACKWARD_BALL 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_RIGHT 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_RIGHT_BALL 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_LEFT 
-						||	m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex	== PLAYER_RUN_LEFT_BALL)
-					{
-						CheckPlayerFootPosSynch(m_AnimCompIndex, animState->stateIndex, jointIndex, i);
-					}*/
-					
-
 					/*Lerp factor is calculated for a normalized value between 0-1 for interpolation.*/
 					float lerpFactor = (currentTime - timeKeyframe1) / (timeKeyframe2 - timeKeyframe1);
 
@@ -598,114 +575,6 @@ void AnimationHandler::SetAnimationComponent(int animationState, float transitio
 	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->velocity = velocity;
 	
-}
-
-void AnimationHandler::CheckPlayerFootPosSynch(int player, int runningState, int foot, int keyframeIndex)
-{
-	if (player == PLAYER_STUDLEY)
-	{
-		if (foot == RIGHT_FOOT)
-		{
-			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
-			{
-				if (keyframeIndex == 1)
-					m_AnimComponentList[player]->syncWalkSound = true;
-			}
-			
-			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
-			{
-				if(keyframeIndex == 2)
-					m_AnimComponentList[player]->syncWalkSound = true;
-			}
-
-			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
-			{
-				if(keyframeIndex == 3)
-					m_AnimComponentList[player]->syncWalkSound = true;
-			}
-
-			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
-			{
-				if (keyframeIndex == 2)
-					m_AnimComponentList[player]->syncWalkSound = true;
-			}
-		}
-
-		if (foot == LEFT_FOOT)
-		{
-			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
-			{
-				if(keyframeIndex == 0)
-					m_AnimComponentList[player]->syncWalkSound = true;
-			}
-
-			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
-			{
-
-			}
-		}
-	}
-
-	if (player == PLAYER_ABBINGTON)
-	{
-		/*Write this code later when Abbington is animated and exported.*/
-
-		if (foot == LEFT_FOOT)
-		{
-			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
-			{
-
-			}
-		}
-
-		if (foot == LEFT_FOOT)
-		{
-			if (runningState == PLAYER_RUN_FORWARD || runningState == PLAYER_RUN_FORWARD_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_BACKWARD || runningState == PLAYER_RUN_BACKWARD_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_RIGHT || runningState == PLAYER_RUN_RIGHT_BALL)
-			{
-
-			}
-
-			if (runningState == PLAYER_RUN_LEFT || runningState == PLAYER_RUN_LEFT_BALL)
-			{
-
-			}
-		}
-	}
 }
 
 void AnimationHandler::Blend(float secondsElapsed)

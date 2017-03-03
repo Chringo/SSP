@@ -741,8 +741,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.GetRagdoll()->state = RAGDOLL;
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
-					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
 					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
 					this->m_player2.GetAnimationComponent()->source_State->stateIndex = RAGDOLL_STATE;
 
@@ -752,22 +752,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					if (this->m_player2.GetRagdoll()->state == RAGDOLL)
 					{
 
-						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
+						this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
 						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
-						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
+						this->m_player2.GetAnimationComponent()->currentState = PLAYER_RISE_UP;
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
 					}
-					if (itr->newstate == PLAYER_THROW || itr->newstate == PLAYER_PICKUP)
-					{
-						//beacause PLAYER_THROW and PLAYER_PICKUP loops for some reason
-						int a = 0;
-						itr->isLooping = false;
-					}
+					
 					this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
 
 				}
 			}
@@ -859,9 +854,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetGrabbed(closestBall);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 			//Play the animation for player picking up the ball.
-			this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
-			this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.50f, FROZEN_TRANSITION, false, true, 1.5f, 1.0f);
-			this->m_player1.GetAnimationComponent()->previousState = PLAYER_PICKUP;
+				this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.45f, FROZEN_TRANSITION, false, true, 1.75f, 1.0f);
+				this->m_player1.GetAnimationComponent()->currentState = PLAYER_PICKUP;
 		}
 
 	}
@@ -869,9 +864,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetGrabbed(nullptr);
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
-		this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
-		this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_player1.GetAnimationComponent()->velocity);
-		this->m_player1.GetAnimationComponent()->previousState = PLAYER_IDLE;
+			this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+			this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+			this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
 	}
 	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 	{
@@ -1216,11 +1211,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	else if (this->m_player1.isAnimationChanged())
 	{
-		if (ap->previousState == PLAYER_THROW)
-		{
-			int a = 0;
-		}
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
 
 #pragma endregion Send_Player_Animation_Update
