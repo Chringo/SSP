@@ -139,7 +139,7 @@ int System::Run()
 		//Handle events and update inputhandler through said events
 		result = this->HandleEvents();
 		this->m_inputHandler->mouseMovement(m_window);
-		SDL_PumpEvents();
+		
 		//Update game
 		/*if (this->m_inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
