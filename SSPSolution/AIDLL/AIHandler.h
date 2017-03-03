@@ -24,6 +24,7 @@ public:
 	AIDLL_API int Shutdown();
 
 	AIDLL_API int Initialize(int maxOfAIComponents);
+	AIDLL_API int ClearAIComponents();
 	AIDLL_API int Update(float deltaTime);
 
 	//Retrieve next available component in the vector
