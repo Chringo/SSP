@@ -57,6 +57,7 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 		result = this->m_currentLevel->Update(dt, inputHandler);
 	}
 	if (result == -2)
+
 	{
 		this->m_currentLevel->ShutDown();
 		delete this->m_currentLevel;

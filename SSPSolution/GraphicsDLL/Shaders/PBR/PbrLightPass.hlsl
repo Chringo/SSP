@@ -362,27 +362,32 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         float3 L = pointlights[i].position.xyz - wPosSamp.xyz;
         float distance = length(L);
-        //if (distance <= pointlights[i].radius)
-        //{
+
+        if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex].x) //This needs to happen on every iteration! The currenShadowLightIndex keeps us from looping through all shadow indices
+        {
+           if (distance <= pointlights[i].radius) // this is shit. But it is faster than unessecary shadow calculation
+           {
+             shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, SHADOWCASTING_LIGHTS[currentShadowLightIndex].y);
+           }
+            currentShadowLightIndex++;
+        }
+        if (distance <= pointlights[i].radius)
+        {
             L = normalize(L);
             float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-            //if (NdotL >= 0.0f) // causes artifacts atm, John is on it!
-            //{
+           // if (NdotL >= 0.0f) // causes artifacts atm, John is on it!
+           // {
                 lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
                 lightPower *= (AOSamp);
                 lightPower *= pointlights[i].intensity;
             //SHADOW
        
-                if (i == SHADOWCASTING_LIGHTS[currentShadowLightIndex].x)
-                {
-                    shadowFactor = sampleStaticShadowStencils(wPosSamp.xyz, pointlights[i].position.xyz, SHADOWCASTING_LIGHTS[currentShadowLightIndex].y);
-                    currentShadowLightIndex += 1;
-
+                
                     if (i == DYNAMIC_SHADOWLIGHT_INDEX)
                     {
                         shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
                     }
-                }
+               
                 if (lightPower > 0.0f)
                 {
             //PBR variables 
@@ -410,8 +415,8 @@ float4 PS_main(VS_OUT input) : SV_Target
 
            // return diffuseLight;
                 }
-           // }
-        //}
+          // }
+        }
     }
 
     //return shadowFactor;
