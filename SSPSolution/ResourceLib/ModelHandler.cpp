@@ -29,6 +29,30 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 	
 }
 
+Resources::Status Resources::ModelHandler::ClearUnusedMemory()
+{
+	m_emptyContainers.shrink_to_fit();
+
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		m_containers.at(i)->shrink_to_fit();
+	}
+	m_containers.shrink_to_fit();
+
+	Resources::Status st = Resources::Status::ST_OK;
+		st = m_meshHandler	  ->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+		st = m_materialHandler->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+		st = m_skeletonHandler->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+
+	return st;
+}
+
 Resources::ModelHandler::ModelHandler()
 {
 

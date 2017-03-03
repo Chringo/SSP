@@ -38,6 +38,19 @@ Resources::MaterialHandler::~MaterialHandler()
 	}
 }
 
+Resources::Status Resources::MaterialHandler::ClearUnusedMemory()
+{
+	m_emptyContainers.shrink_to_fit();
+
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		m_containers.at(i)->shrink_to_fit();
+	}
+	m_containers.shrink_to_fit();
+	m_textureHandler->ClearUnusedMemory();
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::MaterialHandler::GetMaterial(const unsigned int & id, ResourceContainer *& materialPtr)
 {
 	std::unordered_map<unsigned int, ResourceContainer>::iterator got = m_materials.find(id);

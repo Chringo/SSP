@@ -169,6 +169,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 	}
 	
 	fileLoader->CloseFile(Resources::FileLoader::Files::BPF_FILE);
+	//this->ClearUnusedMemory();
 #ifdef _DEBUG
 	this->ResetQueryCounter();
 #endif // _DEBUG
@@ -185,6 +186,10 @@ Resources::Status Resources::ResourceHandler::UnloadCurrentLevel()
 	else
 		status = Status::ST_RES_MISSING;
 	return  status;
+}
+Resources::Status Resources::ResourceHandler::ClearUnusedMemory()
+{
+	return  m_modelHandler->ClearUnusedMemory();
 }
 Resources::ResourceHandler * Resources::ResourceHandler::GetInstance()
 {

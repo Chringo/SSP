@@ -433,8 +433,6 @@ void Camera::SetCameraPivot(DirectX::XMVECTOR *lockTarget, DirectX::XMVECTOR tar
 {
 	bool result = false;
 
-
-
 	this->m_focusPoint = lockTarget;
 	//this->m_distance = distance;
 	this->m_maxDistance = distance;

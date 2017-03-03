@@ -26,7 +26,7 @@ namespace Resources
 		DLL_OPERATION Resources::Status GetTexture(const unsigned int& id, Texture*& texturePtr);
 		DLL_OPERATION Resources::Status LoadTexture(const unsigned int& id, ResourceContainer*& texturePtr);
 		DLL_OPERATION Resources::Status UnloadTexture(const unsigned int& id);
-		
+		DLL_OPERATION Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
 		DLL_OPERATION void SetDevice(ID3D11Device* device);
 
 		DLL_OPERATION Texture* GetPlaceHolderTextures();
