@@ -100,7 +100,7 @@ float3 sRGBtoLinear(in float3 sRGBCol)
     return linearRGB;
 }
 
-float3 schlick(float3 f0, float f90, float u) //f0 is spec/metalness, f90 is spec/metal factor
+float3 schlickFresnel(float3 f0, float f90, float u) //f0 is spec/metalness, f90 is spec/metal factor
 {
     return f0 + (f90 - f0) * pow(1.0f - u, 5.0f);
 }
@@ -111,8 +111,8 @@ float DisneyDiffuse(float NdotV, float NdotL, float LdotH, float linearRoughness
     float energyFactor = lerp(1.0, 1.0 / 1.51, linearRoughness);
     float fd90 = energyBias + 2.0 * LdotH * LdotH * linearRoughness;
     float3 f0 = float3(1.0, 1.0, 1.0);
-    float lightScatter = schlick(f0, fd90, NdotL).r;
-    float viewScatter = schlick(f0, fd90, NdotV).r;
+    float lightScatter = schlickFresnel(f0, fd90, NdotL).r;
+    float viewScatter = schlickFresnel(f0, fd90, NdotV).r;
     
     return lightScatter * viewScatter * energyFactor;
 }
@@ -285,6 +285,7 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
 }
 
     static const float Pi = 3.14159265359;
+    static const float PiH = Pi / 2;
     static const float EPSILON = 1e-5f;
 float4 PS_main(VS_OUT input) : SV_Target
 {
@@ -294,8 +295,8 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     uint lightCount = NUM_POINTLIGHTS;
 
-    float4 diffuseLight  = float4(0, 0, 0, 0);
-    float4 specularLight = float4(0, 0, 0, 0);
+    float4 diffuseLight = 0;
+    float4 specularLight = 0;
 
     //SAMPLING
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
@@ -312,23 +313,25 @@ float4 PS_main(VS_OUT input) : SV_Target
     //f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
-    float linearRough = (saturate(roughSamp)).r;
-    float roughness =  pow(abs(linearRough), 4.0);
+    //float linearRough = roughSamp;
+    roughSamp = pow((roughSamp), 0.4);
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
-    //colorSamp = pow(abs(colorSamp), 2.2);
-    //roughSamp = pow(abs(roughSamp), 2.2);
-    //f90 = pow(abs(f90), 2.2);
-    //AOSamp = pow(abs(AOSamp), 2.2);
-    //AO
     float AO = AOSamp;
 
     //DIFFUSE & SPECULAR
-    float3 diffuseColor = colorSamp.rgb * (1 - metalSamp);
+    //float3 diffuseColor = colorSamp.rgb * (1 - metalSamp);
+    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, metalSamp);
     float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, f90);
     float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
-    //N = normalize(N);
+    diffuseColor = pow(abs(diffuseColor), 2.2);
+    roughSamp = pow(abs(roughSamp), 2.2);
+    AO = pow(abs(AO), 2.2);
+
+    float roughPow2 = roughSamp * roughSamp;
+    float roughPow4 = roughPow2 * roughPow2;
+    float roughtPow2H = roughPow2 * 0.5;
 
 
     //VIEWSPACE VARIABLES
@@ -336,9 +339,9 @@ float4 PS_main(VS_OUT input) : SV_Target
     ////float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;
     //float3 vCamPos = viewMatrix._14_24_34;
     //float3 vCamDir = viewMatrix._13_23_33;
+    //float3 V = normalize(vCamPos - vPos); //vSpace
 
     float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
-    //float3 V = normalize(vCamPos - vPos); //vSpace
     
     float NdotV = abs(dot(N, V)) + EPSILON;
     
@@ -367,26 +370,45 @@ float4 PS_main(VS_OUT input) : SV_Target
 
         if (lightPower > 0.0f)
         {
-            //PBR variables 
-            float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz);
-            float3 H = normalize(V + L);
+            //DOTS
+            //V // Cam to pixel
+            float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz); //lightDir
+            float3 H = normalize(V + L); //halfVector
 
             float LdotH = saturate((dot(L, H)));
             float NdotH = saturate((dot(N, H)));
             float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
             float VdotH = saturate((dot(V, H)));
-            
+            //float HdotN = saturate((dot(H, N)));
+            float NdotV = saturate((dot(N, V)));
+
             lightPower *= saturate(shadowFactor+0.25);
             //DIFFUSE
-            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough) / Pi; //roughness should be linear
-            diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+           // float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough) / Pi; //roughness should be linear
+           // diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+            //NON DISNEY DIFFUSE
+            diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
+
 
             //SPECULAR
-            float3 f  = schlick(f0, f90, LdotH);
-            float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
-            float d   = GGX(NdotH, roughness); //roughness should be sRGB
 
-            float3 fr = d * f * vis / Pi;
+            //FRESNEL
+            //float3 f  = schlickFresnel(f0, f90, LdotH);
+            float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
+
+            //DISTRIUTION
+            //float d = GGX(NdotH, roughPow4); //roughness should be sRGB
+            float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
+            d = roughPow2 / (Pi * d * d);                  //ggx Distribution
+
+            //GEOMETRY
+            //float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughtPow2H); //roughness should be sRGB
+            float vis = (NdotV / (NdotV * (1 - roughtPow2H) + roughtPow2H));
+
+
+            //float3 fr = d * f * vis / Pi;
+            float3 fr = ((d * f * vis) / 4 * NdotL * NdotV).rrr;
+
 
             specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
@@ -409,7 +431,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //finalColor.rgb *= AOSamp;
 
     
-    return saturate(finalColor);
+    return pow(finalColor, .4545);
 
 
 
