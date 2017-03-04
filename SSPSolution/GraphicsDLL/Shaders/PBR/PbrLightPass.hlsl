@@ -284,6 +284,8 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
     
 }
 
+    static const float Pi = 3.14159265359;
+    static const float EPSILON = 1e-5f;
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
@@ -291,8 +293,6 @@ float4 PS_main(VS_OUT input) : SV_Target
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
     uint lightCount = NUM_POINTLIGHTS;
-    static const float Pi = 3.14159265359;
-    static const float EPSILON = 1e-5f;
 
     float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
@@ -313,9 +313,13 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     float linearRough = (saturate(roughSamp)).r;
-    float roughness =  pow(linearRough, 4);
+    float roughness =  pow(abs(linearRough), 4.0);
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
+    //colorSamp = pow(abs(colorSamp), 2.2);
+    //roughSamp = pow(abs(roughSamp), 2.2);
+    //f90 = pow(abs(f90), 2.2);
+    //AOSamp = pow(abs(AOSamp), 2.2);
     //AO
     float AO = AOSamp;
 
@@ -325,13 +329,16 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
     //N = normalize(N);
-    float3 vPos = mul(wPosSamp, viewMatrix).xyz;
-    //float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;
-    float3 vCamPos = viewMatrix._14_24_34;
-    float3 vCamDir = viewMatrix._13_23_33;
 
 
-    float3 V = normalize(vCamPos - vPos);  //;
+    //VIEWSPACE VARIABLES
+    //float3 vPos = mul(wPosSamp, viewMatrix).xyz;
+    ////float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;
+    //float3 vCamPos = viewMatrix._14_24_34;
+    //float3 vCamDir = viewMatrix._13_23_33;
+
+    float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
+    //float3 V = normalize(vCamPos - vPos); //vSpace
     
     float NdotV = abs(dot(N, V)) + EPSILON;
     
@@ -361,7 +368,7 @@ float4 PS_main(VS_OUT input) : SV_Target
         if (lightPower > 0.0f)
         {
             //PBR variables 
-            float3 L = normalize(pointlights[i].position.xyz - vPos);
+            float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz);
             float3 H = normalize(V + L);
 
             float LdotH = saturate((dot(L, H)));
@@ -386,18 +393,18 @@ float4 PS_main(VS_OUT input) : SV_Target
            // return diffuseLight;
         }
     }
-    return N.xyzx;
+    //return N.xyzx;
 
     //return shadowFactor;
     //COMPOSITE
     float3 diffuse = saturate(diffuseLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
-    float3 specular = specularLight.rgb;
+    float3 specular = saturate(specularLight.rgb);
     
 
     //float4 finalColor = float4(specular, 1);
-    float4 finalColor = float4(saturate(diffuse), 1);
-    finalColor.rgb += saturate(specular);
+    float4 finalColor = float4((diffuse), 1);
+    finalColor.rgb += specular;
     finalColor.rgb += ambient;
     //finalColor.rgb *= AOSamp;
 
