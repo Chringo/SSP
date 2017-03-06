@@ -959,19 +959,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			1.3f
 		);
 	}
-#ifdef DEVELOPMENTFUNCTIONS
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
-	{
-		m_cameraRef->SetDistance(10.f);
-
-	}
-
-	if (inputHandler->IsKeyReleased(SDL_SCANCODE_C))
-	{
-		m_cameraRef->SetDistance(1.3f);
-
-	}
-#endif // DEVELOPMENTFUNCTIONS
 
 	if (this->m_player1.GetIsAming())
 	{
