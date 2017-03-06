@@ -25,6 +25,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
+	if (editorMode)
+		featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 #ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
@@ -204,22 +206,6 @@ int Direct3DHandler::PresentScene()
 
 	this->m_swapChain->Present(1, 0);
 
-	/*
-	Uncomment this to find out vram
-
-#ifdef _DEBUG
-	DXGI_QUERY_VIDEO_MEMORY_INFO info;
-	if (SUCCEEDED(dxgiAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
-	{
-		int memoryUsage = info.CurrentUsage / 1024 / 1024; //MiB
-
-		char msg[100];
-		sprintf_s(msg, "%d", memoryUsage);
-		printf("GPU MiB: %d", memoryUsage);
-	}
-#endif
-
-*/
 	return 0;
 }
 
