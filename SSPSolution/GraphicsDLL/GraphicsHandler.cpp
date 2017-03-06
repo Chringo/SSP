@@ -461,8 +461,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 		return 1;
 	}
 #ifdef _DEBUG
-	this->editorMode = editorMode;
-	if (!editorMode)
+	this->m_EditorMode = editorMode;
+	if (!m_EditorMode)
 #endif //_DEBUG
 	{
 		this->m_uiHandler = new UIHandler;
@@ -1109,7 +1109,7 @@ void GraphicsHandler::Shutdown()
 	this->DeleteOctree(&this->m_octreeRoot);
 
 #ifdef _DEBUG
-	if (!editorMode)
+	if (!m_EditorMode)
 	{
 		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 		{
