@@ -761,7 +761,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TESTWHEEL.level"), this->m_levelToHost);
 					break;
 
 				case 1:
