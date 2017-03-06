@@ -97,6 +97,7 @@ public:
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
 		CullingResult TestAgainstBox(C_BOX box);
+		CullingResult TestAgainstSphere(DirectX::XMVECTOR pos, float radius);
 		CullingResult TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius);
 		//An conservative test is fast but may not cull all things that could be culled
 		CullingResult TestAgainstOBBConservative(C_OBB box);
@@ -111,7 +112,7 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
-	GRAPHICSDLL_API int Initialize(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f);
+	GRAPHICSDLL_API int Initialize(float farPlane = 77.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update();	
@@ -119,13 +120,14 @@ public:
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
 	GRAPHICSDLL_API int UpdateProjectionMat();
-	GRAPHICSDLL_API int UpdateProjection(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI * 5) / 12.0f, float nearPlane = 0.1f);
+	GRAPHICSDLL_API int UpdateProjection(float farPlane = 77.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI * 5) / 12.0f, float nearPlane = 0.1f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
 	GRAPHICSDLL_API C_Ray CastRay();
 	GRAPHICSDLL_API C_Ray CastRayFromMaxDistance();
-	GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos);
+	//GRAPHICSDLL_API int AddToIntersectCheck(DirectX::XMFLOAT4X4 ort, DirectX::XMFLOAT3 ext, DirectX::XMFLOAT3 pos);
+	GRAPHICSDLL_API int AddToIntersectCheck(const DirectX::XMFLOAT3 pos, const DirectX::XMFLOAT3 ext);
 	GRAPHICSDLL_API int ClearIntersectList();
 
 #pragma region
@@ -192,6 +194,7 @@ public:
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
 	GRAPHICSDLL_API bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	GRAPHICSDLL_API bool m_IntersectRayAABB(const C_Ray& ray, const C_AABB& bb, float &distance);
 	
 #pragma endregion setters
 private:
@@ -201,7 +204,8 @@ private:
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
 	void m_calcDistance();
-	std::vector<C_OBB> m_intersectionOBBs;
+	//std::vector<C_OBB> m_intersectionOBBs;
+	std::vector<C_AABB> m_intersectionAABBs;
 };
 
 #endif

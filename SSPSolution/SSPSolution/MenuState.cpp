@@ -761,7 +761,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
+						levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
+					
 					break;
 
 				case 1:
@@ -952,7 +953,8 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
+					
+						levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				case 1:
