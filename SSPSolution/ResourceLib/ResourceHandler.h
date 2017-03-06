@@ -17,8 +17,8 @@ namespace Resources
 
 	private:
 		struct LevelResources {
-			unsigned int *ids = nullptr;
-			unsigned int numResources;
+			unsigned int *ids	      = nullptr;
+			unsigned int numResources = 0;
 			LevelResources() {};
 			~LevelResources(){
 				delete ids; 
@@ -38,17 +38,18 @@ namespace Resources
 
 		DLL_OPERATION Resources::Status LoadLevel(unsigned int id);
 		DLL_OPERATION Resources::Status LoadLevel(LevelData::ResourceHeader* levelResources, unsigned int numResources); 
-
-	DLL_OPERATION static ResourceHandler* GetInstance();
-	/* Set */
-	DLL_OPERATION void SetDeviceAndContext(ID3D11Device* device, ID3D11DeviceContext* context);
-	DLL_OPERATION void SetDevice(ID3D11Device* device);
-	DLL_OPERATION void SetContext(ID3D11DeviceContext* context);
-	/* Get */
-	DLL_OPERATION ID3D11Device* GetDevice()			   const { return this->m_device; };
-	DLL_OPERATION ID3D11DeviceContext* GetContext()      const { return this->m_context; };
-
-	DLL_OPERATION Resources::Status  GetModel(unsigned int id, Model*& modelPtr) ;
+		DLL_OPERATION Resources::Status UnloadCurrentLevel();
+		DLL_OPERATION Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
+		/* Set */
+		DLL_OPERATION void SetDeviceAndContext(ID3D11Device* device, ID3D11DeviceContext* context);
+		DLL_OPERATION void SetDevice(ID3D11Device* device);
+		DLL_OPERATION void SetContext(ID3D11DeviceContext* context);
+		/* Get */
+		DLL_OPERATION static ResourceHandler* GetInstance(); //SINGLETON
+		DLL_OPERATION ID3D11Device* GetDevice()			   const { return this->m_device; };
+		DLL_OPERATION ID3D11DeviceContext* GetContext()      const { return this->m_context; };
+	
+		DLL_OPERATION Resources::Status  GetModel(unsigned int id, Model*& modelPtr) ;
 
 
 	private:
