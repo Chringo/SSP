@@ -78,9 +78,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	swapChainDesc.Width = resolution.x;
 	swapChainDesc.Stereo = false;
 	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	//swapChainDesc.RefreshRate.Numerator = 60; //60hz
-	//swapChainDesc.RefreshRate.Denominator = 1;
-	//swapChainDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.Scaling = DXGI_SCALING_NONE;
 
 	swapChainDesc.SampleDesc.Count = 1; //No MSAA
@@ -88,8 +85,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	swapChainDesc.BufferCount = 2;
-	//swapChainDesc.OutputWindow = *windowHandle;
-	//swapChainDesc.Windowed = true; //Hardcoded windowed mode
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH /*DXGI_PRESENT_RESTART*/;
 
@@ -115,14 +110,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	{
 		return 1;
 	}
-
-	//IDXGIFactory1* dxgiFactory = nullptr;
-	//hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory1),
-	//	reinterpret_cast<void**>(&dxgiFactory));
-	//if (FAILED(hResult))
-	//{
-	//	return 1;
-	//}
 
 	IDXGIFactory2* dxgiFactory2 = nullptr;
 	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
