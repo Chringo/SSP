@@ -455,13 +455,15 @@ GraphicsHandler::~GraphicsHandler()
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution,  bool editorMode)
 {
 	this->m_d3dHandler = new Direct3DHandler;
-	
-	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
+
+#ifdef _DEBUG
+	this->m_EditorMode = editorMode;
+#endif //_DEBUG
+	if (this->m_d3dHandler->Initialize(windowHandle, resolution, this->m_EditorMode))
 	{
 		return 1;
 	}
 #ifdef _DEBUG
-	this->m_EditorMode = editorMode;
 	if (!m_EditorMode)
 #endif //_DEBUG
 	{

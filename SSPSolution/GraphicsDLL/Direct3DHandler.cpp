@@ -18,7 +18,7 @@ Direct3DHandler::~Direct3DHandler()
 {
 }
 
-int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution)
+int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode)
 {
 	HRESULT hResult;
 
