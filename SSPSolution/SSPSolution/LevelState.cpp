@@ -760,18 +760,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					}
 
 					this->m_player2.GetRagdoll()->state = ANIMATED;
-					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					//this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
+					this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(itr->newstate)->GetAnimationStateData();
+					this->m_player2.GetAnimationComponent()->source_State->stateIndex = itr->newstate;
+					this->m_player2.GetAnimationComponent()->transitionDuration = itr->transitionDuritation;
+					this->m_player2.GetAnimationComponent()->blendFlag = (Blending)itr->blendingType;
+					this->m_player2.GetAnimationComponent()->source_State->isLooping = itr->isLooping;
+					this->m_player2.GetAnimationComponent()->lockAnimation = itr->lockAnimation;
+					this->m_player2.GetAnimationComponent()->playingSpeed = itr->playingSpeed;
+					this->m_player2.GetAnimationComponent()->velocity = itr->velocity;
 					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
 					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
-
-					if (m_player2.GetAnimationComponent()->blendFlag == NO_TRANSITION)
-					{
-						if (this->m_player2.GetAnimationComponent()->source_State != nullptr &&
-							this->m_player2.GetAnimationComponent()->target_State != nullptr)
-						{
-							this->m_player2.GetAnimationComponent()->blendFlag = Blending::SMOOTH_TRANSITION;
-						}
-					}
 				}
 			}
 
