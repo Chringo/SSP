@@ -61,6 +61,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
+		sp->setDefaultVolume(1.f);
 		this->m_sounds2D.push_back(sp);
 	}
 	else
@@ -334,6 +335,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(1.f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -442,6 +444,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(0.8f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -454,6 +457,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(1.3f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else

@@ -16,6 +16,7 @@ DebugHandler::DebugHandler()
 	}
 	this->m_minFPS = 999999;
 	this->m_maxFPS = 0;
+	this->m_currProcess = GetCurrentProcess();
 }
 
 void DebugHandler::ClearConsole()
@@ -385,7 +386,7 @@ int DebugHandler::DisplayOnScreen(float dTime)
 
 	//physical ram used
 	PROCESS_MEMORY_COUNTERS pmc;
-	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+	GetProcessMemoryInfo(this->m_currProcess, &pmc, sizeof(pmc));
 	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
 	SIZE_T peakPhysMemUsedByMe = pmc.PeakWorkingSetSize;
 	this->m_physRamTextComp->text = L"RAM usage(current/peak): " + std::to_wstring(physMemUsedByMe / 1024 / 1024)

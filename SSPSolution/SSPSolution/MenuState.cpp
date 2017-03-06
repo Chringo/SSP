@@ -766,25 +766,22 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), this->m_levelToHost);
 					break;
 
 				case 2:
 					printf("LOAD LEVEL 2\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), this->m_levelToHost);
 					break;
 
 				case 3:
 					printf("LOAD LEVEL 5\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), this->m_levelToHost);
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
 					break;
 
 				}
+				levelSelect->LoadLevel(m_levelToHost);
 #pragma endregion Level_To_Load
 
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
@@ -952,30 +949,27 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
 				case 2:
 					printf("LOAD LEVEL 2\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
 					break;
 
 				case 3:
 					printf("LOAD LEVEL 5\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				}
+
+				levelSelect->LoadLevel(levelID);
 				#pragma endregion Level_To_Load
 			}
 				//Delete it
@@ -1027,27 +1021,27 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL 0\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), 0);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 2:
 				printf("LOAD LEVEL 2\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), 2);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 3:
 				printf("LOAD LEVEL 3\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), 3);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			}

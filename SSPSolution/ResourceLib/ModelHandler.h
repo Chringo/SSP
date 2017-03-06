@@ -39,7 +39,7 @@ namespace Resources
 		Resources::Status GetModel( unsigned int& id, ResourceContainer *&modelPtr);
 		Model* GetPlaceholderModel();
 		ModelHandler(size_t modelAmount, ID3D11Device* device = nullptr);
-
+		Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
 		Resources::Status LoadModel(unsigned int& id, ResourceContainer*& modelPtr);
 		Resources::Status UnloadModel(unsigned int& id);
 		virtual ~ModelHandler();
