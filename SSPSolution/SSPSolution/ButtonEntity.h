@@ -24,6 +24,9 @@ private:
 	float m_activatedOffset  = -0.2f; 
 	float m_targetOffset	 = 0;
 	float m_lastFrameOffset;
+
+	irrklang::ISound* m_timer_sound;
+
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();

@@ -12,6 +12,10 @@ MenuState::MenuState()
 
 MenuState::~MenuState()
 {
+	if (this->m_Menu_Music != nullptr)
+		this->m_Menu_Music->drop();
+	if (this->m_Level_Music != nullptr)
+		this->m_Level_Music->drop();
 }
 
 int MenuState::ShutDown()
@@ -163,6 +167,9 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
+
+	this->m_Menu_Music = nullptr;
+	this->m_Level_Music = nullptr;
 
 	return result;
 }
@@ -602,6 +609,17 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 		if (isJoining)
 		{
+			//disable the menu music
+			this->m_Menu_Music->setIsPaused(true);
+			if (this->m_Level_Music == nullptr)
+			{
+				this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			}
+			else
+			{
+				this->m_Level_Music->setPlayPosition(0);
+				this->m_Level_Music->setIsPaused(false);
+			}
 			this->Joining(inputHandler);
 		}
 
@@ -727,13 +745,23 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				//this->PushStateToStack(levelSelect);
 
 				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
-
+				//disable the menu music and enable level music
+				this->m_Menu_Music->setIsPaused(true);
+				if (this->m_Level_Music == nullptr)
+				{
+					this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+				}
+				else
+				{
+					this->m_Level_Music->setPlayPosition(0);
+					this->m_Level_Music->setIsPaused(false);
+				}
 #pragma region
 				switch (this->m_levelToHost)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
 					break;
 
 				case 1:
@@ -753,7 +781,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), this->m_levelToHost);
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
 					break;
 
 				}
@@ -796,6 +824,13 @@ int MenuState::EnterState()
 	switch(this->m_menuState)
 	{
 	case 0: /*/ Main menu /*/
+
+		//Set the music and activate it
+		if (this->m_Menu_Music == nullptr)
+			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
+		else
+			this->m_Menu_Music->setIsPaused(false);
+		
 		//Show buttons
 		nrOfMenuitems = this->m_mainMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
@@ -817,6 +852,12 @@ int MenuState::EnterState()
 
 	case 2: /*/ Start game menu /*/
 
+		if (this->m_Menu_Music->getIsPaused())
+		{
+			this->m_Level_Music->setIsPaused(true);
+			this->m_Menu_Music->setPlayPosition(0);
+			this->m_Menu_Music->setIsPaused(false);
+		}
 		//Show buttons
 		nrOfMenuitems = this->m_startMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
@@ -911,7 +952,7 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				case 1:
@@ -931,7 +972,7 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
+					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				}
@@ -986,7 +1027,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL 0\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"), 0);
+				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), 0);
 				break;
 
 			case 1:
