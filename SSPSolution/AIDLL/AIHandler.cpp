@@ -134,17 +134,24 @@ int AIHandler::Update(float deltaTime)
 						this->m_AIComponents[i]->AC_waypoints[0],
 						0.05f, i))
 					{
-						this->ChangeDirection(i);
+						if (!this->m_AIComponents[i]->AC_changedDirection)
+							this->ChangeDirection(i);
+
 						this->m_AIComponents[i]->AC_reset = false;
 					}
 					else
 					{
-						this->ChangeDirection(i);
+						if (!this->m_AIComponents[i]->AC_changedDirection)
+							this->ChangeDirection(i);
+
 						this->m_AIComponents[i]->AC_triggered = false;
 					}
 						
 					//printf("-Returning\n");
-					UpdatePosition(i);
+					if (this->m_AIComponents[i]->AC_reset)
+					{
+						UpdatePosition(i);
+					}
 				}
 				else
 				{
@@ -166,7 +173,8 @@ int AIHandler::Update(float deltaTime)
 								this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID];
 								this->m_AIComponents[i]->AC_nextWaypointID--;
 
-								this->ChangeDirection(i);
+								if (!this->m_AIComponents[i]->AC_changedDirection)
+									this->ChangeDirection(i);
 
 								this->m_AIComponents[i]->AC_triggered = false;
 							}
@@ -196,8 +204,9 @@ int AIHandler::Update(float deltaTime)
 								this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[0];
 								this->m_AIComponents[i]->AC_nextWaypointID++;
 
-								this->ChangeDirection(i);
-
+								if (!this->m_AIComponents[i]->AC_changedDirection)
+									this->ChangeDirection(i);
+								
 								this->m_AIComponents[i]->AC_triggered = false;
 							}
 						}
@@ -206,9 +215,10 @@ int AIHandler::Update(float deltaTime)
 							printf("<--\n");
 							UpdatePosition(i);
 						}
-
 					}
 				}
+
+				this->m_AIComponents[i]->AC_changedDirection = false;
 
 				break;
 #pragma endregion Round trip
@@ -383,16 +393,6 @@ bool AIHandler::ChangeDirection(int i)
 	this->m_AIComponents[i]->AC_WaypointUpdated = false;
 
 	this->m_AIComponents[i]->AC_changedDirection = true;
-	//this->m_AIComponents[i]->AC_reset = false;
-
-	/*if (this->m_AIComponents[i]->AC_time == 2)
-	{
-		this->m_AIComponents[i]->AC_time = 0;
-	}
-	else
-	{
-		this->m_AIComponents[i]->AC_time++;
-	}*/
 
 	return true;
 }
