@@ -48,15 +48,6 @@ void AnimationHandler::Update(float dt)
 
 		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != AnimationStates::RAGDOLL_STATE )
 		{
-			//if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
-			//{
-			//	if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == AnimationStates::RAGDOLL_STATE)
-			//	{
-			//		this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
-			//		continue;
-			//	}
-			//}
-
 			if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 			{
 				/*Set the current animation component index.*/
@@ -119,12 +110,12 @@ void AnimationHandler::Update(float dt)
 
 						/*After the blending is finished, the target state will simply become the new source state.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->source_State = this->m_AnimComponentList[m_AnimCompIndex]->target_State;
+
+						/*Set the source states blend flag to NO_TRANSITION when blending is finished and only to play a single animation.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->source_State->blendFlag = Blending::NO_TRANSITION;
+
 						/*Assign the target local time to source local time.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->source_Time = this->m_AnimComponentList[m_AnimCompIndex]->target_Time;
-
-						this->m_AnimComponentList[m_AnimCompIndex]->previousState = this->m_AnimComponentList[m_AnimCompIndex]->currentState;
-						this->m_AnimComponentList[m_AnimCompIndex]->currentState = this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex;
 
 						/*Reset target state and it's local time.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->target_State = nullptr;
@@ -214,6 +205,8 @@ void AnimationHandler::ShutDown()
 
 	this->m_maxAnimComps = 16;
 	this->m_nrOfAnimComps = 0;
+
+	/*Clear the component list and the transform data for each component.*/
 	this->m_AnimComponentList.clear();
 	this->m_AnimComponentList.shrink_to_fit();
 	this->m_transformData.clear();
@@ -247,12 +240,12 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
-			//DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
-			//DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
+			/*Storing the scale transformations for handling scaling of joints individually.*/
 			this->m_transformData[m_AnimCompIndex].localScales.push_back(scaleMat);
+
+			/*Update the local transform for each joint in the skeleton.*/
 			this->m_transformData[m_AnimCompIndex].localTransforms.push_back(localTransform);
 		}
 		/*The current time is at the last keyframe.*/
@@ -272,11 +265,7 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 			DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(quat);
 			DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(trans);
 
-			//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 			DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
-
-			//DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
-			//DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 
 			this->m_transformData[m_AnimCompIndex].localScales.push_back(scaleMat);
 			this->m_transformData[m_AnimCompIndex].localTransforms.push_back(localTransform);
@@ -323,12 +312,10 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
-					/*Update the local transform for each joint in the skeleton.*/
-					//DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
 					/*Storing the scale transformations for handling scaling of joints individually.*/
-					//DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
-
 					this->m_transformData[m_AnimCompIndex].localScales.push_back(scaleMat);
+
+					/*Update the local transform for each joint in the skeleton.*/
 					this->m_transformData[m_AnimCompIndex].localTransforms.push_back(localTransform);
 				}
 			}
@@ -367,12 +354,10 @@ void AnimationHandler::BlendKeys(float transitionTime)
 
 		DirectX::XMMATRIX localTransform = XMMatrixMultiply(transMat, quatMat);
 
-		//DirectX::XMStoreFloat4x4(&this->localTransforms[jointIndex], localTransform);
-
 		/*Storing the scale transformations for handling scaling of joints individually.*/
-		//DirectX::XMStoreFloat4x4(&this->localScales[jointIndex], scaleMat);
-
 		this->m_transformData[m_AnimCompIndex].localScales.push_back(scaleMat);
+
+		/*Update the local transform for each joint in the skeleton.*/
 		this->m_transformData[m_AnimCompIndex].localTransforms.push_back(localTransform);
 	}
 
@@ -575,8 +560,6 @@ void AnimationHandler::SetAnimationComponent(int animationState, float transitio
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->velocity = velocity;
-
-	std::cout << animationState << ": ANIMCOMP SENT!" << std::endl;
 }
 
 void AnimationHandler::Blend(float secondsElapsed)
@@ -652,11 +635,14 @@ void AnimationHandler::CalculateFinalTransform()
 			this->m_transformData[m_AnimCompIndex].localScales[i].r[1].m128_f32[1], 
 			this->m_transformData[m_AnimCompIndex].localScales[i].r[2].m128_f32[2] });
 
+		/*When the hierarchy transform calculations are done for the skeleton, apply the scale matrix for each joint.*/
 		DirectX::XMMATRIX finalMat = DirectX::XMMatrixMultiply(scaleMat, toRoot);
 
+		/*Updates each final joint matrix to the GPU, which influences and move the vertices of the model.*/
 		m_animGraphicsComponents[m_AnimCompIndex]->finalJointTransforms[i] = DirectX::XMMatrixMultiply(*inverseBindPose, finalMat);
 	}
 
+	/*Clear the vectors before the next frame, to avoid any old data remaining when updating the skeleton each frame.*/
 	for (int i = 0; i < *m_nrOfGraphicsAnimationComponents; i++)
 	{
 		this->m_transformData[m_AnimCompIndex].localTransforms.clear();

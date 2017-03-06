@@ -685,8 +685,6 @@ void Player::SetAnimationComponent(int animationState, float transitionDuration,
 		this->m_aComp->target_Time = 0.f;
 		this->m_aComp->source_Time = 0.f;
 	}
-
-	std::cout << animationState << ": ANIMCOMP SENT!" << std::endl;
 }
 
 void Player::SetBall(Entity * ball)
