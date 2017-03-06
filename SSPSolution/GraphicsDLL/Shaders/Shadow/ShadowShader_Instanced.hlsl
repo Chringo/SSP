@@ -26,7 +26,7 @@ cbuffer shadow : register(b5)
     float4x4 ShadowViewMatrix[6];
     float4x4 ShadowProjectionMatrix;
 }
-StructuredBuffer<PointLight> pointlights : register(t6);
+
 struct VS_IN
     {
     float3 Pos           : POSITION;

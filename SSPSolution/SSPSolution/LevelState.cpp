@@ -2633,6 +2633,8 @@ int LevelState::UnloadLevel()
 	this->m_Player1ChainPhysicsComp.clear();
 	this->m_Player2ChainPhysicsComp.clear();
 
+	Resources::ResourceHandler::GetInstance()->UnloadCurrentLevel();
+
 	return 1;
 }
 
