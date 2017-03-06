@@ -43,7 +43,7 @@ public:
 	Direct3DHandler();
 	~Direct3DHandler();
 
-	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution);
+	int Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode);
 	int InitializeGridRasterizer();
 
 	int PresentScene();
