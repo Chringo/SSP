@@ -123,6 +123,9 @@ void AnimationHandler::Update(float dt)
 						/*Assign the target local time to source local time.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->source_Time = this->m_AnimComponentList[m_AnimCompIndex]->target_Time;
 
+						this->m_AnimComponentList[m_AnimCompIndex]->previousState = this->m_AnimComponentList[m_AnimCompIndex]->currentState;
+						this->m_AnimComponentList[m_AnimCompIndex]->currentState = this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex;
+
 						/*Reset target state and it's local time.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->target_State = nullptr;
 						this->m_AnimComponentList[m_AnimCompIndex]->target_Time = 0;
