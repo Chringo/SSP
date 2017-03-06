@@ -73,6 +73,7 @@ namespace LIGHTING
 					if (shadowMaps != nullptr){
 						shadowMaps->Release();
 						shadowMaps = nullptr;
+						numShadowLights = 0;
 					}
 			}
 		};
