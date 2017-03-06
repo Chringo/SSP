@@ -40,6 +40,7 @@ private:
 	DirectX::XMFLOAT4 m_cameraUp;
 
 	DirectX::XMVECTOR * m_focusPoint;
+	DirectX::XMVECTOR m_standardFocusPoint;
 	DirectX::XMVECTOR m_focusPointOffset;
 	DirectX::XMVECTOR m_cameraMaxDistancePos;
 	//DirectX::XMVECTOR m_targetCameraPos;

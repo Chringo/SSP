@@ -130,6 +130,12 @@ LevelState::~LevelState()
 int LevelState::ShutDown()
 {
 	int result = 1;
+	this->UnloadLevel();
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
+	//Get the Camera Pivot and delete it before supplimenting our own
+
+	this->m_cameraRef->SetCameraPivot(nullptr, targetOffset, 1.3f);
 	// Clear the dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
@@ -215,10 +221,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 77.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0P1.level", 77.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5P1.level", 46.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 40.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L6P1.level, 46.0f}");
@@ -434,8 +440,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 	//this->m_dynamicEntitys
-
-	m_cameraRef->SetCameraPivot(
+	//Get the Camera Pivot and delete it before supplimenting our own
+	
+	this->m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
 		targetOffset,
 		1.3f
@@ -1296,7 +1303,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+		//SoundHandler::instance().PlaySound2D(Sounds2D::MENU, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
@@ -2496,11 +2503,9 @@ int LevelState::UnloadLevel()
 	//Shutdown PhysicsHandler and initialize it again.
 #pragma region
 	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
-	pHandler->ShutDown();
-	pHandler->Initialize();
-#pragma endregion Physics handler restart
 
-	this->m_cHandler->ClearAIComponents();
+	pHandler->ClearPhysicsHandler();
+#pragma endregion Physics handler restart
 
 	this->m_director.Initialize();
 #pragma region
@@ -2525,6 +2530,12 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player1.SetPhysicsComponent(playerP);
+
+	//reset player1 animation component to idle animation
+	this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+	this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
+
 #pragma endregion Player 1
 #pragma region
 	//We then need to recreate the persistent components here
@@ -2547,6 +2558,13 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player2.SetPhysicsComponent(playerP);
+
+	//reset player2 animation component to idle animation
+	this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+	this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player2.GetAnimationComponent()->currentState = PLAYER_IDLE;
+
+
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -2611,6 +2629,9 @@ int LevelState::UnloadLevel()
 	//Re-introduce them into our dynamic list
 	this->m_dynamicEntitys.push_back(ball1);
 	this->m_dynamicEntitys.push_back(ball2);
+
+	this->m_Player1ChainPhysicsComp.clear();
+	this->m_Player2ChainPhysicsComp.clear();
 
 	Resources::ResourceHandler::GetInstance()->UnloadCurrentLevel();
 
