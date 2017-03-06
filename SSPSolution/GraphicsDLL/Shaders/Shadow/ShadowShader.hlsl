@@ -31,12 +31,12 @@ struct SHADOW_GS_OUT
 };
 
 #define MAX_SHADOW_LIGHTS 20  
-
+#define MAX_LIGHT_AMOUNT 60
 
 struct PointLight //Must be 16 bit aligned!
 {
     bool isActive;
-    float3 isActivePADDING;
+    float3 _PADDING;
     float3 color;
     float intensity;
     float4 position;
@@ -48,13 +48,13 @@ struct PointLight //Must be 16 bit aligned!
 cbuffer LightInfo : register(b3)
 {
     uint NUM_POINTLIGHTS;
+    uint DYNAMIC_SHADOWLIGHT_INDEX;
     float3 AMBIENT_COLOR;
     float AMBIENT_INTENSITY;
-    uint DYNAMIC_SHADOWLIGHT_INDEX;
-    uint padding[2];
-    int SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
+    int2 SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be multiple of 4
 
 }
+
 
 cbuffer shadow : register(b5)
 {
@@ -64,7 +64,13 @@ cbuffer shadow : register(b5)
 
 static const uint MAX_SHADOWMAP_AMOUNT = 1;
 
-StructuredBuffer<PointLight> pointlights : register(t6);
+//StructuredBuffer<PointLight> pointlights : register(t6);
+cbuffer LightArrayBuffer : register(b6)
+{
+    
+    PointLight pointlights[MAX_LIGHT_AMOUNT];
+
+}
 
 SHADOW_VS_OUT VS_main(VS_IN input)
 {
