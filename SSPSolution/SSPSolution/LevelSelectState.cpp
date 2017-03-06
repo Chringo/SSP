@@ -67,7 +67,7 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
-int LevelSelectState::LoadLevel(std::string path, int levelID)
+int LevelSelectState::LoadLevel(int levelID)
 {
 
 	int result = 0;

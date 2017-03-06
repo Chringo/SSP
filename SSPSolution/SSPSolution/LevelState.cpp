@@ -221,11 +221,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0P1.level", 77.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0P1.level", 68.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
 	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
 	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 41.0f });
 	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
+
+
+
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L6P1.level, 46.0f}");
@@ -2726,7 +2730,7 @@ std::string LevelState::GetLevelPath()
 
 void LevelState::SetCurrentLevelID(int currentLevelID)
 {
-	this->m_curLevel = currentLevelID;
+	this->m_curLevel = min(currentLevelID,this->m_levelPaths.size() - 1);
 }
 
 int LevelState::EnterState()
