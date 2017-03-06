@@ -1512,7 +1512,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 #endif // _DEBUG
 
 
-	Render(0.0f);
+//	Render(0.0f);
 
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
@@ -1566,13 +1566,6 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
-//D3D11_BOX srcBox; // box for the resourceCopy
-//srcBox.left = 0;
-//srcBox.right = srcBox.left + 512;
-//srcBox.top = 0;
-//srcBox.bottom = srcBox.top + 512;
-//srcBox.front = 0;
-//srcBox.back = 1;
 
 	for (size_t i = 0; i < lights->numShadowLights; i++) //for each light
 	{
@@ -1589,7 +1582,6 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
 
 		}
-		//m_d3dHandler->PresentScene(); //Finish the renderCall
 	}
 
 	m_LightHandler->SetStaticShadowsToGPU();
