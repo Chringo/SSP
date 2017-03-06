@@ -67,16 +67,20 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
-int LevelSelectState::LoadLevel(std::string path, int levelID)
+int LevelSelectState::LoadLevel(int levelID)
 {
 
 	int result = 0;
 	Resources::Status st = Resources::Status::ST_OK;
+	//Prepare the level state
+	this->m_currentLevel->SetCurrentLevelID(levelID);
+	//Get the level path from the level state for the level id/index
+	std::string levelPath = this->m_currentLevel->GetLevelPath();
 	
 	LevelData::Level* level;    //pointer for data
 	//Load LevelData from file
 
-		st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
+		st = Resources::FileLoader::GetInstance()->LoadLevel(levelPath, level); //load file
 		//if not successful
 		if (st != Resources::ST_OK)
 			return 0;
@@ -92,7 +96,6 @@ int LevelSelectState::LoadLevel(std::string path, int levelID)
 			return 0;
 	
 	//Create level
-	this->m_currentLevel->SetCurrentLevelID(levelID);
 	result = this->m_currentLevel->CreateLevel(level);
 
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
