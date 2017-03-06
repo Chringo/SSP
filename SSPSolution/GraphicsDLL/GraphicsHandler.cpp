@@ -1589,7 +1589,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
 
 		}
-		m_d3dHandler->PresentScene(); //Finish the renderCall
+		//m_d3dHandler->PresentScene(); //Finish the renderCall
 	}
 
 	m_LightHandler->SetStaticShadowsToGPU();
