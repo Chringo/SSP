@@ -415,16 +415,16 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             //SPECULAR
 
-            //FRESNEL
+            //FRESNEL TERM
             //float3 f  = schlickFresnel(f0, f90, LdotH);
             float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
 
-            //DISTRIUTION
+            //DISTRIUTION TERM
             //float d = GGX(NdotH, roughPow4); //roughness should be sRGB
             float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
             d = roughPow2 / (Pi * d * d);                  //ggx Distribution
 
-            //GEOMETRY
+            //GEOMETRY TERM
             //float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughtPow2H); //roughness should be sRGB
             float vis = (NdotV / (NdotV * (1 - roughtPow2H) + roughtPow2H));
 
