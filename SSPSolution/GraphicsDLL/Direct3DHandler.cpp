@@ -177,22 +177,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	this->m_gDevice->CreateBlendState(&BlendState, &g_pBlendStateNoBlend);
 
-	/*
-	Uncumment this to find vram
-
-
-#ifdef _DEBUG
-	IDXGIAdapter* firstAdapter = nullptr;
-	hResult = dxgiFactory->EnumAdapters(0, &firstAdapter);
-
-	dxgiAdapter3 = nullptr;
-	if (SUCCEEDED(firstAdapter->QueryInterface(__uuidof(IDXGIAdapter3), (void**)&dxgiAdapter3)))
-	{
-		//failed creating adapter3
-	}
-#endif
-*/
-
 	return 0;
 }
 

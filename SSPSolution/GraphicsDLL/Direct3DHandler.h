@@ -5,11 +5,6 @@
 #include <DirectXMath.h>
 #include "../ResourceLib/ResourceHandler.h"
 
-//include this to find out VRAM
-//#include "stdafx.h"
-//#include <DXGI1_3.h>
-//#include <DXGI1_4.h>
-
 class Direct3DHandler
 {
 private:
@@ -28,16 +23,6 @@ private:
 	ID3D11BlendState* g_pBlendStateNoBlend = NULL;
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
-	/*
-	remove comment here to find vram
-	
-
-#ifdef _DEBUG
-	IDXGIAdapter3* dxgiAdapter3;	//for VRAM check
-#endif
-	*/
-
-
 
 public:
 	Direct3DHandler();
