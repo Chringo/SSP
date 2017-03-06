@@ -312,6 +312,7 @@ public:
 
 	PHYSICSDLL_API void SetIgnoreCollisions();
 
+	PHYSICSDLL_API void ClearPhysicsHandler();
 
 
 #ifdef _DEBUG

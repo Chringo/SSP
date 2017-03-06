@@ -120,6 +120,11 @@ Resources::Status Resources::AnimationHandler::UnloadAnimation(const unsigned in
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::AnimationHandler::ClearUnusedMemory()
+{
+	return Resources::Status::ST_OK;
+}
+
 Resources::Animation * Resources::AnimationHandler::GetEmptyContainer()
 {
 	if (m_emptyContainers.size() < 1)

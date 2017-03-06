@@ -44,10 +44,11 @@ void SoundHandler::LoadSounds()
 	//Load 2D sounds
 #pragma region
 	//Menu1
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Menu_Music_stereo1.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/Level_music.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
+		sp->setDefaultVolume(0.1f);
 		this->m_sounds2D.push_back(sp);
 	}
 	else
@@ -60,6 +61,7 @@ void SoundHandler::LoadSounds()
 	if (sp != nullptr)
 	{
 		sp->grab();
+		sp->setDefaultVolume(1.f);
 		this->m_sounds2D.push_back(sp);
 	}
 	else
@@ -333,6 +335,7 @@ void SoundHandler::LoadSounds()
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(1.f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else
@@ -412,11 +415,49 @@ void SoundHandler::LoadSounds()
 		printf("Failed to load sound");
 	}
 
-	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/PingEffect.mp3");
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Wheel.mp3");
 	if (sp != nullptr)
 	{
 		sp->grab();
 		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Wheel_Clicked.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_Button_Timer.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(0.8f);
+		this->m_sounds3D.push_back(sp);
+	}
+	else
+	{
+		printf("Failed to load sound");
+	}
+
+	sp = m_soundEngine->addSoundSourceFromFile("../Debug/Sounds/General_PingSound.mp3");
+	if (sp != nullptr)
+	{
+		sp->grab();
+		sp->setDefaultMinDistance(SOUND_MIN_DISTANCE);
+		sp->setDefaultVolume(1.3f);
 		this->m_sounds3D.push_back(sp);
 	}
 	else

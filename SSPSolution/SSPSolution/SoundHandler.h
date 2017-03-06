@@ -13,8 +13,8 @@ const irrklang::ik_f32 SOUND_MIN_DISTANCE = 5;	//At what distance (in sound spac
 enum Sounds2D
 {
 	NO_SOUND2D = -1,
-	MENU1,
-	MENU2,
+	LEVEL,
+	MENU,
 };
 
 enum Sounds3D
@@ -48,8 +48,10 @@ enum Sounds3D
 	GENERAL_LEVER,
 	GENERAL_LIFT,
 	GENERAL_DOOR_OPENING,
+	GENERAL_WHEEL,
+	GENERAL_WHEEL_CLICK,
+	GENERAL_BUTTON_TIMER,
 	PING_EFFECT_SOUND,
-
 
 };
 
