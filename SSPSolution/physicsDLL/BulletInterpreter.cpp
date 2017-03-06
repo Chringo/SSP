@@ -584,6 +584,31 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, Collitio
 
 }
 
+void BulletInterpreter::ClearBullet()
+{
+	size_t size = this->m_rigidBodies.size();
+	for (size_t i = 0; i < size; i++)
+	{
+		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
+		btMotionState* tempMSPtr = tempPtr->getMotionState();
+		if (tempMSPtr != nullptr)
+		{
+			delete tempMSPtr;
+		}
+		btCollisionShape* tempBPtr = tempPtr->getCollisionShape();
+		if (tempBPtr != nullptr)
+		{
+			delete tempBPtr;
+		}
+		//removes the rigidbody from the dynamic world
+		this->m_dynamicsWorld->removeRigidBody(tempPtr);
+		
+		delete tempPtr;
+		tempPtr = nullptr;
+	}
+	this->m_rigidBodies.clear();
+}
+
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
 {
 	return this->m_rigidBodies.at(index);
@@ -692,7 +717,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 			if (obj1->getUserIndex() == index)
@@ -712,7 +737,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 

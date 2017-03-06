@@ -489,7 +489,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	m_shaderControl->Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), this->m_d3dHandler->GetViewPort());
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
-	this->m_overviewCamera.Initialize();
+	this->m_overviewCamera.Initialize(500.0f);
 	DirectX::XMVECTOR camPos = DirectX::XMVectorSet(20.f, 1.f, -10.f, 0.f);
 	DirectX::XMVECTOR camOffset = DirectX::XMVectorSet(0.f, 50.f, 0.f, 0.f);
 	this->m_overviewCamera.SetCameraPivot(&camPos, camOffset, 2.0f);
@@ -499,6 +499,8 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 	this->m_overviewCamera.SetLookAt(camPos);*/
 	this->m_overviewCamera.Update();
 	this->m_useOverview = false;
+
+	this->m_activeLightIndices.reserve(MAX_ACTIVE_LIGHTS);
 
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
@@ -524,11 +526,6 @@ Camera* GraphicsHandler::SetCamera(Camera * newCamera)
 
 int GraphicsHandler::Render(float deltaTime)
 {
-
-
-
-
-
 	int result = 0;
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 
@@ -551,24 +548,26 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			result++;
 			
-			DirectX::XMMATRIX ortm;
+			/*DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
-			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
-			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
-			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
 
 			DirectX::XMStoreFloat4x4(&ort, ortm);
 			this->m_camera->AddToIntersectCheck(
 				ort,
-				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext),
+				DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData()).ext),
 				i->pos
-			);
-				i->isInRay = false;
+			);*/
+
+			this->m_camera->AddToIntersectCheck(i->pos, i->ext);
+
+			i->isInRay = false;
 			//This component needs to be checked against the ray for camera intersection
 		}
 	}
 #pragma endregion
-
 
 	/*TEMP CBUFFER STUFF*/
 	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
@@ -576,16 +575,16 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		this->m_overviewCamera.GetCameraPos(frame.cPos);
 		this->m_overviewCamera.GetViewMatrix(frame.cView);
+		frame.cProjection = DirectX::XMLoadFloat4x4(this->m_overviewCamera.GetProjectionMatrix());
 	}
 	else
 	{
 		this->m_camera->GetCameraPos(frame.cPos);
 		this->m_camera->GetViewMatrix(frame.cView);
+		frame.cProjection = DirectX::XMLoadFloat4x4(this->m_camera->GetProjectionMatrix());
 	}
 	
-	frame.cProjection = DirectX::XMLoadFloat4x4(m_camera->GetProjectionMatrix());
 	frame.cTimer = elapsedTime;
-
 
 
 	/********************/
@@ -594,204 +593,252 @@ int GraphicsHandler::Render(float deltaTime)
 
 	//Use the root node in the octree to create arrays of things to render, one array for each model id
 
-	int amountOfModelsToRender = 0;
-	int componentsInTree = this->m_octreeRoot.containedComponents.size();
-	
+	std::vector<InstanceData> instancedRenderingList;
+	std::vector<size_t> staticNormalRenderingList;
+	//Go through all components dynamic components
+	size_t renderCap = this->m_dynamicGraphicsComponents.size();
+#pragma omp parallel num_threads(2)
+	{
+		int myThreadID = omp_get_thread_num();
+		//int amountOfThreads = omp_get_num_threads();
+		//printf("My ID: %d Out of: %d\n", myThreadID, amountOfThreads);
+		if (myThreadID == 0)
+		{
+			int amountOfModelsToRender = 0;
+			int componentsInTree = this->m_octreeRoot.containedComponents.size();
 
 #pragma region
-	std::vector<InstanceData> instancedRenderingList;
-	unsigned int firstRenderedModelID = UINT_MAX;
-	unsigned int firstRenderedInstancedModelID = 0;
-	unsigned int lastModelID = 0;
-	Resources::Model* lastModelPtr = nullptr;
-	Resources::Model* firstRenderedModelPtr = nullptr;
-	Resources::Model* firstRenderedInstancedModelPtr = nullptr;
-	//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		if (i->isRendered)
-		{
-			if (i->modelID == lastModelID)
+			unsigned int firstRenderedModelID = UINT_MAX;
+			unsigned int firstRenderedInstancedModelID = 0;
+			unsigned int lastModelID = 0;
+			Resources::Model* lastModelPtr = nullptr;
+			Resources::Model* firstRenderedModelPtr = nullptr;
+			Resources::Model* firstRenderedInstancedModelPtr = nullptr;
+			//Find the first model to be rendered and use that ones ModelID to prepare the loop after this one
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 			{
-				firstRenderedInstancedModelID = i->modelID;
-				firstRenderedInstancedModelPtr = i->modelPtr;
-				break;
+				if (i->isRendered)
+				{
+					if (i->modelID == lastModelID)
+					{
+						firstRenderedInstancedModelID = i->modelID;
+						firstRenderedInstancedModelPtr = i->modelPtr;
+						break;
+					}
+					lastModelPtr = i->modelPtr;
+					lastModelID = i->modelID;
+					if (firstRenderedModelID == UINT_MAX)
+					{
+						firstRenderedModelID = i->modelID;
+						firstRenderedModelPtr = i->modelPtr;
+					}
+				}
 			}
-			lastModelPtr = i->modelPtr;
-			lastModelID  = i->modelID;
-			if (firstRenderedModelID == UINT_MAX)
-			{
-				firstRenderedModelID = i->modelID;
-				firstRenderedModelPtr = i->modelPtr;
-			}
-		}
-	}
 
-	m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
-	
-	int amountOfModelOccurrencees = 0;
-	unsigned int lastComponentIndex = 0;
-	lastModelID  = firstRenderedModelID;
-	lastModelPtr = firstRenderedModelPtr;
-	OctreeBV* lastRenderedComponent = nullptr;
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		//If the component is to be rendered, increase the counter
-		if (i->isRendered)
-		{
-			//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
-			if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+			//m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+
+			int amountOfModelOccurrencees = 0;
+			unsigned int lastComponentIndex = 0;
+			lastModelID = firstRenderedModelID;
+			lastModelPtr = firstRenderedModelPtr;
+			OctreeBV* lastRenderedComponent = nullptr;
+			//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
+			{
+				//If the component is to be rendered, increase the counter
+				if (i->isRendered)
+				{
+					//Because we know that the list is sorted, when the ID changes we can create an array with the amounf of last model ID occurrencees
+					if (lastModelID != i->modelID || amountOfModelOccurrencees >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+					{
+						if (amountOfModelOccurrencees > 1)
+						{
+							//Create the array
+							InstanceData instanceData;
+							instanceData.modelID = lastModelID;
+							instanceData.modelPtr = lastModelPtr;
+							instanceData.amountOfInstances = amountOfModelOccurrencees;
+							//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
+							instancedRenderingList.push_back(instanceData);
+							amountOfModelOccurrencees = 0;
+
+						}
+						else
+						{
+							//m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+							staticNormalRenderingList.push_back(lastComponentIndex);
+							lastRenderedComponent->isRendered = false;
+							amountOfModelOccurrencees = 0;
+						}
+					}
+					//Prepare the data for the next model ID
+					lastModelPtr = i->modelPtr;
+					lastModelID = i->modelID;
+					lastComponentIndex = i->componentIndex;
+					lastRenderedComponent = i;
+					++amountOfModelOccurrencees;
+				}
+			}
+			if (componentsInTree > 0 && lastRenderedComponent != nullptr)
 			{
 				if (amountOfModelOccurrencees > 1)
 				{
-					//Create the array
 					InstanceData instanceData;
-					instanceData.modelID  = lastModelID;
+					instanceData.modelID = lastModelID;
 					instanceData.modelPtr = lastModelPtr;
 					instanceData.amountOfInstances = amountOfModelOccurrencees;
 					//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
 					instancedRenderingList.push_back(instanceData);
-					amountOfModelOccurrencees = 0;
-
 				}
-				else 
+				else
 				{
-	
-					
-					m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); // render shadows
-					m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
+
+					//m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
+
+					//m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
+					staticNormalRenderingList.push_back(lastComponentIndex);
 
 					lastRenderedComponent->isRendered = false;
-					amountOfModelOccurrencees = 0;
+					amountOfModelOccurrencees = -1;
 				}
 			}
-			//Prepare the data for the next model ID
-			lastModelPtr = i->modelPtr;
-			lastModelID = i->modelID;
-			lastComponentIndex = i->componentIndex;
-			lastRenderedComponent = i;
-			++amountOfModelOccurrencees;
-		}
-	}
-	if (componentsInTree > 0 && lastRenderedComponent != nullptr)
-	{
-		if (amountOfModelOccurrencees > 1)
-		{
-			InstanceData instanceData;
-			instanceData.modelID  = lastModelID;
-			instanceData.modelPtr = lastModelPtr;
-			instanceData.amountOfInstances = amountOfModelOccurrencees;
-			//instanceData.componentSpecific = new DirectX::XMFLOAT4X4[amountOfModelOccurrencees];
-			instancedRenderingList.push_back(instanceData);
-		}
-		else
-		{
-			
-			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); 
-			m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex]->modelPtr, this->m_staticGraphicsComponents[lastComponentIndex]);
 
-			lastRenderedComponent->isRendered = false;
-			amountOfModelOccurrencees = -1;
-		}
-	}
-
-	//Fill the array with valuable data
-	int instancedRenderingIndex = 0;
-	int instancedModelCount = 0;
-	lastModelID  = firstRenderedInstancedModelID;
-	lastModelPtr = firstRenderedInstancedModelPtr;
-	for (OctreeBV* i : this->m_octreeRoot.containedComponents)
-	{
-		//reset the 'isRendered' bool
-		if (i->isRendered)
-		{
-			//If it is time to change 
-			if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+			//Fill the array with valuable data
+			int instancedRenderingIndex = 0;
+			int instancedModelCount = 0;
+			lastModelID = firstRenderedInstancedModelID;
+			lastModelPtr = firstRenderedInstancedModelPtr;
+			for (OctreeBV* i : this->m_octreeRoot.containedComponents)
 			{
-				instancedRenderingIndex++;
-				instancedModelCount = 0;
+				//reset the 'isRendered' bool
+				if (i->isRendered)
+				{
+					//If it is time to change 
+					if (i->modelID != instancedRenderingList[instancedRenderingIndex].modelID || instancedModelCount >= this->m_deferredSH->MAX_INSTANCED_GEOMETRY)
+					{
+						instancedRenderingIndex++;
+						instancedModelCount = 0;
+					}
+					//Get the data
+					DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex].worldMatrix;
+					worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
+					//Store the data
+					DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
+					i->isRendered = false;
+				}
 			}
-			//Get the data
-			DirectX::XMMATRIX worldMatrix = this->m_staticGraphicsComponents[i->componentIndex]->worldMatrix;
-			worldMatrix = DirectX::XMMatrixTranspose(worldMatrix);
-			//Store the data
-			DirectX::XMStoreFloat4x4(&instancedRenderingList[instancedRenderingIndex].componentSpecific[instancedModelCount++], worldMatrix);
-			i->isRendered = false;
-		}
-	}
 #pragma endregion Octree stuff
 
+		}
+		else if (myThreadID == 1)
+		{
+			//Check lights against frustrum
+#pragma region
+			//Get the data and convert it into the specialized data we need
+			LIGHTING::LightHandler::LightArray* lightArrayPtr = this->m_LightHandler->Get_Light_List();
+			LIGHTING::Point* specializedData = lightArrayPtr->dataPtr;
+			//Loop the lights
+			Camera::ViewFrustrum frustrum;
+			this->m_camera->GetViewFrustrum(frustrum);
+			int lightsInFrustrum = 0;
+			for (int lightIndex = 0; lightIndex < lightArrayPtr->numItems; lightIndex++)
+			{
+				if (frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0)
+				{
+					this->m_activeLightIndices.push_back(lightIndex);
+				}
+				//specializedData[lightIndex].isActive = frustrum.TestAgainstSphere(specializedData[lightIndex].position, specializedData[lightIndex].radius) > 0;
+				//lightsInFrustrum += specializedData[lightIndex].isActive;
+			}
+			//printf("Lights in frustrum %d\n", lightsInFrustrum);
+			//Update light buffer
+			//this->m_LightHandler->UpdateStructuredBuffer(LIGHTING::LIGHT_TYPE::LT_POINT);
+			this->m_LightHandler->UpdateActiveLightsToGPU(&m_activeLightIndices);
+			this->m_activeLightIndices.clear();
+#pragma endregion LightCulling
 
-	//Go through all components dynamic components
-	size_t renderCap = this->m_dynamicGraphicsComponents.size();
+
+			m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 
 #pragma region 
-	//TEMP Johans
-	D3D11_VIEWPORT vP; 
-	vP.Width = 1280.f;
-	vP.Height = 720.f;
-	vP.MinDepth = 0.0f;
-	vP.MaxDepth = 1.0f;
-	vP.TopLeftX = 0;
-	vP.TopLeftY = 0;
-	m_d3dHandler->GetDeviceContext()->RSSetViewports(1, &vP);
 
 #pragma region Render shadows for normal (non instanced) geometry
 
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
-	for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_dynamicGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
-		}
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow); // render shadows
+			for (size_t i = 0; i < renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_dynamicGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+				}
 
-	}
-	
+			}
 
-for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
-	{
-		if (this->m_persistantGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
-		}
 
-	}
+			for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NORMAL G
+			{
+				if (this->m_persistantGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+				}
+
+			}
 #pragma endregion
 #pragma region Render shadows for animated geometry
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
-	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
-	{
-		if (this->m_animGraphicsComponents[i]->active == false)
-			continue;
-		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::AnimatedShadow);
+			for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+			{
+				if (this->m_animGraphicsComponents[i]->active == false)
+					continue;
+				m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
 
-	}
+			}
 #pragma endregion
 #pragma endregion Shadow pass
 
 
 #pragma region
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_dynamicGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
-		}
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal); //render
+			for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_dynamicGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_dynamicGraphicsComponents[i]->modelPtr, this->m_dynamicGraphicsComponents[i]);
+				}
 
-	}
+			}
 
-	renderCap = this->m_persistantGraphicsComponents.size();
-	for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
-	{
-		if (this->m_persistantGraphicsComponents[i]->active)
-		{
-			m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
-		}
+			renderCap = this->m_persistantGraphicsComponents.size();
+			for (size_t i = 0; i < (size_t)renderCap; i++) //FOR EACH NORMAL GEOMETRY
+			{
+				if (this->m_persistantGraphicsComponents[i]->active)
+				{
+					m_shaderControl->Draw(this->m_persistantGraphicsComponents[i]->modelPtr, this->m_persistantGraphicsComponents[i]);
+				}
 
-	}
+			}
 #pragma endregion Render non-instanced geometry
+
+#pragma region
+			m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
+			for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
+			{
+				if (this->m_animGraphicsComponents[i]->active == false)
+					continue;
+				m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
+
+
+			}
+#pragma endregion Render animated objects
+
+		}
+	}
+	//m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+	//Render non-instanced static geometry
+	for(size_t lastComponentIndex : staticNormalRenderingList)
+		m_shaderControl->Draw(this->m_staticGraphicsComponents[lastComponentIndex].modelPtr, &this->m_staticGraphicsComponents[lastComponentIndex]);
 
 #pragma region
 	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Instanced); //render instanced
@@ -802,17 +849,6 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 
 #pragma endregion Render Instanced objects
 
-#pragma region
-	m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Animated);
-	for (int i = 0; i < this->m_nrOfGraphicsAnimationComponents; i++) //FOR EACH ANIMATED
-	{
-		if (this->m_animGraphicsComponents[i]->active == false)
-			continue;
-		m_shaderControl->Draw(m_animGraphicsComponents[i]->modelPtr, m_animGraphicsComponents[i]);
-
-		
-	}
-#pragma endregion Render animated objects
 	//render joints
 
 	//for (int a = 0; a < 21; a++)
@@ -829,7 +865,6 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 
 	//	this->RenderBoundingVolume(offSet, sphere);
 	//}
-	//
 
 
 
@@ -886,8 +921,8 @@ for (size_t i = 0; i < m_persistantGraphicsComponents.size(); i++) //FOR EACH NO
 	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
 
-	for (GraphicsComponent* comp : m_staticGraphicsComponents)
-		 m_shaderControl->Draw(comp->modelPtr, comp);
+	for (GraphicsComponent comp : m_staticGraphicsComponents)
+		 m_shaderControl->Draw(comp.modelPtr, &comp);
 
 
 
@@ -1024,14 +1059,14 @@ void GraphicsHandler::Shutdown()
 	//	this->m_animGraphicsComponents[i] = nullptr;
 	//}
 	//Clear the memory for the components
-	for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+	/*for (size_t i = 0; i < this->m_staticGraphicsComponents.size(); i++)
 	{
 		if (this->m_staticGraphicsComponents[i] != nullptr)
 		{
 			delete this->m_staticGraphicsComponents[i];
 			this->m_staticGraphicsComponents[i] = nullptr;
 		}
-	}
+	}*/
 	for (size_t i = 0; i < this->m_dynamicGraphicsComponents.size(); i++)
 	{
 		if (this->m_dynamicGraphicsComponents[i] != nullptr)
@@ -1136,24 +1171,24 @@ int GraphicsHandler::GenerateOctree()
 	for ( i = 0; i < componentCount; i++)
 	{
 		//Fill the component with data
-		this->m_octreeRoot.containedComponents[i]->pos = this->m_staticGraphicsComponents[i]->pos;
-		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i]->modelID;
+		this->m_octreeRoot.containedComponents[i]->pos = this->m_staticGraphicsComponents[i].pos;
+		this->m_octreeRoot.containedComponents[i]->modelID = this->m_staticGraphicsComponents[i].modelID;
 		this->m_octreeRoot.containedComponents[i]->componentIndex = i;
-		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[0];
-		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[1];
-		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i]->modelPtr->GetOBBData().extension[2];
+		this->m_octreeRoot.containedComponents[i]->ext.x = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[0];
+		this->m_octreeRoot.containedComponents[i]->ext.y = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[1];
+		this->m_octreeRoot.containedComponents[i]->ext.z = this->m_staticGraphicsComponents[i].modelPtr->GetOBBData().extension[2];
 		Resources::ResourceHandler::GetInstance()->GetModel(this->m_octreeRoot.containedComponents[i]->modelID, this->m_octreeRoot.containedComponents[i]->modelPtr);
 		
 		//If the rotation isn't 0 create a bigger AABB
 #pragma region
-		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i]->ort))
+		if (!DirectX::XMMatrixIsIdentity(this->m_staticGraphicsComponents[i].ort))
 		//if (this->m_octreeRoot.containedComponents[i]->ext.x != this->m_staticGraphicsComponents[i]->extensions.x || this->m_octreeRoot.containedComponents[i]->ext.y != this->m_staticGraphicsComponents[i]->extensions.y || this->m_octreeRoot.containedComponents[i]->ext.z != this->m_staticGraphicsComponents[i]->extensions.z)
 		//if (this->m_staticGraphicsComponents[i]->rotation.x != 0 || this->m_staticGraphicsComponents[i]->rotation.y != 0 || this->m_staticGraphicsComponents[i]->rotation.z)
 		{
 			DirectX::XMVECTOR quaternion;
 			DirectX::XMVECTOR translation;
 			DirectX::XMVECTOR scale;
-			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i]->worldMatrix);
+			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, this->m_staticGraphicsComponents[i].worldMatrix);
 			DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(quaternion);
 			DirectX::XMVECTOR corners[8];
 			//Define the 8 AABB corners (if we exclude the center)
@@ -1403,17 +1438,17 @@ int GraphicsHandler::ResizeStaticComponents(size_t new_cap)
 	//Delete all old components
 	//std::remove_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
 	//std::remove(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), GraphicsComponent_Remove_All_Predicate());
-	std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
+	//std::transform(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), this->m_staticGraphicsComponents.begin(), GraphicsComponent_Remove_All_Unary());
 
 	this->m_staticGraphicsComponents.clear();
 
 	//Set size for the vector
-	this->m_staticGraphicsComponents.resize(new_cap, nullptr);
+	this->m_staticGraphicsComponents.resize(new_cap);
 	//Go through vector and make pointers point to a structure
 	size_t amountOfComponents = new_cap;
 	for (size_t i = 0; i < amountOfComponents; i++)
 	{
-		this->m_staticGraphicsComponents[i] = new GraphicsComponent();
+		this->m_staticGraphicsComponents[i].active = false;
 	}
 
 	//Clear the Octree of contained components
@@ -1477,7 +1512,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 #endif // _DEBUG
 
 
-	Render(0.0f);
+//	Render(0.0f);
 
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
@@ -1486,6 +1521,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 
 	lights->ReleaseShadowMaps(); //release the textures if there are any
+	if (lights->numShadowLights <= 0)
+		return 1;
 
 #pragma region Create the textureCubeArray
 	D3D11_TEXTURE2D_DESC ShadowTexDesc;
@@ -1529,13 +1566,6 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 
 	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
-//D3D11_BOX srcBox; // box for the resourceCopy
-//srcBox.left = 0;
-//srcBox.right = srcBox.left + 512;
-//srcBox.top = 0;
-//srcBox.bottom = srcBox.top + 512;
-//srcBox.front = 0;
-//srcBox.back = 1;
 
 	for (size_t i = 0; i < lights->numShadowLights; i++) //for each light
 	{
@@ -1552,8 +1582,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
 
 		}
-		m_d3dHandler->PresentScene(); //Finish the renderCall
 	}
+
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
 
@@ -1640,15 +1670,31 @@ GraphicsComponent * GraphicsHandler::GetNextAvailableStaticComponent()
 	//result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), Find_Available_Component);
 	if (this->m_staticGraphicsComponents.size() > 0)
 	{
-		result = *std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
-			[](GraphicsComponent* comp) { return (comp->active == 0); });
+		for (int i = 0; i < this->m_staticGraphicsComponents.size(); i++)
+		{
+			if (this->m_staticGraphicsComponents[i].active == 0)
+			{
+				result = &this->m_staticGraphicsComponents[i];
+				break;
+			}
+		}
+		/*for (GraphicsComponent i : this->m_staticGraphicsComponents)
+		{
+			if (i.active == 0)
+			{
+				result = &i;
+				break;
+			}
+		}*/
 
+		/*result = std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(),
+		[](GraphicsComponent comp) { return (comp.active == 0); });*/
 		/*if (std::find_if(this->m_staticGraphicsComponents.begin(), this->m_staticGraphicsComponents.end(), [&new_id](const entry &arg) {
 		return arg.first == new_id; }) != ...)*/
-		if (result != nullptr && result->active)
+		/*if (result != nullptr && result->active)
 		{
 			result = nullptr;
-		}
+		}*/
 	}
 	return result;
 	//Yea that happened
@@ -2287,15 +2333,15 @@ float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
 			//Create the OBB
 			DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
-			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
-			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
-			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
+			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
+			memcpy(&ortm.r[1], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[1], sizeof(float) * 3);
+			memcpy(&ortm.r[2], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[2], sizeof(float) * 3);
 
 			DirectX::XMStoreFloat4x4(&ort, ortm);
 
 			Camera::C_OBB obb;
 			obb.ort = ort;
-			obb.ext = DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex]->modelPtr->GetOBBData()).ext);
+			obb.ext = DirectX::XMFLOAT3(m_ConvertOBB(this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData()).ext);
 			obb.pos = i->pos;
 
 			OBBs.push_back(obb);	//Push to the list of OBBs

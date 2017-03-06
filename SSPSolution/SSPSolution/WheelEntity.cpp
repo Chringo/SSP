@@ -10,6 +10,11 @@ WheelEntity::WheelEntity()
 
 WheelEntity::~WheelEntity()
 {
+	if (this->m_wheel_sound != nullptr)
+	{
+		this->m_wheel_sound->stop();
+		this->m_wheel_sound->drop();
+	}
 }
 
 int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
@@ -31,6 +36,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->m_resetTime = resetTime;
 	this->m_resetRotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_resetTime;
 	this->m_timeUntilReset = this->m_resetCountdown = timeUntilReset;
+	this->m_wheel_sound = nullptr;
 
 	this->SyncComponents();
 	return result;
@@ -52,6 +58,16 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = Resetting;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 				this->m_needSync = true;
+
+				//pause the wheel sound
+				
+			}
+		}
+		if (this->m_wheel_sound != nullptr)
+		{
+			if (!this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setIsPaused(true);
 			}
 		}
 		break;
@@ -63,6 +79,20 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			//Rotation in percentage = rotationAMount / maxRotation
 			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + (this->m_rotatePerSec * dT));
+
+			//initialize the sound or if it's already initialized, loop it.
+			if (this->m_wheel_sound == nullptr)
+			{
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				this->m_wheel_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_WHEEL, pos, true, true);
+			}
+			else if (this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(false);
+			}
+
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
@@ -165,6 +195,20 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 		{
 			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_resetRotatePerSec * dT));
+
+			//initialize the sound or if it's already initialized, loop it.
+			if (this->m_wheel_sound == nullptr)
+			{
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				this->m_wheel_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_WHEEL, pos, true, true);
+			}
+			else if (this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(false);
+			}
+
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
@@ -212,6 +256,14 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 		}
 		break;
 	case MaxRotation:
+		if (this->m_wheel_sound != nullptr)
+		{
+			if (!this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(true);
+			}
+		}
 		this->m_rotationState = Resting;
 		break;
 	default:
