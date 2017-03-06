@@ -11,7 +11,10 @@ WheelEntity::WheelEntity()
 WheelEntity::~WheelEntity()
 {
 	if (this->m_wheel_sound != nullptr)
+	{
+		this->m_wheel_sound->stop();
 		this->m_wheel_sound->drop();
+	}
 }
 
 int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)

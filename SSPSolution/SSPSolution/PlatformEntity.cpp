@@ -14,7 +14,10 @@ int PlatformEntity::Shutdown()
 {
 	int result = 0;
 	if (this->m_ActiveSound != nullptr)
+	{
+		this->m_ActiveSound->stop();
 		this->m_ActiveSound->drop();
+	}
 	return result;
 }
 
