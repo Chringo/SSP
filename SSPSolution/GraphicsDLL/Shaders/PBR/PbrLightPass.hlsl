@@ -407,7 +407,7 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             lightPower *= saturate(shadowFactor+0.25);
             //DIFFUSE
-            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughSamp) / Pi; //roughness should be linear
             diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
             //NON DISNEY DIFFUSE
             //diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
