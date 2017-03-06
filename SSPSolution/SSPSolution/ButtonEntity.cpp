@@ -10,7 +10,10 @@ ButtonEntity::ButtonEntity()
 ButtonEntity::~ButtonEntity()
 {
 	if (this->m_timer_sound != nullptr)
+	{
+		this->m_timer_sound->stop();
 		this->m_timer_sound->drop();
+	}
 }
 
 int ButtonEntity::Update(float dT, InputHandler * inputHandler)
