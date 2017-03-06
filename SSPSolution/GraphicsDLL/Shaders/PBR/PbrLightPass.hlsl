@@ -349,7 +349,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
    
     float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
-    float3 reflectVec = reflect(V, N);
+    float3 reflectVec = -reflect(V, N);
 
     //return N.rgbr;
 
