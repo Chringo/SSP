@@ -1557,6 +1557,24 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
 
+
+
+
+	//REFLECTION CUBEMAP
+	ID3D11ShaderResourceView* textureView = nullptr;
+	ID3D11Resource*	textureResource = nullptr;
+
+	hResult = DirectX::CreateDDSTextureFromFile
+	(
+		m_d3dHandler->GetDevice(),
+		L"../ResourceLib/AssetFiles/Islands.dds",
+		&textureResource, &textureView, size_t(0), 
+		(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+	);
+
+
+	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &textureView);
+
 	 return  1;
 }
 

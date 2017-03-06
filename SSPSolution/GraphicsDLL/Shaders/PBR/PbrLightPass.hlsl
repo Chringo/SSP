@@ -4,6 +4,7 @@ Texture2D normalTex		         : register(t2);
 Texture2D wPosTex		         : register(t3);
 TextureCube shadowTex            : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
 TextureCubeArray sShadowsTexA    : register(t11);
+TextureCube reflectionTex        : register(t12);
 SamplerState linearSampler       : register(s0);
 SamplerState pointSampler        : register(s1);
 
@@ -284,6 +285,21 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
     
 }
 
+// Lys constants
+static const float k0 = 0.00098, k1 = 0.9921, fUserMaxSPow = 0.2425;
+static const float g_fMaxT = (exp2(-10.0 / sqrt(fUserMaxSPow)) - k0) / k1;
+static const int nMipOffset = 0;
+
+// Lys function, copy/pasted from https://www.knaldtech.com/docs/doku.php?id=specular_lys
+float GetSpecPowToMip(float fSpecPow, int nMips)
+{
+    // This line was added because ShaderTool destroys mipmaps.
+    fSpecPow = 1 - pow(1 - fSpecPow, 8);
+    // Default curve - Inverse of Toolbag 2 curve with adjusted constants.
+    float fSmulMaxT = (exp2(-10.0 / sqrt(fSpecPow)) - k0) / k1;
+    return float(nMips - 1 - nMipOffset) * (1.0 - clamp(fSmulMaxT / g_fMaxT, 0.0, 1.0));
+}
+
     static const float Pi = 3.14159265359;
     static const float PiH = Pi / 2;
     static const float EPSILON = 1e-5f;
@@ -299,12 +315,19 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 specularLight = 0;
 
     //SAMPLING
+    int mipLevels, width, height;
+    reflectionTex.GetDimensions(0, width, height, mipLevels);
+
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
     float metalSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).r);
     float roughSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).g + EPSILON);
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
+   
+    float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
+    float3 reflectVec = reflect(V, N);
+
     //return N.rgbr;
 
 
@@ -325,14 +348,15 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, f90);
     float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
-    diffuseColor = pow(abs(diffuseColor), 2.2);
-    roughSamp = pow(abs(roughSamp), 2.2);
-    AO = pow(abs(AO), 2.2);
-
+    //diffuseColor = pow(abs(diffuseColor), 2.2);
+    //roughSamp = pow(abs(roughSamp), 2.2);
+    //AO = pow(abs(AO), 2.2);
+    //f90 = pow(abs(f90), 2.2);
     float roughPow2 = roughSamp * roughSamp;
     float roughPow4 = roughPow2 * roughPow2;
     float roughtPow2H = roughPow2 * 0.5;
 
+    float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughPow4, mipLevels));
 
     //VIEWSPACE VARIABLES
     //float3 vPos = mul(wPosSamp, viewMatrix).xyz;
@@ -341,7 +365,6 @@ float4 PS_main(VS_OUT input) : SV_Target
     //float3 vCamDir = viewMatrix._13_23_33;
     //float3 V = normalize(vCamPos - vPos); //vSpace
 
-    float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
     
     float NdotV = abs(dot(N, V)) + EPSILON;
     
@@ -384,10 +407,10 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             lightPower *= saturate(shadowFactor+0.25);
             //DIFFUSE
-           // float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough) / Pi; //roughness should be linear
-           // diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+            diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
             //NON DISNEY DIFFUSE
-            diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
+            //diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
 
 
             //SPECULAR
@@ -412,18 +435,21 @@ float4 PS_main(VS_OUT input) : SV_Target
 
             specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
+            //return fr.rgbr;
            // return diffuseLight;
         }
     }
-    //return N.xyzx;
 
     //return shadowFactor;
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight.rgb);
-    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
-    float3 specular = saturate(specularLight.rgb);
-    
+    float4 f = float4(saturate(specularColor + (1 - specularColor) * pow(1 - NdotV, 5)), 1.0);
 
+
+    float3 diffuse = lerp(diffuseLight, specSamp, f).rgb;
+    //float3 diffuse = saturate(diffuseLight.rgb);
+    float3 specular = saturate(specularLight.rgb);
+    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
+    
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4((diffuse), 1);
     finalColor.rgb += specular;
@@ -431,7 +457,8 @@ float4 PS_main(VS_OUT input) : SV_Target
     //finalColor.rgb *= AOSamp;
 
     
-    return pow(finalColor, .4545);
+    return finalColor;
+    //return (specSamp.xyzx);
 
 
 
