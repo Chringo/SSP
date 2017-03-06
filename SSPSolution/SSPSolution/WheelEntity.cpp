@@ -306,8 +306,9 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					//If we were not already increasing 
-					//if(this->m_rotationState != 1)
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+					if(this->m_rotationState != 1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+
 					this->m_rotationState = RotatingIncrease;
 					this->m_resetCountdown = this->m_timeUntilReset;
 				}
@@ -322,8 +323,9 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					//If we were not already dencreasing 
-					//if (this->m_rotationState != -1)
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					if (this->m_rotationState != -1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+
 					this->m_rotationState = RotatingDecrease;
 					this->m_resetCountdown = this->m_timeUntilReset;
 				}
@@ -438,8 +440,10 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			}
 			else
 			{
-				//If we were not already increasing 
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+				//If we were not already increasing
+				if (this->m_rotationState != 1)
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+
 				this->m_rotationState = RotatingIncrease;
 				this->m_resetCountdown = this->m_timeUntilReset;
 			}
@@ -454,20 +458,24 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			else
 			{
 				//If we were not already dencreasing
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+				if (this->m_rotationState != -1)
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 				this->m_rotationState = RotatingDecrease;
 				this->m_resetCountdown = this->m_timeUntilReset;
 			}
 		}
 		else if (newSyncState->rotationState == 2)
 		{
-			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
+			if (this->m_rotationState != 2)
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
+
 			this->m_rotationState = MaxRotation;
 			this->m_resetCountdown = this->m_timeUntilReset;
 		}
 		else if (newSyncState->rotationState == -2)
 		{
-			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
+			if (this->m_rotationState != -2)
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 			this->m_rotationState = Resetting;
 			this->m_resetCountdown = this->m_timeUntilReset;
 		}
