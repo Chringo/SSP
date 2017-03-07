@@ -233,7 +233,7 @@ int Direct3DHandler::PresentScene()
 	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
 
 
-	this->m_swapChain->Present(1, 0);
+	this->m_swapChain->Present(0, 0);
 
 	/*
 	Uncomment this to find out vram
