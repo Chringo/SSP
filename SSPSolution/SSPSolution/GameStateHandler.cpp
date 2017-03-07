@@ -76,7 +76,11 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 		//this->PushStateToStack(levelSelect);
 
 		if (levelPath.length() < 2)
-			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+		{
+			//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+			levelSelect->LoadLevel(std::string("../Assets/L1P1.level"));
+
+		}	
 		else
 			levelSelect->LoadLevel(levelPath);
 		//Delete it. If it was successful it would have pushed a LevelState to the stack

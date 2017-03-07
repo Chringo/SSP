@@ -10,7 +10,8 @@ namespace Resources
 	class TextureHandler
 	{
 	private:
-		 std::string TEXTURE_PATH = "../ResourceLib/AssetFiles/";
+//		 std::string TEXTURE_PATH = "../ResourceLib/AssetFiles/";
+    	 std::string TEXTURE_PATH = "../Assets/";
 		std::unordered_map<unsigned int, ResourceContainer> m_textures;
 		std::deque<Texture*> m_emptyContainers;
 		std::vector<std::vector<Texture>*> m_containers;
