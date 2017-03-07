@@ -15,7 +15,8 @@ namespace ShaderLib
 		Shadow			  = 4,
 		InstancedShadow   = 5,
 		AnimatedShadow	  = 6,
-		Wireframe		  = 7
+		Wireframe		  = 7,
+		CubeMap_Generation = 8
 	};
 
 
