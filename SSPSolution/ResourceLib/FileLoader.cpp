@@ -178,6 +178,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 {
 	
 	static LevelData::Level level;
+	level.Reset();
 	std::fstream file;
 	file.open(path, std::fstream::in | std::fstream::binary | std::ios::ate); //Open, at end of file, to get the total size
 	if (!file.is_open())
