@@ -439,37 +439,37 @@ float4 PS_main(VS_OUT input) : SV_Target
                 float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
                 float VdotH = saturate((dot(V, H)));
                 //float HdotN = saturate((dot(H, N)));
-                float NdotV = saturate((dot(N, V)));
+                //float NdotV = saturate((dot(N, V)));
                 lightPower *= shadowFactor;
 
                 //DIFFUSE
-                float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughSamp) / Pi; //roughness should be linear
-                diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                //float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+                //diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
                 //NON DISNEY DIFFUSE
-                //diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
+                diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
 
 
                 //SPECULAR
 
                 //FRESNEL TERM
-                //float3 f  = schlickFresnel(f0, f90, LdotH);
-                float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
+                float3 f  = schlickFresnel(f0, f90, LdotH);
+                //float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
 
                 //DISTRIUTION TERM
-                //float d = GGX(NdotH, roughPow4); //roughness should be sRGB
-                float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
-                d = roughPow2 / (Pi * d * d);                  //ggx Distribution
+                float d = GGX(NdotH, roughPow4); //roughness should be sRGB
+                //float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
+                //d = roughPow2 / (Pi * d * d);                  //ggx Distribution
 
                 //GEOMETRY TERM
-                //float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughtPow2H); //roughness should be sRGB
-                float vis = (NdotV / (NdotV * (1 - roughtPow2H) + roughtPow2H));
+                float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughtPow2H); //roughness should be sRGB
+                //float vis = (NdotV / (NdotV * (1 - roughtPow2H) + roughtPow2H));
 
 
                 //float3 fr = d * f * vis / Pi;
                 float3 fr = ((d * f * vis) / 4 * NdotL * NdotV).rrr;
 
 
-                        specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
+                specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
                 //return fr.rgbr;
                 //return diffuseLight;
@@ -479,10 +479,14 @@ float4 PS_main(VS_OUT input) : SV_Target
 
     //return shadowFactor;
     //COMPOSITE
+    //float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz); //lightDir
+    //float3 H = normalize(V + L); //halfVector
+    //float LdotH = saturate((dot(L, H)));
+    //float3 f = schlickFresnel(f0, f90, LdotH);
     float4 f = float4(saturate(specularColor + (1 - specularColor) * pow(1 - NdotV, 5)), 1.0);
 
 
-    float3 diffuse = lerp(diffuseLight, specSamp, f).rgb;
+    float3 diffuse = lerp(diffuseLight, specSamp, f);
     //float3 diffuse = saturate(diffuseLight.rgb);
     float3 specular = saturate(specularLight.rgb);
     float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
