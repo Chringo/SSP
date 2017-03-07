@@ -11,6 +11,7 @@ Direct3DHandler::Direct3DHandler()
 	this->m_rasterizerStateWireFrame = nullptr;
 	this->m_swapChain = nullptr;
 	this->m_viewport = nullptr;
+	this->m_SwapCount = 1;
 }
 
 
@@ -24,9 +25,18 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the Device \\
 
-	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
+	D3D_FEATURE_LEVEL featureLevel;
+	this->m_SwapCount = 1;
 	if (editorMode)
+	{
 		featureLevel = D3D_FEATURE_LEVEL_11_0;
+		this->m_SwapCount = 0;
+	}
+	else
+	{
+		featureLevel = D3D_FEATURE_LEVEL_11_1;
+		this->m_SwapCount = 1;
+	}
 
 #ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
@@ -86,9 +96,18 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	swapChainDesc.SampleDesc.Quality = 0;
 	
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
-	swapChainDesc.BufferCount = 2;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH /*DXGI_PRESENT_RESTART*/;
+	if (editorMode)
+	{
+		swapChainDesc.BufferCount = 1;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapChainDesc.Flags = 0;
+	}
+	else
+	{
+		swapChainDesc.BufferCount = 2;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH /*DXGI_PRESENT_RESTART*/;
+	}
 
 	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
 	fullScreenDesc.RefreshRate.Numerator = 60;
@@ -103,8 +122,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	{
 		return 1;
 	}
-	
-
 
 	IDXGIAdapter2* dxgiAdapter = nullptr;
 	hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter2), (void**)&dxgiAdapter);
@@ -204,7 +221,7 @@ int Direct3DHandler::PresentScene()
 	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
 
 
-	this->m_swapChain->Present(1, 0);
+	this->m_swapChain->Present(this->m_SwapCount, 0);
 
 	return 0;
 }

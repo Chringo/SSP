@@ -10,14 +10,15 @@ class Direct3DHandler
 private:
 	ID3D11Device*			  m_gDevice;
 	ID3D11DeviceContext*	  m_gDeviceContext;
-	IDXGISwapChain1*			  m_swapChain;
 	ID3D11RenderTargetView*   m_backBufferRTV;
 	ID3D11ShaderResourceView* m_backBufferSRV; //for post processing
 	HWND*					  m_activeWindow;
 	D3D11_VIEWPORT*			  m_viewport;
 	ID3D11RasterizerState*	  m_rasterizerState;
 	ID3D11RasterizerState*	  m_rasterizerStateWireFrame;
-
+	IDXGISwapChain1*		  m_swapChain;
+	int m_SwapCount;
+	
 	ID3D11Texture2D* m_depthStencilBuffer;
 
 	ID3D11BlendState* g_pBlendStateNoBlend = NULL;
