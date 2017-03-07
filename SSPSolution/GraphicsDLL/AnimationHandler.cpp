@@ -309,7 +309,6 @@ void AnimationHandler::InterpolateKeys(Resources::Animation::AnimationState* ani
 					DirectX::XMMATRIX quatMat = DirectX::XMMatrixRotationQuaternion(lerpQuat);
 					DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslationFromVector(lerpTrans);
 
-					//DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(transMat, quatMat), scaleMat);
 					DirectX::XMMATRIX localTransform = DirectX::XMMatrixMultiply(transMat, quatMat);
 
 					/*Storing the scale transformations for handling scaling of joints individually.*/
