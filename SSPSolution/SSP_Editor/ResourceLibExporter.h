@@ -49,7 +49,9 @@ private:
 	};
 
 	ResourceLibExporter();
-	std::string m_DestinationPath = "../ResourceLib/AssetFiles/AssetFile.bpf";
+	//std::string m_DestinationPath = "../ResourceLib/AssetFiles/AssetFile.bpf";
+	std::string m_DestinationPath = "../Assets/AssetFile.bpf";
+
 	std::vector<RegistryItem> m_Items;
 	std::ofstream* m_Output;
 	unsigned int m_Offset = sizeof(RegistryHeader);
