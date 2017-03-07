@@ -1498,6 +1498,21 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
  int GraphicsHandler::GenerateStaticSceneShadows()
 {
+
+	 //REFLECTION CUBEMAP
+	 ID3D11ShaderResourceView* textureView = nullptr;
+	 ID3D11Resource*	textureResource = nullptr;
+
+	 HRESULT hResult = DirectX::CreateDDSTextureFromFile
+	 (
+		 m_d3dHandler->GetDevice(),
+		 L"../ResourceLib/AssetFiles/Islands.dds",
+		 &textureResource, &textureView, size_t(0),
+		 (DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+	 );
+
+
+	 m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &textureView);
 	 //For each light
 
 		// Set the light as active for shadow rendering
@@ -1540,7 +1555,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	//Create the render target Texture
 	ID3D11Texture2D* tempTexture;
-	HRESULT hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempTexture);
+	hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempTexture);
 	if (FAILED(hResult))
 	{
 		return 1;
@@ -1585,6 +1600,11 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
+
+
+
+
+
 
 	 return  1;
 }
