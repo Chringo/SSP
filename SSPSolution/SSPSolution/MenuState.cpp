@@ -13,9 +13,15 @@ MenuState::MenuState()
 MenuState::~MenuState()
 {
 	if (this->m_Menu_Music != nullptr)
+	{
+		this->m_Menu_Music->stop();
 		this->m_Menu_Music->drop();
+	}
 	if (this->m_Level_Music != nullptr)
+	{
+		this->m_Level_Music->stop();
 		this->m_Level_Music->drop();
+	}
 }
 
 int MenuState::ShutDown()
@@ -102,17 +108,19 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_startMenuButtons.push_back(button);
 	}
+	int indentation = 0;
 	for (size_t i = 0; i < NR_OF_LEVELS; i++) //Create the host game menu level select buttons
 	{
+		indentation = (i > 3) + i;
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 200.f);
-		tempUIComp->size = DirectX::XMFLOAT2(200.f, 250.f);
+		tempUIComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 150.f + (indentation / 4) * 250.f);
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 360.f);
+		tempTextComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 310.f + (indentation / 4) * 250.f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -162,8 +170,11 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_hostMenuButtons[0].m_textComp->text = L"Tutorial";
 	this->m_hostMenuButtons[1].m_textComp->text = L"Level 1";
 	this->m_hostMenuButtons[2].m_textComp->text = L"Level 2";
-	this->m_hostMenuButtons[3].m_textComp->text = L"Level 5";
-	this->m_hostMenuButtons[4].m_textComp->text = L"Go Back";
+	this->m_hostMenuButtons[3].m_textComp->text = L"Level 3";
+	this->m_hostMenuButtons[4].m_textComp->text = L"Level 4";
+	this->m_hostMenuButtons[5].m_textComp->text = L"Level 5";
+	this->m_hostMenuButtons[6].m_textComp->text = L"Level 6";
+	this->m_hostMenuButtons[7].m_textComp->text = L"Go Back";
 
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
@@ -610,16 +621,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (isJoining)
 		{
 			//disable the menu music
-			this->m_Menu_Music->setIsPaused(true);
-			if (this->m_Level_Music == nullptr)
-			{
-				this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
-			}
-			else
-			{
-				this->m_Level_Music->setPlayPosition(0);
-				this->m_Level_Music->setIsPaused(false);
-			}
+			this->setMusic(Sounds2D::LEVEL);
 			this->Joining(inputHandler);
 		}
 
@@ -746,46 +748,41 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 				//disable the menu music and enable level music
-				this->m_Menu_Music->setIsPaused(true);
-				if (this->m_Level_Music == nullptr)
-				{
-					this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
-				}
-				else
-				{
-					this->m_Level_Music->setPlayPosition(0);
-					this->m_Level_Music->setIsPaused(false);
-				}
+				this->setMusic(Sounds2D::LEVEL);
 #pragma region
 				switch (this->m_levelToHost)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-						levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
-					
 					break;
 
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), this->m_levelToHost);
 					break;
 
 				case 2:
 					printf("LOAD LEVEL 2\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), this->m_levelToHost);
 					break;
 
 				case 3:
+					printf("LOAD LEVEL 3\n");
+					break;
+				case 4:
+					printf("LOAD LEVEL 4\n");
+					break;
+				case 5:
 					printf("LOAD LEVEL 5\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), this->m_levelToHost);
+					break;
+				case 6:
+					printf("LOAD LEVEL 6\n");
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), this->m_levelToHost);
 					break;
 
 				}
+				levelSelect->LoadLevel(m_levelToHost);
 #pragma endregion Level_To_Load
 
 				//Delete it. If it was successful it would have pushed a LevelState to the stack
@@ -827,10 +824,7 @@ int MenuState::EnterState()
 	case 0: /*/ Main menu /*/
 
 		//Set the music and activate it
-		if (this->m_Menu_Music == nullptr)
-			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
-		else
-			this->m_Menu_Music->setIsPaused(false);
+		this->setMusic(Sounds2D::MENU);
 		
 		//Show buttons
 		nrOfMenuitems = this->m_mainMenuButtons.size();
@@ -853,12 +847,7 @@ int MenuState::EnterState()
 
 	case 2: /*/ Start game menu /*/
 
-		if (this->m_Menu_Music->getIsPaused())
-		{
-			this->m_Level_Music->setIsPaused(true);
-			this->m_Menu_Music->setPlayPosition(0);
-			this->m_Menu_Music->setIsPaused(false);
-		}
+		this->setMusic(Sounds2D::MENU);
 		//Show buttons
 		nrOfMenuitems = this->m_startMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
@@ -953,31 +942,36 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				{
 				case 0:
 					printf("LOAD LEVEL TUT\n");
-					
-						levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				case 1:
 					printf("LOAD LEVEL 1\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
 					break;
 
 				case 2:
 					printf("LOAD LEVEL 2\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"));
 					break;
 
 				case 3:
+					printf("LOAD LEVEL 3\n");
+					break;
+				case 4:
+					printf("LOAD LEVEL 4\n");
+					break;
+				case 5:
 					printf("LOAD LEVEL 5\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"));
+					break;
+				case 6:
+					printf("LOAD LEVEL 6\n");
 					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
-					levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"));
 					break;
 
 				}
+
+				levelSelect->LoadLevel(levelID);
 				#pragma endregion Level_To_Load
 			}
 				//Delete it
@@ -1029,27 +1023,27 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL 0\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L0P1.level"), 0);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 2:
 				printf("LOAD LEVEL 2\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L2P1.level"), 2);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 3:
 				printf("LOAD LEVEL 3\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L5P1.level"), 3);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"), 1);
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			}
@@ -1067,4 +1061,56 @@ void MenuState::Joining(InputHandler* inputHandler)
 	}
 
 #pragma endregion Network_Sync
+}
+
+void MenuState::setMusic(Sounds2D which)
+{
+	if (which == Sounds2D::LEVEL)
+	{
+		if (this->m_Level_Music == nullptr)
+		{
+			this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Level_Music->getIsPaused())
+			{
+				this->m_Level_Music->setIsPaused(false);
+			}
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_Menu_Music == nullptr)
+		{
+			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Menu_Music->getIsPaused())
+			{
+				this->m_Menu_Music->setIsPaused(false);
+			}
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+	}
 }

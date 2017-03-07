@@ -254,7 +254,7 @@ int Direct3DHandler::PresentScene()
 	if(editor)
 		this->m_SwapChainOld->Present(0, 0);
 	else
-		this->m_swapChain->Present(1, 0);
+		this->m_swapChain->Present(0, 0);
 
 
 	return 0;

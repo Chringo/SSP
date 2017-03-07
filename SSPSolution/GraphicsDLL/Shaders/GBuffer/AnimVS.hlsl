@@ -65,15 +65,16 @@ VS_OUT VS_main(VS_IN input)
         }
     }
 
-	matrix WV = mul(viewMatrix, projectionMatrix);
-	matrix WVP = mul(worldMatrix, WV);
 
-    output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
-    output.Pos = mul(float4(skinnedPos, 1), WVP);
+
+    output.Pos = mul(float4(skinnedPos, 1.0f), worldMatrix);
+    output.wPos = output.Pos;
+    output.Pos = mul(output.Pos, viewMatrix);
+    output.Pos = mul(output.Pos, projectionMatrix);
 
 	/*Always handle the normal and tangents as DIRECTIONS, otherwise no good PBR shading for dynamic meshes.*/
-    output.Normal = mul(float4(skinnedNormal, 0), worldMatrix).rgb;
-    output.Tangent = mul(float4(skinnedTan, 0), worldMatrix).rgb;
+    output.Normal = mul(float4(skinnedNormal, 0.0f), worldMatrix);;
+    output.Tangent = mul(float4(skinnedTan, 0.0f), worldMatrix);;
 
 	output.UV = input.UV;
 
