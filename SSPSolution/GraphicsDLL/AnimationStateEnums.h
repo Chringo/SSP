@@ -32,13 +32,4 @@ enum Blending
 	SMOOTH_TRANSITION = 1,
 	FROZEN_TRANSITION =	2
 };
-
-enum FootSoundSynch
-{
-	PLAYER_STUDLEY, 
-	PLAYER_ABBINGTON, 
-	RIGHT_FOOT = 15,
-	LEFT_FOOT = 19
-};
-
 #endif
