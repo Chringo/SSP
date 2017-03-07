@@ -1059,3 +1059,55 @@ void MenuState::Joining(InputHandler* inputHandler)
 
 #pragma endregion Network_Sync
 }
+
+void MenuState::setMusic(Sounds2D which)
+{
+	if (which == Sounds2D::LEVEL)
+	{
+		if (this->m_Level_Music == nullptr)
+		{
+			this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Level_Music->getIsPaused())
+			{
+				this->m_Level_Music->setIsPaused(false);
+			}
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_Menu_Music == nullptr)
+		{
+			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Menu_Music->getIsPaused())
+			{
+				this->m_Menu_Music->setIsPaused(false);
+			}
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+	}
+}
