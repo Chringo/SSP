@@ -43,6 +43,7 @@ private:
 	float Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2);
 	void UpdatePosition(int i);
 	bool ChangeDirection(int i);
+	bool Reset(int i);
 	
 };
 #endif
