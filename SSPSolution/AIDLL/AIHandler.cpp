@@ -167,7 +167,7 @@ int AIHandler::Update(float deltaTime)
 						}
 						else
 						{
-							printf("-->\n");
+							//printf("-->\n");
 							UpdatePosition(i);
 						}
 
@@ -197,7 +197,7 @@ int AIHandler::Update(float deltaTime)
 						}
 						else
 						{
-							printf("<--\n");
+							//printf("<--\n");
 							UpdatePosition(i);
 						}
 					}
