@@ -40,8 +40,6 @@ struct AnimationComponent
 	bool m_TransitionComplete = false;
 	bool syncWalkSound = false;
 
-	//Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
-
 	bool lockAnimation = false;
 
 	Resources::Skeleton* skeleton = nullptr;
