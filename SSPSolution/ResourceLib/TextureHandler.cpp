@@ -79,8 +79,14 @@ Resources::Status Resources::TextureHandler::LoadTexture(const unsigned int & id
 	size_t size = 0;
 	
 	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
-	if (st != ST_OK)
+	if (st != ST_OK) {
+
+#ifdef _DEBUG
+		std::cout << "No texture found with the ID: " << id << std::endl;
+#endif // _DEBUG
+
 		return st;
+	}
 
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	if (resData->m_resType != RES_TEXTURE)
@@ -163,6 +169,19 @@ Resources::Status Resources::TextureHandler::UnloadTexture(const unsigned int & 
 
 	}
 	return Resources::Status::ST_OK;
+}
+
+ Resources::Status Resources::TextureHandler::ClearUnusedMemory()
+{
+
+	 m_emptyContainers.shrink_to_fit();
+
+	 for (size_t i = 0; i < m_containers.size(); i++)
+	 {
+		 m_containers.at(i)->shrink_to_fit();
+	 }
+	 m_containers.shrink_to_fit();
+	return  Resources::Status::ST_OK;
 }
 
 

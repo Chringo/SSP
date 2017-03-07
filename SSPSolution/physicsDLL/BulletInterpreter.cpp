@@ -523,7 +523,7 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTy
 void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, CollitionTypes collitionType, int mask)
 {
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1]*2, src->PC_OBB.ext[2]);
-	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.30);
+	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.375);
 
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
@@ -582,6 +582,31 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, Collitio
 	src->PC_IndexRigidBody = pos;
 
 
+}
+
+void BulletInterpreter::ClearBullet()
+{
+	size_t size = this->m_rigidBodies.size();
+	for (size_t i = 0; i < size; i++)
+	{
+		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
+		btMotionState* tempMSPtr = tempPtr->getMotionState();
+		if (tempMSPtr != nullptr)
+		{
+			delete tempMSPtr;
+		}
+		btCollisionShape* tempBPtr = tempPtr->getCollisionShape();
+		if (tempBPtr != nullptr)
+		{
+			delete tempBPtr;
+		}
+		//removes the rigidbody from the dynamic world
+		this->m_dynamicsWorld->removeRigidBody(tempPtr);
+		
+		delete tempPtr;
+		tempPtr = nullptr;
+	}
+	this->m_rigidBodies.clear();
 }
 
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
@@ -692,7 +717,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 			if (obj1->getUserIndex() == index)
@@ -712,7 +737,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include "ShaderLib.h"
 
 #ifndef CONSTANT_BUFFER_HANDLER_H
@@ -134,18 +134,18 @@ public:
 		public:
 			struct arrayIndex {
 				int index;
-				int _Padding[3];
+				int shadowMapIndex;
+				int _Padding[2];
 			};
 			struct pData
 			{
 				
-				UINT   NUM_POINTLIGHTS;
-				UINT   DYNAMIC_SHADOWLIGHT_INDEX;
+				UINT   NUM_POINTLIGHTS    = 0;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX = 0;
 				UINT   padding[2];
 				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
 				float  AMBIENT_INTENSITY = 0.2f;
 				arrayIndex	SHADOWCASTING_LIGHTS[MAX_SHADOW_LIGHTS]; //Must be size  multiple of 4
-				//int paddinga[68];
 			};
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 		public:

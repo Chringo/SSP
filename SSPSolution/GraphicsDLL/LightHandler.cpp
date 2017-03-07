@@ -23,7 +23,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	DirectX::XMVECTOR up   = { 0.0f,1.0f,0.0f,0.0f};
 	m_shadowCb.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 9.0f);
 	
-	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = -1;
+	m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
 	for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
 	{
 		m_constBufferData.SHADOWCASTING_LIGHTS[i].index = -1;
@@ -117,6 +117,7 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(int amount)
 	
 	HRESULT hr;
 	D3D11_BUFFER_DESC lightBufferDesc;
+#ifndef USE_CONST_BUFFER_FOR_LIGHTS
 	ZeroMemory(&lightBufferDesc, sizeof(lightBufferDesc));
 	lightBufferDesc.BindFlags		    = D3D11_BIND_SHADER_RESOURCE;
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
@@ -144,10 +145,27 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(int amount)
 	}
 	this->m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
 
+#else
+	ZeroMemory(&lightBufferDesc, sizeof(lightBufferDesc));
+	lightBufferDesc.ByteWidth           = sizeof(Point) * MAX_LIGHT_AMOUNT;
+	lightBufferDesc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.Usage		        = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.CPUAccessFlags      = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags	        = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &m_lightBuffer);
+	if (SUCCEEDED(hr))
+	{
+		this->m_gDeviceContext->PSSetConstantBuffers(6, 1, &m_lightBuffer);
+		this->m_gDeviceContext->GSSetConstantBuffers(6, 1, &m_lightBuffer);
+	}
+	else
+		return 1;
+#endif
 
 	m_constBufferData.NUM_POINTLIGHTS = amount;
 
-	
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 
 	return true;
@@ -197,17 +215,20 @@ bool LIGHTING::LightHandler::UpdateStructuredBuffer()
 
  bool LIGHTING::LightHandler::SetStaticShadowsToGPU()
 {
-
-
 	 m_gDeviceContext->PSSetShaderResources(11, 1, &this->m_lightData.shadowMaps);
 	return true;
 }
 
 bool LIGHTING::LightHandler::SetBufferAsActive()
 {
-	
+#ifdef  USE_CONST_BUFFER_FOR_LIGHTS
+		this->m_gDeviceContext->PSSetConstantBuffers(6, 1, &m_lightBuffer);
+		this->m_gDeviceContext->GSSetConstantBuffers(6, 1, &m_lightBuffer);
+#else
 		m_gDeviceContext->GSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
 		m_gDeviceContext->PSSetShaderResources(BUFFER_SHADER_SLOT, 1, &m_structuredBuffer);
+
+#endif // !1
 	
 	return true;
 }
@@ -219,21 +240,20 @@ bool LIGHTING::LightHandler::SetLightData(Point * lightArray, unsigned int numLi
 		return false;
 	m_lightData.dataPtr  = lightArray;
 	m_lightData.numItems = numLights;
-	if (numLights > this->NUM_LIGHTS || numLights < this->NUM_LIGHTS)
-	{
-		ReleaseStructuredBuffer();
-		CreateStructuredBuffer(numLights);
-		
-		return true;
-	}
-	else {
-		NUM_LIGHTS = numLights;
+	//if (numLights != this->NUM_LIGHTS)
+	//{
+	//	ReleaseStructuredBuffer();
+	//	CreateStructuredBuffer(numLights);
+	//	
+	//	return true;
+	//}
+	//else {
 		
 		m_constBufferData.NUM_POINTLIGHTS = numLights;
 
 		ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 		return true;
-	}
+//	}
 }
 
 void LIGHTING::LightHandler::SetAmbientLight(float r, float g, float b, float intensity)
@@ -264,7 +284,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		m_lightData.dataPtr = new LIGHTING::Point[level->numPointLights];
 	
 
-		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) *MAX_SHADOW_LIGHTS);
+		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) * MAX_SHADOW_LIGHTS);
 
 		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)
 		{
@@ -278,7 +298,6 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 				m_lightData.numShadowLights += 1;
 		}
 
-	//	m_lightData.shadowLightIndex[0] = 1;
 		for (size_t i = 0; i < level->numPointLights; i++) //convert from levelType point light to game pointlight
 		{
 			memcpy(&((Point*)m_lightData.dataPtr)[i].color, level->pointLights[i].color, sizeof(float) * 3);
@@ -288,12 +307,15 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 			m_lightData.dataPtr[i].falloff.constant    = level->pointLights[i].falloff_constant;
 			m_lightData.dataPtr[i].falloff.linear	   = level->pointLights[i].falloff_linear;
 			m_lightData.dataPtr[i].radius			   = level->pointLights[i].radius;
-			m_lightData.dataPtr[i].padding[0]		   = 0.0f;
-			m_lightData.dataPtr[i].padding[1]		   = 0.0f;
-			m_lightData.dataPtr[i].padding[2]		   = 0.0f;
+			m_lightData.dataPtr[i].padding[0]		   = FALSE;
+			m_lightData.dataPtr[i].padding[1]		   = FALSE;
+			m_lightData.dataPtr[i].padding[2]		   = FALSE;
 		}
 		SetLightData(m_lightData.dataPtr, level->numPointLights);
+#ifndef USE_CONST_BUFFER_FOR_LIGHTS
 		UpdateStructuredBuffer();
+#endif // ! USE_CONST_BUFFER_FOR_LIGHTS
+
 	}
 	return true;
 }
@@ -335,16 +357,117 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
  bool LIGHTING::LightHandler::SetShadowCastingLight(int index)
 {
-	 if (m_lightData.dataPtr == nullptr || m_lightData.numItems <= index || m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX == index)
+	 if (m_lightData.dataPtr == nullptr || m_lightData.numItems <= index || m_lightData.currentDynamicShadowIndex == index)
 		 return false;
-
-	 m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = index;
-
-	 ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
+	
+	 m_lightData.currentDynamicShadowIndex = index;
+	// m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = index;
+	//
+	// ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 	 Point* specializedData = this->m_lightData.dataPtr;
 
 	return  SetShadowCastingLight(&specializedData[index]);
 }
+
+  bool LIGHTING::LightHandler::UpdateActiveLightsToGPU(std::vector<int>* indices)
+ {
+#pragma region 
+	  /*
+	  make an array of Point[indices.size()]
+	  make a vector of ints for the new shadow indices. No set size. We don't know how many of the lights will cast shadows
+	  for each item in indices
+		{	
+			copy the light at m_lightData.dataPtr[item] 
+
+			for each shadowIndex in m_lightData.shadowLightIndex
+				
+				Check if this light is a light that casts shadows
+				if( item == shadowIndex)
+					pushback the shadowvector with the current index in the new Point array
+	  
+	  }
+
+	  Update lightBuffer with the lights
+	  Update LightInfo buffer with numLights and shadowcasting lights
+	  */
+#pragma endregion PSUEDO
+
+#pragma region
+	  if (m_lightData.dataPtr == nullptr)
+		  return false;
+
+	  static std::vector<Point> lightArray;
+	  static std::vector<ConstantBufferHandler::ConstantBuffer::light::arrayIndex>	shadowIndices;
+	
+	  lightArray.push_back(m_lightData.dataPtr[m_lightData.currentDynamicShadowIndex]);			  // Make sure that the dynamic shadow casting light is in the buffer
+	  
+	  ConstantBufferHandler::ConstantBuffer::light::arrayIndex item;
+	  item.index = 0;
+	  //item.shadowMapIndex
+		  for (int i = 0; i < (int)m_lightData.numShadowLights; i++) //detta är pinsamt
+		  {
+			  if (m_lightData.shadowLightIndex[i] == m_lightData.currentDynamicShadowIndex) {
+				  item.shadowMapIndex = i;
+			  }
+			  else if (m_lightData.shadowLightIndex[i] == -1)
+				  break;
+		  }
+	  shadowIndices.push_back(item); // Make sure that the dynamic shadow casting light is in the buffer
+	  m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
+
+	  for (int i = 0; i < (int)indices->size(); i++) //for each index sent into this function
+	  {
+		  if (indices->at(i) == m_lightData.currentDynamicShadowIndex) { // if the light is casting dynamic shadow, then it has already been added
+			  continue;
+		  }
+
+		  lightArray.push_back(m_lightData.dataPtr[indices->at(i)]); // pushback the light data
+
+		  for (int shadowIndex = 0; shadowIndex < (int)m_lightData.numShadowLights; shadowIndex++) //go through the shadow array
+		  {
+			  if (indices->at(i) == m_lightData.shadowLightIndex[shadowIndex]) {	// if this light index resides in the shdaowIndex array
+				  item.index = lightArray.size() - 1;
+				  item.shadowMapIndex = shadowIndex;
+				  shadowIndices.push_back(item);					// pushback the current index in the new Lightarray (The new index in the const buffer)
+				  break;
+			  }
+			  else if (m_lightData.shadowLightIndex[shadowIndex] == -1) //if we've reached a -1 value in the array, we've reached the end of available shadows indices
+				  break;
+		  }
+	  }
+
+	 D3D11_MAPPED_SUBRESOURCE mapRes;
+	 HRESULT hr = m_gDeviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+	  if (FAILED(hr)) {
+#ifdef _DEBUG
+		  MessageBox(NULL, L"Failed to update lights buffer", L"Error", MB_ICONERROR | MB_OK);
+#endif // _DEBUG	
+		  return false;
+  }
+#ifdef USE_CONST_BUFFER_FOR_LIGHTS
+	  memset(mapRes.pData, 0, sizeof(Point) * MAX_LIGHT_AMOUNT); //Null the data in the buffer
+#else
+	  memset(mapRes.pData, 0, sizeof(Point) * NUM_LIGHTS);
+#endif
+	  memcpy(mapRes.pData, (void*)lightArray.data(), sizeof(Point) * lightArray.size()); //copy the lights
+	  m_gDeviceContext->Unmap(m_lightBuffer, 0);
+
+	  m_constBufferData.NUM_POINTLIGHTS = lightArray.size();	//Update Num pointLights
+
+	  //Update the shadowIndices array
+	  memset(m_constBufferData.SHADOWCASTING_LIGHTS, -1, sizeof(ConstantBufferHandler::ConstantBuffer::light::arrayIndex) * MAX_SHADOW_LIGHTS); //Null the data in the buffer
+	  memcpy(m_constBufferData.SHADOWCASTING_LIGHTS, (void*)shadowIndices.data(), sizeof(ConstantBufferHandler::ConstantBuffer::light::arrayIndex)*  shadowIndices.size()); //copy the shadow indices
+	
+	  ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData); // update the lightInfo buffer
+
+
+	  //update structured buffer
+
+	  lightArray.clear();
+	  shadowIndices.clear();
+#pragma endregion Implementation
+	  return true;
+ }
 
 
 int LIGHTING::LightHandler::GetClosestLightIndex(DirectX::XMFLOAT3 pos)

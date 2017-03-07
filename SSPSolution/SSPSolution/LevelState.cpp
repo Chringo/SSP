@@ -130,6 +130,12 @@ LevelState::~LevelState()
 int LevelState::ShutDown()
 {
 	int result = 1;
+	this->UnloadLevel();
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	//this->m_dynamicEntitys
+	//Get the Camera Pivot and delete it before supplimenting our own
+
+	this->m_cameraRef->SetCameraPivot(nullptr, targetOffset, 1.3f);
 	// Clear the dynamic entities
 	for (size_t i = 0; i < this->m_dynamicEntitys.size(); i++)
 	{
@@ -215,10 +221,15 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 77.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0P1.level", 68.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5P1.level", 46.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 41.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
+
+
+
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level, 46.0f}");
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L6P1.level, 46.0f}");
@@ -434,8 +445,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 #pragma region
 	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 	//this->m_dynamicEntitys
-
-	m_cameraRef->SetCameraPivot(
+	//Get the Camera Pivot and delete it before supplimenting our own
+	
+	this->m_cameraRef->SetCameraPivot(
 		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
 		targetOffset,
 		1.3f
@@ -741,8 +753,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_player2.GetRagdoll()->state = RAGDOLL;
 					GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player2.GetGraphicComponent();
 					gp->finalJointTransforms[itr->jointIndex] = DirectX::XMLoadFloat4x4(&itr->finalJointTransform);
-					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
 					this->m_player2.SetAnimationComponent(RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0);
 					this->m_player2.GetAnimationComponent()->source_State->stateIndex = RAGDOLL_STATE;
 
@@ -752,22 +764,17 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					if (this->m_player2.GetRagdoll()->state == RAGDOLL)
 					{
 
-						this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
+						this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
 						this->m_player2.SetAnimationComponent(PLAYER_RISE_UP, 0, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
-						this->m_player2.GetAnimationComponent()->previousState = PLAYER_RISE_UP;
+						this->m_player2.GetAnimationComponent()->currentState = PLAYER_RISE_UP;
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = PLAYER_RISE_UP;
 					}
-					if (itr->newstate == PLAYER_THROW || itr->newstate == PLAYER_PICKUP)
-					{
-						//beacause PLAYER_THROW and PLAYER_PICKUP loops for some reason
-						int a = 0;
-						itr->isLooping = false;
-					}
+					
 					this->m_player2.GetRagdoll()->state = ANIMATED;
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
-					this->m_player2.SetOldAnimState(this->m_player2.GetAnimationComponent()->previousState);
-					this->m_player2.GetAnimationComponent()->previousState = itr->newstate;
+					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
 
 				}
 			}
@@ -859,9 +866,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_player1.SetGrabbed(closestBall);
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 			//Play the animation for player picking up the ball.
-			this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
-			this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.50f, FROZEN_TRANSITION, false, true, 1.5f, 1.0f);
-			this->m_player1.GetAnimationComponent()->previousState = PLAYER_PICKUP;
+				this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+				this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.45f, FROZEN_TRANSITION, false, true, 1.75f, 1.0f);
+				this->m_player1.GetAnimationComponent()->currentState = PLAYER_PICKUP;
 		}
 
 	}
@@ -869,9 +876,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetGrabbed(nullptr);
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
-		this->m_player1.SetOldAnimState(this->m_player1.GetAnimationComponent()->previousState);
-		this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 0.8f, this->m_player1.GetAnimationComponent()->velocity);
-		this->m_player1.GetAnimationComponent()->previousState = PLAYER_IDLE;
+			this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+			this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+			this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
 	}
 	if (this->m_player1.GetRagdoll()->state == RAGDOLL)
 	{
@@ -1216,11 +1223,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	else if (this->m_player1.isAnimationChanged())
 	{
-		if (ap->previousState == PLAYER_THROW)
-		{
-			int a = 0;
-		}
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->previousState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
 
 #pragma endregion Send_Player_Animation_Update
@@ -1305,7 +1308,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma region
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_M))
 	{
-		SoundHandler::instance().PlaySound2D(Sounds2D::MENU1, false, false);
+		//SoundHandler::instance().PlaySound2D(Sounds2D::MENU, false, false);
 	}
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_N))
 	{
@@ -2505,8 +2508,8 @@ int LevelState::UnloadLevel()
 	//Shutdown PhysicsHandler and initialize it again.
 #pragma region
 	PhysicsHandler* pHandler = this->m_cHandler->GetPhysicsHandler();
-	pHandler->ShutDown();
-	pHandler->Initialize();
+
+	pHandler->ClearPhysicsHandler();
 #pragma endregion Physics handler restart
 
 	this->m_director.Initialize();
@@ -2532,6 +2535,12 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player1.SetPhysicsComponent(playerP);
+
+	//reset player1 animation component to idle animation
+	this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+	this->m_player1.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player1.GetAnimationComponent()->currentState = PLAYER_IDLE;
+
 #pragma endregion Player 1
 #pragma region
 	//We then need to recreate the persistent components here
@@ -2554,6 +2563,13 @@ int LevelState::UnloadLevel()
 	playerP->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	playerP->PC_friction = 1.0f;
 	this->m_player2.SetPhysicsComponent(playerP);
+
+	//reset player2 animation component to idle animation
+	this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+	this->m_player2.SetAnimationComponent(PLAYER_IDLE, 0.50f, Blending::SMOOTH_TRANSITION, true, false, 1.0f, 1.0f);
+	this->m_player2.GetAnimationComponent()->currentState = PLAYER_IDLE;
+
+
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -2618,6 +2634,11 @@ int LevelState::UnloadLevel()
 	//Re-introduce them into our dynamic list
 	this->m_dynamicEntitys.push_back(ball1);
 	this->m_dynamicEntitys.push_back(ball2);
+
+	this->m_Player1ChainPhysicsComp.clear();
+	this->m_Player2ChainPhysicsComp.clear();
+
+	Resources::ResourceHandler::GetInstance()->UnloadCurrentLevel();
 
 	return 1;
 }
@@ -2709,7 +2730,7 @@ std::string LevelState::GetLevelPath()
 
 void LevelState::SetCurrentLevelID(int currentLevelID)
 {
-	this->m_curLevel = currentLevelID;
+	this->m_curLevel = min(currentLevelID,this->m_levelPaths.size() - 1);
 }
 
 int LevelState::EnterState()

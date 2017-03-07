@@ -135,12 +135,18 @@ int ConstantBufferHandler::ResetConstantBuffers()
 
 int ConstantBufferHandler::Shutdown()
 {
-	if (world.D3DBuffer)
-		world.D3DBuffer->Release();
-	if (frame.D3DBuffer)
-		frame.D3DBuffer->Release();
-	if (skeleton.D3DBuffer)
-		skeleton.D3DBuffer->Release();
+	if (this->world.D3DBuffer)
+		this->world.D3DBuffer->Release();
+	if (this->frame.D3DBuffer)
+		this->frame.D3DBuffer->Release();
+	if (this->light.D3DBuffer)
+		this->light.D3DBuffer->Release();
+	if (this->material.D3DBuffer)
+		this->material.D3DBuffer->Release();
+	if (this->skeleton.D3DBuffer)
+		this->skeleton.D3DBuffer->Release();
+	if (this->shadow.D3DBuffer)
+		this->shadow.D3DBuffer->Release();
 	
 
 	return 0;

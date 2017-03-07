@@ -57,6 +57,7 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 		result = this->m_currentLevel->Update(dt, inputHandler);
 	}
 	if (result == -2)
+
 	{
 		this->m_currentLevel->ShutDown();
 		delete this->m_currentLevel;
@@ -66,32 +67,36 @@ int LevelSelectState::Update(float dt, InputHandler * inputHandler)
 	return result;
 }
 
-int LevelSelectState::LoadLevel(std::string path, int levelID)
+int LevelSelectState::LoadLevel(int levelID)
 {
 
 	int result = 0;
 	Resources::Status st = Resources::Status::ST_OK;
+	//Prepare the level state
+	this->m_currentLevel->SetCurrentLevelID(levelID);
+	//Get the level path from the level state for the level id/index
+	std::string levelPath = this->m_currentLevel->GetLevelPath();
 	
 	LevelData::Level* level;    //pointer for data
 	//Load LevelData from file
-	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level); //load file
-	//if not successful
-	if (st != Resources::ST_OK)
-		return 0;
-	//Load Resources of the level
-	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
-	//if not successful
-	if (st != Resources::ST_OK)
-		return 0;
+
+		st = Resources::FileLoader::GetInstance()->LoadLevel(levelPath, level); //load file
+		//if not successful
+		if (st != Resources::ST_OK)
+			return 0;
+		//Load Resources of the level
+		st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+		//if not successful
+		if (st != Resources::ST_OK)
+			return 0;
+		
+		//Load Lights of the level
+
+		if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+			return 0;
 	
-	//Load Lights of the level
-
-	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
-		return 0;
 	//Create level
-	result = this->m_currentLevel->CreateLevel(level); 
-
-	this->m_currentLevel->SetCurrentLevelID(levelID);
+	result = this->m_currentLevel->CreateLevel(level);
 
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
 

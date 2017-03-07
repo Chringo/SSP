@@ -1,7 +1,7 @@
 #ifndef RESOURCELIB_ENUM_ENUM_H
 #define RESOURCELIB_ENUM_ENUM_H
 #pragma warning( disable: 4996 )
-#include <d3d11.h>
+#include <d3d11_1.h>
 
 namespace Resources
 {
@@ -45,7 +45,9 @@ namespace Resources
 		ST_RES_ALREADY_LOADED,
 		ST_DEVICE_MISSING,
 		ST_ERROR_OPENING_FILE,
-		ST_FILE_CLOSED
+		ST_FILE_CLOSED,
+		ST_USING_PLACEHOLDER
+
 	};
 
 	static bool SAFE_RELEASE(IUnknown* dxBuffer)
