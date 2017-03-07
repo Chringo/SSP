@@ -1233,6 +1233,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	else if (this->m_player1.isAnimationChanged())
 	{
+		if (ap->currentState == AnimationStates::PLAYER_PICKUP)
+		{
+			printf("Loop: %d \n", ap->target_State->isLooping);
+		}
 		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->source_State->blendFlag, ap->source_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
 
