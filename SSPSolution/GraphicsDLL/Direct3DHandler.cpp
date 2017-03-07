@@ -81,6 +81,28 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	this->m_gDeviceContext->RSSetState(this->m_rasterizerState); //Set the rasterstate
 
+
+	IDXGIDevice1* dxgiDevice = nullptr;
+	hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	IDXGIAdapter2* dxgiAdapter = nullptr;
+	hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter2), (void**)&dxgiAdapter);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}		
+	
+	IDXGIFactory2* dxgiFactory2 = nullptr;
+	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
 	ID3D11Texture2D* backBufferPrt = nullptr;
 
 	// Create the swapchain
@@ -107,29 +129,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		swapChainDesc.Windowed = true;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-
-		IDXGIDevice* dxgiDevice = nullptr;
-		hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
-
-		IDXGIAdapter* dxgiAdapter = nullptr;
-		hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
-
-		IDXGIFactory* dxgiFactory = nullptr;
-		hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
-
-		hResult = dxgiFactory->CreateSwapChain(this->m_gDevice, &swapChainDesc, &this->m_SwapChainOld);
+		
+		hResult = dxgiFactory2->CreateSwapChain(this->m_gDevice, &swapChainDesc, &this->m_SwapChainOld);
 		if (FAILED(hResult))
 		{
 			return 1;
@@ -164,32 +165,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
-		IDXGIDevice1* dxgiDevice = nullptr;
-		hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
-
-		IDXGIAdapter2* dxgiAdapter = nullptr;
-		hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter2), (void**)&dxgiAdapter);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
-
-		IDXGIFactory2* dxgiFactory2 = nullptr;
-		hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
-		if (FAILED(hResult))
-		{
-			return 1;
-		}
 		hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
 		if (FAILED(hResult))
 		{
 			return 1;
 		}
-		
+
 		this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 	}
 	
