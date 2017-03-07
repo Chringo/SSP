@@ -141,43 +141,63 @@ namespace LevelData {
 
 	struct Level {
 		SpawnHeader  spawns[2];
-		unsigned int numResources= 0;
-		ResourceHeader* resources = nullptr;
-
-		unsigned int numEntities = 0;
-		EntityHeader* entities = nullptr;
-
-		unsigned int numAI = 0;
-		AiHeader* aiComponents = nullptr;
-		
-		unsigned int numCheckpoints = 0;
-		CheckpointHeader* checkpoints = nullptr;
-
-		unsigned int numButton = 0;
-		ButtonHeader * buttons = nullptr;
-
-		unsigned int numDoor = 0;
-		DoorHeader * doors = nullptr;
-
-		unsigned int numLever = 0;
-		LeverHeader * levers = nullptr;
-
-		unsigned int numWheel = 0;
-		WheelHeader * wheels = nullptr;
-		
-		float  ambientColor[3]   = {1.0f,1.0f,1.0f};
-		float  ambientIntensity = 0.2f; ;
-
+		unsigned int numResources		= 0;
+		unsigned int numEntities		= 0;
+		unsigned int numAI				= 0;
+		unsigned int numCheckpoints		= 0;
+		unsigned int numButton			= 0;
+		unsigned int numDoor			= 0;
+		unsigned int numLever			= 0;
+		unsigned int numWheel			= 0;
 		unsigned int numPointLights		= 0;
-		PointLightHeader* pointLights   =nullptr;
-		
-		int shadowCastIndexes[20];
+		float		 ambientColor[3]   = {1.0f,1.0f,1.0f};
+		float		 ambientIntensity = 0.2f; ;
+		int			 shadowCastIndexes[20];
 
+
+		ResourceHeader*		resources	  = nullptr;
+		EntityHeader*		entities	  = nullptr;
+		AiHeader*			aiComponents  = nullptr;
+		CheckpointHeader*	checkpoints   = nullptr;
+		ButtonHeader *		buttons		  = nullptr;
+		DoorHeader *		doors		  = nullptr;
+		LeverHeader *		levers        = nullptr;
+		WheelHeader *		wheels        = nullptr;
+		PointLightHeader*   pointLights   = nullptr;
 		Level() {
+			Reset();
+		}
+
+		void Reset() {
 			for (size_t i = 0; i < 20; i++)
 			{
 				shadowCastIndexes[i] = -1;
 			}
+
+			 numResources		= 0;
+			 numEntities		= 0;
+			 numAI				= 0;
+			 numCheckpoints		= 0;
+			 numButton			= 0;
+			 numDoor			= 0;
+			 numLever			= 0;
+			 numWheel			= 0;
+			 numPointLights		= 0;
+			 ambientColor[0]    = 1.0f;
+			 ambientColor[1]    = 1.0f;
+			 ambientColor[2]    = 1.0f;
+			 ambientIntensity   = 0.2f;
+
+			 resources		 = nullptr;
+			 entities		 = nullptr;
+			 aiComponents	 = nullptr;
+			 checkpoints	 = nullptr;
+			 buttons		 = nullptr;
+			 doors			 = nullptr;
+			 levers			 = nullptr;
+			 wheels			 = nullptr;
+			 pointLights	 = nullptr;
+			
 
 
 		}
