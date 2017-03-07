@@ -459,7 +459,7 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 #ifdef _DEBUG
 	this->m_EditorMode = editorMode;
 #endif //_DEBUG
-	if (this->m_d3dHandler->Initialize(windowHandle, resolution, this->m_EditorMode))
+	if (this->m_d3dHandler->Initialize(windowHandle, resolution, editorMode))
 	{
 		return 1;
 	}
