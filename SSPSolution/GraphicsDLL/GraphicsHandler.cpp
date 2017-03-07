@@ -1516,13 +1516,12 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
+	if (lights->numShadowLights <= 0)
+		return 1;
 	
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
 	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 
-	lights->ReleaseShadowMaps(); //release the textures if there are any
-	if (lights->numShadowLights <= 0)
-		return 1;
 
 #pragma region Create the textureCubeArray
 	D3D11_TEXTURE2D_DESC ShadowTexDesc;
