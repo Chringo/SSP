@@ -106,13 +106,13 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 200.f);
-		tempUIComp->size = DirectX::XMFLOAT2(200.f, 250.f);
+		tempUIComp->position = DirectX::XMFLOAT2(150.f + ((i % 4) * 200.f), 150.f + (i / 4) * 250.f);
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 360.f);
+		tempTextComp->position = DirectX::XMFLOAT2(150.f + ((i % 4) * 200.f), 310.f + (i / 4) * 250.f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -162,8 +162,11 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_hostMenuButtons[0].m_textComp->text = L"Tutorial";
 	this->m_hostMenuButtons[1].m_textComp->text = L"Level 1";
 	this->m_hostMenuButtons[2].m_textComp->text = L"Level 2";
-	this->m_hostMenuButtons[3].m_textComp->text = L"Level 5";
-	this->m_hostMenuButtons[4].m_textComp->text = L"Go Back";
+	this->m_hostMenuButtons[3].m_textComp->text = L"Level 3";
+	this->m_hostMenuButtons[4].m_textComp->text = L"Level 4";
+	this->m_hostMenuButtons[5].m_textComp->text = L"Level 5";
+	this->m_hostMenuButtons[6].m_textComp->text = L"Level 6";
+	this->m_hostMenuButtons[7].m_textComp->text = L"Go Back";
 
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
@@ -772,7 +775,16 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 					break;
 
 				case 3:
+					printf("LOAD LEVEL 3\n");
+					break;
+				case 4:
+					printf("LOAD LEVEL 4\n");
+					break;
+				case 5:
 					printf("LOAD LEVEL 5\n");
+					break;
+				case 6:
+					printf("LOAD LEVEL 6\n");
 					break;
 
 				default:
@@ -959,7 +971,16 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 					break;
 
 				case 3:
+					printf("LOAD LEVEL 3\n");
+					break;
+				case 4:
+					printf("LOAD LEVEL 4\n");
+					break;
+				case 5:
 					printf("LOAD LEVEL 5\n");
+					break;
+				case 6:
+					printf("LOAD LEVEL 6\n");
 					break;
 
 				default:
