@@ -77,12 +77,6 @@ int Camera::Update()
  	this->m_updatePos();
 
 	//if player is thrown
-
-	if (this->m_cameraPos.x < -99999.0f)
-	{
-		int b = 5;
-		//infinity error
-	}
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 
 	return result;
@@ -726,11 +720,7 @@ void Camera::m_updatePos()
 	if(this->m_focusPoint != nullptr)
 		finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
-	if (this->m_distance > 500)
-	{
-		//This is a problem
-		int b = 17;
-	}
+
  	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
 
 	float x = m_distance * cos(m_pitch) * sin(m_yaw);
