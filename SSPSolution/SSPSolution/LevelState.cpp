@@ -748,11 +748,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
 
-				if (itr->newstate == AnimationStates::PLAYER_PICKUP)
-				{
-					printf("Loop: %d \n", itr->isLooping);
-				}
-
 				if (itr->newstate == RAGDOLL_STATE)	//If the packet is for a ragdoll state
 				{
 					this->m_player2.GetRagdoll()->state = RAGDOLL;
@@ -1233,10 +1228,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	else if (this->m_player1.isAnimationChanged())
 	{
-		if (ap->currentState == AnimationStates::PLAYER_PICKUP)
-		{
-			printf("Loop: %d \n", ap->source_State->isLooping);
-		}
 		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->target_State->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
 
