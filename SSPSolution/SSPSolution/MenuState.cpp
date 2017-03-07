@@ -1070,7 +1070,7 @@ void MenuState::setMusic(Sounds2D which)
 	{
 		if (this->m_Menu_Music == nullptr)
 		{
-			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
 			if (this->m_Level_Music != nullptr)
 			{
 				this->m_Level_Music->setIsPaused(true);
