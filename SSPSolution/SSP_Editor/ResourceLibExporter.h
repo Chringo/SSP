@@ -49,7 +49,6 @@ private:
 	};
 
 	ResourceLibExporter();
-	//std::string m_DestinationPath = "../ResourceLib/AssetFiles/AssetFile.bpf";
 	std::string m_DestinationPath = "../Assets/AssetFile.bpf";
 
 	std::vector<RegistryItem> m_Items;

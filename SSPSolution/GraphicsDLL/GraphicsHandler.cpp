@@ -1503,14 +1503,6 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	 ID3D11ShaderResourceView* textureView = nullptr;
 	 ID3D11Resource*	textureResource = nullptr;
 
-	/* HRESULT hResult = DirectX::CreateDDSTextureFromFile
-	 (
-		 m_d3dHandler->GetDevice(),
-		 L"../ResourceLib/AssetFiles/Islands.dds",
-		 &textureResource, &textureView, size_t(0),
-		 (DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
-	 );*/
-
 	 HRESULT hResult = DirectX::CreateDDSTextureFromFile
 		 (
 			 m_d3dHandler->GetDevice(),
