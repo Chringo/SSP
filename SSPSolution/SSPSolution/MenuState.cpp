@@ -13,9 +13,15 @@ MenuState::MenuState()
 MenuState::~MenuState()
 {
 	if (this->m_Menu_Music != nullptr)
+	{
+		this->m_Menu_Music->stop();
 		this->m_Menu_Music->drop();
+	}
 	if (this->m_Level_Music != nullptr)
+	{
+		this->m_Level_Music->stop();
 		this->m_Level_Music->drop();
+	}
 }
 
 int MenuState::ShutDown()
@@ -610,16 +616,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (isJoining)
 		{
 			//disable the menu music
-			this->m_Menu_Music->setIsPaused(true);
-			if (this->m_Level_Music == nullptr)
-			{
-				this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
-			}
-			else
-			{
-				this->m_Level_Music->setPlayPosition(0);
-				this->m_Level_Music->setIsPaused(false);
-			}
+			this->setMusic(Sounds2D::LEVEL);
 			this->Joining(inputHandler);
 		}
 
@@ -746,16 +743,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 				//disable the menu music and enable level music
-				this->m_Menu_Music->setIsPaused(true);
-				if (this->m_Level_Music == nullptr)
-				{
-					this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
-				}
-				else
-				{
-					this->m_Level_Music->setPlayPosition(0);
-					this->m_Level_Music->setIsPaused(false);
-				}
+				this->setMusic(Sounds2D::LEVEL);
 #pragma region
 				switch (this->m_levelToHost)
 				{
@@ -822,10 +810,7 @@ int MenuState::EnterState()
 	case 0: /*/ Main menu /*/
 
 		//Set the music and activate it
-		if (this->m_Menu_Music == nullptr)
-			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
-		else
-			this->m_Menu_Music->setIsPaused(false);
+		this->setMusic(Sounds2D::MENU);
 		
 		//Show buttons
 		nrOfMenuitems = this->m_mainMenuButtons.size();
@@ -848,12 +833,7 @@ int MenuState::EnterState()
 
 	case 2: /*/ Start game menu /*/
 
-		if (this->m_Menu_Music->getIsPaused())
-		{
-			this->m_Level_Music->setIsPaused(true);
-			this->m_Menu_Music->setPlayPosition(0);
-			this->m_Menu_Music->setIsPaused(false);
-		}
+		this->setMusic(Sounds2D::MENU);
 		//Show buttons
 		nrOfMenuitems = this->m_startMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
@@ -1058,4 +1038,56 @@ void MenuState::Joining(InputHandler* inputHandler)
 	}
 
 #pragma endregion Network_Sync
+}
+
+void MenuState::setMusic(Sounds2D which)
+{
+	if (which == Sounds2D::LEVEL)
+	{
+		if (this->m_Level_Music == nullptr)
+		{
+			this->m_Level_Music = SoundHandler::instance().PlaySound2D(Sounds2D::LEVEL, true, true);
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Level_Music->getIsPaused())
+			{
+				this->m_Level_Music->setIsPaused(false);
+			}
+			if (this->m_Menu_Music != nullptr)
+			{
+				this->m_Menu_Music->setIsPaused(true);
+				this->m_Menu_Music->setPlayPosition(0);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_Menu_Music == nullptr)
+		{
+			this->m_Menu_Music = SoundHandler::instance().PlaySound2D(Sounds2D::MENU, true, true);
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+		else
+		{
+			if (this->m_Menu_Music->getIsPaused())
+			{
+				this->m_Menu_Music->setIsPaused(false);
+			}
+			if (this->m_Level_Music != nullptr)
+			{
+				this->m_Level_Music->setIsPaused(true);
+				this->m_Level_Music->setPlayPosition(0);
+			}
+		}
+	}
 }
