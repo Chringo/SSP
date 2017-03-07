@@ -310,7 +310,8 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
 }
 
 // Lys constants
-static const float k0 = 0.00098, k1 = 0.9921, fUserMaxSPow = 0.2425;
+static const float k0 = 0.00098, k1 = 0.9921;
+static const float fUserMaxSPow = 0.2425;
 static const float g_fMaxT = (exp2(-10.0 / sqrt(fUserMaxSPow)) - k0) / k1;
 static const int nMipOffset = 0;
 
@@ -329,10 +330,6 @@ float GetSpecPowToMip(float fSpecPow, int nMips)
     static const float EPSILON = 1e-5f;
 float4 PS_main(VS_OUT input) : SV_Target
 {
-
-
-   // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
-
 
     float4 diffuseLight = 0;
     float4 specularLight = 0;
@@ -358,6 +355,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     float f90 = metalSamp;
     //f90 = 0.16f * metalSamp * metalSamp;
 
+    //float spow = (2.0 / (roughSamp * roughSamp)) - 2.0;
+
+    float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughSamp, mipLevels));
+    //float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, 5.5);
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     //float linearRough = roughSamp;
     roughSamp = pow((roughSamp), 0.4);
@@ -379,7 +380,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float roughPow4 = roughPow2 * roughPow2;
     float roughtPow2H = roughPow2 * 0.5;
 
-    float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughPow4, mipLevels));
+    //specSamp = pow(abs(specSamp), 2.2);
 
     //VIEWSPACE VARIABLES
     //float3 vPos = mul(wPosSamp, viewMatrix).xyz;
@@ -387,7 +388,6 @@ float4 PS_main(VS_OUT input) : SV_Target
     //float3 vCamPos = viewMatrix._14_24_34;
     //float3 vCamDir = viewMatrix._13_23_33;
     //float3 V = normalize(vCamPos - vPos); //vSpace
-
     
     float NdotV = abs(dot(N, V)) + EPSILON;
     
@@ -443,10 +443,10 @@ float4 PS_main(VS_OUT input) : SV_Target
                 lightPower *= shadowFactor;
 
                 //DIFFUSE
-                //float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
-                //diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+                diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
                 //NON DISNEY DIFFUSE
-                diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
+                //diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
 
 
                 //SPECULAR
@@ -456,7 +456,7 @@ float4 PS_main(VS_OUT input) : SV_Target
                 //float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
 
                 //DISTRIUTION TERM
-                float d = GGX(NdotH, roughPow4); //roughness should be sRGB
+                float d = GGX(NdotH, roughtPow2H); //roughness should be sRGB
                 //float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
                 //d = roughPow2 / (Pi * d * d);                  //ggx Distribution
 
