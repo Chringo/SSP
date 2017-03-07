@@ -747,7 +747,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				/* We know that all packets will be sent to player2
 				since only player2 will send animation packets */
-				printf("Packet: %d \n", itr->newstate);
+
 				if (itr->newstate == RAGDOLL_STATE)	//If the packet is for a ragdoll state
 				{
 					this->m_player2.GetRagdoll()->state = RAGDOLL;
@@ -772,8 +772,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					}
 
 					this->m_player2.GetRagdoll()->state = ANIMATED;
-					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
+					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
 					this->m_player2.GetAnimationComponent()->currentState = itr->newstate;
 				}
 			}
