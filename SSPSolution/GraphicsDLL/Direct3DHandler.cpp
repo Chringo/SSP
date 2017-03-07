@@ -103,9 +103,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		return 1;
 	}
 
-	ID3D11Texture2D* backBufferPrt = nullptr;
+	// Create the swapchain \\
 
-	// Create the swapchain
 	if (editorMode)
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
@@ -135,8 +134,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		{
 			return 1;
 		}
-
-		this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 	}
 	else
 	{
@@ -170,14 +167,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		{
 			return 1;
 		}
-
-		this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 	}
 
 	// Create the backbuffer render target view \\
 
-	//ID3D11Texture2D* backBufferPrt = nullptr;
-	//this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
+	ID3D11Texture2D* backBufferPrt = nullptr;
+	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 
 	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))
@@ -186,15 +181,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	}
 
 	hResult = this->m_gDevice->CreateShaderResourceView(backBufferPrt, nullptr, &this->m_backBufferSRV);
-
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
 
-
 	backBufferPrt->Release();
-
 
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
@@ -252,8 +244,6 @@ int Direct3DHandler::PresentScene()
 	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
 
 	this->m_swapChain->Present(0, 0);
-
-
 	return 0;
 }
 
