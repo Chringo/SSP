@@ -11,7 +11,6 @@ Direct3DHandler::Direct3DHandler()
 	this->m_rasterizerStateWireFrame = nullptr;
 	this->m_swapChain = nullptr;
 	this->m_viewport = nullptr;
-	this->m_SwapCount = 1;
 }
 
 
@@ -21,23 +20,15 @@ Direct3DHandler::~Direct3DHandler()
 
 int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode)
 {
-	editor = editorMode;
 	HRESULT hResult;
 
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel;
-	this->m_SwapCount = 1;
 	if (editorMode)
-	{
 		featureLevel = D3D_FEATURE_LEVEL_11_0;
-		this->m_SwapCount = 0;
-	}
 	else
-	{
 		featureLevel = D3D_FEATURE_LEVEL_11_1;
-		this->m_SwapCount = 1;
-	}
 
 #ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,

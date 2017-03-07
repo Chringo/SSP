@@ -17,9 +17,6 @@ private:
 	ID3D11RasterizerState*	  m_rasterizerState;
 	ID3D11RasterizerState*	  m_rasterizerStateWireFrame;
 	IDXGISwapChain1*		  m_swapChain;
-	IDXGISwapChain*			  m_SwapChainOld;
-	int m_SwapCount;
-	bool editor;
 	
 	ID3D11Texture2D* m_depthStencilBuffer;
 
