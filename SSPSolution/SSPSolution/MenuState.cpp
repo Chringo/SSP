@@ -102,17 +102,19 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_startMenuButtons.push_back(button);
 	}
+	int indentation = 0;
 	for (size_t i = 0; i < NR_OF_LEVELS; i++) //Create the host game menu level select buttons
 	{
+		indentation = (i > 3) + i;
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(150.f + ((i % 4) * 200.f), 150.f + (i / 4) * 250.f);
+		tempUIComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 150.f + (indentation / 4) * 250.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(150.f + ((i % 4) * 200.f), 310.f + (i / 4) * 250.f);
+		tempTextComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 310.f + (indentation / 4) * 250.f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
