@@ -6,7 +6,7 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[BPF_FILE] = std::string("../ResourceLib/AssetFiles/AssetFile.bpf");
+	filePaths[BPF_FILE] = std::string("../Assets/AssetFile.bpf");
 
 	fileHandles[BPF_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 
