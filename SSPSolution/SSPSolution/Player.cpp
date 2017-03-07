@@ -366,7 +366,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					/*Set the component to play the animation for throwing the other player's ball.*/
 					this->m_aComp->previousState = this->m_aComp->currentState;
-					SetAnimationComponent(PLAYER_THROW, 0.30f, Blending::FROZEN_TRANSITION, false, true, 1.75f, 1.0f);
+					SetAnimationComponent(PLAYER_THROW, 0.30f, Blending::SMOOTH_TRANSITION, false, true, 1.75f, 1.0f);
 					this->m_aComp->currentState = PLAYER_THROW;
 				}
 

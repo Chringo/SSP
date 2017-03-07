@@ -76,7 +76,7 @@ void AnimationHandler::Update(float dt)
 							if (this->m_AnimComponentList[m_AnimCompIndex]->source_State->stateIndex == AnimationStates::PLAYER_PICKUP)
 							{
 								this->m_AnimComponentList[m_AnimCompIndex]->previousState = this->m_AnimComponentList[m_AnimCompIndex]->currentState;
-								SetAnimationComponent(AnimationStates::PLAYER_BALL_IDLE, 0.55f, Blending::SMOOTH_TRANSITION, true, false, 0.9f, 1.0f);
+								SetAnimationComponent(AnimationStates::PLAYER_BALL_IDLE, 0.55f, Blending::FROZEN_TRANSITION, true, false, 0.9f, 1.0f);
 								this->m_AnimComponentList[m_AnimCompIndex]->currentState = AnimationStates::PLAYER_BALL_IDLE;
 							}
 							else

@@ -867,7 +867,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 
 			//Play the animation for player picking up the ball.
 			this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
-			this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.45f, FROZEN_TRANSITION, false, true, 1.75f, 1.0f);
+			this->m_player1.SetAnimationComponent(PLAYER_PICKUP, 0.45f, SMOOTH_TRANSITION, false, true, 1.75f, 1.0f);
 			this->m_player1.GetAnimationComponent()->currentState = PLAYER_PICKUP;
 		}
 
