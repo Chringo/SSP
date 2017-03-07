@@ -94,8 +94,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	if (FAILED(hResult))
 	{
 		return 1;
-	}		
-	
+	}
+
 	IDXGIFactory2* dxgiFactory2 = nullptr;
 	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
 	if (FAILED(hResult))
@@ -108,12 +108,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the swapchain
 	if (editorMode)
 	{
-		DXGI_SWAP_CHAIN_DESC swapChainDesc;
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
-		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapChainDesc.BufferDesc.Width = resolution.x;
-		swapChainDesc.BufferDesc.Height = resolution.y;
+		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapChainDesc.Width = resolution.x;
+		swapChainDesc.Height = resolution.y;
 
 		swapChainDesc.SampleDesc.Count = 1; //No MSAA
 		swapChainDesc.SampleDesc.Quality = 0;
@@ -123,20 +123,20 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swapChainDesc.Flags = 0;
 
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = 59994;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1002;
-		swapChainDesc.OutputWindow = *windowHandle;
-		swapChainDesc.Windowed = true;
-		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		
-		hResult = dxgiFactory2->CreateSwapChain(this->m_gDevice, &swapChainDesc, &this->m_SwapChainOld);
+		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
+		fullScreenDesc.RefreshRate.Numerator = 59994;
+		fullScreenDesc.RefreshRate.Denominator = 1002;
+		fullScreenDesc.Windowed = true;
+		fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+		hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
 		if (FAILED(hResult))
 		{
 			return 1;
 		}
 
-		this->m_SwapChainOld->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
+		this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 	}
 	else
 	{
@@ -173,12 +173,12 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 		this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
 	}
-	
+
 	// Create the backbuffer render target view \\
 
 	//ID3D11Texture2D* backBufferPrt = nullptr;
 	//this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
-	
+
 	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))
 	{
@@ -194,8 +194,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 
 	backBufferPrt->Release();
-	
-	
+
+
 	this->m_viewport = new D3D11_VIEWPORT;
 	this->m_viewport->TopLeftX = 0.0f;
 	this->m_viewport->TopLeftY = 0.0f;
@@ -251,10 +251,7 @@ int Direct3DHandler::PresentScene()
 	//RECT dirtyRectPrev, dirtyRectCurrent, dirtyRectCopy;
 	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
 
-	if(editor)
-		this->m_SwapChainOld->Present(0, 0);
-	else
-		this->m_swapChain->Present(0, 0);
+	this->m_swapChain->Present(0, 0);
 
 
 	return 0;
