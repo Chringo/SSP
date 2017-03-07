@@ -131,6 +131,7 @@ private:
 
 	void Hosting(float dt, InputHandler* inputHandler);
 	void Joining(InputHandler* inputHandler);
+	void setMusic(Sounds2D which);
 
 public:
 	MenuState();
