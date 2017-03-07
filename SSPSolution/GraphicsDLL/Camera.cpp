@@ -77,8 +77,6 @@ int Camera::Update()
  	this->m_updatePos();
 
 	//if player is thrown
-
-
 	DirectX::XMStoreFloat4x4(&this->m_viewMatrix, DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&this->m_cameraPos), DirectX::XMLoadFloat4(&this->m_lookAt), DirectX::XMLoadFloat4(&this->m_cameraUp)));
 
 	return result;
@@ -722,7 +720,8 @@ void Camera::m_updatePos()
 	if(this->m_focusPoint != nullptr)
 		finalFocus = DirectX::XMVectorAdd((*m_focusPoint), m_focusPointOffset);
 	DirectX::XMVECTOR camPosVec = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_distance));
-	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
+
+ 	this->m_cameraMaxDistancePos = DirectX::XMVectorAdd(finalFocus, DirectX::XMVectorScale(m_camDirvector, -m_maxDistance));
 
 	float x = m_distance * cos(m_pitch) * sin(m_yaw);
 	float y = m_distance * sin(m_pitch);
@@ -812,7 +811,8 @@ void Camera::m_calcDistance()
 		float diffFactor = (abs(m_distance - targetDistance) * zoomSpeedFactor);
 		this->m_distance = lerp(m_distance, targetDistance, this->m_deltaTime*diffFactor);
 	}
-	
+	if (fabs(this->m_distance) > m_maxDistance)
+		this->m_distance = m_maxDistance;
 }
 #pragma endregion setters
 

@@ -223,9 +223,12 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 68.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
 	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
 	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
-	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L2P1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3P1.level", 41.0f });
+	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level", 41.0f });
 	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
 
 
@@ -964,19 +967,6 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			1.3f
 		);
 	}
-#ifdef DEVELOPMENTFUNCTIONS
-	if (inputHandler->IsKeyDown(SDL_SCANCODE_C))
-	{
-		m_cameraRef->SetDistance(10.f);
-
-	}
-
-	if (inputHandler->IsKeyReleased(SDL_SCANCODE_C))
-	{
-		m_cameraRef->SetDistance(1.3f);
-
-	}
-#endif // DEVELOPMENTFUNCTIONS
 
 	if (this->m_player1.GetIsAming())
 	{
