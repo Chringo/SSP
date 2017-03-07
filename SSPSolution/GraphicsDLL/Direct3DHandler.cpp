@@ -110,8 +110,8 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	}
 
 	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
-	fullScreenDesc.RefreshRate.Numerator = 60;
-	fullScreenDesc.RefreshRate.Denominator = 1;
+	fullScreenDesc.RefreshRate.Numerator = 59994;
+	fullScreenDesc.RefreshRate.Denominator = 1002;
 	fullScreenDesc.Windowed = true;
 	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
