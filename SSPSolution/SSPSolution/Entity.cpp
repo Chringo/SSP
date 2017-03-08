@@ -28,11 +28,11 @@ int Entity::SyncComponents()
 					float offSet = 0.0f;
 					if (this->GetGraphicComponent()->modelID == 1117267500) //Studley
 					{
-						offSet = 0.15f;
+						offSet = 0.05f;
 					}
 					else if (this->GetGraphicComponent()->modelID == 885141774) // Abbington
 					{
-						offSet = -0.05f;
+						offSet = 0.15f;
 					}
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1] + offSet, 0, 0)));
@@ -81,7 +81,7 @@ void Entity::UnsafeSyncComponents()
 			float offSet = 0.0f;
 			if (this->GetGraphicComponent()->modelID == 1117267500) //Studley
 			{
-				offSet = -0.05f;
+				offSet = 0.05f;
 			}
 			else if (this->GetGraphicComponent()->modelID == 885141774) // Abbington
 			{
