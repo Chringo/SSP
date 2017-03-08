@@ -117,6 +117,15 @@ void LevelState::SendSyncForJoin()
 		}
 	}
 
+	PhysicsComponent* pc = nullptr;
+	for (PlatformEntity* p : this->m_platformEntities)
+	{
+		pc = p->GetPhysicsComponent();
+		DirectX::XMFLOAT4X4 newrot;
+		DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
+		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
+	}
+
 }
 
 LevelState::LevelState()
