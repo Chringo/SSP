@@ -5,7 +5,7 @@
 #include "../GraphicsDLL/GraphicsComponent.h"
 
 #define HOST_DISABLE
-#define NR_OF_LEVELS 7
+#define NR_OF_LEVELS 6
 
 const float TIMEOUT_TIME = 200;
 

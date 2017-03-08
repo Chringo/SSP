@@ -109,19 +109,17 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		this->m_startMenuButtons.push_back(button);
 	}
 
-	int indentation = 0;
 	for (size_t i = 0; i < NR_OF_LEVELS; i++) //Create the host game menu level select buttons
 	{
-		indentation = (i > 3) + i;
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 150.f + (indentation / 4) * 250.f);
+		tempUIComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 150.f + (i / 3) * 250.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(150.f + ((indentation % 4) * 200.f), 310.f + (indentation / 4) * 250.f);
+		tempTextComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 310.f + (i / 3) * 250.f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -174,8 +172,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_hostMenuButtons[3].m_textComp->text = L"Level 3";
 	this->m_hostMenuButtons[4].m_textComp->text = L"Level 4";
 	this->m_hostMenuButtons[5].m_textComp->text = L"Level 5";
-	this->m_hostMenuButtons[6].m_textComp->text = L"Level 6";
-	this->m_hostMenuButtons[7].m_textComp->text = L"Go Back";
+	this->m_hostMenuButtons[6].m_textComp->text = L"Go Back";
 
 	this->m_markedItem = 0;
 	this->m_mainMenuButtons[0].SetHovered(true);
@@ -775,9 +772,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				case 5:
 					printf("LOAD LEVEL 5\n");
 					break;
-				case 6:
-					printf("LOAD LEVEL 6\n");
-					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
@@ -1022,45 +1016,38 @@ void MenuState::Joining(InputHandler* inputHandler)
 			{
 			case 0:
 				printf("LOAD LEVEL TUT\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 1:
 				printf("LOAD LEVEL 1\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 2:
 				printf("LOAD LEVEL 2\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 3:
 				printf("LOAD LEVEL 3\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 			case 4:
 				printf("LOAD LEVEL 4\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 			case 5:
 				printf("LOAD LEVEL 5\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 
 			case 6:
 				printf("LOAD LEVEL 6\n");
-				levelSelect->LoadLevel(levelID);
 				break;
 
 			default:
 				printf("LOAD DEFUALT\n");
-				levelSelect->LoadLevel(levelID);
+				
 				break;
 
 			}
-			#pragma endregion Level_To_Load
-
+			levelSelect->LoadLevel(levelID);
+#pragma endregion Level_To_Load
 			inputHandler->SetMouseLocked(true);	//Lock the mouse again
 		}
 
