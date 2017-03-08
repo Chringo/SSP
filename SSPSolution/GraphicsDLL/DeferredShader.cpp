@@ -464,7 +464,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
-	depthBufferDesc.Width = viewPort->Width;
+	depthBufferDesc.Width =  viewPort->Width;
 	depthBufferDesc.Height = viewPort->Height;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;

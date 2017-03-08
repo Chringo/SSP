@@ -102,7 +102,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapChainDesc.Width = resolution.x;
+		swapChainDesc.Width =  resolution.x;
 		swapChainDesc.Height = resolution.y;
 
 		swapChainDesc.SampleDesc.Count = 1; //No MSAA
@@ -164,6 +164,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	ID3D11Texture2D* backBufferPrt = nullptr;
 	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
+
 
 	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))

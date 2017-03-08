@@ -338,7 +338,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float4 specularLight = 0;
 
     //SAMPLING
-    int mipLevels, width, height;
+    int mipLevels = 0, width = 0, height = 0;
     reflectionTex.GetDimensions(0, width, height, mipLevels);
 
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
@@ -351,6 +351,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
     float3 reflectVec = -reflect(V, N);
 
+   
     //return N.rgbr;
 
 
@@ -380,7 +381,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float roughtPow2H = roughPow2 * 0.5;
 
     float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughPow4, mipLevels));
-
+   
     //VIEWSPACE VARIABLES
     //float3 vPos = mul(wPosSamp, viewMatrix).xyz;
     ////float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;

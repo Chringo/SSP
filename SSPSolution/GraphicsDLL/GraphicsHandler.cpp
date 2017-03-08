@@ -1515,8 +1515,17 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
  int GraphicsHandler::GenerateStaticSceneShadows()
 {
+	 ID3D11Resource * textureView = nullptr;
+	 ID3D11ShaderResourceView *textureResource = nullptr;
 
-	
+	 DirectX::CreateDDSTextureFromFile
+	 (
+	 	m_d3dHandler->GetDevice(),
+	 	L"../ResourceLib/AssetFiles/Islands.dds",
+	 	&textureView, &textureResource, size_t(0),
+	 	(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+	 );
+	 m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &textureResource);
 
 	
 
@@ -1535,7 +1544,6 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 #endif // _DEBUG
 
 
-	GenerateSceneCubeMap();
 	//Render(0.0f);
 
 
@@ -1609,17 +1617,21 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
+	m_d3dHandler->PresentScene();
+	
+	GenerateSceneCubeMap();
+
+	textureResource->Release();
 
 	return  1;
 }
 
 int GraphicsHandler::GenerateSceneCubeMap()
 {
-	
+	//Render(1.0f);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
 	ID3D11Device* device		  = this->m_d3dHandler->GetDevice();
 	//REFLECTION CUBEMAP
-	ID3D11Resource*	textureResource = nullptr;
 
 	if (m_sceneCubeMap != nullptr) {
 		m_sceneCubeMap->Release();
@@ -1637,7 +1649,7 @@ int GraphicsHandler::GenerateSceneCubeMap()
 	cubeTextureDesc.SampleDesc.Count	 = 1;
 	cubeTextureDesc.SampleDesc.Quality   = 0;
 	cubeTextureDesc.Usage				 = D3D11_USAGE_DEFAULT;
-	cubeTextureDesc.BindFlags			 = D3D11_BIND_SHADER_RESOURCE| D3D11_BIND_RENDER_TARGET;
+	cubeTextureDesc.BindFlags			 = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	cubeTextureDesc.CPUAccessFlags		 = D3D11_CPU_ACCESS_WRITE;
 	cubeTextureDesc.MiscFlags			 = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
@@ -1741,7 +1753,6 @@ int GraphicsHandler::GenerateSceneCubeMap()
 	ups[4] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // +Z
 	ups[5] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // -Z
 
-	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 		ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
 		frame.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 500.0f);
 		
@@ -1763,12 +1774,22 @@ int GraphicsHandler::GenerateSceneCubeMap()
 		m_shaderControl->SetBackBuffer(cubeRTV, textureSRV);
 	for (int i = 0; i < 6; i++) //for each side of the cube map
 	{
-		frame.cView = DirectX::XMMatrixLookAtLH(position, targets[i], ups[i]);
-		ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
+
+		ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
 		m_shaderControl->ClearFrame();
+		this->m_d3dHandler->ClearBlendState();
+		frame.cView = DirectX::XMMatrixLookAtLH(position, targets[i], ups[i]);
+		frame.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 500.0f);
+		frame.cPos = position;
+		ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
 		this->RenderStaticScene();
+
+		m_LightHandler->SetBufferAsActive();
+		m_LightHandler->SetStaticShadowsToGPU();
+		
 		context->RSSetViewports(1, &vp);
 		m_shaderControl->DrawFinal();
+		//Render(1.0f);
 		//ID3D11Resource* textureRes;
 		//m_d3dHandler->GetBackbufferSRV()->GetResource(&textureRes);
 		context->CopySubresourceRegion(tempTexture, 10*i, 0, 0, 0, backBufferPrt, 0, NULL); //copy the  jth texture in the cubeMap
@@ -1777,7 +1798,7 @@ int GraphicsHandler::GenerateSceneCubeMap()
 	context->GenerateMips(m_sceneCubeMap);
 	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
 
-	m_d3dHandler->PresentScene();
+	//m_d3dHandler->PresentScene();
 
 	context->RSSetViewports(1, m_d3dHandler->GetViewPort());
 	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_sceneCubeMap);
@@ -1785,6 +1806,8 @@ int GraphicsHandler::GenerateSceneCubeMap()
 	tempTexture->Release();
 	backBufferPrt->Release();
 	cubeRTV->Release();
+	textureSRV->Release();
+
 	return 0;
 }
 
