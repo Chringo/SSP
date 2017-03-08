@@ -21,8 +21,7 @@ enum Textures
 	Level2 = 9,
 	Level3 = 10,
 	Level4 = 11,
-	Level5 = 12,
-	Level6 = 13
+	Level5 = 12
 };
 
 class UIHandler
