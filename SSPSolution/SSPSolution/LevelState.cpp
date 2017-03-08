@@ -269,10 +269,10 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 1; //Set Entity ID
-	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);								//Set Position
-	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.0, 0, 0); //Set Rotation
-	playerP->PC_is_Static = false;							//Set IsStatic							//Set Active
+	playerP->PC_entityID = DEFINED_IDS::PLAYER_1;				//Set Entity ID
+	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position
+	playerP->PC_rotation = DirectX::XMVectorSet(0, 0.0, 0, 0);	//Set Rotation
+	playerP->PC_is_Static = false;								//Set IsStatic
 	playerP->PC_mass = 10;
 	playerP->PC_BVtype = BV_OBB;
 	playerP->PC_OBB.ext[0] = playerG->modelPtr->GetOBBData().extension[0];
@@ -338,7 +338,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	playerG->active = true;
 	resHandler->GetModel(playerG->modelID, playerG->modelPtr);
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_entityID = DEFINED_IDS::PLAYER_2;			//Set Entity ID
 	playerP->PC_pos = { 0 };								//Set Position
 	playerP->PC_is_Static = false;							//Set IsStatic
 	playerP->PC_active = true;								//Set Active
@@ -397,7 +397,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_entityID = DEFINED_IDS::BALL_1;				//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -428,7 +428,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_entityID = DEFINED_IDS::BALL_2;				//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
@@ -577,7 +577,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				connecting player so they still have the same start position relative to eachother.
 				*/
 
-				if ((int)itr->entityID == 1)	//Packets for player2
+				if ((int)itr->entityID == DEFINED_IDS::PLAYER_1)	//Packets for player2
 				{
 					pp = this->m_player2.GetPhysicsComponent();
 
@@ -588,7 +588,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 
 				}
-				else if ((int)itr->entityID == 2)	//Packets for player1
+				else if ((int)itr->entityID == DEFINED_IDS::PLAYER_2)	//Packets for player1
 				{
 					pp = this->m_player1.GetPhysicsComponent();
 
@@ -598,7 +598,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if ((int)itr->entityID == 3)	//Packets for ball1
+				else if ((int)itr->entityID == DEFINED_IDS::BALL_1)	//Packets for ball1
 				{
 					pp = this->m_player2.GetBall()->GetPhysicsComponent();
 
@@ -607,7 +607,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 					pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
 				}
-				else if ((int)itr->entityID == 4)	//Packets for ball2
+				else if ((int)itr->entityID == DEFINED_IDS::BALL_2)	//Packets for ball2
 				{
 					pp = this->m_player1.GetBall()->GetPhysicsComponent();
 
@@ -927,11 +927,11 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 			else //Drop
 			{
-				if (itr->entityID == 1)
+				if (itr->entityID == DEFINED_IDS::PLAYER_1)
 				{
 					this->m_player2.SetGrabbed(nullptr);
 				}
-				else if (itr->entityID == 2)
+				else if (itr->entityID == DEFINED_IDS::PLAYER_2)
 				{
 					this->m_player1.SetGrabbed(nullptr);
 				}
@@ -1065,8 +1065,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				ent = this->m_dynamicEntitys.at(i);
 
 				if (ent != this->m_player2.GetGrabbed() &&
-					ent->GetEntityID() != 5 && ent->GetEntityID() != 6 &&
-					ent->GetEntityID() != 4 && ent->GetEntityID() != 3	//if the hosting player 
+					ent->GetEntityID() != DEFINED_IDS::CHAIN_1 && ent->GetEntityID() != DEFINED_IDS::CHAIN_2 &&
+					ent->GetEntityID() != DEFINED_IDS::BALL_1 && ent->GetEntityID() != DEFINED_IDS::BALL_2	//if the hosting player 
 					)
 					//If it is not grabbed by player2 and is not a chain link
 				{
@@ -1479,7 +1479,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			linkLenght = 0.5f;
 		}
-		unsigned int entityID = 5;
+		unsigned int entityID = DEFINED_IDS::CHAIN_1;
 		PC_ptr = this->m_cHandler->GetPhysicsComponent();
 
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
@@ -1528,7 +1528,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		{
 			linkLenght = 0.50f;
 		}
-		unsigned int entityID = 6;
+		unsigned int entityID = DEFINED_IDS::CHAIN_2;
 		PhysicsComponent* PC_ptr = this->m_cHandler->GetPhysicsComponent();
 
 		PC_ptr->PC_pos = DirectX::XMVectorAdd(this->m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorScale(diffVec, float(i)));
@@ -1574,6 +1574,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numEntities; i++)
 	{
 		LevelData::EntityHeader* currEntity = &data->entities[i]; //Current entity
+		currEntity->EntityID += DEFINED_IDS::NUMMBER_OF_IDS;	//ADD number of predefined ids to avoid conflict from editor
 		GraphicsComponent* t_gc;
 		Resources::Model * modelPtr;
 
@@ -1685,7 +1686,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		AIComponent* t_ac = m_cHandler->GetAIComponent();
 		t_ac->AC_triggered = true;// Temp: Needed for AIHandler->Update()
-		t_ac->AC_entityID = data->aiComponents[i].EntityID;
+		t_ac->AC_entityID = data->aiComponents[i].EntityID + DEFINED_IDS::NUMMBER_OF_IDS;	//Add nummber of predefined ids to avoid conflict from editor
 		t_ac->AC_time = data->aiComponents[i].time;
 		t_ac->AC_speed = data->aiComponents[i].speed;
 		t_ac->AC_pattern = data->aiComponents[i].pattern;
@@ -1725,7 +1726,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma region Physics
 		PhysicsComponent* t_pc = m_cHandler->GetPhysicsComponent();
 		t_pc->PC_pos = t_ac->AC_position;
-		t_pc->PC_entityID = data->aiComponents[i].EntityID;
+		t_pc->PC_entityID = data->aiComponents[i].EntityID + DEFINED_IDS::NUMMBER_OF_IDS; //Add nummber of predefined ids to avoid conflict from editor
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
@@ -1767,8 +1768,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	{
 		Field* tempField = this->m_cHandler->GetPhysicsHandler()->CreateField(
 			data->checkpoints[i].position,
-			1,	//EntityID Player1
-			2,	//EntityID Player2
+			DEFINED_IDS::PLAYER_1,	//EntityID Player1
+			DEFINED_IDS::PLAYER_2,	//EntityID Player2
 			data->checkpoints[i].ext,
 			data->checkpoints[i].ort
 		);
@@ -1787,6 +1788,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numButton; i++)
 	{
 		LevelData::ButtonHeader tempHeader = data->buttons[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS; //Add nummber of predefined ids to avoid conflict from editor
 		ButtonEntity* tempEntity = new ButtonEntity();
 
 		//Create world matrix from data
@@ -1867,6 +1869,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numLever; i++)
 	{
 		LevelData::LeverHeader tempHeader = data->levers[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;	//Add nummber of predefined ids to avoid conflict from editor
 		LeverEntity* tempEntity = new LeverEntity();
 
 		//Create world matrix from data
@@ -1932,6 +1935,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numWheel; i++)
 	{
 		LevelData::WheelHeader tempHeader = data->wheels[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;	//Add nummber of predefined ids to avoid conflict from editor
 		WheelEntity* tempEntity = new WheelEntity();
 
 		//Create world matrix from data
@@ -2015,6 +2019,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numDoor; i++)
 	{
 		LevelData::DoorHeader tempHeader = data->doors[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;	//Add nummber of predefined ids to avoid conflict from editor
 		DoorEntity* tempEntity = new DoorEntity();
 
 		//Create world matrix from data
@@ -2091,8 +2096,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		PlatformEntity* toConnect = nullptr;
 		//Find our platform and save it to our pointer(toConnect)
 		for (std::vector<PlatformEntity*>::iterator observer = this->m_platformEntities.begin(); observer != this->m_platformEntities.end() && toConnect == nullptr; observer++)
-		{
-			if ((*observer)->GetEntityID() == data->aiComponents[i].EntityID)
+		{	
+			//Add nummber of predefined ids to avoid conflict from editor
+			if ((*observer)->GetEntityID() == data->aiComponents[i].EntityID + DEFINED_IDS::NUMMBER_OF_IDS);
 			{
 				toConnect = (*observer);
 			}
@@ -2101,7 +2107,8 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (int connectionIndex = 0; connectionIndex < data->aiComponents[i].Listener.numConnections; connectionIndex++)
 		{
 			//Get the ID
-			unsigned int connectionID = data->aiComponents[i].Listener.SenderID[connectionIndex];
+			//Add nummber of predefined ids to avoid conflict from editor
+			unsigned int connectionID = data->aiComponents[i].Listener.SenderID[connectionIndex] + DEFINED_IDS::NUMMBER_OF_IDS;
 			//Cycle through every puzzle element list until you find the connection ID
 			Entity* entityToObserve = nullptr;
 			bool foundConnection = false;
@@ -2151,6 +2158,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numDoor; i++)
 	{
 		LevelData::DoorHeader tempHeader = data->doors[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;
 		DoorEntity* toConnect = nullptr;
 		//Find our door and save it in doorToConnect
 		for (std::vector<DoorEntity*>::iterator observer = this->m_doorEntities.begin(); observer != this->m_doorEntities.end() && toConnect == nullptr; observer++)
@@ -2164,7 +2172,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
 		{
 			//Get the ID
-			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex] + DEFINED_IDS::NUMMBER_OF_IDS;
 			//Cycle through every puzzle element list until you find the connection ID
 			Entity* entityToObserve = nullptr;
 			bool foundConnection = false;
@@ -2215,6 +2223,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numButton; i++)
 	{
 		LevelData::ButtonHeader tempHeader = data->buttons[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;
 		ButtonEntity* toConnect = nullptr;
 		//Find our door and save it in doorToConnect
 		for (std::vector<ButtonEntity*>::iterator observer = this->m_buttonEntities.begin(); observer != this->m_buttonEntities.end() && toConnect == nullptr; observer++)
@@ -2228,7 +2237,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
 		{
 			//Get the ID
-			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex] + DEFINED_IDS::NUMMBER_OF_IDS;
 			//Cycle through every puzzle element list until you find the connection ID
 			Entity* entityToObserve = nullptr;
 			bool foundConnection = false;
@@ -2274,6 +2283,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numLever; i++)
 	{
 		LevelData::LeverHeader tempHeader = data->levers[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;
 		LeverEntity* toConnect = nullptr;
 		//Find our door and save it in doorToConnect
 		for (std::vector<LeverEntity*>::iterator observer = this->m_leverEntities.begin(); observer != this->m_leverEntities.end() && toConnect == nullptr; observer++)
@@ -2287,7 +2297,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
 		{
 			//Get the ID
-			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex] + DEFINED_IDS::NUMMBER_OF_IDS;
 			//Cycle through every puzzle element list until you find the connection ID
 			Entity* entityToObserve = nullptr;
 			bool foundConnection = false;
@@ -2333,6 +2343,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	for (size_t i = 0; i < data->numWheel; i++)
 	{
 		LevelData::WheelHeader tempHeader = data->wheels[i];
+		tempHeader.EntityID += DEFINED_IDS::NUMMBER_OF_IDS;
 		WheelEntity* toConnect = nullptr;
 		//Find our door and save it in doorToConnect
 		for (std::vector<WheelEntity*>::iterator observer = this->m_wheelEntities.begin(); observer != this->m_wheelEntities.end() && toConnect == nullptr; observer++)
@@ -2346,7 +2357,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (int connectionIndex = 0; connectionIndex < tempHeader.Listener.numConnections; connectionIndex++)
 		{
 			//Get the ID
-			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex];
+			unsigned int connectionID = tempHeader.Listener.SenderID[connectionIndex] + DEFINED_IDS::NUMMBER_OF_IDS;
 			//Cycle through every puzzle element list until you find the connection ID
 			Entity* entityToObserve = nullptr;
 			bool foundConnection = false;
@@ -2512,7 +2523,7 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	PhysicsComponent* playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 1;	//Set Entity ID
+	playerP->PC_entityID = DEFINED_IDS::PLAYER_1;	//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
@@ -2540,7 +2551,7 @@ int LevelState::UnloadLevel()
 #pragma region
 	//We then need to recreate the persistent components here
 	playerP = m_cHandler->GetPhysicsComponent();
-	playerP->PC_entityID = 2;	//Set Entity ID
+	playerP->PC_entityID = DEFINED_IDS::PLAYER_2;	//Set Entity ID
 	playerP->PC_pos = DirectX::XMVectorSet(0, 2, 0, 0);			//Set Position (Will be set in createLevel)
 	playerP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	playerP->PC_is_Static = false;								//Set IsStatic							
@@ -2568,7 +2579,7 @@ int LevelState::UnloadLevel()
 #pragma endregion Player 2
 #pragma region 
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 3;									//Set Entity ID
+	ballP->PC_entityID = DEFINED_IDS::BALL_1;									//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_rotationVelocity = DirectX::XMVectorSet(0, 0, 0, 0);
@@ -2587,7 +2598,7 @@ int LevelState::UnloadLevel()
 #pragma endregion ball1
 #pragma region
 	ballP = m_cHandler->GetPhysicsComponent();
-	ballP->PC_entityID = 4;									//Set Entity ID
+	ballP->PC_entityID = DEFINED_IDS::BALL_2;									//Set Entity ID
 	ballP->PC_pos = { 0 };									//Set Position
 	ballP->PC_rotation = DirectX::XMVectorSet(0, 0, 0, 0);	//Set Rotation
 	ballP->PC_is_Static = false;							//Set IsStatic
