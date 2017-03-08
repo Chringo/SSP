@@ -938,7 +938,13 @@ int GraphicsHandler::Render(float deltaTime)
 	  m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
 
 	  for (GraphicsComponent comp : m_staticGraphicsComponents)
-		  m_shaderControl->Draw(comp.modelPtr, &comp);
+		  if (comp.active)
+			m_shaderControl->Draw(comp.modelPtr, &comp);
+	  for (GraphicsComponent * comp : m_dynamicGraphicsComponents)
+	  {
+		if(comp->active)
+		  m_shaderControl->Draw(comp->modelPtr, comp);
+	  }
 
 	  return 0;
  }
