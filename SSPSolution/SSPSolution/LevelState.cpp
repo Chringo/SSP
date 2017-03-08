@@ -1645,7 +1645,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//t_pc->PC_friction = 0.55f;
 #ifdef _DEBUG
 		if (st != Resources::ST_OK)
-			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;
+			std::cout << "Model could not be found when loading level data,  ID: " << currEntity->modelID << std::endl;//NOTE: IS offseted by DEFINED_IDS::NUMMBER_OF_IDS
 #endif // _DEBUG
 
 		t_pc->PC_OBB = m_ConvertOBB(modelPtr->GetOBBData()); //Convert and insert OBB data
@@ -1776,7 +1776,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			data->checkpoints[i].ort
 		);
 		FieldEntity* tempFE = new FieldEntity();
-		tempFE->Initialize(data->checkpoints[i].entityID, tempField);
+		tempFE->Initialize(data->checkpoints[i].entityID + DEFINED_IDS::NUMMBER_OF_IDS, tempField);
 		this->m_fieldEntities.push_back(tempFE);
 		this->m_fieldEntities[i]->AddObserver(&this->m_director, this->m_director.GetID());
 	}
