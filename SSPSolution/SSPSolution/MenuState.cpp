@@ -1021,7 +1021,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 			switch (levelID)
 			{
 			case 0:
-				printf("LOAD LEVEL 0\n");
+				printf("LOAD LEVEL TUT\n");
 				levelSelect->LoadLevel(levelID);
 				break;
 
@@ -1041,9 +1041,16 @@ void MenuState::Joining(InputHandler* inputHandler)
 				break;
 			case 4:
 				printf("LOAD LEVEL 4\n");
+				levelSelect->LoadLevel(levelID);
 				break;
 			case 5:
 				printf("LOAD LEVEL 5\n");
+				levelSelect->LoadLevel(levelID);
+				break;
+
+			case 6:
+				printf("LOAD LEVEL 6\n");
+				levelSelect->LoadLevel(levelID);
 				break;
 
 			default:
