@@ -319,7 +319,7 @@ static const int nMipOffset = 0;
 float GetSpecPowToMip(float fSpecPow, int nMips)
 {
     // This line was added because ShaderTool destroys mipmaps.
-    fSpecPow = 1 - pow(1 - fSpecPow, 8);
+    //fSpecPow = 1 - pow(1 - fSpecPow, 8);
     // Default curve - Inverse of Toolbag 2 curve with adjusted constants.
     float fSmulMaxT = (exp2(-10.0 / sqrt(fSpecPow)) - k0) / k1;
     return float(nMips - 1 - nMipOffset) * (1.0 - clamp(fSmulMaxT / g_fMaxT, 0.0, 1.0));
@@ -355,10 +355,10 @@ float4 PS_main(VS_OUT input) : SV_Target
     float f90 = metalSamp;
     //f90 = 0.16f * metalSamp * metalSamp;
 
-    //float spow = (2.0 / (roughSamp * roughSamp)) - 2.0;
+    float spow = (2.0 / (roughSamp * roughSamp)) - 2.0;
 
-    float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughSamp, mipLevels));
-    //float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, 5.5);
+    float4 specSamp = reflectionTex.SampleLevel(linearSampler, reflectVec, GetSpecPowToMip(spow, mipLevels));
+    //float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, 0);
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     //float linearRough = roughSamp;
     roughSamp = pow((roughSamp), 0.4);
@@ -443,10 +443,10 @@ float4 PS_main(VS_OUT input) : SV_Target
                 lightPower *= shadowFactor;
 
                 //DIFFUSE
-                float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
-                diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                //float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+                //diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
                 //NON DISNEY DIFFUSE
-                //diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
+                diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
 
 
                 //SPECULAR
