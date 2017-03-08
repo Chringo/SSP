@@ -1518,7 +1518,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	
 
-	 GenerateSceneCubeMap();
+	
 
 	 HRESULT hResult;
 	 //For each light
@@ -1535,7 +1535,8 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 #endif // _DEBUG
 
 
-//	Render(0.0f);
+	GenerateSceneCubeMap();
+	//Render(0.0f);
 
 
 	LIGHTING::LightHandler::LightArray* lights =  m_LightHandler->Get_Light_List();
@@ -1609,8 +1610,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
 
-
-	 return  1;
+	return  1;
 }
 
 int GraphicsHandler::GenerateSceneCubeMap()
