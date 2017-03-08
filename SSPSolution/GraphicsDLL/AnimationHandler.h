@@ -37,6 +37,8 @@ struct AnimationComponent
 	float playingSpeed = 1.f;
 	float velocity = 1.f;
 
+	Blending blendFlag = Blending::NO_TRANSITION;
+
 	bool m_TransitionComplete = false;
 	bool syncWalkSound = false;
 
