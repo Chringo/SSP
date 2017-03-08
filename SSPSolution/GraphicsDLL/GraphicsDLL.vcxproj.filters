@@ -13,21 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{7118aa5f-6603-4080-b226-1f3c853fd205}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders\PBR">
-      <UniqueIdentifier>{084e614c-40d4-4846-a579-648dc3e44203}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders\GBuffer">
-      <UniqueIdentifier>{569bd10a-b0a8-4ffb-85f8-e98263085c71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders\PostProcess">
-      <UniqueIdentifier>{d89a6cbd-d723-497f-a99f-0f766707b31a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders\Debug">
-      <UniqueIdentifier>{93f4560a-a201-423c-97a2-490d7a1696a9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\UIHandler">
       <UniqueIdentifier>{651d093a-eb21-4d0d-8d9d-1e17162b5866}</UniqueIdentifier>
     </Filter>
@@ -46,8 +31,23 @@
     <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{eb269100-a0f1-43e1-b661-c735bf31ba23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{eb2e0e90-c546-4723-9930-bb78aa124401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Debug">
+      <UniqueIdentifier>{a9196974-2858-4441-9827-56d204f2654f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\GBuffer">
+      <UniqueIdentifier>{b063cc87-b299-4d9f-a34a-93555311940b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\PBR">
+      <UniqueIdentifier>{1777514c-8ced-4945-a8c0-89a25e6bd70d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\PostProcess">
+      <UniqueIdentifier>{34e19be3-a22d-4bb6-955f-57d497d13932}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\Shaders\Shadow">
-      <UniqueIdentifier>{eb19a108-95d4-45c9-ba66-e82f560b5826}</UniqueIdentifier>
+      <UniqueIdentifier>{66f898a9-6d09-4788-bb59-681f4b1d6881}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,47 +160,47 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBuffer\GridPS.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBufferVS.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBuffer.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightVS.hlsl">
-      <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PBR\PbrLightPass.hlsl">
-      <Filter>Resource Files\Shaders\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\AnimVS.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PostProcess\RayTrace_BoundingBox.hlsl">
-      <Filter>Resource Files\Shaders\PostProcess</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Debug\DebugVS.hlsl">
-      <Filter>Resource Files\Shaders\Debug</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Debug\DebugPS.hlsl">
-      <Filter>Resource Files\Shaders\Debug</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBuffer\GBufferVS_Instanced.hlsl">
-      <Filter>Resource Files\Shaders\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Shadow\ShadowShader.hlsl">
-      <Filter>Resource Files\Shaders\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Shadow\ShadowShader_Instanced.hlsl">
-      <Filter>Resource Files\Shaders\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Shadow\ShadowShader_Animation.hlsl">
-      <Filter>Resource Files\Shaders\Shadow</Filter>
-    </FxCompile>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <FxCompile Include="..\Assets\Shaders\Debug\DebugPS.hlsl">
+      <Filter>Resource Files\Shaders\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\Debug\DebugVS.hlsl">
+      <Filter>Resource Files\Shaders\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\GBuffer\AnimVS.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\GBuffer\GBuffer.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\GBuffer\GBufferVS.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\GBuffer\GBufferVS_Instanced.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\GBuffer\GridPS.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\Shadow\ShadowShader.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\Shadow\ShadowShader_Animation.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\Shadow\ShadowShader_Instanced.hlsl">
+      <Filter>Resource Files\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\PostProcess\RayTrace_BoundingBox.hlsl">
+      <Filter>Resource Files\Shaders\PostProcess</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\PBR\PbrLightPass.hlsl">
+      <Filter>Resource Files\Shaders\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\PBR\PbrLightVS.hlsl">
+      <Filter>Resource Files\Shaders\PBR</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
