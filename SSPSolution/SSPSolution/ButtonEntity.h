@@ -26,6 +26,7 @@ private:
 	float m_lastFrameOffset;
 
 	irrklang::ISound* m_timer_sound;
+	void setActiveTimerSound(bool activate);
 
 public:
 	ButtonEntity();

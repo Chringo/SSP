@@ -1746,12 +1746,12 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 {
 	if (ragdoll->playerPC->PC_entityID == 2)
 	{
-		if (ragdoll->state == ANIMATED_TRANSITION)
+		if (ragdoll->state == RagdollState::ANIMATED_TRANSITION)
 		{
-			ragdoll->state = ANIMATED;
+			ragdoll->state = RagdollState::ANIMATED;
 		}
 	}
-	if (ragdoll->state == ANIMATED)
+	if (ragdoll->state == RagdollState::ANIMATED)
 	{
 
 
@@ -1766,10 +1766,10 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		float ballVel = DirectX::XMVectorGetX(DirectX::XMVector3Length(ragdoll->ballPC->PC_velocity));
 		if (ballVel > 10.0)
 		{
-			ragdoll->state = RAGDOLL_TRANSITION;
+			ragdoll->state = RagdollState::RAGDOLL_TRANSITION;
 		}
 	}
-	if (ragdoll->state == RAGDOLL_TRANSITION)
+	if (ragdoll->state == RagdollState::RAGDOLL_TRANSITION)
 	{
 		//Change where the chain is attached
 		this->m_links.at(ragdoll->link_index).PL_previous = ragdoll->upperBody.center;	//Set it to the ragdoll
@@ -1787,9 +1787,9 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		}
 
 
-		ragdoll->state = RAGDOLL;
+		ragdoll->state = RagdollState::RAGDOLL;
 	}
-	if (ragdoll->state == RAGDOLL)
+	if (ragdoll->state == RagdollState::RAGDOLL)
 	{
 		//make the player position follow the ragdoll body
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 0, 0, 0));
@@ -1804,7 +1804,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			ragdoll->time_standil_still++;
 			if (ragdoll->time_standil_still > 20)
 			{
-				ragdoll->state = KEYFRAMEBLEND;
+				ragdoll->state = RagdollState::KEYFRAMEBLEND;
 			}
 		}
 		else
@@ -1812,7 +1812,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 			ragdoll->time_standil_still = 0;
 		}
 	}
-	if (ragdoll->state == KEYFRAMEBLEND)
+	if (ragdoll->state == RagdollState::KEYFRAMEBLEND)
 	{
 		//Change where the chain is attached
 
@@ -1825,7 +1825,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		ragdoll->playerPC->PC_pos = DirectX::XMVectorAdd(ragdoll->lowerBody.center->PC_pos, DirectX::XMVectorSet(0, 1.6, 0, 0));
 
 
-		int animationIndex = PLAYER_RISE_UP;
+		int animationIndex = AnimationStates::PLAYER_RISE_UP;
 		int rootJoint = 0;
 
 		ragdoll->blendTime += dt;
@@ -1868,7 +1868,7 @@ void PhysicsHandler::RagdollLogic(Ragdoll * ragdoll, float dt)
 		{
 			ragdoll->blendTime = 0;
 			ragdoll->key_frame_blend_stage = BLEND_TIME;
-			ragdoll->state = ANIMATED_TRANSITION;
+			ragdoll->state =  RagdollState::ANIMATED_TRANSITION;
 
 		}
 	}

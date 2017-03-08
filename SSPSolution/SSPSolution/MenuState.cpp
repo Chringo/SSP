@@ -108,6 +108,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		button.m_textComp = tempTextComp;
 		this->m_startMenuButtons.push_back(button);
 	}
+
 	int indentation = 0;
 	for (size_t i = 0; i < NR_OF_LEVELS; i++) //Create the host game menu level select buttons
 	{
@@ -449,6 +450,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			//Switch visable buttons
 			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
 			this->m_markedItem = 0;
+			this->m_hostMenuButtons[0].SetHovered(true);
 			this->m_menuState = 3;
 			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
 			{
@@ -961,9 +963,6 @@ void MenuState::Hosting(float dt, InputHandler* inputHandler)
 				case 5:
 					printf("LOAD LEVEL 5\n");
 					break;
-				case 6:
-					printf("LOAD LEVEL 6\n");
-					break;
 
 				default:
 					printf("LOAD DEFUALT\n");
@@ -1022,7 +1021,7 @@ void MenuState::Joining(InputHandler* inputHandler)
 			switch (levelID)
 			{
 			case 0:
-				printf("LOAD LEVEL 0\n");
+				printf("LOAD LEVEL TUT\n");
 				levelSelect->LoadLevel(levelID);
 				break;
 
@@ -1038,6 +1037,19 @@ void MenuState::Joining(InputHandler* inputHandler)
 
 			case 3:
 				printf("LOAD LEVEL 3\n");
+				levelSelect->LoadLevel(levelID);
+				break;
+			case 4:
+				printf("LOAD LEVEL 4\n");
+				levelSelect->LoadLevel(levelID);
+				break;
+			case 5:
+				printf("LOAD LEVEL 5\n");
+				levelSelect->LoadLevel(levelID);
+				break;
+
+			case 6:
+				printf("LOAD LEVEL 6\n");
 				levelSelect->LoadLevel(levelID);
 				break;
 

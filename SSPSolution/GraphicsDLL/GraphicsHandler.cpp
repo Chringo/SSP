@@ -455,14 +455,16 @@ GraphicsHandler::~GraphicsHandler()
 int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& resolution,  bool editorMode)
 {
 	this->m_d3dHandler = new Direct3DHandler;
-	
-	if (this->m_d3dHandler->Initialize(windowHandle, resolution))
+
+#ifdef _DEBUG
+	this->m_EditorMode = editorMode;
+#endif //_DEBUG
+	if (this->m_d3dHandler->Initialize(windowHandle, resolution, editorMode))
 	{
 		return 1;
 	}
 #ifdef _DEBUG
-	this->editorMode = editorMode;
-	if (!editorMode)
+	if (!m_EditorMode)
 #endif //_DEBUG
 	{
 		this->m_uiHandler = new UIHandler;
@@ -1109,7 +1111,7 @@ void GraphicsHandler::Shutdown()
 	this->DeleteOctree(&this->m_octreeRoot);
 
 #ifdef _DEBUG
-	if (!editorMode)
+	if (!m_EditorMode)
 	{
 		for (int i = 0; i < this->m_maxGraphicsComponents; i++)
 		{
