@@ -543,14 +543,15 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
-			if (this->m_ragdoll->state == RAGDOLL )
+			//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0,-0.05,0,0)));
+			if (this->m_ragdoll->state == RagdollState::RAGDOLL )
 			{
 				//offsets for when player ragdoll is in RAGDOLL stage
 				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
 				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -1);
 				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->upperBody.center->PC_pos, offSet));
 			}
-			if (this->m_ragdoll->state == KEYFRAMEBLEND)
+			if (this->m_ragdoll->state == RagdollState::KEYFRAMEBLEND)
 			{
 				//offsets for when player ragdoll is in KEYFRAMEBLEND stage
 				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
