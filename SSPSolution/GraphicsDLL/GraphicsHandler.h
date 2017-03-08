@@ -35,7 +35,7 @@ class GraphicsHandler
 
 #ifdef _DEBUG
 private:
-	bool editorMode = false;
+	bool m_EditorMode = false;
 	enum BoundingTypes {
 		T_OBB,
 		T_AABB,
