@@ -644,9 +644,23 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 							pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
-
+							break;
 						}
 
+					}
+
+					//If we still havent found an entity check for platforms
+					std::vector<PlatformEntity*>::iterator Pitr;
+					for (Pitr = this->m_platformEntities.begin(); Pitr != this->m_platformEntities.end(); Pitr++)
+					{
+						PlatformEntity* plat = (*Pitr._Ptr);	// The entity identified by the ID sent from the other client
+						pp = plat->GetPhysicsComponent();
+
+						// Update the component
+						pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+						pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+						pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+						break;
 					}
 
 				}
