@@ -2,6 +2,37 @@
 
 
 
+void ButtonEntity::setActiveTimerSound(bool activate)
+{
+	if (activate)
+	{
+		if (this->m_timer_sound == nullptr)
+		{
+			DirectX::XMFLOAT3 pos;
+			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
+		}
+		else
+		{
+			if (this->m_timer_sound->getIsPaused())
+			{
+				this->m_timer_sound->setIsPaused(false);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_timer_sound != nullptr)
+		{
+			if (!this->m_timer_sound->getIsPaused())
+			{
+				this->m_timer_sound->setIsPaused(true);
+				this->m_timer_sound->setPlayPosition(0);
+			}
+		}
+	}
+}
+
 ButtonEntity::ButtonEntity()
 {
 }
@@ -24,20 +55,24 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	{
 		this->m_elapsedResetTime -= dT;
 
-		if (this->m_timer_sound == nullptr)
+		//if (this->m_timer_sound == nullptr)
+		//{
+		//	DirectX::XMFLOAT3 pos;
+		//	DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		//	this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
+		//}
+		//else if (this->m_timer_sound->getIsPaused())
+		//{
+		//	this->m_timer_sound->setPlayPosition(0);
+		//	this->m_timer_sound->setIsPaused(false);
+		//}
+		this->setActiveTimerSound(true);
+		if (this->m_timer_sound != nullptr)
 		{
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
-		}
-		else if (this->m_timer_sound->getIsPaused())
-		{
-			this->m_timer_sound->setPlayPosition(0);
-			this->m_timer_sound->setIsPaused(false);
-		}
-		if (this->m_resetTime < 10.0f && this->m_timer_sound->getPlaybackSpeed() != 2.0f)
-		{
-			this->m_timer_sound->setPlaybackSpeed(2.0f);
+			if (this->m_resetTime < 10.0f && this->m_timer_sound->getPlaybackSpeed() != 2.0f)
+			{
+				this->m_timer_sound->setPlaybackSpeed(2.0f);
+			}
 		}
 
 		if (this->m_elapsedResetTime <= 0.0f)
@@ -52,8 +87,8 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			//DirectX::XMFLOAT3 pos;
 			//DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			//SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+			this->setActiveTimerSound(false);
 			this->m_timer_sound->setPlaybackSpeed(1.0f);
-			this->m_timer_sound->setIsPaused(true);
 			this->m_needSync = true;
 		}
 	}
@@ -167,31 +202,12 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
 		if (!this->m_isActive)
 		{
-			if (this->m_timer_sound != nullptr)
-			{
-				if (!this->m_timer_sound->getIsPaused())
-				{
-					this->m_timer_sound->setPlaybackSpeed(1.0f);
-					this->m_timer_sound->setIsPaused(true);
-				}
-			}
+			this->setActiveTimerSound(false);
+			this->m_timer_sound->setPlaybackSpeed(1.f);
 		}
 		else
 		{
-			if (this->m_timer_sound != nullptr)
-			{
-				if (this->m_timer_sound->getIsPaused())
-				{
-					this->m_timer_sound->setPlayPosition(0);
-					this->m_timer_sound->setIsPaused(false);
-				}
-			}
-			else
-			{
-				DirectX::XMFLOAT3 pos;
-				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-				this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
-			}
+			this->setActiveTimerSound(true);
 		}
 		
 		this->m_needSync = true;

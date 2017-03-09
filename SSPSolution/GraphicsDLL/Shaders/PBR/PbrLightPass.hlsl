@@ -4,6 +4,7 @@ Texture2D normalTex		         : register(t2);
 Texture2D wPosTex		         : register(t3);
 TextureCube shadowTex            : register(t10); // 7,8,9 is taken up by light buffers, If this is changed, modify the "SetShadowDataToRead()" function in DeferredShader.h
 TextureCubeArray sShadowsTexA    : register(t11);
+TextureCube reflectionTex        : register(t12);
 SamplerState linearSampler       : register(s0);
 SamplerState pointSampler        : register(s1);
 
@@ -108,7 +109,7 @@ float3 sRGBtoLinear(in float3 sRGBCol)
     return linearRGB;
 }
 
-float3 schlick(float3 f0, float f90, float u) //f0 is spec/metalness, f90 is spec/metal factor
+float3 schlickFresnel(float3 f0, float f90, float u) //f0 is spec/metalness, f90 is spec/metal factor
 {
     return f0 + (f90 - f0) * pow(1.0f - u, 5.0f);
 }
@@ -119,8 +120,8 @@ float DisneyDiffuse(float NdotV, float NdotL, float LdotH, float linearRoughness
     float energyFactor = lerp(1.0, 1.0 / 1.51, linearRoughness);
     float fd90 = energyBias + 2.0 * LdotH * LdotH * linearRoughness;
     float3 f0 = float3(1.0, 1.0, 1.0);
-    float lightScatter = schlick(f0, fd90, NdotL).r;
-    float viewScatter = schlick(f0, fd90, NdotV).r;
+    float lightScatter = schlickFresnel(f0, fd90, NdotL).r;
+    float viewScatter = schlickFresnel(f0, fd90, NdotV).r;
     
     return lightScatter * viewScatter * energyFactor;
 }
@@ -308,47 +309,86 @@ float sampleShadowStencils(float3 worldPos, float3 lpos, float currentShadowFact
     
 }
 
+// Lys constants
+static const float k0 = 0.00098, k1 = 0.9921, fUserMaxSPow = 0.2425;
+static const float g_fMaxT = (exp2(-10.0 / sqrt(fUserMaxSPow)) - k0) / k1;
+static const int nMipOffset = 0;
+
+// Lys function, copy/pasted from https://www.knaldtech.com/docs/doku.php?id=specular_lys
+float GetSpecPowToMip(float fSpecPow, int nMips)
+{
+    // This line was added because ShaderTool destroys mipmaps.
+    fSpecPow = 1 - pow(1 - fSpecPow, 8);
+    // Default curve - Inverse of Toolbag 2 curve with adjusted constants.
+    float fSmulMaxT = (exp2(-10.0 / sqrt(fSpecPow)) - k0) / k1;
+    return float(nMips - 1 - nMipOffset) * (1.0 - clamp(fSmulMaxT / g_fMaxT, 0.0, 1.0));
+}
+
+    static const float Pi = 3.14159265359;
+    static const float PiH = Pi / 2;
+    static const float EPSILON = 1e-5f;
 float4 PS_main(VS_OUT input) : SV_Target
 {
 
 
    // return shadowTex.Sample(linearSampler, float3(input.UV, 0)).rrrr;
 
-    static const float Pi = 3.14159265359;
-    static const float EPSILON = 1e-5f;
 
-    float4 diffuseLight  = float4(0, 0, 0, 0);
-    float4 specularLight = float4(0, 0, 0, 0);
+    float4 diffuseLight = 0;
+    float4 specularLight = 0;
 
     //SAMPLING
+    int mipLevels, width, height;
+    reflectionTex.GetDimensions(0, width, height, mipLevels);
+
     float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
-    float metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
-    float roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
+    float metalSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).r);
+    float roughSamp = max(0.02, (metalRoughAo.Sample(pointSampler, input.UV)).g + EPSILON);
     float AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
     float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
     float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
+   
+    float3 V = normalize(camPos.xyz - wPosSamp.xyz); //wSpace
+    float3 reflectVec = -reflect(V, N);
+
     //return N.rgbr;
 
 
     //METALNESS (F90)
     float f90 = metalSamp;
-    f90 = 0.16f * metalSamp * metalSamp;
+    //f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
-    float linearRough = (saturate(roughSamp + EPSILON)).r;
-    float roughness =  linearRough * linearRough;
+    //float linearRough = roughSamp;
+    roughSamp = pow((roughSamp), 0.4);
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
-    //AO
     float AO = AOSamp;
 
     //DIFFUSE & SPECULAR
-    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, f90);
+    //float3 diffuseColor = colorSamp.rgb * (1 - metalSamp);
+    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, metalSamp);
     float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, f90);
     float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
-    //N = normalize(N);
-    float3 V = normalize(camPos.xyz - wPosSamp.xyz);
+    //diffuseColor = pow(abs(diffuseColor), 2.2);
+    //roughSamp = pow(abs(roughSamp), 2.2);
+    //AO = pow(abs(AO), 2.2);
+    //f90 = pow(abs(f90), 2.2);
+    float roughPow2 = roughSamp * roughSamp;
+    float roughPow4 = roughPow2 * roughPow2;
+    float roughtPow2H = roughPow2 * 0.5;
+
+    float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, GetSpecPowToMip(roughPow4, mipLevels));
+
+    //VIEWSPACE VARIABLES
+    //float3 vPos = mul(wPosSamp, viewMatrix).xyz;
+    ////float3 vCamPos = mul(float4(camPos.xyz, 1), viewMatrix).xyz;
+    //float3 vCamPos = viewMatrix._14_24_34;
+    //float3 vCamDir = viewMatrix._13_23_33;
+    //float3 V = normalize(vCamPos - vPos); //vSpace
+
+    
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     
@@ -375,65 +415,91 @@ float4 PS_main(VS_OUT input) : SV_Target
         {
             L = normalize(L);
             float NdotL = dot(N, L); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-           // if (NdotL >= 0.0f) // causes artifacts atm, John is on it!
-           // {
-                lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
-                lightPower *= (AOSamp);
-                lightPower *= pointlights[i].intensity;
-            //SHADOW
-       
+            // if (NdotL >= 0.0f) // causes artifacts atm, John is on it!
+            // {
+            lightPower = smoothAttenuationOpt(distance, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+            lightPower *= (AOSamp);
+            lightPower *= pointlights[i].intensity;
+
                 
-                    if (i == DYNAMIC_SHADOWLIGHT_INDEX)
-                    {
-                        shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
-                    }
+            //SHADOW
+            if (i == DYNAMIC_SHADOWLIGHT_INDEX)
+            {
+                shadowFactor = sampleShadowStencils(wPosSamp.xyz, pointlights[DYNAMIC_SHADOWLIGHT_INDEX].position.xyz, shadowFactor);
+            }
                
-                if (lightPower > 0.0f)
-                {
-            //PBR variables 
-                    //float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
-                    float3 H = normalize(V + L);
+            if (lightPower > 0.0f)
+            {
+                //DOTS
+                        //float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
+                float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz); //lightDir
+                float3 H = normalize(V + L); //halfVector
+                float LdotH = saturate((dot(L, H)));
+                float NdotH = saturate((dot(N, H)));
+                float NdotL = saturate((dot(N, L))); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+                float VdotH = saturate((dot(V, H)));
+                //float HdotN = saturate((dot(H, N)));
+                //float NdotV = saturate((dot(N, V)));
+                lightPower *= shadowFactor;
 
-                    float LdotH = saturate((dot(L, H)));
-                    float NdotH = saturate((dot(N, H)));
-                    NdotL = max(saturate(NdotL), 0.004f); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
-                    float VdotH = saturate((dot(V, H)));
-            
-                    lightPower *= shadowFactor;
-            //DIFFUSE
-                    float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
-                    diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                //DIFFUSE
+                //float fd = DisneyDiffuse(NdotV, NdotL, LdotH, roughPow4) / Pi; //roughness should be linear
+                //diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
+                //NON DISNEY DIFFUSE
+                diffuseLight += float4((saturate(dot(L, N)) * PiH) * pointlights[i].color * lightPower * diffuseColor.rgb, 1.0f);
 
-            //SPECULAR
-                    float3 f = schlick(f0, f90, LdotH);
-                    float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
-                    float d = GGX(NdotH, roughness); //roughness should be sRGB
 
-                    float3 fr = d * f * vis / Pi;
+                //SPECULAR
 
-                    specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
+                //FRESNEL TERM
+                float3 f  = schlickFresnel(f0, f90, LdotH);
+                //float3 f = specularColor + (1 - specularColor) * (pow(1 - VdotH, 5) / (6 - 5 * (1 - roughSamp)));
 
-           // return diffuseLight;
-                }
-          // }
+                //DISTRIUTION TERM
+                float d = GGX(NdotH, roughPow4); //roughness should be sRGB
+                //float d = NdotH * NdotH * (roughPow2 - 1) + 1; //denominator
+                //d = roughPow2 / (Pi * d * d);                  //ggx Distribution
+
+                //GEOMETRY TERM
+                float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughtPow2H); //roughness should be sRGB
+                //float vis = (NdotV / (NdotV * (1 - roughtPow2H) + roughtPow2H));
+
+
+                //float3 fr = d * f * vis / Pi;
+                float3 fr = ((d * f * vis) / 4 * NdotL * NdotV).rrr;
+
+
+                specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
+
+                //return fr.rgbr;
+                //return diffuseLight;
+            }
         }
     }
 
     //return shadowFactor;
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight.rgb);
-    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
-    float3 specular = specularLight.rgb;
-    
+    //float3 L = normalize(pointlights[i].position.xyz - wPosSamp.xyz); //lightDir
+    //float3 H = normalize(V + L); //halfVector
+    //float LdotH = saturate((dot(L, H)));
+    //float3 f = schlickFresnel(f0, f90, LdotH);
+    float4 f = float4(saturate(specularColor + (1 - specularColor) * pow(1 - NdotV, 5)), 1.0);
 
+
+    float3 diffuse = lerp(diffuseLight, specSamp, f);
+    //float3 diffuse = saturate(diffuseLight.rgb);
+    float3 specular = saturate(specularLight.rgb);
+    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
+    
     //float4 finalColor = float4(specular, 1);
-    float4 finalColor = float4(saturate(diffuse), 1);
-    finalColor.rgb += saturate(specular);
+    float4 finalColor = float4((diffuse), 1);
+    finalColor.rgb += specular;
     finalColor.rgb += ambient;
     //finalColor.rgb *= AOSamp;
 
     
-    return saturate(finalColor);
+    return finalColor;
+    //return (specSamp.xyzx);
 
 
 

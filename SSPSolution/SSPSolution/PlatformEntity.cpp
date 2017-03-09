@@ -106,7 +106,6 @@ int PlatformEntity::React(unsigned int entityID, EVENT reactEvent)
 	case WHEEL_INCREASING:
 		//printf("INCREASING\n");
 		this->GetAIComponent()->AC_triggered = true;
-		this->GetAIComponent()->AC_increasing = true;
 		this->GetAIComponent()->AC_reset = false;
 		break;
 	case WHEEL_DECREASING:
