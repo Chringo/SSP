@@ -124,7 +124,7 @@ void LevelState::SendSyncForJoin()
 		DirectX::XMFLOAT4X4 newrot;
 		DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
 		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
-}
+	}
 
 }
 
@@ -247,7 +247,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_levelPaths.push_back({ "../Assets/L3E1.level", 41.0f });
 	this->m_levelPaths.push_back({ "../Assets/L4E1.level", 41.0f });
 	this->m_levelPaths.push_back({ "../Assets/L5E1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../Assets/L6E1.level", 40.0f });
+	//this->m_levelPaths.push_back({ "../Assets/L6E1.level", 40.0f });
 
 
 
