@@ -146,7 +146,7 @@ void LevelState::SendSyncForJoin()
 			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0, i, gp->finalJointTransforms[i]);
 		}
 	}
-	else if (this->m_player1.isAnimationChanged())
+	else
 	{
 		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
