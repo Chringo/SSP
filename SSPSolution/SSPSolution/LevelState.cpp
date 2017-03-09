@@ -2744,6 +2744,7 @@ int LevelState::LoadNext()
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
 		this->m_curLevel = 0;
+		this->m_gsh->PopStateFromStack();
 	}
 
 	Resources::Status st = Resources::Status::ST_OK;
