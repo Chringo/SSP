@@ -17,7 +17,7 @@ WheelEntity::~WheelEntity()
 	}
 }
 
-int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
+int WheelEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
 {
 	int result = this->InitializeBase(entityID, pComp, gComp, nullptr);
 	//Load default values
@@ -274,7 +274,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	return 0;
 }
 
-int WheelEntity::React(int entityID, EVENT reactEvent)
+int WheelEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	return 0;
 }
@@ -510,9 +510,9 @@ void WheelEntity::m_UpdateOBB(bool inc, float dT)
 	DirectX::XMVECTOR rotVec = Ortho.r[0];
 
 	//get the rotation from the physics component
-	float rotate = this->m_rotatePerSec * dT * 50;
+	float rotate = this->m_rotatePerSec * dT * 50.0f;
 	//float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
-	float radian = rotate * (3.14 / 180);
+	float radian = rotate * (3.14f / 180.0f);
 	
 	//if the wheel is spinning to orginal state, decreasing
 	if(inc == false)

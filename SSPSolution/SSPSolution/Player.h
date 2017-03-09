@@ -34,10 +34,10 @@ public:
 	Player();
 	~Player();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
+	int Initialize(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
 
 	int Update(float dT, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 	//Returns the old value
 	Entity* SetGrabbed(Entity* entityPtr);
