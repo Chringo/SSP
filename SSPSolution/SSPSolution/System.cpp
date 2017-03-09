@@ -110,7 +110,7 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Thread 0");
 	DebugHandler::instance()->CreateTimer(L"Thread 1");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
-	DebugHandler::instance()->CreateCustomLabel(L"Low frame counter", 0);
+	DebugHandler::instance()->CreateCustomLabel(L"Slow frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
 
 
