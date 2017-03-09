@@ -356,12 +356,11 @@ float4 PS_main(VS_OUT input) : SV_Target
     float f90 = metalSamp;
     //f90 = 0.16f * metalSamp * metalSamp;
 
-    float spow = (2.0 / (roughSamp * roughSamp)) - 2.0;
 
-    float4 specSamp = reflectionTex.SampleLevel(linearSampler, reflectVec, GetSpecPowToMip(spow, mipLevels));
     //float4 specSamp = reflectionTex.SampleLevel(pointSampler, reflectVec, 0);
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     //float linearRough = roughSamp;
+    //float spow = (2.0 / (roughSamp * roughSamp)) - 2.0;
     roughSamp = pow((roughSamp), 0.4);
     //float sRGBrough = linearToSRGB(met_rough_ao_Samp.ggg).g; //takes float3, could cause error
 
@@ -381,6 +380,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     float roughPow4 = roughPow2 * roughPow2;
     float roughtPow2H = roughPow2 * 0.5;
 
+    float4 specSamp = reflectionTex.SampleLevel(linearSampler, reflectVec, GetSpecPowToMip(roughSamp, mipLevels));
     //specSamp = pow(abs(specSamp), 2.2);
    
     //VIEWSPACE VARIABLES
