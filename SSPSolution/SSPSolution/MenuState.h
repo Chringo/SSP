@@ -111,6 +111,7 @@ private:
 	unsigned int m_markedItem;
 	UIComponent* m_menuBG;
 	UIComponent* m_menuFrame;
+	UIComponent* m_levelFrame;
 	std::vector<UIComponent*> m_menuCogs;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;

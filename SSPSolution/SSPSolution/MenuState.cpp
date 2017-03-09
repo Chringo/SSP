@@ -63,6 +63,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuFrame->scale = 0.66666f;
 	this->m_menuFrame->layerDepth = 0.8f;
 
+	this->m_levelFrame = cHandler->GetUIComponent();
+	this->m_levelFrame->active = 0;
+	this->m_levelFrame->position = DirectX::XMFLOAT2(300.0f, 110.0f);
+	this->m_levelFrame->size = DirectX::XMFLOAT2(700.f, 500.f);
+	this->m_levelFrame->spriteID = Textures::LevelFrame;
+	//this->m_levelFrame->scale = 0.66666f;
+	this->m_levelFrame->layerDepth = 0.8f;
+
 	size_t nrOfCogs = 2;
 	for (size_t i = 0; i < nrOfCogs; i++)
 	{
@@ -147,14 +155,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 150.f + (i / 3) * 250.f);
+		tempUIComp->position = DirectX::XMFLOAT2(380.f + ((i % 3) * 200.f), 150.f + (i / 3) * 220.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
-		tempUIComp->scale = 0.8f;
+		tempUIComp->scale = 0.66666f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 310.f + (i / 3) * 250.f);
+		tempTextComp->position = DirectX::XMFLOAT2(380.f + ((i % 3) * 200.f), 290.f + (i / 3) * 220.f);
 		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
@@ -164,14 +172,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	//Add go back button to level select
 	UIComponent* tempUIComp = cHandler->GetUIComponent();
 	tempUIComp->active = 0;
-	tempUIComp->position = DirectX::XMFLOAT2(100.f, 600.f);
+	tempUIComp->position = DirectX::XMFLOAT2(515.f, 600.f);
 	tempUIComp->layerDepth = 0.5f;
 	tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 	tempUIComp->scale = 0.66666f;
 	tempUIComp->spriteID = Textures::Button;
 	TextComponent* tempTextComp = cHandler->GetTextComponent();
 	tempTextComp->active = 0;
-	tempTextComp->position = DirectX::XMFLOAT2(120.f, 610.f);
+	tempTextComp->position = DirectX::XMFLOAT2(535.f, 610.f);
 	tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 	tempTextComp->useBlackText = true;
 	MenuButton button;
@@ -498,6 +506,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->m_ipTextBox.SetActive(false);
 			this->m_menuFrame->active = 0;
+			this->m_levelFrame->active = 1;
 			for (UIComponent* cog : this->m_menuCogs)
 			{
 				cog->active = 0;
@@ -734,6 +743,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->m_menuBG->active = 0;
 			this->m_menuFrame->active = 0;
+			this->m_levelFrame->active = 0;
 
 #pragma endregion Hide Menu
 
@@ -769,6 +779,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->m_ipTextBox.SetActive(true);
 			this->m_menuFrame->active = 1;
+			this->m_levelFrame->active = 0;
 			for (UIComponent* cog : this->m_menuCogs)
 			{
 				cog->active = 1;
@@ -933,6 +944,7 @@ int MenuState::LeaveState()
 	{
 		cog->active = 0;
 	}
+	this->m_levelFrame->active = 0;
 
 	return 0;
 }
