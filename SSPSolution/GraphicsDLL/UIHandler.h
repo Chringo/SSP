@@ -9,19 +9,27 @@
 
 enum Textures
 {
-	Cat = 0,
-	Gamelogo = 1,
-	Keymaps = 2,
-	MenuBG = 3,
-	TButton = 4,
-	Crosshair = 5,
-	CrosshairAim = 6,
-	Level0 = 7,
-	Level1 = 8,
-	Level2 = 9,
-	Level3 = 10,
-	Level4 = 11,
-	Level5 = 12
+	Gamelogo = 0,
+	Background = 1,
+	Chars = 2,
+	Frame = 3,
+	Header = 4,
+	Cog = 5,
+	BStartGame = 6,
+	BOptions = 7,
+	BExit = 8,
+	BHost = 9,
+	BJoin = 10,
+	BIP = 11,
+	BBack = 12,
+	Level0 = 13,
+	Level1 = 14,
+	Level2 = 15,
+	Level3 = 16,
+	Level4 = 17,
+	Level5 = 18,
+	Crosshair = 19,
+	CrosshairAim = 20
 };
 
 class UIHandler
