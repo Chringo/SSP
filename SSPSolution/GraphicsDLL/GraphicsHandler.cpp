@@ -948,6 +948,19 @@ int GraphicsHandler::Render(float deltaTime)
 	  return 0;
  }
 
+  int GraphicsHandler::RenderStaticScene(std::vector<GraphicsComponent*> comps)
+  {
+	  m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	  m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
+
+	  for (GraphicsComponent * comp : comps)
+	  {
+			m_shaderControl->Draw(comp->modelPtr, comp);
+	  }
+
+	  return 0;
+  }
+
  int GraphicsHandler::Update(float deltaTime)
  {
 	 int result = 0;
@@ -1807,6 +1820,197 @@ int GraphicsHandler::GenerateSceneCubeMap(DirectX::XMVECTOR cubePos)
 		//ID3D11Resource* textureRes;
 		//m_d3dHandler->GetBackbufferSRV()->GetResource(&textureRes);
 		context->CopySubresourceRegion(tempTexture, 10*i, 0, 0, 0, backBufferPrt, 0, NULL); //copy the  jth texture in the cubeMap
+	}
+
+	context->GenerateMips(m_sceneCubeMap);
+	m_shaderControl->SetBackBuffer(m_d3dHandler->GetBackbufferRTV(), m_d3dHandler->GetBackbufferSRV());
+
+	//m_d3dHandler->PresentScene();
+
+	context->RSSetViewports(1, m_d3dHandler->GetViewPort());
+	m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_sceneCubeMap);
+
+	tempTexture->Release();
+	backBufferPrt->Release();
+	cubeRTV->Release();
+	textureSRV->Release();
+
+	if (this->m_sceneCubeMap != nullptr && this->m_defaultCubeMap != nullptr) {
+		this->m_defaultCubeMap->Release();
+		this->m_defaultCubeMap = nullptr;
+	}
+
+	return 0;
+}
+
+
+int GraphicsHandler::EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*> comps)
+{
+	//Render(1.0f);
+	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
+	ID3D11Device* device = this->m_d3dHandler->GetDevice();
+	//REFLECTION CUBEMAP
+
+	if (m_sceneCubeMap != nullptr) {
+		m_sceneCubeMap->Release();
+		m_sceneCubeMap = nullptr;
+	}
+
+#pragma region Create the textureCube
+	D3D11_TEXTURE2D_DESC cubeTextureDesc;
+
+	cubeTextureDesc.Width = CUBE_MAP_RESOLUTION;
+	cubeTextureDesc.Height = CUBE_MAP_RESOLUTION;
+	cubeTextureDesc.MipLevels = 10;
+	cubeTextureDesc.ArraySize = 6;	//one for each axis 
+	cubeTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	cubeTextureDesc.SampleDesc.Count = 1;
+	cubeTextureDesc.SampleDesc.Quality = 0;
+	cubeTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	cubeTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	cubeTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cubeTextureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	//Create the render target Texture
+	ID3D11Texture2D* tempTexture;
+	HRESULT hResult = device->CreateTexture2D(&cubeTextureDesc, NULL, &tempTexture);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+	//Set up the shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewCubeTexture;
+	resourceViewCubeTexture.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	resourceViewCubeTexture.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	resourceViewCubeTexture.TextureCube.MipLevels = 10;
+	resourceViewCubeTexture.TextureCube.MostDetailedMip = 0;
+
+	//Create the resourceView;
+
+	hResult = device->CreateShaderResourceView(tempTexture, &resourceViewCubeTexture, &m_sceneCubeMap);
+	if (FAILED(hResult))
+		return 1;
+#pragma endregion
+
+
+
+#pragma region
+
+
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	ZeroMemory(&texDesc, sizeof(texDesc));
+	texDesc.Width = CUBE_MAP_RESOLUTION;
+	texDesc.Height = CUBE_MAP_RESOLUTION;
+	texDesc.MipLevels = 0;
+	texDesc.ArraySize = 1;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+
+	ID3D11RenderTargetView*   cubeRTV = nullptr;
+	ID3D11Texture2D*		  backBufferPrt = nullptr;
+	ID3D11ShaderResourceView *textureSRV = nullptr;
+
+	hResult = device->CreateTexture2D(&texDesc, NULL, &backBufferPrt);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+	hResult = device->CreateRenderTargetView(backBufferPrt, NULL, &cubeRTV);
+	if (FAILED(hResult))
+	{
+
+		backBufferPrt->Release();
+		// hResult = DirectX::CreateDDSTextureFromFile
+		//(
+		//	m_d3dHandler->GetDevice(),
+		//	L"../ResourceLib/AssetFiles/Islands.dds",
+		//	&textureResource, &textureView, size_t(0),
+		//	(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+		//);
+		//m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_sceneCubeMap);
+
+
+		return 1;
+	}
+
+	hResult = device->CreateShaderResourceView(backBufferPrt, nullptr, &textureSRV);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+
+#pragma endregion Create the RTV and texture for the cube map rendering
+
+	//Look along each coordinate axis
+	DirectX::XMVECTOR position = cubePos;
+	DirectX::XMVECTOR targets[6];
+
+	targets[0] = DirectX::XMVectorSet(position.m128_f32[0] + 1.0f, position.m128_f32[1], position.m128_f32[2], 1.0f); // +X
+	targets[1] = DirectX::XMVectorSet(position.m128_f32[0] - 1.0f, position.m128_f32[1], position.m128_f32[2], 1.0f); // -X
+	targets[2] = DirectX::XMVectorSet(position.m128_f32[0], position.m128_f32[1] + 1.0f, position.m128_f32[2], 1.0f); // +Y
+	targets[3] = DirectX::XMVectorSet(position.m128_f32[0], position.m128_f32[1] - 1.0f, position.m128_f32[2], 1.0f); // -Y
+	targets[4] = DirectX::XMVectorSet(position.m128_f32[0], position.m128_f32[1], position.m128_f32[2] + 1.0f, 1.0f); // +Z
+	targets[5] = DirectX::XMVectorSet(position.m128_f32[0], position.m128_f32[1], position.m128_f32[2] - 1.0f, 1.0f); // -Z
+
+
+
+																													  /* use world up vector (0,1,0) for all directions except +Y/-Y, In these cases we need a different up vector*/
+	DirectX::XMVECTOR ups[6];
+
+	ups[0] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // +X
+	ups[1] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // -X
+	ups[2] = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f); // +Y
+	ups[3] = DirectX::XMVectorSet(0.0f, 0.0f, +1.0f, 1.0f); // -Y
+	ups[4] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // +Z
+	ups[5] = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);  // -Z
+
+	ConstantBufferHandler::ConstantBuffer::frame::cbData frame;
+	frame.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 500.0f);
+
+	D3D11_VIEWPORT vp;
+
+	vp.Width = (float)CUBE_MAP_RESOLUTION;
+	vp.Height = (float)CUBE_MAP_RESOLUTION;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+
+	std::vector<int> lights(m_LightHandler->Get_Light_List()->numItems);
+	for (size_t i = 0; i < m_LightHandler->Get_Light_List()->numItems; i++)
+	{
+		lights.at(i) = i;
+	}
+	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPU(&lights);
+	m_shaderControl->SetBackBuffer(cubeRTV, textureSRV);
+	for (int i = 0; i < 6; i++) //for each side of the cube map
+	{
+
+		ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+		m_shaderControl->ClearFrame();
+		this->m_d3dHandler->ClearBlendState();
+		frame.cView = DirectX::XMMatrixLookAtLH(position, targets[i], ups[i]);
+		frame.cProjection = DirectX::XMMatrixPerspectiveFovLH((float)DirectX::XM_PI * 0.5, 1.0f, 0.0005f, 500.0f);
+		frame.cPos = position;
+		ConstantBufferHandler::GetInstance()->frame.UpdateBuffer(&frame);
+		this->RenderStaticScene(comps);
+
+		m_LightHandler->SetBufferAsActive();
+		m_LightHandler->SetStaticShadowsToGPU();
+
+		context->RSSetViewports(1, &vp);
+		m_shaderControl->DrawFinal();
+		//Render(1.0f);
+		//ID3D11Resource* textureRes;
+		//m_d3dHandler->GetBackbufferSRV()->GetResource(&textureRes);
+		context->CopySubresourceRegion(tempTexture, 10 * i, 0, 0, 0, backBufferPrt, 0, NULL); //copy the  jth texture in the cubeMap
 	}
 
 	context->GenerateMips(m_sceneCubeMap);
