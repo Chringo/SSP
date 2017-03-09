@@ -606,9 +606,12 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		else if (this->m_ipTextBox.m_uiComp->CheckClicked())
 		{
 			//IP text box was clicked
-			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
-			this->m_markedItem = this->m_startMenuButtons.size();
-			this->m_ipTextBox.SetFocused(true);
+			if (this->m_markedItem != this->m_startMenuButtons.size())
+			{
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+				this->m_markedItem = this->m_startMenuButtons.size();
+				this->m_ipTextBox.SetFocused(true);
+			}
 		}
 
 		if (this->m_ipTextBox.m_focused)
@@ -945,6 +948,8 @@ int MenuState::LeaveState()
 		cog->active = 0;
 	}
 	this->m_levelFrame->active = 0;
+	this->m_menuBG->active = 0;
+	this->m_menuFrame->active = 0;
 
 	return 0;
 }
