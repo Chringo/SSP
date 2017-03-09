@@ -5,14 +5,14 @@
 class Subject
 {
 private:
-	std::map<int, Observer*> m_observers;	//Pair observer and EntityID
+	std::map<unsigned int, Observer*> m_observers;	//Pair observer and EntityID
 public:
 	Subject();
 	virtual ~Subject();
 
-	void Notify(int entityID, EVENT newEvent);
-	void AddObserver(Observer* observer, int entityID);
-	int RemoveObserver(int entityID);
+	void Notify(unsigned int entityID, EVENT newEvent);
+	void AddObserver(Observer* observer, unsigned int entityID);
+	int RemoveObserver(unsigned int entityID);
 	//int RemoveObserver(Observer* observer);
 private:
 };

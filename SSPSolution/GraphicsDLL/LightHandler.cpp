@@ -398,8 +398,8 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 
 	  static std::vector<Point> lightArray;
 	  static std::vector<ConstantBufferHandler::ConstantBuffer::light::arrayIndex>	shadowIndices;
-	
-	  lightArray.push_back(m_lightData.dataPtr[m_lightData.currentDynamicShadowIndex]);			  // Make sure that the dynamic shadow casting light is in the buffer
+	if(m_lightData.currentDynamicShadowIndex != -1)
+		 lightArray.push_back(m_lightData.dataPtr[m_lightData.currentDynamicShadowIndex]);			  // Make sure that the dynamic shadow casting light is in the buffer
 	  
 	  ConstantBufferHandler::ConstantBuffer::light::arrayIndex item;
 	  item.index = 0;

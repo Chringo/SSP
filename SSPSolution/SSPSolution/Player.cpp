@@ -22,7 +22,7 @@ Player::~Player()
 	}
 }
 
-int Player::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
+int Player::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp)
 {
 	int result = 0;
 
@@ -555,8 +555,8 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			{
 				//offsets for when player ragdoll is in KEYFRAMEBLEND stage
 				DirectX::XMVECTOR offSet = this->m_ragdoll->playerPC->PC_OBB.ort.r[1];
-				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -0.0);
-				offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorSet(0, 0, -1.5, 0));
+				offSet = DirectX::XMVectorScale(offSet, this->m_ragdoll->playerPC->PC_OBB.ext[1] * -0.0f);
+				offSet = DirectX::XMVectorAdd(offSet, DirectX::XMVectorSet(0, 0, -1.5f, 0));
 				this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorAdd(this->m_ragdoll->lowerBody.center->PC_pos, offSet));
 
 			}
@@ -568,7 +568,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	return result;
 }
 
-int Player::React(int entityID, EVENT reactEvent)
+int Player::React(unsigned int entityID, EVENT reactEvent)
 {
 	int result = 0;
 
