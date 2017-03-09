@@ -510,16 +510,19 @@ void WheelEntity::m_UpdateOBB(bool inc, float dT)
 	DirectX::XMVECTOR rotVec = Ortho.r[0];
 
 	//get the rotation from the physics component
-	float rotate = this->m_rotatePerSec * dT * 50.0f;
-	//float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
-	float radian = rotate * (3.14f / 180.0f);
-	
+	float rotate = dT;
 	//if the wheel is spinning to orginal state, decreasing
-	if(inc == false)
-		radian *= -1;
+	if (inc)
+	{
+		rotate *= this->m_rotatePerSec;
+	}
+	else
+	{
+		rotate *= -this->m_resetRotatePerSec;
+	}
 
 	//angle rotation vector
-	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, radian);
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, rotate);
 
 	//update the new orthographic matrix
 	this->m_pComp->PC_OBB.ort *= rotationMatrix;
