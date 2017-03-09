@@ -117,6 +117,15 @@ void LevelState::SendSyncForJoin()
 		}
 	}
 
+	PhysicsComponent* pc = nullptr;
+	for (PlatformEntity* p : this->m_platformEntities)
+	{
+		pc = p->GetPhysicsComponent();
+		DirectX::XMFLOAT4X4 newrot;
+		DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
+		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
+}
+
 }
 
 LevelState::LevelState()
@@ -232,13 +241,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
 
 	//For installer
-	this->m_levelPaths.push_back({ "../Assets/TutorialLevel.level", 68.0f });
-	this->m_levelPaths.push_back({ "../Assets/L1P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../Assets/L1P2.level", 46.0f });
-	this->m_levelPaths.push_back({ "../Assets/L2P1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../Assets/L3P1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../Assets/L4P1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../Assets/L5P1.level", 40.0f });
+	this->m_levelPaths.push_back({ "../Assets/L0E1.level", 68.0f });
+	this->m_levelPaths.push_back({ "../Assets/L1E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../Assets/L2E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../Assets/L3E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../Assets/L4E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../Assets/L5E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../Assets/L6E1.level", 40.0f });
 
 
 
@@ -645,7 +654,28 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
 							pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
 							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+							break;
+						}
 
+					}
+
+					//If we still havent found an entity check for platforms
+					std::vector<PlatformEntity*>::iterator Pitr;
+					for (Pitr = this->m_platformEntities.begin(); Pitr != this->m_platformEntities.end(); Pitr++)
+					{
+
+						if (itr->entityID == (*Pitr._Ptr)->GetEntityID())
+						{
+							PlatformEntity* plat = (*Pitr._Ptr);	// The entity identified by the ID sent from the other client
+							pp = plat->GetPhysicsComponent();
+
+							// Update the component
+							pp->PC_pos = DirectX::XMLoadFloat3(&itr->newPos);
+							pp->PC_OBB.ort = DirectX::XMLoadFloat4x4(&itr->newRotation);
+							pp->PC_velocity = DirectX::XMLoadFloat3(&itr->newVelocity);
+
+							plat->GetAIComponent()->AC_position = pp->PC_pos;
+							break;
 						}
 
 					}
@@ -784,7 +814,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 						this->m_player2.GetAnimationComponent()->source_State = this->m_player2.GetAnimationComponent()->animation_States->at(AnimationStates::PLAYER_RISE_UP)->GetAnimationStateData();
 						this->m_player2.GetAnimationComponent()->source_State->stateIndex = AnimationStates::PLAYER_RISE_UP;
 					}
-					
+
 					this->m_player2.GetRagdoll()->state = RagdollState::ANIMATED;
 					this->m_player2.GetAnimationComponent()->previousState = this->m_player2.GetAnimationComponent()->currentState;
 					this->m_player2.SetAnimationComponent(itr->newstate, itr->transitionDuritation, (Blending)itr->blendingType, itr->isLooping, itr->lockAnimation, itr->playingSpeed, itr->velocity);
@@ -880,7 +910,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), closestBall->GetEntityID());
 
 			//Play the animation for player picking up the ball.
-				this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
+			this->m_player1.GetAnimationComponent()->previousState = this->m_player1.GetAnimationComponent()->currentState;
 			this->m_player1.SetAnimationComponent(AnimationStates::PLAYER_PICKUP, 0.45f, Blending::FROZEN_TRANSITION, false, true, 1.75f, 1.0f);
 			this->m_player1.GetAnimationComponent()->currentState = AnimationStates::PLAYER_PICKUP;
 		}

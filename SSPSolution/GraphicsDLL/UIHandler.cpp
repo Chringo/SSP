@@ -29,7 +29,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"../Assets/UIelements/consolas.spritefont");
 	
-	this->m_nrOfTextures = 14;
+	this->m_nrOfTextures = 13;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{
 		ID3D11ShaderResourceView* newTexture = nullptr;
@@ -49,7 +49,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level3.png", nullptr, &this->m_textures.at(10));
 	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level4.png", nullptr, &this->m_textures.at(11));
 	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level5.png", nullptr, &this->m_textures.at(12));
-	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level6.png", nullptr, &this->m_textures.at(13));
+	
 
 	D3D11_BLEND_DESC BlendState;
 	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));

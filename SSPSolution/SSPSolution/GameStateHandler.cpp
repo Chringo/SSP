@@ -78,7 +78,7 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef
 		if (levelPath.length() < 2)
 		{
 			//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
-			levelSelect->LoadLevel(std::string("../Assets/L1P1.level"));
+			levelSelect->LoadLevel(std::string("../Assets/L0E1.level"));
 
 		}	
 		else
