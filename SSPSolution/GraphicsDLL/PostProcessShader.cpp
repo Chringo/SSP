@@ -23,6 +23,7 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	 filePaths[WATER]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[BLUR]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[FXAA]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[SSR]			 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
 
 	 // Create the screen quad \\
 	 

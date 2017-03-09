@@ -11,7 +11,7 @@ public:
 		WATER,
 		BLUR,
 		FXAA,
-
+		SSR,
 
 		NUM_TYPES
 	};
