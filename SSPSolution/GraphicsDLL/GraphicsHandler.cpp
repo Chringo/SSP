@@ -1155,7 +1155,8 @@ void GraphicsHandler::Shutdown()
 
 	
 #endif // _DEBUG
-
+	if (this->m_defaultCubeMap != nullptr)
+		this->m_defaultCubeMap->Release();
 	
 	delete[] this->m_animGraphicsComponents;
 	delete[] this->m_graphicsComponents;
@@ -1522,16 +1523,15 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
  int GraphicsHandler::GenerateStaticSceneShadows()
 {
 	 ID3D11Resource * textureView = nullptr;
-	 ID3D11ShaderResourceView *textureResource = nullptr;
 
 	 DirectX::CreateDDSTextureFromFile
 	 (
 	 	m_d3dHandler->GetDevice(),
 	 	L"../ResourceLib/AssetFiles/Islands.dds",
-	 	&textureView, &textureResource, size_t(0),
+	 	&textureView, &m_defaultCubeMap, size_t(0),
 	 	(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
 	 );
-	 m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &textureResource);
+	 m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_defaultCubeMap);
 
 	
 
@@ -1621,18 +1621,19 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 		}
 	}
 
+
+
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
 	m_d3dHandler->PresentScene();
 	
-	GenerateSceneCubeMap();
 
-	textureResource->Release();
+
 
 	return  1;
 }
 
-int GraphicsHandler::GenerateSceneCubeMap()
+int GraphicsHandler::GenerateSceneCubeMap(DirectX::XMVECTOR cubePos)
 {
 	//Render(1.0f);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
@@ -1737,7 +1738,7 @@ int GraphicsHandler::GenerateSceneCubeMap()
 #pragma endregion Create the RTV and texture for the cube map rendering
 
 	//Look along each coordinate axis
-	DirectX::XMVECTOR position = DirectX::XMVectorSet(0.0f,2.0f,-19.0f,1.0f);
+	DirectX::XMVECTOR position = cubePos;
 	DirectX::XMVECTOR targets[6];
 
 	targets[0] = DirectX::XMVectorSet(position.m128_f32[0] + 1.0f, position.m128_f32[1],			   position.m128_f32[2], 1.0f); // +X
@@ -1813,6 +1814,11 @@ int GraphicsHandler::GenerateSceneCubeMap()
 	backBufferPrt->Release();
 	cubeRTV->Release();
 	textureSRV->Release();
+
+	if (this->m_sceneCubeMap != nullptr && this->m_defaultCubeMap != nullptr) {
+		this->m_defaultCubeMap->Release();
+		this->m_defaultCubeMap = nullptr;
+	}
 
 	return 0;
 }

@@ -485,7 +485,7 @@ float4 PS_main(VS_OUT input) : SV_Target
     //float LdotH = saturate((dot(L, H)));
     //float3 f = schlickFresnel(f0, f90, LdotH);
     float4 f = float4(saturate(specularColor + (1 - specularColor) * pow(1 - NdotV, 5)), 1.0);
-
+    
 
     float3 diffuse = lerp(diffuseLight, specSamp, f);
     //float3 diffuse = saturate(diffuseLight.rgb);

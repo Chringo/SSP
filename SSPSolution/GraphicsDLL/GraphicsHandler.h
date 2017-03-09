@@ -93,6 +93,7 @@ private:
 	std::vector<int> m_activeLightIndices;
 
 	ID3D11ShaderResourceView* m_sceneCubeMap = nullptr;
+	ID3D11ShaderResourceView *m_defaultCubeMap = nullptr;
 	//temp
 	Camera* m_camera;
 	ID3D11Buffer* m_vertexBuffer;
@@ -259,7 +260,7 @@ public:
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();
-	GRAPHICSDLL_API int GenerateSceneCubeMap();
+	GRAPHICSDLL_API int GenerateSceneCubeMap(DirectX::XMVECTOR cubePos);
 
 	//TEMP STUFF
 public:
