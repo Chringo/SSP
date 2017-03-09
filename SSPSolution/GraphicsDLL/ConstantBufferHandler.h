@@ -141,7 +141,7 @@ public:
 			{
 				
 				UINT   NUM_POINTLIGHTS    = 0;
-				UINT   DYNAMIC_SHADOWLIGHT_INDEX = 0;
+				UINT   DYNAMIC_SHADOWLIGHT_INDEX = 1337;
 				UINT   padding[2];
 				float  AMBIENT_COLOR[3] = { 1.0f,1.0f,1.0f };
 				float  AMBIENT_INTENSITY = 0.2f;

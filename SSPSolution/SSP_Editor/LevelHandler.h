@@ -16,11 +16,11 @@ private:
 	Level m_currentLevel;
 	QString filePath = "//DESKTOP-BOKNO6D/server/Assets/bbf files/Levels/";
 	LevelHandler();
-	
+	GraphicsHandler* m_graphicsHandler;
 public:
 	~LevelHandler();
 	static LevelHandler* GetInstance();
-
+	void SetGraphicsHandler(GraphicsHandler* gh);
 	LevelData::LevelStatus ExportLevelFile(QString & filepath = QString());
 	LevelData::LevelStatus ImportLevelFile();
 	LevelData::LevelStatus NewLevel();
