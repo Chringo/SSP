@@ -956,8 +956,7 @@ int GraphicsHandler::Render(float deltaTime)
 
 	  for (GraphicsComponent * comp : comps)
 	  {
-		  if (comp->active)
-			  m_shaderControl->Draw(comp->modelPtr, comp);
+			m_shaderControl->Draw(comp->modelPtr, comp);
 	  }
 
 	  return 0;

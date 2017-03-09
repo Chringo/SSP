@@ -50,7 +50,7 @@ public:
 	Resources::Status AddPointLight();
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
-
+	void generateCubeMap(GraphicsHandler* gh, DirectX::XMVECTOR campos);
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);
 	Resources::Status AddLightEntity(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
