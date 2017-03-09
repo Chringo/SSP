@@ -110,6 +110,7 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Thread 0");
 	DebugHandler::instance()->CreateTimer(L"Thread 1");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+	DebugHandler::instance()->CreateCustomLabel(L"Low frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
 
 
@@ -216,7 +217,7 @@ int System::Update(float deltaTime)
 			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
 			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
 
-			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
+			DebugHandler::instance()->UpdateCustomLabel(2, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);
 
 			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
@@ -274,7 +275,7 @@ int System::Update(float deltaTime)
 
 			DebugHandler::instance()->StartTimer(2);
 			int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
-			DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
+			//DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
