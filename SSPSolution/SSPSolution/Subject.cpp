@@ -11,9 +11,9 @@ Subject::~Subject()
 {
 }
 
-void Subject::Notify(int entityID, EVENT newEvent)
+void Subject::Notify(unsigned int entityID, EVENT newEvent)
 {
-	std::map<int, Observer*>::iterator itr;
+	std::map<unsigned int, Observer*>::iterator itr;
 
 	for (itr = this->m_observers.begin(); itr != this->m_observers.end(); itr++)
 	{
@@ -21,12 +21,12 @@ void Subject::Notify(int entityID, EVENT newEvent)
 	}
 }
 
-void Subject::AddObserver(Observer * observer, int entityID)
+void Subject::AddObserver(Observer * observer, unsigned int entityID)
 {
-	this->m_observers.insert( std::pair<int, Observer*>(entityID, observer) );
+	this->m_observers.insert( std::pair<unsigned int, Observer*>(entityID, observer) );
 }
 
-int Subject::RemoveObserver(int entityID)
+int Subject::RemoveObserver(unsigned int entityID)
 {
 	if (this->m_observers.erase(entityID) != 0)
 	{

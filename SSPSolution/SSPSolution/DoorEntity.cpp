@@ -9,7 +9,7 @@ DoorEntity::~DoorEntity()
 {
 }
 
-int DoorEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, std::vector<ElementState> subjectStates, float rotateTime, float minRotation, float maxRotation)
+int DoorEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, std::vector<ElementState> subjectStates, float rotateTime, float minRotation, float maxRotation)
 {
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
 
@@ -279,7 +279,7 @@ int DoorEntity::Update(float dT, InputHandler * inputHandler)
 	return 0;
 }
 
-int DoorEntity::React(int entityID, EVENT reactEvent)
+int DoorEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	//Kims stuff, "crazy but elegant" - Oscar 2017-01-23
 	//I, Kim, do not remember our old crazy solution.

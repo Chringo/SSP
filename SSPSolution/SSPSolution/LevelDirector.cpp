@@ -77,7 +77,7 @@ int FSMEnvironment::LevelDirector::Update(float dt)
 	return SUCCESS;
 }
 
-int FSMEnvironment::LevelDirector::React(int entityID, EVENT event)
+int FSMEnvironment::LevelDirector::React(unsigned int entityID, EVENT event)
 {
 	// TODO: Proper reaction in director!
 

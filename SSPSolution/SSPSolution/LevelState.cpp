@@ -236,7 +236,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3E1.level", 41.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L4E1.level", 41.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5E1.level", 40.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L6E1.level", 41.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L6E1.level", 41.0f });
 
 
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
@@ -551,7 +551,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	}
 	this->UpdateGraphicalLinks();
 
-	int prevConnects = this->m_networkModule->GetNrOfConnectedClients();
+	int prevConnects = (int)this->m_networkModule->GetNrOfConnectedClients();
 	this->m_networkModule->Update();
 
 	//If someone has connected
@@ -1489,15 +1489,15 @@ int LevelState::CreateLevel(LevelData::Level * data)
 #pragma region
 	this->m_player1.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
-			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2, 0, 0, 0));
+			m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(2.0f, 0.0f, 0.0f, 0.0f));
 	m_player2.GetBall()->GetPhysicsComponent()->PC_pos =
 		DirectX::XMVectorAdd(
-			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1, 1, 1, 0));
+			m_player2.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f));
 
 
 #pragma region
 	float linkLenght = 0.5f;
-	DirectX::XMVECTOR diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
+	DirectX::XMVECTOR diffVec = DirectX::XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
 	PhysicsComponent* previous = this->m_player1.GetPhysicsComponent();
 	PhysicsComponent* next = nullptr;
 	PhysicsComponent* PC_ptr = nullptr;
@@ -1546,7 +1546,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 	this->m_Player1ChainPhysicsComp.push_back(this->m_player1.GetBall()->GetPhysicsComponent());
 	this->m_cHandler->GetPhysicsHandler()->CreateLink(previous, this->m_player1.GetBall()->GetPhysicsComponent(), linkLenght, PhysicsLinkType::PL_CHAIN);
-	diffVec = DirectX::XMVectorSet(0.1, 0, 0, 0);
+	diffVec = DirectX::XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
 	linkLenght = 0.5f;
 	previous = this->m_player2.GetPhysicsComponent();
 	next = nullptr;
@@ -2472,7 +2472,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	//
 #pragma endregion Sync components
 
-	m_cHandler->GetGraphicsHandler()->GenerateStaticSceneShadows();
+	
 #ifdef _DEBUG
 	//This keeps track of any resource lib access outside of level loading. 
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
@@ -2765,7 +2765,7 @@ std::string LevelState::GetLevelPath()
 
 void LevelState::SetCurrentLevelID(int currentLevelID)
 {
-	this->m_curLevel = min(currentLevelID,this->m_levelPaths.size() - 1);
+	this->m_curLevel = min(currentLevelID, int(this->m_levelPaths.size() - 1));
 }
 
 int LevelState::EnterState()
@@ -2836,9 +2836,9 @@ DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t, std::vector<Ph
 {
 	this->delta_t = 1.f / (float)list->size();
 
-	int p = (float((float)t / this->delta_t));
+	int p = int((t / this->delta_t));
 
-#define BOUNDS(pp){ if (pp < 0) pp = 0; else if(pp >= (int)list->size()-1)pp = list->size()-1;}
+#define BOUNDS(pp){ if (pp < 0) pp = int(0); else if(pp >= (int)list->size()-1)pp = int(list->size()-1);}
 	int p0 = p - 1;			BOUNDS(p0);
 	int p1 = p; 			BOUNDS(p1);
 	int p2 = p + 1;			BOUNDS(p2);
@@ -2853,17 +2853,4 @@ DirectX::XMVECTOR LevelState::GetInterpolatedSplinePoint(float t, std::vector<Ph
 		lt);
 
 	return pos;
-}
-DirectX::XMVECTOR LevelState::Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4) // unused
-{
-	float t2 = t * t;
-
-	float t3 = t2 * t;
-
-	float b1 = 0.5f * (-t3 + 2 * t2 - t);
-	float b2 = 0.5f * (3 * t3 - 5 * t2 + 2);
-	float b3 = 0.5f * (-3 * t3 + 4 * t2 + t);
-	float b4 = 0.5f * (t3 - t2);
-
-	return (p1*b1 + p2*b2 + p3*b3 + p4*b4);
 }

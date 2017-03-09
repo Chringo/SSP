@@ -28,7 +28,7 @@ void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContex
 	{
 		m_constBufferData.SHADOWCASTING_LIGHTS[i].index = -1;
 	}
-
+	m_lightData.currentDynamicShadowIndex = -1;
 	Light temp;
 	temp.position = pos;
 	SetShadowCastingLight(-1);

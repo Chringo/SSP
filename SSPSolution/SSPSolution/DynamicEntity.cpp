@@ -9,7 +9,7 @@ DynamicEntity::~DynamicEntity()
 }
 
 
-int DynamicEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, AIComponent* aiComp)
+int DynamicEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AnimationComponent* aComp, AIComponent* aiComp)
 {
 	this->InitializeBase(entityID, pComp, gComp, aComp, aiComp);
 	return 0;
@@ -26,7 +26,7 @@ int DynamicEntity::Update(float dT, InputHandler * inputHandler)
 	return result;
 }
 
-int DynamicEntity::React(int entityID, EVENT reactEvent)
+int DynamicEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	return 0;
 }

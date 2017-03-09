@@ -11,9 +11,9 @@ public:
 	FieldEntity();
 	~FieldEntity();
 
-	int Initialize(int entityID, Field* field);
+	int Initialize(unsigned int entityID, Field* field);
 	int Update(float deltaTime, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 	Field* GetField();
 private:

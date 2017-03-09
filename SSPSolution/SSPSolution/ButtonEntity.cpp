@@ -145,7 +145,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	return result;
 }
 
-int ButtonEntity::React(int entityID, EVENT reactEvent)
+int ButtonEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	int result = 0;
 	//If a button receives a LEVER::ACTIVATED or BUTTON::ACTIVATE event, deactivate this lever
@@ -163,7 +163,7 @@ int ButtonEntity::React(int entityID, EVENT reactEvent)
 }
 
 
-int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
+int ButtonEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
