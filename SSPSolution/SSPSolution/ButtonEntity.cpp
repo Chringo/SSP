@@ -10,7 +10,7 @@ void ButtonEntity::setActiveTimerSound(bool activate)
 		{
 			DirectX::XMFLOAT3 pos;
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
+			this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, false, true);
 		}
 		else
 		{
