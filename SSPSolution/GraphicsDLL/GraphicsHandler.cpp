@@ -548,8 +548,6 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (i->isInRay)
 		{
-			result++;
-			
 			/*DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
 			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
@@ -608,6 +606,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			int amountOfModelsToRender = 0;
 			int componentsInTree = this->m_octreeRoot.containedComponents.size();
+			result = componentsInTree;
 
 #pragma region
 			unsigned int firstRenderedModelID = UINT_MAX;
