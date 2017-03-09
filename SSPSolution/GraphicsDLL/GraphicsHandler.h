@@ -25,6 +25,7 @@ const int OCTREE_NODE_MAX_DEPTH = 5;
 const int OCTREE_NODE_MIN_DEPTH = 1;
 const float OCTREE_NODE_MIN_SIZE = 2.0f;
 const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
+const unsigned int CUBE_MAP_RESOLUTION = 512; //ratio always 1:1
 const size_t MAX_ACTIVE_LIGHTS = 40;
 					  
 	
@@ -91,7 +92,8 @@ private:
 
 	std::vector<int> m_activeLightIndices;
 
-
+	ID3D11ShaderResourceView* m_sceneCubeMap = nullptr;
+	ID3D11ShaderResourceView *m_defaultCubeMap = nullptr;
 	//temp
 	Camera* m_camera;
 	ID3D11Buffer* m_vertexBuffer;
@@ -211,6 +213,7 @@ public:
 	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
 	GRAPHICSDLL_API int Render(float deltaTime);
 	GRAPHICSDLL_API int RenderStaticObjectShadows();
+	GRAPHICSDLL_API int RenderStaticScene();
 	GRAPHICSDLL_API int Update(float deltaTime);
 
 
@@ -257,7 +260,7 @@ public:
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();
-
+	GRAPHICSDLL_API int GenerateSceneCubeMap(DirectX::XMVECTOR cubePos);
 
 	//TEMP STUFF
 public:

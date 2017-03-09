@@ -97,6 +97,44 @@ int LevelSelectState::LoadLevel(int levelID)
 	
 	//Create level
 	result = this->m_currentLevel->CreateLevel(level);
+	m_cHandler->GetGraphicsHandler()->GenerateStaticSceneShadows();
+
+#pragma region
+	DirectX::XMVECTOR cubePos;
+	switch (levelID)
+	{
+	case 0: //Tutorial
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+		break;
+	case 1:
+		cubePos = DirectX::XMVectorSet(8.0f, 4.0f, -2.0f, 1.0f);
+		break;
+	case 2:
+		cubePos = DirectX::XMVectorSet(6.0f, 3.0f, -67.0f, 1.0f);
+		break;
+	case 3:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, 2.0f, 1.0f);
+		break;
+	case 4:
+		cubePos = DirectX::XMVectorSet(10.0f, 3.0f, -22.0f, 1.0f);
+		break;
+	case 5:
+		cubePos = DirectX::XMVectorSet(20.0f, 2.0f, 12.0f, 1.0f);
+		break;
+	case 6:
+		cubePos = DirectX::XMVectorSet(15.0f, 5.0f, -19.0f, 1.0f);
+		break;
+	case 7:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+		break;
+	default:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+			break;
+	}
+
+#pragma endregion Get cube map pos
+
+	m_cHandler->GetGraphicsHandler()->GenerateSceneCubeMap(cubePos);
 
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
 

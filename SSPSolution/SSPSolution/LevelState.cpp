@@ -2461,7 +2461,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	//
 #pragma endregion Sync components
 
-	m_cHandler->GetGraphicsHandler()->GenerateStaticSceneShadows();
+	
 #ifdef _DEBUG
 	//This keeps track of any resource lib access outside of level loading. 
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
