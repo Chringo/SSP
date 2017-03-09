@@ -8,7 +8,7 @@ FieldEntity::~FieldEntity()
 {
 }
 
-int FieldEntity::Initialize(int entityID, Field* field)
+int FieldEntity::Initialize(unsigned int entityID, Field* field)
 {
 	this->InitializeBase(entityID, nullptr, nullptr, nullptr);
 	this->m_field = field;
@@ -28,7 +28,7 @@ int FieldEntity::Update(float deltaTime, InputHandler * inputHandler)
 	return result;
 }
 
-int FieldEntity::React(int entityID, EVENT reactEvent)
+int FieldEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 
 	return 1;

@@ -173,14 +173,11 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	{
 		return 1;
 	}
-
 	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_NORMAL]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_NORMAL]);
 	if (FAILED(hResult))
 	{
 		return 1;
 	}
-
-
 	hResult = device->CreateVertexShader(vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferPointer(), vertexShaderBuffer[VERTEX_SHADERS::VS_SHADOW_INSTANCED]->GetBufferSize(), NULL, &this->m_vertexShader[VERTEX_SHADERS::VS_SHADOW_INSTANCED]);
 	if (FAILED(hResult))
 	{
@@ -467,7 +464,7 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
-	depthBufferDesc.Width = viewPort->Width;
+	depthBufferDesc.Width =  viewPort->Width;
 	depthBufferDesc.Height = viewPort->Height;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;

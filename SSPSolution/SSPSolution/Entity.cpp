@@ -65,7 +65,7 @@ int Entity::SyncComponents()
 	return result;
 }
 
-int Entity::AddObserver(Observer * observer, int entityID)
+int Entity::AddObserver(Observer * observer, unsigned int entityID)
 {
 	this->m_subject.AddObserver(observer, entityID);
 	return 1;
@@ -154,9 +154,9 @@ bool Entity::IsGrabbed()
 	return this->m_isGrabbed;
 }
 
-int Entity::SetEntityID(int entityID)
+unsigned int Entity::SetEntityID(unsigned int entityID)
 {
-	int lastValue = this->m_entityID;
+	unsigned int lastValue = this->m_entityID;
 	this->m_entityID = entityID;
 	return lastValue;
 }
@@ -186,12 +186,12 @@ bool Entity::GetGrabbed()
 	return this->m_isGrabbed;
 }
 
-int Entity::GetEntityID()
+unsigned int Entity::GetEntityID()
 {
 	return this->m_entityID;
 }
 
-int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp)
+int Entity::InitializeBase(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp)
 {
 	int result = 1;
 	this->m_isGrabbed = false;

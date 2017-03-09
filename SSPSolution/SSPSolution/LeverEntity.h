@@ -25,10 +25,10 @@ public:
 	LeverEntity();
 	virtual ~LeverEntity();
 	 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance);
+	int Initialize(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance);
 
 	int Update(float dT, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 	//For now we check only if the player is close enough
 	int CheckPressed(DirectX::XMFLOAT3 playerPos);

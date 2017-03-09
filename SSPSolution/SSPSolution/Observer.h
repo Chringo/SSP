@@ -9,7 +9,7 @@ public:
 	Observer();
 	virtual ~Observer();
 
-	virtual int React(int entityID, EVENT reactEvent) = 0;
+	virtual int React(unsigned int entityID, EVENT reactEvent) = 0;
 private:
 };
 

@@ -23,9 +23,22 @@
 #define BALL1_ID 1
 #define BALL2_ID 1
 #define CHAIN_ID 1
-const int GRAB_COOLDOWN = 1;	//Cooldown in seconds until player can grab something after a throw
-const int GRAB_RANGE = 3;		//The range of the grab in meters
-const int PING_DISTANCE = 100;	//Distance for the ping ray
+
+enum DEFINED_IDS
+{
+	PLAYER_1	= 1,
+	PLAYER_2,
+	BALL_1,
+	BALL_2,
+	CHAIN_1,
+	CHAIN_2,
+	NUMMBER_OF_IDS
+};
+
+const float GRAB_COOLDOWN = 1.0f;		//Cooldown in seconds until player can grab something after a throw
+const float GRAB_RANGE = 3.0f;			//The range of the grab in meters
+const float PING_DISTANCE = 100.0f;	//Distance for the ping ray
+
 
 
 // For testing

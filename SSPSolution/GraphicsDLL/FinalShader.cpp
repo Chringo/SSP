@@ -21,7 +21,6 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
-
 	this->m_deviceContext = deviceContext;
 
 	//Insert shader path here
@@ -173,7 +172,7 @@ int FinalShader::SetActive()
 	m_deviceContext->GSSetShader(nullptr, NULL, 0);
 	m_deviceContext->VSSetShader(this->m_vertexShader, NULL, 0);
 	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-
+	
 	this->m_screenQuad->SetBuffers(m_deviceContext);
 
 	return 0;
@@ -183,7 +182,6 @@ int FinalShader::SetRenderParameters(ID3D11RenderTargetView *backBufferRTV, ID3D
 {
 	this->m_finalRTV = backBufferRTV;
 	this->m_gBufferRTVs = gBuffers;
-
 	return 0;
 }
 
