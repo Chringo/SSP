@@ -1107,6 +1107,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
+		if (this->m_networkModule->IsHost())
+		{
+			PhysicsComponent* pc = nullptr;
+			for (PlatformEntity* e : this->m_platformEntities)
+			{
+				pc = e->GetPhysicsComponent();
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity,newrot);
+			}
+		}
+
 	}
 
 #pragma endregion Network_Send_Updates

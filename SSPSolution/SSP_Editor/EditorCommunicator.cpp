@@ -16,7 +16,7 @@ Resources::Status Communicator::Initialize(
 	this->m_Width = w;
 	this->m_Height = h;
 	this->m_IsPreview = isPreview;
-
+	LevelHandler::GetInstance()->SetGraphicsHandler(m_GraphicsHandler);
 	this->m_GraphicsHandler->Initialize(
 		&this->m_hwnd,
 		DirectX::XMINT2(1920.0f, 1080.0f), true
