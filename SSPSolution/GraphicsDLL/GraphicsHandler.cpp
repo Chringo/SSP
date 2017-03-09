@@ -1008,6 +1008,14 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
+
+	m_LightHandler->Get_Light_List()->numShadowLights = 0;
+	std::vector<int> lights(m_LightHandler->Get_Light_List()->numItems);
+	for (size_t i = 0; i < m_LightHandler->Get_Light_List()->numItems; i++)
+	{
+		lights.at(i) = i;
+	}
+	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPU(&lights);
 	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
