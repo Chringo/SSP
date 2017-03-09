@@ -548,8 +548,6 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		if (i->isInRay)
 		{
-			result++;
-			
 			/*DirectX::XMMATRIX ortm;
 			DirectX::XMFLOAT4X4 ort;
 			memcpy(&ortm.r[0], &this->m_staticGraphicsComponents[i->componentIndex].modelPtr->GetOBBData().extensionDir[0], sizeof(float) * 3);
@@ -608,6 +606,7 @@ int GraphicsHandler::Render(float deltaTime)
 		{
 			int amountOfModelsToRender = 0;
 			int componentsInTree = this->m_octreeRoot.containedComponents.size();
+			result = componentsInTree;
 
 #pragma region
 			unsigned int firstRenderedModelID = UINT_MAX;
@@ -1008,6 +1007,14 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 
 int GraphicsHandler::renderFinalEditor()
 {
+
+	m_LightHandler->Get_Light_List()->numShadowLights = 0;
+	std::vector<int> lights(m_LightHandler->Get_Light_List()->numItems);
+	for (size_t i = 0; i < m_LightHandler->Get_Light_List()->numItems; i++)
+	{
+		lights.at(i) = i;
+	}
+	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPU(&lights);
 	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
