@@ -47,6 +47,7 @@ struct UIComponent
 	bool wasClicked = false;
 	bool isHovered = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	DirectX::FXMVECTOR origin = DirectX::XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
 	float scale = 1.f;
 	float rotation = 0.f;
