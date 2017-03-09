@@ -98,6 +98,8 @@ int LevelSelectState::LoadLevel(int levelID)
 	//Create level
 	result = this->m_currentLevel->CreateLevel(level);
 
+	
+
 	this->m_gsh->PushStateToStack(this->m_currentLevel);
 
 	return result;
