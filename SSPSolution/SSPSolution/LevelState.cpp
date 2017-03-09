@@ -465,11 +465,11 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
 	if (this->m_networkModule->IsHost())
 	{
-		ballG->modelID = 1256673809;
+		ballG->modelID = 1321651915;
 	}
 	else
 	{
-		ballG->modelID = 1321651915;
+		ballG->modelID = 1256673809;
 	}
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
