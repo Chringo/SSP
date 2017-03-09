@@ -424,6 +424,9 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->EndTimer(0);
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
+	if(deltaTime > 33333.f)
+		DebugHandler::instance()->UpdateCustomLabelIncrease(1, 1.0f);
+
 #pragma endregion Logic
 
 	return result;

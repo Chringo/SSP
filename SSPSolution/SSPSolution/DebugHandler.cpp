@@ -362,10 +362,6 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	int sum = 0, avgFPS;
 	this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
 	this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
-	if (this->m_frameTimes[this->m_currFrameTimesPtr] < 30.0f)
-	{
-		this->UpdateCustomLabelIncrease(1, 1.0f);
-	}
 	for (int k = 0; k < this->m_FRAMES_FOR_AVG; k++)
 	{
 		sum += this->m_frameTimes[k];
