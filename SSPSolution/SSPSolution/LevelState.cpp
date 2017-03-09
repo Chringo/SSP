@@ -230,15 +230,13 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 68.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
-	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
-	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3P1.level", 41.0f });
-	this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
-
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0E1.level", 68.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L4E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5E1.level", 40.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L6E1.level", 41.0f });
 
 
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
