@@ -717,7 +717,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		for (size_t i = 0; i < NR_OF_LEVELS; i++) //Check if level has been selected
 		{
 			if (this->m_hostMenuButtons.at(i).m_uiComp->CheckClicked()) {
-				this->m_levelToHost = i;
+				this->m_levelToHost = (int)i;
 			}
 		}
 			
