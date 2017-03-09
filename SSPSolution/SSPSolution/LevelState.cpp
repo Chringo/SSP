@@ -134,6 +134,22 @@ void LevelState::SendSyncForJoin()
 	{
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player2.GetBall()->GetEntityID());
 	}
+
+	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+	if (this->m_player1.GetRagdoll()->state == RagdollState::RAGDOLL || this->m_player1.GetRagdoll()->state == RagdollState::KEYFRAMEBLEND)
+	{
+		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
+
+		for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
+		{
+			//Send a packet for E V E R Y joint
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0, i, gp->finalJointTransforms[i]);
+		}
+	}
+	else if (this->m_player1.isAnimationChanged())
+	{
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, ap->target_State->isLooping, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+	}
 }
 
 LevelState::LevelState()
