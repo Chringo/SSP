@@ -480,7 +480,6 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			this->m_resetCountdown = this->m_timeUntilReset;
 		}
 	}
-	printf("%d \n", newSyncState->rotationState);
 }
 
 WheelSyncState * WheelEntity::GetSyncState()
