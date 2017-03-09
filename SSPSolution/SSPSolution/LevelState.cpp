@@ -2127,7 +2127,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		for (std::vector<PlatformEntity*>::iterator observer = this->m_platformEntities.begin(); observer != this->m_platformEntities.end() && toConnect == nullptr; observer++)
 		{	
 			//Add nummber of predefined ids to avoid conflict from editor
-			if ((*observer)->GetEntityID() == data->aiComponents[i].EntityID + DEFINED_IDS::NUMMBER_OF_IDS);
+			if ((*observer)->GetEntityID() == (data->aiComponents[i].EntityID + DEFINED_IDS::NUMMBER_OF_IDS))
 			{
 				toConnect = (*observer);
 			}
