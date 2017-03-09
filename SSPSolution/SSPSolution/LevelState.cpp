@@ -126,6 +126,14 @@ void LevelState::SendSyncForJoin()
 		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
 	}
 
+	if (this->m_player1.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player1.GetBall()->GetEntityID());
+	}
+	else if (this->m_player2.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player2.GetBall()->GetEntityID());
+	}
 }
 
 LevelState::LevelState()
