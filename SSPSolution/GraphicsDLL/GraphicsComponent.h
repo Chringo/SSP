@@ -116,8 +116,10 @@ struct TextComponent
 	std::wstring text = L"";
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
 	DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.f, 1.f);
+	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.f, 0.f);
 	float rotation = 0.f;
 	float layerDepth = 0.f;
+	bool useBlackText = false;
 };
 
 #endif

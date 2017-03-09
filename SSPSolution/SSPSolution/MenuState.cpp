@@ -51,42 +51,73 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_menuBG->active = 1;
 	this->m_menuBG->position = DirectX::XMFLOAT2(0.0f, 0.0f);
 	this->m_menuBG->size = DirectX::XMFLOAT2(1280.f, 720.f);
-	this->m_menuBG->spriteID = Textures::MenuBG;
+	this->m_menuBG->scale = 0.66666f;
+	this->m_menuBG->spriteID = Textures::Background;
 	this->m_menuBG->layerDepth = 1.0f;
+
+	this->m_menuFrame = cHandler->GetUIComponent();
+	this->m_menuFrame->active = 1;
+	this->m_menuFrame->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_menuFrame->size = DirectX::XMFLOAT2(1280.f, 720.f);
+	this->m_menuFrame->spriteID = Textures::CombinedFrame;
+	this->m_menuFrame->scale = 0.66666f;
+	this->m_menuFrame->layerDepth = 0.8f;
+
+	size_t nrOfCogs = 2;
+	for (size_t i = 0; i < nrOfCogs; i++)
+	{
+		UIComponent* tempUIComp = cHandler->GetUIComponent();
+		tempUIComp->active = 1;
+		tempUIComp->layerDepth = 0.9f;
+		tempUIComp->size = DirectX::XMFLOAT2(100.f, 100.f);
+		tempUIComp->origin = DirectX::XMFLOAT2(47.f, 47.f);
+		tempUIComp->spriteID = Textures::Cog;
+		this->m_menuCogs.push_back(tempUIComp);
+	}
+	this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(580.f, 200.f);
+	this->m_menuCogs.at(0)->scale = 0.8f;
+	this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(680.f, 170.f);
 
 	for (size_t i = 0; i < 3; i++) //Create the main menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 1;
-		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		tempUIComp->position = DirectX::XMFLOAT2(515.f, 290.f + (i * 60.f));
 		tempUIComp->layerDepth = 0.5f;
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::TButton;
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
+		//tempUIComp->origin = DirectX::XMFLOAT2(187.f, 36.f);
+		tempUIComp->scale = 0.66666f;
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
-		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
+		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
+		tempTextComp->useBlackText = true;
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
 		this->m_mainMenuButtons.push_back(button);
 	}
-	this->m_keymaps = cHandler->GetUIComponent();
+	/*this->m_keymaps = cHandler->GetUIComponent();
 	this->m_keymaps->active = 0;
 	this->m_keymaps->position = DirectX::XMFLOAT2(200.f, 400.f);
 	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
 	this->m_keymaps->spriteID = Textures::Keymaps;
-	this->m_keymaps->scale = 0.5f;
+	this->m_keymaps->scale = 0.5f;*/
 	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(50.f, 50.f + (i * 150.f));
+		tempUIComp->position = DirectX::XMFLOAT2(515.f, 290.f + (i * 60.f));
 		tempUIComp->layerDepth = 0.5f;
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::TButton;
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
+		tempUIComp->scale = 0.66666f;
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(75.f, 70.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
+		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
+		tempTextComp->useBlackText = true;
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -96,13 +127,16 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(100.f, 200.f + (i * 150.f));
+		tempUIComp->position = DirectX::XMFLOAT2(515.f, 290.f + (i * 60.f));
 		tempUIComp->layerDepth = 0.5f;
-		tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-		tempUIComp->spriteID = Textures::TButton;
+		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
+		tempUIComp->scale = 0.66666f;
+		tempUIComp->spriteID = Textures::Button;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(100.f, 220.f + (i * 150.f));
+		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
+		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
+		tempTextComp->useBlackText = true;
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -116,10 +150,12 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 150.f + (i / 3) * 250.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
+		tempUIComp->scale = 0.8f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(400.f + ((i % 3) * 200.f), 310.f + (i / 3) * 250.f);
+		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
 		button.m_textComp = tempTextComp;
@@ -130,11 +166,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	tempUIComp->active = 0;
 	tempUIComp->position = DirectX::XMFLOAT2(100.f, 600.f);
 	tempUIComp->layerDepth = 0.5f;
-	tempUIComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	tempUIComp->spriteID = Textures::TButton;
+	tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
+	tempUIComp->scale = 0.66666f;
+	tempUIComp->spriteID = Textures::Button;
 	TextComponent* tempTextComp = cHandler->GetTextComponent();
 	tempTextComp->active = 0;
-	tempTextComp->position = DirectX::XMFLOAT2(100.f, 620.f);
+	tempTextComp->position = DirectX::XMFLOAT2(120.f, 610.f);
+	tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
+	tempTextComp->useBlackText = true;
 	MenuButton button;
 	button.m_uiComp = tempUIComp;
 	button.m_textComp = tempTextComp;
@@ -143,17 +182,17 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	//Init the ip text box
 	this->m_ipTextBox.m_uiComp = cHandler->GetUIComponent();
 	this->m_ipTextBox.m_uiComp->active = 0;
-	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
-	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(300.f, 100.f);
-	this->m_ipTextBox.m_uiComp->scale = 0.6;
+	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(515.f, 290.f + (180.f));
+	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(200.f, 45.f);
+	this->m_ipTextBox.m_uiComp->scale = 0.66666f;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
-	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
-	this->m_ipTextBox.m_uiComp->spriteID = Textures::TButton;
+	this->m_ipTextBox.m_uiComp->spriteID = Textures::Button;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
-	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(575.f, 220.f + (150.f));
-	this->m_ipTextBox.m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
+	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(535.f, 300.f + (180.f));
+	this->m_ipTextBox.m_textComp->scale = DirectX::XMFLOAT2(0.5f, 0.5f);
 	this->m_ipTextBox.m_textComp->text = L"Enter IP...";
+	this->m_ipTextBox.m_textComp->useBlackText = true;
 
 	this->m_mainMenuButtons[0].m_textComp->text = L"Start Game";
 	this->m_mainMenuButtons[2].m_textComp->text = L"Quit Game";
@@ -281,7 +320,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(true);
 			}
-			this->m_keymaps->active = 1;
+			//this->m_keymaps->active = 1;
 		}
 		else if (this->m_mainMenuButtons[2].m_uiComp->CheckClicked())
 		{
@@ -367,7 +406,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			{
 				this->m_optionsMenuButtons[i].SetActive(false);
 			}
-			this->m_keymaps->active = 0;
+			//this->m_keymaps->active = 0;
 		}
 		break;
 
@@ -458,8 +497,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(false);
 			}
 			this->m_ipTextBox.SetActive(false);
-		
-			
+			this->m_menuFrame->active = 0;
+			for (UIComponent* cog : this->m_menuCogs)
+			{
+				cog->active = 0;
+			}
 
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
@@ -556,6 +598,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		{
 			//IP text box was clicked
 			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			this->m_markedItem = this->m_startMenuButtons.size();
 			this->m_ipTextBox.SetFocused(true);
 		}
 
@@ -690,6 +733,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_hostMenuButtons[i].SetActive(false);
 			}
 			this->m_menuBG->active = 0;
+			this->m_menuFrame->active = 0;
 
 #pragma endregion Hide Menu
 
@@ -724,6 +768,11 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_startMenuButtons[i].SetActive(true);
 			}
 			this->m_ipTextBox.SetActive(true);
+			this->m_menuFrame->active = 1;
+			for (UIComponent* cog : this->m_menuCogs)
+			{
+				cog->active = 1;
+			}
 			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
 			{
 				this->m_hostMenuButtons[i].SetActive(false);
@@ -799,6 +848,13 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 	default:
 		break;
 	}
+
+	this->m_menuCogs.at(0)->rotation += (dt / 1000000);
+	if (this->m_menuCogs.at(0)->rotation > 2 * DirectX::XM_PI)
+		this->m_menuCogs.at(0)->rotation = 0.0f;
+	this->m_menuCogs.at(1)->rotation -= (dt / 1000000);
+	if (this->m_menuCogs.at(1)->rotation < 0)
+		this->m_menuCogs.at(1)->rotation = 2 * DirectX::XM_PI;
 	
 	if (this->m_networkModule)
 	{
@@ -858,6 +914,12 @@ int MenuState::EnterState()
 	}
 	
 	this->m_menuBG->active = 1;
+	this->m_menuFrame->active = 1;
+
+	for (UIComponent* cog : this->m_menuCogs)
+	{
+		cog->active = 1;
+	}
 
 	this->isHosting = false;
 	this->isJoining = false;
@@ -867,6 +929,11 @@ int MenuState::EnterState()
 
 int MenuState::LeaveState()
 {
+	for (UIComponent* cog : this->m_menuCogs)
+	{
+		cog->active = 0;
+	}
+
 	return 0;
 }
 
@@ -1034,10 +1101,6 @@ void MenuState::Joining(InputHandler* inputHandler)
 				break;
 			case 5:
 				printf("LOAD LEVEL 5\n");
-				break;
-
-			case 6:
-				printf("LOAD LEVEL 6\n");
 				break;
 
 			default:

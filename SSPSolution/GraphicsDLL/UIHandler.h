@@ -18,12 +18,14 @@ enum Textures
 	Button = 6,
 	Crosshair = 7,
 	CrosshairAim = 8,
-	Level0 = 9,
-	Level1 = 10,
-	Level2 = 11,
-	Level3 = 12,
-	Level4 = 13,
-	Level5 = 14,
+	Keymaps = 9,
+	CombinedFrame = 10,
+	Level0 = 11,
+	Level1 = 12,
+	Level2 = 13,
+	Level3 = 14,
+	Level4 = 15,
+	Level5 = 16
 };
 
 class UIHandler
