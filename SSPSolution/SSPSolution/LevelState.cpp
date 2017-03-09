@@ -1114,7 +1114,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			{
 				pc = e->GetPhysicsComponent();
 				DirectX::XMFLOAT4X4 newrot;
-				DirectX::XMStoreFloat4x4(&newrot, pp->PC_OBB.ort);
+				DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
 				this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity,newrot);
 			}
 		}
