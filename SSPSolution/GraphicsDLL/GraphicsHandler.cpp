@@ -1625,7 +1625,7 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	m_LightHandler->SetStaticShadowsToGPU();
 	tempTexture->Release();	
-	m_d3dHandler->PresentScene();
+	//m_d3dHandler->PresentScene();
 	
 
 
