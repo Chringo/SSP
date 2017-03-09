@@ -109,7 +109,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 200.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 250.f);
 		tempUIComp->layerDepth = 0.5f;
-		tempUIComp->spriteID = Textures::Level0 + i;
+		tempUIComp->spriteID = Textures::Level0 + (int)i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(200.f + (i * 200.f), 360.f);
@@ -138,7 +138,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->active = 0;
 	this->m_ipTextBox.m_uiComp->position = DirectX::XMFLOAT2(550.f, 200.f + (150.f));
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(300.f, 100.f);
-	this->m_ipTextBox.m_uiComp->scale = 0.6;
+	this->m_ipTextBox.m_uiComp->scale = 0.6f;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(400.f, 100.f);
 	this->m_ipTextBox.m_uiComp->spriteID = Textures::TButton;
@@ -673,7 +673,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		for (size_t i = 0; i < NR_OF_LEVELS; i++) //Check if level has been selected
 		{
 			if (this->m_hostMenuButtons.at(i).m_uiComp->CheckClicked()) {
-				this->m_levelToHost = i;
+				this->m_levelToHost = (int)i;
 			}
 		}
 			

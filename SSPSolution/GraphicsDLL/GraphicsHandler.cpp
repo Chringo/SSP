@@ -2310,7 +2310,7 @@ inline OBB GraphicsHandler::m_ConvertOBB(BoundingBoxHeader & boundingBox) //Conv
 	return obj;
 }
 
-float GraphicsHandler::Ping_GetDistanceToClosestOBB(int maxDistance)
+float GraphicsHandler::Ping_GetDistanceToClosestOBB(float maxDistance)
 {
 	std::vector<Camera::C_OBB> OBBs;
 

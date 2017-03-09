@@ -4,7 +4,7 @@ PlatformEntity::~PlatformEntity()
 {
 	this->Shutdown();
 }
-int PlatformEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
+int PlatformEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr, aiComp);
@@ -75,7 +75,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 	return result;
 }
 
-int PlatformEntity::React(int entityID, EVENT reactEvent)
+int PlatformEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	switch (reactEvent)
 	{

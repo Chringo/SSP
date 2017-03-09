@@ -3,7 +3,7 @@
 LeverEntity::LeverEntity(){}
 LeverEntity::~LeverEntity(){}
 
-int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
+int LeverEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
@@ -72,7 +72,7 @@ int LeverEntity::Update(float dT, InputHandler * inputHandler)
 	return result;
 }
 
-int LeverEntity::React(int entityID, EVENT reactEvent)
+int LeverEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	int result = 0;
 	//If a lever receives a LEVER::ACTIVATED or BUTTON::ACTIVATE event, deactivate this lever

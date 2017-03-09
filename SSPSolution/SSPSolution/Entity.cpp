@@ -26,7 +26,7 @@ int Entity::SyncComponents()
 				if (this->GetGraphicComponent()->modelID == 1117267500 || this->GetGraphicComponent()->modelID == 885141774) // 1 or 2 == player
 				{
 					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1] + 0.25, 0, 0)));
+					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1] + 0.25f, 0.0f, 0.0f)));
 				}
 				else
 				{
@@ -56,7 +56,7 @@ int Entity::SyncComponents()
 	return result;
 }
 
-int Entity::AddObserver(Observer * observer, int entityID)
+int Entity::AddObserver(Observer * observer, unsigned int entityID)
 {
 	this->m_subject.AddObserver(observer, entityID);
 	return 1;
@@ -70,7 +70,7 @@ void Entity::UnsafeSyncComponents()
 		if (this->GetGraphicComponent()->modelID == 1117267500 || this->GetGraphicComponent()->modelID == 885141774) // 1 or 2 == player
 		{
 			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
-			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1] + 0.25, 0, 0)));
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1] + 0.25f, 0.0f, 0.0f)));
 		}
 		else
 		{
@@ -136,9 +136,9 @@ bool Entity::IsGrabbed()
 	return this->m_isGrabbed;
 }
 
-int Entity::SetEntityID(int entityID)
+unsigned int Entity::SetEntityID(unsigned int entityID)
 {
-	int lastValue = this->m_entityID;
+	unsigned int lastValue = this->m_entityID;
 	this->m_entityID = entityID;
 	return lastValue;
 }
@@ -168,12 +168,12 @@ bool Entity::GetGrabbed()
 	return this->m_isGrabbed;
 }
 
-int Entity::GetEntityID()
+unsigned int Entity::GetEntityID()
 {
 	return this->m_entityID;
 }
 
-int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp)
+int Entity::InitializeBase(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp)
 {
 	int result = 1;
 	this->m_isGrabbed = false;

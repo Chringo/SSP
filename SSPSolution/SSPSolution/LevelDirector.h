@@ -27,7 +27,7 @@ namespace FSMEnvironment
 		int Initialize();		// Initiate values for new level, i.e. reset values and load new level
 		int Update(float deltaTime);	// Update LD and check state
 
-		int React(int entityID, EVENT event);	//TODO: Might be moved to state
+		int React(unsigned int entityID, EVENT event);	//TODO: Might be moved to state
 		// Add function to attach either state or LD to an entity
 
 		unsigned int GetID() const { return this->m_directorID; }// Director's ID acts as an entity ID

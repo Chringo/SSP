@@ -8,10 +8,10 @@ public:
 	DynamicEntity();
 	~DynamicEntity();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp = nullptr, AIComponent* aiComp = nullptr);
+	int Initialize(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp = nullptr, AIComponent* aiComp = nullptr);
 
 	int Update(float dT, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 
 };
