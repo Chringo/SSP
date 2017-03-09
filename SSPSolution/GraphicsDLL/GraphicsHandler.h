@@ -214,6 +214,7 @@ public:
 	GRAPHICSDLL_API int Render(float deltaTime);
 	GRAPHICSDLL_API int RenderStaticObjectShadows();
 	GRAPHICSDLL_API int RenderStaticScene();
+	GRAPHICSDLL_API int RenderStaticScene(std::vector<GraphicsComponent*> comps);
 	GRAPHICSDLL_API int Update(float deltaTime);
 
 
@@ -260,6 +261,7 @@ public:
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();
+	GRAPHICSDLL_API int EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*> comps);
 	GRAPHICSDLL_API int GenerateSceneCubeMap(DirectX::XMVECTOR cubePos);
 
 	//TEMP STUFF
