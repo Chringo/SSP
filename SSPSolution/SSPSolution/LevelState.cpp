@@ -1236,21 +1236,10 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 #pragma endregion Puzzle elements synchronization 
 
 #pragma region
-	if (this->m_networkModule->IsHost())
+	for (size_t i = 0; i < this->m_platformEntities.size(); i++)
 	{
-		for (size_t i = 0; i < this->m_platformEntities.size(); i++)
-		{
-			this->m_platformEntities[i]->Update(dt, inputHandler);
-		}
+		this->m_platformEntities[i]->Update(dt, inputHandler);
 	}
-	else 
-	{
-		for (size_t i = 0; i < this->m_platformEntities.size(); i++)
-		{
-			this->m_platformEntities[i]->SyncComponents();
-		}
-	}
-
 #pragma endregion Platforms
 
 #pragma endregion Update_Puzzle_Elements
