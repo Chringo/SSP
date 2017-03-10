@@ -126,6 +126,9 @@ void LevelState::SendSyncForJoin()
 		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
 	}
 
+	//Drop anything we are holding
+	this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+
 	if (this->m_player1.GetBall()->IsGrabbed())
 	{
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player1.GetBall()->GetEntityID());
