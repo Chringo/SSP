@@ -28,8 +28,13 @@ private:
 	DirectX::XMVECTOR m_upDir;
 	DirectX::XMVECTOR m_rightDir;
 	DirectX::XMVECTOR m_newPlayerDir;
-
+	
+#pragma region soundvariables
+	bool m_hasBeenThrown;
+	irrklang::ISound* m_thrownSound = nullptr;
 	irrklang::ISound* m_walkingSound;
+#pragma endregion
+
 	float m_chainSoundTimer;
 	float m_timeSinceThrow;
 	bool isAbbington;

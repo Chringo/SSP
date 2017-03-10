@@ -19,7 +19,13 @@ Player::~Player()
 {
 	if (this->m_walkingSound)
 	{
+		this->m_walkingSound->stop();
 		this->m_walkingSound->drop();
+	}
+	if (this->m_thrownSound)
+	{
+		this->m_thrownSound->stop();
+		this->m_thrownSound->drop();
 	}
 }
 
@@ -34,6 +40,8 @@ int Player::Initialize(unsigned int entityID, PhysicsComponent * pComp, Graphics
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+	this->m_thrownSound = nullptr;
+	this->m_hasBeenThrown = false;
 	this->m_chainSoundTimer = 0.0f;
 
 	if (this->GetGraphicComponent()->modelID == 1117267500)	//Studly Model ID
@@ -86,11 +94,58 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			SetAnimationComponent(AnimationStates::PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
 			this->m_aComp->currentState = AnimationStates::PLAYER_IDLE;
 			this->m_ragdoll->state = RagdollState::ANIMATED;
+			if (this->m_thrownSound != nullptr)
+			{
+				//if the character has stopped flying, this statement will teminate the flying sound
+				//if it has been assigned and reset the bool variable
+				this->m_thrownSound->stop();
+				this->m_thrownSound->drop();
+				this->m_hasBeenThrown = false;
+			}
 		}
 		if (this->m_ragdoll->state == RagdollState::RAGDOLL || this->m_ragdoll->state == RagdollState::KEYFRAMEBLEND)
 		{
 			this->m_aComp;
 			this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+
+			if (this->m_thrownSound == nullptr)
+			{
+				//play a random throw sound
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				//Check to see which character model is used, to get the right sound
+				if (this->isAbbington)
+					this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_FLYING_1, Sounds3D::ABBINGTON_FLYING_3, pos, false, true);
+				else
+					this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_FLYING_1, Sounds3D::STUDLEY_FLYING_3, pos, false, true);
+				this->m_hasBeenThrown = true;
+			}
+			else
+			{
+				//update sound position
+				if ((int)this->m_thrownSound->getPlayPosition() != -1)
+				{
+					DirectX::XMFLOAT3 pos;
+					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+					irrklang::vec3d<float> posIklang(pos.x, pos.y, pos.z);
+					this->m_thrownSound->setPosition(posIklang);
+				}
+				else
+				{
+					if (!this->m_hasBeenThrown)
+					{
+						//play a random throw sound
+						DirectX::XMFLOAT3 pos;
+						DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+						//Check to see which character model is used, to get the right sound
+						if (this->isAbbington)
+							this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_FLYING_1, Sounds3D::ABBINGTON_FLYING_3, pos, false, true);
+						else
+							this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_FLYING_1, Sounds3D::STUDLEY_FLYING_3, pos, false, true); 
+						this->m_hasBeenThrown = true;
+					}
+				}
+			}
 			
 			if (!stateExists(AnimationStates::RAGDOLL_STATE))
 			{
