@@ -54,7 +54,7 @@ void AnimationHandler::Update(float dt)
 				SetAnimCompIndex(aCompIndex);
 
 				/*If only one animation is playing, there should be no transition.*/
-				if (this->m_AnimComponentList[m_AnimCompIndex]->source_State->blendFlag == Blending::NO_TRANSITION)
+				if (this->m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
 				{
 					/*Increment source animation's local time and multiply by speed factor and velocity.*/
 					float playingSpeed = this->m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
@@ -94,8 +94,8 @@ void AnimationHandler::Update(float dt)
 				}
 
 				/*If two animations are playing, there should be a SMOOTH transition or FROZEN transition.*/
-				else if (this->m_AnimComponentList[m_AnimCompIndex]->target_State->blendFlag == Blending::SMOOTH_TRANSITION 
-					|| this->m_AnimComponentList[m_AnimCompIndex]->target_State->blendFlag == Blending::FROZEN_TRANSITION)
+				else if (this->m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION 
+					|| this->m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 				{
 					/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
 					if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
@@ -112,7 +112,7 @@ void AnimationHandler::Update(float dt)
 						this->m_AnimComponentList[m_AnimCompIndex]->source_State = this->m_AnimComponentList[m_AnimCompIndex]->target_State;
 
 						/*Set the source states blend flag to NO_TRANSITION when blending is finished and only to play a single animation.*/
-						this->m_AnimComponentList[m_AnimCompIndex]->source_State->blendFlag = Blending::NO_TRANSITION;
+						this->m_AnimComponentList[m_AnimCompIndex]->blendFlag = Blending::NO_TRANSITION;
 
 						/*Assign the target local time to source local time.*/
 						this->m_AnimComponentList[m_AnimCompIndex]->source_Time = this->m_AnimComponentList[m_AnimCompIndex]->target_Time;
@@ -452,7 +452,7 @@ void AnimationHandler::ExtractSourceKeys(float sourceTime, float globalTime)
 
 	/*If the blending type is Smooth Transition, increment the source time until blending is completed.
 	If the blending type is Frozen Transition, let the time be frozen when the blending process started.*/
-	if(this->m_AnimComponentList[m_AnimCompIndex]->target_State->blendFlag != Blending::FROZEN_TRANSITION)
+	if(this->m_AnimComponentList[m_AnimCompIndex]->blendFlag != Blending::FROZEN_TRANSITION)
 		this->m_AnimComponentList[m_AnimCompIndex]->source_Time += globalTime;
 }
 
@@ -553,8 +553,7 @@ void AnimationHandler::SetAnimationComponent(int animationState, float transitio
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State = this->m_AnimComponentList[this->m_AnimCompIndex]->
 		animation_States->at(animationState)->GetAnimationStateData();
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->stateIndex = animationState;
-	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->blendFlag = blendingType;
-	this->m_AnimComponentList[this->m_AnimCompIndex]->source_State->blendFlag = blendingType;
+	this->m_AnimComponentList[this->m_AnimCompIndex]->blendFlag = blendingType;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->target_State->isLooping = isLooping;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->playingSpeed = playingSpeed;
 	this->m_AnimComponentList[this->m_AnimCompIndex]->lockAnimation = lockAnimation;

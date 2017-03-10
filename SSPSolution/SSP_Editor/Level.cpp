@@ -473,6 +473,28 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 	}
 }
 
+void Level::generateCubeMap(GraphicsHandler * gh, DirectX::XMVECTOR campos)
+{
+	std::vector<GraphicsComponent*> comps;
+
+	//std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
+	//std::vector<std::vector<Container*>> m_puzzleElements;
+
+	for(auto vec : m_ModelMap)
+	{
+		std::vector<Container> it = ((std::vector<Container>)vec.second);
+		for (Container cont : it)
+			comps.push_back(&cont.component);
+	}
+	for (int i = 0; i < NUM_PUZZLE_ELEMENTS; i++)
+		for (Container* cont : m_puzzleElements[i])
+			comps.push_back(&cont->component);
+
+	gh->EditorGenerateSceneCubeMap(DirectX::XMVectorSet(2.0f, 0.0f, -19.f, 0.f), comps);
+
+
+}
+
 bool Level::isEmpty()
 {
 	if (this->GetNumEntities() == 0 && this->GetNumPuzzleElements() == 0 && this->GetNumLights() == 0) {

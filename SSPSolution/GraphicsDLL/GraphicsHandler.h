@@ -25,6 +25,7 @@ const int OCTREE_NODE_MAX_DEPTH = 5;
 const int OCTREE_NODE_MIN_DEPTH = 1;
 const float OCTREE_NODE_MIN_SIZE = 2.0f;
 const unsigned int STATIC_SHADOWMAP_RESOLUTION = 512; // ratio always 1:1
+const unsigned int CUBE_MAP_RESOLUTION = 512; //ratio always 1:1
 const size_t MAX_ACTIVE_LIGHTS = 40;
 					  
 	
@@ -34,7 +35,7 @@ class GraphicsHandler
 
 #ifdef _DEBUG
 private:
-	bool editorMode = false;
+	bool m_EditorMode = false;
 	enum BoundingTypes {
 		T_OBB,
 		T_AABB,
@@ -91,7 +92,8 @@ private:
 
 	std::vector<int> m_activeLightIndices;
 
-
+	ID3D11ShaderResourceView* m_sceneCubeMap = nullptr;
+	ID3D11ShaderResourceView *m_defaultCubeMap = nullptr;
 	//temp
 	Camera* m_camera;
 	ID3D11Buffer* m_vertexBuffer;
@@ -211,6 +213,8 @@ public:
 	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
 	GRAPHICSDLL_API int Render(float deltaTime);
 	GRAPHICSDLL_API int RenderStaticObjectShadows();
+	GRAPHICSDLL_API int RenderStaticScene();
+	GRAPHICSDLL_API int RenderStaticScene(std::vector<GraphicsComponent*> comps);
 	GRAPHICSDLL_API int Update(float deltaTime);
 
 
@@ -257,7 +261,8 @@ public:
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();
-
+	GRAPHICSDLL_API int EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*> comps);
+	GRAPHICSDLL_API int GenerateSceneCubeMap(DirectX::XMVECTOR cubePos);
 
 	//TEMP STUFF
 public:
@@ -265,7 +270,7 @@ public:
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
 	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 	GRAPHICSDLL_API void ToggleOverviewCamera();
-	GRAPHICSDLL_API float Ping_GetDistanceToClosestOBB(int maxDistance);	//Used for the Ping
+	GRAPHICSDLL_API float Ping_GetDistanceToClosestOBB(float maxDistance);	//Used for the Ping
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:

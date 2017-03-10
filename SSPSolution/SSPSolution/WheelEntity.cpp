@@ -17,7 +17,7 @@ WheelEntity::~WheelEntity()
 	}
 }
 
-int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
+int WheelEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
 {
 	int result = this->InitializeBase(entityID, pComp, gComp, nullptr);
 	//Load default values
@@ -274,7 +274,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	return 0;
 }
 
-int WheelEntity::React(int entityID, EVENT reactEvent)
+int WheelEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	return 0;
 }
@@ -444,9 +444,7 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			else
 			{
 				//If we were not already increasing
-				if (this->m_rotationState != 1)
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
-
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
 				this->m_rotationState = RotatingIncrease;
 				this->m_resetCountdown = this->m_timeUntilReset;
 			}
@@ -477,8 +475,7 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 		}
 		else if (newSyncState->rotationState == -2)
 		{
-			if (this->m_rotationState != -2)
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
+			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 			this->m_rotationState = Resetting;
 			this->m_resetCountdown = this->m_timeUntilReset;
 		}
@@ -513,16 +510,19 @@ void WheelEntity::m_UpdateOBB(bool inc, float dT)
 	DirectX::XMVECTOR rotVec = Ortho.r[0];
 
 	//get the rotation from the physics component
-	float rotate = this->m_rotatePerSec * dT * 50;
-	//float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
-	float radian = rotate * (3.14 / 180);
-	
+	float rotate = dT;
 	//if the wheel is spinning to orginal state, decreasing
-	if(inc == false)
-		radian *= -1;
+	if (inc)
+	{
+		rotate *= this->m_rotatePerSec;
+	}
+	else
+	{
+		rotate *= -this->m_resetRotatePerSec;
+	}
 
 	//angle rotation vector
-	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, radian);
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, rotate);
 
 	//update the new orthographic matrix
 	this->m_pComp->PC_OBB.ort *= rotationMatrix;

@@ -2,7 +2,6 @@
 #define RESOURCELIB_ANIMATION_ANIMATION_H
 
 #include "Resource.h"
-#include "../GraphicsDLL/AnimationStateEnums.h"
 
 namespace Resources 
 {
@@ -25,7 +24,6 @@ namespace Resources
 			float startTime = 0.f;
 			float endTime = 0.f;
 			bool isLooping = false;
-			Blending blendFlag = Blending::NO_TRANSITION;
 		};
 
 		struct AnimationJoint 

@@ -40,10 +40,10 @@ public:
 	WheelEntity();
 	~WheelEntity();
 	//Max and Min rotation are all described as 1.0f = 1 = 1 entire turn of the wheel
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = 1.0f, float rotateTime = 1.0f, bool resets = false, float resetTime = 1.0f, float timeUntilReset = 0.0f);
+	int Initialize(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 4.0f, float minRotation = 0.0f, float maxRotation = 1.0f, float rotateTime = 1.0f, bool resets = false, float resetTime = 1.0f, float timeUntilReset = 0.0f);
 
 	int Update(float dT, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 	int CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increasing);
 

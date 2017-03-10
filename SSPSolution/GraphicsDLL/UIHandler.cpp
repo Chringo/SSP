@@ -29,14 +29,14 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	
-	this->m_nrOfTextures = 13;
+	this->m_nrOfTextures = 18;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{
 		ID3D11ShaderResourceView* newTexture = nullptr;
 		this->m_textures.push_back(newTexture);
 	}
 
-	DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_textures.at(0));
+	/*DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_textures.at(0));
 	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_textures.at(1));
 	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_temp.png", nullptr, &this->m_textures.at(2));
 	DirectX::CreateWICTextureFromFile(device, L"menubg.png", nullptr, &this->m_textures.at(3));
@@ -48,7 +48,26 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"level2.png", nullptr, &this->m_textures.at(9));
 	DirectX::CreateWICTextureFromFile(device, L"level3.png", nullptr, &this->m_textures.at(10));
 	DirectX::CreateWICTextureFromFile(device, L"level4.png", nullptr, &this->m_textures.at(11));
-	DirectX::CreateWICTextureFromFile(device, L"level5.png", nullptr, &this->m_textures.at(12));
+	DirectX::CreateWICTextureFromFile(device, L"level5.png", nullptr, &this->m_textures.at(12));*/
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/gamelogo.png", nullptr, &this->m_textures.at(0));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/background.png", nullptr, &this->m_textures.at(1));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/chars.png", nullptr, &this->m_textures.at(2));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Frame.png", nullptr, &this->m_textures.at(3));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Header.png", nullptr, &this->m_textures.at(4));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/cog.png", nullptr, &this->m_textures.at(5));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/button.png", nullptr, &this->m_textures.at(6));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(8));	
+	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_temp.png", nullptr, &this->m_textures.at(9));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/combinedframes.png", nullptr, &this->m_textures.at(10));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level0.png", nullptr, &this->m_textures.at(11));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level1.png", nullptr, &this->m_textures.at(12));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level2.png", nullptr, &this->m_textures.at(13));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level3.png", nullptr, &this->m_textures.at(14));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level4.png", nullptr, &this->m_textures.at(15));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level5.png", nullptr, &this->m_textures.at(16));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/levelframe.png", nullptr, &this->m_textures.at(17));
+	
 
 	D3D11_BLEND_DESC BlendState;
 	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
@@ -75,11 +94,11 @@ void UIHandler::DrawUI()
 		{
 			if (tempUIComp->spriteID > 0 && tempUIComp->spriteID < this->m_textures.size())
 			{
-				this->m_spriteBatch->Draw(this->m_textures.at(tempUIComp->spriteID), tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+				this->m_spriteBatch->Draw(this->m_textures.at(tempUIComp->spriteID), tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, tempUIComp->origin, tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
 			}
 			else
 			{
-				this->m_spriteBatch->Draw(this->m_textures.at(0), tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
+				this->m_spriteBatch->Draw(this->m_textures.at(0), tempUIComp->position, nullptr, DirectX::Colors::White, tempUIComp->rotation, tempUIComp->origin, tempUIComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempUIComp->layerDepth);
 			}
 		}
 	}
@@ -88,7 +107,10 @@ void UIHandler::DrawUI()
 		tempTextComp = this->m_textComponents.at(i);
 		if (tempTextComp->active)
 		{
-			this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), tempTextComp->position, DirectX::Colors::White, tempTextComp->rotation, DirectX::XMFLOAT2(0.f, 0.f), tempTextComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempTextComp->layerDepth);
+			if(!tempTextComp->useBlackText)
+				this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), tempTextComp->position, DirectX::Colors::White, tempTextComp->rotation, tempTextComp->origin, tempTextComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempTextComp->layerDepth);
+			else
+				this->m_spriteFont->DrawString(this->m_spriteBatch, tempTextComp->text.c_str(), tempTextComp->position, DirectX::Colors::Black, tempTextComp->rotation, tempTextComp->origin, tempTextComp->scale, DirectX::SpriteEffects::SpriteEffects_None, tempTextComp->layerDepth);
 		}
 	}
 	this->m_spriteBatch->End();
