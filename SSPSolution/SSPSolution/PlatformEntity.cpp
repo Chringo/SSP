@@ -95,10 +95,10 @@ int PlatformEntity::React(unsigned int entityID, EVENT reactEvent)
 		this->GetAIComponent()->AC_triggered = false;
 		break;
 	case BUTTON_ACTIVE:
-		this->GetAIComponent()->AC_triggered = true;
+		this->GetAIComponent()->AC_triggered = !this->GetAIComponent()->AC_triggered;
 		break;
 	case LEVER_DEACTIVE:
-		this->GetAIComponent()->AC_triggered = true;
+		this->GetAIComponent()->AC_triggered = !this->GetAIComponent()->AC_triggered;
 		this->GetAIComponent()->AC_oldReset = this->GetAIComponent()->AC_reset;
 		this->GetAIComponent()->AC_reset = true;
 		break;

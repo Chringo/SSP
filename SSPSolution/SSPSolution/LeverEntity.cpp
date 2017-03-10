@@ -119,9 +119,13 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 	if (newSyncState != nullptr)
 	{
 
-		if (this->m_isActive != newSyncState->isActive)
+		if (newSyncState->isActive)
 		{
-			this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+			this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_ACTIVE));
+		}
+		else
+		{
+			this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE));
 		}
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
