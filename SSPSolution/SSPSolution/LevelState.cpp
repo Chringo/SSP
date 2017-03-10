@@ -126,6 +126,39 @@ void LevelState::SendSyncForJoin()
 		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
 	}
 
+	//Drop anything we are holding
+	this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+
+	if (this->m_player1.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player1.GetBall()->GetEntityID());
+	}
+	else if (this->m_player2.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player2.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player2.GetBall()->GetEntityID());
+	}
+
+	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+	if (this->m_player1.GetRagdoll()->state == RagdollState::RAGDOLL || this->m_player1.GetRagdoll()->state == RagdollState::KEYFRAMEBLEND)
+	{
+		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
+
+		for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
+		{
+			//Send a packet for E V E R Y joint
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0, i, gp->finalJointTransforms[i]);
+		}
+	}
+	else
+	{
+		bool loop = false;
+		if (ap->currentState == PLAYER_IDLE || ap->currentState == PLAYER_BALL_IDLE)
+		{
+			loop = true;
+		}
+
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, loop, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+	}
 }
 
 LevelState::LevelState()
@@ -401,7 +434,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
-	ballG->modelID = 1256673809;
+	if (this->m_networkModule->IsHost())
+	{
+		ballG->modelID = 1256673809;
+	}
+	else
+	{
+		ballG->modelID = 1321651915;
+	}
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -432,7 +472,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
-	ballG->modelID = 1321651915;
+	if (this->m_networkModule->IsHost())
+	{
+		ballG->modelID = 1321651915;
+	}
+	else
+	{
+		ballG->modelID = 1256673809;
+	}
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	ballP = m_cHandler->GetPhysicsComponent();
@@ -2743,6 +2790,7 @@ int LevelState::LoadNext()
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
 		this->m_curLevel = 0;
+		this->m_gsh->PopStateFromStack();
 	}
 
 	Resources::Status st = Resources::Status::ST_OK;

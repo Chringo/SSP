@@ -65,11 +65,27 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 
 	this->m_levelFrame = cHandler->GetUIComponent();
 	this->m_levelFrame->active = 0;
-	this->m_levelFrame->position = DirectX::XMFLOAT2(300.0f, 110.0f);
+	this->m_levelFrame->position = DirectX::XMFLOAT2(290.0f, 110.0f);
 	this->m_levelFrame->size = DirectX::XMFLOAT2(700.f, 500.f);
 	this->m_levelFrame->spriteID = Textures::LevelFrame;
 	//this->m_levelFrame->scale = 0.66666f;
 	this->m_levelFrame->layerDepth = 0.8f;
+
+	this->m_charsLevel = cHandler->GetUIComponent();
+	this->m_charsLevel->active = 0;
+	this->m_charsLevel->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_charsLevel->size = DirectX::XMFLOAT2(1280.f, 720.f);
+	this->m_charsLevel->spriteID = Textures::Chars;
+	this->m_charsLevel->scale = 0.66666f;
+	this->m_charsLevel->layerDepth = 0.9f;
+
+	this->m_controls = cHandler->GetUIComponent();
+	this->m_controls->active = 0;
+	this->m_controls->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_controls->size = DirectX::XMFLOAT2(1000.f, 500.f);
+	this->m_controls->spriteID = Textures::Keymaps;
+	//this->m_controls->scale = 0.66666f;
+	this->m_controls->layerDepth = 0.4f;
 
 	size_t nrOfCogs = 2;
 	for (size_t i = 0; i < nrOfCogs; i++)
@@ -112,7 +128,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
 	this->m_keymaps->spriteID = Textures::Keymaps;
 	this->m_keymaps->scale = 0.5f;*/
-	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
+	for (size_t i = 0; i < 3; i++) //Create the options menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
@@ -155,14 +171,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
-		tempUIComp->position = DirectX::XMFLOAT2(380.f + ((i % 3) * 200.f), 150.f + (i / 3) * 220.f);
+		tempUIComp->position = DirectX::XMFLOAT2(370.f + ((i % 3) * 200.f), 150.f + (i / 3) * 220.f);
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 200.f);
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->scale = 0.66666f;
 		tempUIComp->spriteID = Textures::Level0 + i;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
-		tempTextComp->position = DirectX::XMFLOAT2(380.f + ((i % 3) * 200.f), 290.f + (i / 3) * 220.f);
+		tempTextComp->position = DirectX::XMFLOAT2(370.f + ((i % 3) * 200.f), 290.f + (i / 3) * 220.f);
 		tempTextComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 		MenuButton button;
 		button.m_uiComp = tempUIComp;
@@ -207,7 +223,8 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_mainMenuButtons[1].m_textComp->text = L"Options";
 
 	this->m_optionsMenuButtons[0].m_textComp->text = L"Fullscreen";
-	this->m_optionsMenuButtons[1].m_textComp->text = L"Go Back";
+	this->m_optionsMenuButtons[1].m_textComp->text = L"Controls";
+	this->m_optionsMenuButtons[2].m_textComp->text = L"Go Back";
 
 	this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
 	this->m_startMenuButtons[1].m_textComp->text = L"Join Game";
@@ -352,18 +369,18 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
-		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) && this->m_controls->active == 0)
 		{
 			for (size_t i = 0; i < nrOfOptionMenuitems; i++)
 			{
 				this->m_optionsMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
+		if ((inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER)) && this->m_controls->active == 0)
 		{
 				this->m_optionsMenuButtons[m_markedItem].m_uiComp->wasClicked = true;
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN) && this->m_controls->active == 0)
 		{
 			if (this->m_markedItem < nrOfOptionMenuitems - 1)
 			{
@@ -372,7 +389,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP) && this->m_controls->active == 0)
 		{
 			if (this->m_markedItem > 0)
 			{
@@ -382,11 +399,20 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
-		if (this->m_optionsMenuButtons[0].m_uiComp->CheckClicked())
+		if (this->m_controls->active == 1)
+		{
+			if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE) || inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE) || inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
+			{
+				this->m_controls->active = 0;
+				for (size_t i = 0; i < nrOfOptionMenuitems; i++)
+				{
+					this->m_optionsMenuButtons[i].SetActive(true);
+				}
+			}
+		}
+		else if (this->m_optionsMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Toggle fullscreen was clicked
-			////Cheating by telling the system the user pressed F
-			//inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
 			result = 511;
 			if (!this->inFullscreen)
 			{
@@ -399,6 +425,15 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->inFullscreen = !this->inFullscreen;
 		}
 		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
+		{
+			//Controls was clicked
+			this->m_controls->active = 1;
+			for (size_t i = 0; i < nrOfOptionMenuitems; i++)
+			{
+				this->m_optionsMenuButtons[i].SetActive(false);
+			}
+		}
+		else if (this->m_optionsMenuButtons[2].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Return to main menu was clicked
 			//Switch visable buttons
@@ -507,23 +542,14 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_ipTextBox.SetActive(false);
 			this->m_menuFrame->active = 0;
 			this->m_levelFrame->active = 1;
-			for (UIComponent* cog : this->m_menuCogs)
-			{
-				cog->active = 0;
-			}
+			this->m_charsLevel->active = 1;
+			this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(290.f, 110.f);
+			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(985.f, 585.f);
 
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
 		{
 			//Join Game was clicked
-
-			//Hide buttons
-			for (size_t i = 0; i < nrOfStartMenuitems; i++)
-			{
-				this->m_startMenuButtons[i].SetActive(false);
-			}
-			this->m_ipTextBox.SetActive(false);
-			this->m_menuBG->active = 0;
 
 			//Update the IP stored in Progression
 			if (!this->m_ipTextBox.firstChar)
@@ -585,11 +611,14 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 
 		}
-		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
+		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Go Back was clicked
 			//Switch visable buttons
-			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			if (this->m_markedItem != this->m_startMenuButtons.size())
+			{
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			}
 			this->m_markedItem = 0;
 			this->m_mainMenuButtons[0].SetHovered(true);
 			this->m_menuState = 0;
@@ -768,7 +797,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 			this->isHosting = true;
 		}
-		else if (this->m_hostMenuButtons[NR_OF_LEVELS].m_uiComp->CheckClicked())
+		else if (this->m_hostMenuButtons[NR_OF_LEVELS].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Go Back was clicked
 			//Switch visable buttons
@@ -783,10 +812,9 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_ipTextBox.SetActive(true);
 			this->m_menuFrame->active = 1;
 			this->m_levelFrame->active = 0;
-			for (UIComponent* cog : this->m_menuCogs)
-			{
-				cog->active = 1;
-			}
+			this->m_charsLevel->active = 0;
+			this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(580.f, 200.f);
+			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(680.f, 170.f);
 			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
 			{
 				this->m_hostMenuButtons[i].SetActive(false);
@@ -934,6 +962,8 @@ int MenuState::EnterState()
 	{
 		cog->active = 1;
 	}
+	this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(580.f, 200.f);
+	this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(680.f, 170.f);
 
 	this->isHosting = false;
 	this->isJoining = false;
@@ -943,6 +973,29 @@ int MenuState::EnterState()
 
 int MenuState::LeaveState()
 {
+	size_t nrOfMenuitems = this->m_mainMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_mainMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_optionsMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_optionsMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_startMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_startMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_hostMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_hostMenuButtons[i].SetActive(false);
+	}
+
+	this->m_ipTextBox.SetActive(false);
+
 	for (UIComponent* cog : this->m_menuCogs)
 	{
 		cog->active = 0;
@@ -950,6 +1003,7 @@ int MenuState::LeaveState()
 	this->m_levelFrame->active = 0;
 	this->m_menuBG->active = 0;
 	this->m_menuFrame->active = 0;
+	this->m_charsLevel->active = 0;
 
 	return 0;
 }
