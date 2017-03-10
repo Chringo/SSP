@@ -113,6 +113,7 @@ private:
 	UIComponent* m_menuFrame;
 	UIComponent* m_levelFrame;
 	UIComponent* m_charsLevel;
+	UIComponent* m_controls;
 	std::vector<UIComponent*> m_menuCogs;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;

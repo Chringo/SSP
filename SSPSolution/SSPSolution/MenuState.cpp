@@ -79,6 +79,14 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_charsLevel->scale = 0.66666f;
 	this->m_charsLevel->layerDepth = 0.9f;
 
+	this->m_controls = cHandler->GetUIComponent();
+	this->m_controls->active = 0;
+	this->m_controls->position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	this->m_controls->size = DirectX::XMFLOAT2(1000.f, 500.f);
+	this->m_controls->spriteID = Textures::Keymaps;
+	//this->m_controls->scale = 0.66666f;
+	this->m_controls->layerDepth = 0.4f;
+
 	size_t nrOfCogs = 2;
 	for (size_t i = 0; i < nrOfCogs; i++)
 	{
@@ -120,7 +128,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_keymaps->size = DirectX::XMFLOAT2(800.f, 600.f);
 	this->m_keymaps->spriteID = Textures::Keymaps;
 	this->m_keymaps->scale = 0.5f;*/
-	for (size_t i = 0; i < 2; i++) //Create the options menu buttons
+	for (size_t i = 0; i < 3; i++) //Create the options menu buttons
 	{
 		UIComponent* tempUIComp = cHandler->GetUIComponent();
 		tempUIComp->active = 0;
@@ -215,7 +223,8 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_mainMenuButtons[1].m_textComp->text = L"Options";
 
 	this->m_optionsMenuButtons[0].m_textComp->text = L"Fullscreen";
-	this->m_optionsMenuButtons[1].m_textComp->text = L"Go Back";
+	this->m_optionsMenuButtons[1].m_textComp->text = L"Controls";
+	this->m_optionsMenuButtons[2].m_textComp->text = L"Go Back";
 
 	this->m_startMenuButtons[0].m_textComp->text = L"Host Game";
 	this->m_startMenuButtons[1].m_textComp->text = L"Join Game";
@@ -360,18 +369,18 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
-		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT))
+		if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) && this->m_controls->active == 0)
 		{
 			for (size_t i = 0; i < nrOfOptionMenuitems; i++)
 			{
 				this->m_optionsMenuButtons[i].m_uiComp->UpdateClicked(mousePos);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
+		if ((inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER)) && this->m_controls->active == 0)
 		{
 				this->m_optionsMenuButtons[m_markedItem].m_uiComp->wasClicked = true;
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_DOWN) && this->m_controls->active == 0)
 		{
 			if (this->m_markedItem < nrOfOptionMenuitems - 1)
 			{
@@ -380,7 +389,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 				this->m_optionsMenuButtons[this->m_markedItem].SetHovered(true);
 			}
 		}
-		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP))
+		if (inputHandler->IsKeyPressed(SDL_SCANCODE_UP) && this->m_controls->active == 0)
 		{
 			if (this->m_markedItem > 0)
 			{
@@ -390,11 +399,20 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
-		if (this->m_optionsMenuButtons[0].m_uiComp->CheckClicked())
+		if (this->m_controls->active == 1)
+		{
+			if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+			{
+				this->m_controls->active = 0;
+				for (size_t i = 0; i < nrOfOptionMenuitems; i++)
+				{
+					this->m_optionsMenuButtons[i].SetActive(true);
+				}
+			}
+		}
+		else if (this->m_optionsMenuButtons[0].m_uiComp->CheckClicked())
 		{
 			//Toggle fullscreen was clicked
-			////Cheating by telling the system the user pressed F
-			//inputHandler->SetKeyState(SDL_SCANCODE_F, true); //Seems this does not reset, ever
 			result = 511;
 			if (!this->inFullscreen)
 			{
@@ -406,7 +424,16 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->inFullscreen = !this->inFullscreen;
 		}
-		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
+		{
+			//Controls was clicked
+			this->m_controls->active = 1;
+			for (size_t i = 0; i < nrOfOptionMenuitems; i++)
+			{
+				this->m_optionsMenuButtons[i].SetActive(false);
+			}
+		}
+		else if (this->m_optionsMenuButtons[2].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Return to main menu was clicked
 			//Switch visable buttons

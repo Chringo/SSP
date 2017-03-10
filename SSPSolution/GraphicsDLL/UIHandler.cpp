@@ -10,7 +10,7 @@ UIHandler::~UIHandler()
 
 void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	this->m_maxUIComponents = 26;
+	this->m_maxUIComponents = 28;
 	this->m_nrOfUIComponents = 0;
 	for (unsigned int i = 0; i < this->m_maxUIComponents; i++)
 	{
@@ -56,7 +56,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/button.png", nullptr, &this->m_textures.at(4));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair.png", nullptr, &this->m_textures.at(5));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(6));	
-	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_temp.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Controls.png", nullptr, &this->m_textures.at(7));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/combinedframes.png", nullptr, &this->m_textures.at(8));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/level0.png", nullptr, &this->m_textures.at(9));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/level1.png", nullptr, &this->m_textures.at(10));
