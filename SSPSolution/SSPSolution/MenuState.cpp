@@ -508,7 +508,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_menuFrame->active = 0;
 			this->m_levelFrame->active = 1;
 			this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(300.f, 110.f);
-			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(1000.f, 590.f);
+			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(995.f, 585.f);
 
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
