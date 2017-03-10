@@ -15,7 +15,7 @@ enum Textures
 	Frame = 3,
 	Header = 4,
 	Cog = 5,
-	Button = 6,
+	TButton = 6,
 	Crosshair = 7,
 	CrosshairAim = 8,
 	Keymaps = 9,

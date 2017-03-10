@@ -367,6 +367,9 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
     <ProjectReference Include="..\physicsDLL\physicsDLL.vcxproj">
       <Project>{0e7d331b-b435-4a7e-8074-09225fec9cdb}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\ResourceLib\ResourceLib.vcxproj">
+      <Project>{fa1fec57-5873-49e7-8f1f-ab3941d1f52a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
