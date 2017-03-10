@@ -401,7 +401,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 		if (this->m_controls->active == 1)
 		{
-			if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE) || inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE))
+			if (inputHandler->IsMouseKeyReleased(SDL_BUTTON_LEFT) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE) || inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE) || inputHandler->IsKeyPressed(SDL_SCANCODE_RETURN) || inputHandler->IsKeyPressed(SDL_SCANCODE_KP_ENTER))
 			{
 				this->m_controls->active = 0;
 				for (size_t i = 0; i < nrOfOptionMenuitems; i++)
