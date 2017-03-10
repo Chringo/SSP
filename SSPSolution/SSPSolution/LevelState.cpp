@@ -1708,7 +1708,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			t_pc->PC_friction = 0.0f;
 		}
 
-
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr);// Entity needs its ID
@@ -1770,7 +1769,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
-		t_pc->PC_friction = 0.7f;
+		t_pc->PC_friction = 0.0f;
 		t_pc->PC_elasticity = 0.1f;
 		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
@@ -2014,12 +2013,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//DirectX::XMQuaternionRotationMatrix
 
 		//Copy the bounding volume data from the model into the physics component for reference
-		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
-		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
-		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		//wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		//wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		//wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		//wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0];
+		//wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		//wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 
 		wheel1P->PC_BVtype = BV_OBB;
@@ -2028,9 +2027,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
 		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
 		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] + 0.5f ;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
