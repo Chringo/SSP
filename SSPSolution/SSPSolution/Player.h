@@ -4,6 +4,8 @@
 #include "..\GraphicsDLL\AnimationStateEnums.h"
 #include "Entity.h"
 
+#define BLEND_ROTATION_DURATION 0.50f
+
 class Player :
 	public Entity
 {
@@ -12,7 +14,9 @@ private:
 	float m_acceleration;
 	float m_maxSpeed;
 	float m_throwStrength;
+	float m_blendTimer;
 	bool m_isAiming;
+	bool m_playerIsRotating;
 	Entity* m_ball;
 
 	Ragdoll* m_ragdoll;
@@ -23,6 +27,7 @@ private:
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
 	DirectX::XMVECTOR m_rightDir;
+	DirectX::XMVECTOR m_newPlayerDir;
 	
 #pragma region soundvariables
 	bool m_hasBeenThrown;
@@ -31,7 +36,6 @@ private:
 #pragma endregion
 
 	float m_chainSoundTimer;
-	int	m_oldAnimState;
 	float m_timeSinceThrow;
 	bool isAbbington;
 
@@ -54,7 +58,6 @@ public:
 	void SetAiming(bool isAming);
 	void SetBall(Entity* ball);
 	void SetRagdoll(Ragdoll* ragdoll);
-	void SetOldAnimState(int newOldState);
 
 	bool stateExists(int animationState);
 	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
