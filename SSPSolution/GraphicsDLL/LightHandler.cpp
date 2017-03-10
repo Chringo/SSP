@@ -413,8 +413,11 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 			  else if (m_lightData.shadowLightIndex[i] == -1)
 				  break;
 		  }
-	  shadowIndices.push_back(item); // Make sure that the dynamic shadow casting light is in the buffer
-	  m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
+		  if (m_lightData.currentDynamicShadowIndex != -1) {
+
+			 shadowIndices.push_back(item); // Make sure that the dynamic shadow casting light is in the buffer
+			 m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
+	}
 
 	  for (int i = 0; i < (int)indices->size(); i++) //for each index sent into this function
 	  {

@@ -234,8 +234,8 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1E1.level", 46.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2E1.level", 46.0f });
 	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3E1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L4E1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5E1.level", 40.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L4E1.level", 45.0f });
+	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5E1.level", 35.0f });
 	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L6E1.level", 41.0f });
 
 
@@ -1107,6 +1107,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 			}
 		}
 
+		if (this->m_networkModule->IsHost())
+		{
+			PhysicsComponent* pc = nullptr;
+			for (PlatformEntity* e : this->m_platformEntities)
+			{
+				pc = e->GetPhysicsComponent();
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity,newrot);
+			}
+		}
+
 	}
 
 #pragma endregion Network_Send_Updates
@@ -1465,7 +1477,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player1_Spawn, DirectX::XMVectorSet(0, 2, 0, 0));
+		//this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
 		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
 			this->m_player1.GetAnimationComponent(),
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
@@ -1482,7 +1494,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
 			this->m_player1.GetPhysicsComponent(),
 			this->m_player1.GetBall()->GetPhysicsComponent());
-
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
 #pragma endregion Network
@@ -1697,7 +1708,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			t_pc->PC_friction = 0.0f;
 		}
 
-
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr);// Entity needs its ID
@@ -1759,7 +1769,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
-		t_pc->PC_friction = 0.7f;
+		t_pc->PC_friction = 0.0f;
 		t_pc->PC_elasticity = 0.1f;
 		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
@@ -2003,12 +2013,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//DirectX::XMQuaternionRotationMatrix
 
 		//Copy the bounding volume data from the model into the physics component for reference
-		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
-		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
-		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		//wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		//wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		//wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		//wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0];
+		//wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		//wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 
 		wheel1P->PC_BVtype = BV_OBB;
@@ -2017,9 +2027,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
 		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
 		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] + 0.5f ;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
