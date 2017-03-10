@@ -931,6 +931,17 @@ int GraphicsHandler::Render(float deltaTime)
 	 return  1;
 }
 
+int GraphicsHandler::RenderStaticObjectShadows(std::vector<GraphicsComponent*> comps)
+ {
+	 m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
+	 m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Shadow);
+
+	 for (GraphicsComponent * comp : comps)
+		 m_shaderControl->Draw(comp->modelPtr, comp);
+
+	 return  1;
+ }
+
   int GraphicsHandler::RenderStaticScene()
  {
 	  m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
@@ -948,7 +959,7 @@ int GraphicsHandler::Render(float deltaTime)
 	  return 0;
  }
 
-  int GraphicsHandler::RenderStaticScene(std::vector<GraphicsComponent*> comps)
+  int GraphicsHandler::RenderStaticScene(std::vector<GraphicsComponent*>& comps)
   {
 	  m_shaderControl->SetActive(ShaderControl::Shaders::DEFERRED);
 	  m_shaderControl->SetVariation(ShaderLib::ShaderVariations::Normal);
@@ -1021,13 +1032,13 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 int GraphicsHandler::renderFinalEditor()
 {
 
-	m_LightHandler->Get_Light_List()->numShadowLights = 0;
+	
 	std::vector<int> lights(m_LightHandler->Get_Light_List()->numItems);
 	for (size_t i = 0; i < m_LightHandler->Get_Light_List()->numItems; i++)
 	{
 		lights.at(i) = i;
 	}
-	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPU(&lights);
+	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPUeditor(&lights);
 	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
 #ifdef _DEBUG
@@ -1653,6 +1664,125 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 	return  1;
 }
 
+int GraphicsHandler::EditorGenerateStaticSceneShadows(std::vector<GraphicsComponent*>& comps)
+{
+	//ID3D11Resource * textureView = nullptr;
+
+	//DirectX::CreateDDSTextureFromFile
+	//(
+	//	m_d3dHandler->GetDevice(),
+	//	L"../ResourceLib/AssetFiles/Islands.dds",
+	//	&textureView, &m_defaultCubeMap, size_t(0),
+	//	(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+	//);
+	//m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_defaultCubeMap);
+
+
+
+	HRESULT hResult;
+	//For each light
+
+	// Set the light as active for shadow rendering
+
+	// Render the static objects in the scene
+
+	// Save the textures to the light, (or to file)
+
+	//
+#ifdef _DEBUG
+	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
+#endif // _DEBUG
+
+
+	//Render(0.0f);
+
+
+	LIGHTING::LightHandler::LightArray* lights = m_LightHandler->Get_Light_List();
+	if (lights->shadowMaps != nullptr)
+	{
+		lights->shadowMaps->Release();
+		lights->shadowMaps = nullptr;
+	}
+	if (lights->numShadowLights <= 0)
+		return 1;
+
+
+	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
+	ID3D11Device* device = this->m_d3dHandler->GetDevice();
+
+
+#pragma region Create the textureCubeArray
+	D3D11_TEXTURE2D_DESC ShadowTexDesc;
+
+	ShadowTexDesc.Width = (UINT)STATIC_SHADOWMAP_RESOLUTION;
+	ShadowTexDesc.Height = (UINT)STATIC_SHADOWMAP_RESOLUTION;
+	ShadowTexDesc.MipLevels = 1;
+	ShadowTexDesc.ArraySize = 6 * lights->numShadowLights;	//one for each axis * number of lights
+	ShadowTexDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	ShadowTexDesc.SampleDesc.Count = 1;
+	ShadowTexDesc.SampleDesc.Quality = 0;
+	ShadowTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	ShadowTexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	ShadowTexDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	ShadowTexDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	//Create the render target Texture
+	ID3D11Texture2D* tempTexture;
+	hResult = device->CreateTexture2D(&ShadowTexDesc, NULL, &tempTexture);
+	if (FAILED(hResult))
+	{
+		return 1;
+	}
+	//Set up the shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewShadowDesc;
+	resourceViewShadowDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	resourceViewShadowDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+	resourceViewShadowDesc.TextureCubeArray.NumCubes = lights->numShadowLights;
+	resourceViewShadowDesc.TextureCubeArray.First2DArrayFace = 0;
+	resourceViewShadowDesc.TextureCubeArray.MostDetailedMip = 0;
+	resourceViewShadowDesc.TextureCubeArray.MipLevels = -1;
+
+
+
+	//Create the resourceView;
+
+	hResult = device->CreateShaderResourceView(tempTexture, &resourceViewShadowDesc, &lights->shadowMaps);
+	if (FAILED(hResult))
+		return 1;
+#pragma endregion
+
+
+	ConstantBufferHandler::GetInstance()->ResetConstantBuffers();
+
+	for (size_t i = 0; i < lights->numShadowLights; i++) //for each light
+	{
+
+		m_shaderControl->ClearFrame();
+
+		m_LightHandler->SetShadowCastingLight(lights->shadowLightIndex[i]);
+		this->RenderStaticObjectShadows(comps);						   //render statics
+
+
+
+		for (size_t j = 0; j < 6; j++) //for each side of the cube map
+		{
+			context->CopySubresourceRegion(tempTexture, j + (6 * i), 0, 0, 0, m_shaderControl->GetShadowTexture(), j, NULL); //copy the  jth texture in the cubeMap
+
+		}
+	}
+
+
+
+	m_LightHandler->SetStaticShadowsToGPU();
+	tempTexture->Release();
+	//m_d3dHandler->PresentScene();
+
+
+
+
+	return  1;
+}
+
 int GraphicsHandler::GenerateSceneCubeMap(DirectX::XMVECTOR cubePos)
 {
 	//Render(1.0f);
@@ -1844,7 +1974,7 @@ int GraphicsHandler::GenerateSceneCubeMap(DirectX::XMVECTOR cubePos)
 }
 
 
-int GraphicsHandler::EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*> comps)
+int GraphicsHandler::EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*> &comps)
 {
 	//Render(1.0f);
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();

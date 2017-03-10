@@ -15,12 +15,14 @@ public:
 	void AddLight(Light* light, LIGHTING::Light * data, LIGHTING::LIGHT_TYPE type);
 	void AddLight(LIGHTING::Point* light);
 	void UpdateLights(LIGHTING::LIGHT_TYPE type);
+	void UpdateShadows();
 	void RemoveLight(int index, LIGHTING::LIGHT_TYPE type);
 	void SetAmbientR(float r);
 	void SetAmbientG(float g);
 	void SetAmbientB(float b);
 	void SetAmbientIntensity(float intensity);
 	void SetLevelAmbient(Ambient ambient);
+	void SetGraphicsHandler(GraphicsHandler* gh) { this->gh = gh; };
 	const Ambient * GetLevelAmbient() { return &this->m_levelAmbience; };
 	void DisplayLightRadius(bool display);
 	bool DisplayLightRadius();
@@ -39,7 +41,7 @@ private:
 	std::vector<LIGHTING::Point> pointLightData;
 	std::vector<int> shadowCasterIndexes;
 	bool m_displayLightRadius;
-
+	GraphicsHandler* gh = nullptr;
 
 };
 
