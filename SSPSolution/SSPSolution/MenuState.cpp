@@ -406,7 +406,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 			this->inFullscreen = !this->inFullscreen;
 		}
-		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked())
+		else if (this->m_optionsMenuButtons[1].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Return to main menu was clicked
 			//Switch visable buttons
@@ -584,11 +584,14 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			}
 
 		}
-		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked())
+		else if (this->m_startMenuButtons[2].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Go Back was clicked
 			//Switch visable buttons
-			this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			if (this->m_markedItem != this->m_startMenuButtons.size())
+			{
+				this->m_startMenuButtons[this->m_markedItem].SetHovered(false);
+			}
 			this->m_markedItem = 0;
 			this->m_mainMenuButtons[0].SetHovered(true);
 			this->m_menuState = 0;
@@ -767,7 +770,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 			this->isHosting = true;
 		}
-		else if (this->m_hostMenuButtons[NR_OF_LEVELS].m_uiComp->CheckClicked())
+		else if (this->m_hostMenuButtons[NR_OF_LEVELS].m_uiComp->CheckClicked() || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 		{
 			//Go Back was clicked
 			//Switch visable buttons
