@@ -9,16 +9,23 @@ Player::Player()
 	this->m_grabbed = nullptr;
 	this->m_isAiming = false;
 	this->m_walkingSound = nullptr;
-	this->m_oldAnimState = 0;
 	this->m_timeSinceThrow = 0;
 	this->m_ragdoll = nullptr;
+	this->m_playerIsRotating = false;
+	this->m_blendTimer = 0;
 }
 
 Player::~Player()
 {
 	if (this->m_walkingSound)
 	{
+		this->m_walkingSound->stop();
 		this->m_walkingSound->drop();
+	}
+	if (this->m_thrownSound)
+	{
+		this->m_thrownSound->stop();
+		this->m_thrownSound->drop();
 	}
 }
 
@@ -33,6 +40,8 @@ int Player::Initialize(unsigned int entityID, PhysicsComponent * pComp, Graphics
 	this->m_lookDir = DirectX::XMVectorSet(0, 0, 1, 0);
 	this->m_carryOffset = DirectX::XMVectorSet(0, 0, 0, 0);
 	this->m_walkingSound = nullptr;
+	this->m_thrownSound = nullptr;
+	this->m_hasBeenThrown = false;
 	this->m_chainSoundTimer = 0.0f;
 
 	if (this->GetGraphicComponent()->modelID == 1117267500)	//Studly Model ID
@@ -85,11 +94,58 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			SetAnimationComponent(AnimationStates::PLAYER_RISE_UP, 0.5f, Blending::NO_TRANSITION, false, true, 2.0f, 1.0f);
 			this->m_aComp->currentState = AnimationStates::PLAYER_IDLE;
 			this->m_ragdoll->state = RagdollState::ANIMATED;
+			if (this->m_thrownSound != nullptr)
+			{
+				//if the character has stopped flying, this statement will teminate the flying sound
+				//if it has been assigned and reset the bool variable
+				this->m_thrownSound->stop();
+				this->m_thrownSound->drop();
+				this->m_hasBeenThrown = false;
+			}
 		}
 		if (this->m_ragdoll->state == RagdollState::RAGDOLL || this->m_ragdoll->state == RagdollState::KEYFRAMEBLEND)
 		{
 			this->m_aComp;
 			this->m_ragdoll->playerPC->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
+
+			if (this->m_thrownSound == nullptr)
+			{
+				//play a random throw sound
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				//Check to see which character model is used, to get the right sound
+				if (this->isAbbington)
+					this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_FLYING_1, Sounds3D::ABBINGTON_FLYING_3, pos, false, true);
+				else
+					this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_FLYING_1, Sounds3D::STUDLEY_FLYING_3, pos, false, true);
+				this->m_hasBeenThrown = true;
+			}
+			else
+			{
+				//update sound position
+				if ((int)this->m_thrownSound->getPlayPosition() != -1)
+				{
+					DirectX::XMFLOAT3 pos;
+					DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+					irrklang::vec3d<float> posIklang(pos.x, pos.y, pos.z);
+					this->m_thrownSound->setPosition(posIklang);
+				}
+				else
+				{
+					if (!this->m_hasBeenThrown)
+					{
+						//play a random throw sound
+						DirectX::XMFLOAT3 pos;
+						DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+						//Check to see which character model is used, to get the right sound
+						if (this->isAbbington)
+							this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::ABBINGTON_FLYING_1, Sounds3D::ABBINGTON_FLYING_3, pos, false, true);
+						else
+							this->m_thrownSound = SoundHandler::instance().PlayRandomSound3D(Sounds3D::STUDLEY_FLYING_1, Sounds3D::STUDLEY_FLYING_3, pos, false, true); 
+						this->m_hasBeenThrown = true;
+					}
+				}
+			}
 			
 			if (!stateExists(AnimationStates::RAGDOLL_STATE))
 			{
@@ -258,12 +314,12 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//Set the ball to be between the two hands
 			
 			//left hand index  : 8
-		//right hand index : 12
+			//right hand index : 12
 
 			//Get left hand, multiply it by bind pose to correct position
 			DirectX::XMMATRIX joint = ((GraphicsAnimationComponent*)this->GetGraphicComponent())->finalJointTransforms[8];
 			DirectX::XMMATRIX tpose = DirectX::XMMATRIX(this->GetAnimationComponent()->skeleton->GetSkeletonData()->joints[8].invBindPose);
-					DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
+			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(tpose);
 			tpose = DirectX::XMMatrixInverse(&det, tpose);
 			joint = DirectX::XMMatrixMultiply(tpose, joint);
 
@@ -278,11 +334,11 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			DirectX::XMMATRIX world = this->GetGraphicComponent()->worldMatrix;
 			
 			//Multiply the hand joints into world space
-					joint = DirectX::XMMatrixMultiply(joint, world);
+			joint = DirectX::XMMatrixMultiply(joint, world);
 			jointTwo = DirectX::XMMatrixMultiply(jointTwo, world);
 
 			//Get a vector from left hand to right hand
-					DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3], joint.r[3]);
+			DirectX::XMVECTOR jointToJoint = DirectX::XMVectorSubtract(jointTwo.r[3], joint.r[3]);
 
 			//Cut the vector in half
 			jointToJoint = DirectX::XMVectorScale(jointToJoint, 0.5);
@@ -299,7 +355,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		}
 #pragma region
 		
-
 		//Set the ball to be between the two hands
 
 		//left hand index  : 8
@@ -327,7 +382,6 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			float yVel = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
 			this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, yVel, 0, 0);
 		}
-		//if (inputHandler->IsKeyPressed(SDL_SCANCODE_P))
 		bool hasThrown = false;
 		if(inputHandler->IsMouseKeyPressed(SDL_BUTTON_LEFT) && this->m_grabbed != nullptr)
 		{
@@ -392,24 +446,9 @@ int Player::Update(float dT, InputHandler* inputHandler)
 	//Check if the player CAN	 update its physics component
 	if (this->m_pComp != nullptr)
 	{
-		//Check if the player should update its physics component
-		//if (this->m_pComp->PC_entityID == 0)
-		//{
-		if (forwards == 0)
-		{
-			//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-			//this->m_ragdoll->upperBody.center->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
-		}
 		if (forwards != 0 || sideways != 0)
 		{
-			//Use those values for the player behaviour calculations
-			//Get the rotation around the Y-axis, also called the Yaw axis
-			//float yaw = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
-
-			//Define a quaternion rotation so we can rotate the velocity vector
-			//DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.0f, DirectX::XMScalarASin(yaw / 2.0f), 0.0f, DirectX::XMScalarACos(yaw / 2.0f));
 			float forwardsVel = 0.0f, sidewaysVel = 0.0f;
-			//DirectX::XMVECTOR velocity = DirectX::XMVectorSet(m_speed * sideways, 0.0f, m_speed * forwards, 1.0f);
 			DirectX::XMVECTOR velocity = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 			DirectX::XMVECTOR lookAtDir = this->m_lookDir;
 			lookAtDir.m128_f32[1] = 0.0f;
@@ -452,12 +491,10 @@ int Player::Update(float dT, InputHandler* inputHandler)
 			//Add the velocity to our physicsComponent
 			float ySpeed = 0;
 			ySpeed = DirectX::XMVectorGetY(this->m_pComp->PC_velocity);
-			//ySpeed += DirectX::XMVectorGetY(velocity);
 
 			this->m_pComp->PC_velocity = velocity;
 
 			this->m_pComp->PC_velocity = DirectX::XMVectorSetY(this->m_pComp->PC_velocity, ySpeed);
-			//this->m_ragdoll->upperBody.center->PC_velocity = this->m_pComp->PC_velocity;
 
 			/*Store the velocity of the player to use as a scale factor for animation playing speed.*/
 			DirectX::XMVECTOR velocityAnimation = DirectX::XMVector3Length(this->m_pComp->PC_velocity);
@@ -465,24 +502,18 @@ int Player::Update(float dT, InputHandler* inputHandler)
 
 			//Rotates the player to run in the direction that the camera faces.
 			DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0f,1.0f,0.0f,0.0f }));
-			this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+
+			/*Store the new player direction to spherical interpolate to from the old player direction.*/
+			this->m_newPlayerDir = DirectX::XMQuaternionRotationMatrix(DirectX::XMMatrixSet(
 				-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
 				0.f, 1.f, 0.f, 0.0f,
 				-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
 				0, 0, 0, 1.0f
-			);
-			//If the player is grabbing the ball, the ball entity should also rotate in the direction of the camera. 
-			if (this->m_grabbed != nullptr)
-			{
-				PhysicsComponent* physicComp = this->m_grabbed->GetPhysicsComponent();
+			));
 
-				physicComp->PC_OBB.ort = DirectX::XMMatrixSet(
-					-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
-					0.f, 1.f, 0.f, 0.0f,
-					-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
-					0, 0, 0, 1.0f
-				);
-			}
+			/*Set the flag is the player is moving.*/
+			this->m_playerIsRotating = true;
+			
 			//Play walking sounds
 			/*Playing the corresponding walk sounds based on which entity id the player has, 2 for studley, 1 for abbington*/
 			if (this->m_walkingSound == nullptr)	//Check if we have a walking sound
@@ -519,16 +550,39 @@ int Player::Update(float dT, InputHandler* inputHandler)
 				{
 					this->m_walkingSound->setIsPaused(true);	//Pause the walking sound
 				}
-				if (m_isAiming)
+			}
+
+			/*If the player is rotating to the new direction the camera faces and NOT aiming when doing this.*/
+			if (this->m_playerIsRotating == true && this->m_isAiming == false)
+			{
+				/*Increment the blend timer with delta time each frame.*/
+				this->m_blendTimer += dT;
+
+				/*If the rotation to the new direction is finished, set the blend timer to zero and flag to false.*/
+				if (this->m_blendTimer >= BLEND_ROTATION_DURATION)
 				{
-					DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));
-					this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
-						-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
-						0.f, 1.f, 0.f, 0.0f,
-						-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
-						0, 0, 0, 1.0f
-					);
+					this->m_blendTimer = 0;
+					this->m_playerIsRotating = false;
 				}
+
+				/*Get the old player direction.*/
+				DirectX::XMVECTOR oldPlayerDir = DirectX::XMQuaternionRotationMatrix(this->m_pComp->PC_OBB.ort);
+
+				/*Calculate a blend percentage from the current time in blending with the maximum blend rotation factor.*/
+				float blendPercentage = this->m_blendTimer / BLEND_ROTATION_DURATION;
+
+				this->m_pComp->PC_OBB.ort = DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionSlerp(oldPlayerDir, this->m_newPlayerDir, blendPercentage));
+			}
+			/*If the player is aiming, just set the new rotation of the player in the direction that the camera faces, each frame.*/
+			else if (this->m_isAiming == true)
+			{
+				DirectX::XMVECTOR walkDir = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(this->m_rightDir, { 0.0,1.0,0.0,0.0 }));
+				this->m_pComp->PC_OBB.ort = DirectX::XMMatrixSet(
+					-this->m_rightDir.m128_f32[0], -this->m_rightDir.m128_f32[1], -this->m_rightDir.m128_f32[2], 0.0f,
+					0.f, 1.f, 0.f, 0.0f,
+					-walkDir.m128_f32[0], -walkDir.m128_f32[1], -walkDir.m128_f32[2], 0.0f,
+					0, 0, 0, 1.0f
+				);
 			}
 
 		//Update sound pos
@@ -543,7 +597,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 		if (this->m_gComp != nullptr)
 		{
 			this->UnsafeSyncComponents();
-			//this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0,-0.05,0,0)));
+
 			if (this->m_ragdoll->state == RagdollState::RAGDOLL )
 			{
 				//offsets for when player ragdoll is in RAGDOLL stage
@@ -699,11 +753,6 @@ void Player::SetBall(Entity * ball)
 void Player::SetRagdoll(Ragdoll * ragdoll)
 {
 	this->m_ragdoll = ragdoll;
-}
-
-void Player::SetOldAnimState(int newOldState)
-{
-	this->m_oldAnimState = newOldState;
 }
 
 float Player::GetMaxSpeed()
