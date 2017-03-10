@@ -98,10 +98,14 @@ int PlatformEntity::React(unsigned int entityID, EVENT reactEvent)
 		this->GetAIComponent()->AC_triggered = true;
 		break;
 	case LEVER_DEACTIVE:
-		this->GetAIComponent()->AC_triggered = false;
-		break;
-	case LEVER_ACTIVE:
 		this->GetAIComponent()->AC_triggered = true;
+		this->GetAIComponent()->AC_oldReset = this->GetAIComponent()->AC_reset;
+		this->GetAIComponent()->AC_reset = true;
+		break;
+	case LEVER_ACTIVE:		
+		this->GetAIComponent()->AC_triggered = true;
+		this->GetAIComponent()->AC_oldReset = this->GetAIComponent()->AC_reset;
+		this->GetAIComponent()->AC_reset = false;
 		break;
 	case WHEEL_INCREASING:
 		//printf("INCREASING\n");
