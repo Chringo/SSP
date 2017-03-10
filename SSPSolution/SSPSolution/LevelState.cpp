@@ -131,11 +131,11 @@ void LevelState::SendSyncForJoin()
 
 	if (this->m_player1.GetBall()->IsGrabbed())
 	{
-		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player1.GetBall()->GetEntityID());
+		this->m_networkModule->SendGrabPacket(this->m_player2.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player1.GetBall()->GetEntityID());
 	}
 	else if (this->m_player2.GetBall()->IsGrabbed())
 	{
-		this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), this->m_player2.GetBall()->GetEntityID());
+		this->m_networkModule->SendGrabPacket(this->m_player2.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player2.GetBall()->GetEntityID());
 	}
 
 	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
