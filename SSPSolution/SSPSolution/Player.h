@@ -23,9 +23,13 @@ private:
 	DirectX::XMVECTOR m_lookDir;
 	DirectX::XMVECTOR m_upDir;
 	DirectX::XMVECTOR m_rightDir;
-
-	irrklang::ISound* m_thrownSound;
+	
+#pragma region soundvariables
+	bool m_hasBeenThrown;
+	irrklang::ISound* m_thrownSound = nullptr;
 	irrklang::ISound* m_walkingSound;
+#pragma endregion
+
 	float m_chainSoundTimer;
 	int	m_oldAnimState;
 	float m_timeSinceThrow;
