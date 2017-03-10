@@ -10,7 +10,7 @@ UIHandler::~UIHandler()
 
 void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
-	this->m_maxUIComponents = 25;
+	this->m_maxUIComponents = 26;
 	this->m_nrOfUIComponents = 0;
 	for (unsigned int i = 0; i < this->m_maxUIComponents; i++)
 	{
@@ -29,7 +29,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	
-	this->m_nrOfTextures = 16;
+	this->m_nrOfTextures = 17;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{
 		ID3D11ShaderResourceView* newTexture = nullptr;
@@ -65,6 +65,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/level4.png", nullptr, &this->m_textures.at(13));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/level5.png", nullptr, &this->m_textures.at(14));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/levelframe.png", nullptr, &this->m_textures.at(15));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Header.png", nullptr, &this->m_textures.at(16));
 	
 
 	D3D11_BLEND_DESC BlendState;
