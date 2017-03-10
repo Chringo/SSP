@@ -148,7 +148,13 @@ void LevelState::SendSyncForJoin()
 	}
 	else
 	{
-		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, false, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+		bool loop = false;
+		if (ap->currentState == PLAYER_IDLE || ap->currentState == PLAYER_BALL_IDLE)
+		{
+			loop = true;
+		}
+
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, loop, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
 	}
 }
 
