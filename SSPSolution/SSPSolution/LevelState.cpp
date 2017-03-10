@@ -1708,7 +1708,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			t_pc->PC_friction = 0.0f;
 		}
 
-
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr);// Entity needs its ID
@@ -1770,7 +1769,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
-		t_pc->PC_friction = 0.1f;
+		t_pc->PC_friction = 0.0f;
 		t_pc->PC_elasticity = 0.1f;
 		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
