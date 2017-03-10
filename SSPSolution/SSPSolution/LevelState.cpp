@@ -2013,12 +2013,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//DirectX::XMQuaternionRotationMatrix
 
 		//Copy the bounding volume data from the model into the physics component for reference
-		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
-		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
-		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		//wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		//wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		//wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		//wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0];
+		//wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		//wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 
 		wheel1P->PC_BVtype = BV_OBB;
@@ -2027,9 +2027,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
 		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
 		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] + 0.5f ;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
