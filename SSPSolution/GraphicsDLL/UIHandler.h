@@ -13,7 +13,7 @@ enum Textures
 	Background = 1,
 	Chars = 2,
 	Cog = 3,
-	Button = 4,
+	TButton = 4,
 	Crosshair = 5,
 	CrosshairAim = 6,
 	Keymaps = 7,

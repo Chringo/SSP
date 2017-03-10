@@ -188,6 +188,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		{
 			light->Update();
 			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
+		
 			if (SelectionHandler::GetInstance()->HasSelection())
 				SelectionHandler::GetInstance()->Update();
 		}

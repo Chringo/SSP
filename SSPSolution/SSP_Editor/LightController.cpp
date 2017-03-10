@@ -148,6 +148,13 @@ void LightController::UpdateLights(LIGHTING::LIGHT_TYPE type)
 	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 }
 
+void LightController::UpdateShadows()
+{
+	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+
+	LIGHTING::LightHandler::GetInstance()->SetShadowLightIndexList(LightController::GetInstance()->GetShadowCasterIndexList());
+}
+
 void LightController::RemoveLight(int index, LIGHTING::LIGHT_TYPE type)
 {
 	//gonna need to find the data index here aswell if we want support for more lighttypes
@@ -268,6 +275,7 @@ void LightController::MakeShadowCaster(unsigned int internalID)
 				if (shadowIndex == i)
 					return;
 			shadowCasterIndexes.push_back(i);
+			UpdateShadows();
 			return;
 		}
 	}
@@ -281,6 +289,7 @@ void LightController::RemoveShadowCaster(unsigned int internalID)
 				if (shadowCasterIndexes.at(j) == i)
 				{
 					shadowCasterIndexes.erase(shadowCasterIndexes.begin() + j);
+					UpdateShadows();
 					return;
 				}
 	return;
@@ -288,7 +297,7 @@ void LightController::RemoveShadowCaster(unsigned int internalID)
 
 bool LightController::GetIsShadowCaster(unsigned int internalID)
 {
-
+	
 	for (int i = 0; i < m_lights.size(); i++)
 	{
 		if (m_lights[i]->internalID == internalID)
@@ -314,7 +323,8 @@ void LightController::Destroy()
 	this->pointLightData.clear();
 	m_lights.reserve(200);
 	pointLightData.reserve(200);
-	LIGHTING::LightHandler::GetInstance()->SetLightData(pointLightData.data(), pointLightData.size());
+
+	UpdateShadows();
 	LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
 	
 }

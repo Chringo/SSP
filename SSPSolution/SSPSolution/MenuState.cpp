@@ -103,7 +103,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 		//tempUIComp->origin = DirectX::XMFLOAT2(187.f, 36.f);
 		tempUIComp->scale = 0.66666f;
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 1;
 		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
@@ -128,7 +128,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 		tempUIComp->scale = 0.66666f;
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
@@ -147,7 +147,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 		tempUIComp->layerDepth = 0.5f;
 		tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 		tempUIComp->scale = 0.66666f;
-		tempUIComp->spriteID = Textures::Button;
+		tempUIComp->spriteID = Textures::TButton;
 		TextComponent* tempTextComp = cHandler->GetTextComponent();
 		tempTextComp->active = 0;
 		tempTextComp->position = DirectX::XMFLOAT2(535.f, 300.f + (i * 60.f));
@@ -184,7 +184,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	tempUIComp->layerDepth = 0.5f;
 	tempUIComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 	tempUIComp->scale = 0.66666f;
-	tempUIComp->spriteID = Textures::Button;
+	tempUIComp->spriteID = Textures::TButton;
 	TextComponent* tempTextComp = cHandler->GetTextComponent();
 	tempTextComp->active = 0;
 	tempTextComp->position = DirectX::XMFLOAT2(535.f, 610.f);
@@ -202,7 +202,7 @@ int MenuState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, Ca
 	this->m_ipTextBox.m_uiComp->size = DirectX::XMFLOAT2(200.f, 45.f);
 	this->m_ipTextBox.m_uiComp->scale = 0.66666f;
 	this->m_ipTextBox.m_uiComp->layerDepth = 0.5f;
-	this->m_ipTextBox.m_uiComp->spriteID = Textures::Button;
+	this->m_ipTextBox.m_uiComp->spriteID = Textures::TButton;
 	this->m_ipTextBox.m_textComp = cHandler->GetTextComponent();
 	this->m_ipTextBox.m_textComp->active = 0;
 	this->m_ipTextBox.m_textComp->position = DirectX::XMFLOAT2(535.f, 300.f + (180.f));
