@@ -507,10 +507,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_ipTextBox.SetActive(false);
 			this->m_menuFrame->active = 0;
 			this->m_levelFrame->active = 1;
-			for (UIComponent* cog : this->m_menuCogs)
-			{
-				cog->active = 0;
-			}
+			this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(300.f, 110.f);
+			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(1000.f, 590.f);
 
 		}
 		else if (this->m_startMenuButtons[1].m_uiComp->CheckClicked())
@@ -783,10 +781,8 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 			this->m_ipTextBox.SetActive(true);
 			this->m_menuFrame->active = 1;
 			this->m_levelFrame->active = 0;
-			for (UIComponent* cog : this->m_menuCogs)
-			{
-				cog->active = 1;
-			}
+			this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(580.f, 200.f);
+			this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(680.f, 170.f);
 			for (size_t i = 0; i < nrOfLevelMenuItems; i++)
 			{
 				this->m_hostMenuButtons[i].SetActive(false);
@@ -934,6 +930,8 @@ int MenuState::EnterState()
 	{
 		cog->active = 1;
 	}
+	this->m_menuCogs.at(0)->position = DirectX::XMFLOAT2(580.f, 200.f);
+	this->m_menuCogs.at(1)->position = DirectX::XMFLOAT2(680.f, 170.f);
 
 	this->isHosting = false;
 	this->isJoining = false;
