@@ -515,14 +515,6 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Join Game was clicked
 
-			//Hide buttons
-			for (size_t i = 0; i < nrOfStartMenuitems; i++)
-			{
-				this->m_startMenuButtons[i].SetActive(false);
-			}
-			this->m_ipTextBox.SetActive(false);
-			this->m_menuBG->active = 0;
-
 			//Update the IP stored in Progression
 			if (!this->m_ipTextBox.firstChar)
 			{
@@ -941,6 +933,29 @@ int MenuState::EnterState()
 
 int MenuState::LeaveState()
 {
+	size_t nrOfMenuitems = this->m_mainMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_mainMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_optionsMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_optionsMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_startMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_startMenuButtons[i].SetActive(false);
+	}
+	nrOfMenuitems = this->m_hostMenuButtons.size();
+	for (size_t i = 0; i < nrOfMenuitems; i++)
+	{
+		this->m_hostMenuButtons[i].SetActive(false);
+	}
+
+	this->m_ipTextBox.SetActive(false);
+
 	for (UIComponent* cog : this->m_menuCogs)
 	{
 		cog->active = 0;
