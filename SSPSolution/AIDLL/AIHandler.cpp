@@ -51,6 +51,8 @@ int AIHandler::Update(float deltaTime)
 
 	for (int i = 0; i < this->m_nrOfAIComponents; i++)
 	{
+		bool changedDir = false;
+
 		if (this->m_AIComponents[i] == nullptr)
 			break;
 
@@ -113,95 +115,82 @@ int AIHandler::Update(float deltaTime)
 				//Round-trip pattern
 				//default direction 0 assumed in description.
 				/*This pattern will move the platform from 0 to AC_numberOfWaypoint and stop at both these positions*/
+				//int oldDir = this->m_AIComponents[i]->AC_oldDirection;
 
-				//test
-				if (this->m_AIComponents[i]->AC_latestWaypointID < 0 || this->m_AIComponents[i]->AC_latestWaypointID > 1)
-				{
-					int i = 0;
-				}
-
-				if (this->m_AIComponents[i]->AC_nextWaypointID < 0 || this->m_AIComponents[i]->AC_nextWaypointID > 1)
-				{
-					int i = 0;
-				}
-				//test end
-
-				if (this->m_AIComponents[i]->AC_endpointReached)
+				if ((this->m_AIComponents[i]->AC_oldReset != this->m_AIComponents[i]->AC_reset)
+					&& this->m_AIComponents[i]->AC_endpointReached == false)
 				{
 					this->ChangeDirection(i);
+					this->m_AIComponents[i]->AC_oldReset = this->m_AIComponents[i]->AC_reset;
 
-					this->m_AIComponents[i]->AC_reset = false;
+					changedDir = true;
+				}
+
+				if (this->m_AIComponents[i]->AC_direction == 0 && changedDir == false)
+				{
+					#pragma region
+					if (WaypointApprox(
+						this->m_AIComponents[i]->AC_position,
+						this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
+						0.05f, i))
+					{
+						this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID < this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
+							this->m_AIComponents[i]->AC_nextWaypointID++;
+
+						this->m_AIComponents[i]->AC_endpointReached = false;
+
+						if (this->m_AIComponents[i]->AC_latestWaypointID >= this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
+						{
+							//printf("##LastWaypoint\n");
+							this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID];
+							this->m_AIComponents[i]->AC_nextWaypointID--;
+
+							this->m_AIComponents[i]->AC_endpointReached = true;
+						}
+					}
+#pragma endregion	SWITCH TO NEXT WAYPOINT
+				}
+				else if (this->m_AIComponents[i]->AC_direction == 1 && changedDir == false)
+				{
+					#pragma region
+					if (WaypointApprox(
+						this->m_AIComponents[i]->AC_position,
+						this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
+						0.05f, i))
+					{
+						this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
+
+						if (this->m_AIComponents[i]->AC_nextWaypointID > 0)
+							this->m_AIComponents[i]->AC_nextWaypointID--;
+
+						this->m_AIComponents[i]->AC_endpointReached = false;
+
+						if (this->m_AIComponents[i]->AC_latestWaypointID <= 0)
+						{
+							//printf("#FirstWaypoint\n");
+							this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[0];
+							this->m_AIComponents[i]->AC_nextWaypointID++;
+
+							this->m_AIComponents[i]->AC_endpointReached = true;
+						}
+					}
+#pragma endregion	SWITCH TO NEXT WAYPOINT
+				}
+
+				if (this->m_AIComponents[i]->AC_endpointReached && changedDir == false)
+				{	
+					//this->ChangeDirection(i);
+
 					this->m_AIComponents[i]->AC_triggered = false;
 					this->m_AIComponents[i]->AC_endpointReached = false;
 					
 				}
-				else if (this->m_AIComponents[i]->AC_reset)
-				{
-					Reset(i);
-					this->m_AIComponents[i]->AC_reset = false;
-				}
-				else
-				{
-					if (this->m_AIComponents[i]->AC_direction == 0)
-					{
-						if (WaypointApprox(
-							this->m_AIComponents[i]->AC_position,
-							this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
-							0.05f, i))
-						{
-							this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
+				
+				UpdatePosition(i);
 
-							if (this->m_AIComponents[i]->AC_nextWaypointID < this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
-								this->m_AIComponents[i]->AC_nextWaypointID++;
-
-							this->m_AIComponents[i]->AC_endpointReached = false;
-
-							if (this->m_AIComponents[i]->AC_latestWaypointID >= this->m_AIComponents[i]->AC_nrOfWaypoint - 1)
-							{
-								//printf("##LastWaypoint\n");
-								this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID];
-								this->m_AIComponents[i]->AC_nextWaypointID--;
-
-								this->m_AIComponents[i]->AC_endpointReached = true;
-							}
-						}
-						else
-						{
-							//printf("-->\n");
-							UpdatePosition(i);
-						}
-
-					}
-					else if (this->m_AIComponents[i]->AC_direction == 1)
-					{
-						if (WaypointApprox(
-							this->m_AIComponents[i]->AC_position,
-							this->m_AIComponents[i]->AC_waypoints[this->m_AIComponents[i]->AC_nextWaypointID],
-							0.05f, i))
-						{
-							this->m_AIComponents[i]->AC_latestWaypointID = this->m_AIComponents[i]->AC_nextWaypointID;
-
-							if (this->m_AIComponents[i]->AC_nextWaypointID > 0)
-								this->m_AIComponents[i]->AC_nextWaypointID--;
-
-							this->m_AIComponents[i]->AC_endpointReached = false;
-
-							if (this->m_AIComponents[i]->AC_latestWaypointID <= 0)
-							{
-								//printf("#FirstWaypoint\n");
-								this->m_AIComponents[i]->AC_position = this->m_AIComponents[i]->AC_waypoints[0];
-								this->m_AIComponents[i]->AC_nextWaypointID++;
-
-								this->m_AIComponents[i]->AC_endpointReached = true;
-							}
-						}
-						else
-						{
-							//printf("<--\n");
-							UpdatePosition(i);
-						}
-					}
-				}
+				printf("Dir: %d, OLDReset: %d, NEWReset: %d, Waypoint: %d \n", this->m_AIComponents[i]->AC_direction, this->m_AIComponents[i]->AC_oldReset, this->m_AIComponents[i]->AC_reset , this->m_AIComponents[i]->AC_endpointReached);
 
 				break;
 #pragma endregion Round trip
@@ -365,17 +354,20 @@ bool AIHandler::ChangeDirection(int i)
 	int temp;
 
 	if (this->m_AIComponents[i]->AC_direction == 0)
+	{
 		this->m_AIComponents[i]->AC_direction = 1;
+	}
 	else
+	{
 		this->m_AIComponents[i]->AC_direction = 0;
+	}
+		
 
 	temp = this->m_AIComponents[i]->AC_nextWaypointID;
 	this->m_AIComponents[i]->AC_nextWaypointID = this->m_AIComponents[i]->AC_latestWaypointID;
 	this->m_AIComponents[i]->AC_latestWaypointID = temp;
 
 	this->m_AIComponents[i]->AC_WaypointUpdated = false;
-
-	this->m_AIComponents[i]->AC_changedDirection = true;
 
 	return true;
 }
@@ -384,12 +376,12 @@ bool AIHandler::Reset(int i)
 {
 	if (!this->m_AIComponents[i]->AC_direction == 0)
 		return false;
-
+	
 	this->m_AIComponents[i]->AC_direction = 1;
 	this->m_AIComponents[i]->AC_nextWaypointID = 0;
 	this->m_AIComponents[i]->AC_latestWaypointID = 1;
 	this->m_AIComponents[i]->AC_WaypointUpdated = false;
-	this->m_AIComponents[i]->AC_changedDirection = true;
+	
 
 	return true;
 }

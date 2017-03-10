@@ -36,7 +36,7 @@ __declspec(align(16)) struct AIComponent
 	// Round trip
 	bool AC_endpointReached = false;
 	bool AC_reset = false;
-	bool AC_changedDirection = false;
+	bool AC_oldReset = false;
 
 
 	DirectX::XMVECTOR AC_waypoints[8];
