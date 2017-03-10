@@ -240,6 +240,7 @@ bool LIGHTING::LightHandler::SetLightData(Point * lightArray, unsigned int numLi
 		return false;
 	m_lightData.dataPtr  = lightArray;
 	m_lightData.numItems = numLights;
+	NUM_LIGHTS			 = numLights;
 	//if (numLights != this->NUM_LIGHTS)
 	//{
 	//	ReleaseStructuredBuffer();
@@ -498,19 +499,16 @@ bool LIGHTING::LightHandler::UpdateActiveLightsToGPUeditor(std::vector<int>* ind
 
 	  static std::vector<Point> lightArray;
 	  static std::vector<ConstantBufferHandler::ConstantBuffer::light::arrayIndex>	shadowIndices;
-	  if (m_lightData.currentDynamicShadowIndex != -1)
-		  lightArray.push_back(m_lightData.dataPtr[m_lightData.currentDynamicShadowIndex]);			  // Make sure that the dynamic shadow casting light is in the buffer
-
-	  //ConstantBufferHandler::ConstantBuffer::light::arrayIndex item;
-	  //item.index = 0;
-	  //item.shadowMapIndex
+	 
+	 
+	  m_lightData.currentDynamicShadowIndex = 1337;
 
 	  ConstantBufferHandler::ConstantBuffer::light::arrayIndex item;
-	  for (size_t i = 0; i < m_lightData.numShadowLights; i++)
-	  {
-		  item.index = m_lightData.shadowLightIndex[i];
-		  shadowIndices.push_back(item);
-	  };
+	 // for (size_t i = 0; i < m_lightData.numShadowLights; i++)
+	 // {
+	//	  item.index = m_lightData.shadowLightIndex[i];
+	//	  shadowIndices.push_back(item);
+	 // };
 	  
 
 	  //for (int i = 0; i < (int)m_lightData.numShadowLights; i++) //detta är pinsamt
@@ -521,15 +519,12 @@ bool LIGHTING::LightHandler::UpdateActiveLightsToGPUeditor(std::vector<int>* ind
 		 // else if (m_lightData.shadowLightIndex[i] == -1)
 			//  break;
 	  //}
-	  //shadowIndices.push_back(item); // Make sure that the dynamic shadow casting light is in the buffer
-	  m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 0;
+	 
+	  m_constBufferData.DYNAMIC_SHADOWLIGHT_INDEX = 1337;
 
 	  for (int i = 0; i < (int)indices->size(); i++) //for each index sent into this function
 	  {
-		  if (indices->at(i) == m_lightData.currentDynamicShadowIndex) { // if the light is casting dynamic shadow, then it has already been added
-			  continue;
-		  }
-
+		 
 		  lightArray.push_back(m_lightData.dataPtr[indices->at(i)]); // pushback the light data
 
 		  for (int shadowIndex = 0; shadowIndex < (int)m_lightData.numShadowLights; shadowIndex++) //go through the shadow array

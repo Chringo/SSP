@@ -1033,7 +1033,7 @@ int GraphicsHandler::RenderFromEditor(Resources::Model* model,GraphicsComponent*
 int GraphicsHandler::renderFinalEditor()
 {
 
-	m_LightHandler->Get_Light_List()->numShadowLights = 0;
+	
 	std::vector<int> lights(m_LightHandler->Get_Light_List()->numItems);
 	for (size_t i = 0; i < m_LightHandler->Get_Light_List()->numItems; i++)
 	{
@@ -1699,8 +1699,14 @@ int GraphicsHandler::EditorGenerateStaticSceneShadows(std::vector<GraphicsCompon
 
 
 	LIGHTING::LightHandler::LightArray* lights = m_LightHandler->Get_Light_List();
+	if (lights->shadowMaps != nullptr)
+	{
+		lights->shadowMaps->Release();
+		lights->shadowMaps = nullptr;
+	}
 	if (lights->numShadowLights <= 0)
 		return 1;
+
 
 	ID3D11DeviceContext * context = this->m_d3dHandler->GetDeviceContext();
 	ID3D11Device* device = this->m_d3dHandler->GetDevice();
