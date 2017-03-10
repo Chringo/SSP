@@ -50,6 +50,7 @@ public:
 	GraphicsComponent* GetGraphicComponent();
 	AIComponent* GetAIComponent();
 	AnimationComponent* GetAnimationComponent();
+	Entity* GetISGrabbedBy();
 
 	bool GetGrabbed();
 	unsigned int GetEntityID();

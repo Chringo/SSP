@@ -181,6 +181,11 @@ AnimationComponent * Entity::GetAnimationComponent()
 	return this->m_aComp;
 }
 
+Entity * Entity::GetISGrabbedBy()
+{
+	return this->m_isGrabbedBy;
+}
+
 bool Entity::GetGrabbed()
 {
 	return this->m_isGrabbed;
