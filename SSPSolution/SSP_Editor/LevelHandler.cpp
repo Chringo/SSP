@@ -20,6 +20,7 @@ LevelHandler * LevelHandler::GetInstance()
 void LevelHandler::SetGraphicsHandler(GraphicsHandler * gh)
 {
 	m_graphicsHandler = gh;
+	LightController::GetInstance()->SetGraphicsHandler(gh);
 }
 
 LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
@@ -286,6 +287,7 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	delete modelData; //Cleanup
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the  name to the level
+	
 	
 	m_currentLevel.generateCubeMap(m_graphicsHandler, DirectX::XMVectorSet(2.0f, 0.0f, -19.0f, 0.0f));
 	
