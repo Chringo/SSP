@@ -127,7 +127,7 @@ void LevelState::SendSyncForJoin()
 	}
 
 	//Drop anything we are holding
-	this->m_networkModule->SendGrabPacket(this->m_player1.GetEntityID(), -1);
+	this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
 
 	if (this->m_player1.GetBall()->IsGrabbed())
 	{
