@@ -235,7 +235,7 @@ int Direct3DHandler::PresentScene()
 	//RECT dirtyRectPrev, dirtyRectCurrent, dirtyRectCopy;
 	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
 
-	this->m_swapChain->Present(1, 0);
+	this->m_swapChain->Present(0, 0);
 	return 0;
 }
 
