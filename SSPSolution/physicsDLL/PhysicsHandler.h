@@ -11,6 +11,12 @@
 #include <vector>
 #include "BulletInterpreter.h"
 
+enum LinkType
+{
+	NORMAL,
+	PLAYERLINK
+};
+
 static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 
 struct ChainLink
@@ -18,6 +24,7 @@ struct ChainLink
 	float CL_lenght;
 	PhysicsComponent* CL_next;
 	PhysicsComponent* CL_previous;
+	LinkType segmentType;
 };
 
 struct Field
@@ -32,7 +39,6 @@ struct Field
 	bool F_second_inside;
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
-
 };
 
 
@@ -83,11 +89,7 @@ private:
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
-
-	//collitionCorrection
-	void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
-	void ObbObbCollitionCorrection(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
-	DirectX::XMVECTOR FindCollitionPoint(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
+	void CheckFieldIntersection();
 
 	bool IsPointInBox(DirectX::XMVECTOR point, OBB* &src, DirectX::XMVECTOR BoxPos);
 
@@ -117,8 +119,6 @@ public:
 	PHYSICSDLL_API void ShutDown();
 	PHYSICSDLL_API void Update(float deltaTime);
 
-	PHYSICSDLL_API void CheckFieldIntersection();
-
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_X(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Y(PhysicsComponent* src, const float &radian);
 	PHYSICSDLL_API DirectX::XMMATRIX RotateBB_Z(PhysicsComponent* src, const float &radian);
@@ -135,13 +135,13 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght);
+	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, LinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 	PHYSICSDLL_API bool IntersectRaySphere(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const Sphere &obj, const DirectX::XMVECTOR &pos, float &distanceToOBB);
 
-	PHYSICSDLL_API Field* CreateField(DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, OBB* &obb);
+	PHYSICSDLL_API Field* CreateField(float * pos, unsigned int entityID1, unsigned int entityID2, float * ext, float * ort);
 
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
@@ -150,29 +150,27 @@ public:
 	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
 	PHYSICSDLL_API bool checkCollition();
-
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
 	PHYSICSDLL_API BulletInterpreter* GetBulletInterpreterRef();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
-	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
+	//PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
 	
 	PHYSICSDLL_API void TransferBoxesToBullet(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
-	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
-	
-	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
 
 	PHYSICSDLL_API void SyncAllPhyicsComponentsToBullet();
 	PHYSICSDLL_API void SyncBulletToPhysicsComponents();
 
-	PHYSICSDLL_API void DoChainPhysics(float dt);
-	PHYSICSDLL_API void DoChainAjustPhysics();
+	PHYSICSDLL_API void DoChainPhysics(float dt, bool isTicked);
+	PHYSICSDLL_API void DoChainAjustPhysics(bool isTicked);
 	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
+
+	PHYSICSDLL_API void ChainPhysicsCallback(ChainLink* link, float dt);
 
 	PHYSICSDLL_API void ClearCollisionNormals();
 	PHYSICSDLL_API void ProcessCallback(btScalar timestep);
+	PHYSICSDLL_API void AdjustChainLinkCallback(ChainLink* link);
 
 
 #ifdef _DEBUG

@@ -14,7 +14,6 @@ private:
 	float m_throwStrength;
 	bool m_isAiming;
 	Entity* m_ball;
-
 	Entity* m_grabbed;
 	DirectX::XMVECTOR m_carryOffset;
 
@@ -23,12 +22,15 @@ private:
 	DirectX::XMVECTOR m_rightDir;
 
 	irrklang::ISound* m_walkingSound;
+	int	m_oldAnimState;
+
+	UIComponent* m_controlsOverlay;
 
 public:
 	Player();
 	~Player();
 
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp);
+	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, ComponentHandler* cHandler);
 
 	int Update(float dT, InputHandler* inputHandler);
 	int React(int entityID, EVENT reactEvent);
@@ -44,7 +46,7 @@ public:
 	void SetBall(Entity* ball);
 
 	bool stateExists(int animationState);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 
 	float GetMaxSpeed();
 	float GetAcceleration();
@@ -54,6 +56,7 @@ public:
 	bool GetIsAming();
 	Entity* GetGrabbed();
 	Entity* GetBall();
+	bool isAnimationChanged();	//Compares the current Animation State against the previous frame's Animation State 
 
 private:
 

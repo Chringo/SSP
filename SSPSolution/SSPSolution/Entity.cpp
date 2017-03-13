@@ -11,7 +11,7 @@ int Entity::SyncComponents()
 		if (this->m_aiComp != nullptr)
 		{
 			// Works for now since we're only handling platforms
-			if (this->m_aiComp->AC_triggered)
+			if (this->m_aiComp->AC_triggered && !this->m_aiComp->AC_finished)
 				this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
 			else
 				this->m_pComp->PC_velocity = { 0 };
@@ -119,11 +119,14 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 	if (this->m_isGrabbedBy != nullptr)
 	{
 		this->m_isGrabbed = true;
+		//Deactivate the component
+		this->m_pComp->PC_active = false;
 		this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
 	else 
 	{
 		this->m_isGrabbed = false;
+		this->m_pComp->PC_active = true;
 	}
 	return lastValue;
 }

@@ -13,6 +13,19 @@
 #include "LeverEntity.h"
 #include "FieldEntity.h"
 #include "PlatformEntity.h"
+//more than 10 segments can lead to chain segments going through walls. #ShitSebbeSays
+
+#define CHAIN_SEGMENT_MODEL_ID 1680427216
+//Per player
+#define CHAIN_SEGMENTS 5
+#define PLAYER1_ID 1
+#define PLAYER2_ID 1
+#define BALL1_ID 1
+#define BALL2_ID 1
+#define CHAIN_ID 1
+
+// For testing
+#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState
@@ -39,9 +52,13 @@ private:
 	std::list<StatePacket> m_statePacketList;	//List with all updates for entities from the network
 	std::list<StateWheelPacket> m_wheelStatePacketList;	//List with all updates for entities from the network
 	std::list<GrabPacket> m_grabPacketList;	//List with all updates for entities from the network
+	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
 	
 	Entity* GetClosestBall(float minDist);
 
+	int m_curLevel;
+	int m_clearedLevel;
+	std::vector<std::string> m_levelPaths;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -49,7 +66,14 @@ public:
 	int ShutDown();
 	int Initialize(GameStateHandler* gsh, ComponentHandler* cHandler, Camera* cameraRef);
 	int Update(float dt, InputHandler * inputHandler);
+	//Return means. 1:Success ; -1:Failed to load file ; -2:Failed to load level ; -3:Failed to load lights
 	int CreateLevel(LevelData::Level* data);
+	int UnloadLevel();
+	//TEMP
+	int LoadNext();
+
+	int GetLevelIndex();
+	std::string GetLevelPath();
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };

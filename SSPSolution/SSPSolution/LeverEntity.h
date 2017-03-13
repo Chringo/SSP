@@ -12,14 +12,18 @@ class LeverEntity :
 {
 private:
 	//Variables
-	bool m_isActive;
+	bool  m_isActive;
 	float m_range;
-
-	bool m_needSync;
+	float m_animSpeed  = 400.0f;
+	float m_targetRot  = 0;
+	float m_currRot    = 0;
+	float m_activatedRotation = -90.0f;
+	bool  m_animationActive = false;
+	bool  m_needSync;
 public:
 	LeverEntity();
 	virtual ~LeverEntity();
-
+	 
 	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance);
 
 	int Update(float dT, InputHandler* inputHandler);

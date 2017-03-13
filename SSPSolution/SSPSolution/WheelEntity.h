@@ -30,7 +30,8 @@ private:
 	float m_resetRotatePerSec;
 	float m_timeUntilReset;
 	float m_resetCountdown;
-	// -2:resetingRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation
+	enum {Resetting = -2, RotatingDecrease = -1, Resting = 0, RotatingIncrease = 1, MaxRotation = 2};
+	// -2:resetingRotation | -1:negativeRotation | 0:noRotation | 1:positiveRotation | 2:MaxAndResting
 	int m_rotationState;
 
 	bool m_needSync;
