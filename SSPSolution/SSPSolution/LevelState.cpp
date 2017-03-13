@@ -577,7 +577,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//Crosshair overlay
 	this->m_crosshair = cHandler->GetUIComponent();
-	this->m_crosshair->active = 1;
+	this->m_crosshair->active = false;
 	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
 	this->m_crosshair->spriteID = Textures::Crosshair;
 	this->m_crosshair->scale = 0.8f;
@@ -1021,6 +1021,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 	if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 	{
+		this->m_crosshair->active = true;
 		this->m_player1.SetAiming(true);
 		//Crosshair overlay
 		this->m_crosshair->spriteID = Textures::CrosshairAim;
@@ -1039,7 +1040,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetAiming(false);
 		//Crosshair overlay
-		this->m_crosshair->spriteID = Textures::Crosshair;
+		this->m_crosshair->active = false;
 
 		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
 		m_cameraRef->SetCameraPivotOffset(
@@ -2558,7 +2559,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, 2.0f, 1.0f);
 		break;
 	case 4:
-		cubePos = DirectX::XMVectorSet(10.0f, 3.0f, -22.0f, 1.0f);
+		cubePos = DirectX::XMVectorSet(-11.0f, 3.0f, -12.0f, 1.0f);
 		break;
 	case 5:
 		cubePos = DirectX::XMVectorSet(20.0f, 2.0f, 12.0f, 1.0f);
