@@ -63,30 +63,27 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 
 		this->m_cHandlerPtr->RemoveLastUIComponent();
 		this->m_cHandlerPtr->RemoveLastUIComponent();
-		this->m_cHandlerPtr->RemoveLastTextComponent();
+ 		this->m_cHandlerPtr->RemoveLastTextComponent();
+		this->m_gsh->PopStateFromStack();
 
-		//MenuState* menuState = new MenuState();
-		//result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
+		MenuState* menuState = new MenuState();
+		result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
 
-		//if (result > 0)
-		//{
-		//	//Push it to the gamestate stack/vector
-		//	this->m_gsh->PushStateToStack(menuState);
-		//	this->m_backgroundUIComp->active = 0;
-		//	this->m_gamelogoUIComp->active = 0;
-		//	this->m_spaceTextComp->active = 0;
-		//}
-		//else
-		//{
-		//	//Delete it
-		//	delete menuState;
-		//	menuState = nullptr;
-		//}
-
-		CreditState* creditState = new CreditState();
+		if (result > 0)
+		{
+			//Push it to the gamestate stack/vector
+			this->m_gsh->PushStateToStack(menuState);
+		}
+		else
+		{
+			//Delete it
+			delete menuState;
+			menuState = nullptr;
+		}
+		/*CreditState* creditState = new CreditState();
 		result = creditState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
 		this->m_gsh->PushStateToStack(creditState);
-		this->m_spaceTextComp->active = 0;
+		this->m_spaceTextComp->active = 0;*/
 
 	}
 	return result;

@@ -245,8 +245,6 @@ int LevelState::ShutDown()
 
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
-	this->m_cHandler->RemoveLastUIComponent();
-	this->m_cHandler->RemoveLastUIComponent();
 
 	this->m_Player1ChainPhysicsComp.clear();
 	this->m_Player2ChainPhysicsComp.clear();
@@ -1423,6 +1421,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
 		this->m_gsh->PopStateFromStack();
 
 		//MenuState* menuState = new MenuState();
@@ -2791,12 +2791,20 @@ int LevelState::LoadNext()
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
 		this->m_curLevel = 0;
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
 		this->m_gsh->PopStateFromStack();
 		CreditState* creditState = new CreditState();
 		int result = creditState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
 		if (result > 0)
 		{
 			this->m_gsh->PushStateToStack(creditState);
+		}
+		else
+		{
+			delete creditState;
+			creditState = nullptr;
 		}
 	}
 	else

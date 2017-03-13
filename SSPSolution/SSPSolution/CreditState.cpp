@@ -14,11 +14,7 @@ CreditState::~CreditState()
 int CreditState::ShutDown()
 {
 	int result = 1;
-	this->m_cHandlerPtr->RemoveLastUIComponent();
-	this->m_cHandlerPtr->RemoveLastUIComponent();
-	this->m_cHandlerPtr->RemoveLastTextComponent();
-	this->m_cHandlerPtr->RemoveLastTextComponent();
-	this->m_cHandlerPtr->RemoveLastTextComponent();
+	
 	return result;
 }
 
@@ -69,6 +65,7 @@ int CreditState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler,
 	this->m_creditTextComp->scale = DirectX::XMFLOAT2(creditTextScale, creditTextScale);
 	this->m_creditTextComp->position = DirectX::XMFLOAT2(80.0f, 510.0f);
 	this->m_creditTextComp->text = L"Christoffer Banheden      Marc Andersson      John Augustsson      Kim Arvola Bjelkesten\nMartin Clementson         Oscar Engborg       Johan Ganeteg        Sebastian Hallin\nErik Petterson            Tobias Kling        Axel Persson         David Wigelius\nSebastian Lundgren";
+	
 	return result;
 }
 
@@ -78,6 +75,11 @@ int CreditState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+		this->m_cHandlerPtr->RemoveLastTextComponent();
+		this->m_cHandlerPtr->RemoveLastTextComponent();
+		this->m_cHandlerPtr->RemoveLastTextComponent();
 		this->m_gsh->PopStateFromStack();
 	}
 
