@@ -2558,7 +2558,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, 2.0f, 1.0f);
 		break;
 	case 4:
-		cubePos = DirectX::XMVectorSet(10.0f, 3.0f, -22.0f, 1.0f);
+		cubePos = DirectX::XMVectorSet(-11.0f, 3.0f, -12.0f, 1.0f);
 		break;
 	case 5:
 		cubePos = DirectX::XMVectorSet(20.0f, 2.0f, 12.0f, 1.0f);
