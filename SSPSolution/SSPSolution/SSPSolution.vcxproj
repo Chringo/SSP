@@ -169,6 +169,7 @@ copy /y "$(SolutionDir)\Release\*.exe" "$(ProjectDir)"</Command>
   <ItemGroup>
     <ClCompile Include="ButtonEntity.cpp" />
     <ClCompile Include="ComponentHandler.cpp" />
+    <ClCompile Include="CreditState.cpp" />
     <ClCompile Include="DebugHandler.cpp" />
     <ClCompile Include="DoorEntity.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
@@ -200,6 +201,7 @@ copy /y "$(SolutionDir)\Release\*.exe" "$(ProjectDir)"</Command>
     <ClInclude Include="ButtonEntity.h" />
     <ClInclude Include="ComponentHandler.h" />
     <ClInclude Include="ComponentStructs.h" />
+    <ClInclude Include="CreditState.h" />
     <ClInclude Include="DebugHandler.h" />
     <ClInclude Include="DoorEntity.h" />
     <ClInclude Include="DynamicEntity.h" />

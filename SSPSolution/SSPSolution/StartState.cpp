@@ -1,5 +1,6 @@
 #include "StartState.h"
 #include "GameStateHandler.h"
+#include "CreditState.h"
 
 
 StartState::StartState()
@@ -59,6 +60,12 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE))
 	{
+
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+ 		this->m_cHandlerPtr->RemoveLastTextComponent();
+		this->m_gsh->PopStateFromStack();
+
 		MenuState* menuState = new MenuState();
 		result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
 
@@ -66,9 +73,6 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Push it to the gamestate stack/vector
 			this->m_gsh->PushStateToStack(menuState);
-			this->m_backgroundUIComp->active = 0;
-			this->m_gamelogoUIComp->active = 0;
-			this->m_spaceTextComp->active = 0;
 		}
 		else
 		{
@@ -77,7 +81,6 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 			menuState = nullptr;
 		}
 	}
-
 	return result;
 }
 

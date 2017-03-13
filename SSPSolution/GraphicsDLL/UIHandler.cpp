@@ -29,7 +29,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
 	
-	this->m_nrOfTextures = 17;
+	this->m_nrOfTextures = 16;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{
 		ID3D11ShaderResourceView* newTexture = nullptr;
@@ -54,18 +54,17 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/charswide.png", nullptr, &this->m_textures.at(2));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/cog.png", nullptr, &this->m_textures.at(3));
 	DirectX::CreateWICTextureFromFile(device, L"Sprites/button.png", nullptr, &this->m_textures.at(4));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair.png", nullptr, &this->m_textures.at(5));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(6));	
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/Controls.png", nullptr, &this->m_textures.at(7));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/combinedframes.png", nullptr, &this->m_textures.at(8));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level0.png", nullptr, &this->m_textures.at(9));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level1.png", nullptr, &this->m_textures.at(10));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level2.png", nullptr, &this->m_textures.at(11));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level3.png", nullptr, &this->m_textures.at(12));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level4.png", nullptr, &this->m_textures.at(13));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level5.png", nullptr, &this->m_textures.at(14));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/levelframe.png", nullptr, &this->m_textures.at(15));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/Header.png", nullptr, &this->m_textures.at(16));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(5));	
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Controls.png", nullptr, &this->m_textures.at(6));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/combinedframes.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level0.png", nullptr, &this->m_textures.at(8));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level1.png", nullptr, &this->m_textures.at(9));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level2.png", nullptr, &this->m_textures.at(10));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level3.png", nullptr, &this->m_textures.at(11));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level4.png", nullptr, &this->m_textures.at(12));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/level5.png", nullptr, &this->m_textures.at(13));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/levelframe.png", nullptr, &this->m_textures.at(14));
+	DirectX::CreateWICTextureFromFile(device, L"Sprites/Header.png", nullptr, &this->m_textures.at(15));
 	
 
 	D3D11_BLEND_DESC BlendState;
@@ -199,6 +198,13 @@ TextComponent* UIHandler::GetNextTextComponent()
 		return this->m_textComponents.at(this->m_nrOfTextComponents++);
 	}
 	return nullptr;
+}
+
+int UIHandler::RemoveLastTextComponent()
+{
+	this->m_nrOfTextComponents--;
+	this->m_textComponents.at(this->m_nrOfTextComponents)->ResetValuesToDefault();
+	return this->m_nrOfTextComponents;
 }
 
 void UIHandler::UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos)

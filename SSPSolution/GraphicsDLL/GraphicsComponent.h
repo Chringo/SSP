@@ -120,6 +120,18 @@ struct TextComponent
 	float rotation = 0.f;
 	float layerDepth = 0.f;
 	bool useBlackText = false;
+
+	void ResetValuesToDefault()
+	{
+		this->active = 0;
+		this->text = L"";
+		this->position = DirectX::XMFLOAT2(0.f, 0.f);
+		this->scale = DirectX::XMFLOAT2(1.f, 1.f);
+		this->origin = DirectX::XMFLOAT2(0.f, 0.f);
+		this->rotation = 0.f;
+		this->layerDepth = 0.f;
+		this->useBlackText = false;
+	}
 };
 
 #endif

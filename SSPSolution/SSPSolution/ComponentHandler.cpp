@@ -195,6 +195,11 @@ int ComponentHandler::RemoveLastUIComponent()
 	return this->m_graphicsHandler->RemoveLastUIComponent();
 }
 
+int ComponentHandler::RemoveLastTextComponent()
+{
+	return this->m_graphicsHandler->RemoveLastTextComponent();
+}
+
 void ComponentHandler::WaypointTime()
 {
 	m_aiHandler->WaypointTime();

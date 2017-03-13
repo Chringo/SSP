@@ -1,4 +1,5 @@
 #include "LevelState.h"
+#include "CreditState.h"
 #include "GameStateHandler.h"
 
 inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
@@ -244,8 +245,6 @@ int LevelState::ShutDown()
 
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
-	this->m_cHandler->RemoveLastUIComponent();
-	this->m_cHandler->RemoveLastUIComponent();
 
 	this->m_Player1ChainPhysicsComp.clear();
 	this->m_Player2ChainPhysicsComp.clear();
@@ -580,7 +579,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_crosshair = cHandler->GetUIComponent();
 	this->m_crosshair->active = false;
 	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
-	this->m_crosshair->spriteID = Textures::Crosshair;
+	this->m_crosshair->spriteID = Textures::CrosshairAim;
 	this->m_crosshair->scale = 0.8f;
 
 	return result;
@@ -1022,10 +1021,9 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	//Aming for player1 (SHOULD BE FOR THE CONTROLED PLAYER)
 	if (inputHandler->IsMouseKeyDown(SDL_BUTTON_RIGHT))
 	{
-		this->m_crosshair->active = true;
 		this->m_player1.SetAiming(true);
 		//Crosshair overlay
-		this->m_crosshair->spriteID = Textures::CrosshairAim;
+		this->m_crosshair->active = true;
 
 		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
 		targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
@@ -1423,6 +1421,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
 		this->m_gsh->PopStateFromStack();
 
 		//MenuState* menuState = new MenuState();
@@ -2791,65 +2791,82 @@ int LevelState::LoadNext()
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
 		this->m_curLevel = 0;
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
 		this->m_gsh->PopStateFromStack();
+		CreditState* creditState = new CreditState();
+		int result = creditState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+		if (result > 0)
+		{
+			this->m_gsh->PushStateToStack(creditState);
+		}
+		else
+		{
+			delete creditState;
+			creditState = nullptr;
+		}
 	}
+	else
+	{
+		Resources::Status st = Resources::Status::ST_OK;
+		std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
-	Resources::Status st = Resources::Status::ST_OK;
-	std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
+		//We also need to clear the internal lists, lets have another function do that
+		this->UnloadLevel();
 
-	//We also need to clear the internal lists, lets have another function do that
-	this->UnloadLevel();
+		LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
+		path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
-	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
-	path = this->m_levelPaths.at(this->m_curLevel).levelPath;
-
-	//Begin by clearing the current level data by calling UnloadLevel.
-	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
+		//Begin by clearing the current level data by calling UnloadLevel.
+		//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
 #pragma region
-	printf("LOAD LEVEL %d\n", this->m_curLevel);
-	//Load LevelData from file
-	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
-	//if not successful
-	if (st != Resources::ST_OK)
-	{
-		//Error loading file.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
-		return -1;
-	}
-	//Load Resources of the level
-	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
-	//if not successful
-	if (st != Resources::ST_OK)
-	{
-		//Error loading level from resource handler.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
-		return -2;
-	}
+		printf("LOAD LEVEL %d\n", this->m_curLevel);
+		//Load LevelData from file
+		st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
+		//if not successful
+		if (st != Resources::ST_OK)
+		{
+			//Error loading file.
+			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+			return -1;
+		}
+		//Load Resources of the level
+		st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+		//if not successful
+		if (st != Resources::ST_OK)
+		{
+			//Error loading level from resource handler.
+			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+			return -2;
+		}
 
-	//Load Lights of the level
+		//Load Lights of the level
 
-	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
-	{
-		//Error loading lights through LightHandler.
-		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
-		return -3;
-	}
+		if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+		{
+			//Error loading lights through LightHandler.
+			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
+			return -3;
+		}
 #pragma endregion Loading data
 
 
 #pragma region
-	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
-	m_cameraRef->SetCameraPivot(
-		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
-		targetOffset,
-		1.3f
-	);
+		m_cameraRef->SetCameraPivot(
+			&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
+			targetOffset,
+			1.3f
+		);
 
 #pragma endregion Set_Camera
 
-	//Call the CreateLevel with the level data.
-	result = this->CreateLevel(level);
+		//Call the CreateLevel with the level data.
+		result = this->CreateLevel(level);
+	}
+	
 	return 1;
 }
 

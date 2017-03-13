@@ -97,11 +97,7 @@ int System::Initialize(std::string path)
 
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
-	//Initialize the GameStateHandler
-	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
-
-	//this->m_Anim = new Animation();
-
+	
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
 	DebugHandler::instance()->CreateTimer(L"GS Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
@@ -112,7 +108,10 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Slow frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
-
+	
+	//Initialize the GameStateHandler
+	//NOTE: Don't create any timers or other objects that uses TextComponent after this one
+	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
 
 	return result;
 }
