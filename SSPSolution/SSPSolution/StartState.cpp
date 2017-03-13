@@ -63,6 +63,7 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 
 		this->m_cHandlerPtr->RemoveLastUIComponent();
 		this->m_cHandlerPtr->RemoveLastUIComponent();
+		this->m_cHandlerPtr->RemoveLastTextComponent();
 
 		//MenuState* menuState = new MenuState();
 		//result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);

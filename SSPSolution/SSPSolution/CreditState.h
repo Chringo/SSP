@@ -10,7 +10,9 @@ class CreditState :
 private:
 	UIComponent* m_gamelogoUIComp;
 	UIComponent* m_backgroundUIComp;
-	TextComponent* m_spaceTextComp;
+	TextComponent* m_gzTextComp;
+	TextComponent* m_creditHeaderTextComp;
+	TextComponent* m_creditTextComp;
 
 	ComponentHandler* m_cHandlerPtr;
 	Camera* m_cameraRef;
