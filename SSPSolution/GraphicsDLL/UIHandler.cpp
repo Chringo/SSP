@@ -201,6 +201,13 @@ TextComponent* UIHandler::GetNextTextComponent()
 	return nullptr;
 }
 
+int UIHandler::RemoveLastTextComponent()
+{
+	this->m_nrOfTextComponents--;
+	this->m_textComponents.at(this->m_nrOfTextComponents)->ResetValuesToDefault();
+	return this->m_nrOfTextComponents;
+}
+
 void UIHandler::UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos)
 {
 	std::vector<UIComponent*>::iterator uiCompIter;

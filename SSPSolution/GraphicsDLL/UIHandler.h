@@ -56,6 +56,7 @@ public:
 	int RemoveUIComponent(UIComponent* ptr);
 	int RemoveLastUIComponent();
 	TextComponent* GetNextTextComponent();
+	int RemoveLastTextComponent();
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos);
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize);
 };

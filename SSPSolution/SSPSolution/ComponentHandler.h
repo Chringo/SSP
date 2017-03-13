@@ -47,6 +47,7 @@ public:
 	int ClearAIComponents();
 	int RemoveUIComponentFromPtr(UIComponent* ptr);
 	int RemoveLastUIComponent();
+	int RemoveLastTextComponent();
 
 	void WaypointTime();
 
