@@ -64,7 +64,7 @@ int CreditState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler,
 	this->m_creditTextComp->active = 1;
 	this->m_creditTextComp->scale = DirectX::XMFLOAT2(creditTextScale, creditTextScale);
 	this->m_creditTextComp->position = DirectX::XMFLOAT2(80.0f, 510.0f);
-	this->m_creditTextComp->text = L"Christoffer Banheden      Marc Andersson      John Augustsson      Kim Arvola Bjelkesten\nMartin Clementson         Oscar Engborg       Johan Ganeteg        Sebastian Hallin\nErik Petterson            Tobias Kling        Axel Persson         David Wigelius\nSebastian Lundgren";
+	this->m_creditTextComp->text = L"Christoffer Banheden      Marc Andersson      John Augustsson      Kim Arvola Bjelkesten\nMartin Clementson         Oscar Engborg       Johan Ganeteg        Sebastian Hallin\nErik Pettersson            Tobias Kling        Axel Persson         David Wigelius\nSebastian Lundgren";
 	
 	return result;
 }
