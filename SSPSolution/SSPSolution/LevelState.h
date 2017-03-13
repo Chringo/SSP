@@ -42,7 +42,7 @@ const float PING_DISTANCE = 100.0f;	//Distance for the ping ray
 
 
 // For testing
-#define DEVELOPMENTFUNCTIONS
+//#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState
