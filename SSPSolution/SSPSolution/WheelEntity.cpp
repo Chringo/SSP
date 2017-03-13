@@ -294,7 +294,8 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 	{
 		if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < this->m_range
 			&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < this->m_range
-			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
+			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range
+			)
 		{
 			this->m_needSync = true;
 			//if increasing == 1 then you want to increase, if -1 you want to decrease
@@ -510,16 +511,19 @@ void WheelEntity::m_UpdateOBB(bool inc, float dT)
 	DirectX::XMVECTOR rotVec = Ortho.r[0];
 
 	//get the rotation from the physics component
-	float rotate = this->m_rotatePerSec * dT * 50.0f;
-	//float rotate = DirectX::XMVectorGetY(this->m_pComp->PC_rotation);
-	float radian = rotate * (3.14f / 180.0f);
-	
+	float rotate = dT;
 	//if the wheel is spinning to orginal state, decreasing
-	if(inc == false)
-		radian *= -1;
+	if (inc)
+	{
+		rotate *= this->m_rotatePerSec;
+	}
+	else
+	{
+		rotate *= -this->m_resetRotatePerSec;
+	}
 
 	//angle rotation vector
-	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, radian);
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, rotate);
 
 	//update the new orthographic matrix
 	this->m_pComp->PC_OBB.ort *= rotationMatrix;

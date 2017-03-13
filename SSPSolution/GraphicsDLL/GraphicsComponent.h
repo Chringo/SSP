@@ -47,6 +47,7 @@ struct UIComponent
 	bool wasClicked = false;
 	bool isHovered = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
 	float scale = 1.f;
 	float rotation = 0.f;
@@ -115,8 +116,22 @@ struct TextComponent
 	std::wstring text = L"";
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
 	DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.f, 1.f);
+	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.f, 0.f);
 	float rotation = 0.f;
 	float layerDepth = 0.f;
+	bool useBlackText = false;
+
+	void ResetValuesToDefault()
+	{
+		this->active = 0;
+		this->text = L"";
+		this->position = DirectX::XMFLOAT2(0.f, 0.f);
+		this->scale = DirectX::XMFLOAT2(1.f, 1.f);
+		this->origin = DirectX::XMFLOAT2(0.f, 0.f);
+		this->rotation = 0.f;
+		this->layerDepth = 0.f;
+		this->useBlackText = false;
+	}
 };
 
 #endif

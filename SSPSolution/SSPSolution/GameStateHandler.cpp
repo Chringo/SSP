@@ -161,7 +161,10 @@ int GameStateHandler::PushStateToStack(GameState * state)
 {
 	int result = 1;
 
-	this->m_stateStack.back()->LeaveState();
+	if (this->m_stateStack.size() > 0)
+	{
+		this->m_stateStack.back()->LeaveState();
+	}
 	this->m_stateStack.push_back(state);
 	this->m_stateStack.back()->EnterState();
 
@@ -182,8 +185,10 @@ GameState * GameStateHandler::PopStateFromStack()
 	{
 		this->m_statesToRemove.push_back(result);
 	}
-
-	this->m_stateStack.back()->EnterState();
+	if (this->m_stateStack.size() > 0)
+	{
+		this->m_stateStack.back()->EnterState();
+	}
 
 	return result;
 }

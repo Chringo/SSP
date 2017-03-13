@@ -360,6 +360,17 @@ copy /Y "$(SolutionDir)Debug\physicsDLL.dll" "$(OutDir)physicsDLL.dll"</Command>
   <ItemGroup>
     <Text Include="TODO.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GraphicsDLL\GraphicsDLL.vcxproj">
+      <Project>{59269be3-152c-4d71-bf1a-b4b0312adbb2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\physicsDLL\physicsDLL.vcxproj">
+      <Project>{0e7d331b-b435-4a7e-8074-09225fec9cdb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ResourceLib\ResourceLib.vcxproj">
+      <Project>{fa1fec57-5873-49e7-8f1f-ab3941d1f52a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

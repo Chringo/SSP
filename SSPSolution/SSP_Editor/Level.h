@@ -29,7 +29,7 @@ private:
 	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
 	std::vector<std::vector<Container*>> m_puzzleElements;				 //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access									 //all ze lightz
-
+	GraphicsHandler* m_graphicsHandler = nullptr;
 public:
 	Level();
 	~Level();
@@ -50,7 +50,7 @@ public:
 	Resources::Status AddPointLight();
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
-
+	void generateCubeMap(GraphicsHandler* gh, DirectX::XMVECTOR campos);
 /*
 	Resources::Status GetLightEntity(unsigned int instanceID, Container& container);
 	Resources::Status AddLightEntity(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);

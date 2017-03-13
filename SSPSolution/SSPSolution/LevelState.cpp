@@ -1,4 +1,5 @@
 #include "LevelState.h"
+#include "CreditState.h"
 #include "GameStateHandler.h"
 
 inline OBB m_ConvertOBB(BoundingBoxHeader & boundingBox) //Convert from BBheader to OBB struct										
@@ -126,6 +127,39 @@ void LevelState::SendSyncForJoin()
 		this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity, newrot);
 	}
 
+	//Drop anything we are holding
+	this->m_networkModule->SendGrabPacket(this->m_player2.GetEntityID(), -1);
+
+	if (this->m_player1.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player1.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player1.GetBall()->GetEntityID());
+}
+	else if (this->m_player2.GetBall()->IsGrabbed())
+	{
+		this->m_networkModule->SendGrabPacket(this->m_player2.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player2.GetBall()->GetEntityID());
+	}
+
+	AnimationComponent* ap = this->m_player1.GetAnimationComponent();
+	if (this->m_player1.GetRagdoll()->state == RagdollState::RAGDOLL || this->m_player1.GetRagdoll()->state == RagdollState::KEYFRAMEBLEND)
+	{
+		GraphicsAnimationComponent* gp = (GraphicsAnimationComponent*)this->m_player1.GetGraphicComponent();
+
+		for (int i = 0; i < gp->jointCount; i++)	//Iterate all joints
+		{
+			//Send a packet for E V E R Y joint
+			this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), RAGDOLL_STATE, 0.f, Blending::NO_TRANSITION, false, false, 0.f, 1.0, i, gp->finalJointTransforms[i]);
+		}
+	}
+	else
+	{
+		bool loop = false;
+		if (ap->currentState == PLAYER_IDLE || ap->currentState == PLAYER_BALL_IDLE)
+		{
+			loop = true;
+		}
+
+		this->m_networkModule->SendAnimationPacket(this->m_player1.GetEntityID(), ap->currentState, ap->transitionDuration, ap->blendFlag, loop, ap->lockAnimation, ap->playingSpeed, ap->velocity, 0, DirectX::XMMATRIX());
+	}
 }
 
 LevelState::LevelState()
@@ -211,8 +245,6 @@ int LevelState::ShutDown()
 
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_controlsOverlay);
 	//this->m_cHandler->RemoveUIComponentFromPtr(this->m_crosshair);
-	this->m_cHandler->RemoveLastUIComponent();
-	this->m_cHandler->RemoveLastUIComponent();
 
 	this->m_Player1ChainPhysicsComp.clear();
 	this->m_Player2ChainPhysicsComp.clear();
@@ -413,7 +445,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball1
 	DynamicEntity* ball = new DynamicEntity();
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
+	if (this->m_networkModule->IsHost())
+	{
 	ballG->modelID = 1256673809;
+	}
+	else
+	{
+		ballG->modelID = 1321651915;
+	}
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	PhysicsComponent* ballP = m_cHandler->GetPhysicsComponent();
@@ -444,7 +483,14 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	////Ball2
 	DynamicEntity* ball2 = new DynamicEntity();
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
+	if (this->m_networkModule->IsHost())
+	{
 	ballG->modelID = 1321651915;
+	}
+	else
+	{
+		ballG->modelID = 1256673809;
+	}
 	ballG->active = true;
 	resHandler->GetModel(ballG->modelID, ballG->modelPtr);
 	ballP = m_cHandler->GetPhysicsComponent();
@@ -543,9 +589,9 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 
 	//Crosshair overlay
 	this->m_crosshair = cHandler->GetUIComponent();
-	this->m_crosshair->active = 1;
+	this->m_crosshair->active = false;
 	this->m_crosshair->position = DirectX::XMFLOAT2(608.f, 328.f);
-	this->m_crosshair->spriteID = Textures::Crosshair;
+	this->m_crosshair->spriteID = Textures::CrosshairAim;
 	this->m_crosshair->scale = 0.8f;
 
 	return result;
@@ -989,7 +1035,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetAiming(true);
 		//Crosshair overlay
-		this->m_crosshair->spriteID = Textures::CrosshairAim;
+		this->m_crosshair->active = true;
 
 		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(.3f, 1.4f, 0.0f, 0.0f);
 		targetOffset = DirectX::XMVectorScale(this->m_player1.GetRightDir(), 0.3f);
@@ -1005,7 +1051,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	{
 		this->m_player1.SetAiming(false);
 		//Crosshair overlay
-		this->m_crosshair->spriteID = Textures::Crosshair;
+		this->m_crosshair->active = false;
 
 		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.f, 1.4f, 0.0f, 0.0f);
 		m_cameraRef->SetCameraPivotOffset(
@@ -1117,6 +1163,18 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 					this->m_networkModule->SendEntityUpdatePacket(pp->PC_entityID, pp->PC_pos, pp->PC_velocity, newrot);	//Send the update
 				}
 			}
+		}
+
+		if (this->m_networkModule->IsHost())
+		{
+			PhysicsComponent* pc = nullptr;
+			for (PlatformEntity* e : this->m_platformEntities)
+			{
+				pc = e->GetPhysicsComponent();
+				DirectX::XMFLOAT4X4 newrot;
+				DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
+				this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity,newrot);
+	}
 		}
 
 	}
@@ -1375,6 +1433,8 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
 		this->m_gsh->PopStateFromStack();
 
 		//MenuState* menuState = new MenuState();
@@ -1477,7 +1537,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 	if (this->m_networkModule->IsHost())
 	{
 		this->m_player1.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
-		this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player1_Spawn, DirectX::XMVectorSet(0, 2, 0, 0));
+		//this->m_player1.GetPhysicsComponent()->PC_pos = DirectX::XMVectorAdd(this->m_player1_Spawn, DirectX::XMVectorSet(0, 0, 0, 0));
 		this->m_cHandler->GetPhysicsHandler()->CreateRagdollBodyWithChainAndBall(1, this->m_player1.GetAnimationComponent()->skeleton->GetSkeletonData()->joints,
 			this->m_player1.GetAnimationComponent(),
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
@@ -1494,7 +1554,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			DirectX::XMVectorAdd(this->m_player1.GetPhysicsComponent()->PC_pos, DirectX::XMVectorSet(10, 0, 0, 0)),
 			this->m_player1.GetPhysicsComponent(),
 			this->m_player1.GetBall()->GetPhysicsComponent());
-
 		this->m_player2.GetPhysicsComponent()->PC_pos = this->m_player1_Spawn;
 	}
 #pragma endregion Network
@@ -1709,7 +1768,6 @@ int LevelState::CreateLevel(LevelData::Level * data)
 			t_pc->PC_friction = 0.0f;
 		}
 
-
 		if (t_pc->PC_is_Static) {
 			StaticEntity* tse = new StaticEntity();
 			tse->Initialize(t_pc->PC_entityID, t_pc, t_gc, nullptr);// Entity needs its ID
@@ -1771,7 +1829,7 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		t_pc->PC_is_Static = false;
 		t_pc->PC_steadfast = true;
 		t_pc->PC_gravityInfluence = 0;
-		t_pc->PC_friction = 0.7f;
+		t_pc->PC_friction = 0.0f;
 		t_pc->PC_elasticity = 0.1f;
 		t_pc->PC_BVtype = BV_OBB;
 		t_pc->PC_mass = 0;
@@ -2015,12 +2073,12 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		//DirectX::XMQuaternionRotationMatrix
 
 		//Copy the bounding volume data from the model into the physics component for reference
-		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
-		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
-		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		//wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
+		//wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
+		//wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
+		//wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0];
+		//wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		//wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 
 		wheel1P->PC_BVtype = BV_OBB;
@@ -2029,9 +2087,9 @@ int LevelState::CreateLevel(LevelData::Level * data)
 		wheel1P->PC_AABB.ext[0] = wheel1G->modelPtr->GetOBBData().extension[0];
 		wheel1P->PC_AABB.ext[1] = wheel1G->modelPtr->GetOBBData().extension[1];
 		wheel1P->PC_AABB.ext[2] = wheel1G->modelPtr->GetOBBData().extension[2];
-		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] * 2.0f;
-		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1] * 2.0f;
-		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2] * 2.0f;
+		wheel1P->PC_OBB.ext[0] = wheel1P->PC_AABB.ext[0] + 0.5f ;
+		wheel1P->PC_OBB.ext[1] = wheel1P->PC_AABB.ext[1];
+		wheel1P->PC_OBB.ext[2] = wheel1P->PC_AABB.ext[2];
 
 		DirectX::XMMATRIX tempOBBPos = DirectX::XMMatrixTranslationFromVector(DirectX::XMVECTOR{ wheel1G->modelPtr->GetOBBData().position.x, wheel1G->modelPtr->GetOBBData().position.y, wheel1G->modelPtr->GetOBBData().position.z });
 		tempOBBPos = DirectX::XMMatrixMultiply(tempOBBPos, wheel1G->worldMatrix);
@@ -2492,6 +2550,47 @@ int LevelState::CreateLevel(LevelData::Level * data)
 
 
 
+
+	m_cHandler->GetGraphicsHandler()->GenerateStaticSceneShadows();
+
+#pragma region
+	DirectX::XMVECTOR cubePos;
+	switch (m_curLevel)
+	{
+	case 0: //Tutorial
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+		break;
+	case 1:
+		cubePos = DirectX::XMVectorSet(8.0f, 4.0f, -2.0f, 1.0f);
+		break;
+	case 2:
+		cubePos = DirectX::XMVectorSet(6.0f, 3.0f, -67.0f, 1.0f);
+		break;
+	case 3:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, 2.0f, 1.0f);
+		break;
+	case 4:
+		cubePos = DirectX::XMVectorSet(-11.0f, 3.0f, -12.0f, 1.0f);
+		break;
+	case 5:
+		cubePos = DirectX::XMVectorSet(20.0f, 2.0f, 12.0f, 1.0f);
+		break;
+	case 6:
+		cubePos = DirectX::XMVectorSet(15.0f, 5.0f, -19.0f, 1.0f);
+		break;
+	case 7:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+		break;
+	default:
+		cubePos = DirectX::XMVectorSet(0.0f, 2.0f, -19.0f, 1.0f);
+		break;
+	}
+#pragma endregion Get cube map pos
+
+	m_cHandler->GetGraphicsHandler()->GenerateSceneCubeMap(cubePos);
+
+
+
 	return 1;
 }
 
@@ -2704,8 +2803,24 @@ int LevelState::LoadNext()
 		//Next behavior is to pop ourselves and go back to the menu
 		//The last behavior is to pop ourselves and push a Credit state
 		this->m_curLevel = 0;
+		this->m_networkModule->SendFlagPacket(PacketTypes::DISCONNECT_REQUEST);
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_cHandler->RemoveLastUIComponent();
+		this->m_gsh->PopStateFromStack();
+		CreditState* creditState = new CreditState();
+		int result = creditState->Initialize(this->m_gsh, this->m_cHandler, this->m_cameraRef);
+		if (result > 0)
+		{
+			this->m_gsh->PushStateToStack(creditState);
+		}
+		else
+		{
+			delete creditState;
+			creditState = nullptr;
+		}
 	}
-
+	else
+	{
 	Resources::Status st = Resources::Status::ST_OK;
 	std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
@@ -2762,6 +2877,8 @@ int LevelState::LoadNext()
 
 	//Call the CreateLevel with the level data.
 	result = this->CreateLevel(level);
+	}
+	
 	return 1;
 }
 

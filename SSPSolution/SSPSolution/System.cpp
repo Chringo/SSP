@@ -97,11 +97,7 @@ int System::Initialize(std::string path)
 
 	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
 	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
-	//Initialize the GameStateHandler
-	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
-
-	//this->m_Anim = new Animation();
-
+	
 	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
 	DebugHandler::instance()->CreateTimer(L"GS Update");
 	DebugHandler::instance()->CreateTimer(L"Physics");
@@ -110,8 +106,12 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateTimer(L"Thread 0");
 	DebugHandler::instance()->CreateTimer(L"Thread 1");
 	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+	DebugHandler::instance()->CreateCustomLabel(L"Slow frame counter", 0);
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
-
+	
+	//Initialize the GameStateHandler
+	//NOTE: Don't create any timers or other objects that uses TextComponent after this one
+	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
 
 	return result;
 }
@@ -216,7 +216,7 @@ int System::Update(float deltaTime)
 			int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNodeThreaded(1);
 			//int renderedItems = this->m_graphicsHandler->FrustrumCullOctreeNode();
 
-			DebugHandler::instance()->UpdateCustomLabel(1, float(renderedItems));
+			DebugHandler::instance()->UpdateCustomLabel(2, float(renderedItems));
 			DebugHandler::instance()->EndTimer(3);
 
 			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
@@ -274,7 +274,7 @@ int System::Update(float deltaTime)
 
 			DebugHandler::instance()->StartTimer(2);
 			int objCntForRay = this->m_graphicsHandler->Render(deltaTime);
-			DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
+			//DebugHandler::instance()->UpdateCustomLabel(2, float(objCntForRay));
 
 			DebugHandler::instance()->EndTimer(2);
 #pragma endregion Graphics and rendering
@@ -423,6 +423,9 @@ int System::Update(float deltaTime)
 	DebugHandler::instance()->EndTimer(0);
 
 	DebugHandler::instance()->UpdateCustomLabelIncrease(0, 1.0f);
+	if(deltaTime > 33333.f)
+		DebugHandler::instance()->UpdateCustomLabelIncrease(1, 1.0f);
+
 #pragma endregion Logic
 
 	return result;

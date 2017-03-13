@@ -24,6 +24,8 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	 filePaths[BLUR]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[FXAA]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
 
+	 filePaths[SSR]			 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
+
 	 // Create the screen quad \\
 	 
 	 DirectX::XMINT2 resolution;

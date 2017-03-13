@@ -1,5 +1,6 @@
 #include "StartState.h"
 #include "GameStateHandler.h"
+#include "CreditState.h"
 
 
 StartState::StartState()
@@ -31,11 +32,19 @@ int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, 
 	float distance = 4.0f;
 	this->m_cameraRef->SetCameraPivot(&this->m_lockTarget, targetOffset, distance);
 
+	this->m_backgroundUIComp = cHandler->GetUIComponent();
+	this->m_backgroundUIComp->active = 1;
+	this->m_backgroundUIComp->spriteID = Textures::Background;
+	this->m_backgroundUIComp->position = DirectX::XMFLOAT2(0.f, 0.f);
+	this->m_backgroundUIComp->scale = 0.66666f;
+	this->m_backgroundUIComp->size = DirectX::XMFLOAT2(800.f, 400.f);
+
 	this->m_gamelogoUIComp = cHandler->GetUIComponent();
 	this->m_gamelogoUIComp->active = 1;
-	this->m_gamelogoUIComp->spriteID = Textures::Gamelogo;
-	this->m_gamelogoUIComp->position = DirectX::XMFLOAT2(115.f, 0.f);
-	this->m_gamelogoUIComp->size = DirectX::XMFLOAT2(800.f, 400.f);
+	this->m_gamelogoUIComp->spriteID = Textures::Header;
+	this->m_gamelogoUIComp->position = DirectX::XMFLOAT2(470.f, 30.5f);
+	this->m_gamelogoUIComp->scale = 0.66666f;
+	this->m_gamelogoUIComp->size = DirectX::XMFLOAT2(400.f, 400.f);
 
 	this->m_spaceTextComp = cHandler->GetTextComponent();
 	this->m_spaceTextComp->active = 1;
@@ -51,6 +60,12 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 
 	if (inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE))
 	{
+
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+		this->m_cHandlerPtr->RemoveLastUIComponent();
+ 		this->m_cHandlerPtr->RemoveLastTextComponent();
+		this->m_gsh->PopStateFromStack();
+
 		MenuState* menuState = new MenuState();
 		result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
 
@@ -58,8 +73,6 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 		{
 			//Push it to the gamestate stack/vector
 			this->m_gsh->PushStateToStack(menuState);
-			this->m_gamelogoUIComp->active = 0;
-			this->m_spaceTextComp->active = 0;
 		}
 		else
 		{
@@ -68,7 +81,6 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 			menuState = nullptr;
 		}
 	}
-
 	return result;
 }
 

@@ -213,7 +213,9 @@ public:
 	GRAPHICSDLL_API Camera* SetCamera(Camera* newCamera);
 	GRAPHICSDLL_API int Render(float deltaTime);
 	GRAPHICSDLL_API int RenderStaticObjectShadows();
+	GRAPHICSDLL_API int RenderStaticObjectShadows(std::vector<GraphicsComponent*> comps);
 	GRAPHICSDLL_API int RenderStaticScene();
+	GRAPHICSDLL_API int RenderStaticScene(std::vector<GraphicsComponent*>& comps);
 	GRAPHICSDLL_API int Update(float deltaTime);
 
 
@@ -231,6 +233,7 @@ public:
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 	GRAPHICSDLL_API int RemoveUIComponentFromPtr(UIComponent* ptr);
 	GRAPHICSDLL_API int RemoveLastUIComponent();
+	GRAPHICSDLL_API int RemoveLastTextComponent();
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
 	
@@ -260,8 +263,9 @@ public:
 
 
 	GRAPHICSDLL_API int GenerateStaticSceneShadows();
+	GRAPHICSDLL_API int EditorGenerateSceneCubeMap(DirectX::XMVECTOR cubePos, std::vector<GraphicsComponent*>& comps);
 	GRAPHICSDLL_API int GenerateSceneCubeMap(DirectX::XMVECTOR cubePos);
-
+	GRAPHICSDLL_API int EditorGenerateStaticSceneShadows(std::vector<GraphicsComponent*>& comps);
 	//TEMP STUFF
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
