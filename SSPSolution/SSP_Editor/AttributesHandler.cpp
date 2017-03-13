@@ -17,6 +17,7 @@ Ui::AttributesHandler::AttributesHandler(const Ui::SSP_EditorClass * ui)
 {
 	this->Initialize(ui);
 
+
 }
 
 void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
@@ -52,6 +53,9 @@ void Ui::AttributesHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_BehaviourHandler = new BehaviourTypeHandler(ui);
 	m_BehaviourHandler->Initialize(ui);
 
+
+
+
 	Deselect();
 }
 
@@ -64,15 +68,40 @@ void Ui::AttributesHandler::SetSelection(Container *& selection)
 {
 	if (selection != nullptr)
 	{
-		if (m_selection != nullptr) {
-
-		if (selection->internalID == m_selection->internalID)
-			return;
-		}
 		m_selection = selection;
-		UpdateSelection();
-		m_BehaviourHandler->SetSelection(selection);
+		m_numericBoxes[TRANSLATE][X]->setValue(selection->position.m128_f32[X]);
+		m_numericBoxes[TRANSLATE][Y]->setValue(selection->position.m128_f32[Y]);
+		m_numericBoxes[TRANSLATE][Z]->setValue(selection->position.m128_f32[Z]);
+
+
+		m_numericBoxes[ROTATE][X]->setValue(selection->rotation.m128_f32[X]);
+		m_numericBoxes[ROTATE][Y]->setValue(selection->rotation.m128_f32[Y]);
+		m_numericBoxes[ROTATE][Z]->setValue(selection->rotation.m128_f32[Z]);
+
+
+
+		if (m_selection->type == CHECKPOINT)
+		{
+			m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
+			m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
+			m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
+			m_uniqueID->setText(QString::number(((CheckpointContainer*)selection)->internalID));
+		}
+		else
+		{
+			m_numericBoxes[SCALE][X]->setValue(1.0f);
+			m_numericBoxes[SCALE][Y]->setValue(1.0f);
+			m_numericBoxes[SCALE][Z]->setValue(1.0f);
+			m_uniqueID->setText(QString::number(selection->internalID));
+		}
+
+		m_nameBox->setText("oops");
+		
 	
+		m_isStaticBox->setChecked(m_selection->isStatic);
+		m_BehaviourHandler->SetSelection(selection);
+		
+
 	}
 
 }
@@ -94,61 +123,36 @@ void Ui::AttributesHandler::Deselect()
 	m_numericBoxes[SCALE][Z]->setValue(0);
 
 	m_uniqueID->setText(QString::number(0));
+
+
+
 	m_BehaviourHandler->Deselect();
 
 }
 
 void Ui::AttributesHandler::UpdateSelection()
 {
+	SetSelection(m_selection); // This function updates. no need to rewrite
+}
 
-	if (m_selection == nullptr)
-		return;
-	m_numericBoxes[TRANSLATE][X]->setValue(m_selection->position.m128_f32[X]);
-	m_numericBoxes[TRANSLATE][Y]->setValue(m_selection->position.m128_f32[Y]);
-	m_numericBoxes[TRANSLATE][Z]->setValue(m_selection->position.m128_f32[Z]);
-
-
-	m_numericBoxes[ROTATE][X]->setValue(m_selection->rotation.m128_f32[X]);
-	m_numericBoxes[ROTATE][Y]->setValue(m_selection->rotation.m128_f32[Y]);
-	m_numericBoxes[ROTATE][Z]->setValue(m_selection->rotation.m128_f32[Z]);
-
-
-
-	if (m_selection->type == CHECKPOINT)
-	{
-		m_numericBoxes[SCALE][X]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[0]);
-		m_numericBoxes[SCALE][Y]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[1]);
-		m_numericBoxes[SCALE][Z]->setValue(((CheckpointContainer*)m_selection)->scale.m128_f32[2]);
-	}
-	else
-	{
-		m_numericBoxes[SCALE][X]->setValue(1.0f);
-		m_numericBoxes[SCALE][Y]->setValue(1.0f);
-		m_numericBoxes[SCALE][Z]->setValue(1.0f);
-	}
-
-	m_nameBox->setText("oops");
-
-	m_uniqueID->setText(QString::number(m_selection->internalID));
-
-	m_isStaticBox->setChecked(m_selection->isStatic);
-
-	//SetSelection(m_selection); // This function updates. no need to rewrite
+void Ui::AttributesHandler::SetAmbientLight(Ambient amb)
+{
+	m_BehaviourHandler->SetAmbientLight(amb);
 }
 
 void Ui::AttributesHandler::on_translate_X_changed(double val)
 {
 	if (m_selection != nullptr) {
 		if (m_selection->position.m128_f32[X] != float(val)) {
-				m_selection->position.m128_f32[X] = float(val);
-				m_selection->isDirty = true;
+			m_selection->position.m128_f32[X] = float(val);
+			m_selection->isDirty = true;
 		}
 	}
 }
 
 void Ui::AttributesHandler::on_translate_Y_changed(double val)
 {
-	if(m_selection != nullptr){
+	if (m_selection != nullptr) {
 		if (m_selection->position.m128_f32[Y] != float(val)) {
 			m_selection->position.m128_f32[Y] = float(val);
 			m_selection->isDirty = true;
@@ -169,10 +173,11 @@ void Ui::AttributesHandler::on_translate_Z_changed(double val)
 void Ui::AttributesHandler::on_rotation_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		if (m_selection->rotation.m128_f32[X] != float(val)){
+		if (m_selection->rotation.m128_f32[X] != float(val)) {
 			m_selection->rotation.m128_f32[X] = float(val);
-		m_selection->isDirty = true;
-	}
+			m_selection->rotation.m128_f32[X] = float(val);
+			m_selection->isDirty = true;
+		}
 	}
 }
 
@@ -199,7 +204,7 @@ void Ui::AttributesHandler::on_rotation_Z_changed(double val)
 void Ui::AttributesHandler::on_scale_X_changed(double val)
 {
 	if (m_selection != nullptr) {
-		if (m_selection->type == CHECKPOINT) {
+		if (m_selection->type == CHECKPOINT && ((CheckpointContainer*)m_selection)->scale.m128_f32[0] != val) {
 			((CheckpointContainer*)m_selection)->scale.m128_f32[0] = float(val);
 			m_selection->isDirty = true;
 		}
@@ -210,7 +215,7 @@ void Ui::AttributesHandler::on_scale_X_changed(double val)
 void Ui::AttributesHandler::on_scale_Y_changed(double val)
 {
 	if (m_selection != nullptr) {
-		if (m_selection->type == CHECKPOINT) {
+		if (m_selection->type == CHECKPOINT && ((CheckpointContainer*)m_selection)->scale.m128_f32[1] != val) {
 			((CheckpointContainer*)m_selection)->scale.m128_f32[1] = float(val);
 			m_selection->isDirty = true;
 		}
@@ -220,7 +225,7 @@ void Ui::AttributesHandler::on_scale_Y_changed(double val)
 void Ui::AttributesHandler::on_scale_Z_changed(double val)
 {
 	if (m_selection != nullptr) {
-		if (m_selection->type == CHECKPOINT) {
+		if (m_selection->type == CHECKPOINT && ((CheckpointContainer*)m_selection)->scale.m128_f32[2] != val) {
 			((CheckpointContainer*)m_selection)->scale.m128_f32[2] = float(val);
 			m_selection->isDirty = true;
 		}
@@ -242,3 +247,6 @@ void Ui::AttributesHandler::on_isStatic_changed(int state)
 		}
 	}
 }
+
+
+

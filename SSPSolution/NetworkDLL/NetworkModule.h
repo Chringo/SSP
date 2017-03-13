@@ -31,6 +31,7 @@ private:
 	int				time_current;	// The up time for the network. (Togheter with time_start will calculate the time stamp for a packet)
 	std::string		my_ip;
 	bool			isHost;			// Bool to see if this client is a host or not
+	bool			clientIsReady;	// Bool to see if the other client has recived the syncPacket and is ready to play
 
 	SOCKET							listenSocket;		// Socket that will listen for incoming data
 	SOCKET							connectSocket;		// Socket that connects to a SPECIFIC socket (is used when we want to comunicate with one specific client)
@@ -70,17 +71,18 @@ public:
 	NETWORKDLL_API int	Join(char* ip);			// Will try to Join a host with the chosen ip
 	NETWORKDLL_API int	GetNrOfConnectedClients();	// Return the number of conencted clients
 	NETWORKDLL_API bool	IsHost();					//Return if whatever this client is Host or not
+	NETWORKDLL_API bool	IsClientReady();
 
 	//Public packet functions (send to all other clients e.g the only other player)
 	NETWORKDLL_API void SendFlagPacket(PacketTypes type);
 	NETWORKDLL_API void SendSyncPacket();
-	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/);
+	NETWORKDLL_API void SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMFLOAT4X4 newRotation/*, DirectX::XMVECTOR newRotationVelocity*/);
 	NETWORKDLL_API void SendAnimationPacket(unsigned int entityID);
 	NETWORKDLL_API void SendStateWheelPacket(unsigned int entityID, int rotationState, float rotationAmount);
 	NETWORKDLL_API void SendStateButtonPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendStateLeverPacket(unsigned int entityID, bool isActive);
 	NETWORKDLL_API void SendCameraPacket(DirectX::XMFLOAT4 newPos);
-	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost);
+	NETWORKDLL_API void SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID);
 	NETWORKDLL_API void SendGrabPacket(unsigned int entityID, unsigned int grabbedID);
 
 	// Mutex functions

@@ -26,6 +26,7 @@ Level::Level()
 		{
 			this->m_puzzleElements.push_back(std::vector<Container*>());
 		}
+		
 	
 }
 
@@ -40,9 +41,9 @@ std::unordered_map<unsigned int, std::vector<Container>>* Level::GetModelEntitie
 	return &m_ModelMap;
 }
 
-std::unordered_map<unsigned int, std::vector<Container>>* Level::GetLights()
+std::vector<Light*>* Level::GetLights()
 {
-	return &m_LightMap;
+	return LightController::GetInstance()->GetLights();
 }
 
 std::vector<CheckpointContainer*>* Level::GetCheckpoints()
@@ -63,7 +64,16 @@ Container * Level::GetInstanceEntity(unsigned int entityID)
 			}
 		}
 	}
-	
+
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		for each (Container* container in m_puzzleElements.at(i)) {
+			if (container->internalID == entityID)
+			{
+				return container;
+			}
+		}
+	}
 	return nullptr;
 }
 
@@ -160,10 +170,10 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 Resources::Status Level::AddCheckpointEntity()
 {
 	CheckpointContainer * container = new CheckpointContainer();
-	container->checkpointNumber = 0;
-	container->internalID = GlobalIDHandler::GetInstance()->GetNewId();
-	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
 
+	this->m_checkpointHandler.GetAllCheckpoints()->push_back(container);
+	this->m_checkpointHandler.GetAllCheckpoints()->back()->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+	this->m_checkpointHandler.GetAllCheckpoints()->back()->checkpointNumber = 0;
 	return Resources::Status::ST_OK;
 }
 
@@ -171,25 +181,28 @@ Resources::Status Level::AddPuzzleElement(ContainerType type, void * element)
 {
 
 	
+	AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
+	this->RemoveModel(((Container*)element)->component.modelID, ((Container*)element)->internalID);
 	switch (type)
 	{
 	case BUTTON:
-
-		AddModelEntityFromLevelFile(((Container*)element)->component.modelID, ((Container*)element)->internalID, ((Container*)element)->position, ((Button*)element)->rotation);
-
-
-		this->RemoveModel(((Button*)element)->component.modelID, ((Button*)element)->internalID);
-		m_puzzleElements.at(BUTTON).push_back((Button*)element);
+		m_puzzleElements.at(BUTTON).push_back(((Button*)element));
 		break;
 	case LEVER:
+		m_puzzleElements.at(LEVER).push_back(((Button*)element));
 		break;
 	case WHEEL:
+		m_puzzleElements.at(WHEEL).push_back(((Button*)element));
 		break;
 	case DOOR:
+		m_puzzleElements.at(DOOR).push_back(((Door*)element));
 		break;
 	case MAGNET:
 		break;
 	case PRESSUREPLATE:
+		break;
+	case AI:
+		m_LevelAi.GetAllPathComponents()->push_back(((AiContainer*)element));
 		break;
 	default:
 		break;
@@ -236,35 +249,36 @@ Resources::Status Level::UpdateModel(unsigned int modelID, unsigned int instance
 			}
 
 		}
-			for (size_t i = 0; i < m_puzzleElements.size(); i++)
-			{
-				for each (Container* container in m_puzzleElements.at(i)) {
-					if (container->internalID == instanceID)
-					{
-						container->position = position;
-						container->rotation = rotation;
-						DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
+		for (size_t i = 0; i < m_puzzleElements.size(); i++)
+		{
+			for each (Container* container in m_puzzleElements.at(i)) {
+				if (container->internalID == instanceID)
+				{
+					container->position = position;
+					container->rotation = rotation;
+					DirectX::XMMATRIX containerMatrix = DirectX::XMMatrixIdentity();
 
-						DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
-						DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
-						DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
-						//Create the rotation matrix
-						DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
-						rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
+					DirectX::XMMATRIX rotationMatrixX = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(rotation.m128_f32[0]));
+					DirectX::XMMATRIX rotationMatrixY = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(rotation.m128_f32[1]));
+					DirectX::XMMATRIX rotationMatrixZ = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(rotation.m128_f32[2]));
+					//Create the rotation matrix
+					DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrixZ, rotationMatrixX);
+					rotationMatrix = DirectX::XMMatrixMultiply(rotationMatrix, rotationMatrixY);
 
-						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
-						//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
-						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
-						containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
-						container->component.worldMatrix = containerMatrix;
-						container->isDirty = false;
-						return Resources::Status::ST_OK;
-
-					}
+					//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation);
+					//DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+					containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, rotationMatrix);
+					containerMatrix = DirectX::XMMatrixMultiply(containerMatrix, DirectX::XMMatrixTranslationFromVector(position));
+					container->component.worldMatrix = containerMatrix;
+					container->isDirty = false;
+					return Resources::Status::ST_OK;
 
 				}
 
 			}
+
+		}
+		m_LevelAi.UpdatePathComponent(instanceID,position,rotation);
 
 		return Resources::Status::ST_RES_MISSING;
 	}
@@ -321,6 +335,13 @@ Resources::Status Level::UpdateCheckpoint(unsigned int instanceID, DirectX::XMVE
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Level::AddPointLight()
+{
+
+	LightController::GetInstance()->AddLight(LIGHTING::LT_POINT);
+	return Resources::Status::ST_OK;
+}
+
 
 
 Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instanceID) // Author : Johan Ganeteg
@@ -336,9 +357,17 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 			if (m_checkpointHandler.GetAllCheckpoints()->at(i)->internalID == instanceID)
 			{
 				m_checkpointHandler.GetAllCheckpoints()->erase(m_checkpointHandler.GetAllCheckpoints()->begin() + i);
+				return  Resources::Status::ST_OK;
 			}
 		}
-		return Resources::Status::ST_RES_MISSING;
+		for (size_t i = 0; i < LightController::GetInstance()->GetLights()->size(); i++)
+		{
+			if (LightController::GetInstance()->GetLights()->at(i)->internalID == instanceID)
+			{
+				LightController::GetInstance()->RemoveLight(i, LIGHTING::LT_POINT);
+			}
+		}
+
 	}
 	else {
 		modelPtr = &got->second;
@@ -347,12 +376,11 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 		{
 			if (instanceID == modelPtr->at(i).internalID)
 			{
-				if (modelPtr->at(i).aiComponent != nullptr)
-					this->m_LevelAi.DeletePathComponent(instanceID);
 					modelPtr->erase(modelPtr->begin() + i);
 					return Resources::Status::ST_OK;
 			}
 		}
+	}
 		for (size_t i = 0; i < m_puzzleElements.size(); i++)
 		{
 			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
@@ -365,8 +393,8 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 
 			}
 		}
+		m_LevelAi.DeletePathComponent(instanceID);
 		
-	}
 	return Resources::Status::ST_OK;
 }
 
@@ -376,13 +404,58 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap.find(source->component.modelID);
 	std::vector<Container>* modelPtr;
 
-	if (got == m_ModelMap.end()) { // if  does not exists in memory
+	if (got == m_ModelMap.end()) { // if  does not exists in container memory
+
+		for (size_t i = 0; i < m_puzzleElements.size(); i++) // check puzzle elements
+		{
+			for (size_t j = 0; j < m_puzzleElements.at(i).size(); j++)
+			{
+				if (m_puzzleElements.at(i).at(j)->component.modelID == source->component.modelID)
+				{
+					
+
+					Container temp = *source;
+					temp.component.modelPtr = source->component.modelPtr;
+					modelPtr = &got->second;
+					temp.internalID = GlobalIDHandler::GetInstance()->GetNewId();
+					destination = &modelPtr->back();
+					//SelectionHandler::GetInstance()->SetSelectedContainer()
+					this->m_ModelMap[source->component.modelID].push_back(temp);
+
+					return Resources::Status::ST_OK;
+				}
+
+			}
+		}
+		std::vector<Light*> *lvec = LightController::GetInstance()->GetLights();
+		for each (Light* light in *lvec)
+		{
+			if (source->internalID == light->internalID)
+			{
+				Point * point = new Point;
+				point->pickSphere = ((Point *)light)->pickSphere;
+				point->rangeSphere = ((Point *)light)->rangeSphere;
+				point->position = ((Point *)light)->data->position;
+				point->type = LIGHT;
+				//point->internalID = GlobalIDHandler::GetInstance()->GetNewId();
+
+				LIGHTING::Point * data = ((Point*)source)->data;
+
+				LightController::GetInstance()->AddLight(point, data, LIGHTING::LT_POINT);
+				LightController::GetInstance()->GetLights()->back()->position = light->position;
+				LightController::GetInstance()->GetLights()->back()->type = LIGHT;
+
+				destination = LightController::GetInstance()->GetLights()->back();
+				destination->type = LIGHT;
+			}
+			return Resources::Status::ST_OK;
+		}
+
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else {
 		Container temp = *source;
 		temp.component.modelPtr = source->component.modelPtr;
-		temp.aiComponent = nullptr;
 		modelPtr = &got->second;
 		temp.internalID = GlobalIDHandler::GetInstance()->GetNewId();
 		modelPtr->push_back(temp);
@@ -394,7 +467,8 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 
 bool Level::isEmpty()
 {
-	if (this->GetNumEntities() == 0) {
+	if (this->GetNumEntities() == 0 && this->GetNumPuzzleElements() == 0 && this->GetNumLights() == 0) {
+		
 		return true;
 	}
 	return false;
@@ -415,6 +489,16 @@ unsigned int Level::GetNumEntities()
 unsigned int Level::GetNumLights()
 {
 	return 0;
+}
+
+unsigned int Level::GetNumPuzzleElements()
+{
+	unsigned int amount = 0;
+	for (size_t i = 0; i < m_puzzleElements.size(); i++)
+	{
+		amount += (unsigned int)m_puzzleElements.at(i).size();
+	}
+	return amount;
 }
 
 Container * Level::GetSpawnPoint(int index)
@@ -439,7 +523,6 @@ void Level::Destroy()
 {
 	m_uniqueModels.clear();
 	m_ModelMap.clear();
-	m_LightMap.clear();
 	levelName = "untitled_level";
 
 	m_SpawnPoints[0].position = { 1.0f, 0.0, 0.0f };
@@ -474,6 +557,9 @@ void Level::Destroy()
 		delete container;
 	}
 	this->GetCheckpoints()->clear();
+
+
+	LightController::GetInstance()->Destroy();
 }
 
 void Level::SetSpawnPoint(LevelData::SpawnHeader data, int index)
@@ -536,9 +622,10 @@ Door * Level::ConvertToDoor(Container *& object)
 
 		Door* newDoor = new Door(*entity); // copy the container
 		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
-		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to button array
-		object = newDoor; //set the object to the new button as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		this->m_puzzleElements.at(DOOR).push_back(newDoor); // add to door array
+		object = newDoor; //set the object to the new door as well. In case the programmer tries to use the object afterwards. This avoids crashes
 		return newDoor; //Return new button
+		
 	}
 
 	return nullptr;
@@ -577,5 +664,79 @@ Container * Level::ConvertToContainer(Container *& object)
 	
 
 
+	return nullptr;
+}
+
+AiContainer * Level::ConvertToAI(Container *& object)
+{
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+
+	Container* entity = this->GetInstanceEntity(object->internalID);
+	if (entity != nullptr)
+	{
+		// Create a new door,
+		// transfer the entity information
+		// Remove the old container
+		// put the door into the door vector
+
+
+		AiContainer* newAI = this->m_LevelAi.NewPathComponent(); // get new ai component
+
+		newAI->ConvertFromContainer(entity); //Get the data from the  container
+
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		object = newAI; //set the object to the new AI as well. In case the programmer tries to use the object afterwards. This avoids crashes
+		return newAI; //Return new ai
+	}
+
+
+	return nullptr;
+}
+
+Wheel * Level::ConvertToWheel(Container *& object)
+{
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new wheel,
+		// transfer the entity information
+		// Remove the old container
+		// put the wheel into the wheel vector
+
+		Wheel* newWheel = new Wheel(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(WHEEL).push_back(newWheel); // add to wheel array
+		object = newWheel; //set the obj to the new wheel as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newWheel; //Return new Wheel
+
+	}
+	return nullptr;
+}
+
+Lever * Level::ConvertToLever(Container *& object)
+{
+	
+	if (object->type != ContainerType::MODEL)
+		this->ConvertToContainer(object);
+	Container* entity = this->GetInstanceEntity(object->internalID);
+
+	if (entity != nullptr)
+	{
+		// Create a new lever,
+		// transfer the entity information
+		// Remove the old container
+		// put the wheel into the wheel vector
+
+		Lever* newLever = new Lever(*entity); // copy the container
+		this->RemoveModel(entity->component.modelID, entity->internalID); // remove the old one
+		this->m_puzzleElements.at(LEVER).push_back(newLever); // add to Lever array
+		object = newLever; //set the obj to the new Lever as well. Incase the programmer tries to use the obj afterwards. This avoids crashes
+		return newLever; //Return new Lever
+
+	}
 	return nullptr;
 }

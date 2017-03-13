@@ -9,86 +9,32 @@
 
 #include <DirectXMath.h>
 #include <vector>
+#include "BulletInterpreter.h"
 
-#pragma region
+static void BulletworldCallback(btDynamicsWorld* world, btScalar timeStep);
 
-enum BoundingVolumeType
-{
-	BV_AABB,
-	BV_OBB,
-	BV_Sphere,
-	BV_Plane
-};
-
-struct AABB
-{
-	float ext[3];
-};
-
-struct OBB
-{
-	float ext[3];
-	DirectX::XMMATRIX ort;
-};
-
-struct Ray
-{
-	DirectX::XMVECTOR Origin;
-	DirectX::XMVECTOR RayDir;
-};
-struct Sphere
-{
-	float radius;
-};
-
-struct Plane
-{
-	DirectX::XMVECTOR PC_normal;
-};
-#pragma endregion
-
-struct PhysicsComponent
-{
-	DirectX::XMVECTOR PC_pos;
-	DirectX::XMVECTOR PC_velocity;
-	DirectX::XMVECTOR PC_rotation;
-	DirectX::XMVECTOR PC_rotationVelocity;
-	DirectX::XMVECTOR PC_normalForce;
-	double PC_gravityInfluence;
-	int PC_active;
-	int PC_entityID;
-	float PC_mass;
-	bool PC_is_Static;
-	bool PC_collides;
-	bool PC_steadfast;
-	float PC_friction;
-	float PC_elasticity;
-	BoundingVolumeType PC_BVtype;
-
-	AABB PC_AABB;
-	OBB PC_OBB;
-	Sphere PC_Sphere;
-	Plane PC_Plane;
-
-	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
-	void operator delete(void* p) { _aligned_free(p); };
-};
 struct ChainLink
 {
 	float CL_lenght;
-	PhysicsComponent* CL_next; 
+	PhysicsComponent* CL_next;
 	PhysicsComponent* CL_previous;
 };
+
 struct Field
 {
 	OBB F_BV;
 
+	DirectX::XMFLOAT3 F_pos;
+
 	unsigned int F_entitityID1;
 	unsigned int F_entitityID2;
-	bool F_first_inide;
+	bool F_first_inside;
 	bool F_second_inside;
+	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+	void operator delete(void* p) { _aligned_free(p); };
 
 };
+
 
 class PhysicsHandler
 {
@@ -97,6 +43,7 @@ private:
 
 	std::vector<PhysicsComponent*> m_dynamicComponents;
 	std::vector<PhysicsComponent*> m_staticComponents;
+	BulletInterpreter m_bullet;
 
 	std::vector<ChainLink> m_links;
 
@@ -112,10 +59,23 @@ private:
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
 
+	//
+	bool OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Pos, OBB* &obb2, DirectX::XMVECTOR obb2Pos);
+	bool OBBAABBIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, AABB* &AABB, DirectX::XMVECTOR aabbPos);
+	bool SphereAABBIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, AABB* &AABB, DirectX::XMVECTOR aabbPos);
+	bool SphereOBBIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, OBB* &obb, DirectX::XMVECTOR obbPos, DirectX::XMVECTOR obbRotation);
+	bool SphereSphereIntersectionTest(Sphere* &sphere1, DirectX::XMVECTOR sphere1Pos, Sphere* &sphere2, DirectX::XMVECTOR sphere2Pos);
+	bool SpherePlaneIntersectionTest(Sphere* &sphere, DirectX::XMVECTOR spherePos, Plane* &plane, DirectX::XMVECTOR planePos);
+	bool AABBPlaneIntersectionTest(AABB* &aabb, DirectX::XMVECTOR aabbPos, Plane* &plane, DirectX::XMVECTOR planePos);
+	bool OBBPlaneIntersectionTest(OBB* &obb, DirectX::XMVECTOR obbPos, Plane* &plane, DirectX::XMVECTOR planePos);
+	bool AABBAABBIntersectionTest(AABB* &aabb1, DirectX::XMVECTOR aabb1Pos, AABB* &aabb2, DirectX::XMVECTOR aabb2Pos);
+
+	//
+
 	//intersection tests
-	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB, bool doPhysics, float dt);
+	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB, float dt);
 	bool OBBAABBIntersectionTest(PhysicsComponent * objOBB, PhysicsComponent * objAABB, float dt);
-	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB, float dt);
+	bool SphereAABBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objAABB, bool doPhysics, float dt);
 	bool SphereOBBIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objOBB, float dt);
 	bool SphereSphereIntersectionTest(PhysicsComponent* objSphere1, PhysicsComponent* objSphere2, float dt);
 	bool SpherePlaneIntersectionTest(PhysicsComponent* objSphere, PhysicsComponent* objPlane, float dt);
@@ -123,13 +83,13 @@ private:
 	bool OBBPlaneIntersectionTest(PhysicsComponent* objOBB, PhysicsComponent* objPlane, float dt);
 	bool AABBAABBIntersectionTest(PhysicsComponent *obj1, PhysicsComponent *obj2, float dt);
 
+
 	//collitionCorrection
-	//void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
+	void ObbObbCollitionCorrectionBB(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
 	void ObbObbCollitionCorrection(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
 	DirectX::XMVECTOR FindCollitionPoint(PhysicsComponent* obj1, PhysicsComponent* obj2, float dt);
 
 	bool IsPointInBox(DirectX::XMVECTOR point, OBB* &src, DirectX::XMVECTOR BoxPos);
-	void FindNormalFromPointOfIntersection(OBB* &src, DirectX::XMVECTOR vecToPoint, float* arr);
 
 	void CollitionDynamics(PhysicsComponent* obj1, PhysicsComponent* obj2, DirectX::XMVECTOR normal, float dt);
 
@@ -148,8 +108,8 @@ private:
 	void SetStartIndex(unsigned int newStartIndex);
 	void SetNumberOfDynamics(unsigned int newNumberOfDynamics);
 	void SetIsHost(bool newIsHost);
-
 public:
+	float timeStep;
 	PHYSICSDLL_API PhysicsHandler();
 	PHYSICSDLL_API ~PhysicsHandler();
 
@@ -175,10 +135,13 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreatePhysicsComponent(const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
+	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght);
+	PHYSICSDLL_API void ResetChainLink();
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos);
 	PHYSICSDLL_API bool IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	PHYSICSDLL_API bool IntersectRaySphere(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const Sphere &obj, const DirectX::XMVECTOR &pos, float &distanceToOBB);
 
-	PHYSICSDLL_API Field* CreateField(DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, OBB &obb);
+	PHYSICSDLL_API Field* CreateField(DirectX::XMVECTOR &pos, unsigned int entityID1, unsigned int entityID2, OBB* &obb);
 
 	PHYSICSDLL_API void SimpleCollition(float dt);
 	PHYSICSDLL_API void SimpleGravity(PhysicsComponent* componentPtr, const float &dt);
@@ -186,12 +149,31 @@ public:
 	PHYSICSDLL_API int GetNrOfComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetDynamicComponentAt(int index)const;
 
+	PHYSICSDLL_API bool checkCollition();
+
 	PHYSICSDLL_API void SetBB_Rotation(const DirectX::XMVECTOR &rotVec, PhysicsComponent* toRotate);
 
-	PHYSICSDLL_API bool checkCollition();
+	PHYSICSDLL_API BulletInterpreter* GetBulletInterpreterRef();
 
 	PHYSICSDLL_API void SortComponents(); //sorts the array so the dynamic components are first and static are last
 	PHYSICSDLL_API PhysicsComponent* GetClosestComponent(PhysicsComponent* component, int minDistance);
+	
+	PHYSICSDLL_API void TransferBoxesToBullet(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void ApplyPlayer1ToBullet(PhysicsComponent* player1);
+	PHYSICSDLL_API void ApplyPlayer2ToBullet(PhysicsComponent* player2);
+	
+	PHYSICSDLL_API btRigidBody* GetRigidBody(int index);
+
+	PHYSICSDLL_API void SyncAllPhyicsComponentsToBullet();
+	PHYSICSDLL_API void SyncBulletToPhysicsComponents();
+
+	PHYSICSDLL_API void DoChainPhysics(float dt);
+	PHYSICSDLL_API void DoChainAjustPhysics();
+	PHYSICSDLL_API void UpdateStaticPlatforms(float dt);
+
+	PHYSICSDLL_API void ClearCollisionNormals();
+	PHYSICSDLL_API void ProcessCallback(btScalar timestep);
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);

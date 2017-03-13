@@ -115,8 +115,8 @@ Ray ComputeCameraRay( int u, int v)
 
 	float3 camera_right = cross(camDir, camera_up);
 	camera_up = cross(camera_right, camDir);
-	double normalized_u = (u / WIN_WIDTH)   - 0.5;
-	double normalized_v = (v / WIN_HEIGHT)  - 0.5;
+	float normalized_u = (u / WIN_WIDTH)   - 0.5;
+	float normalized_v = (v / WIN_HEIGHT)  - 0.5;
 	float3 image_point = normalized_u * camera_right +
                           normalized_v * camera_up +
                         camPos.xyz + camDir;

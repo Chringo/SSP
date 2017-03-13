@@ -11,12 +11,13 @@ LeverEntity::~LeverEntity()
 {
 }
 
-int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp)
+int LeverEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance)
 {
 	int result = 0;
-	this->InitializeBase(entityID, pComp, gComp);
+	this->InitializeBase(entityID, pComp, gComp, nullptr);
 	this->m_isActive = 0;
-	this->m_range = 5.0f;
+	this->m_needSync = false;
+	this->m_range = interactionDistance;
 	this->SyncComponents();
 	return result;
 }
@@ -35,7 +36,11 @@ int LeverEntity::React(int entityID, EVENT reactEvent)
 	{
 		this->m_isActive = false;
 		this->m_subject.Notify(this->m_entityID, EVENT::LEVER_DEACTIVE);
-		this->m_needSync = true;
+		
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
+		
 	}
 	return result;
 }
@@ -48,6 +53,11 @@ int LeverEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 	{
 		this->m_isActive = !this->m_isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
+
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
+
 		this->m_needSync = true;
 	}
 	return 0;
@@ -60,7 +70,11 @@ void LeverEntity::SetSyncState(LeverSyncState * newSyncState)
 		//The player is always the cause of the state change
 		this->m_isActive = newSyncState->isActive;
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::LEVER_DEACTIVE + this->m_isActive));
-		this->m_needSync = false;
+
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LEVER, pos, false, false);
+		
 	}
 }
 
@@ -70,6 +84,7 @@ LeverSyncState * LeverEntity::GetSyncState()
 	if (this->m_needSync)
 	{
 		result = new LeverSyncState{this->m_entityID, this->m_isActive};
+		this->m_needSync = false;
 	}
 	return result;
 }

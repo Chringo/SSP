@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAabbUtil2.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedObjectArray.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHull.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btCpuFeatureUtility.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btDefaultMotionState.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGeometryUtil.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGrahamScan2dConvexHull.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btHashMap.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btIDebugDraw.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btList.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMatrix3x3.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMatrixX.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMinMax.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btMotionState.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPoolAllocator.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuadWord.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuaternion.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuickprof.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btRandom.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btScalar.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSerializer.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSpatialAlgebra.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btStackAlloc.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btTransform.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btTransformUtil.h" />
+    <ClInclude Include="..\..\..\bullet3-2.85.1\src\LinearMath\btVector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btAlignedAllocator.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHull.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btConvexHullComputer.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btGeometryUtil.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btPolarDecomposition.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btQuickprof.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btSerializer.cpp" />
+    <ClCompile Include="..\..\..\bullet3-2.85.1\src\LinearMath\btVector3.cpp" />
+  </ItemGroup>
+</Project>

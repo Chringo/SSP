@@ -1,17 +1,10 @@
 Texture2D colorTex		: register(t0);
-Texture2D metal         : register(t1);
-Texture2D rough         : register(t2);
-Texture2D AO            : register(t3);
-Texture2D normalTex		: register(t4);
-Texture2D wPosTex		: register(t5);
+Texture2D metalRoughAo  : register(t1);
+Texture2D normalTex		: register(t2);
+Texture2D wPosTex		: register(t3);
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
-
-//cbuffer worldMatrix : register(b0)
-//{
-//	matrix worldMatrix;
-//}
 
 cbuffer camera : register(b1)
 {
@@ -19,9 +12,33 @@ cbuffer camera : register(b1)
     float4x4 projectionMatrix;
 
     float4 camPos;
-	// do not need padding here. float4 = 16bit
 
 }
+cbuffer LightInfo : register(b3)
+{
+    uint   NUM_POINTLIGHTS;
+    uint   NUM_AREALIGHTS;
+    uint   NUM_DIRECTIONALLIGHTS;
+    uint   NUM_SPOTLIGHTS;
+    float3 AMBIENT_COLOR;
+    float  AMBIENT_INTENSITY;
+}
+
+struct PointLight //Must be 16 bit aligned!
+{
+    bool isActive;
+    float3 isActivePADDING;
+    float3 color;
+    float intensity;
+    float4 position;
+    float radius;
+    float constantFalloff;
+    float linearFalloff;
+    float quadraticFalloff;
+};
+
+
+StructuredBuffer<PointLight> pointlights : register(t8);
 
 struct VS_OUT
 {
@@ -42,9 +59,9 @@ struct LIGHT
 LIGHT initLight()
 {
     LIGHT light;
-    light.lightPos = float3(0.0f, 0.0f, -1.5f);
-	light.lightDir = float3(0.0f, 0.5f, 1.0f);
-    light.lightColor = float3(1.0f, 1.0f, 1.0f);
+    light.lightPos     = float3(0.0f, 0.0f, -1.5f);
+	light.lightDir     = float3(0.0f, 0.5f, 1.0f);
+    light.lightColor   = float3(1.0f, 1.0f, 1.0f);
     light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
 
     return light;
@@ -53,11 +70,10 @@ LIGHT initLight()
 LIGHT initCustomLight(float3 pos, float3 color)
 {
     LIGHT light;
-    light.lightPos = pos;
-	light.lightDir = float3(0.0f, 0.5f, 1.0f);
-    light.lightColor = color;
-    light.lightAmbient = float3(0.2f, 0.2f, 0.2f);
-
+    light.lightPos     = pos;
+	light.lightDir     = float3(0.0f, 0.5f, 1.0f);
+    light.lightColor   = color;
+    light.lightAmbient = AMBIENT_COLOR.rrr;
     return light;
 }
 
@@ -122,34 +138,98 @@ float GGX(float NdotH, float m)
     return m2 / (f * f);
 }
 
+float pointIllumination(float3 P, float3 N, float3 lightCentre, float r, float c, float l, float q, float cutoff)
+{
+    float3 L = P-lightCentre;
+    float distance = length(L);
+    float d = max(distance, 0);
+    L /= distance;
+
+    float df = (1 / r);
+
+    float attenuation = 1 / ((c * distance) + (l * distance) + (q * distance * distance));
+
+
+
+    return attenuation;
+}
+
+float smoothAttenuation(float3 P, float3 lightCentre, float range, float c, float l, float q)
+{
+    float3 L = lightCentre - P;
+    float distance = length(L);
+
+    
+    float la = l * distance;
+    float qa = q * distance * distance;
+
+    
+
+    float attenuation = 1 / (c + la + qa);
+    //attenuation += 1.0f - smoothstep(range * c, range, distance);
+
+
+    float final = 1.0f - smoothstep(range * attenuation, range, distance);
+   // attenuation += 1.0f - smoothstep(range * qa, range, distance);
+
+    return max(final, 0);
+
+}
+
+float DirectIllumination(float3 P, float N, float3 lightCentre, float r, float cutoff)
+{
+
+    float innerRadius = 0.25;
+    // calculate normalized light vector and distance to sphere light surface
+    float3 L = lightCentre - P;
+    float distance = length(L);
+    float d = max(distance - innerRadius, 0);
+    L /= distance;
+
+    // calculate basic attenuation
+    float denom = d / innerRadius + 1;
+    float attenuation = 1 / (denom * denom);
+
+    // scale and bias attenuation such that:
+    //   attenuation == 0 at extent of max influence
+    //   attenuation == 1 when d == 0
+    attenuation = (attenuation - cutoff) / (1 - cutoff);
+    attenuation = max(attenuation, 0);
+
+    float DOT = max(dot(L, N), 0);
+    attenuation *= DOT;
+    attenuation *= saturate (d / (r - innerRadius));
+
+    return attenuation;
+}
+
 float4 PS_main(VS_OUT input) : SV_Target
 {
-    uint lightCount = 3;
+    uint lightCount = NUM_POINTLIGHTS;
     float Pi = 3.14159265359;
     float EPSILON = 1e-5f;
 
-    float4 diffuseLight = float4(0, 0, 0, 0);
+    float4 diffuseLight  = float4(0, 0, 0, 0);
     float4 specularLight = float4(0, 0, 0, 0);
 
     LIGHT light[3]; 
-    light[0] = initCustomLight(float3(0.0, 0.0, -3.0), float3(1., 1., 1.));
-    light[1] = initCustomLight(float3(0.0, 0.0, -3.5), float3(1., 1., 1.));
-    light[2] = initCustomLight(float3(0.5, 1.2, -2.0), float3(1., 1., 1.));
+    light[0] = initCustomLight(float3(10.0, -9.0, -3.0), pointlights[0].color); //float3(0.0, 0.0, -3.0), float3(1., 1., 1.));   pointlights[0].position.xyz
+    //light[1] = initCustomLight(float3(14.0, -9.0, -3.0), pointlights[1].color); //float3(0.0, 0.0, -3.5), float3(1., 1., 1.));   pointlights[1].position.xyz
+    //light[2] = initCustomLight(float3(18.0, -9.0,  -3.0), pointlights[2].color); //float3(0.5, 1.2, -2.0), float3(1., 1., 1.));   pointlights[2].position.xyz
 
     //SAMPLING
-    float4 wPosSamp = wPosTex.Sample(pointSampler, input.UV);
-    float3 metalSamp = (metal.Sample(pointSampler, input.UV));
-    float3 roughSamp = (rough.Sample(pointSampler, input.UV));
-    float3 AOSamp = (AO.Sample(pointSampler, input.UV)).rgb;
-    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV));
-    float3 N = (normalTex.Sample(pointSampler, input.UV));
+    float4 wPosSamp  = wPosTex.Sample(pointSampler, input.UV);
+    float3 metalSamp = (metalRoughAo.Sample(pointSampler, input.UV)).r;
+    float3 roughSamp = (metalRoughAo.Sample(pointSampler, input.UV)).g;
+    float3 AOSamp = (metalRoughAo.Sample(pointSampler, input.UV)).b;
+    float3 colorSamp = (colorTex.Sample(pointSampler, input.UV)).rgb;
+    float3 N = (normalTex.Sample(pointSampler, input.UV)).rgb;
 
 
 
     //METALNESS (F90)
-    float metalness = metalSamp.r;
-    float f90 = metalness;
-    f90 = 0.16f * metalness * metalness;
+    float f90 = metalSamp;
+    f90 = 0.16f * metalSamp * metalSamp;
 
     //ROUGHNESS (is same for both diffuse and specular, ala forstbite)
     float linearRough = (saturate(roughSamp + EPSILON)).r;
@@ -160,67 +240,66 @@ float4 PS_main(VS_OUT input) : SV_Target
     float AO = AOSamp.b;
 
     //DIFFUSE & SPECULAR
-    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, metalness);
-    float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, metalness);
-    float3 specularColor = lerp(f0, colorSamp.rgb, metalness);
+    float3 diffuseColor = lerp(colorSamp.rgb, 0.0f.rrr, f90);
+    float3 f0 = lerp(0.03f.rrr, colorSamp.rgb, f90);
+    float3 specularColor = lerp(f0, colorSamp.rgb, f90);
 
     //N = normalize(N);
     float3 V = normalize(camPos.xyz - wPosSamp.xyz);
     float NdotV = abs(dot(N, V)) + EPSILON;
     
     //FOR EACH LIGHT
-    for (uint i = 0; i < lightCount; i++)
+    for (uint i = 0; i < lightCount; i++) ///TIP : Separate each light type calculations into functions. i.e : calc point, calc area, etc
     {
-        //PBR variables 
-       //float3 L = normalize((wPosSamp.xyz) - light[i].lightPos);
-		float3 L = normalize(light[i].lightPos - (wPosSamp.xyz));
-        float3 H = normalize(V + L);
         float lightPower = 0;
 
-        float LdotH = saturate((dot(L, H)));
-        float NdotH = saturate((dot(N, H)));
-        float NdotL = saturate((dot(N, L)));
-        float VdotH = saturate((dot(V, H)));
+        lightPower = smoothAttenuation(wPosSamp.xyz, pointlights[i].position.xyz, pointlights[i].radius, pointlights[i].constantFalloff, pointlights[i].linearFalloff, pointlights[i].quadraticFalloff);
+        lightPower *= pointlights[i].intensity; //could add falloff factor
+        if (lightPower > 0.0f)
+        {
+            //PBR variables 
+            float3 L = normalize(pointlights[i].position.xyz - (wPosSamp.xyz));
+            float3 H = normalize(V + L);
 
+            float LdotH = saturate((dot(L, H)));
+            float NdotH = saturate((dot(N, H)));
+            float NdotL = max(saturate((dot(N, L))), 0.0002); //the max function is there to reduce/remove specular artefacts caused by a lack of reflections
+            float VdotH = saturate((dot(V, H)));
 
-        
-        //if (dot(camPos - light.lightPos, normalize(light.lightDir)) > 0) //just for lights with direction. Or selfshadowing, or maby just needed for everything... pallante tänka påat atm
+            //DO SHADOW STUFF HERE
 
-        //else //lights with no direction
+            //DIFFUSE
+            float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
+            diffuseLight += float4(fd.xxx * pointlights[i].color * lightPower * diffuseColor.rgb, 1);
 
+            //SPECULAR
+            float3 f = schlick(f0, f90, LdotH);
+            float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
+            float d = GGX(NdotH, roughness); //roughness should be sRGB
 
-        lightPower = 1.00f; //could add falloff factor
-        
-        //DO SHADOW STUFF HERE
+            float3 fr = d * f * vis / Pi;
 
-        //DIFFUSE
-        float fd = DisneyDiffuse(NdotV, NdotL, LdotH, linearRough.r) / Pi; //roughness should be linear
-        diffuseLight += float4(fd.xxx * light[i].lightColor * lightPower * diffuseColor.rgb, 1);
+            specularLight += float4(fr * specularColor * pointlights[i].color * lightPower, 1);
 
-        //SPECULAR
-        float3 f = schlick(f0, f90, LdotH);
-        float vis = V_SmithGGXCorrelated(NdotV, NdotL, roughness); //roughness should be sRGB
-        float d = GGX(NdotH, roughness); //roughness should be sRGB
-
-        float3 fr = d * f * vis / Pi;
-
-        specularLight += float4(fr * specularColor * light[i].lightColor * lightPower, 1);
-
-        //return N.rgbr;
+           // return diffuseLight;
+        }
     }
 
 
     //COMPOSITE
-    float3 diffuse = saturate(diffuseLight).rgb;
+    float3 diffuse = saturate(diffuseLight.rgb);
+    float3 ambient = saturate(colorSamp * AMBIENT_COLOR * AMBIENT_INTENSITY);
     float3 specular = specularLight.rgb;
+    
 
     //float4 finalColor = float4(specular, 1);
     float4 finalColor = float4(saturate(diffuse), 1);
     finalColor.rgb += saturate(specular);
-
+    finalColor.rgb += ambient;
+    //finalColor.rgb *= AOSamp;
 
     
-    return finalColor;
+    return saturate(finalColor);
 
 
 

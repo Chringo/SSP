@@ -45,16 +45,12 @@ Resources::Status Resources::SkeletonHandler::GetSkeleton(const unsigned int & i
 
 Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & id, ResourceContainer *& skelPtr)
 {
-
 	char* data = nullptr;
 	size_t size = 0;
-	std::string path = "../ResourceLib/AssetFiles/SkelMesh1.skel";
- 	Status st = FileLoader::GetInstance()->LoadFile(path, data, &size);
+ 	Status st = FileLoader::GetInstance()->LoadResource(id, data, &size);
 	if (st != ST_OK)
 		return st;
 	
-	
-		
 	Skeleton* newSkeleton = GetEmptyContainer(); //Get an empty container
 	Resource::RawResourceData resData;
 	Skeleton::RawSkeletonData skelData;
@@ -81,42 +77,36 @@ Resources::Status Resources::SkeletonHandler::LoadSkeleton(const unsigned int & 
 
 	skelData.joints = nullptr;
 
-	/*
-	Load all animations for the skeleton
-	for each anim
-	m_animationHandler
-	newSkeleton->AddAnimation
-	*/
-	ResourceContainer* animPtr;
-	
-	m_animHandler->LoadAnimation(UINT(213), animPtr);
-	newSkeleton->AddAnimation((Animation*)animPtr->resource, 0);
+	int animsloaded = 0;
+	std::vector<unsigned int> animIDs;
+	for (unsigned int i = 0; i < *animCount; ++i)
+	{
+		animIDs.push_back(((LayerIdHeader*)data)->id);
+		data += sizeof(LayerIdHeader);
+	}
 
-	//int animsloaded = 0;
-	//for (size_t i = 0; i < *animCount; i++)
-	//{
-	//	ResourceContainer* animPtr;
-	//	unsigned int* id = &((LayerIdHeader*)data)->id;
-	//	m_animHandler->LoadAnimation(UINT(213), animPtr);
-	//	//st = m_animationHandler->GetAnimation(id, &animPtr);
-	//	//switch (st) {
-	//	//	case Status::ST_RES_MISSING: { //if it doesent exist
-	//	//		//Status mSt = m_animationHandler->LoadAnimation(id, animPtr); //load the animation
-	//	//		if (mSt != ST_OK) {
-	//	//			continue;
-	//	//		}
-	//	//		else
-	//	//			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
-	//	//		break;
-	//	//	}
-	//	//	case Status::ST_OK: {
-	//	//		animPtr->refCount += 1;
-	//	//		newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
-	//	//		break;
-	//	//	}
-	//		animsloaded++;
-	//	//}
-	//}
+	for (size_t i = 0; i < animIDs.size(); i++)
+	{
+		ResourceContainer* animPtr;
+		st = m_animHandler->GetAnimation(animIDs.at(i), animPtr);
+		switch (st) {
+		case Status::ST_RES_MISSING: { //if it doesent exist
+			Status mSt = m_animHandler->LoadAnimation(animIDs.at(i), animPtr); //load the animation
+			if (mSt != ST_OK) {
+				continue;
+			}
+			else
+				newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+			break;
+		}
+		case Status::ST_OK: {
+			animPtr->refCount += 1;
+			newSkeleton->AddAnimation((Animation*)animPtr->resource, animsloaded);
+			break;
+		}
+		}
+		animsloaded++;
+	}
 
 	m_skeletons[id] = ResourceContainer(newSkeleton, 1);	 // put it into the map
 	m_emptyContainers.pop_front();							 // remove from empty container queue

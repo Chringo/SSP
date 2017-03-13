@@ -33,15 +33,19 @@ int GameStateHandler::ShutDown()
 	}
 
 	//Shutdown the NetworkModule that is shared with all GameStates
-	GameState::m_networkModule->Shutdown();
-	delete GameState::m_networkModule;
-	GameState::m_networkModule = nullptr;
+	if (GameState::m_networkModule)	//If it is active
+	{
+		GameState::m_networkModule->Shutdown();
+		delete GameState::m_networkModule;
+		GameState::m_networkModule = nullptr;
+	}
+
 
 	return 1;
 }
 
 
-int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
+int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera * cameraRef, std::string levelPath)
 {
 	int result = 0;
 	
@@ -71,8 +75,10 @@ int GameStateHandler::Initialize(ComponentHandler * cHandler, Camera* cameraRef)
 		//Push it to the gamestate stack/vector
 		this->PushStateToStack(levelSelect);
 
-
-		levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/Intro Level.level"));
+		if (levelPath.length() < 2)
+			levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/L1P1.level"));
+		else
+			levelSelect->LoadLevel(levelPath);
 	}
 	else
 	{

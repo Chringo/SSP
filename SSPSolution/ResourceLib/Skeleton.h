@@ -37,7 +37,7 @@ namespace Resources
 		};
 
 	private:
-		const static int	       MAX_ANIMATIONS = 6;
+		const static int	       MAX_ANIMATIONS = 12;
 		RawSkeletonData		       m_skelData;
 		unsigned int		       m_numAnimations = 0;
 		std::vector<Animation*>    m_animations;
@@ -55,7 +55,8 @@ namespace Resources
 		
 		DLL_OPERATION const unsigned int				  GetNumAnimations()		const { return m_numAnimations; };
 		DLL_OPERATION const RawSkeletonData*			  GetSkeletonData()			const { return &m_skelData;		 };
-		DLL_OPERATION Animation*						  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
+		DLL_OPERATION Animation* 						  GetAnimation(int& index)  const { return ((unsigned int)index < m_numAnimations ? m_animations[index] : nullptr); };
+		DLL_OPERATION std::vector<Animation*>*			  GetAllAnimations()			  { return &m_animations; };
 		DLL_OPERATION const std::vector<unsigned int> *	  GetAllAnimationIds()		const { return &m_animationIds; };
 		DLL_OPERATION virtual std::shared_ptr<char>		  GetDataAsBinary(size_t* size, bool* result = nullptr);
 		DLL_OPERATION void								  AddAnimationID(unsigned int m_animationID) { this->m_animationIds.push_back(m_animationID); };

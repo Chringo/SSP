@@ -5,6 +5,7 @@ NetworkModule::NetworkModule()
 	this->isLocked = false;
 	this->client_id = 0;
 	this->packet_ID = 0;
+	this->clientIsReady = false;
 }
 
 NetworkModule::~NetworkModule()
@@ -125,6 +126,12 @@ int NetworkModule::Shutdown()
 	
 	this->connectedClients.clear();	// Remove all connected clients
 	printf("%d Clients has been removed on server shutdown\n", i);
+
+	closesocket(this->listenSocket);
+	WSACleanup();
+
+	closesocket(this->connectSocket);
+	WSACleanup();
 
 	return 1;
 }
@@ -271,7 +278,7 @@ void NetworkModule::SendSyncPacket()
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMVECTOR newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
+void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVECTOR newPos, DirectX::XMVECTOR newVelocity, DirectX::XMFLOAT4X4 newRotation/*, DirectX::XMVECTOR newRotationVelocity*/)
 {
 	const unsigned int packet_size = sizeof(EntityPacket);
 	char packet_data[packet_size];
@@ -282,7 +289,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	packet.timestamp = this->GetTimeStamp();
 	packet.entityID = entityID;
 	DirectX::XMStoreFloat3(&packet.newPos, newPos);
-	DirectX::XMStoreFloat3(&packet.newRotation, newRotation);
+	packet.newRotation = newRotation;
 	DirectX::XMStoreFloat3(&packet.newVelocity, newVelocity);
 	//packet.newRotationVelocity = newRotationVelocity;
 
@@ -371,7 +378,7 @@ void NetworkModule::SendCameraPacket(DirectX::XMFLOAT4 newPos /*, DirectX::XMFLO
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost)
+void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int nrOfDynamics, bool isHost, unsigned int levelID, unsigned int checkpointID)
 {
 	const unsigned int packet_size = sizeof(SyncPhysicPacket);
 	char packet_data[packet_size];
@@ -383,6 +390,8 @@ void NetworkModule::SendPhysicSyncPacket(unsigned int startIndex, unsigned int n
 	packet.startIndex = startIndex;
 	packet.nrOfDynamics = nrOfDynamics;
 	packet.isHost = isHost;
+	packet.levelID = levelID;
+	packet.checkpointID = checkpointID;
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -465,19 +474,17 @@ void NetworkModule::ReadMessagesFromClients()
 	std::map<unsigned int, SOCKET>::iterator iter;
 	
 	// Go through all clients
-	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end();)
+	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end(); iter++)
 	{
 		
 		// Load the incoming data
 		int data_length = this->ReceiveData(iter->first, network_data);
 		int data_read = 0;
-		printf("\n\n\n\n\n %d \n",data_length);
-		printf("\n\n\n\n\n\n\n %d, %d \n", sizeof(AnimationPacket), sizeof(EntityPacket));
+
 		// If there was data
 		if (data_length <= 0)
 		{
 			//No data recieved, go to the next client
-			iter++;
 			continue;
 		}
 		while( data_read != data_length)
@@ -485,7 +492,7 @@ void NetworkModule::ReadMessagesFromClients()
 			//Read the header (skip the first 4 bytes since it is virtual function information)
 			memcpy(&header, &network_data[data_read + 4], sizeof(PacketTypes));
 
-#pragma region
+			#pragma region
 		
 			switch (header)
 			{
@@ -626,6 +633,18 @@ void NetworkModule::ReadMessagesFromClients()
 
 				break;
 
+			case SYNC_READY:
+
+				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
+				
+				this->clientIsReady = true;
+
+				data_read += sizeof(Packet);
+				//DEBUG
+				//printf("Recived SYNC_PHYSICS packet\n");
+
+				break;
+
 			case TEST_PACKET:
 
 				p.deserialize(&network_data[data_read]);	// Read the binary data into the object
@@ -640,14 +659,10 @@ void NetworkModule::ReadMessagesFromClients()
 				printf("Unkown packet type %d\n", header);
 				data_read = data_length;	//Break
 			}
-#pragma endregion ALL_PACKETS
+			#pragma endregion ALL_PACKETS
 		}
 
-		if (iter != this->connectedClients.end()) {
-			iter++;
-		}
-		
-}
+	}
 
 }
 
@@ -869,7 +884,7 @@ std::list<SyncPhysicPacket> NetworkModule::PacketBuffer_GetPhysicPacket()
 
 	for (iter = this->packet_Buffer_Physic.begin(); iter != this->packet_Buffer_Physic.end();)
 	{
-		if (iter->packet_type == UPDATE_CAMERA)
+		if (iter->packet_type == SYNC_PHYSICS)
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Physic.erase(iter);	//Returns the next element after the errased element
@@ -914,4 +929,9 @@ int NetworkModule::GetNrOfConnectedClients()
 bool NetworkModule::IsHost()
 {
 	return  this->isHost;
+}
+
+bool NetworkModule::IsClientReady()
+{
+	return this->clientIsReady;
 }

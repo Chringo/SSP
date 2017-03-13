@@ -1,32 +1,43 @@
 #include "Entity.h"
 
-
-
-Entity::Entity()
-{
-}
-
-
-Entity::~Entity()
-{
-}
+Entity::Entity(){}
+Entity::~Entity(){}
 
 int Entity::SyncComponents()
 {
 	int result = 1;
-
 	if (this->m_pComp != nullptr)
 	{
 		if (this->m_aiComp != nullptr)
 		{
-			// Assuming m_pComp->PC_is_Static is true
 			// Works for now since we're only handling platforms
-			this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
+			if (this->m_aiComp->AC_triggered)
+				this->m_pComp->PC_velocity = DirectX::XMVectorScale(this->m_aiComp->AC_dir, this->m_aiComp->AC_speed);
+			else
+				this->m_pComp->PC_velocity = { 0 };
 			this->m_aiComp->AC_position = this->m_pComp->PC_pos;
+			//TODO: test physcomp vs aicomp positions are still updated after they are released from duty
 		}
 		if (this->m_gComp != nullptr)
 		{
-			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+			//rotate and translate the obb in the game
+			if (this->m_pComp->PC_BVtype == BV_OBB)
+			{
+				if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
+				{
+					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
+				}
+				else
+				{
+					this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+				}
+			}
+			else
+			{
+				this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+			}
+
 			result = 1;
 		}
 		else
@@ -42,20 +53,34 @@ int Entity::SyncComponents()
 		}
 		result = -1;
 	}
-
 	return result;
 }
 
 int Entity::AddObserver(Observer * observer, int entityID)
 {
 	this->m_subject.AddObserver(observer, entityID);
-
-	return 0;
+	return 1;
 }
 
 void Entity::UnsafeSyncComponents()
 {
-	this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	//rotate and translate the obb in the game
+	if (this->m_pComp->PC_BVtype == BV_OBB)
+	{
+		if (this->m_entityID == 1 || this->m_entityID == 2) // 1 or 2 == player
+		{
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_gComp->worldMatrix, DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSet(0, -this->m_pComp->PC_OBB.ext[1], 0, 0)));
+		}
+		else
+		{
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_pComp->PC_OBB.ort, DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+		}
+	}
+	else
+	{
+		this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_pComp->PC_rotation), DirectX::XMMatrixTranslationFromVector(this->m_pComp->PC_pos));
+	}
 }
 
 PhysicsComponent* Entity::SetPhysicsComponent(PhysicsComponent * pComp)
@@ -79,6 +104,13 @@ AIComponent * Entity::SetAIComponent(AIComponent * aiComp)
 	return tempReturn;
 }
 
+AnimationComponent * Entity::SetAnimationComponent(AnimationComponent * aComp)
+{
+	AnimationComponent* tempReturn = this->m_aComp;
+	this->m_aComp = aComp;
+	return tempReturn;
+}
+
 bool Entity::SetGrabbed(Entity* isGrabbedBy)
 {
 	bool lastValue = this->m_isGrabbed;;
@@ -87,15 +119,12 @@ bool Entity::SetGrabbed(Entity* isGrabbedBy)
 	if (this->m_isGrabbedBy != nullptr)
 	{
 		this->m_isGrabbed = true;
-		this->m_pComp->PC_gravityInfluence = 0;
 		this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
-	else {
+	else 
+	{
 		this->m_isGrabbed = false;
-		this->m_pComp->PC_gravityInfluence = 1;
-		//this->m_pComp->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 	}
-	
 	return lastValue;
 }
 
@@ -126,6 +155,11 @@ AIComponent * Entity::GetAIComponent()
 	return this->m_aiComp;
 }
 
+AnimationComponent * Entity::GetAnimationComponent()
+{
+	return this->m_aComp;
+}
+
 bool Entity::GetGrabbed()
 {
 	return this->m_isGrabbed;
@@ -136,7 +170,7 @@ int Entity::GetEntityID()
 	return this->m_entityID;
 }
 
-int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AIComponent* aiComp)
+int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, AnimationComponent* aComp, AIComponent* aiComp)
 {
 	int result = 1;
 	this->m_isGrabbed = false;
@@ -144,6 +178,7 @@ int Entity::InitializeBase(int entityID, PhysicsComponent* pComp, GraphicsCompon
 	this->m_entityID = entityID;
 	this->m_pComp = pComp;
 	this->m_gComp = gComp;
+	this->m_aComp = aComp;
 	this->m_aiComp = aiComp;
 	this->m_isGrabbedBy = nullptr;
 	return result;

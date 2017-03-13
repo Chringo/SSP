@@ -33,11 +33,9 @@ struct GS_OUT
 struct PS_OUT
 {
     float3 color : SV_Target0;
-    float3 metal : SV_Target1;
-    float3 rough : SV_Target2;
-    float3 AO : SV_Target3;
-    float3 normal : SV_Target4;
-    float4 wPosition : SV_Target5;
+    float3 metalRoughAo : SV_Target1;
+    float3 normal : SV_Target2;
+    float4 wPosition : SV_Target3;
 };
 
 float3 normalToWorldSpace(float3 normalMapSample, float3 normal, float3 tangent) //Function for normal mapping  
@@ -116,10 +114,10 @@ PS_OUT PS_main(GS_OUT input)
     float3 normalSamp = normalTex.Sample(linearSampler, input.UV).rgb;
 
     output.color = albedoTex.Sample(linearSampler, input.UV).rgb;
-    output.metal = metalTex.Sample(linearSampler, input.UV);
-    output.rough = roughTex.Sample(linearSampler, input.UV);
-    output.AO = aoTex.Sample(linearSampler, input.UV);
-    output.normal = normalToWorldSpace(normalSamp, input.Normal, input.tangent);
+    output.metalRoughAo.r = metalTex.Sample(linearSampler, input.UV).r;
+    output.metalRoughAo.g = roughTex.Sample(linearSampler, input.UV).r;
+    output.metalRoughAo.b = aoTex.Sample(linearSampler, input.UV).r;
+    output.normal = normalToWorldSpace(normalSamp, input.Normal, float3(input.tangent.x, input.tangent.y, -input.tangent.z));
     output.wPosition = input.wPos;
    
     //output.metal_rough_AO = aoTex.Sample(pointSampler, input.UV);

@@ -13,9 +13,9 @@ cbuffer frame : register(b1)
     float timer,
     padding1, padding2, padding3;
 }
-cbuffer skeleton : register(b5)
+cbuffer skeleton : register(b4)
 {
-	float4x4 joints[32];
+	float4x4 joints[22];
 }
 
 
@@ -53,13 +53,15 @@ VS_OUT VS_main(VS_IN input)
 	/*Vertex blending is performed here. With the following: weights, influences and the matrix of each joint.*/
 	for (int i = 0; i < 4; i++)
 	{
-        weight = input.weights[i];
         influences = input.influences[i];
-        if (influences > 0)
-        {          
-            skinnedPos += mul(mul(float4(input.Pos, 1.0f), joints[influences]), weight);
-            skinnedNormal += mul(mul(float4(input.Normal, 1.0f), joints[influences]), weight);
-            skinnedTan += mul(mul(float4(input.Tangent, 1.0f), joints[influences]), weight);
+
+		if (influences != -1)
+		{
+			weight = input.weights[i];
+
+            skinnedPos += mul(weight, mul(float4(input.Pos, 1.0f), joints[influences])).xyz;
+            skinnedNormal += mul(weight, mul(float4(input.Normal, 0.0f), joints[influences])).xyz;
+            skinnedTan += mul(weight, mul(float4(input.Tangent, 0.0f), joints[influences])).xyz;
         }
     }
 
@@ -69,8 +71,9 @@ VS_OUT VS_main(VS_IN input)
     output.wPos = mul(float4(skinnedPos, 1), worldMatrix);
     output.Pos = mul(float4(skinnedPos, 1), WVP);
 
-    output.Normal = mul(float4(skinnedNormal, 1), worldMatrix).rgb;
-    output.Tangent = mul(float4(skinnedTan, 1), worldMatrix).rgb;
+	/*Always handle the normal and tangents as DIRECTIONS, otherwise no good PBR shading for dynamic meshes.*/
+    output.Normal = mul(float4(skinnedNormal, 0), worldMatrix).rgb;
+    output.Tangent = mul(float4(skinnedTan, 0), worldMatrix).rgb;
 
 	output.UV = input.UV;
 

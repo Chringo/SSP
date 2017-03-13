@@ -7,6 +7,7 @@
 #include "AiHandler.h"
 #include "GlobalIDHandler.h"
 #include "Checkpointhandler.h"
+#include "LightController.h"
 //#include "UiControlHandler.h"
 #define PLAYER1 2215164276 
 #define PLAYER2 3255160373
@@ -27,8 +28,7 @@ private:
 	std::string levelName = "untitled_level";
 	std::vector<unsigned int> m_uniqueModels;							 // Every unique model used by the level
 	std::unordered_map<unsigned int, std::vector<Container>> m_ModelMap; // Every instance of modelEntities in the level
-	std::unordered_map<unsigned int, std::vector<Container>> m_LightMap; // Every instance of lights in the level
-	std::vector<std::vector<Container*>> m_puzzleElements; //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access
+	std::vector<std::vector<Container*>> m_puzzleElements;				 //A 2d array of MODEL,BUTTON,LEVER,WHEEL,DOOR,MAGNET,PRESSUREPLATE, Use enum to access									 //all ze lightz
 
 public:
 	Level();
@@ -36,7 +36,7 @@ public:
 	
 	std::vector<unsigned int>* GetUniqueModels() { return &this->m_uniqueModels; };
 	std::unordered_map<unsigned int, std::vector<Container>> * GetModelEntities();
-	std::unordered_map<unsigned int, std::vector<Container>> * GetLights();
+	std::vector<Light*> * GetLights();
 	std::vector<CheckpointContainer*>* GetCheckpoints();
 	Container* GetInstanceEntity(unsigned int entityID);
 	Resources::Status GetModelEntity(unsigned int modelID, unsigned int instanceID, Container& container);
@@ -47,7 +47,7 @@ public:
 	Resources::Status UpdateModel(unsigned int modelID, unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateSpawnPoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation);
 	Resources::Status UpdateCheckpoint(unsigned int instanceID, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMVECTOR scale);
-
+	Resources::Status AddPointLight();
 	Resources::Status RemoveModel(unsigned int modelID, unsigned int instanceID);
 	Resources::Status DuplicateEntity(  Container*& source, Container*& destination);
 
@@ -60,6 +60,7 @@ public:
 	bool isEmpty();
 	unsigned int GetNumEntities();
 	unsigned int GetNumLights();
+	unsigned int GetNumPuzzleElements();
 	Container* GetSpawnPoint(int index);
 	AiHandler* GetAiHandler() { return &m_LevelAi; };
 	CheckpointHandler* GetCheckpointHandler() { return &this->m_checkpointHandler; };
@@ -70,9 +71,13 @@ public:
 	void SetSpawnPoint(LevelData::SpawnHeader data, int index);
 
 	const std::vector<Container*>* GetPuzzleElements(ContainerType type);
-	Button*    ConvertToButton(Container*& object);
-	Door*      ConvertToDoor  (Container*& object);
-	Container* ConvertToContainer(Container*& object); //polymorphism 
+	AiContainer* ConvertToAI(Container*& object);
+	Container*   ConvertToContainer(Container*& object); //polymorphism 
+	Button*      ConvertToButton(Container*& object);
+	Wheel*		 ConvertToWheel (Container*& object);
+	Lever*		 ConvertToLever (Container*& object);
+	Door*        ConvertToDoor  (Container*& object);
+	
 
 	
 };

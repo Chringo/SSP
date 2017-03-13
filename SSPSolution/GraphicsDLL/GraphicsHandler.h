@@ -10,6 +10,8 @@
 #include "ShaderControl.h"
 #include "DebugRenderer.h"
 #include "UIHandler.h"
+#include "LightHandler.h"
+#include <algorithm>
 
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
@@ -19,8 +21,10 @@
 
 const int ARRAY_INC = 5;
 
+	
 class GraphicsHandler
 {
+	
 
 #ifdef _DEBUG
 private:
@@ -62,14 +66,22 @@ private:
 	FinalShader*			m_finalSH;
 	ShaderControl*			m_shaderControl;
 	UIHandler*				m_uiHandler;
+	LIGHTING::LightHandler*			m_LightHandler;
 	HWND* m_windowHandle;
 	bool postProcessing = false;
-	
 
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;
 	int m_nrOfGraphicsComponents;
 	int m_maxGraphicsComponents;
+	int m_nrOfGraphicsAnimationComponents;
+	int m_maxGraphicsAnimationComponents;
+	//New way of saving graphics components which is not used yet
+	std::vector<GraphicsComponent*> m_staticGraphicsComponents;
+	std::vector<GraphicsComponent*> m_dynamicGraphicsComponents;
+	std::vector<GraphicsComponent*> m_persistantGraphicsComponents;
+	std::vector<GraphicsAnimationComponent*> m_animationGraphicsComponents;
+
 
 	//temp
 	Camera* m_camera;
@@ -81,6 +93,96 @@ private:
 	int IncreaseArraySize(int increaseTo);
 	int DecreaseArraySize();
 	int DecreaseArraySize(int decreaseTo);
+
+	int IncreaseArraySizeAnim();
+	int IncreaseArraySizeAnim(int increaseTo);
+	int DecreaseArraySizeAnim();
+	int DecreaseArraySizeAnim(int decreaseTo);
+
+	//[0] = x, [1] = y, [2] = z
+	int m_octreeSize[3];
+	int m_maxDepth;			//The max depth of a node that contains components
+	int m_minDepth;			//The minimum amount of depth for a node that contains components
+	float m_minSize;		//The minimum size of a nodes sides for which it is still worth splitting
+
+	int m_minContainment;	//The minimum amount contained components for which it is still wroth splitting after minDepth is reached
+	//We want to keep splittin the nodes until the time it takes to check if the nodes that contain the components becomes larger than the time gained by culling away the contained components
+	struct OctreeBV {
+		unsigned int componentIndex;
+		unsigned int modelID;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+		bool isRendered;
+	}; 
+	struct OctreeNode {
+		OctreeNode* branches[8] = { nullptr };
+		std::vector<OctreeBV*> containedComponents;
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 ext;
+	};
+	OctreeNode m_octreeRoot;
+	
+#ifdef _DEBUG
+	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
+#endif
+	struct Sorting_on_modelID
+	{
+		inline bool operator() (const OctreeBV* first, const OctreeBV* second)
+		{
+			bool statementTrue = first->modelID < second->modelID;
+			return statementTrue;
+		}
+	};
+
+	//INACTIVE
+	struct Find_Available_gComponent
+	{
+		inline bool operator() (const GraphicsComponent* comp)
+		{
+			return comp->active == 0;
+		}
+	};
+
+	//INACTIVE
+	struct GraphicsComponent_Remove_Inactive_Predicate {
+		inline bool operator()(GraphicsComponent* component) {
+			bool result = false;
+			if (component != nullptr)
+			{
+				if (component->active == false)
+				{
+					delete component;
+					component = nullptr;
+					result = true;
+				}
+			}
+			else
+				result = true;
+			return result;
+		}
+	};
+
+	//USE AT CREATION OF A NEW LEVEL TO DELETE OLD COMPONENTS
+	struct GraphicsComponent_Remove_All_Predicate {
+		inline void operator()(GraphicsComponent* component) {
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+			}
+		}
+	};
+	struct GraphicsComponent_Remove_All_Unary {
+		inline GraphicsComponent* operator()(GraphicsComponent*& component) {
+			if (component != nullptr)
+			{
+				delete component;
+				component = nullptr;
+			}
+			return component;
+		}
+	};
+
 public:
 	GRAPHICSDLL_API GraphicsHandler();
 	GRAPHICSDLL_API ~GraphicsHandler();
@@ -91,14 +193,20 @@ public:
 	GRAPHICSDLL_API int Render(float deltaTime);
 
 	GRAPHICSDLL_API int SetComponentArraySize(int newSize);
+	GRAPHICSDLL_API int SetAnimComponentArraySize(int newSize);
 	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableComponent();
+	GRAPHICSDLL_API GraphicsAnimationComponent* GetNextAvailableAnimationComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableStaticComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailableDynamicComponent();
+	GRAPHICSDLL_API GraphicsComponent* GetNextAvailablePersistentComponent();
 	GRAPHICSDLL_API int UpdateComponentList();
+	GRAPHICSDLL_API int UpdateAnimComponentList();
 
 	GRAPHICSDLL_API UIComponent* GetNextAvailableUIComponent();
 	GRAPHICSDLL_API void UpdateUIComponents(DirectX::XMFLOAT2 mousePos);
 
 	GRAPHICSDLL_API TextComponent* GetNextAvailableTextComponent();
-
+	
 	GRAPHICSDLL_API int InitializeGrid();
 	GRAPHICSDLL_API int RenderGrid(Resources::Model* model, GraphicsComponent* component);
 	GRAPHICSDLL_API int RenderFromEditor(Resources::Model* model, GraphicsComponent* component);
@@ -106,12 +214,32 @@ public:
 	GRAPHICSDLL_API int clearEditor();
 	GRAPHICSDLL_API void Shutdown();
 
+	GRAPHICSDLL_API GraphicsAnimationComponent** GetGraphicsAnimationComponents() { return m_animGraphicsComponents; };
+	GRAPHICSDLL_API int * GetAmountOfGraphicAnimationComponents() { return &m_nrOfGraphicsAnimationComponents; };
+
+	//Culling functions
+	//Function generates an internal datastructure for accelerated rendering through culling techniques. Return: 0 if no components elegible for accelerated datastructure inclusion. 1 if there were comopnents elegible. -1 if the accelerated datastructure could not be created.
+	GRAPHICSDLL_API int GenerateOctree();
+	GRAPHICSDLL_API int FrustrumCullOctreeNode();
+	//Deletes all data and creates a new vector of pointers to new empty datastructures for your "GetComponent" pleasures~
+	GRAPHICSDLL_API int ResizeDynamicComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeStaticComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizeAnimationComponents(size_t new_cap);
+	GRAPHICSDLL_API int ResizePersistentComponents(size_t new_cap);
+
+
 	//TEMP STUFF
 public:
 	GRAPHICSDLL_API void SetTempAnimComponent(void*);
 	GRAPHICSDLL_API GraphicsComponent* getComponent(int index);
+	GRAPHICSDLL_API GraphicsAnimationComponent* getAnimComponent(int index);
 private:
 	void m_CreateTempsTestComponents();
+
+	void OctreeExtend(OctreeNode* curNode, int depth);
+	void TraverseOctree(OctreeNode* curNode, Camera::ViewFrustrum* cullingFrustrum);
+	void DeleteOctree(OctreeNode* curNode);
+	int AABBvsAABBIntersectionTest(DirectX::XMFLOAT3 pos1, DirectX::XMFLOAT3 ext1, DirectX::XMFLOAT3 pos2, DirectX::XMFLOAT3 ext2);
 };
 
 #endif

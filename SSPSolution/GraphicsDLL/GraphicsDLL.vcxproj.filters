@@ -96,8 +96,20 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationStateEnums.h">
+      <Filter>Header Files\Animations</Filter>
+    </ClInclude>
     <ClInclude Include="UIHandler.h">
       <Filter>Header Files\UIHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="LightShader.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LightHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightStructs.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +152,9 @@
     <ClCompile Include="UIHandler.cpp">
       <Filter>Source Files\UIHandler</Filter>
     </ClCompile>
+    <ClCompile Include="LightHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\GBuffer\GridPS.hlsl">
@@ -168,6 +183,9 @@
     </FxCompile>
     <FxCompile Include="Shaders\Debug\DebugPS.hlsl">
       <Filter>Resource Files\Shaders\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBuffer\GBufferVS_Instanced.hlsl">
+      <Filter>Resource Files\Shaders\GBuffer</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

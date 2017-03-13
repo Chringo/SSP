@@ -17,7 +17,7 @@ LevelHandler * LevelHandler::GetInstance()
 	return &instance;
 }
 
-LevelData::LevelStatus LevelHandler::ExportLevelFile()
+LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 {
 	std::string path = GetFilePathAndName(Operation::SAVE);
 	if (path == "")
@@ -37,6 +37,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	char* resData  = new char[resSize];										 //Allocate for resource data
 	GetResourceData(resData);												 //Get resource data
 	file.write(resData, resSize);											 //Write resource data to file
+	delete[] resData;															 //Release the data from memory
 
 	//Spawn Points
 	LevelData::SpawnHeader spawns[2];
@@ -47,7 +48,8 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 	size_t modelSize = sizeof(LevelData::EntityHeader) * header.entityAmount;
 	char* modelData  = new char[modelSize];					//Allocate for modelEntity data
 	GetEntityData(modelData);								//Get modelEntity data	
-	file.write(modelData, modelSize);						//Write all modelEntities														
+	file.write(modelData, modelSize);						//Write all modelEntities	
+	delete[] modelData;										//Release the data from memory
     
     //AI Entities
 	if (header.AiComponentAmount > 0)
@@ -55,17 +57,17 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
 		GetAiData(aiData);								        //Get ai data	
-		file.write(aiData, aiSize);						//Write all aiComponents					
-		delete aiData;
+		file.write(aiData, aiSize);							    //Write all aiComponents					
+		delete[] aiData;
 	}
 
 	if (header.checkpointAmount > 0)
 	{
 		size_t checkpointSize = sizeof(LevelData::CheckpointHeader) * header.checkpointAmount;
-		char* checkpointData = new char[checkpointSize];
+		char* checkpointData  = new char[checkpointSize];
 		this->GetCheckpointData(checkpointData);
 		file.write(checkpointData, checkpointSize);
-		delete checkpointData;
+		delete[] checkpointData;
 	}
 
 	if (header.buttonAmount > 0)
@@ -74,28 +76,57 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile()
 		char* buttonData = new char[buttonSize];
 		this->GetButtonData(buttonData);
 		file.write(buttonData, buttonSize);
-		delete buttonData;
+		delete[] buttonData;
 	}
 	if (header.doorAmount > 0)
 	{
-
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		this->GetDoorData(doorData);
+		file.write(doorData, doorSize);
+		delete[] doorData;
 	}
 	if (header.leverAmount > 0)
 	{
-
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		this->GetLeverData(leverData);
+		file.write(leverData, leverSize);
+		delete[] leverData;
 	}
 	if (header.wheelAmount > 0)
 	{
-
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		this->GetWheelData(wheelData);
+		file.write(wheelData, wheelSize);
+		delete[] wheelData;
 	}
+
+	
+	LevelData::SceneLightHeader sceneLights = GetSceneLightHeader(); //Get the lights header for the file 
+	char* sceneLightdata = (char*)&sceneLights;
+	file.write(sceneLightdata, sizeof(LevelData::SceneLightHeader)); //Write the scene light header
+
+	if (sceneLights.numPointLights > 0)
+	{
+		size_t pointLightSize = sizeof(LevelData::PointLightHeader) * sceneLights.numPointLights;
+		char* pointData		  = new char[pointLightSize];
+		this->GetPointLightData(pointData);
+		file.write(pointData, pointLightSize);
+		delete[] pointData;
+	}
+
+
 
 	file.close();
 	//Cleanup
-	delete resData;
-	delete modelData;
+
+	
 
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the new name to the level
+	filepath = (QString::fromStdString(path));
 	return LevelData::LevelStatus::L_OK;
 }
 
@@ -163,7 +194,59 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		LoadTriggerComponents((LevelData::ButtonHeader*)buttonData, header.buttonAmount);
 		delete buttonData;
 	}
+	if (header.doorAmount > 0)
+	{
+		size_t doorSize = sizeof(LevelData::DoorHeader) * header.doorAmount;
+		char* doorData = new char[doorSize];
+		file.read(doorData, doorSize);
 
+		LoadTriggerComponents((LevelData::DoorHeader*)doorData, header.doorAmount);
+		delete doorData;
+	}
+
+	if (header.leverAmount > 0)
+	{
+		size_t leverSize = sizeof(LevelData::LeverHeader) * header.leverAmount;
+		char* leverData = new char[leverSize];
+		file.read(leverData, leverSize);
+
+		LoadTriggerComponents((LevelData::LeverHeader*)leverData, header.leverAmount);
+		delete leverData;
+	}
+	if (header.wheelAmount > 0)
+	{
+		size_t wheelSize = sizeof(LevelData::WheelHeader) * header.wheelAmount;
+		char* wheelData = new char[wheelSize];
+		file.read(wheelData, wheelSize);
+
+		LoadTriggerComponents((LevelData::WheelHeader*)wheelData, header.wheelAmount);
+		delete wheelData;
+	}
+	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
+
+	//Light header
+		
+		LevelData::SceneLightHeader lightHeader;
+		file.read((char*)&lightHeader, sizeof(LevelData::SceneLightHeader));
+	
+		Ambient amb;
+		amb.r =	lightHeader.ambientColor[0];
+		amb.g =	lightHeader.ambientColor[1];
+		amb.b =	lightHeader.ambientColor[2];
+		amb.intensity = lightHeader.ambientIntensity;
+		LightController::GetInstance()->SetLevelAmbient(amb);
+		//Point lights
+		if (lightHeader.numPointLights > 0) {
+
+		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader.numPointLights;	  //memsize
+		char* pointData = new char[pointlightSize];
+		file.read(pointData, pointlightSize);
+		LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
+		delete pointData;
+		}
+
+
+	}
 	file.close();
 	delete modelData; //Cleanup
 	QFileInfo info(QString::fromStdString(path));
@@ -228,17 +311,33 @@ LevelData::MainLevelHeader LevelHandler::GetMainHeader()
 {
 	LevelData::MainLevelHeader header;
 	
-	header.resAmount	     = m_currentLevel.GetUniqueModels()->size();
 	header.entityAmount      = m_currentLevel.GetNumEntities();
 	header.lightAmount       = m_currentLevel.GetNumLights();
+	header.resAmount	     = (unsigned int) m_currentLevel.GetUniqueModels()->size();
 	header.AiComponentAmount = (unsigned int) m_currentLevel.GetAiHandler()->GetAllPathComponents()->size();
-	header.checkpointAmount = (unsigned int)m_currentLevel.GetCheckpoints()->size();
-	header.buttonAmount = (unsigned int)m_currentLevel.GetPuzzleElements(BUTTON)->size();
-	header.doorAmount = (unsigned int)m_currentLevel.GetPuzzleElements(DOOR)->size();
-	header.leverAmount = (unsigned int)m_currentLevel.GetPuzzleElements(LEVER)->size();
-	header.wheelAmount = (unsigned int)m_currentLevel.GetPuzzleElements(WHEEL)->size();
+	header.checkpointAmount  = (unsigned int) m_currentLevel.GetCheckpoints()->size();
+	header.buttonAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(BUTTON)->size();
+	header.doorAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(DOOR)->size();
+	header.leverAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(LEVER)->size();
+	header.wheelAmount		 = (unsigned int) m_currentLevel.GetPuzzleElements(WHEEL)->size();
 
 	return header;
+}
+
+LevelData::SceneLightHeader LevelHandler::GetSceneLightHeader()
+{
+	LevelData::SceneLightHeader data;
+
+	data.numPointLights = LightController::GetInstance()->GetPointLightData()->size();
+	
+	const Ambient* amb = LightController::GetInstance()->GetLevelAmbient();
+
+	data.ambientIntensity = amb->intensity;
+	data.ambientColor[0] = amb->r;
+	data.ambientColor[1] = amb->g;
+	data.ambientColor[2] = amb->b;
+	//TODO: Add ambientColor and ambient Intesity
+	return data;
 }
 
 LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
@@ -266,12 +365,12 @@ LevelData::LevelStatus LevelHandler::GetEntityData(char * dataPtr)
 			entity.rotation[2] = entityContainer->at(i).rotation.m128_f32[2];
 
 			entity.isStatic	   = entityContainer->at(i).isStatic;
-			if (entityContainer->at(i).aiComponent != nullptr)
-			{
-				entity.isStatic = false;
-				entity.hasAi = true;
-			}
-			else
+			//if (entityContainer->at(i).aiComponent != nullptr)
+			//{
+			//	entity.isStatic = false;
+			//	entity.hasAi = true;
+			//}
+			//else
 				entity.hasAi = false;
 			memcpy(dataPtr + offset, (char*)&entity, sizeof(LevelData::EntityHeader));
 			offset += sizeof(LevelData::EntityHeader);
@@ -324,27 +423,14 @@ LevelData::LevelStatus LevelHandler::GetSpawnData(char * dataPtr)
 LevelData::LevelStatus LevelHandler::GetAiData(char * dataPtr)
 {
 	unsigned int offset = 0;
-	std::vector<AIComponent*>* aiData = m_currentLevel.GetAiHandler()->GetAllPathComponents();
-	for (size_t i = 0; i < aiData->size(); i++) // for each ai component in the level
+	
+	for each (AiContainer* ai in *m_currentLevel.GetAiHandler()->GetAllPathComponents())
 	{
-		LevelData::AiHeader ai;
-		ai.entityID		 = aiData->at(i)->AC_entityID;
-		ai.nrOfWaypoints = aiData->at(i)->AC_nrOfWaypoint;
-		ai.pattern		 = aiData->at(i)->AC_pattern;
-		ai.speed		 = aiData->at(i)->AC_speed;
-		ai.time			 = aiData->at(i)->AC_time;
-		memset(ai.wayPoints, 0, sizeof(float) * 24);
-
-		for (size_t j = 0; j < ai.nrOfWaypoints; j++)
-		{
-				ai.wayPoints[j][0] = aiData->at(i)->AC_waypoints[j].m128_f32[0];
-				ai.wayPoints[j][1] = aiData->at(i)->AC_waypoints[j].m128_f32[1];
-				ai.wayPoints[j][2] = aiData->at(i)->AC_waypoints[j].m128_f32[2];
-		}
-		memcpy(dataPtr + offset, (char*)&ai, sizeof(LevelData::AiHeader));
+		VerifyTriggerData(ai);
+		LevelData::AiHeader * ah = ai->GetData();
+		memcpy(dataPtr + offset, (char*)ah, sizeof(LevelData::AiHeader));
 		offset += sizeof(LevelData::AiHeader);
 	}
-
 
 	return LevelData::LevelStatus::L_OK;
 }
@@ -368,9 +454,78 @@ LevelData::LevelStatus LevelHandler::GetButtonData(char * dataPtr)
 	unsigned int offset = 0;
 	for each (Button* button in *this->m_currentLevel.GetPuzzleElements(BUTTON))
 	{
+		VerifyTriggerData(button);
 		LevelData::ButtonHeader* bh = button->GetData();
 		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::ButtonHeader));
 		offset += sizeof(LevelData::ButtonHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetDoorData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Door* door in *this->m_currentLevel.GetPuzzleElements(DOOR))
+	{
+		VerifyTriggerData(door);
+		LevelData::DoorHeader* bh = door->GetData();
+		memcpy(dataPtr + offset, (char*)bh, sizeof(LevelData::DoorHeader));
+		offset += sizeof(LevelData::DoorHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetLeverData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Lever* lever in *this->m_currentLevel.GetPuzzleElements(LEVER))
+	{
+		VerifyTriggerData(lever);
+		LevelData::LeverHeader* lh = lever->GetData();
+		memcpy(dataPtr + offset, (char*)lh, sizeof(LevelData::LeverHeader));
+		offset += sizeof(LevelData::LeverHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetWheelData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	for each (Wheel* wheel in *this->m_currentLevel.GetPuzzleElements(WHEEL))
+	{
+		VerifyTriggerData(wheel);
+		LevelData::WheelHeader* wh = wheel->GetData();
+		memcpy(dataPtr + offset, (char*)wh, sizeof(LevelData::WheelHeader));
+		offset += sizeof(LevelData::WheelHeader);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::GetPointLightData(char * dataPtr)
+{
+	unsigned int offset = 0;
+	std::vector<LIGHTING::Point>* lights = LightController::GetInstance()->GetPointLightData();
+
+	for each(LIGHTING::Point light in *lights) {
+		
+		LevelData::PointLightHeader currentLight;
+		currentLight.falloff_quadratic = light.falloff.quadratic;
+		currentLight.falloff_constant  = light.falloff.constant;
+		currentLight.falloff_linear    = light.falloff.linear;
+		currentLight.position[0]	   = light.position.m128_f32[0];
+		currentLight.position[1]	   = light.position.m128_f32[1];
+		currentLight.position[2]	   = light.position.m128_f32[2];
+		currentLight.intensity		   = light.intensity;
+		currentLight.color[0]		   = light.color.r;
+		currentLight.color[1]		   = light.color.g;
+		currentLight.color[2]		   = light.color.b;
+		currentLight.radius			   = light.radius;
+		memcpy(dataPtr + offset, (char*)&currentLight, sizeof(LevelData::PointLightHeader));
+		offset += sizeof(LevelData::PointLightHeader);
 	}
 
 	return LevelData::LevelStatus::L_OK;
@@ -395,29 +550,10 @@ LevelData::LevelStatus LevelHandler::LoadAiComponents(LevelData::AiHeader * data
 {
 	for (size_t i = 0; i < numComponents; i++)
 	{
-		
-			AIComponent* newComponent	  = LevelHandler::GetInstance()->GetCurrentLevel()->GetAiHandler()->NewPathComponent();
-			newComponent->AC_entityID	  = dataPtr[i].entityID;
-			newComponent->AC_nrOfWaypoint = dataPtr[i].nrOfWaypoints;
-			newComponent->AC_speed		  = dataPtr[i].speed;
-			newComponent->AC_pattern	  = dataPtr[i].pattern;
-			newComponent->AC_time		  = dataPtr[i].time;
-			for (size_t k = 0; k < newComponent->AC_nrOfWaypoint; k++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					newComponent->AC_waypoints[k].m128_f32[j] = dataPtr[i].wayPoints[k][j];
-				}
-			}
-			Container* cont = m_currentLevel.GetInstanceEntity(newComponent->AC_entityID);
-			if (cont == nullptr) {
-				std::cout << "The entity that has the AIcomponent with id :" << newComponent->AC_entityID << "does not exist" << std::endl;
-				return LevelData::LevelStatus::L_FILE_NOT_FOUND;
-			}
-			else {
-				cont->aiComponent = newComponent;
-			}
-
+		AiContainer* newComponent = new AiContainer(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(AI, newComponent);
+			
+		newComponent->component.modelPtr = DataHandler::GetInstance()->GetModel(newComponent->component.modelID);
 	}
 
 	return LevelData::LevelStatus::L_OK;
@@ -439,17 +575,107 @@ LevelData::LevelStatus LevelHandler::LoadCheckpointComponents(LevelData::Checkpo
 	return LevelData::LevelStatus::L_OK;
 }
 
+LevelData::LevelStatus LevelHandler::LoadPointLightComponents(LevelData::PointLightHeader * dataPtr, size_t numComponents)
+{
+
+
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		LIGHTING::Point point;
+		memcpy(&point.color, dataPtr[i].color, sizeof(float) * 3);
+		memcpy(&point.position.m128_f32, dataPtr[i].position, sizeof(float) * 3);
+
+		point.falloff.quadratic = dataPtr[i].falloff_quadratic;
+		point.falloff.constant  = dataPtr[i].falloff_constant;
+		point.falloff.linear	= dataPtr[i].falloff_linear;
+		point.intensity			= dataPtr[i].intensity;
+		point.radius			= dataPtr[i].radius;
+
+		LightController::GetInstance()->AddLight(&point);
+	}
+	return LevelData::LevelStatus::L_OK;
+}
+
 LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::ButtonHeader * dataPtr, size_t numComponents)
 {
 	for (size_t i = 0; i < numComponents; i++)
 	{
 		Button * button = new Button(&dataPtr[i]);
-		//GlobalIDHandler::GetInstance()->AddExistingID(button->internalID);
 		m_currentLevel.AddPuzzleElement(BUTTON, button);
 
 		button->component.modelPtr = DataHandler::GetInstance()->GetModel(button->component.modelID);
-	
 	}
 
-	return LevelData::LevelStatus();
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::DoorHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Door * door = new Door(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(DOOR, door);
+
+		door->component.modelPtr = DataHandler::GetInstance()->GetModel(door->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::WheelHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Wheel * wheel = new Wheel(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(WHEEL, wheel);
+
+		wheel->component.modelPtr = DataHandler::GetInstance()->GetModel(wheel->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+LevelData::LevelStatus LevelHandler::LoadTriggerComponents(LevelData::LeverHeader * dataPtr, size_t numComponents)
+{
+	for (size_t i = 0; i < numComponents; i++)
+	{
+		Lever * lever = new Lever(&dataPtr[i]);
+		m_currentLevel.AddPuzzleElement(LEVER, lever);
+
+		lever->component.modelPtr = DataHandler::GetInstance()->GetModel(lever->component.modelID);
+	}
+
+	return LevelData::LevelStatus::L_OK;
+}
+
+
+
+bool LevelHandler::VerifyTriggerData(ListenerContainer* listener)
+{
+	for (unsigned int i = 0; i < listener->numTriggers; i++)
+	{
+		//Ask the level if the trigger exists. So that it wont crash if a connected trigger has been
+		//deleted.
+
+		Container* trigger = LevelHandler::GetInstance()->GetCurrentLevel()->GetInstanceEntity(listener->triggerEntityIds[i]);
+		if (trigger == nullptr) { //this means it has been deleted completely
+			listener->DeleteTrigger(listener->triggerEntityIds[i]);
+			if (listener->numTriggers < 1)//if there are no other triggers
+				return false;
+			else {
+				i -= 1;
+				continue;
+			}
+		}
+
+
+		if (trigger->type == ContainerType::MODEL) {								// this is a check to make sure that the trigger is not a model.	   									   
+			listener->DeleteTrigger(trigger->internalID); 	// This is because, you can add a button, then convert that button to a model,
+																				// when deleting,														// In that case, every listener that is connected to that button needs to remove that connection
+																				// every trigger is moved one step to the front in the array.			// So if the selected objects connections has changed to something that is not a trigger.																		//so decrease i by one, to iterate over 0 again							// The trigger will be removed
+			i -= 1;
+			continue;
+		}
+	}
+	return true;
 }

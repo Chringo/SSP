@@ -48,7 +48,13 @@ private:
 	}
 
 public:
-	unsigned int GetInstanceID() { return m_selectedContainer->internalID; };
+	unsigned int GetInstanceID()
+	{
+		if (m_selectedContainer->type == ContainerType::CHECKPOINT)
+			return ((CheckpointContainer*)m_selectedContainer)->internalID;
+		else
+			return m_selectedContainer->internalID;
+	};
 	unsigned int GetModelID() { return m_modelID; };
 	Container * GetContainer() { return m_selectedContainer; };
 	DirectX::XMVECTOR ** GetAxisColors() { return m_axisColors; };
@@ -63,7 +69,7 @@ public:
 
 	void UpdateOBB()
 	{
-		if (this->m_selectedContainer->type == CHECKPOINT)
+		if (this->m_selectedContainer->type == CHECKPOINT || this->m_selectedContainer->type == LIGHT)
 		{
 			m_obbCenterPosition = this->m_selectedContainer->position;
 		}
@@ -94,7 +100,6 @@ public:
 		this->m_modelID = modelID;
 
 
-		m_UpdateAxies();
 		UpdateOBB();
 		setActive(true);
 	};
@@ -109,22 +114,29 @@ public:
 
 		m_obbCenterPosition = selectedContainer->position;
 
-		m_UpdateAxies();
+
 		UpdateOBB();
 		setActive(true);
 	};
 
-
-	void Select(OBB &selectedOBB,
-		AIComponent *& AiContainer)
+	void Select(Sphere &selectedSphere,
+		Point *& selectedContainer)
 	{
-		DeSelect();
-		this->m_selectedContainer = nullptr;
-		this->m_aiContainer = AiContainer;
-		this->m_selectedObjectOBB = selectedOBB;
-		setActive(true);
+		this->m_selectedObjectOBB.ort = DirectX::XMMatrixIdentity();
+		this->m_selectedObjectOBB.ext[0] = selectedSphere.radius;
+		this->m_selectedObjectOBB.ext[1] = selectedSphere.radius;
+		this->m_selectedObjectOBB.ext[2] = selectedSphere.radius;
+		this->m_selectedContainer = selectedContainer;
+		this->m_instanceID = selectedContainer->internalID;
+		this->m_modelID = UINT_MAX;
 
-	}
+		m_obbCenterPosition = selectedContainer->position;
+
+
+		UpdateOBB();
+		setActive(true);
+	};
+
 
 	void SelectAxis(int i)
 	{
