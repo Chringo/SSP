@@ -80,11 +80,6 @@ int StartState::Update(float dt, InputHandler * inputHandler)
 			delete menuState;
 			menuState = nullptr;
 		}
-		/*CreditState* creditState = new CreditState();
-		result = creditState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-		this->m_gsh->PushStateToStack(creditState);
-		this->m_spaceTextComp->active = 0;*/
-
 	}
 	return result;
 }

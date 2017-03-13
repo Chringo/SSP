@@ -110,6 +110,7 @@ int System::Initialize(std::string path)
 	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
 	
 	//Initialize the GameStateHandler
+	//NOTE: Don't create any timers or other objects that uses TextComponent after this one
 	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
 
 	return result;
