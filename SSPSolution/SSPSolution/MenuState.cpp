@@ -704,7 +704,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 		if (isJoining)
 		{
 			//disable the menu music
-			this->setMusic(Sounds2D::LEVEL);
+			//this->setMusic(Sounds2D::LEVEL);
 			this->Joining(inputHandler);
 		}
 
@@ -838,7 +838,7 @@ int MenuState::Update(float dt, InputHandler * inputHandler)
 
 				//levelSelect->LoadLevel(std::string("../ResourceLib/AssetFiles/TutorialLevel.level"));
 				//disable the menu music and enable level music
-				this->setMusic(Sounds2D::LEVEL);
+				//this->setMusic(Sounds2D::LEVEL);
 #pragma region
 				switch (this->m_levelToHost)
 				{
@@ -918,7 +918,7 @@ int MenuState::EnterState()
 	case 0: /*/ Main menu /*/
 
 		//Set the music and activate it
-		this->setMusic(Sounds2D::MENU);
+		//this->setMusic(Sounds2D::MENU);
 		
 		//Show buttons
 		nrOfMenuitems = this->m_mainMenuButtons.size();
@@ -941,7 +941,7 @@ int MenuState::EnterState()
 
 	case 2: /*/ Start game menu /*/
 
-		this->setMusic(Sounds2D::MENU);
+		//this->setMusic(Sounds2D::MENU);
 		//Show buttons
 		nrOfMenuitems = this->m_startMenuButtons.size();
 		for (size_t i = 0; i < nrOfMenuitems; i++)
