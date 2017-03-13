@@ -1,24 +1,25 @@
-#include "StartState.h"
-#include "GameStateHandler.h"
 #include "CreditState.h"
+#include "GameStateHandler.h"
 
 
-StartState::StartState()
+CreditState::CreditState()
 {
 }
 
 
-StartState::~StartState()
+CreditState::~CreditState()
 {
 }
 
-int StartState::ShutDown()
+int CreditState::ShutDown()
 {
 	int result = 1;
+	this->m_cHandlerPtr->RemoveLastUIComponent();
+	this->m_cHandlerPtr->RemoveLastUIComponent();
 	return result;
 }
 
-int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
+int CreditState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, Camera * cameraRef)
 {
 	int result = 0;
 	result = GameState::InitializeBase(gsh, cHandler, cameraRef, false);
@@ -48,55 +49,31 @@ int StartState::Initialize(GameStateHandler * gsh, ComponentHandler * cHandler, 
 
 	this->m_spaceTextComp = cHandler->GetTextComponent();
 	this->m_spaceTextComp->active = 1;
+	this->m_spaceTextComp->scale = DirectX::XMFLOAT2(0.5f, 0.5f);
 	this->m_spaceTextComp->position = DirectX::XMFLOAT2(320.f, 550.f);
 	this->m_spaceTextComp->text = L"Press SPACE to continue...";
 
 	return result;
 }
 
-int StartState::Update(float dt, InputHandler * inputHandler)
+int CreditState::Update(float dt, InputHandler * inputHandler)
 {
 	int result = 1;
 
-	if (inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE))
+	if (inputHandler->IsKeyPressed(SDL_SCANCODE_SPACE) || inputHandler->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
-
-		this->m_cHandlerPtr->RemoveLastUIComponent();
-		this->m_cHandlerPtr->RemoveLastUIComponent();
-
-		//MenuState* menuState = new MenuState();
-		//result = menuState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-
-		//if (result > 0)
-		//{
-		//	//Push it to the gamestate stack/vector
-		//	this->m_gsh->PushStateToStack(menuState);
-		//	this->m_backgroundUIComp->active = 0;
-		//	this->m_gamelogoUIComp->active = 0;
-		//	this->m_spaceTextComp->active = 0;
-		//}
-		//else
-		//{
-		//	//Delete it
-		//	delete menuState;
-		//	menuState = nullptr;
-		//}
-
-		CreditState* creditState = new CreditState();
-		result = creditState->Initialize(this->m_gsh, this->m_cHandlerPtr, this->m_cameraRef);
-		this->m_gsh->PushStateToStack(creditState);
-		this->m_spaceTextComp->active = 0;
-
+		this->m_gsh->PopStateFromStack();
 	}
+
 	return result;
 }
 
-int StartState::EnterState()
+int CreditState::EnterState()
 {
 	return 0;
 }
 
-int StartState::LeaveState()
+int CreditState::LeaveState()
 {
 	return 0;
 }
