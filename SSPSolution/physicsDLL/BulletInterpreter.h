@@ -93,8 +93,8 @@ struct PhysicsComponent
 
 	void AddCollitionNormal(DirectX::XMFLOAT3 normal)
 	{
-		int nrOfNormals = this->m_collition_Normals.size();
-		for (int i = 0; i < nrOfNormals; i++)
+		size_t nrOfNormals = this->m_collition_Normals.size();
+		for (size_t i = 0; i < nrOfNormals; i++)
 		{
 			float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
 				DirectX::XMLoadFloat3(&normal), 
@@ -110,6 +110,47 @@ struct PhysicsComponent
 		}
 	}
 };
+
+enum PhysicsLinkType
+{
+	PL_CHAIN,
+	PL_BODY,
+	PL_BODY_LEFTLEG,
+	PL_BODY_RIGHTLEG,
+	PL_BODY_LEFTARM,
+	PL_BODY_RIGHTARM,
+	PL_BODY_CENTERBODY,
+};
+struct PhysicsLink
+{
+	PhysicsLinkType PL_type;
+	float PL_lenght;
+	PhysicsComponent* PL_next;
+	PhysicsComponent* PL_previous;
+};
+
+
+
+//struct ChainLink
+//{
+//	float CL_lenght;
+//	PhysicsComponent* CL_next;
+//	PhysicsComponent* CL_previous;
+//};
+
+//struct Field
+//{
+//	OBB F_BV;
+//
+//	DirectX::XMFLOAT3 F_pos;
+//
+//	unsigned int F_entitityID1;
+//	unsigned int F_entitityID2;
+//	bool F_first_inside;
+//	bool F_second_inside;
+//	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
+//	void operator delete(void* p) { _aligned_free(p); };
+//};
 
 #pragma endregion
 
@@ -177,6 +218,9 @@ public:
 
 	PHYSICSDLL_API void AddNormalFromCollisions(PhysicsComponent* src, int index);
 	PHYSICSDLL_API btDynamicsWorld* GetBulletWorld();
+
+	PHYSICSDLL_API void SetIgnoreCollisions(PhysicsComponent* src1, PhysicsComponent* src2);
+	PHYSICSDLL_API void SetCollisionShapeLocalScaling(PhysicsComponent* src, btVector3 scale);
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body

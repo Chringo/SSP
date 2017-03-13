@@ -21,7 +21,7 @@ Camera::~Camera()
 {
 }
 
-int Camera::Initialize(float screenAspect, float fieldOfView, float nearPlane, float farPlane)
+int Camera::Initialize(float farPlane, float screenAspect, float fieldOfView, float nearPlane)
 {
 	int result = 1;
 
@@ -95,7 +95,7 @@ int Camera::UpdateView()
 	return 1;
 }
 
-int Camera::UpdateProjection()
+int Camera::UpdateProjectionMat()
 {
 	int result = 1;
 	if (this->m_screenAspect <= 0 || this->m_fieldOfView <= 0)
@@ -111,7 +111,7 @@ int Camera::UpdateProjection()
 	return result;
 }
 
-int Camera::UpdateProjection(float screenAspect, float fieldOfView, float nearPlane, float farPlane) {
+int Camera::UpdateProjection(float farPlane, float screenAspect, float fieldOfView, float nearPlane) {
 
 	//Update the projection matrix
 	this->m_screenAspect = screenAspect;
@@ -124,8 +124,13 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 {
 	int result = 0;
 	//Constants for descriptive code
-	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
-	enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS};
+	// was on dev
+	//enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	//enum {PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS};
+	//---
+	enum { PLANE_OUTWARDS = -1, RIGHT = 0, X = 0, LEFT = 1, Y = 1, PLANE_INWARDS = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { PLANE_NORMAL_DIRECTION_CHOICE = PLANE_OUTWARDS };
+
 	DirectX::XMMATRIX clipSpaceMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&this->m_viewMatrix), DirectX::XMLoadFloat4x4(&this->m_projectionMatrix));
 	DirectX::XMFLOAT4X4 M;
 	DirectX::XMStoreFloat4x4(&M, clipSpaceMatrix);
@@ -152,15 +157,15 @@ int Camera::GetViewFrustrum(ViewFrustrum & storeIn)
 	storeIn.myPlanes[TOP].normal.z = (M._34 - M._32) * PLANE_NORMAL_DIRECTION_CHOICE;
 	storeIn.myPlanes[TOP].normal.w = (M._44 - M._42) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//NEAR
-	storeIn.myPlanes[NEAR].normal.x = (M._14 + M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[NEAR].normal.y = (M._24 + M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[NEAR].normal.z = (M._34 + M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[NEAR].normal.w = (M._44 + M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CNEAR].normal.x = (M._14 + M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CNEAR].normal.y = (M._24 + M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CNEAR].normal.z = (M._34 + M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CNEAR].normal.w = (M._44 + M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
 	//FAR
-	storeIn.myPlanes[FAR].normal.x = (M._14 - M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[FAR].normal.y = (M._24 - M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[FAR].normal.z = (M._34 - M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
-	storeIn.myPlanes[FAR].normal.w = (M._44 - M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CFAR].normal.x = (M._14 - M._13) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CFAR].normal.y = (M._24 - M._23) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CFAR].normal.z = (M._34 - M._33) * PLANE_NORMAL_DIRECTION_CHOICE;
+	storeIn.myPlanes[CFAR].normal.w = (M._44 - M._43) * PLANE_NORMAL_DIRECTION_CHOICE;
 
 	//Normalize the planes
 	for (int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
@@ -670,7 +675,7 @@ void Camera::m_calcDistance()
 {
 	const float EPSILON = 1e-5f;
 	static float targetDistance = m_maxDistance;
-	float intersectDistance = m_maxDistance + 0.3;
+	float intersectDistance = m_maxDistance + 0.3f;
 	float hitDistance = m_maxDistance;
 	float zoomSpeedFactor = 4.f;
 	bool newDistance = false;
@@ -701,8 +706,8 @@ void Camera::m_calcDistance()
 			targetDistance = intersectDistance;
 		if (targetDistance > this->m_maxDistance)
 			targetDistance = this->m_maxDistance;
-		else if (targetDistance < 0.05)
-			targetDistance = 0.05;
+		else if (targetDistance < 0.05f)
+			targetDistance = 0.05f;
 	}
 	else if(targetDistance < m_maxDistance || targetDistance > m_maxDistance)
 		targetDistance = m_maxDistance;
@@ -721,7 +726,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstAABB(C_AABB box)
 	CullingResult result = FRUSTRUM_INSIDE;
 
 #pragma region
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -829,7 +834,7 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	CullingResult result = FRUSTRUM_INSIDE;
 
 #pragma region
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 	for (size_t i = 0; i < NUMBER_OF_PLANES; i++)
 	{
 		float pos = this->myPlanes[i].normal.w;
@@ -881,10 +886,33 @@ CullingResult Camera::ViewFrustrum::TestAgainstBox(C_BOX box)
 	return result;
 }
 
+CullingResult Camera::ViewFrustrum::TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius)
+{
+	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
+	float distance = 0.0f;
+	enum { NUMBER_OF_PLANES = 6 };
+	for (int i = 0; i < NUMBER_OF_PLANES; i++)
+	{
+		//Distance between point and plane
+		distance = DirectX::XMVectorGetX(DirectX::XMPlaneDotCoord(DirectX::XMLoadFloat4(&this->myPlanes[i].normal), DirectX::XMLoadFloat3(&pos)));
+		//Check distance against
+		if (distance > -radius)
+		{
+			return CullingResult::FRUSTRUM_OUTSIDE;
+		}
+		else if (distance > radius)
+		{
+			result = CullingResult::FRUSTRUM_INTERSECT;
+		}
+	}
+
+	return result;
+}
+
 CullingResult Camera::ViewFrustrum::TestAgainstOBBConservative(C_OBB box)
 {
 	CullingResult result = CullingResult::FRUSTRUM_INSIDE;
-	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, NEAR = 4, FAR = 5, NUMBER_OF_PLANES = 6 };
+	enum { RIGHT = 0, X = 0, LEFT = 1, Y = 1, TOP = 2, Z = 2, BOTTOM = 3, W = 3, DISTANCE = W, CNEAR = 4, CFAR = 5, NUMBER_OF_PLANES = 6 };
 
 	C_BOX testWith;
 	//Get the new extensions after rotation the AABB

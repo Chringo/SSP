@@ -32,7 +32,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			m_gComp->modelPtr->GetOBBData().position.y,
 			m_gComp->modelPtr->GetOBBData().position.z, 0})));
 
-	if (this->GetAIComponent()->AC_triggered)
+	if (this->GetAIComponent()->AC_triggered && !this->GetAIComponent()->AC_finished)
 	{
 		if (this->m_ActiveSound == nullptr)
 		{
@@ -40,12 +40,25 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 			this->m_ActiveSound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_LIFT, pos, true, true);
 		}
+		/*leaving this code outcommented here in case everything breaks for some reason*/
+		//if (this->GetAIComponent()->AC_finished)
+		//{
+		//	this->m_ActiveSound->setPlayPosition(0);
+		//	this->m_ActiveSound->setIsPaused(true);	//Pause the walking sound
+		//}
 		else
 		{
 			if (this->m_ActiveSound->getIsPaused())
 			{
 				this->m_ActiveSound->setIsPaused(false);
 			}
+			/*update the position of the platform sound*/
+			irrklang::vec3df newPos(
+				this->GetPhysicsComponent()->PC_pos.m128_f32[0],
+				this->GetPhysicsComponent()->PC_pos.m128_f32[1],
+				this->GetPhysicsComponent()->PC_pos.m128_f32[2]);
+
+			this->m_ActiveSound->setPosition(newPos);
 		}
 	}
 	else
@@ -90,17 +103,16 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 	case WHEEL_INCREASING:
 		//printf("INCREASING\n");
 		this->GetAIComponent()->AC_triggered = true;
-		//this->GetAIComponent()->AC_reset = false;
+		this->GetAIComponent()->AC_increasing = true;
+		this->GetAIComponent()->AC_reset = false;
 		break;
 	case WHEEL_DECREASING:
-		//printf("INCREASING\n");
-		this->GetAIComponent()->AC_triggered = true;
-		//this->GetAIComponent()->AC_reset = false;
+		//printf("DECREASING\n");
 		break;
 	case WHEEL_RESET:
 		//printf("RESET\n");
 		this->GetAIComponent()->AC_triggered = true;
-		//this->GetAIComponent()->AC_reset = true;
+		this->GetAIComponent()->AC_reset = true;
 		break;
 	default:
 		break;

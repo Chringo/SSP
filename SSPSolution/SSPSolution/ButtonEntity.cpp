@@ -36,7 +36,6 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	}
 	if (m_animationActive)
 	{
-		static float lastFrameOffsetValue = 0;
 		PhysicsComponent* ptr = this->GetPhysicsComponent();
 		DirectX::XMMATRIX offsetMatrix;
 		float frameOffset = m_animSpeed * dT;
@@ -48,7 +47,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 				
 				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
 
-				lastFrameOffsetValue = m_currOffsetValue;
+				this->m_lastFrameOffset = m_currOffsetValue;
 			}
 			else {
 				m_animationActive = false;
@@ -68,7 +67,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			{
 				m_currOffsetValue -= frameOffset;
 				offsetMatrix = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(ptr->PC_OBB.ort.r[0], m_currOffsetValue));
-				lastFrameOffsetValue = m_currOffsetValue;
+				this->m_lastFrameOffset = m_currOffsetValue;
 			}
 			else {
 				m_animationActive = false;
@@ -115,6 +114,7 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	this->m_range = interactionDistance;
 	this->m_resetTime = resetTime;
 	this->m_elapsedResetTime = 0.0f;
+	this->m_lastFrameOffset = 0;
 	this->SyncComponents();
 	return result;
 }
@@ -158,12 +158,12 @@ void ButtonEntity::SetSyncState(ButtonSyncState * newSyncState)
 		this->m_subject.Notify(this->m_entityID, EVENT(EVENT::BUTTON_DEACTIVE + this->m_isActive));
 
 		if (m_isActive) {
-			m_targetOffset = m_activatedOffset;
+			this->m_targetOffset = m_activatedOffset;
 		}
 		else {
-			m_targetOffset = 0;
+			this->m_targetOffset = 0;
 		}
-		m_animationActive = true;
+		this->m_animationActive = true;
 
 		//Play sound
 		DirectX::XMFLOAT3 pos;
@@ -181,4 +181,9 @@ ButtonSyncState * ButtonEntity::GetSyncState()
 		this->m_needSync = false;
 	}
 	return result;
+}
+
+bool ButtonEntity::GetIsActive()
+{
+	return this->m_isActive;
 }

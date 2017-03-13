@@ -83,8 +83,8 @@ bool LIGHTING::LightHandler::CreateStructuredBuffer(LIGHT_TYPE type, int amount)
 	lightBufferDesc.Usage			    = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.CPUAccessFlags	    = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags		    = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	lightBufferDesc.ByteWidth		    = structSize * amount; //total size of the buffer
-	lightBufferDesc.StructureByteStride = structSize;
+	lightBufferDesc.ByteWidth		    = (UINT)structSize * amount; //total size of the buffer
+	lightBufferDesc.StructureByteStride = (UINT)structSize;
 
 	if (FAILED(hr = m_gDevice->CreateBuffer(&lightBufferDesc, nullptr, &m_lightBuffers[type]))) {
 #ifdef  _DEBUG
@@ -160,6 +160,7 @@ bool LIGHTING::LightHandler::ReleaseStructuredBuffer(LIGHT_TYPE type)
 	NUM_LIGHTS[type] = 0;
 	return true;
 }
+
 
 bool LIGHTING::LightHandler::UpdateStructuredBuffer(LIGHT_TYPE type)
 {
@@ -273,6 +274,61 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		UpdateStructuredBuffer(LT_POINT);
 	}
 	return true;
+}
+
+
+int LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos)
+{
+	int result = -1;
+	float distClose = FLT_MAX;
+	float dist = 0.0f;
+	//Local descriptive constants.
+	enum { X = 0, Y = 1, Z = 2 };
+	if (type > 0 && type < NUM_LT)
+	{
+		//Loop the lights
+		for (unsigned int i = 0; i < this->m_lightData->numItems; i++)
+		{
+			Light* commonData = this->m_lightData[type].dataPtr;
+			if (type == LIGHT_TYPE::LT_POINT)
+			{
+				Point* specializedData = static_cast<Point*>(commonData);
+				dist = 0.0f;
+				dist += pow(specializedData[i].position.m128_f32[X] - pos.x, 2);		//X
+				dist += pow(specializedData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+				dist += pow(specializedData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+				//Reduce the distance with the radius
+				dist -= pow(specializedData[i].radius, 2);
+				//Square root it for actual length. We will use the non squared length because
+				//we don't care about actual length, only the relation between the lengths
+				if (dist < distClose)
+				{
+					result = i;
+				}
+			}
+			else
+			{
+				dist = 0.0f;
+				dist += pow(commonData[i].position.m128_f32[X] - pos.x, 2);		//X
+				dist += pow(commonData[i].position.m128_f32[Y] - pos.y, 2);		//Y
+				dist += pow(commonData[i].position.m128_f32[Z] - pos.z, 2);		//Z
+				//Square root it for actual length. We will use the non squared length because
+				//we don't care about actual length, only the relation between the lengths
+				if (dist < distClose)
+				{
+					result = i;
+				}
+			}
+
+		}
+	}
+	return result;
+}
+
+void LIGHTING::LightHandler::GetClosestLightIndex(LIGHT_TYPE type, DirectX::XMFLOAT3 pos, int &storeIn)
+{
+	storeIn = this->GetClosestLightIndex(type, pos);
+	return;
 }
 
 

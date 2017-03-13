@@ -298,7 +298,7 @@ void NetworkModule::SendEntityUpdatePacket(unsigned int entityID, DirectX::XMVEC
 	this->SendToAll(packet_data, packet_size);
 }
 
-void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity)
+void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, float transitionDuritation, int blendType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity,int jointIndex, DirectX::XMMATRIX finalJointTransform)
 {
 	const unsigned int packet_size = sizeof(AnimationPacket);
 	char packet_data[packet_size];
@@ -315,6 +315,8 @@ void NetworkModule::SendAnimationPacket(unsigned int entityID, int newState, flo
 	packet.lockAnimation = lockAnimation;
 	packet.playingSpeed = playingSpeed;
 	packet.velocity = velocity;
+	packet.jointIndex = jointIndex;
+	DirectX::XMStoreFloat4x4(&packet.finalJointTransform, finalJointTransform);
 
 	packet.serialize(packet_data);
 	this->SendToAll(packet_data, packet_size);
@@ -420,6 +422,21 @@ void NetworkModule::SendGrabPacket(unsigned int entityID, unsigned int grabbedID
 	this->SendToAll(packet_data, packet_size);
 }
 
+void NetworkModule::SendPingPacket(DirectX::XMFLOAT3 pos)
+{
+	const unsigned int packet_size = sizeof(PingPacket);
+	char packet_data[packet_size];
+
+	PingPacket packet;
+	packet.packet_ID = this->packet_ID;
+	packet.timestamp = this->GetTimeStamp();
+	packet.packet_type = UPDATE_PING;
+	packet.newPos = pos;
+
+	packet.serialize(packet_data);
+	this->SendToAll(packet_data, packet_size);
+}
+
 bool NetworkModule::AcceptNewClient(unsigned int & id)
 {
 	SOCKET otherClientSocket;
@@ -477,8 +494,10 @@ void NetworkModule::ReadMessagesFromClients()
 	CameraPacket cP;
 	GrabPacket gP;
 	SyncPhysicPacket sPP;
+	PingPacket pP;
 
 	std::map<unsigned int, SOCKET>::iterator iter;
+	bool didDisconnect = false;
 	
 	// Go through all clients
 	for (iter = this->connectedClients.begin(); iter != this->connectedClients.end(); iter++)
@@ -538,6 +557,7 @@ void NetworkModule::ReadMessagesFromClients()
 				//printf("Host recived: DISCONNECT_REQUEST from Client %d \n", iter->first);
 
 				iter = this->connectedClients.end();
+				didDisconnect = true;
 				data_read = data_length;
 				break;
 
@@ -552,7 +572,7 @@ void NetworkModule::ReadMessagesFromClients()
 				iter = this->connectedClients.end();
 				data_read = data_length;
 				this->isHost = true;	//Since we disconnected sucssfully from the othe client, we are now host.
-
+				didDisconnect = true;
 				break;
 
 			case UPDATE_ENTITY:
@@ -629,6 +649,14 @@ void NetworkModule::ReadMessagesFromClients()
 
 				break;
 
+			case UPDATE_PING:
+				pP.deserialize(&network_data[data_read]);
+
+				this->packet_Buffer_Ping.push_back(pP);
+				data_read += sizeof(PingPacket);
+
+				break;
+
 			case SYNC_PHYSICS:
 
 				sPP.deserialize(&network_data[data_read]);	// Read the binary data into the object
@@ -681,6 +709,10 @@ void NetworkModule::ReadMessagesFromClients()
 			#pragma endregion ALL_PACKETS
 		}
 
+		if (didDisconnect == true)
+		{
+			break;
+		}
 	}
 
 }
@@ -951,6 +983,28 @@ std::list<Packet> NetworkModule::PacketBuffer_GetResetPacket()
 		{
 			result.push_back(*iter);					//We should always be able to cast since the header is correct
 			iter = this->packet_Buffer_Messages.erase(iter);	//Returns the next element after the errased element
+		}
+		else
+		{
+			iter++;
+		}
+
+	}
+
+	return result;
+}
+
+std::list<PingPacket> NetworkModule::PacketBuffer_GetPingPacket()
+{
+	std::list<PingPacket> result;
+	std::list<PingPacket>::iterator iter;
+
+	for (iter = this->packet_Buffer_Ping.begin(); iter != this->packet_Buffer_Ping.end();)
+	{
+		if (iter->packet_type == UPDATE_PING)
+		{
+			result.push_back(*iter);					//We should always be able to cast since the header is correct
+			iter = this->packet_Buffer_Ping.erase(iter);	//Returns the next element after the errased element
 		}
 		else
 		{

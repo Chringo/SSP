@@ -19,6 +19,7 @@ enum PacketTypes {
 	UPDATE_LEVER_STATE,
 	UPDATE_CAMERA,
 	UPDATE_GRAB,
+	UPDATE_PING,
 	SYNC_PHYSICS,
 	SYNC_READY,
 	SYNC_RESET,
@@ -85,6 +86,8 @@ struct AnimationPacket : public Packet
 	bool			lockAnimation;
 	float			playingSpeed;
 	float			velocity;
+	int				jointIndex;
+	DirectX::XMFLOAT4X4	finalJointTransform;
 
 	void serialize(char * data)
 	{
@@ -174,6 +177,21 @@ struct SyncPhysicPacket : public Packet
 	void deserialize(char * data)
 	{
 		memcpy(this, data, sizeof(SyncPhysicPacket));
+	}
+};
+
+struct PingPacket : public Packet
+{
+	DirectX::XMFLOAT3	newPos;
+
+	void serialize(char * data)
+	{
+		memcpy(data, this, sizeof(PingPacket));
+	}
+
+	void deserialize(char * data)
+	{
+		memcpy(this, data, sizeof(PingPacket));
 	}
 };
 #endif

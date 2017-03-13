@@ -96,6 +96,7 @@ public:
 		//0 = outside. 1 = intersects frustrum. 2 = inside frustrum.
 		CullingResult TestAgainstAABB(C_AABB box);
 		CullingResult TestAgainstBox(C_BOX box);
+		CullingResult TestAgainstSphere(DirectX::XMFLOAT3 pos, float radius);
 		//An conservative test is fast but may not cull all things that could be culled
 		CullingResult TestAgainstOBBConservative(C_OBB box);
 		//An exact test will always cull all things perfectly but is slow
@@ -109,14 +110,14 @@ public:
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 	//Creates the base camera views
-	GRAPHICSDLL_API int Initialize(float screenAspect = 1280.f / 720.f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
+	GRAPHICSDLL_API int Initialize(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI*5)/12.0f, float nearPlane = 0.1f);
 	//Create a new camera view matrix based on the 6 comtained values available through the setters.
 	//Also updates the cameraPos, lookAt and cameraUp values with the rotations in roll, pitch and yaw.
 	GRAPHICSDLL_API int Update();
 	GRAPHICSDLL_API int UpdateDeltaTime(float dt);
 	GRAPHICSDLL_API int UpdateView();
-	GRAPHICSDLL_API int UpdateProjection();
-	GRAPHICSDLL_API int UpdateProjection(float screenAspect, float fieldOfView = (float)DirectX::XM_PI / 4.0f, float nearPlane = 0.1f, float farPlane = 200.0f);
+	GRAPHICSDLL_API int UpdateProjectionMat();
+	GRAPHICSDLL_API int UpdateProjection(float farPlane = 46.0f, float screenAspect = 1280.0f / 720.0f, float fieldOfView = ((float)DirectX::XM_PI * 5) / 12.0f, float nearPlane = 0.1f);
 	//	0/1 = failed(succeeded to create the view frustrum.
 	GRAPHICSDLL_API int GetViewFrustrum(ViewFrustrum& storeIn);
 	GRAPHICSDLL_API int Reset();
@@ -185,6 +186,8 @@ public:
 	GRAPHICSDLL_API void IncreaseDistance(float amount);
 
 	GRAPHICSDLL_API DirectX::XMVECTOR GetRight();
+	GRAPHICSDLL_API bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
+	
 #pragma endregion setters
 private:
 	DirectX::XMVECTOR Conjugate(DirectX::XMVECTOR quat);
@@ -193,7 +196,6 @@ private:
 	DirectX::XMVECTOR m_Right();
 	void m_updatePos();
 	void m_calcDistance();
-	bool m_IntersectRayOBB(const DirectX::XMVECTOR &rayOrigin, const DirectX::XMVECTOR &rayDir, const OBB &obj, const DirectX::XMVECTOR &obbPos, float &distanceToOBB);
 	std::vector<C_OBB> m_intersectionOBBs;
 };
 

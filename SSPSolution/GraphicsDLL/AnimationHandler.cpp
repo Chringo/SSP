@@ -29,13 +29,30 @@ void AnimationHandler::Initialize(GraphicsAnimationComponent ** graphicAnimCompo
 void AnimationHandler::Update(float dt)
 {
 	/*Convert the delta-time to be in seconds unit format.*/
-
 	float seconds = (dt / 1000000.f);
 
 	/*Iterate each component and check if it's active and update animation.*/
 	for (int aCompIndex = 0; aCompIndex < this->m_nrOfAnimComps; aCompIndex++)
 	{
-		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE)
+		/*Go to the next component if the source state at the current frame is a nullptr.*/
+		if (this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+			continue;
+
+		if (this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != RAGDOLL_STATE )
+		{
+			if (this->m_AnimComponentList[aCompIndex]->target_State != nullptr)
+			{
+				if (this->m_AnimComponentList[aCompIndex]->target_State->stateIndex == RAGDOLL_STATE)
+				{
+					this->m_AnimComponentList[aCompIndex]->target_State = nullptr;
+					continue;
+				}
+			}
+			/*If the component is active and if source or target states are not having error flags. Proceed with update.*/
+			//if (this->m_AnimComponentList[aCompIndex]->active == TRUE &&
+			//	(this->m_AnimComponentList[aCompIndex]->source_State->stateIndex != ANIMATION_ERROR ||
+			//	this->m_AnimComponentList[aCompIndex]->target_State->stateIndex != ANIMATION_ERROR))
+		if (this->m_AnimComponentList[m_AnimCompIndex]->active == TRUE && this->m_AnimComponentList[aCompIndex]->source_State != nullptr)
 		{
 			/*Set the current animation component index.*/
 			SetAnimCompIndex(aCompIndex);
@@ -43,9 +60,6 @@ void AnimationHandler::Update(float dt)
 			/*If only one animation is playing, there should be no transition.*/
 			if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::NO_TRANSITION)
 			{
-				/*If there is no source state, the program should make a assert.*/
-				assert(m_AnimComponentList[m_AnimCompIndex]->source_State != nullptr);
-
 				/*Increment source animation's local time and multiply by speed factor and velocity.*/
 				float playingSpeed = m_AnimComponentList[m_AnimCompIndex]->playingSpeed;
 				float velocity = m_AnimComponentList[m_AnimCompIndex]->velocity;
@@ -92,6 +106,11 @@ void AnimationHandler::Update(float dt)
 			else if (m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::SMOOTH_TRANSITION
 				|| m_AnimComponentList[m_AnimCompIndex]->blendFlag == Blending::FROZEN_TRANSITION)
 			{
+						/*Go to the next component if the target state or the source state at the current frame is a nullptr.*/
+						if (this->m_AnimComponentList[aCompIndex]->target_State == nullptr 
+							|| this->m_AnimComponentList[aCompIndex]->source_State == nullptr)
+							continue;
+
 				/*Transition is complete. Swap the animations and remove the old animation.*/
 				if (m_AnimComponentList[m_AnimCompIndex]->m_TransitionComplete == true)
 				{
@@ -112,7 +131,38 @@ void AnimationHandler::Update(float dt)
 				else
 					Blend(seconds);
 			}
+			}
+			/*If the component is not active or if there was an error loading the animation, skip this update until further.*/
+			else if (this->m_AnimComponentList[m_AnimCompIndex]->active != TRUE )
+			{
+				continue;
+			}
 		}
+		/*Ragdoll physics is currently happening, continue to the next component in the list.*/
+		else
+		{
+			continue;
+		}
+	}
+}
+
+void AnimationHandler::ClearAnimationComponents()
+{
+	/*Delete all content in the std::vector and the vector itself is cleared.*/
+	for (size_t i = 0; i < this->m_AnimComponentList.size(); i++)
+	{
+		delete this->m_AnimComponentList[i];
+	}
+
+	this->m_maxAnimComps = 16;
+	this->m_nrOfAnimComps = 0;
+	m_AnimComponentList.clear();
+	m_AnimComponentList.shrink_to_fit();
+
+	//Create new empty components
+	for (int i = 0; i < this->m_maxAnimComps; i++)
+	{
+		this->m_AnimComponentList.push_back(CreateAnimationComponent());
 	}
 }
 
@@ -149,24 +199,6 @@ AnimationComponent * AnimationHandler::GetNextAvailableComponent()
 	}
 	this->m_nrOfAnimComps++;
 	return this->m_AnimComponentList[this->m_nrOfAnimComps - 1];
-}
-
-void AnimationHandler::UpdateAnimationComponents(float dt)
-{
-	/*Iterate each animation component to check if their active or not.*/
-	for (size_t compIndex = 0; compIndex < this->m_AnimComponentList.size(); compIndex++)
-	{
-		/*If the current iterating component is active, update component and data.*/
-		if (this->m_AnimComponentList[compIndex]->active >= 1)  // if active == true
-		{
-
-		}
-
-		else
-		{
-			/*Should something happen if their not active? Leave this for now!*/
-		}
-	}
 }
 
 void AnimationHandler::ShutDown()

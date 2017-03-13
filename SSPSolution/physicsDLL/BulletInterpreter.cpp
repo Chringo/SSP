@@ -47,7 +47,7 @@
  void BulletInterpreter::applyForcesToRigidbody(PhysicsComponent * src)
  {
 	 btRigidBody* rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
-	 rigidBody->setGravity(this->m_GravityAcc * src->PC_gravityInfluence);
+	 rigidBody->setGravity(this->m_GravityAcc * (const btScalar)src->PC_gravityInfluence);
  }
 
  DirectX::XMMATRIX BulletInterpreter::GetNextFrameRotationMatrix(btTransform & transform)
@@ -98,15 +98,15 @@
 	 btRigidBody* rigidBody = nullptr;
 	 rigidBody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
 
-	 if (src->PC_mass != 0 && src->PC_active == true)
+	 if (src->PC_mass > 0.0f && src->PC_active == true)
 	 {
 		 rigidBody->activate();
 	 }
 
-	 if (src->PC_mass != 0)
+	/* if (src->PC_mass != 0.0f)
 	 {
 		 rigidBody->activate();
-	 }
+	 }*/
  }
 
  btTransform BulletInterpreter::GetLastRotationToBullet(btRigidBody * rb, PhysicsComponent* src)
@@ -188,6 +188,8 @@ void BulletInterpreter::Initialize()
 	this->m_GravityAcc = btVector3(0, -10, 0);
 	this->m_dynamicsWorld->setGravity(this->m_GravityAcc);
 
+	btRigidBody* test = nullptr;
+
 	//this->timeStep = 0;
 	//this->m_dynamicsWorld->getWorldUserInfo()
 	//btInternalTickCallback* test = new btInternalTickCallback;
@@ -208,7 +210,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	#endif
 
 
-	btScalar fixedTimeStep = btScalar(1.0)/btScalar(200); 
+	btScalar fixedTimeStep = btScalar(1.0)/btScalar(120); 
 	float total = maxSubSteps * fixedTimeStep;
 
 	this->m_dynamicsWorld->stepSimulation(timeStep, maxSubSteps, fixedTimeStep);
@@ -252,7 +254,6 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 		this->forceDynamicObjectsToActive(src);
 		
 		this->applyForcesToRigidbody(src);
-		
 		this->applyRotationOnRigidbody(src);
 		
 		//the ball might be picked up or dropped, and need to ignore collition check
@@ -303,8 +304,8 @@ void BulletInterpreter::Shutdown()
 		this->m_broadphase = nullptr;
 	}
 
-	int size = this->m_rigidBodies.size();
-	for (int i = 0; i < size; i++)
+	size_t size = this->m_rigidBodies.size();
+	for (size_t i = 0; i < size; i++)
 	{
 		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
 		btMotionState* tempMSPtr = tempPtr->getMotionState();
@@ -382,15 +383,16 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 
 	//create the rigid body
 	btRigidBody* rigidBody = new btRigidBody(groundRigidBodyCI);
-	rigidBody->setUserIndex(this->m_rigidBodies.size());
-	rigidBody->setUserIndex2(this->m_rigidBodies.size());
+	rigidBody->setUserIndex((int)this->m_rigidBodies.size());
+	rigidBody->setUserIndex2((int)this->m_rigidBodies.size());
 	rigidBody->setAngularFactor(btVector3(0, 0, 0));
+	
 
 	this->m_rigidBodies.push_back(rigidBody);
 
 	//add it into the world
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
-	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
+	src->PC_IndexRigidBody = (int)this->m_rigidBodies.size() - 1;
 
 }
 
@@ -724,6 +726,21 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 btDynamicsWorld * BulletInterpreter::GetBulletWorld()
 {
 	return this->m_dynamicsWorld;
+}
+
+void BulletInterpreter::SetIgnoreCollisions(PhysicsComponent * src1, PhysicsComponent * src2)
+{
+	btRigidBody* rigidBody1 = this->m_rigidBodies.at(src1->PC_IndexRigidBody);
+	btRigidBody* rigidBody2 = this->m_rigidBodies.at(src2->PC_IndexRigidBody);
+
+	rigidBody2->setIgnoreCollisionCheck(rigidBody1, true);
+}
+
+void BulletInterpreter::SetCollisionShapeLocalScaling(PhysicsComponent * src, btVector3 scale)
+{
+	btRigidBody* rigidbody = this->m_rigidBodies.at(src->PC_IndexRigidBody);
+	btVector3 temp = rigidbody->getCollisionShape()->getLocalScaling();
+	rigidbody->getCollisionShape()->setLocalScaling(scale);
 }
 
 void BulletInterpreter::CreateDummyObjects()
