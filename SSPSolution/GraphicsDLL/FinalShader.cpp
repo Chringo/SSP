@@ -15,18 +15,17 @@ FinalShader::~FinalShader()
 {
 }
 
-int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution)
+int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort)
 {
 	HRESULT hResult;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	ID3D10Blob* errorMessage;
-
 	this->m_deviceContext = deviceContext;
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightVS.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightPass.hlsl";
+	WCHAR* vsFilename = L"../Assets/Shaders/PBR/PbrLightVS.hlsl";
+	WCHAR* psFilename = L"../Assets/Shaders/PBR/PbrLightPass.hlsl";
 
 	// Compile the shaders \\
 
@@ -103,9 +102,9 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 
 	//Fill the texture sampler state description
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -124,7 +123,9 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	}
 
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-
+	//samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	//samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	//samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	//Create the texture sampler state
 	hResult = device->CreateSamplerState(&samplerDesc, &this->m_samplerStateLinear);
 	if (FAILED(hResult))
@@ -134,7 +135,10 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 
 
 	// Create the screen quad \\
-
+	
+	DirectX::XMINT2 resolution;
+	resolution.x = viewPort->Width;
+	resolution.y = viewPort->Height;
 	this->m_screenQuad = new ScreenQuad();
 	if (this->m_screenQuad->Initialize(device, resolution))
 	{
@@ -168,7 +172,7 @@ int FinalShader::SetActive()
 	m_deviceContext->GSSetShader(nullptr, NULL, 0);
 	m_deviceContext->VSSetShader(this->m_vertexShader, NULL, 0);
 	m_deviceContext->PSSetShader(this->m_pixelShader, NULL, 0);
-
+	
 	this->m_screenQuad->SetBuffers(m_deviceContext);
 
 	return 0;
@@ -178,7 +182,6 @@ int FinalShader::SetRenderParameters(ID3D11RenderTargetView *backBufferRTV, ID3D
 {
 	this->m_finalRTV = backBufferRTV;
 	this->m_gBufferRTVs = gBuffers;
-
 	return 0;
 }
 

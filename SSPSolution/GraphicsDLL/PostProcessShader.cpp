@@ -11,7 +11,7 @@ PostProcessShader::~PostProcessShader()
 {
 }
 
-int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, const DirectX::XMINT2 & resolution)
+int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, D3D11_VIEWPORT * viewPort)
 {
 	HRESULT hResult;
 	ID3D10Blob* errorMessage;
@@ -19,13 +19,18 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	this->m_deviceContext = deviceContext;
 	WCHAR* filePaths[NUM_TYPES];
 	
-	 filePaths[RAYTRACING]   = L"../GraphicsDLL/Shaders/PostProcess/RayTrace_BoundingBox.hlsl";
-	 filePaths[WATER]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
-	 filePaths[BLUR]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
-	 filePaths[FXAA]		 = L"../GraphicsDLL/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[RAYTRACING]   = L"../Assets/Shaders/PostProcess/RayTrace_BoundingBox.hlsl";
+	 filePaths[WATER]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[BLUR]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[FXAA]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
+
+	 filePaths[SSR]			 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
 
 	 // Create the screen quad \\
-
+	 
+	 DirectX::XMINT2 resolution;
+	 resolution.x = viewPort->Width;
+	 resolution.y = viewPort->Height;
 	 this->m_screenQuad = new ScreenQuad();
 	 if (this->m_screenQuad->Initialize(device, resolution))
 	 {

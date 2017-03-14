@@ -25,7 +25,7 @@
 
 	 btVector3 bulletQuat;
 	 btQuaternion quaturnion;
-
+	 
 	 quaturnion = btQuaternion(
 		 DirectX::XMVectorGetX(quat),
 		 DirectX::XMVectorGetY(quat),
@@ -258,16 +258,16 @@ void BulletInterpreter::SyncBulletWithGame(PhysicsComponent* src)
 		
 		//the ball might be picked up or dropped, and need to ignore collition check
 		//for a short period of time for animation
-		if (src->PC_IndexRigidBody == 2)
-		{
-			this->IgnoreCollitionCheckOnPickupP1(src);
-			this->IgnoreCollitionCheckOnPickupP2(src);
-		}
-		if (src->PC_IndexRigidBody == 3)
-		{
-			this->IgnoreCollitionCheckOnPickupP1(src);
-			this->IgnoreCollitionCheckOnPickupP2(src);
-		}
+		//if (src->PC_IndexRigidBody == 2)
+		//{
+		//	this->IgnoreCollitionCheckOnPickupP1(src);
+		//	this->IgnoreCollitionCheckOnPickupP2(src);
+		//}
+		//if (src->PC_IndexRigidBody == 3)
+		//{
+		//	this->IgnoreCollitionCheckOnPickupP1(src);
+		//	this->IgnoreCollitionCheckOnPickupP2(src);
+		//}
 	}
 }
 
@@ -359,7 +359,7 @@ void BulletInterpreter::CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR 
 	this->m_dynamicsWorld->addRigidBody(rigidBody);
 }
 
-void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
 	btCollisionShape* sphereShape = new btSphereShape(src->PC_Sphere.radius);
 
@@ -389,19 +389,15 @@ void BulletInterpreter::CreateSphere(PhysicsComponent* src, int index)
 	
 
 	this->m_rigidBodies.push_back(rigidBody);
-
 	//add it into the world
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	src->PC_IndexRigidBody = (int)this->m_rigidBodies.size() - 1;
 
 }
 
-void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
-	if (index == 3)
-	{
-		int i = 0;
-	}
+	
 
 	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1], src->PC_OBB.ext[2]);
 	btCollisionShape* box = new btBoxShape(extends);
@@ -465,27 +461,25 @@ void BulletInterpreter::CreateOBB(PhysicsComponent* src, int index)
 	
 	rigidBody->setFriction(src->PC_friction);
 
-	if (index == 0 || index == 1)
-	{
-		rigidBody->setAngularFactor(btVector3(0, 0, 0));
-		
-	}
-
 	rigidBody->setUserIndex(this->m_rigidBodies.size());
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
 
+	if (collitionType == CollitionTypes::COL_STATIC)
+	{
+		rigidBody->setActivationState(DISABLE_SIMULATION);
+	}
+
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	int pos = this->m_rigidBodies.size() - 1;
 	src->PC_IndexRigidBody = pos;
 
 
-	int i = 0;
 
 }
 
-void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
+void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask)
 {
 	//this is always static
 	DirectX::XMVECTOR pos = src->PC_pos;
@@ -515,19 +509,22 @@ void BulletInterpreter::CreateAABB(PhysicsComponent* src, int index)
 	rigidBody->setUserIndex2(this->m_rigidBodies.size());
 
 
+	if (collitionType == CollitionTypes::COL_STATIC)
+	{
+		rigidBody->setActivationState(DISABLE_SIMULATION);
+	}
+
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	
 	src->PC_IndexRigidBody = this->m_rigidBodies.size() - 1;
 }
 
-void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
+void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index, CollitionTypes collitionType, int mask)
 {
+	btVector3 extends = btVector3(src->PC_OBB.ext[0], src->PC_OBB.ext[1]*2, src->PC_OBB.ext[2]);
+	btCollisionShape* Capsule = new btCapsuleShape(extends.getX()*2.5, extends.getY() * 0.375);
 
-	//this capule is ugly hacked, needs further research
-	btVector3 extends = btVector3(src->PC_OBB.ext[0] * 1.2, src->PC_OBB.ext[1] * 1.6, src->PC_OBB.ext[2]);
-	btCollisionShape* Capsule = new btCapsuleShape(extends.getX(), extends.getY());
-	
 	DirectX::XMMATRIX orth = src->PC_OBB.ort;
 
 	//creating a mothion state
@@ -556,6 +553,7 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 		Capsule->calculateLocalInertia(src->PC_mass, interia);
 	}
 
+
 	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI
 	(
 		src->PC_mass,  //mass
@@ -579,12 +577,36 @@ void BulletInterpreter::CreatePlayer(PhysicsComponent * src, int index)
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 	this->m_rigidBodies.push_back(rigidBody);
-	this->m_dynamicsWorld->addRigidBody(rigidBody);
+	this->m_dynamicsWorld->addRigidBody(rigidBody, collitionType, mask);
 	int pos = this->m_rigidBodies.size() - 1;
 	src->PC_IndexRigidBody = pos;
 
 
-	int i = 0;
+}
+
+void BulletInterpreter::ClearBullet()
+{
+	size_t size = this->m_rigidBodies.size();
+	for (size_t i = 0; i < size; i++)
+	{
+		btRigidBody* tempPtr = this->m_rigidBodies.at(i);
+		btMotionState* tempMSPtr = tempPtr->getMotionState();
+		if (tempMSPtr != nullptr)
+		{
+			delete tempMSPtr;
+		}
+		btCollisionShape* tempBPtr = tempPtr->getCollisionShape();
+		if (tempBPtr != nullptr)
+		{
+			delete tempBPtr;
+		}
+		//removes the rigidbody from the dynamic world
+		this->m_dynamicsWorld->removeRigidBody(tempPtr);
+		
+		delete tempPtr;
+		tempPtr = nullptr;
+	}
+	this->m_rigidBodies.clear();
 }
 
 btRigidBody * BulletInterpreter::GetRigidBody(int index)
@@ -695,7 +717,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 			if (obj1->getUserIndex() == index)
@@ -715,7 +737,7 @@ void BulletInterpreter::AddNormalFromCollisions(PhysicsComponent* src, int index
 					toConv.normalize();
 					DirectX::XMFLOAT3 normal;
 					DirectX::XMStoreFloat3(&normal,this->crt_Vec3XMVEc(toConv));
-					src->m_normals.push_back(normal);
+					src->PC_normals.push_back(normal);
 				}
 			}
 

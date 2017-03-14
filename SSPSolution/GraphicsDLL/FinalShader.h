@@ -11,7 +11,6 @@ private:
 	ID3D11VertexShader*   m_vertexShader;
 	ID3D11PixelShader*	  m_pixelShader;
 	ID3D11InputLayout*    m_layout;
-
 	ID3D11RenderTargetView* m_finalRTV;
 	
 	ID3D11SamplerState* m_samplerStateLinear;
@@ -26,7 +25,7 @@ public:
 	FinalShader();
 	~FinalShader();
 
-	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort);
 	
 	int SetActive();
 	int SetRenderParameters(ID3D11RenderTargetView* backBufferRTV, ID3D11ShaderResourceView** gBuffers);
@@ -35,6 +34,7 @@ public:
 
 	int Draw();
 	void ResetPSShaderResources();
+
 };
 
 #endif

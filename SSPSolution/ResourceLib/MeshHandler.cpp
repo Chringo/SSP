@@ -165,11 +165,27 @@ Resources::Status Resources::MeshHandler::UnloadMesh(const unsigned int & id)
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status Resources::MeshHandler::ClearUnusedMemory()
+{
+
+	m_emptyContainers.shrink_to_fit();
+
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		m_containers.at(i)->shrink_to_fit();
+	}
+	m_containers.shrink_to_fit();
+
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::MeshHandler::LoadPlaceHolderMesh()
 {
 
 
-	std::string path = "../ResourceLib/AssetFiles/PlaceHolder.bbf";
+	//std::string path = "../ResourceLib/AssetFiles/PlaceHolder.bbf";
+	std::string path = "../Assets/PlaceHolder.bbf";
+
 	char* data = nullptr;
 	size_t dataSize = 0;
 	Status st = FileLoader::GetInstance()->LoadPlaceHolderMesh(path, data, &dataSize);

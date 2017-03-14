@@ -17,6 +17,12 @@ LevelHandler * LevelHandler::GetInstance()
 	return &instance;
 }
 
+void LevelHandler::SetGraphicsHandler(GraphicsHandler * gh)
+{
+	m_graphicsHandler = gh;
+	LightController::GetInstance()->SetGraphicsHandler(gh);
+}
+
 LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 {
 	std::string path = GetFilePathAndName(Operation::SAVE);
@@ -117,7 +123,24 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 		delete[] pointData;
 	}
 
+	if (sceneLights.numShadowCasters > 0)
+	{
+		size_t shadowListSize = sizeof(int) * sceneLights.numShadowCasters;
 
+		std::vector<int> sortVec = *LightController::GetInstance()->GetShadowCasterIndexList();
+		std::sort(sortVec.begin(), sortVec.end());
+
+		file.write((char*)sortVec.data(), shadowListSize);
+
+		int padding = -1;
+		for (int i = 0; i < (20 - sceneLights.numShadowCasters); i++)
+		{
+			file.write((char*)&padding, sizeof(int));
+		}
+
+
+
+	}
 
 	file.close();
 	//Cleanup
@@ -132,7 +155,7 @@ LevelData::LevelStatus LevelHandler::ExportLevelFile(QString & filepath)
 
 LevelData::LevelStatus LevelHandler::ImportLevelFile()
 {
-	
+
 	//Let the user pick a path and file name.
 	std::string path = GetFilePathAndName(Operation::LOAD);
 	if (path == "")
@@ -140,9 +163,9 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		return LevelData::LevelStatus::L_FILE_SAVE_CANCELLED;
 	}
 	NewLevel();		//Empty the current level object
-																		 
-	std::fstream file;													
-	file.open(path, std::fstream::in | std::fstream::binary);			
+
+	std::fstream file;
+	file.open(path, std::fstream::in | std::fstream::binary);
 
 
 	LevelData::MainLevelHeader header;
@@ -151,7 +174,7 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	//Resource data
 	size_t resSize = sizeof(LevelData::ResourceHeader)* header.resAmount;		  //size of resource data
 	file.seekg(resSize, std::ios_base::cur);									  //Skip the resource data (only used by the game engine)
-	
+
 	//Spawn Points
 	LevelData::SpawnHeader spawns[2];
 	file.read((char*)spawns, sizeof(LevelData::SpawnHeader) * 2);
@@ -170,10 +193,10 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 		size_t aiSize = sizeof(LevelData::AiHeader) * header.AiComponentAmount;
 		char* aiData = new char[aiSize];					    //Allocate for ai data
 		file.read(aiData, aiSize);							//read all aiComponents	
-		
+
 		//TODO: LOAD INTO LEVEL
 		LoadAiComponents((LevelData::AiHeader*)aiData, header.AiComponentAmount);
-		
+
 		delete aiData;
 	}
 	if (header.checkpointAmount > 0)
@@ -225,32 +248,49 @@ LevelData::LevelStatus LevelHandler::ImportLevelFile()
 	if (file.eof() == false) { // if we havent reached the end of file here, then we're using the new levels with lights
 
 	//Light header
-		
+
 		LevelData::SceneLightHeader lightHeader;
 		file.read((char*)&lightHeader, sizeof(LevelData::SceneLightHeader));
-	
+
 		Ambient amb;
-		amb.r =	lightHeader.ambientColor[0];
-		amb.g =	lightHeader.ambientColor[1];
-		amb.b =	lightHeader.ambientColor[2];
+		amb.r = lightHeader.ambientColor[0];
+		amb.g = lightHeader.ambientColor[1];
+		amb.b = lightHeader.ambientColor[2];
 		amb.intensity = lightHeader.ambientIntensity;
 		LightController::GetInstance()->SetLevelAmbient(amb);
 		//Point lights
 		if (lightHeader.numPointLights > 0) {
 
-		size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader.numPointLights;	  //memsize
-		char* pointData = new char[pointlightSize];
-		file.read(pointData, pointlightSize);
-		LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
-		delete pointData;
+			size_t pointlightSize = sizeof(LevelData::PointLightHeader) * lightHeader.numPointLights;	  //memsize
+			char* pointData = new char[pointlightSize];
+			file.read(pointData, pointlightSize);
+			LoadPointLightComponents((LevelData::PointLightHeader*)pointData, lightHeader.numPointLights);
+			delete pointData;
 		}
 
+		if (lightHeader.numShadowCasters > 0) {
 
+			if (LightController::GetInstance()->GetShadowCasterIndexList()->size() > 0)
+				LightController::GetInstance()->GetShadowCasterIndexList()->clear();
+
+			char*data = new char[lightHeader.numShadowCasters * sizeof(int)];
+			file.read(data, lightHeader.numShadowCasters * sizeof(int));
+
+			for (size_t i = 0; i < lightHeader.numShadowCasters; i++)
+			{
+				LightController::GetInstance()->GetShadowCasterIndexList()->push_back((int)data[i * sizeof(int)]);
+			}
+			delete data;
+		}
 	}
 	file.close();
 	delete modelData; //Cleanup
 	QFileInfo info(QString::fromStdString(path));
 	m_currentLevel.SetName(info.baseName().toStdString()); //Set the  name to the level
+	
+	
+	m_currentLevel.generateCubeMap(m_graphicsHandler, DirectX::XMVectorSet(2.0f, 0.0f, -19.0f, 0.0f));
+	
 
 	return LevelData::LevelStatus::L_OK;
 }
@@ -329,6 +369,7 @@ LevelData::SceneLightHeader LevelHandler::GetSceneLightHeader()
 	LevelData::SceneLightHeader data;
 
 	data.numPointLights = LightController::GetInstance()->GetPointLightData()->size();
+	data.numShadowCasters = LightController::GetInstance()->GetShadowCasterIndexList()->size();
 	
 	const Ambient* amb = LightController::GetInstance()->GetLevelAmbient();
 

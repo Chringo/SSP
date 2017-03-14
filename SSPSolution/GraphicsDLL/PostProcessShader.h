@@ -11,7 +11,7 @@ public:
 		WATER,
 		BLUR,
 		FXAA,
-
+		SSR,
 
 		NUM_TYPES
 	};
@@ -33,7 +33,7 @@ public:
 	PostProcessShader();
 	virtual ~PostProcessShader();
 	const bool IsEnabled(PostEffects type) const { return active[type]; };
-	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const DirectX::XMINT2& resolution);
+	int Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, D3D11_VIEWPORT * viewPort);
 	int SetActive(PostEffects type);
 	void Release();
 	ID3D11ShaderResourceView* GetActiveShaderResource() { return m_ResourceView[currRTVIndex]; };

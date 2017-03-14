@@ -38,6 +38,19 @@ Resources::MaterialHandler::~MaterialHandler()
 	}
 }
 
+Resources::Status Resources::MaterialHandler::ClearUnusedMemory()
+{
+	m_emptyContainers.shrink_to_fit();
+
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		m_containers.at(i)->shrink_to_fit();
+	}
+	m_containers.shrink_to_fit();
+	m_textureHandler->ClearUnusedMemory();
+	return Resources::Status::ST_OK;
+}
+
 Resources::Status Resources::MaterialHandler::GetMaterial(const unsigned int & id, ResourceContainer *& materialPtr)
 {
 	std::unordered_map<unsigned int, ResourceContainer>::iterator got = m_materials.find(id);
@@ -94,8 +107,9 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 			st = m_textureHandler->GetTexture(matData.textureIDs[i], temp);
 			if (st == ST_RES_MISSING) {
 				st = m_textureHandler->LoadTexture(matData.textureIDs[i], temp);
-				if (st != ST_OK)
+				if (st != ST_OK) {
 					newMaterial->SetTexture(&m_textureHandler->GetPlaceHolderTextures()[i], TextureType(i));
+				}
 				else
 					newMaterial->SetTexture((Texture*)temp->resource, TextureType(i));
 			}
@@ -148,9 +162,7 @@ Resources::Status Resources::MaterialHandler::UnloadMaterial( const unsigned int
 #endif // _DEBUG
 		}
 	default:
-#ifdef _DEBUG
-		std::cout << "No material with id : " << id << " to unload, Was it using placeholder material?" << std::endl;
-#endif // _DEBUG
+
 		return st;
 	}
 	return Status::ST_OK;

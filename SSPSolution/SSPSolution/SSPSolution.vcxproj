@@ -22,7 +22,7 @@
     <ProjectGuid>{9BFF2156-5379-46CE-9BC9-35BD895C4ECD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SSPSolution</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
     <ProjectName>SSPApplication</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -73,16 +73,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)SDL-SSP\include;$(IncludePath)</IncludePath>
+    <TargetName>Earl Graves</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)SDL-SSP\include;$(IncludePath)</IncludePath>
+    <TargetName>Earl Graves</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>Earl Graves</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>Earl Graves</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -169,6 +173,7 @@ copy /y "$(SolutionDir)\Release\*.exe" "$(ProjectDir)"</Command>
   <ItemGroup>
     <ClCompile Include="ButtonEntity.cpp" />
     <ClCompile Include="ComponentHandler.cpp" />
+    <ClCompile Include="CreditState.cpp" />
     <ClCompile Include="DebugHandler.cpp" />
     <ClCompile Include="DoorEntity.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
@@ -200,6 +205,7 @@ copy /y "$(SolutionDir)\Release\*.exe" "$(ProjectDir)"</Command>
     <ClInclude Include="ButtonEntity.h" />
     <ClInclude Include="ComponentHandler.h" />
     <ClInclude Include="ComponentStructs.h" />
+    <ClInclude Include="CreditState.h" />
     <ClInclude Include="DebugHandler.h" />
     <ClInclude Include="DoorEntity.h" />
     <ClInclude Include="DynamicEntity.h" />

@@ -29,7 +29,7 @@ namespace Resources
 	public:
 		MaterialHandler(size_t materialAmount, ID3D11Device* device = nullptr);
 		virtual ~MaterialHandler();
-
+		 Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
 		Resources::Status GetMaterial( const unsigned int& id, ResourceContainer *&materialPtr);
 		Resources::Status LoadMaterial( unsigned int& id, ResourceContainer*& materialPtr);
 		Resources::Status UnloadMaterial( const unsigned int & id);

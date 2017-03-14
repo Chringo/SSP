@@ -9,13 +9,22 @@
 
 enum Textures
 {
-	Cat = 0,
-	Gamelogo = 1,
-	Keymaps = 2,
-	MenuBG = 3,
-	Button = 4,
-	Crosshair = 5,
-	CrosshairAim = 6
+	Gamelogo = 0,
+	Background = 1,
+	Chars = 2,
+	Cog = 3,
+	TButton = 4,
+	CrosshairAim = 5,
+	Keymaps = 6,
+	CombinedFrame = 7,
+	Level0 = 8,
+	Level1 = 9,
+	Level2 = 10,
+	Level3 = 11,
+	Level4 = 12,
+	Level5 = 13,
+	LevelFrame = 14,
+	Header = 15
 };
 
 class UIHandler
@@ -46,6 +55,7 @@ public:
 	int RemoveUIComponent(UIComponent* ptr);
 	int RemoveLastUIComponent();
 	TextComponent* GetNextTextComponent();
+	int RemoveLastTextComponent();
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos);
 	void UpdateUIComponentsclicked(DirectX::XMFLOAT2 mousePos, DirectX::XMFLOAT2 windowSize);
 };

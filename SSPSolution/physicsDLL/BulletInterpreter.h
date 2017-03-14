@@ -8,6 +8,7 @@
 #else
 #define PHYSICSDLL_API __declspec(dllimport)
 #endif
+#define BIT(x) (1<<(x)) //used for collition types
 
 #include <DirectXMath.h>
 #include <vector>
@@ -15,6 +16,16 @@
 #include "bullet3-2.85.1\src\btBulletDynamicsCommon.h"
 #pragma warning(pop)
 
+enum CollitionTypes
+{
+	COL_NOTHING = 0,
+	COL_DYNAMIC = BIT(0),
+	COL_STATIC = BIT(1),
+	COL_CHAIN_LINK = BIT(2),
+	COL_PLAYER = BIT(3),
+	COL_RAGDOLL = BIT(4),
+	COL_PLATFORM = BIT(5),
+};
 enum BoundingVolumeType
 {
 	BV_AABB,
@@ -85,30 +96,11 @@ struct PhysicsComponent
 	Sphere PC_Sphere;
 	Plane PC_Plane;
 
-	std::vector<DirectX::XMFLOAT3> m_normals;
-	std::vector<CollitionNormal> m_collition_Normals;
+	std::vector<DirectX::XMFLOAT3> PC_normals;
 
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 
-	void AddCollitionNormal(DirectX::XMFLOAT3 normal)
-	{
-		size_t nrOfNormals = this->m_collition_Normals.size();
-		for (size_t i = 0; i < nrOfNormals; i++)
-		{
-			float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
-				DirectX::XMLoadFloat3(&normal), 
-				DirectX::XMLoadFloat3(&this->m_collition_Normals.at(i).CN_normal)));
-			if (dot != 1)
-			{
-				this->m_collition_Normals.push_back(CollitionNormal(normal));
-			}
-			else
-			{
-				this->m_collition_Normals.at(i).lifeTime += 5;
-			}
-		}
-	}
 };
 
 enum PhysicsLinkType
@@ -129,28 +121,6 @@ struct PhysicsLink
 	PhysicsComponent* PL_previous;
 };
 
-
-
-//struct ChainLink
-//{
-//	float CL_lenght;
-//	PhysicsComponent* CL_next;
-//	PhysicsComponent* CL_previous;
-//};
-
-//struct Field
-//{
-//	OBB F_BV;
-//
-//	DirectX::XMFLOAT3 F_pos;
-//
-//	unsigned int F_entitityID1;
-//	unsigned int F_entitityID2;
-//	bool F_first_inside;
-//	bool F_second_inside;
-//	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
-//	void operator delete(void* p) { _aligned_free(p); };
-//};
 
 #pragma endregion
 
@@ -224,10 +194,13 @@ public:
 
 	//type of rigidBodies
 	PHYSICSDLL_API void CreatePlane(DirectX::XMVECTOR normal, DirectX::XMVECTOR pos); //planes is always a solid body
-	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index);
-	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index);
+	PHYSICSDLL_API void CreateSphere(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreateOBB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreateAABB(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+	PHYSICSDLL_API void CreatePlayer(PhysicsComponent* src, int index, CollitionTypes collitionType, int mask);
+
+	PHYSICSDLL_API void ClearBullet();
+
 
 	btVector3 crt_xmvecVec3(DirectX::XMVECTOR &src);
 	DirectX::XMVECTOR crt_Vec3XMVEc(btVector3 &src); //this is posisions only, z value is 1

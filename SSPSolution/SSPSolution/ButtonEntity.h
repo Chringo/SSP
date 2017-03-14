@@ -24,15 +24,19 @@ private:
 	float m_activatedOffset  = -0.2f; 
 	float m_targetOffset	 = 0;
 	float m_lastFrameOffset;
+
+	irrklang::ISound* m_timer_sound;
+	void setActiveTimerSound(bool activate);
+
 public:
 	ButtonEntity();
 	virtual ~ButtonEntity();
 
 	int Update(float dT, InputHandler* inputHandler);
-	int React(int entityID, EVENT reactEvent);
+	int React(unsigned int entityID, EVENT reactEvent);
 
 	//Time in seconds
-	int Initialize(int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 1.5f, float resetTime = 4.0f);
+	int Initialize(unsigned int entityID, PhysicsComponent* pComp, GraphicsComponent* gComp, float interactionDistance = 1.5f, float resetTime = 4.0f);
 
 	//For now we check only if the player is close enough
 	int CheckPressed(DirectX::XMFLOAT3 playerPos);

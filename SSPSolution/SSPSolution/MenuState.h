@@ -5,6 +5,7 @@
 #include "../GraphicsDLL/GraphicsComponent.h"
 
 #define HOST_DISABLE
+#define NR_OF_LEVELS 6
 
 const float TIMEOUT_TIME = 200;
 
@@ -22,12 +23,12 @@ private:
 			m_hovered = hovered;
 			if (hovered)
 			{
-				m_uiComp->scale = 0.8f;
-				m_textComp->scale = DirectX::XMFLOAT2(0.8f, 0.8f);
+				//m_uiComp->scale = 1.0f;
+				m_textComp->scale = DirectX::XMFLOAT2(0.7f, 0.6f);
 			}
 			else
 			{
-				m_uiComp->scale = 0.6f;
+				//m_uiComp->scale = 0.9f;
 				m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.6f);
 			}
 		}
@@ -63,7 +64,6 @@ private:
 			}
 			else
 			{
-				m_uiComp->scale = 0.6f;
 				m_uiComp->active = 0;
 				m_textComp->active = 0;
 				m_focused = false;
@@ -73,12 +73,12 @@ private:
 		{
 			if (focused)
 			{
-				m_uiComp->scale = 0.8f;
+				m_textComp->scale = DirectX::XMFLOAT2(0.6f, 0.5f);
 				m_focused = true;
 			}
 			else
 			{
-				m_uiComp->scale = 0.6f;
+				m_textComp->scale = DirectX::XMFLOAT2(0.5f, 0.5f);
 				m_focused = false;
 			}
 		}
@@ -89,7 +89,10 @@ private:
 				m_textComp->text.clear();
 				this->firstChar = false;
 			}
-			m_textComp->text.append(character);
+			if(m_textComp->text.size() < 15)
+			{ 
+				m_textComp->text.append(character);
+			}
 		}
 		void RemoveChar()
 		{
@@ -104,17 +107,28 @@ private:
 		}
 	};
 
-	unsigned int m_menuState; //0: Main menu, 1: Options Menu, 2: Start Menu
+	unsigned int m_menuState; //0: Main Menu, 1: Options Menu, 2: Start Menu, 3: Level Select
 	unsigned int m_markedItem;
 	UIComponent* m_menuBG;
+	UIComponent* m_menuFrame;
+	UIComponent* m_levelFrame;
+	UIComponent* m_charsLevel;
+	UIComponent* m_controls;
+	std::vector<UIComponent*> m_menuCogs;
 	std::vector<MenuButton> m_mainMenuButtons;
 	std::vector<MenuButton> m_optionsMenuButtons;
 	bool inFullscreen;
-	UIComponent* m_keymaps;
+	//UIComponent* m_keymaps;
 	std::vector<MenuButton> m_startMenuButtons;
 	TextBox m_ipTextBox;
+	std::vector<MenuButton> m_hostMenuButtons;
+	int m_levelToHost;
 	Camera* m_cameraRef;
 	DirectX::XMVECTOR m_lockTarget;
+
+	//music variables
+	irrklang::ISound* m_Menu_Music;
+	irrklang::ISound* m_Level_Music;
 	
 	//Network related functions and variables
 	bool isHosting;
@@ -124,6 +138,7 @@ private:
 
 	void Hosting(float dt, InputHandler* inputHandler);
 	void Joining(InputHandler* inputHandler);
+	void setMusic(Sounds2D which);
 
 public:
 	MenuState();

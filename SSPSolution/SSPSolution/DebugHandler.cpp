@@ -16,6 +16,7 @@ DebugHandler::DebugHandler()
 	}
 	this->m_minFPS = 999999;
 	this->m_maxFPS = 0;
+	this->m_currProcess = GetCurrentProcess();
 }
 
 void DebugHandler::ClearConsole()
@@ -358,14 +359,6 @@ int DebugHandler::DisplayOnScreen(float dTime)
 			+ L" (" +  std::to_wstring(iter->GetAvgPercentage()) + L") %";
 	}
 
-	int nrOfCustomLabels = this->m_values.size();
-	for (int j = 0; j < nrOfCustomLabels; j++)
-	{
-		this->m_values.at(j).textComp->text = this->m_values.at(j).label + L": "
-			+ std::to_wstring(this->m_values.at(j).value);
-	}
-
-
 	int sum = 0, avgFPS;
 	this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= this->m_FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
 	this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
@@ -376,16 +369,23 @@ int DebugHandler::DisplayOnScreen(float dTime)
 	avgFPS = sum / this->m_FRAMES_FOR_AVG;
 	this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
 	this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		
+
 	this->m_fpsTextComp->text = L"FPS: " + std::to_wstring(avgFPS) + L" ["
 		+ std::to_wstring(this->m_minFPS) + L"] (" + std::to_wstring(this->m_frameTimes[this->m_currFrameTimesPtr])
 		+ L") [" + std::to_wstring(this->m_maxFPS) + L"]";
 
 	this->m_currFrameTimesPtr++;
 
+	int nrOfCustomLabels = this->m_values.size();
+	for (int j = 0; j < nrOfCustomLabels; j++)
+	{
+		this->m_values.at(j).textComp->text = this->m_values.at(j).label + L": "
+			+ std::to_wstring(this->m_values.at(j).value);
+	}
+
 	//physical ram used
 	PROCESS_MEMORY_COUNTERS pmc;
-	GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+	GetProcessMemoryInfo(this->m_currProcess, &pmc, sizeof(pmc));
 	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
 	SIZE_T peakPhysMemUsedByMe = pmc.PeakWorkingSetSize;
 	this->m_physRamTextComp->text = L"RAM usage(current/peak): " + std::to_wstring(physMemUsedByMe / 1024 / 1024)

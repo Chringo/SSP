@@ -6,7 +6,7 @@ Resources::FileLoader::FileLoader()
 	this->mem_manager.Alloc(Resources::Memory::MEM_LEVEL, LEVEL_MEMORY);
 	this->mem_manager.Alloc(Resources::Memory::MEM_RES, RESOURCE_MEMORY);
 	
-	filePaths[BPF_FILE] = std::string("../ResourceLib/AssetFiles/AssetFile.bpf");
+	filePaths[BPF_FILE] = std::string("../Assets/AssetFile.bpf");
 
 	fileHandles[BPF_FILE].rdbuf()->pubsetbuf(0, 0);	 //Disable streaming buffers
 
@@ -178,6 +178,7 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 {
 	
 	static LevelData::Level level;
+	level.Reset();
 	std::fstream file;
 	file.open(path, std::fstream::in | std::fstream::binary | std::ios::ate); //Open, at end of file, to get the total size
 	if (!file.is_open())
@@ -289,6 +290,15 @@ Resources::Status Resources::FileLoader::LoadLevel(std::string & path, LevelData
 		file.read(data + offset, pointlightSize);
 		level.pointLights = (LevelData::PointLightHeader*) (data + offset);
 		offset += pointlightSize;
+
+		if (lightHeader->numShadowCasters > 0)
+		{
+			size_t shadowCastSize = sizeof(int) * MAX_SHADOW_CASTERS;
+			file.read(data + offset, shadowCastSize);
+			memcpy(level.shadowCastIndexes, (data + offset), shadowCastSize);
+			//level.shadowCastIndexes = (int*)(data + offset);
+			offset += shadowCastSize;
+		}
 	}
 	else
 	{

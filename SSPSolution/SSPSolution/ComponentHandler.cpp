@@ -179,6 +179,12 @@ int ComponentHandler::ClearAminationComponents()
 	return 0;
 }
 
+int ComponentHandler::ClearAIComponents()
+{
+	this->m_aiHandler->ClearAIComponents();
+	return 0;
+}
+
 int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
 {
 	return this->m_graphicsHandler->RemoveUIComponentFromPtr(ptr);
@@ -187,6 +193,11 @@ int ComponentHandler::RemoveUIComponentFromPtr(UIComponent * ptr)
 int ComponentHandler::RemoveLastUIComponent()
 {
 	return this->m_graphicsHandler->RemoveLastUIComponent();
+}
+
+int ComponentHandler::RemoveLastTextComponent()
+{
+	return this->m_graphicsHandler->RemoveLastTextComponent();
 }
 
 void ComponentHandler::WaypointTime()

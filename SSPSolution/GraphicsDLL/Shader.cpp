@@ -10,7 +10,7 @@ Shader::~Shader()
 {
 }
 
-int Shader::Initialize(ID3D11Device* device,ID3D11DeviceContext * deviceContext, const DirectX::XMINT2& resolution)
+int Shader::Initialize(ID3D11Device* device,ID3D11DeviceContext * deviceContext, D3D11_VIEWPORT * viewPort)
 {
 	return 0;
 }

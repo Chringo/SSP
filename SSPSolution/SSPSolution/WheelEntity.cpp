@@ -10,9 +10,14 @@ WheelEntity::WheelEntity()
 
 WheelEntity::~WheelEntity()
 {
+	if (this->m_wheel_sound != nullptr)
+	{
+		this->m_wheel_sound->stop();
+		this->m_wheel_sound->drop();
+	}
 }
 
-int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
+int WheelEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float minRotation, float maxRotation, float rotateTime, bool resets, float resetTime, float timeUntilReset)
 {
 	int result = this->InitializeBase(entityID, pComp, gComp, nullptr);
 	//Load default values
@@ -31,6 +36,7 @@ int WheelEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComp
 	this->m_resetTime = resetTime;
 	this->m_resetRotatePerSec = (this->m_maxRotation - this->m_minRotation) / this->m_resetTime;
 	this->m_timeUntilReset = this->m_resetCountdown = timeUntilReset;
+	this->m_wheel_sound = nullptr;
 
 	this->SyncComponents();
 	return result;
@@ -52,6 +58,16 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				this->m_rotationState = Resetting;
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_RESET);
 				this->m_needSync = true;
+
+				//pause the wheel sound
+				
+			}
+		}
+		if (this->m_wheel_sound != nullptr)
+		{
+			if (!this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setIsPaused(true);
 			}
 		}
 		break;
@@ -63,6 +79,20 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 			//Rotation in percentage = rotationAMount / maxRotation
 			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) + (this->m_rotatePerSec * dT));
+
+			//initialize the sound or if it's already initialized, loop it.
+			if (this->m_wheel_sound == nullptr)
+			{
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				this->m_wheel_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_WHEEL, pos, true, true);
+			}
+			else if (this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(false);
+			}
+
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) > this->m_maxRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_maxRotation);
@@ -100,6 +130,8 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 				}
 			}
+
+			this->m_UpdateOBB(true, dT);
 
 			this->SyncComponents();
 		}
@@ -150,6 +182,9 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 					this->m_subject.Notify(this->m_entityID, EVENT(EVENT::WHEEL_0 + percentIncNew));
 				}
 			}
+
+			this->m_UpdateOBB(false, dT);
+
 			this->SyncComponents();
 		}
 		break;
@@ -160,6 +195,20 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 		{
 			float rotationAmount = DirectX::XMVectorGetY(this->m_pComp->PC_rotation) / (this->m_maxRotation - this->m_minRotation);
 			this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) - (this->m_resetRotatePerSec * dT));
+
+			//initialize the sound or if it's already initialized, loop it.
+			if (this->m_wheel_sound == nullptr)
+			{
+				DirectX::XMFLOAT3 pos;
+				DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+				this->m_wheel_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_WHEEL, pos, true, true);
+			}
+			else if (this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(false);
+			}
+
 			if (DirectX::XMVectorGetY(this->m_pComp->PC_rotation) < this->m_minRotation)
 			{
 				this->m_pComp->PC_rotation = DirectX::XMVectorSetY(this->m_pComp->PC_rotation, this->m_minRotation);
@@ -201,10 +250,20 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 				}
 
 			}
+			this->m_UpdateOBB(false, dT);
+
 			this->SyncComponents();
 		}
 		break;
 	case MaxRotation:
+		if (this->m_wheel_sound != nullptr)
+		{
+			if (!this->m_wheel_sound->getIsPaused())
+			{
+				this->m_wheel_sound->setPlayPosition(0);
+				this->m_wheel_sound->setIsPaused(true);
+			}
+		}
 		this->m_rotationState = Resting;
 		break;
 	default:
@@ -215,7 +274,7 @@ int WheelEntity::Update(float dT, InputHandler * inputHandler)
 	return 0;
 }
 
-int WheelEntity::React(int entityID, EVENT reactEvent)
+int WheelEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	return 0;
 }
@@ -235,7 +294,8 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 	{
 		if (abs(DirectX::XMVectorGetX(this->m_pComp->PC_pos) - playerPos.x) < this->m_range
 			&& abs(DirectX::XMVectorGetY(this->m_pComp->PC_pos) - playerPos.y) < this->m_range
-			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range)
+			&& abs(DirectX::XMVectorGetZ(this->m_pComp->PC_pos) - playerPos.z) < this->m_range
+			)
 		{
 			this->m_needSync = true;
 			//if increasing == 1 then you want to increase, if -1 you want to decrease
@@ -250,8 +310,9 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					//If we were not already increasing 
-					//if(this->m_rotationState != 1)
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+					if(this->m_rotationState != 1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
+
 					this->m_rotationState = RotatingIncrease;
 					this->m_resetCountdown = this->m_timeUntilReset;
 				}
@@ -266,8 +327,9 @@ int WheelEntity::CheckPlayerInteraction(DirectX::XMFLOAT3 playerPos, int increas
 				else
 				{
 					//If we were not already dencreasing 
-					//if (this->m_rotationState != -1)
-					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+					if (this->m_rotationState != -1)
+						this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+
 					this->m_rotationState = RotatingDecrease;
 					this->m_resetCountdown = this->m_timeUntilReset;
 				}
@@ -382,7 +444,7 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			}
 			else
 			{
-				//If we were not already increasing 
+				//If we were not already increasing
 				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_INCREASING);
 				this->m_rotationState = RotatingIncrease;
 				this->m_resetCountdown = this->m_timeUntilReset;
@@ -398,14 +460,17 @@ void WheelEntity::SetSyncState(WheelSyncState * newSyncState)
 			else
 			{
 				//If we were not already dencreasing
-				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
+				if (this->m_rotationState != -1)
+					this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_DECREASING);
 				this->m_rotationState = RotatingDecrease;
 				this->m_resetCountdown = this->m_timeUntilReset;
 			}
 		}
 		else if (newSyncState->rotationState == 2)
 		{
-			this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
+			if (this->m_rotationState != 2)
+				this->m_subject.Notify(this->m_entityID, EVENT::WHEEL_MAX);
+
 			this->m_rotationState = MaxRotation;
 			this->m_resetCountdown = this->m_timeUntilReset;
 		}
@@ -438,4 +503,28 @@ WheelSyncState * WheelEntity::GetUnconditionalState()
 	result = new WheelSyncState{ this->m_entityID, this->m_rotationState, DirectX::XMVectorGetY(this->m_pComp->PC_rotation) };
 
 	return result;
+}
+
+void WheelEntity::m_UpdateOBB(bool inc, float dT)
+{
+	DirectX::XMMATRIX Ortho = this->m_pComp->PC_OBB.ort;
+	DirectX::XMVECTOR rotVec = Ortho.r[0];
+
+	//get the rotation from the physics component
+	float rotate = dT;
+	//if the wheel is spinning to orginal state, decreasing
+	if (inc)
+	{
+		rotate *= this->m_rotatePerSec;
+	}
+	else
+	{
+		rotate *= -this->m_resetRotatePerSec;
+	}
+
+	//angle rotation vector
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationAxis(rotVec, rotate);
+
+	//update the new orthographic matrix
+	this->m_pComp->PC_OBB.ort *= rotationMatrix;
 }

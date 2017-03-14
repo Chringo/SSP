@@ -8,6 +8,8 @@
 #include "GraphicsComponent.h"
 #include "../ResourceLib/ResourceHandler.h"
 
+#define JOINT_COUNT 21
+
 #ifdef GRAPHICSDLL_EXPORTS
 #define GRAPHICSDLL_API __declspec(dllexport)
 #else
@@ -20,6 +22,7 @@ struct AnimationComponent
 	int active = 0;
 
 	/*Used to check if a state is either new or old.*/
+	int currentState = 0;
 	int previousState = 0;
 
 	/*Used to play one or two animations, for blending.*/
@@ -34,10 +37,10 @@ struct AnimationComponent
 	float playingSpeed = 1.f;
 	float velocity = 1.f;
 
+	Blending blendFlag = Blending::NO_TRANSITION;
+
 	bool m_TransitionComplete = false;
 	bool syncWalkSound = false;
-
-	Blending blendFlag = NO_TRANSITION; // Determines if blending should occur or not.
 
 	bool lockAnimation = false;
 
@@ -45,21 +48,39 @@ struct AnimationComponent
 	std::vector<Resources::Animation*>* animation_States = nullptr;
 };
 
+enum BlendingIndex
+{
+	SOURCE_ANIMATION = 0,
+	TARGET_ANIMATION = 1
+};
+
 struct BlendKeyframe
 {
-	DirectX::XMFLOAT3 trans;
-	DirectX::XMFLOAT3 scale;
-	DirectX::XMFLOAT4 quat;
+	DirectX::XMVECTOR trans;
+	DirectX::XMVECTOR scale;
+	DirectX::XMVECTOR quat;
+};
+
+struct VectorData
+{
+	std::vector<DirectX::XMMATRIX> localTransforms;
+	std::vector<DirectX::XMMATRIX> localScales;
+	std::vector<DirectX::XMMATRIX> relationTransform;
+	std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation;
 };
 
 class AnimationHandler
 {
 private:
+
 	//Variables used only in class.
+	std::vector<VectorData> m_transformData;
+
 	int m_nrOfAnimComps;
 	int m_maxAnimComps;
-
 	int m_AnimCompIndex;
+
+	bool m_extractOnce;
 
 	/*List with animations components*/
 	std::vector<AnimationComponent*> m_AnimComponentList;
@@ -84,15 +105,13 @@ public:
 private:
 	//Functions only used in class.
 	void SetAnimCompIndex(int animCompIndex);
-	void CalculateFinalTransform(std::vector<DirectX::XMFLOAT4X4> localMatrices, std::vector<DirectX::XMFLOAT4X4> localScales);
+	void CalculateFinalTransform();
 	void InterpolateKeys(Resources::Animation::AnimationState* animState, float globalTimeElapsed);
 	void Blend(float secondsElapsed);
-	void BlendKeys(std::vector<std::vector<BlendKeyframe>> blendKeysPerAnimation, float transitionTime);
-	void ExtractSourceKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float sourceTime, float globalTime);
-	void ExtractTargetKeys(std::vector<std::vector<BlendKeyframe>>& blendKeysPerAnimation, float targetTime, float globalTime);
-	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, float playingSpeed);
-	void CheckPlayerFootPosSynch(int player, int runningState, int foot, int keyframeIndex);
+	void BlendKeys(float transitionTime);
+	void ExtractSourceKeys(float sourceTime, float globalTime);
+	void ExtractTargetKeys(float targetTime, float globalTime);
+	void SetAnimationComponent(int animationState, float transitionDuration, Blending blendingType, bool isLooping, bool lockAnimation, float playingSpeed, float velocity);
 };
 
 #endif
-

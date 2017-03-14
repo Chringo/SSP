@@ -29,6 +29,30 @@ Resources::ModelHandler::ModelHandler(size_t modelAmount, ID3D11Device* device )
 	
 }
 
+Resources::Status Resources::ModelHandler::ClearUnusedMemory()
+{
+	m_emptyContainers.shrink_to_fit();
+
+	for (size_t i = 0; i < m_containers.size(); i++)
+	{
+		m_containers.at(i)->shrink_to_fit();
+	}
+	m_containers.shrink_to_fit();
+
+	Resources::Status st = Resources::Status::ST_OK;
+		st = m_meshHandler	  ->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+		st = m_materialHandler->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+		st = m_skeletonHandler->ClearUnusedMemory();
+		if (st != ST_OK)
+			return Status::ST_BUFFER_ERROR;
+
+	return st;
+}
+
 Resources::ModelHandler::ModelHandler()
 {
 
@@ -101,6 +125,10 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			 Status mSt= m_meshHandler->LoadMesh(meshID,meshPtr); //load the mesh
 			 if (mSt != ST_OK){
 				newModel->SetMesh( m_meshHandler->GetPlaceHolderMesh());
+#ifdef _DEBUG
+				std::cout << "Could not load mesh, Using placeholder for model ID : " << id << std::endl;
+#endif // _DEBUG
+
 			 }
 			 else
 				newModel->SetMesh((Mesh*)meshPtr->resource);
@@ -128,8 +156,13 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 		case Status::ST_RES_MISSING:
 		{
 			Status mSt = m_materialHandler->LoadMaterial(matID, matPtr);
-			if (mSt != ST_OK)
+			if (mSt != ST_OK) {
+
 				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
+#ifdef _DEBUG
+				std::cout << "Could not load Material, Using placeholder for model ID : " << id << std::endl;
+#endif // _DEBUG
+			}
 			else
 				newModel->SetMaterial((Material*)matPtr->resource);
 			break;
@@ -144,7 +177,6 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			return st;
 		}
 
-		//newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
 #pragma endregion
 
 		
@@ -196,8 +228,14 @@ Resources::Status Resources::ModelHandler::UnloadModel(unsigned int & id)
 				Skeleton* skel = mod->GetSkeleton();
 				if(mesh != nullptr)
 					m_meshHandler->UnloadMesh(mesh->GetId());
-				if(mat  != nullptr)
-					m_materialHandler->UnloadMaterial(mat->GetId());
+				if (mat != nullptr) {
+					Status matStat = m_materialHandler->UnloadMaterial(mat->GetId());
+					if (matStat != ST_OK) {
+#ifdef _DEBUG
+						std::cout << "No material with id : " << mat->GetId() << " to unload, Was it using placeholder material? \n" << "Model ID: " << id << std::endl;
+#endif // _DEBUG
+					}
+				}
 				if(skel != nullptr)
 					m_skeletonHandler->UnloadSkeleton(skel->GetId());
 				mod->Destroy();
@@ -237,17 +275,19 @@ void Resources::ModelHandler::SetDevice(ID3D11Device * device)
  ResourceContainer* temp;
  //unsigned int one = 1117267500; // player one
  unsigned int one = 885141774;
-// unsigned int two = 885141774; //player two
+ //unsigned int two = 885141774; //player two
  unsigned int two = 1117267500;
  unsigned int three = 1680427216; // chain
  unsigned int four = 1321651915; // ball
  unsigned int five = 2539810394; // ping
+ unsigned int six = 1256673809; // ball2
  FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
  LoadModel(one, temp);
  LoadModel(two, temp);
  LoadModel(three, temp);
  LoadModel(four, temp);
  LoadModel(five, temp);
+ LoadModel(six, temp);
  FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
 }
 

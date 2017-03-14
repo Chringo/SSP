@@ -96,6 +96,18 @@ void SelectionHandler::SetSelectedContainer(Container *& selection)
 void SelectionHandler::SetActiveAxis(int axis)
 {
 	this->m_transformWidget.SelectAxis(axis);
+	if (axis == TransformWidget::NONE)
+	{
+		if (this->GetSelected() != nullptr) {
+			if (GetSelected()->type == ContainerType::LIGHT) {
+				if (LightController::GetInstance()->GetIsShadowCaster(this->GetSelected()->internalID))
+					
+					m_currentLevel->generateCubeMap(nullptr, DirectX::XMVectorSet(2.0f, 0.0f, -19.f, 0.f));
+			}
+
+		}
+		
+	}
 }
 
 
@@ -257,14 +269,14 @@ bool SelectionHandler::PickObjectSelection()
 		{
 			minHitDistance = hitDistance;
 			//update widget with the intersected obb
-			this->m_transformWidget.Select(light->pickSphere, light); //OVERLOAD AND HANLDE THIS
+			this->m_transformWidget.Select(light->pickSphere, light);
 			Container* cont = (Container*)light;
 			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(cont);
 
 			gotHit = result;
 		}
 	}
-
+	
 	//check the checkpoints
 	for each (CheckpointContainer* container in *m_checkpointPtr)
 	{

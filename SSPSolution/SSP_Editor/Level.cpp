@@ -165,11 +165,13 @@ Resources::Status Level::AddModelEntityFromLevelFile(unsigned int modelID, unsig
 	if (got == m_ModelMap.end()) { // if does not exists in memory
 		this->m_ModelMap[modelID].push_back(newComponent);
 		this->m_uniqueModels.push_back(modelID);
+		this->UpdateModel(modelID, instanceID, position, rotation);
 		return Resources::Status::ST_OK;
 	}
 	else {
 		modelPtr = &got->second;
 		modelPtr->push_back(newComponent);
+		this->UpdateModel(modelID, instanceID, position, rotation);
 		return Resources::Status::ST_OK;
 	}
 }
@@ -372,6 +374,7 @@ Resources::Status Level::RemoveModel(unsigned int modelID, unsigned int instance
 			if (LightController::GetInstance()->GetLights()->at(i)->internalID == instanceID)
 			{
 				LightController::GetInstance()->RemoveLight(i, LIGHTING::LT_POINT);
+				return Resources::Status::ST_OK;
 			}
 		}
 
@@ -470,6 +473,39 @@ Resources::Status Level::DuplicateEntity( Container *& source, Container*& desti
 		//SelectionHandler::GetInstance()->SetSelectedContainer()
 		return Resources::Status::ST_OK;
 	}
+}
+
+void Level::generateCubeMap(GraphicsHandler * gh, DirectX::XMVECTOR campos)
+{
+	if (this->m_graphicsHandler == nullptr)
+	{
+		if (gh == nullptr)
+			return;
+		else
+			this->m_graphicsHandler = gh;
+	}
+	std::vector<GraphicsComponent*> comps;
+	comps.reserve(2000);
+	
+	for (auto iterator = m_ModelMap.begin(); iterator != m_ModelMap.end(); ++iterator)
+	{
+		std::vector<Container> * vector = &iterator->second;
+		
+		for (int i = 0; i < vector->size(); i++)
+		{
+			comps.push_back(&vector->at(i).component);
+		}
+	}
+
+
+	for (int i = 0; i < NUM_PUZZLE_ELEMENTS; i++)
+		for (Container* cont : m_puzzleElements[i])
+			comps.push_back(&cont->component);
+
+	LIGHTING::LightHandler::GetInstance()->SetShadowLightIndexList(LightController::GetInstance()->GetShadowCasterIndexList());
+	m_graphicsHandler->EditorGenerateStaticSceneShadows(comps);
+	m_graphicsHandler->EditorGenerateSceneCubeMap(DirectX::XMVectorSet(2.0f, 0.0f, -19.f, 0.f), comps);
+
 }
 
 bool Level::isEmpty()

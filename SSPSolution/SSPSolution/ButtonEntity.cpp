@@ -2,6 +2,37 @@
 
 
 
+void ButtonEntity::setActiveTimerSound(bool activate)
+{
+	if (activate)
+	{
+		if (this->m_timer_sound == nullptr)
+		{
+			DirectX::XMFLOAT3 pos;
+			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, false, true);
+		}
+		else
+		{
+			if (this->m_timer_sound->getIsPaused())
+			{
+				this->m_timer_sound->setIsPaused(false);
+			}
+		}
+	}
+	else
+	{
+		if (this->m_timer_sound != nullptr)
+		{
+			if (!this->m_timer_sound->getIsPaused())
+			{
+				this->m_timer_sound->setIsPaused(true);
+				this->m_timer_sound->setPlayPosition(0);
+			}
+		}
+	}
+}
+
 ButtonEntity::ButtonEntity()
 {
 }
@@ -9,6 +40,11 @@ ButtonEntity::ButtonEntity()
 
 ButtonEntity::~ButtonEntity()
 {
+	if (this->m_timer_sound != nullptr)
+	{
+		this->m_timer_sound->stop();
+		this->m_timer_sound->drop();
+	}
 }
 
 int ButtonEntity::Update(float dT, InputHandler * inputHandler)
@@ -18,6 +54,27 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	if (this->m_isActive && this->m_resetTime > 0.0f)
 	{
 		this->m_elapsedResetTime -= dT;
+
+		//if (this->m_timer_sound == nullptr)
+		//{
+		//	DirectX::XMFLOAT3 pos;
+		//	DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+		//	this->m_timer_sound = SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_TIMER, pos, true, true);
+		//}
+		//else if (this->m_timer_sound->getIsPaused())
+		//{
+		//	this->m_timer_sound->setPlayPosition(0);
+		//	this->m_timer_sound->setIsPaused(false);
+		//}
+		this->setActiveTimerSound(true);
+		if (this->m_timer_sound != nullptr)
+		{
+			if (this->m_resetTime < 10.0f && this->m_timer_sound->getPlaybackSpeed() != 2.0f)
+			{
+				this->m_timer_sound->setPlaybackSpeed(2.0f);
+			}
+		}
+
 		if (this->m_elapsedResetTime <= 0.0f)
 		{
 			//Reset the button
@@ -27,10 +84,11 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 			m_targetOffset = 0;
 			m_animationActive = true;
 			//Play sound
-			DirectX::XMFLOAT3 pos;
-			DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
-			SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
-
+			//DirectX::XMFLOAT3 pos;
+			//DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
+			//SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+			this->setActiveTimerSound(false);
+			this->m_timer_sound->setPlaybackSpeed(1.0f);
 			this->m_needSync = true;
 		}
 	}
@@ -87,7 +145,7 @@ int ButtonEntity::Update(float dT, InputHandler * inputHandler)
 	return result;
 }
 
-int ButtonEntity::React(int entityID, EVENT reactEvent)
+int ButtonEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	int result = 0;
 	//If a button receives a LEVER::ACTIVATED or BUTTON::ACTIVATE event, deactivate this lever
@@ -105,7 +163,7 @@ int ButtonEntity::React(int entityID, EVENT reactEvent)
 }
 
 
-int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
+int ButtonEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, float interactionDistance, float resetTime)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr);
@@ -115,6 +173,7 @@ int ButtonEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsCom
 	this->m_resetTime = resetTime;
 	this->m_elapsedResetTime = 0.0f;
 	this->m_lastFrameOffset = 0;
+	this->m_timer_sound = nullptr;
 	this->SyncComponents();
 	return result;
 }
@@ -141,6 +200,15 @@ int ButtonEntity::CheckPressed(DirectX::XMFLOAT3 playerPos)
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMStoreFloat3(&pos, this->GetPhysicsComponent()->PC_pos);
 		SoundHandler::instance().PlaySound3D(Sounds3D::GENERAL_BUTTON_CLICKED, pos, false, false);
+		if (!this->m_isActive)
+		{
+			this->setActiveTimerSound(false);
+			this->m_timer_sound->setPlaybackSpeed(1.f);
+		}
+		else
+		{
+			this->setActiveTimerSound(true);
+		}
 		
 		this->m_needSync = true;
 	}

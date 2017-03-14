@@ -15,7 +15,7 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	GraphicsHandler*	GraphicsHptr = nullptr;
 	EditorInputHandler*	EditorInputHptr = nullptr;
 	bool isPreview = false;
-
+	
 	//get the desired values from EditorCommunicator
 	GraphicsHptr    = this->m_Communicator->GetGraphicsHandler();
 	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
@@ -187,7 +187,8 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 		if (light->isDirty)
 		{
 			light->Update();
-			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer(LIGHTING::LT_POINT);
+			LIGHTING::LightHandler::GetInstance()->UpdateStructuredBuffer();
+		
 			if (SelectionHandler::GetInstance()->HasSelection())
 				SelectionHandler::GetInstance()->Update();
 		}

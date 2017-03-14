@@ -18,7 +18,7 @@ bool Progression::WriteToFile(std::string filename)
 {
 	std::wofstream saveFile;
 
-	saveFile.open("..\\Debug\\Saves\\" + filename + ".txt");
+	saveFile.open("../Assets/Saves/" + filename + ".txt");
 
 	if (!saveFile.is_open()) 
 	{
@@ -38,7 +38,7 @@ bool Progression::WriteToFile(std::string filename)
 bool Progression::ReadFromFile(std::string filename)
 {
 	std::wifstream loadFile;
-	std::string path = "..\\Debug\\Saves\\" + filename + ".txt";
+	std::string path = "../Assets/Saves/" + filename + ".txt";
 	loadFile.open(path);
 
 	if (!loadFile.is_open()) 

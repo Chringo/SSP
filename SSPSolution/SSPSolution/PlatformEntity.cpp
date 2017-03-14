@@ -4,7 +4,7 @@ PlatformEntity::~PlatformEntity()
 {
 	this->Shutdown();
 }
-int PlatformEntity::Initialize(int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
+int PlatformEntity::Initialize(unsigned int entityID, PhysicsComponent * pComp, GraphicsComponent * gComp, AIComponent * aiComp)
 {
 	int result = 0;
 	this->InitializeBase(entityID, pComp, gComp, nullptr, aiComp);
@@ -14,7 +14,10 @@ int PlatformEntity::Shutdown()
 {
 	int result = 0;
 	if (this->m_ActiveSound != nullptr)
+	{
+		this->m_ActiveSound->stop();
 		this->m_ActiveSound->drop();
+	}
 	return result;
 }
 
@@ -72,7 +75,7 @@ int PlatformEntity::Update(float deltaTime, InputHandler * inputHandler)
 	return result;
 }
 
-int PlatformEntity::React(int entityID, EVENT reactEvent)
+int PlatformEntity::React(unsigned int entityID, EVENT reactEvent)
 {
 	switch (reactEvent)
 	{
@@ -103,7 +106,6 @@ int PlatformEntity::React(int entityID, EVENT reactEvent)
 	case WHEEL_INCREASING:
 		//printf("INCREASING\n");
 		this->GetAIComponent()->AC_triggered = true;
-		this->GetAIComponent()->AC_increasing = true;
 		this->GetAIComponent()->AC_reset = false;
 		break;
 	case WHEEL_DECREASING:

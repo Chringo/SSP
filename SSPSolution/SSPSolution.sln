@@ -22,10 +22,20 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkDLL", "NetworkDLL\NetworkDLL.vcxproj", "{FCB8D293-A5CA-4036-85AE-5CFE3053F7CA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "physicsDLL", "physicsDLL\physicsDLL.vcxproj", "{0E7D331B-B435-4A7E-8074-09225FEC9CDB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FA1FEC57-5873-49E7-8F1F-AB3941D1F52A} = {FA1FEC57-5873-49E7-8F1F-AB3941D1F52A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AIDLL", "AIDLL\AIDLL.vcxproj", "{C07D2EAA-EBAE-4781-A16F-50B4A1822AF0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "SSP_Editor\SSP_Editor.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0E7D331B-B435-4A7E-8074-09225FEC9CDB} = {0E7D331B-B435-4A7E-8074-09225FEC9CDB}
+		{FA1FEC57-5873-49E7-8F1F-AB3941D1F52A} = {FA1FEC57-5873-49E7-8F1F-AB3941D1F52A}
+		{59269BE3-152C-4D71-BF1A-B4B0312ADBB2} = {59269BE3-152C-4D71-BF1A-B4B0312ADBB2}
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "SetupWizard\Setup\Setup.vdproj", "{2AC36F34-40B3-42D4-A7C6-93450CC4F81E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +97,10 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x86.ActiveCfg = Debug|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Debug|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.ActiveCfg = Debug|Win32
+		{2AC36F34-40B3-42D4-A7C6-93450CC4F81E}.Debug|x64.ActiveCfg = Debug
+		{2AC36F34-40B3-42D4-A7C6-93450CC4F81E}.Debug|x86.ActiveCfg = Debug
+		{2AC36F34-40B3-42D4-A7C6-93450CC4F81E}.Release|x64.ActiveCfg = Release
+		{2AC36F34-40B3-42D4-A7C6-93450CC4F81E}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,6 +9,7 @@ class StartState :
 {
 private:
 	UIComponent* m_gamelogoUIComp;
+	UIComponent* m_backgroundUIComp;
 	TextComponent* m_spaceTextComp;
 
 	ComponentHandler* m_cHandlerPtr;

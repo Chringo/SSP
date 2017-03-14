@@ -1,7 +1,7 @@
 #ifndef GRAPHICSDLL_GRAPHICSCOMPONENT_H
 #define GRAPHICSDLL_GRAPHICSCOMPONENT_H
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <DirectXMath.h>
 #include <string>
 #include "../ResourceLib/Model.h"
@@ -10,7 +10,7 @@ struct GraphicsComponent
 {
 	int active = 0;
 	unsigned int modelID = 0;
-	Resources::Model* modelPtr;
+	Resources::Model* modelPtr = nullptr;
 	DirectX::XMMATRIX worldMatrix;
 	DirectX::XMMATRIX ort;
 	DirectX::XMFLOAT3 pos;
@@ -22,6 +22,9 @@ struct GraphicsComponent
 		this->modelID     = a.modelID;
 		this->modelPtr    = a.modelPtr;
 		this->worldMatrix = a.worldMatrix;
+		this->ort		  = a.ort;
+		this->pos		  = a.pos;
+		this->extensions  = a.extensions;
 	} // user-defined copy ctor
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
@@ -44,6 +47,7 @@ struct UIComponent
 	bool wasClicked = false;
 	bool isHovered = false;
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.0f, 0.0f);
+	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::XMFLOAT2 size = DirectX::XMFLOAT2(10.0f, 10.0f);
 	float scale = 1.f;
 	float rotation = 0.f;
@@ -112,8 +116,22 @@ struct TextComponent
 	std::wstring text = L"";
 	DirectX::XMFLOAT2 position = DirectX::XMFLOAT2(0.f, 0.f);
 	DirectX::XMFLOAT2 scale = DirectX::XMFLOAT2(1.f, 1.f);
+	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.f, 0.f);
 	float rotation = 0.f;
 	float layerDepth = 0.f;
+	bool useBlackText = false;
+
+	void ResetValuesToDefault()
+	{
+		this->active = 0;
+		this->text = L"";
+		this->position = DirectX::XMFLOAT2(0.f, 0.f);
+		this->scale = DirectX::XMFLOAT2(1.f, 1.f);
+		this->origin = DirectX::XMFLOAT2(0.f, 0.f);
+		this->rotation = 0.f;
+		this->layerDepth = 0.f;
+		this->useBlackText = false;
+	}
 };
 
 #endif

@@ -24,6 +24,7 @@ public:
 	AIDLL_API int Shutdown();
 
 	AIDLL_API int Initialize(int maxOfAIComponents);
+	AIDLL_API int ClearAIComponents();
 	AIDLL_API int Update(float deltaTime);
 
 	//Retrieve next available component in the vector
@@ -42,6 +43,7 @@ private:
 	float Distance(const DirectX::XMVECTOR v1, const DirectX::XMVECTOR v2);
 	void UpdatePosition(int i);
 	bool ChangeDirection(int i);
+	bool Reset(int i);
 	
 };
 #endif

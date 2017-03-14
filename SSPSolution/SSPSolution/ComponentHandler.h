@@ -44,8 +44,10 @@ public:
 	int ResizeGraphicsDynamic(size_t newCap);
 	int ResizeGraphicsPersistent(size_t newCap);
 	int ClearAminationComponents();
+	int ClearAIComponents();
 	int RemoveUIComponentFromPtr(UIComponent* ptr);
 	int RemoveLastUIComponent();
+	int RemoveLastTextComponent();
 
 	void WaypointTime();
 

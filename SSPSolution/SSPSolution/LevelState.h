@@ -23,13 +23,26 @@
 #define BALL1_ID 1
 #define BALL2_ID 1
 #define CHAIN_ID 1
-const int GRAB_COOLDOWN = 1;	//Cooldown in seconds until player can grab something after a throw
-const int GRAB_RANGE = 3;		//The range of the grab in meters
-const int PING_DISTANCE = 100;	//Distance for the ping ray
+
+enum DEFINED_IDS
+{
+	PLAYER_1	= 1,
+	PLAYER_2,
+	BALL_1,
+	BALL_2,
+	CHAIN_1,
+	CHAIN_2,
+	NUMMBER_OF_IDS
+};
+
+const float GRAB_COOLDOWN = 1.0f;		//Cooldown in seconds until player can grab something after a throw
+const float GRAB_RANGE = 3.0f;			//The range of the grab in meters
+const float PING_DISTANCE = 100.0f;	//Distance for the ping ray
+
 
 
 // For testing
-#define DEVELOPMENTFUNCTIONS
+//#define DEVELOPMENTFUNCTIONS
 
 class LevelState :
 	public GameState
@@ -95,6 +108,31 @@ private:
 
 		};
 	};
+	struct GraphicalLink
+	{
+		GraphicsComponent* m_gComp;
+		DirectX::XMFLOAT3 m_pos;
+		DirectX::XMMATRIX m_rotMat;
+		float xRot;
+		
+		void SetPos(DirectX::XMVECTOR newPos)
+		{
+			DirectX::XMStoreFloat3(&this->m_pos, newPos);
+			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
+		
+		void SetRot(float yRot, float zRot)
+		{
+			
+			this->m_rotMat = DirectX::XMMatrixRotationRollPitchYaw(this->xRot, yRot, zRot);
+
+//			this->m_gComp->worldMatrix = DirectX::XMMatrixTranslationFromVector(newPos);
+
+			this->m_gComp->worldMatrix = DirectX::XMMatrixMultiply(this->m_rotMat, this->m_gComp->worldMatrix);
+		}
+	};
 
 	FSMEnvironment::LevelDirector m_director;
 	Player m_player1;
@@ -103,6 +141,8 @@ private:
 	DirectX::XMVECTOR m_player2_Spawn;
 	PingObject m_player1_Ping;
 	PingObject m_player2_Ping;
+
+	bool m_changeBody;
 
 	std::vector<DynamicEntity*> m_dynamicEntitys;
 	//Entities where no data needs to be moved between the components
@@ -121,6 +161,11 @@ private:
 	std::list<AnimationPacket> m_animationPacketList;	//List with all animation updates from the network
 	std::list<PingPacket> m_pingPacketList;	//List with all Ping updates from the network
 
+	std::vector<GraphicalLink> m_grapichalLinkListPlayer1;
+	std::vector<GraphicalLink> m_grapichalLinkListPlayer2;
+	std::vector<PhysicsComponent*> m_Player1ChainPhysicsComp;
+	std::vector<PhysicsComponent*> m_Player2ChainPhysicsComp;
+
 	Entity* GetClosestBall(float minDist);
 
 	int m_curLevel;
@@ -136,6 +181,7 @@ private:
 	UIComponent* m_controlsOverlay;
 
 	UIComponent* m_crosshair;
+	float delta_t;
 public:
 	LevelState();
 	virtual ~LevelState();
@@ -157,9 +203,13 @@ public:
 	int EnterState();
 	int LeaveState();
 
+	void UpdateGraphicalLinks();
+
 	void* operator new(size_t i) { return _aligned_malloc(i, 16); };
 	void operator delete(void* p) { _aligned_free(p); };
 private:
+	DirectX::XMVECTOR GetInterpolatedSplinePoint(float t, std::vector<PhysicsComponent*>*list);
+	DirectX::XMVECTOR Equal(float t, DirectX::XMVECTOR p1, DirectX::XMVECTOR p2, DirectX::XMVECTOR p3, DirectX::XMVECTOR p4);
 };
 
 #endif

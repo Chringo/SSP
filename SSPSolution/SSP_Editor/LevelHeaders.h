@@ -1,5 +1,4 @@
 #pragma once
-
 namespace LevelData {
 
 
@@ -59,7 +58,7 @@ namespace LevelData {
 	struct SceneLightHeader 
 	{
 		unsigned int numPointLights		  = 0;
-		unsigned int numAreaLights		  = 0;
+		unsigned int numShadowCasters	  = 0;
 		unsigned int numSpotLights		  = 0;
 		unsigned int numDirectionalLights = 0;
 
@@ -142,36 +141,65 @@ namespace LevelData {
 
 	struct Level {
 		SpawnHeader  spawns[2];
-		unsigned int numResources;
-		ResourceHeader* resources;
+		unsigned int numResources		= 0;
+		unsigned int numEntities		= 0;
+		unsigned int numAI				= 0;
+		unsigned int numCheckpoints		= 0;
+		unsigned int numButton			= 0;
+		unsigned int numDoor			= 0;
+		unsigned int numLever			= 0;
+		unsigned int numWheel			= 0;
+		unsigned int numPointLights		= 0;
+		float		 ambientColor[3]   = {1.0f,1.0f,1.0f};
+		float		 ambientIntensity = 0.2f; ;
+		int			 shadowCastIndexes[20];
 
-		unsigned int numEntities;
-		EntityHeader* entities;
 
-		unsigned int numAI;
-		AiHeader* aiComponents;
-		
-		unsigned int numCheckpoints;
-		CheckpointHeader* checkpoints;
+		ResourceHeader*		resources	  = nullptr;
+		EntityHeader*		entities	  = nullptr;
+		AiHeader*			aiComponents  = nullptr;
+		CheckpointHeader*	checkpoints   = nullptr;
+		ButtonHeader *		buttons		  = nullptr;
+		DoorHeader *		doors		  = nullptr;
+		LeverHeader *		levers        = nullptr;
+		WheelHeader *		wheels        = nullptr;
+		PointLightHeader*   pointLights   = nullptr;
+		Level() {
+			Reset();
+		}
 
-		unsigned int numButton;
-		ButtonHeader * buttons;
+		void Reset() {
+			for (size_t i = 0; i < 20; i++)
+			{
+				shadowCastIndexes[i] = -1;
+			}
 
-		unsigned int numDoor;
-		DoorHeader * doors;
+			 numResources		= 0;
+			 numEntities		= 0;
+			 numAI				= 0;
+			 numCheckpoints		= 0;
+			 numButton			= 0;
+			 numDoor			= 0;
+			 numLever			= 0;
+			 numWheel			= 0;
+			 numPointLights		= 0;
+			 ambientColor[0]    = 1.0f;
+			 ambientColor[1]    = 1.0f;
+			 ambientColor[2]    = 1.0f;
+			 ambientIntensity   = 0.2f;
 
-		unsigned int numLever;
-		LeverHeader * levers;
+			 resources		 = nullptr;
+			 entities		 = nullptr;
+			 aiComponents	 = nullptr;
+			 checkpoints	 = nullptr;
+			 buttons		 = nullptr;
+			 doors			 = nullptr;
+			 levers			 = nullptr;
+			 wheels			 = nullptr;
+			 pointLights	 = nullptr;
+			
 
-		unsigned int numWheel;
-		WheelHeader * wheels;
-		
-		float  ambientColor[3];
-		float  ambientIntensity;
 
-		unsigned int numPointLights;
-		PointLightHeader* pointLights;
-
-		
+		}
 	};
 }

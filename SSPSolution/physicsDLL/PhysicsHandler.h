@@ -7,13 +7,16 @@
 #define PHYSICSDLL_API __declspec(dllimport)
 #endif
 
+
 #include <DirectXMath.h>
 #include <vector>
 #include "BulletInterpreter.h"
 //#include "..\ResourceLib\Skeleton.h"
-#include "../ResourceLib/Skeleton.h"
+//#include "../ResourceLib/Skeleton.h"
+//#include "../ResourceLib/Animation.h"
 #include "../GraphicsDLL/GraphicsComponent.h"
 #include "../GraphicsDLL/AnimationHandler.h"
+
 
 enum BodyPartType
 {
@@ -43,14 +46,16 @@ enum RagdollState
 	KEYFRAMEBLEND,
 	ANIMATED_TRANSITION,
 };
-const int BLEND_TIME = 10;
+const float BLEND_TIME = 0.2f;
 struct Ragdoll
 {
 	RagdollState state = ANIMATED;
+	int link_index;
 
 	float original_ext[3];
 	int key_frame_blend_stage;
 	int time_standil_still;
+	float blendTime = 0;
 
 	PhysicsComponent* playerPC;
 	PhysicsComponent* ballPC;
@@ -63,9 +68,11 @@ struct Ragdoll
 	BodyPart leftLeg;
 
 	Resources::Skeleton::Joint *Skeleton;
+	AnimationComponent* m_aComp;
 
 	DirectX::XMMATRIX jointMatrixes[21];
 	DirectX::XMMATRIX bindPose[21];
+	DirectX::XMVECTOR * m_AnklePos;
 };
 enum LinkType
 {
@@ -120,6 +127,10 @@ private:
 
 
 
+
+
+
+
 	DirectX::XMVECTOR m_gravity;
 	int m_ragdollNotMovingCounter;
 	int m_nrOfStaticObjects;
@@ -129,6 +140,14 @@ private:
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
+
+	//Collision groups
+	int chainLinkCollides = CollitionTypes::COL_STATIC;
+	int playerBasedCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	int dynamicCollides = CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int staticCollides = CollitionTypes::COL_CHAIN_LINK | CollitionTypes::COL_PLAYER | CollitionTypes::COL_RAGDOLL;
+	int ragdollCollides = CollitionTypes::COL_DYNAMIC | CollitionTypes::COL_STATIC;
+	//int platformCollide = CollitionTypes::COL_PLAYER | CollitionTypes::COL_CHAIN_LINK;
 
 	//
 	bool OBBOBBIntersectionTest(OBB* &obb1, DirectX::XMVECTOR obb1Pos, OBB* &obb2, DirectX::XMVECTOR obb2Pos);
@@ -209,13 +228,13 @@ public:
 	PHYSICSDLL_API PhysicsComponent* CreateBodyPartPhysicsComponent(int player, const DirectX::XMVECTOR &pos, const bool &isStatic);
 
 	PHYSICSDLL_API void CreateChainLink(PhysicsComponent* playerComponent, PhysicsComponent* ballComponent, int nrOfLinks, float linkLenght);
-	PHYSICSDLL_API void CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
+	PHYSICSDLL_API int CreateLink(PhysicsComponent* previous, PhysicsComponent* next, float linkLenght, PhysicsLinkType type);
 	PHYSICSDLL_API void ResetChainLink();
 
 	PHYSICSDLL_API void ResetRagdollToTPose(DirectX::XMVECTOR pos);
 
 	PHYSICSDLL_API void CreateRagdollBody(DirectX::XMVECTOR pos, PhysicsComponent* playerPC);
-	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
+	PHYSICSDLL_API void CreateRagdollBodyWithChainAndBall(int player, Resources::Skeleton::Joint *Skeleton, AnimationComponent* aComp, DirectX::XMVECTOR pos, PhysicsComponent* playerPC, PhysicsComponent* ball);
 
 	PHYSICSDLL_API void AdjustRagdoll(Ragdoll* ragdoll, float dt);
 	PHYSICSDLL_API DirectX::XMVECTOR AdjustBodyPartDistance(PhysicsComponent* previous, PhysicsComponent* next, float lenght);
@@ -242,8 +261,13 @@ public:
 	PHYSICSDLL_API int GetNrOfBodyComponents()const;
 	PHYSICSDLL_API PhysicsComponent* GetBodyComponentAt(int index)const;
 
+	PHYSICSDLL_API int GetNrOfPhysicsLinks();
+	PHYSICSDLL_API PhysicsLink* GetPhysicsLinkAt(int index);
+
 	PHYSICSDLL_API Ragdoll* GetPlayer1Ragdoll();
 	PHYSICSDLL_API Ragdoll* GetPlayer2Ragdoll();
+
+
 
 	PHYSICSDLL_API int GetNrOfMagnets()const;
 	//PHYSICSDLL_API Magnet* GetMagnetAt(int index);
@@ -287,6 +311,9 @@ public:
 	PHYSICSDLL_API void MovePhysicsJoint(DirectX::XMVECTOR toMove , int index, int nrOfChildren);
 
 	PHYSICSDLL_API void SetIgnoreCollisions();
+
+	PHYSICSDLL_API void ClearPhysicsHandler();
+
 
 #ifdef _DEBUG
 	PHYSICSDLL_API void GetPhysicsComponentOBB(OBB*& src, int index);
