@@ -55,7 +55,7 @@ int System::Initialize(std::string path)
 		printf("SDL succeeded in initializing the window!\n");
 	}
 
-	m_window = SDL_CreateWindow("SSD Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("Earl Grave's Prison", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (m_window == NULL)
 	{
 		printf("Window creation failed! SDL_ERROR: %hS\n", SDL_GetError());
