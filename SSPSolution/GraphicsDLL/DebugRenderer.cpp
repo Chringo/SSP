@@ -85,8 +85,8 @@ DebugRenderer::~DebugRenderer()
 int DebugRenderer::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, const DirectX::XMINT2 & resolution)
 {
 	HRESULT hResult;
-	WCHAR* filePathVS = L"../GraphicsDLL/Shaders/Debug/DebugVS.hlsl";
-	WCHAR* filePathPS = L"../GraphicsDLL/Shaders/Debug/DebugPS.hlsl";
+	WCHAR* filePathVS = L"../Assets/Shaders/Debug/DebugVS.hlsl";
+	WCHAR* filePathPS = L"../Assets/Shaders/Debug/DebugPS.hlsl";
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertShaderBuffer  = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
