@@ -44,6 +44,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		NULL, &this->m_gDeviceContext);
 	if (FAILED(hResult))
 	{
+		printf("D3D11CreateDevice D3D_FEATURE_LEVEL_11_1 failed!\n");
 		featureLevel = D3D_FEATURE_LEVEL_11_0;
 		hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
 			NULL, D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
@@ -51,12 +52,14 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		_11_0_Mode_ = true;
 		if (FAILED(hResult))
 		{
+			printf("D3D11CreateDevice D3D_FEATURE_LEVEL_11_0 failed!\n");
 			return 1;
 		}
+		return 1;
 	}
 
 #endif
-	
+
 	// Create the rasterizer state \\
 
 	D3D11_RASTERIZER_DESC rasterizerDesc;
@@ -76,6 +79,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = this->m_gDevice->CreateRasterizerState(&rasterizerDesc, &this->m_rasterizerState);
 	if (FAILED(hResult))
 	{
+		printf("CreateRasterizerState failed!\n");
 		return 1;
 	}
 
@@ -86,6 +90,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = this->m_gDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
 	if (FAILED(hResult))
 	{
+		printf("IDXGIDevice1 failed!\n");
 		return 1;
 	}
 
@@ -93,6 +98,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = dxgiDevice->GetParent(__uuidof(IDXGIAdapter2), (void**)&dxgiAdapter);
 	if (FAILED(hResult))
 	{
+		printf("IDXGIAdapter2 failed!\n");
 		return 1;
 	}
 
@@ -100,6 +106,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory2);
 	if (FAILED(hResult))
 	{
+		printf("IDXGIFactory2 failed!\n");
 		return 1;
 	}
 
@@ -107,39 +114,40 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	if (editorMode || _11_0_Mode_)
 	{
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
-	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
+		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.Width = resolution.x;
+		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapChainDesc.Width = resolution.x;
 		swapChainDesc.Height = resolution.y;
 
-	swapChainDesc.SampleDesc.Count = 1; //No MSAA
-	swapChainDesc.SampleDesc.Quality = 0;
-	
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+		swapChainDesc.SampleDesc.Count = 1; //No MSAA
+		swapChainDesc.SampleDesc.Quality = 0;
+
+		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 		swapChainDesc.BufferCount = 1;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swapChainDesc.Flags = 0;
 
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
-	fullScreenDesc.RefreshRate.Numerator = 59994;
-	fullScreenDesc.RefreshRate.Denominator = 1002;
-	fullScreenDesc.Windowed = true;
-	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
+		fullScreenDesc.RefreshRate.Numerator = 59994;
+		fullScreenDesc.RefreshRate.Denominator = 1002;
+		fullScreenDesc.Windowed = true;
+		fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
 		hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
-	if (FAILED(hResult))
-	{
-		return 1;
-	}
+		if (FAILED(hResult))
+		{
+			printf("CreateSwapChainForHwnd for Editor failed!\n");
+			return 1;
+		}
 	}
 	else
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-	
+
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.Width = resolution.x;
 		swapChainDesc.Height = resolution.y;
@@ -161,28 +169,31 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		fullScreenDesc.Windowed = true;
 		fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	
-	hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
-	if (FAILED(hResult))
-	{
-		return 1;
+
+		hResult = dxgiFactory2->CreateSwapChainForHwnd(this->m_gDevice, HWND(*windowHandle), &swapChainDesc, &fullScreenDesc, nullptr, &m_swapChain);
+		if (FAILED(hResult))
+		{
+			printf("CreateSwapChainForHwnd failed!\n");
+			return 1;
+		}
 	}
-	}
-	
+
 	// Create the backbuffer render target view \\
 
 	ID3D11Texture2D* backBufferPrt = nullptr;
 	this->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)(&backBufferPrt));
-	
+
 	hResult = this->m_gDevice->CreateRenderTargetView(backBufferPrt, NULL, &this->m_backBufferRTV);
 	if (FAILED(hResult))
 	{
+		printf("CreateRenderTargetView failed!\n");
 		return 1;
 	}
 
 	hResult = this->m_gDevice->CreateShaderResourceView(backBufferPrt, nullptr, &this->m_backBufferSRV);
 	if (FAILED(hResult))
 	{
+		printf("CreateShaderResourceView failed!\n");
 		return 1;
 	}
 
@@ -230,6 +241,7 @@ int Direct3DHandler::InitializeGridRasterizer()
 	hResult = this->m_gDevice->CreateRasterizerState(&rasterizerDesc, &this->m_rasterizerStateWireFrame);
 	if (FAILED(hResult))
 	{
+		printf("CreateRasterizerState failed!\n");
 		return 1;
 	}
 

@@ -72,9 +72,9 @@ int System::Initialize(std::string path)
 
 	this->m_graphicsHandler = new GraphicsHandler();
 	if (this->m_graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
-	{
-		printf("GraphicsHandler did not work. RIP!\n");
-	}
+		printf("GraphicsHandler failed!\n");
+	else
+		printf("GraphicsHandler succeeded\n");
 	this->m_camera = new Camera();
 	this->m_camera->Initialize();
 	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
