@@ -55,7 +55,6 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 			printf("D3D11CreateDevice D3D_FEATURE_LEVEL_11_0 failed!\n");
 			return 1;
 		}
-		return 1;
 	}
 
 #endif
