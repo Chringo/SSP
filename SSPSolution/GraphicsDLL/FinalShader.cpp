@@ -24,8 +24,8 @@ int FinalShader::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	this->m_deviceContext = deviceContext;
 
 	//Insert shader path here
-	WCHAR* vsFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightVS.hlsl";
-	WCHAR* psFilename = L"../GraphicsDLL/Shaders/PBR/PbrLightPass.hlsl";
+	WCHAR* vsFilename = L"../Assets/Shaders/PBR/PbrLightVS.hlsl";
+	WCHAR* psFilename = L"../Assets/Shaders/PBR/PbrLightPass.hlsl";
 
 	// Compile the shaders \\
 

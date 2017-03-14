@@ -27,7 +27,7 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
-	this->m_spriteFont = new DirectX::SpriteFont(device, L"consolas.spritefont");
+	this->m_spriteFont = new DirectX::SpriteFont(device, L"../Assets/UIelements/consolas.spritefont");
 	
 	this->m_nrOfTextures = 16;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
@@ -36,35 +36,36 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		this->m_textures.push_back(newTexture);
 	}
 
-	/*DirectX::CreateWICTextureFromFile(device, L"cat.png", nullptr, &this->m_textures.at(0));
-	DirectX::CreateWICTextureFromFile(device, L"gamelogo.png", nullptr, &this->m_textures.at(1));
-	DirectX::CreateWICTextureFromFile(device, L"../../keymaps_temp.png", nullptr, &this->m_textures.at(2));
-	DirectX::CreateWICTextureFromFile(device, L"menubg.png", nullptr, &this->m_textures.at(3));
-	DirectX::CreateWICTextureFromFile(device, L"button.png", nullptr, &this->m_textures.at(4));
-	DirectX::CreateWICTextureFromFile(device, L"crosshair.png", nullptr, &this->m_textures.at(5));
-	DirectX::CreateWICTextureFromFile(device, L"crosshair_aim.png", nullptr, &this->m_textures.at(6));
-	DirectX::CreateWICTextureFromFile(device, L"level0.png", nullptr, &this->m_textures.at(7));
-	DirectX::CreateWICTextureFromFile(device, L"level1.png", nullptr, &this->m_textures.at(8));
-	DirectX::CreateWICTextureFromFile(device, L"level2.png", nullptr, &this->m_textures.at(9));
-	DirectX::CreateWICTextureFromFile(device, L"level3.png", nullptr, &this->m_textures.at(10));
-	DirectX::CreateWICTextureFromFile(device, L"level4.png", nullptr, &this->m_textures.at(11));
-	DirectX::CreateWICTextureFromFile(device, L"level5.png", nullptr, &this->m_textures.at(12));*/
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/gamelogo.png", nullptr, &this->m_textures.at(0));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/background.png", nullptr, &this->m_textures.at(1));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/charswide.png", nullptr, &this->m_textures.at(2));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/cog.png", nullptr, &this->m_textures.at(3));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/button.png", nullptr, &this->m_textures.at(4));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(5));	
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/Controls.png", nullptr, &this->m_textures.at(6));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/combinedframes.png", nullptr, &this->m_textures.at(7));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level0.png", nullptr, &this->m_textures.at(8));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level1.png", nullptr, &this->m_textures.at(9));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level2.png", nullptr, &this->m_textures.at(10));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level3.png", nullptr, &this->m_textures.at(11));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level4.png", nullptr, &this->m_textures.at(12));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/level5.png", nullptr, &this->m_textures.at(13));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/levelframe.png", nullptr, &this->m_textures.at(14));
-	DirectX::CreateWICTextureFromFile(device, L"Sprites/Header.png", nullptr, &this->m_textures.at(15));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/gamelogo.png", nullptr, &this->m_textures.at(0));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/background.png", nullptr, &this->m_textures.at(1));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/charswide.png", nullptr, &this->m_textures.at(2));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/cog.png", nullptr, &this->m_textures.at(3));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/button.png", nullptr, &this->m_textures.at(4));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/crosshair_aim.png", nullptr, &this->m_textures.at(5));	
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/Controls.png", nullptr, &this->m_textures.at(6));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/combinedframes.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level0.png", nullptr, &this->m_textures.at(8));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level1.png", nullptr, &this->m_textures.at(9));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level2.png", nullptr, &this->m_textures.at(10));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level3.png", nullptr, &this->m_textures.at(11));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level4.png", nullptr, &this->m_textures.at(12));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/level5.png", nullptr, &this->m_textures.at(13));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/levelframe.png", nullptr, &this->m_textures.at(14));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/Sprites/Header.png", nullptr, &this->m_textures.at(15));
+	
+	/*DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/cat.png", nullptr, &this->m_textures.at(0));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/gamelogo.png", nullptr, &this->m_textures.at(1));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/keymaps_temp.png", nullptr, &this->m_textures.at(2));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/menubg.png", nullptr, &this->m_textures.at(3));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/button.png", nullptr, &this->m_textures.at(4));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/crosshair.png", nullptr, &this->m_textures.at(5));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/crosshair_aim.png", nullptr, &this->m_textures.at(6));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level0.png", nullptr, &this->m_textures.at(7));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level1.png", nullptr, &this->m_textures.at(8));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level2.png", nullptr, &this->m_textures.at(9));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level3.png", nullptr, &this->m_textures.at(10));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level4.png", nullptr, &this->m_textures.at(11));
+	DirectX::CreateWICTextureFromFile(device, L"../Assets/UIelements/level5.png", nullptr, &this->m_textures.at(12));*/
 	
 
 	D3D11_BLEND_DESC BlendState;

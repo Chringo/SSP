@@ -133,7 +133,7 @@ void LevelState::SendSyncForJoin()
 	if (this->m_player1.GetBall()->IsGrabbed())
 	{
 		this->m_networkModule->SendGrabPacket(this->m_player1.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player1.GetBall()->GetEntityID());
-	}
+}
 	else if (this->m_player2.GetBall()->IsGrabbed())
 	{
 		this->m_networkModule->SendGrabPacket(this->m_player2.GetBall()->GetISGrabbedBy()->GetEntityID(), this->m_player2.GetBall()->GetEntityID());
@@ -262,13 +262,25 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	this->m_clearedLevel = 0;
 	this->m_curLevel = 0;
 
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L0E1.level", 68.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1E1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2E1.level", 46.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3E1.level", 41.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L4E1.level", 45.0f });
-	this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L5E1.level", 35.0f });
-	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L6E1.level", 41.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/TutorialLevel.level", 68.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P1.level", 46.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	////this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	////this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L1P2.level", 46.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L2P1.level", 41.0f });
+	//this->m_levelPaths.push_back({ "../ResourceLib/AssetFiles/L3P1.level", 41.0f });
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level", 41.0f });
+	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L5P1.level", 40.0f });
+
+	//For installer
+	this->m_levelPaths.push_back({ "../Assets/L0E1.level", 68.0f });
+	this->m_levelPaths.push_back({ "../Assets/L1E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../Assets/L2E1.level", 46.0f });
+	this->m_levelPaths.push_back({ "../Assets/L3E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../Assets/L4E1.level", 41.0f });
+	this->m_levelPaths.push_back({ "../Assets/L5E1.level", 41.0f });
+	//this->m_levelPaths.push_back({ "../Assets/L6E1.level", 40.0f });
+
 
 
 	//this->m_levelPaths.push_back({"../ResourceLib/AssetFiles/L4P1.level, 46.0f}");
@@ -435,7 +447,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	GraphicsComponent* ballG = m_cHandler->GetPersistentGraphicsComponent();
 	if (this->m_networkModule->IsHost())
 	{
-		ballG->modelID = 1256673809;
+	ballG->modelID = 1256673809;
 	}
 	else
 	{
@@ -473,7 +485,7 @@ int LevelState::Initialize(GameStateHandler * gsh, ComponentHandler* cHandler, C
 	ballG = m_cHandler->GetPersistentGraphicsComponent();
 	if (this->m_networkModule->IsHost())
 	{
-		ballG->modelID = 1321651915;
+	ballG->modelID = 1321651915;
 	}
 	else
 	{
@@ -1162,7 +1174,7 @@ int LevelState::Update(float dt, InputHandler * inputHandler)
 				DirectX::XMFLOAT4X4 newrot;
 				DirectX::XMStoreFloat4x4(&newrot, pc->PC_OBB.ort);
 				this->m_networkModule->SendEntityUpdatePacket(pc->PC_entityID, pc->PC_pos, pc->PC_velocity,newrot);
-			}
+	}
 		}
 
 	}
@@ -2809,62 +2821,62 @@ int LevelState::LoadNext()
 	}
 	else
 	{
-		Resources::Status st = Resources::Status::ST_OK;
-		std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
+	Resources::Status st = Resources::Status::ST_OK;
+	std::string path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
-		//We also need to clear the internal lists, lets have another function do that
-		this->UnloadLevel();
+	//We also need to clear the internal lists, lets have another function do that
+	this->UnloadLevel();
 
-		LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
-		path = this->m_levelPaths.at(this->m_curLevel).levelPath;
+	LevelData::Level* level;    //pointer for resourcehandler data. This data is actually stored in the file loader so don't delete it.
+	path = this->m_levelPaths.at(this->m_curLevel).levelPath;
 
-		//Begin by clearing the current level data by calling UnloadLevel.
-		//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
+	//Begin by clearing the current level data by calling UnloadLevel.
+	//Cheat and use the singletons for ResourceHandler, FileLoader, LightHandler
 #pragma region
-		printf("LOAD LEVEL %d\n", this->m_curLevel);
-		//Load LevelData from file
-		st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
-		//if not successful
-		if (st != Resources::ST_OK)
-		{
-			//Error loading file.
-			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
-			return -1;
-		}
-		//Load Resources of the level
-		st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
-		//if not successful
-		if (st != Resources::ST_OK)
-		{
-			//Error loading level from resource handler.
-			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
-			return -2;
-		}
+	printf("LOAD LEVEL %d\n", this->m_curLevel);
+	//Load LevelData from file
+	st = Resources::FileLoader::GetInstance()->LoadLevel(path, level);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading file.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading file!", "In LevelState::LoadNext()");
+		return -1;
+	}
+	//Load Resources of the level
+	st = Resources::ResourceHandler::GetInstance()->LoadLevel(level->resources, level->numResources);
+	//if not successful
+	if (st != Resources::ST_OK)
+	{
+		//Error loading level from resource handler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading level!", "In LevelState::LoadNext()");
+		return -2;
+	}
 
-		//Load Lights of the level
+	//Load Lights of the level
 
-		if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
-		{
-			//Error loading lights through LightHandler.
-			printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
-			return -3;
-		}
+	if (!LIGHTING::LightHandler::GetInstance()->LoadLevelLight(level))
+	{
+		//Error loading lights through LightHandler.
+		printf("ERROR message: %s -  Error occcured: %s!", "Failed loading lights!", "In LevelState::LoadNext()");
+		return -3;
+	}
 #pragma endregion Loading data
 
 
 #pragma region
-		DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
+	DirectX::XMVECTOR targetOffset = DirectX::XMVectorSet(0.0f, 1.4f, 0.0f, 0.0f);
 
-		m_cameraRef->SetCameraPivot(
-			&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
-			targetOffset,
-			1.3f
-		);
+	m_cameraRef->SetCameraPivot(
+		&this->m_cHandler->GetPhysicsHandler()->GetComponentAt(0)->PC_pos,
+		targetOffset,
+		1.3f
+	);
 
 #pragma endregion Set_Camera
 
-		//Call the CreateLevel with the level data.
-		result = this->CreateLevel(level);
+	//Call the CreateLevel with the level data.
+	result = this->CreateLevel(level);
 	}
 	
 	return 1;

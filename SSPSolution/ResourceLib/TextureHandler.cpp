@@ -224,27 +224,19 @@ bool Resources::TextureHandler::LoadPlaceHolderTextures()
 		size_t length[5];
 		ID3D11ShaderResourceView* textureView[5];
 		ID3D11Resource*			textureResource[5];
-		///*PBR test textures*/
-		//path_str[TEXTURE_ALBEDO]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
-		//path_str[TEXTURE_SPECULAR]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
-		//path_str[TEXTURE_ROUGHNESS]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
-		//path_str[TEXTURE_NORMAL]			= std::string("../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
-		//path_str[TEXTURE_AO]				= std::string("../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
 
-		path_str_EDITOR[TEXTURE_ALBEDO]     = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_albedom.dds");
-		path_str_EDITOR[TEXTURE_SPECULAR]   = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_metalness.dds");
-		path_str_EDITOR[TEXTURE_ROUGHNESS]  = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_roughness.dds");
-		path_str_EDITOR[TEXTURE_NORMAL]     = std::string("../../ResourceLib/AssetFiles/PBRTEST/test_normal.dds");
-		path_str_EDITOR[TEXTURE_AO]			= std::string("../../ResourceLib/AssetFiles/PBRTEST/test_ao.dds");
-
-
+		path_str_EDITOR[TEXTURE_ALBEDO] = std::string("../Assets/PBRTEST/test_albedom.dds");
+		path_str_EDITOR[TEXTURE_SPECULAR] = std::string("../Assets/PBRTEST/test_metalness.dds");
+		path_str_EDITOR[TEXTURE_ROUGHNESS] = std::string("../Assets/PBRTEST/test_roughness.dds");
+		path_str_EDITOR[TEXTURE_NORMAL] = std::string("../Assets/PBRTEST/test_normal.dds");
+		path_str_EDITOR[TEXTURE_AO] = std::string("../Assets/PBRTEST/test_ao.dds");
 
 		/*JOHN Textures*/
-		path_str[TEXTURE_ALBEDO]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ALBEDO.dds");
-		path_str[TEXTURE_SPECULAR]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_METALLIC.dds");
-		path_str[TEXTURE_ROUGHNESS]  = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_ROUGHNESS.dds");
-		path_str[TEXTURE_NORMAL]	 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_NORMAL.dds");
-		path_str[TEXTURE_AO]		 = std::string("../ResourceLib/AssetFiles/PLACEHOLDER_MODEL_AO.dds");
+		path_str[TEXTURE_ALBEDO] = std::string("../Assets/PLACEHOLDER_MODEL_ALBEDO.dds");
+		path_str[TEXTURE_SPECULAR] = std::string("../Assets/PLACEHOLDER_MODEL_METALLIC.dds");
+		path_str[TEXTURE_ROUGHNESS] = std::string("../Assets/PLACEHOLDER_MODEL_ROUGHNESS.dds");
+		path_str[TEXTURE_NORMAL] = std::string("../Assets/PLACEHOLDER_MODEL_NORMAL.dds");
+		path_str[TEXTURE_AO] = std::string("../Assets/PLACEHOLDER_MODEL_AO.dds");
 
 		for (size_t i = 0; i < 5; i++)
 		{

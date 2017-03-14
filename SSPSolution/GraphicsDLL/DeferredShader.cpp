@@ -46,14 +46,14 @@ int DeferredShader::Initialize(ID3D11Device* device,  ID3D11DeviceContext* devic
 	this->m_deviceContext = deviceContext;
 
 	//Insert shader path here
-	WCHAR* vsFilename         = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS.hlsl";
-	WCHAR* vsInstFilename     = L"../GraphicsDLL/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
-	WCHAR* vsAnimFilename     = L"../GraphicsDLL/Shaders/GBuffer/AnimVS.hlsl";
-	WCHAR* gsFilename		  = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* psFilename	      = L"../GraphicsDLL/Shaders/GBuffer/GBuffer.hlsl";
-	WCHAR* shadowFilename	  = L"../GraphicsDLL/Shaders/Shadow/ShadowShader.hlsl";
-	WCHAR* shadowInstFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Instanced.hlsl";
-	WCHAR* shadowAnimFilename = L"../GraphicsDLL/Shaders/Shadow/ShadowShader_Animation.hlsl";
+	WCHAR* vsFilename         = L"../Assets/Shaders/GBuffer/GBufferVS.hlsl";
+	WCHAR* vsInstFilename     = L"../Assets/Shaders/GBuffer/GBufferVS_Instanced.hlsl";
+	WCHAR* vsAnimFilename     = L"../Assets/Shaders/GBuffer/AnimVS.hlsl";
+	WCHAR* gsFilename		  = L"../Assets/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* psFilename	      = L"../Assets/Shaders/GBuffer/GBuffer.hlsl";
+	WCHAR* shadowFilename	  = L"../Assets/Shaders/Shadow/ShadowShader.hlsl";
+	WCHAR* shadowInstFilename = L"../Assets/Shaders/Shadow/ShadowShader_Instanced.hlsl";
+	WCHAR* shadowAnimFilename = L"../Assets/Shaders/Shadow/ShadowShader_Animation.hlsl";
 	// Compile the shaders \\
 
 #ifdef _DEBUG

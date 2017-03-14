@@ -1188,7 +1188,7 @@ void GraphicsHandler::Shutdown()
 #endif // _DEBUG
 	if (this->m_defaultCubeMap != nullptr)
 		this->m_defaultCubeMap->Release();
-	
+
 	delete[] this->m_animGraphicsComponents;
 	delete[] this->m_graphicsComponents;
 #ifdef _DEBUG
@@ -1557,14 +1557,14 @@ int GraphicsHandler::ResizePersistentComponents(size_t new_cap)
 
 	 DirectX::CreateDDSTextureFromFile
 	 (
-	 	m_d3dHandler->GetDevice(),
-	 	L"../ResourceLib/AssetFiles/Islands.dds",
+		 m_d3dHandler->GetDevice(),
+	 	L"../Assets/Islands.dds",
 	 	&textureView, &m_defaultCubeMap, size_t(0),
-	 	(DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
+		 (DirectX::DDS_ALPHA_MODE*)DirectX::DDS_ALPHA_MODE_UNKNOWN
 	 );
 	 m_d3dHandler->GetDeviceContext()->PSSetShaderResources(12, 1, &m_defaultCubeMap);
 
-	
+
 
 	 HRESULT hResult;
 	 //For each light
