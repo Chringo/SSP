@@ -21,7 +21,7 @@ Direct3DHandler::~Direct3DHandler()
 int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resolution, bool editorMode)
 {
 	HRESULT hResult;
-
+	bool _11_0_Mode_;
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel;
@@ -42,10 +42,20 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
 		NULL, D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
 		NULL, &this->m_gDeviceContext);
+	_11_0_Mode_ = false;
 	if (FAILED(hResult))
 	{
-		return 1;
+		featureLevel = D3D_FEATURE_LEVEL_11_0;
+		hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,
+			NULL, D3D11_CREATE_DEVICE_SINGLETHREADED, &featureLevel, 1, D3D11_SDK_VERSION, &this->m_gDevice,
+			NULL, &this->m_gDeviceContext);
+		_11_0_Mode_ = true;
+		if (FAILED(hResult))
+		{
+			return 1;
+		}
 	}
+
 #endif
 
 	// Create the rasterizer state \\
@@ -96,7 +106,7 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 
 	// Create the swapchain \\
 
-	if (editorMode)
+	if (editorMode || _11_0_Mode_)
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
