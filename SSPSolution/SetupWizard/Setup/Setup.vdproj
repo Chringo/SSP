@@ -939,12 +939,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_65C539F8154E9AF1AEB09FDFE2D80F9D"
-        "OwnerKey" = "8:_105010A9391C4DE08E5DB143BFFE8AC3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_65F05E3F4CE840369BCED41E6A64DA13"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1319,12 +1313,6 @@
         {
         "MsmKey" = "8:_92C27CC963D74332AD687DE9DDE71CED"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_937BFEB14814F2DF37E66AB80A83756E"
-        "OwnerKey" = "8:_105010A9391C4DE08E5DB143BFFE8AC3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1912,6 +1900,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D47A1F46FCAD4EBC834113C6F48C03CA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D619A54C3C02493295A4F69F0FA6567F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5356,26 +5350,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65C539F8154E9AF1AEB09FDFE2D80F9D"
-            {
-            "SourcePath" = "8:MSVCP140.dll"
-            "TargetName" = "8:MSVCP140.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_2233587D598B4573BC958626DD3118B2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65F05E3F4CE840369BCED41E6A64DA13"
             {
             "SourcePath" = "8:..\\..\\Assets\\Abbington_AO.dds"
@@ -6614,26 +6588,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_937BFEB14814F2DF37E66AB80A83756E"
-            {
-            "SourcePath" = "8:VCRUNTIME140.dll"
-            "TargetName" = "8:VCRUNTIME140.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_2233587D598B4573BC958626DD3118B2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_93D04E1D67794850A3E9EE81555E5DD3"
@@ -8542,6 +8496,26 @@
             "TargetName" = "8:MatSphere1_Normal.dds"
             "Tag" = "8:"
             "Folder" = "8:_EA4B6BA514B84BB29F5517F34BB400DC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D619A54C3C02493295A4F69F0FA6567F"
+            {
+            "SourcePath" = "8:..\\..\\readme.txt"
+            "TargetName" = "8:readme.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_345C66E4EF9043DAB2BB40F8CD3FC05B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
