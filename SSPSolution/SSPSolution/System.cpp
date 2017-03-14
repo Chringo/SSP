@@ -72,46 +72,50 @@ int System::Initialize(std::string path)
 
 	this->m_graphicsHandler = new GraphicsHandler();
 	if (this->m_graphicsHandler->Initialize(&this->m_hwnd, DirectX::XMINT2(SCREEN_WIDTH, SCREEN_HEIGHT)))
+	{
 		printf("GraphicsHandler failed!\n");
+	}
 	else
-		printf("GraphicsHandler succeeded\n");
-	this->m_camera = new Camera();
-	this->m_camera->Initialize();
-	//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
-	Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
-	delete oldCam;
-	oldCam = nullptr;
-	//Initialize the PhysicsHandler
-	this->m_physicsHandler.Initialize();
-	//Initialize the AIHandler
-	this->m_AIHandler = AIHandler();
-	this->m_AIHandler.Initialize(4);
+	{
+		printf("GraphicsHandler succeeded\n");	
+		this->m_camera = new Camera();
+		this->m_camera->Initialize();
+		//this->m_camera->SetRotationAroundPosOffset(0.0f, 1.0f, 1.0f);
+		Camera* oldCam = this->m_graphicsHandler->SetCamera(this->m_camera);
+		delete oldCam;
+		oldCam = nullptr;
+		//Initialize the PhysicsHandler
+		this->m_physicsHandler.Initialize();
+		//Initialize the AIHandler
+		this->m_AIHandler = AIHandler();
+		this->m_AIHandler.Initialize(4);
 
-	//Initialize the InputHandler
-	this->m_inputHandler = new InputHandler();
-	this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
+		//Initialize the InputHandler
+		this->m_inputHandler = new InputHandler();
+		this->m_inputHandler->Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, m_window);
 
-	//Initialize the animation handler. 
-	this->m_AnimationHandler = new AnimationHandler();
-	this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
+		//Initialize the animation handler. 
+		this->m_AnimationHandler = new AnimationHandler();
+		this->m_AnimationHandler->Initialize(m_graphicsHandler->GetGraphicsAnimationComponents(), m_graphicsHandler->GetAmountOfGraphicAnimationComponents());
 
-	//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
-	this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
-	
-	DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
-	DebugHandler::instance()->CreateTimer(L"GS Update");
-	DebugHandler::instance()->CreateTimer(L"Physics");
-	DebugHandler::instance()->CreateTimer(L"Render");
-	DebugHandler::instance()->CreateTimer(L"Frustum Cull");
-	DebugHandler::instance()->CreateTimer(L"Thread 0");
-	DebugHandler::instance()->CreateTimer(L"Thread 1");
-	DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
-	DebugHandler::instance()->CreateCustomLabel(L"Slow frame counter", 0);
-	DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
-	
-	//Initialize the GameStateHandler
-	//NOTE: Don't create any timers or other objects that uses TextComponent after this one
-	this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
+		//Initialize the ComponentHandler. This must happen before the initialization of the gamestatehandler
+		this->m_componentHandler.Initialize(this->m_graphicsHandler, &this->m_physicsHandler, &this->m_AIHandler, this->m_AnimationHandler);
+
+		DebugHandler::instance()->SetComponentHandler(&this->m_componentHandler);
+		DebugHandler::instance()->CreateTimer(L"GS Update");
+		DebugHandler::instance()->CreateTimer(L"Physics");
+		DebugHandler::instance()->CreateTimer(L"Render");
+		DebugHandler::instance()->CreateTimer(L"Frustum Cull");
+		DebugHandler::instance()->CreateTimer(L"Thread 0");
+		DebugHandler::instance()->CreateTimer(L"Thread 1");
+		DebugHandler::instance()->CreateCustomLabel(L"Frame counter", 0);
+		DebugHandler::instance()->CreateCustomLabel(L"Slow frame counter", 0);
+		DebugHandler::instance()->CreateCustomLabel(L"Components in frustum", 0.0f);
+
+		//Initialize the GameStateHandler
+		//NOTE: Don't create any timers or other objects that uses TextComponent after this one
+		this->m_gsh.Initialize(&this->m_componentHandler, this->m_camera, path);
+	}
 
 	return result;
 }
