@@ -939,6 +939,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_65C539F8154E9AF1AEB09FDFE2D80F9D"
+        "OwnerKey" = "8:_7BBC2EF1D6284FB8906C405846DE16EA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_65F05E3F4CE840369BCED41E6A64DA13"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1313,6 +1319,12 @@
         {
         "MsmKey" = "8:_92C27CC963D74332AD687DE9DDE71CED"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_937BFEB14814F2DF37E66AB80A83756E"
+        "OwnerKey" = "8:_7BBC2EF1D6284FB8906C405846DE16EA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -5350,6 +5362,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65C539F8154E9AF1AEB09FDFE2D80F9D"
+            {
+            "SourcePath" = "8:MSVCP140.dll"
+            "TargetName" = "8:MSVCP140.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_2233587D598B4573BC958626DD3118B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65F05E3F4CE840369BCED41E6A64DA13"
             {
             "SourcePath" = "8:..\\..\\Assets\\Abbington_AO.dds"
@@ -6588,6 +6620,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_937BFEB14814F2DF37E66AB80A83756E"
+            {
+            "SourcePath" = "8:VCRUNTIME140.dll"
+            "TargetName" = "8:VCRUNTIME140.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_2233587D598B4573BC958626DD3118B2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_93D04E1D67794850A3E9EE81555E5DD3"
@@ -9779,6 +9831,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_9799AAC6A2234B8A869732F86AA26856"
+            {
+            "Name" = "8:EarlGravesPuzzles"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_3B5314AE492D499A9A702E1DFCA3D747"
+            "Folder" = "8:_3B5314AE492D499A9A702E1DFCA3D747"
+            "WorkingFolder" = "8:_3B5314AE492D499A9A702E1DFCA3D747"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E0E31FF8B8844502A34571685603F059"
+            {
+            "Name" = "8:EarlGravesPuzzles"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_345C66E4EF9043DAB2BB40F8CD3FC05B"
+            "Folder" = "8:_63EB40FF544E435AAA579A1ADF56D89D"
+            "WorkingFolder" = "8:_345C66E4EF9043DAB2BB40F8CD3FC05B"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {

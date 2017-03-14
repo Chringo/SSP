@@ -2,7 +2,7 @@
 *///// Requirements //////*
 */////////////////////////*
 
-Windows 10
+Windows 10, x64 system is required
 
 LAN connection, ethernet cable 
 Port used: 6881
