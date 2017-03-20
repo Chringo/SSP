@@ -2,7 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
-
+#include <fstream>
 
 
 bool PhysicsHandler::IntersectAABB()
@@ -835,6 +835,7 @@ bool PhysicsHandler::Initialize()
 {
 	this->m_gravity = DirectX::XMVectorSet(0.0f, -0.05f, 0.0f, 0.0f);
 
+
 	return true;
 }
 
@@ -851,11 +852,15 @@ void PhysicsHandler::Update(float deltaTime)
 {
 	float dt = (deltaTime / 50000);
 
+#pragma region ChainPhysics
 	int nrOfChainLinks = this->m_links.size();
 	for (int i = 0; i < nrOfChainLinks; i++)
 	{
 		this->DoChainPhysics(&this->m_links.at(i), dt);
 	}
+#pragma endregion
+
+#pragma region collitioncheck
 	int nrOfObjects = this->m_dynamicComponents.size();
 	for (int i = 0; i < (nrOfObjects - this->m_nrOfStaticObjects); i++)
 	{
@@ -920,6 +925,10 @@ void PhysicsHandler::Update(float deltaTime)
 			current->PC_velocity = DirectX::XMVectorSet(0, 0, 0, 0);
 		}
 	}
+#pragma endregion
+
+	if (this->fileDone == false)
+		this->checkCollition();
 
 	for (int i = 0; i < nrOfChainLinks; i++)
 	{
@@ -1416,12 +1425,31 @@ bool PhysicsHandler::checkCollition()
 	std::chrono::time_point<std::chrono::system_clock>start;
 	std::chrono::time_point<std::chrono::system_clock>end;
 
-	start = std::chrono::system_clock::now();
-	result = this->IntersectAABB();
-	end = std::chrono::system_clock::now();
+	
 
-	std::chrono::duration<double>elapsed_secounds = end - start;
-	std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+	std::chrono::duration<double>elapsed_time;
+	std::time_t end_time;
+	
+	std::ofstream myFile;
+	myFile.open("performanceSweepTest.txt");
+
+	int i = 0;
+
+	while (i++ < 2000)
+	{
+		start = std::chrono::system_clock::now();
+		result = this->IntersectAABB();
+		end = std::chrono::system_clock::now();
+
+		elapsed_time = end - start;
+		end_time = std::chrono::system_clock::to_time_t(end);
+		elapsed_time *= 1000; //millisecounds
+
+		float test = elapsed_time.count();
+		myFile << test << std::endl;
+	}
+	myFile.close();
+	this->fileDone = true;
 
 	return result;
 }

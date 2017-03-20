@@ -128,97 +128,97 @@ int DebugHandler::ResetMinMax()
 
 int DebugHandler::Display(float dTime)
 {
-	COORD topLeft = { 0, 0 };
-	COORD FPSLocation = { 50, 0 };
-	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO screen;
-	DWORD written;
+	//COORD topLeft = { 0, 0 };
+	//COORD FPSLocation = { 50, 0 };
+	//HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	//CONSOLE_SCREEN_BUFFER_INFO screen;
+	//DWORD written;
 
-	//GetConsoleScreenBufferInfo(console, &screen);
-	/*FillConsoleOutputCharacterA(
-		console, ' ', toClear.X * toClear.Y, topLeft, &written
-	);*/
-	/*FillConsoleOutputAttribute(
-		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
-		toClear.X * toClear.Y, topLeft, &written
-	);*/
-	SetConsoleCursorPosition(console, topLeft);
+	////GetConsoleScreenBufferInfo(console, &screen);
+	///*FillConsoleOutputCharacterA(
+	//	console, ' ', toClear.X * toClear.Y, topLeft, &written
+	//);*/
+	///*FillConsoleOutputAttribute(
+	//	console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+	//	toClear.X * toClear.Y, topLeft, &written
+	//);*/
+	//SetConsoleCursorPosition(console, topLeft);
 
-	std::vector<Timer>::iterator iter;
-	std::vector<std::string>::iterator iterLabel;
-	int nrOfTimers = this->m_timers.size();
-	for (int i = this->m_timerMins.size(); i < nrOfTimers; i++)
-	{
-		this->m_timerMins.push_back(9999999);
-		this->m_timerMaxs.push_back(0);
-	}
+	//std::vector<Timer>::iterator iter;
+	//std::vector<std::string>::iterator iterLabel;
+	//int nrOfTimers = this->m_timers.size();
+	//for (int i = this->m_timerMins.size(); i < nrOfTimers; i++)
+	//{
+	//	this->m_timerMins.push_back(9999999);
+	//	this->m_timerMaxs.push_back(0);
+	//}
 
-	unsigned int time, minTime, maxTime;
-	int i;
-	for (i = 0, iter = this->m_timers.begin(), iterLabel = this->m_labels.begin();
-		iter != this->m_timers.end() && iterLabel != this->m_labels.end();
-		i++, iter++, iterLabel++)
-	{
-		time = iter->GetTimeMS(this->m_frequency);
+	//unsigned int time, minTime, maxTime;
+	//int i;
+	//for (i = 0, iter = this->m_timers.begin(), iterLabel = this->m_labels.begin();
+	//	iter != this->m_timers.end() && iterLabel != this->m_labels.end();
+	//	i++, iter++, iterLabel++)
+	//{
+	//	time = iter->GetTimeMS(this->m_frequency);
 
-		minTime = this->m_timerMins.at(i);
-		maxTime = this->m_timerMaxs.at(i);
-		this->m_timerMins.at(i) = (minTime < time) ? minTime : time;
-		this->m_timerMaxs.at(i) = (maxTime > time) ? maxTime : time;
+	//	minTime = this->m_timerMins.at(i);
+	//	maxTime = this->m_timerMaxs.at(i);
+	//	this->m_timerMins.at(i) = (minTime < time) ? minTime : time;
+	//	this->m_timerMaxs.at(i) = (maxTime > time) ? maxTime : time;
 
-		LARGE_INTEGER elapsedTime;
-		elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
-		elapsedTime.QuadPart *= 1000000;
-		elapsedTime.QuadPart /= this->m_frequency.QuadPart;
+	//	LARGE_INTEGER elapsedTime;
+	//	elapsedTime.QuadPart = this->m_programEnd.QuadPart - this->m_programStart.QuadPart;
+	//	elapsedTime.QuadPart *= 1000000;
+	//	elapsedTime.QuadPart /= this->m_frequency.QuadPart;
 
-		std::cout << std::fixed << std::setprecision(1) << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
-			<< time << " [" << this->m_timerMaxs.at(i) << "] us, " 
-			<< (float)((time / (float)elapsedTime.QuadPart) * 100) << "%";
-		GetConsoleScreenBufferInfo(console, &screen);
-		FillConsoleOutputCharacterA(
-			console, ' ', 5, screen.dwCursorPosition, &written
-		);
-		std::cout << std::endl;
-	}
-	int nrOfCustomLabels = this->m_labelsValues.size();
-	for (int j = 0; j < nrOfCustomLabels; j++)
-	{
-		std::cout << this->m_labelsValues.at(j) << ": " << this->m_customValues.at(j);
-		GetConsoleScreenBufferInfo(console, &screen);
-		FillConsoleOutputCharacterA(
-			console, ' ', 5, screen.dwCursorPosition, &written
-		);
-		std::cout << std::endl;
-	}
+	//	std::cout << std::fixed << std::setprecision(1) << iterLabel->c_str() << ": [" << this->m_timerMins.at(i) << "] "
+	//		<< time << " [" << this->m_timerMaxs.at(i) << "] us, " 
+	//		<< (float)((time / (float)elapsedTime.QuadPart) * 100) << "%";
+	//	GetConsoleScreenBufferInfo(console, &screen);
+	//	FillConsoleOutputCharacterA(
+	//		console, ' ', 5, screen.dwCursorPosition, &written
+	//	);
+	//	std::cout << std::endl;
+	//}
+	//int nrOfCustomLabels = this->m_labelsValues.size();
+	//for (int j = 0; j < nrOfCustomLabels; j++)
+	//{
+	//	std::cout << this->m_labelsValues.at(j) << ": " << this->m_customValues.at(j);
+	//	GetConsoleScreenBufferInfo(console, &screen);
+	//	FillConsoleOutputCharacterA(
+	//		console, ' ', 5, screen.dwCursorPosition, &written
+	//	);
+	//	std::cout << std::endl;
+	//}
 
-	this->m_timers.clear();
-	this->m_labels.clear();
-	this->m_timerToEnd = 0;
+	//this->m_timers.clear();
+	//this->m_labels.clear();
+	//this->m_timerToEnd = 0;
 
-	if (this->m_displayFPS)
-	{
-		int sum = 0, avgFPS;
-		this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
-		this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
-		for (int k = 0; k < FRAMES_FOR_AVG; k++)
-		{
-			sum += this->m_frameTimes[k];
-		}
-		avgFPS = sum / FRAMES_FOR_AVG;
-		this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
-		SetConsoleCursorPosition(console, FPSLocation);
-		std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
-		GetConsoleScreenBufferInfo(console, &screen);
-		FillConsoleOutputCharacterA(
-			console, ' ', 8, screen.dwCursorPosition, &written
-		);
-		this->m_currFrameTimesPtr++;
-		
-	}
+	//if (this->m_displayFPS)
+	//{
+	//	int sum = 0, avgFPS;
+	//	this->m_currFrameTimesPtr = (this->m_currFrameTimesPtr >= FRAMES_FOR_AVG) ? 0 : this->m_currFrameTimesPtr;
+	//	this->m_frameTimes[this->m_currFrameTimesPtr] = (unsigned int)(1000000 / dTime);
+	//	for (int k = 0; k < FRAMES_FOR_AVG; k++)
+	//	{
+	//		sum += this->m_frameTimes[k];
+	//	}
+	//	avgFPS = sum / FRAMES_FOR_AVG;
+	//	this->m_minFPS = (this->m_minFPS < this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_minFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+	//	this->m_maxFPS = (this->m_maxFPS > this->m_frameTimes[this->m_currFrameTimesPtr]) ? this->m_maxFPS : this->m_frameTimes[this->m_currFrameTimesPtr];
+	//	SetConsoleCursorPosition(console, FPSLocation);
+	//	std::cout << "FPS: " << avgFPS << " [" << this->m_minFPS << "] (" << std::to_string(this->m_frameTimes[this->m_currFrameTimesPtr]) << ") [" << this->m_maxFPS << "]";
+	//	GetConsoleScreenBufferInfo(console, &screen);
+	//	FillConsoleOutputCharacterA(
+	//		console, ' ', 8, screen.dwCursorPosition, &written
+	//	);
+	//	this->m_currFrameTimesPtr++;
+	//	
+	//}
 
-	COORD finishedCursonLoc = { 0, nrOfTimers + nrOfCustomLabels + 1 };
-	SetConsoleCursorPosition(console, finishedCursonLoc);
+	//COORD finishedCursonLoc = { 0, nrOfTimers + nrOfCustomLabels + 1 };
+	//SetConsoleCursorPosition(console, finishedCursonLoc);
 
 	return 0;
 }

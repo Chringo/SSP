@@ -88,6 +88,7 @@ private:
 
 	const float m_offSet = 0.5f;
 	bool IntersectAABB();
+	bool fileDone = false;
 
 	//intersection tests
 	bool ObbObbIntersectionTest(PhysicsComponent* objA, PhysicsComponent* objB);
