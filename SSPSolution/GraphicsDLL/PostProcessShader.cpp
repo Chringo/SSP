@@ -19,10 +19,15 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 	this->m_deviceContext = deviceContext;
 	WCHAR* filePaths[NUM_TYPES];
 	
+	for (int i = 0; i < NUM_TYPES; i++)
+	{
+		this->active[i] = true;
+	}
+
 	 filePaths[RAYTRACING]   = L"../Assets/Shaders/PostProcess/RayTrace_BoundingBox.hlsl";
 	 filePaths[WATER]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
 	 filePaths[BLUR]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
-	 filePaths[FXAA]		 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
+	 filePaths[FXAA]		 = L"../Assets/Shaders/PostProcess/FXAA.hlsl";
 
 	 filePaths[SSR]			 = L"../Assets/Shaders/PostProcess/RayTracing.hlsl";
 
@@ -110,6 +115,8 @@ int PostProcessShader::Initialize(ID3D11Device * device, ID3D11DeviceContext * d
 
 	 }
 
+	 this->active[PostEffects::RAYTRACING] = false;
+
 	 return 0;
 	
 }
@@ -179,7 +186,7 @@ ID3D11RenderTargetView* PostProcessShader::Draw()
 	*/
 	ID3D11RenderTargetView* temp = nullptr;
 	m_deviceContext->OMSetRenderTargets(1, &temp, NULL);
-	m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
+ 	m_deviceContext->PSSetShaderResources(RESOURCEVIEW_SLOT, 1, &m_ResourceView[currRTVIndex]);
 	return m_RenderTarget[currRTVIndex];
 }
 
@@ -192,7 +199,6 @@ ID3D11RenderTargetView * PostProcessShader::GetAvailableRTV()
 	}
 	else
 	{
-
 		currRTVIndex = 0;
 		return m_RenderTarget[0];
 	}

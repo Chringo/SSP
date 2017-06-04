@@ -878,7 +878,7 @@ int GraphicsHandler::Render(float deltaTime)
 	{
 		ID3D11ShaderResourceView* srv = m_d3dHandler->GetBackbufferSRV();
 		ID3D11DeviceContext* context  = m_d3dHandler->GetDeviceContext();
-		ID3D11RenderTargetView* temp  = nullptr;
+		ID3D11RenderTargetView* temp  = NULL;
 		context->OMSetRenderTargets(1, &temp, NULL);
 		context->PSSetShaderResources(6,1,&srv);
 

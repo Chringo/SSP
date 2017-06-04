@@ -75,7 +75,7 @@ private:
 	UIHandler*				m_uiHandler;
 	LIGHTING::LightHandler*			m_LightHandler;
 	HWND* m_windowHandle;
-	bool postProcessing = false;
+	bool postProcessing = true;
 
 	GraphicsAnimationComponent** m_animGraphicsComponents = nullptr;
 	GraphicsComponent** m_graphicsComponents;

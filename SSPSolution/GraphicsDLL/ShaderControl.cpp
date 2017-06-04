@@ -81,7 +81,7 @@ void ShaderControl::PostProcess()
 	ID3D11RenderTargetView* rtv = this->m_backBufferRTV;
 	PostProcessShader::PostEffects fx;
 	bool processed = false;
-	m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, NULL);
+	//m_DeviceContext->OMSetRenderTargets(1, &m_backBufferRTV, NULL);
 	for (size_t i = 0; i < PostProcessShader::NUM_TYPES; i++)
 	{
 		fx = PostProcessShader::PostEffects(i);
@@ -98,7 +98,7 @@ void ShaderControl::PostProcess()
 		ID3D11ShaderResourceView* postResourceView = ((PostProcessShader*)m_shaders[POSTPROCESS])->GetActiveShaderResource();
 		ID3D11Resource* postResource;
 		postResourceView->GetResource(&postResource);
-
+		
 
 		ID3D11Resource* bbResource;
 		m_backBufferSRV->GetResource(&bbResource);

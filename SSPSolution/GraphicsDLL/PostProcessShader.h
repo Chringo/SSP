@@ -27,7 +27,7 @@ private:
 
 	short int currRTVIndex = 0;
 
-	bool active[NUM_TYPES]{ true };
+	bool active[NUM_TYPES];
 	
 public:
 	PostProcessShader();

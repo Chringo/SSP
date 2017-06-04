@@ -202,5 +202,8 @@
     <FxCompile Include="..\Assets\Shaders\PBR\PbrLightVS.hlsl">
       <Filter>Resource Files\Shaders\PBR</Filter>
     </FxCompile>
+    <FxCompile Include="..\Assets\Shaders\PostProcess\FXAA.hlsl">
+      <Filter>Resource Files\Shaders\PostProcess</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
