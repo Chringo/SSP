@@ -1,7 +1,7 @@
 Texture2D backBufferTex		: register(t6);
-Texture2D normalTex		         : register(t2);
-SamplerState linearSampler : register(s0);
-SamplerState pointSampler : register(s1);
+Texture2D normalTex		    : register(t2);
+SamplerState linearSampler  : register(s0);
+SamplerState pointSampler   : register(s1);
 
 
 static const float WIN_WIDTH = 1280.0f;
@@ -34,7 +34,7 @@ float4 PS_main(VS_OUT input) : SV_TARGET
 {
 	float4 bbSamp = float4(backBufferTex.Sample(pointSampler, input.UV));
     float4 final;
-    //return bbSamp;
+
     //EDGE DETECTION
     
     //luma for current pixel
@@ -227,6 +227,4 @@ float4 PS_main(VS_OUT input) : SV_TARGET
     final = backBufferTex.Sample(pointSampler, finalUV);
 
     return final;
-    return final = float4(1.0,1.0,1.0,1.0);
-    
 }
