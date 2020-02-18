@@ -1,6 +1,6 @@
 #include "GraphicsHandler.h"
 
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 void GraphicsHandler::RenderBoundingVolume(DirectX::XMVECTOR& pos,OBB & box, DirectX::XMVECTOR color)
 {
 	obbBoxes.push_back(&box);
@@ -506,14 +506,14 @@ int GraphicsHandler::Initialize(HWND * windowHandle, const DirectX::XMINT2& reso
 
 	//this->m_CreateTempsTestComponents();
 	//InitializeGrid();
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 	 obbBoxes.reserve(20);
 	 aabbBoxes.reserve(20);
 	 planes.reserve(20);
 	 spheres.reserve(20);
 	 dsv = m_shaderControl->GetBackBufferDSV();
 	 m_debugRender.Initialize(this->m_d3dHandler->GetDevice(), this->m_d3dHandler->GetDeviceContext(), resolution);
-#endif // _DEBUG
+#endif // DEBUG_RENDERING
 
 	return 0;
 }
@@ -890,7 +890,7 @@ int GraphicsHandler::Render(float deltaTime)
 #pragma endregion Post Processing
 
 #pragma region
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 	Camera::ViewFrustrum renderTest;
 	this->m_camera->GetViewFrustrum(renderTest);
 
@@ -905,7 +905,7 @@ int GraphicsHandler::Render(float deltaTime)
 	int modelQueries = Resources::ResourceHandler::GetInstance()->GetQueryCounter();
 	assert(modelQueries == 0); // If this triggers, The resource lib has been accessed somewhere outside of level loading.
 	Resources::ResourceHandler::GetInstance()->ResetQueryCounter();
-#endif // _DEBUG
+#endif // DEBUG_RENDERING
 #pragma endregion Debug rendering
 
 
@@ -1041,9 +1041,9 @@ int GraphicsHandler::renderFinalEditor()
 	LIGHTING::LightHandler::GetInstance()->UpdateActiveLightsToGPUeditor(&lights);
 	m_LightHandler->SetBufferAsActive();
 	m_shaderControl->DrawFinal();
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 	RenderBoundingBoxes();
-#endif // _DEBUG
+#endif // DEBUG_RENDERING
 
 	this->m_d3dHandler->PresentScene();
 	return 0;
@@ -1191,9 +1191,9 @@ void GraphicsHandler::Shutdown()
 
 	delete[] this->m_animGraphicsComponents;
 	delete[] this->m_graphicsComponents;
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 	m_debugRender.Release();
-#endif // _DEBUG
+#endif // DEBUG_RENDERING
 
 }
 

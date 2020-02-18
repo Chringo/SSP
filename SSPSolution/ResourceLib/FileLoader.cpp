@@ -94,26 +94,6 @@ Resources::Status Resources::FileLoader::LoadResource(const unsigned int& id, ch
 
 	infile->read(data, itemPtr->byteSize); //Read the whole item data
 
-//MainHeader mainHeader;
-//infile->read((char*)&mainHeader, sizeof(MainHeader)); //Read main header
-//
-//MeshHeader meshHeader;
-//
-//infile->read((char*)&meshHeader, sizeof(MeshHeader)); 
-//size_t sizetoRead = sizeof(Resource::RawResourceData)+ sizeof(MeshHeader) + (sizeof(Mesh::Vertex) * meshHeader.numVerts) + (sizeof(UINT) * meshHeader.indexLength);
-//Resource::RawResourceData tempRes;
-//tempRes.m_id = id;
-//tempRes.m_resType = Resources::ResourceType::RES_MESH;
-//
-//mem_manager.Clear(Resources::Memory::MEM_RES);
-//
-//data = mem_manager.Store(Resources::Memory::MEM_RES, sizetoRead);
-//
-//memcpy((char*)data, (char*)&tempRes, sizeof(Resource::RawResourceData));
-//memcpy((char*)data + sizeof(Resource::RawResourceData), (char*)&meshHeader, sizeof(MeshHeader));
-//
-//UINT offset = sizeof(Resource::RawResourceData) + sizeof(MeshHeader);
-//infile->read(data + offset, sizetoRead);
 
 	return Resources::Status::ST_OK;
 
@@ -341,4 +321,61 @@ Resources::Status Resources::FileLoader::LoadRegistryFile()
 
 	CloseFile(Files::BPF_FILE);
 	return Resources::Status::ST_OK;
+}
+
+
+const std::vector<unsigned int>*  Resources::FileLoader::GetAssetIdsOfType(Resources::ResourceType type) {
+
+	return m_sortedAssetsList != nullptr ? &m_sortedAssetsList->at(type) : nullptr;
+}
+
+Resources::Status Resources::FileLoader::SortAllAssets() {
+
+	//Iterate all registry items
+	//Read item from BPF
+	
+	Status st = Status::ST_OK;
+	if (this->OpenFile(Files::BPF_FILE) ){
+		try{
+			if (m_sortedAssetsList == nullptr) {
+				using namespace std;
+				m_sortedAssetsList = make_unique<vector<vector<unsigned int>>>(vector<vector<unsigned int>>(ResourceType::RES_NUMTYPES));
+			}
+			else {
+				m_sortedAssetsList->clear();
+			}
+
+			std::cout <<"Num total resources in registry: " << m_fileRegistry.size() << std::endl;
+			//m_sortedAssetsList->reserve(Resources::ResourceType::RES_NUMTYPES);
+	
+			for (auto const& item : m_fileRegistry) {
+				char* data = nullptr;
+				size_t dataSize = 0;
+				Status st = LoadResource(item.first, data, &dataSize);
+				if (st != ST_OK){
+					std::cout << "Failed to load Item | ID : " << item.first << std::endl;
+					return st;
+				}
+
+				Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
+				if (resData->m_resType != ResourceType::RES_UNKOWN){
+					m_sortedAssetsList->at(resData->m_resType).push_back(item.first);
+				}
+				else {
+					std::cout << "Found res UNKOWN... : id# " << item.first << std::endl;
+				}
+			}
+		}
+		catch (...){
+			std::cout << "Exception thrown when sorting asset data" << std::endl;
+			CloseFile(Files::BPF_FILE);
+		}
+	}
+	else {
+		st = Status::ST_ERROR_OPENING_FILE;
+	}
+
+	CloseFile(Files::BPF_FILE);
+
+	return st;
 }

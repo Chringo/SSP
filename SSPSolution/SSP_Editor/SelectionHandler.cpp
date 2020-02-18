@@ -321,26 +321,26 @@ bool SelectionHandler::PickObjectSelection()
 	}
 	
 
-	//check the spawnPoints
-	for (size_t i = 0; i < 2; i++)
-	{
-		Container* spawn = m_currentLevel->GetSpawnPoint(i);
-		OBB obj = m_ConvertOBB(spawn->component.modelPtr->GetOBBData(), spawn);
-
-		bool result = false;
-		result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, spawn->position, hitDistance);
-		//transformWidget.setActive(result);
-		if (result && hitDistance < minHitDistance)
-		{
-			
-			minHitDistance = hitDistance;
-			//update widget with the intersected obb
-			this->m_transformWidget.Select(obj, spawn, i, spawn->component.modelPtr->GetId());
-			Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(spawn);
-
-			gotHit = result;
-		}
-	}
+	////check the spawnPoints
+	// for (size_t i = 0; i < 2; i++)
+	//{
+	//	Container* spawn = m_currentLevel->GetSpawnPoint(i);
+	//	OBB obj; //= m_ConvertOBB(spawn->component.modelPtr->GetOBBData(), spawn);
+	//
+	//	bool result = false;
+	//	result = this->m_PhysicsHandler->IntersectRayOBB(m_ray.localOrigin, this->m_ray.direction, obj, spawn->position, hitDistance);
+	//	//transformWidget.setActive(result);
+	//	if (result && hitDistance < minHitDistance)
+	//	{
+	//		
+	//		minHitDistance = hitDistance;
+	//		//update widget with the intersected obb
+	//		this->m_transformWidget.Select(obj, spawn, i, spawn->component.modelPtr->GetId());
+	//		Ui::UiControlHandler::GetInstance()->GetAttributesHandler()->SetSelection(spawn);
+	//
+	//		gotHit = result;
+	//	}
+	//}
 	std::vector<AiContainer*>* container = m_currentLevel->GetAiHandler()->GetAllPathComponents();
 	for (size_t i = 0; i < container->size(); i++)
 	{

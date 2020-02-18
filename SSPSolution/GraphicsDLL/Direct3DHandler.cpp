@@ -25,10 +25,10 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 	// Create the Device \\
 
 	D3D_FEATURE_LEVEL featureLevel;
-	if (editorMode)
+	//if (editorMode)
 		featureLevel = D3D_FEATURE_LEVEL_11_0;
-	else
-		featureLevel = D3D_FEATURE_LEVEL_11_1;
+	//else
+		//featureLevel = D3D_FEATURE_LEVEL_11_1;
 
 #ifdef _DEBUG
 	hResult = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE,

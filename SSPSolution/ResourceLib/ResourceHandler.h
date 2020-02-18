@@ -11,10 +11,6 @@ namespace Resources
 
 	class  ResourceHandler
 	{
-
-	
-
-
 	private:
 		struct LevelResources {
 			unsigned int *ids	      = nullptr;
@@ -51,6 +47,9 @@ namespace Resources
 	
 		DLL_OPERATION Resources::Status  GetModel(unsigned int id, Model*& modelPtr) ;
 
+		//Editor functions
+
+		DLL_OPERATION Resources::Status LoadAllAssetsFromBPF(); //Loads the entire library into memory.
 
 	private:
 		Resources::Status UnloadLevel(LevelResources* levelRes); 

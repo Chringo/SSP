@@ -19,6 +19,8 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+#define DEBUG_RENDERING
+
 const int ARRAY_INC = 5;
 const int OCTREE_NODE_MIN_CONTAINMENT = 1;
 const int OCTREE_NODE_MAX_DEPTH = 5;
@@ -31,11 +33,11 @@ const size_t MAX_ACTIVE_LIGHTS = 40;
 	
 class GraphicsHandler
 {
-	
-
 #ifdef _DEBUG
+bool m_EditorMode = false;
+#endif
+#ifdef DEBUG_RENDERING
 private:
-	bool m_EditorMode = false;
 	enum BoundingTypes {
 		T_OBB,
 		T_AABB,
@@ -143,7 +145,7 @@ private:
 	Camera m_overviewCamera;
 	bool m_useOverview;
 	
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 	int RenderOctree(OctreeNode * curNode, Camera::ViewFrustrum * cullingFrustrum);
 #endif
 	struct Sorting_on_modelID

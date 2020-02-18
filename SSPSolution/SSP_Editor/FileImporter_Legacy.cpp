@@ -1,5 +1,5 @@
-#ifndef LEGACY_IMPORT
-#include "FileImporter.h"
+#ifdef LEGACY_IMPORT
+#include "FileImporter_Legacy.h"
 
 
 FileImporter::FileImporter(QTreeWidget *itemList)
@@ -15,13 +15,257 @@ FileImporter::~FileImporter()
 {
 }
 
+Resources::Status FileImporter::ImportFromServer()
+{
+	Ui::AssetTreeHandler* uiTree = Ui::UiControlHandler::GetInstance()->GetAssetTreeController();
+	DIR *dir;
+	struct dirent *ent;
+	QString dirPath = pathToBbfFolder + "/Models";
+	int numModels = 0;
 
+	/*importing the player model files*/
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::PLAYER, Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+
+#pragma region Models
+	/*importing the rest of the model files*/
+
+	/*Importing Floors*/
+	dirPath = pathToBbfFolder + "/Models/Floors";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::GENERAL, Ui::AssetTreeHandler::AssetCategories::FLOORS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+
+		/*importing brick Floors*/
+		dirPath = pathToBbfFolder + "/Models/Floors/Bricks";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::FLOORS,
+			Ui::AssetTreeHandler::AssetSubCategories::BRICK);
+
+		/*importing Stone Floors*/
+		dirPath = pathToBbfFolder + "/Models/Floors/Stones";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::FLOORS,
+			Ui::AssetTreeHandler::AssetSubCategories::STONE);
+
+		/*importing plaster Floors*/
+		dirPath = pathToBbfFolder + "/Models/Floors/Plaster";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::FLOORS,
+			Ui::AssetTreeHandler::AssetSubCategories::PLASTER);
+
+		/*importing plaster Floors*/
+		dirPath = pathToBbfFolder + "/Models/Floors/Iron";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::FLOORS,
+			Ui::AssetTreeHandler::AssetSubCategories::IRON);
+
+	/*Importing Ceilings*/
+	dirPath = pathToBbfFolder + "/Models/Ceilings";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::GENERAL, Ui::AssetTreeHandler::AssetCategories::CEILINGS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+
+		/*importing brick Ceilings*/
+		dirPath = pathToBbfFolder + "/Models/Ceilings/Bricks";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::CEILINGS,
+			Ui::AssetTreeHandler::AssetSubCategories::BRICK);
+
+		/*importing Stone Ceilings*/
+		dirPath = pathToBbfFolder + "/Models/Ceilings/Stones";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::CEILINGS,
+			Ui::AssetTreeHandler::AssetSubCategories::STONE);
+
+		/*importing plaster Ceilings*/
+		dirPath = pathToBbfFolder + "/Models/Ceilings/Plaster";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::CEILINGS,
+			Ui::AssetTreeHandler::AssetSubCategories::PLASTER);
+
+		/*importing plaster Ceilings*/
+		dirPath = pathToBbfFolder + "/Models/Ceilings/Iron";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::CEILINGS,
+			Ui::AssetTreeHandler::AssetSubCategories::IRON);
+
+	/*Importing Walls*/
+	dirPath = pathToBbfFolder + "/Models/Walls";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::GENERAL, Ui::AssetTreeHandler::AssetCategories::WALLS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+
+		/*importing brick walls*/
+		dirPath = pathToBbfFolder + "/Models/Walls/Bricks";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::WALLS,
+			Ui::AssetTreeHandler::AssetSubCategories::BRICK);
+
+		/*importing Stone walls*/
+		dirPath = pathToBbfFolder + "/Models/Walls/Stones";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::WALLS,
+			Ui::AssetTreeHandler::AssetSubCategories::STONE);
+
+		/*importing plaster walls*/
+		dirPath = pathToBbfFolder + "/Models/Walls/Plaster";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::WALLS,
+			Ui::AssetTreeHandler::AssetSubCategories::PLASTER);
+
+		/*importing plaster walls*/
+		dirPath = pathToBbfFolder + "/Models/Walls/Iron";
+		AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::SUBCATEGORIES, Ui::AssetTreeHandler::AssetCategories::WALLS,
+			Ui::AssetTreeHandler::AssetSubCategories::IRON);
+
+	/*Importing Interactables*/
+	dirPath = pathToBbfFolder + "/Models/Interactable";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::GENERAL, Ui::AssetTreeHandler::AssetCategories::INTERACTABLE,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+
+	/*Importing General Assets*/
+	dirPath = pathToBbfFolder + "/Models";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::GENERAL, Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+#pragma endregion
+#pragma region Meshes
+	/*importing the mesh files*/
+	dirPath = pathToBbfFolder + "/Meshes";
+	AppendFromFolder(&dirPath, dir, numModels, uiTree, SpecialImportCases::NONE, Ui::AssetTreeHandler::AssetCategories::GENERAL_ASSETS,
+		Ui::AssetTreeHandler::AssetSubCategories::NUM_SUB_CATEGORIES);
+#pragma endregion
+#pragma region Skeletons
+	/*importing the skeleton files*/
+	dirPath = pathToBbfFolder + "/Skeletons";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+#pragma endregion
+#pragma region Animations
+	/*importing the animation*/
+	dirPath = pathToBbfFolder + "/Animations";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+#pragma endregion
+#pragma region Materials
+	/*Load the material files*/
+	dirPath = pathToBbfFolder + "/Materials";
+	if ((dir = opendir(dirPath.toStdString().c_str())) != NULL)
+	{
+		/* append all the mesh names from the directory */
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (*ent->d_name != '.')
+			{
+				std::string pathName = dirPath.toStdString() + "/";
+				pathName += ent->d_name;
+				//AddListItem(ListItem::MATERIAL, ent->d_name);
+				m_filepaths.push_back(pathName);
+			}
+		}
+		closedir(dir);
+	}
+	else
+	{
+		return Resources::Status::ST_ERROR_OPENING_FILE;
+		/* could not open directory */
+		perror("");
+	}
+	return Resources::ST_OK;
+#pragma endregion
+}
+
+void FileImporter::LoadImportedFiles()
+{
+	char *m_bbf_object;
+	size_t length;
+	for (int i = 0; i < m_filepaths.size(); ++i)
+	{
+		Resources::Status res = m_fileLoader->LoadFile(m_filepaths.at(i), m_bbf_object, &length);
+
+		if (res != Resources::Status::ST_ERROR_OPENING_FILE)
+		{
+			char *type = m_bbf_object + sizeof(unsigned int);
+			Resources::ResourceType loadedObject = (Resources::ResourceType)(*type);
+
+			switch (loadedObject)
+			{
+			case Resources::ResourceType::RES_MODEL:
+				handleModel(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_MESH:
+				handleMesh(m_bbf_object); 
+				break;
+			case Resources::ResourceType::RES_ANIMATION:
+				//handleAnimation(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_SKELETON:
+				handleSkeleton(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_MATERIAL:
+				handleMat(m_bbf_object);
+				break;
+			case Resources::ResourceType::RES_SOUND:
+				break;
+			//RES_UI
+
+			default:
+				break;
+			}
+		}
+	}
+	/*placing a placeholder Material on objects that have no material*/
+	std::vector<Resources::Model*>* m_Models = m_data->GetModels();
+	for (int i = 0; i < m_Models->size(); ++i)
+	{
+		if (m_Models->at(i)->GetMaterial() == nullptr)
+		{
+			GeneratePlaceholderMaterial(m_Models->at(i));
+		}
+	}
+
+}
 Resources::Status FileImporter::Initialize()
 {
-	
-	auto resHandler = Resources::ResourceHandler::GetInstance();
+	bool import = false;
+	do {
+		if (ImportFromServer() == Resources::Status::ST_ERROR_OPENING_FILE) //Try import from server
+		{
+			if (HandlePathNotFound()){   // If it didnt work, prompt for new path
+				SelectNewPath();		// If user wants new path
+			}
+			else {
+				//TODO: Load from BPF file instead
+				return Resources::Status::ST_ERROR_OPENING_FILE;
+			}
+		}
+		else
+			import = true;
+	} while (!import);
+	LoadImportedFiles();
 
-	resHandler->LoadAllAssetsFromBPF();
 	return Resources::Status::ST_OK;
 }
 void FileImporter::handleMesh(char * m_bbf_object)

@@ -225,7 +225,7 @@ int System::Update(float deltaTime)
 			DebugHandler::instance()->EndTimer(3);
 
 			int nrOfComponents = this->m_physicsHandler.GetNrOfComponents();
-#ifdef _DEBUG
+#ifdef DEBUG_RENDERING
 			for (int i = 0; i < nrOfComponents; i++)
 			{
 				PhysicsComponent* temp = this->m_physicsHandler.GetComponentAt(i);
@@ -273,7 +273,7 @@ int System::Update(float deltaTime)
 			//	sphereHolder = &temp->PC_Sphere;
 			//	this->m_graphicsHandler->RenderBoundingVolume(temp->PC_pos, *sphereHolder, DirectX::XMVectorSet(1, 1, 0, 0)); 
 			//}
-#endif  _DEBUG
+#endif  DEBUG_RENDERING
 
 			this->m_graphicsHandler->Update(deltaTime);
 

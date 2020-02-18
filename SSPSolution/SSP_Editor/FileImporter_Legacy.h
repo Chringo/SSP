@@ -1,4 +1,4 @@
-#ifndef LEGACY_IMPORT
+#ifdef LEGACY_IMPORT
 
 #ifndef SSPEDITOR_FILEIMPORTER_FILEIMPORTER_H
 #define SSPEDITOR_FILEIMPORTER_FILEIMPORTER_H
@@ -47,8 +47,9 @@ public:
 	FileImporter(QTreeWidget *itemList);
 	~FileImporter();
 
+	Resources::Status ImportFromServer();
 	Resources::Status Initialize();
-	
+	void LoadImportedFiles();
 	void setDevice(ID3D11Device* device) { this->m_Device = device; };
 
 	std::vector<Resources::Model*>* get_M_models() { return this->m_data->GetModels(); }

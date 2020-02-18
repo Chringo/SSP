@@ -22,7 +22,8 @@ namespace Resources
 		RES_SOUND		= 5,
 		RES_LIGHT		= 6,
 		RES_ANIMATION	= 7,
-		RES_UI			= 8
+		RES_UI			= 8,
+		RES_NUMTYPES	= 9
 	};
 
 	enum TextureType

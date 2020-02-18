@@ -273,3 +273,32 @@ Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelR
 	return Resources::Status::ST_OK;
 }
 
+Resources::Status  Resources::ResourceHandler::LoadAllAssetsFromBPF() {
+	// Loads the entire library into memory from the BPF file
+	using namespace std;
+	auto fileLoader = Resources::FileLoader::GetInstance();
+
+	fileLoader->SortAllAssets();
+
+	vector<pair<ResourceType,string>> typesAndNames(ResourceType::RES_NUMTYPES);
+	
+	typesAndNames.at(ResourceType::RES_MODEL)		= pair<ResourceType, string>(ResourceType::RES_MODEL,"models");
+	typesAndNames.at(ResourceType::RES_MESH)		= pair<ResourceType, string>(ResourceType::RES_MESH, "meshes");
+	typesAndNames.at(ResourceType::RES_MATERIAL)	= pair<ResourceType, string>(ResourceType::RES_MATERIAL, "materials");
+	typesAndNames.at(ResourceType::RES_LIGHT)		= pair<ResourceType, string>(ResourceType::RES_LIGHT, "lights");
+	typesAndNames.at(ResourceType::RES_ANIMATION)	= pair<ResourceType, string>(ResourceType::RES_ANIMATION, "animations");
+	typesAndNames.at(ResourceType::RES_SKELETON)	= pair<ResourceType, string>(ResourceType::RES_SKELETON, "skeletons");
+	typesAndNames.at(ResourceType::RES_TEXTURE)		= pair<ResourceType, string>(ResourceType::RES_TEXTURE, "textures");
+	typesAndNames.at(ResourceType::RES_UI)			= pair<ResourceType, string>(ResourceType::RES_UI, "ui elements");
+	typesAndNames.at(ResourceType::RES_SOUND)		= pair<ResourceType, string>(ResourceType::RES_SOUND, "sounds");
+
+
+
+	for (auto &i : typesAndNames) {
+		auto num = fileLoader->GetAssetIdsOfType(i.first);
+		std::cout << "Number of "<< i.second <<" found in BPF: " << num->size() <<endl;
+	}
+	
+	return Status::ST_OK;
+}
+

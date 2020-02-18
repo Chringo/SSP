@@ -5,6 +5,7 @@
 #include "MemoryManager.h"
 #include "FileHeaders.h"
 #include "../SSP_Editor/LevelHeaders.h"
+#include <memory>
 namespace Resources
 {
 	/*
@@ -48,6 +49,9 @@ namespace Resources
 		std::unordered_map<unsigned int, RegistryItem> m_fileRegistry;
 		MemoryManager mem_manager;
 		FileLoader();
+
+		
+		
 	public:
 		DLL_OPERATION static FileLoader* GetInstance(); //Singleton
 		DLL_OPERATION virtual ~FileLoader();
@@ -59,6 +63,13 @@ namespace Resources
 		DLL_OPERATION Resources::Status LoadFile(std::string& path, char*& data, size_t* size);
 		DLL_OPERATION Resources::Status LoadLevel(std::string& path, LevelData::Level*& levelPtr);
 
+
+		//Reverse Engineering BPF to extract assets. (2020)
+		private:
+			std::unique_ptr<std::vector<std::vector<unsigned int>>> m_sortedAssetsList;
+		public:
+		DLL_OPERATION Resources::Status SortAllAssets();
+		DLL_OPERATION const std::vector<unsigned int>* GetAssetIdsOfType(ResourceType type);
 	private:
 		RegistryItem* GetRegistryIndex(const unsigned int& objectId);
 		Resources::Status LoadRegistryFile(); //Load registry into memory on startup
