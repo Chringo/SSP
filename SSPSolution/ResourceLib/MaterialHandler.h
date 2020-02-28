@@ -35,6 +35,9 @@ namespace Resources
 		Resources::Status UnloadMaterial( const unsigned int & id);
 		void SetDevice(ID3D11Device* device) { m_device = device; m_textureHandler->SetDevice(device);};
 		Material* GetPlaceHolderMaterial();
+
+		TextureHandler* GetTextureHandler() const {return m_textureHandler;}
+		Resources::Status LoadAllMaterialsInBPF();
 	private:
 		Resources::Status CreatePlaceHolder();
 		Material* GetEmptyContainer();

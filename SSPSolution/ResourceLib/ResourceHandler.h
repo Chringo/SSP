@@ -50,7 +50,7 @@ namespace Resources
 		//Editor functions
 
 		DLL_OPERATION Resources::Status LoadAllAssetsFromBPF(); //Loads the entire library into memory.
-
+		DLL_OPERATION ModelHandler* GetModelHandler() {return m_modelHandler;} 
 	private:
 		Resources::Status UnloadLevel(LevelResources* levelRes); 
 

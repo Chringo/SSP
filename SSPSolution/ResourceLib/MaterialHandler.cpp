@@ -72,7 +72,6 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	if (got != m_materials.end())
 		return Status::ST_RES_ALREADY_LOADED;
 
-
 	char* data = nullptr;
 	size_t size = 0;
 
@@ -83,13 +82,9 @@ Resources::Status Resources::MaterialHandler::LoadMaterial( unsigned int & id, R
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	if (resData->m_resType != RES_MATERIAL)
 	{
-#ifdef _DEBUG
-		std::cout << "Wrong resource type. Wanted Material, got type: " << resData->m_id << std::endl;
-#endif // _DEBUG
-
+		LOG( "Wrong resource type. Wanted Material, got type: " + std::to_string(resData->m_id) )
 		return ST_WRONG_RESTYPE;
 	}
-
 
 	Material* newMaterial = GetEmptyContainer(); //Get an empty container
 
@@ -212,4 +207,29 @@ Resources::Material * Resources::MaterialHandler::GetEmptyContainer()
 	}
 	return m_emptyContainers.front();
 
+}
+
+Resources::Status Resources::MaterialHandler::LoadAllMaterialsInBPF() {
+
+	const std::vector<unsigned int>* matIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_MATERIAL);
+	Status retSt = ST_OK;
+	ResourceContainer *res;
+	for (auto x : *matIds) {
+		if (GetMaterial(x, res) == Status::ST_RES_MISSING) {
+			ResourceContainer *y = nullptr;
+			auto st = this->LoadMaterial(x, y);
+
+			if (st != Status::ST_OK){
+				LOG("Error loading material #" + x);
+				 retSt = st;
+				}
+			assert(st == Status::ST_OK);
+		}
+	}
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total Materials loaded: " << m_materials.size() << std::endl;
+	std::cout << "Total ids in registry:" << matIds->size() << std::endl;
+
+
+	return retSt;
 }

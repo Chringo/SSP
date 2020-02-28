@@ -42,9 +42,15 @@ namespace Resources
 		Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
 		Resources::Status LoadModel(unsigned int& id, ResourceContainer*& modelPtr);
 		Resources::Status UnloadModel(unsigned int& id);
+		Resources::Status LoadAllModelsInBPF();
 		virtual ~ModelHandler();
 	
 		void SetDevice(ID3D11Device* device);
+
+		MeshHandler* GetMeshHandler() const {return m_meshHandler;}
+		MaterialHandler* GetMaterialHandler() const { return m_materialHandler; }
+		SkeletonHandler* GetSkeletonHandler() const { return m_skeletonHandler; }
+		DLL_OPERATION std::vector<Model*> GetAllModels();
 	private:
 		bool CreatePlaceHolder();
 		Model* GetEmptyContainer();

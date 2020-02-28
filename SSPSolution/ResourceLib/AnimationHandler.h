@@ -29,6 +29,7 @@ namespace Resources
 		Resources::Status LoadAnimation  (const unsigned int& id, ResourceContainer *& animPtr);
 		Resources::Status UnloadAnimation(const unsigned int& id);
 		Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
+		Resources::Status LoadAllAnimationsInBPF();
 	private:
 		Resources::Animation* GetEmptyContainer();
 	};

@@ -312,3 +312,30 @@ void Resources::TextureHandler::SetDevice(ID3D11Device * device)
 	this->m_device = device;
 }
 
+Resources::Status Resources::TextureHandler::LoadAllTexturesInBPF() {
+
+const std::vector<unsigned int>* textureIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_TEXTURE);
+
+
+	Status retSt = ST_OK;
+	Texture* tex;
+	for (auto x : *textureIds) {
+		
+		if (GetTexture(x,tex) == Status::ST_RES_MISSING) {
+			ResourceContainer *y = nullptr;
+			auto st = this->LoadTexture(x, y);
+	
+			if (st != Status::ST_OK) {
+				std::string e = "Error loading texture #" + std::to_string(x);
+				LOG(e)
+				retSt = st;
+			}
+		}
+		//assert(st == Status::ST_OK);
+	}
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total textures loaded: " << m_textures.size() << std::endl;
+	std::cout << "Total ids in registry:" << textureIds->size() << std::endl;
+
+	return retSt;
+}

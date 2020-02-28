@@ -14,7 +14,7 @@
 #include <qdatetime.h>
 #include "UiControlHandler.h"
 #include "ResourceLibExporter.h"
-
+#include "resourcebrowser.h"
 	class SSP_Editor : public QMainWindow
 	{
 		Q_OBJECT
@@ -23,6 +23,7 @@
 	public:
 		SSP_Editor(QWidget *parent = Q_NULLPTR);
 		~SSP_Editor();
+		void TestLib();
 	protected:
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
@@ -38,6 +39,7 @@
 
 
 	private:
+		ResourceBrowser	tlib;
 		Ui::SSP_EditorClass m_ui;
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;

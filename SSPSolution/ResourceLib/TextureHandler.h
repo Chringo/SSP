@@ -30,6 +30,8 @@ namespace Resources
 		DLL_OPERATION void SetDevice(ID3D11Device* device);
 
 		DLL_OPERATION Texture* GetPlaceHolderTextures();
+
+		Resources::Status LoadAllTexturesInBPF();
 	private:
 		bool LoadPlaceHolderTextures();
 		Texture* GetEmptyContainer();

@@ -264,3 +264,25 @@ Resources::Mesh * Resources::MeshHandler::GetEmptyContainer()
 	}
 	return m_emptyContainers.front();
 }
+
+Resources::Status Resources::MeshHandler::LoadAllMeshesInBPF() {
+	const std::vector<unsigned int>* meshIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_MESH);
+	Status retSt = ST_OK;
+	ResourceContainer* res;
+	for (auto x : *meshIds) {
+		if (GetMesh(x, res) == Status::ST_RES_MISSING) {
+			ResourceContainer *y = nullptr;
+			auto st = this->LoadMesh(x, y);
+
+			if (st != Status::ST_OK) {
+				LOG("Error loading mesh #" + x);
+				retSt = st;
+			}
+		}
+	}
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total meshes loaded: " << m_meshes.size() << std::endl;
+	std::cout << "Total ids in registry:" << meshIds->size() << std::endl;
+
+	return retSt;
+}

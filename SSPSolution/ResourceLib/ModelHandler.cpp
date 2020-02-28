@@ -60,17 +60,13 @@ Resources::ModelHandler::ModelHandler()
 
 Resources::Status Resources::ModelHandler::GetModel( unsigned int & id, ResourceContainer *& modelPtr)
 {
-
-
 	std::unordered_map<unsigned int, ResourceContainer>::iterator got = m_models.find(id);
 	if (got == m_models.end()){ // if the model does not exists in memory
-		
 		return Resources::Status::ST_RES_MISSING;
 	}
 	else{
 		modelPtr = &got->second;
 	}
-
 	return Resources::Status::ST_OK;
 }
 
@@ -89,9 +85,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 	char* data	= nullptr;
 	size_t size = 0;
 	Resources::Status st = Status::ST_OK;
-
 	st = FileLoader::GetInstance()->LoadResource(id, data, &size); //Get the raw data from file
-	
 	if (st != ST_OK)
 		return st;
 											    //additional headers could be added here,
@@ -99,9 +93,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 	Resource::RawResourceData* resData = (Resource::RawResourceData*)data;
 	if (resData->m_resType != RES_MODEL)
 	{
-		#ifdef _DEBUG
-			std::cout << "Wrong resource type. Wanted Model, got type: " << resData->m_resType << std::endl;
-		#endif // _DEBUG
+		LOG("Wrong resource type. Wanted Model, got type: " + resData->m_resType);
 		return ST_WRONG_RESTYPE;
 	}
 	Resources::Model::RawModelData *raw_model_Data = (Resources::Model::RawModelData*)(data + sizeof(Resource::RawResourceData));
@@ -125,10 +117,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			 Status mSt= m_meshHandler->LoadMesh(meshID,meshPtr); //load the mesh
 			 if (mSt != ST_OK){
 				newModel->SetMesh( m_meshHandler->GetPlaceHolderMesh());
-#ifdef _DEBUG
-				std::cout << "Could not load mesh, Using placeholder for model ID : " << id << std::endl;
-#endif // _DEBUG
-
+				LOG("Could not load mesh, Using placeholder for model ID : " + id);
 			 }
 			 else
 				newModel->SetMesh((Mesh*)meshPtr->resource);
@@ -159,9 +148,7 @@ Resources::Status Resources::ModelHandler::LoadModel(unsigned int& id, ResourceC
 			if (mSt != ST_OK) {
 
 				newModel->SetMaterial(m_materialHandler->GetPlaceHolderMaterial());
-#ifdef _DEBUG
-				std::cout << "Could not load Material, Using placeholder for model ID : " << id << std::endl;
-#endif // _DEBUG
+				LOG("Could not load Material, Using placeholder for model ID : " + std::to_string(id));
 			}
 			else
 				newModel->SetMaterial((Material*)matPtr->resource);
@@ -241,14 +228,12 @@ Resources::Status Resources::ModelHandler::UnloadModel(unsigned int & id)
 				mod->Destroy();
 				m_emptyContainers.push_back(mod);
 				m_models.erase(id);
-#ifdef _DEBUG
-				std::cout << "Model : " << id << ". Has been Unloaded" << std::endl;
-#endif //_DEBUG
+				LOG("Model : " << id << ". Has been Unloaded");
 			}
 			break;
 		}
 		case ST_RES_MISSING:
-			std::cout << "Could not find the model to unload| ID :" << id << std::endl;
+			LOG("Could not find the model to unload| ID :" + id);
 	}
 	return Resources::Status::ST_OK;
 }
@@ -305,12 +290,8 @@ bool Resources::ModelHandler::CreatePlaceHolder()
 		placeHolderModel->SetMesh(placeMesh);
 		placeHolderModel->SetMaterial(placeMat);
 		return true;
-	}
-	
-#ifdef _DEBUG
-	std::cout << "No Device set, cannot create place holder" << std::endl;
-#endif // _DEBUG
-
+	}	
+	LOG("No Device set, cannot create place holder");
 	return false;
 }
 
@@ -325,4 +306,38 @@ Resources::Model * Resources::ModelHandler::GetEmptyContainer()
 		}
 	}
 	return m_emptyContainers.front();
+}
+
+Resources::Status Resources::ModelHandler::LoadAllModelsInBPF() {
+	const std::vector<unsigned int>* modelIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_MODEL);
+	Status retSt= ST_OK;
+	ResourceContainer *y = nullptr;
+
+	int failed = 0;
+	for (auto x : *modelIds) {
+		if (GetModel(x, y) == Status::ST_RES_MISSING) {
+			auto st = this->LoadModel(x, y);
+			if (st != Status::ST_OK) {
+				LOG("Error loading model #" + x );
+				retSt = st;
+				failed +=1;
+			}
+		}
+	}
+
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total models loaded: " << m_models.size() << std::endl;
+	std::cout << "Total ids in registry:" << modelIds->size() << std::endl;
+
+	std::cout << "Total fails: " << failed;
+	return retSt;
+}
+
+std::vector<Resources::Model*> Resources::ModelHandler::GetAllModels() {
+	std::vector<Resources::Model*> models;
+	models.reserve(m_models.size());
+	for (auto &x : m_models) {
+		models.push_back((Model*)x.second.resource);
+	}
+	return models;
 }

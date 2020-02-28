@@ -181,3 +181,27 @@ Resources::Skeleton * Resources::SkeletonHandler::GetEmptyContainer()
 	}
 	return m_emptyContainers.front();
 }
+
+Resources::Status Resources::SkeletonHandler::LoadAllSkeletonsInBPF() {
+	const std::vector<unsigned int>* skelIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_SKELETON);
+	Status retSt = ST_OK;
+	ResourceContainer* res;
+	for (auto x : *skelIds) {
+		if (GetSkeleton(x, res) == Status::ST_RES_MISSING) {
+			ResourceContainer *y = nullptr;
+			auto st = this->LoadSkeleton(x, y);
+
+			if (st != Status::ST_OK) {
+				LOG("Error loading skeleton #" + x);
+				retSt = st;
+			}
+			assert(st == Status::ST_OK);
+		}
+	}
+
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total skeletons loaded: " << m_skeletons.size() << std::endl;
+	std::cout << "Total ids in registry:" << skelIds->size() << std::endl;
+
+	return retSt;
+}

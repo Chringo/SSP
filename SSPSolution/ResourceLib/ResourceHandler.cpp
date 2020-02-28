@@ -38,7 +38,7 @@ Resources::ResourceHandler::~ResourceHandler()
 Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 {
 	if (m_device == nullptr){
-		std::cout << "No device is set. Cannot load resources" << std::endl;
+		LOG("No device is set. Cannot load resources");
 		return Status::ST_DEVICE_MISSING;
 	}
 	/*
@@ -60,7 +60,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 	/* T e s t */
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
-		std::cout << "Could not open resource file"<<std::endl;
+		LOG("Could not open resource file");
 		//return ST_ERROR_OPENING_FILE;
 
 		// for each model in level
@@ -76,9 +76,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 		{
 			case Resources::Status::ST_RES_MISSING:
 			{
-#ifdef _DEBUG
-				std::cout << "Model missing, loading" << std::endl;
-#endif // _DEBUG
+				LOG("Model missing, loading");
 
 				//Load the model
 				Status modelSt = m_modelHandler->LoadModel(id, modelPtr);
@@ -105,7 +103,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(unsigned int id)
 Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeader * levelResources, unsigned int numResources)
 {
 	if (m_device == nullptr) {
-		std::cout << "No device is set. Cannot load resources" << std::endl;
+		LOG("No device is set. Cannot load resources");
 		return Status::ST_DEVICE_MISSING;
 	}
 	/*
@@ -124,7 +122,7 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 	FileLoader* fileLoader = Resources::FileLoader::GetInstance();
 	if (!fileLoader->OpenFile(Resources::FileLoader::Files::BPF_FILE))
 	{
-		std::cout << "Could not open BPF file" << std::endl;
+		LOG("Could not open BPF file");
 		return ST_ERROR_OPENING_FILE;
 	}
 
@@ -149,16 +147,12 @@ Resources::Status Resources::ResourceHandler::LoadLevel(LevelData::ResourceHeade
 		{
 		case Resources::Status::ST_RES_MISSING:
 		{
-#ifdef _DEBUG
-			//std::cout << "Model not loaded, loading" << std::endl;
-#endif // _DEBUG
 			//Load the model
 			Status modelSt = m_modelHandler->LoadModel(id, modelPtr); //if this fails, placeholder will take the place
 
 #ifdef _DEBUG
 			if (modelSt != ST_OK) {
-
-				std::cout << "Model not found in BPF, ID: " << id << std::endl;
+				LOG("Model not found in BPF, ID: " + std::to_string(id));
 			}
 #endif // _DEBUG
 			break;
@@ -262,7 +256,7 @@ Resources::Status Resources::ResourceHandler::UnloadLevel(LevelResources* levelR
 #ifdef _DEBUG
 		if (st != ST_OK)
 		{
-			MessageBox(NULL, TEXT("Error in unloading model"), TEXT("ERROR"), MB_OK);
+			MessageBox(NULL, TEXT("Error in unloading model: " + levelRes->ids[i]), TEXT("ERROR"), MB_OK);
 			//return st;
 		}
 #endif // _DEBUG
@@ -298,6 +292,23 @@ Resources::Status  Resources::ResourceHandler::LoadAllAssetsFromBPF() {
 		auto num = fileLoader->GetAssetIdsOfType(i.first);
 		std::cout << "Number of "<< i.second <<" found in BPF: " << num->size() <<endl;
 	}
+
+
+	MeshHandler*		meshHandler		= m_modelHandler->GetMeshHandler();
+	MaterialHandler*	matHandler		= m_modelHandler->GetMaterialHandler();
+	SkeletonHandler*	skelHandler		= m_modelHandler->GetSkeletonHandler();
+	AnimationHandler*	animHandler		= skelHandler->GetAnimationHandler();
+	TextureHandler*		textureHandler  = matHandler->GetTextureHandler();
+
+	FileLoader::GetInstance()->OpenFile(FileLoader::BPF_FILE);
+	textureHandler->LoadAllTexturesInBPF();
+	animHandler->LoadAllAnimationsInBPF();
+	skelHandler->LoadAllSkeletonsInBPF();
+	matHandler->LoadAllMaterialsInBPF();
+	meshHandler->LoadAllMeshesInBPF();
+	m_modelHandler->LoadAllModelsInBPF();
+	FileLoader::GetInstance()->CloseFile(FileLoader::BPF_FILE);
+
 	
 	return Status::ST_OK;
 }

@@ -137,3 +137,27 @@ Resources::Animation * Resources::AnimationHandler::GetEmptyContainer()
 	}
 	return m_emptyContainers.front();
 }
+
+Resources::Status Resources::AnimationHandler::LoadAllAnimationsInBPF() {
+
+	const std::vector<unsigned int>* animIds = FileLoader::GetInstance()->GetAssetIdsOfType(ResourceType::RES_ANIMATION);
+	Status retSt = Status::ST_OK;
+	ResourceContainer* anim;
+	for (auto x : *animIds) {
+		if (GetAnimation(x, anim) == Status::ST_RES_MISSING) {
+			ResourceContainer *y = nullptr;
+			auto st = this->LoadAnimation(x, y);
+
+			if (st != Status::ST_OK) {
+				LOG("Error loading Animation #" + x);
+				retSt = st;
+			}
+			assert(st == Status::ST_OK);
+		}
+	}
+	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "Total animations loaded: " << m_animations.size() << std::endl;
+	std::cout << "Total ids in registry:" << animIds->size() << std::endl;
+
+	return retSt;
+}

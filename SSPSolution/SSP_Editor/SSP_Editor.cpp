@@ -78,6 +78,11 @@ SSP_Editor::~SSP_Editor()
 
 }
 
+void SSP_Editor::TestLib()
+{
+	tlib.OpenBrowser();
+}
+
 
 
 void SSP_Editor::on_NewScene_clicked()

@@ -37,7 +37,7 @@ namespace Resources
 		 Resources::Status ClearUnusedMemory(); // This Will go through the resourceLib and shrink all arrays and vectors to fit. Thus removing all other items in the resource pool
 
 		void SetDevice(ID3D11Device* device) { this->m_device = device; };
-
+		Resources::Status LoadAllMeshesInBPF();
 	private:
 		Resources::Status LoadPlaceHolderMesh();
 		Mesh* GetEmptyContainer();
