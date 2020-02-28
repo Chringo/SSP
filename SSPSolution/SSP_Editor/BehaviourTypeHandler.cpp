@@ -136,7 +136,7 @@ void Ui::BehaviourTypeHandler::Initialize(const Ui::SSP_EditorClass * ui)
 	m_lightDropDown = ui->LightDropDown;
 
 #pragma endregion
-	m_RunLevel = ui->pushButton;
+	m_RunLevel = ui->runLevelButton;
 	connect(m_RunLevel, SIGNAL(clicked()), this, SLOT(on_Run_Level_changed()));
 }
 

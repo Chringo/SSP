@@ -4,6 +4,7 @@
 #include "../ResourceLib/Model.h"
 #include "../ResourceLib/FileHeaders.h"
 #include "../ResourceLib/TextureHandler.h"
+#include	"../ResourceLib/ResourceHandler.h"
 #include <unordered_map>
 
 /*

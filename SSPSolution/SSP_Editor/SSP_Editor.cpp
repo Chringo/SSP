@@ -24,6 +24,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	m_ui.BPF_progressBar->hide();
 	
 	/*connecting the rest of the buttons to the functions*/
+	connect(m_ui.browseButton, SIGNAL(clicked(bool)), this, SLOT(on_Browse_clicked()));
 	connect(m_ui.actionNew_scene,  SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
 	connect(m_ui.actionLoad_scene, SIGNAL(triggered()), this, SLOT(on_LoadScene_clicked()));
 	connect(m_ui.actionSave_scene, SIGNAL(triggered()), this, SLOT(on_SaveScene_clicked()));
@@ -78,13 +79,15 @@ SSP_Editor::~SSP_Editor()
 
 }
 
-void SSP_Editor::TestLib()
+void SSP_Editor::OpenBrowser()
 {
-	tlib.OpenBrowser();
+	m_resBrowser.OpenBrowser();
 }
 
 
-
+void SSP_Editor::on_Browse_clicked() {
+	this->OpenBrowser();
+}
 void SSP_Editor::on_NewScene_clicked()
 {
 	//Prompt the user if they want to save the current level before creating a new scene

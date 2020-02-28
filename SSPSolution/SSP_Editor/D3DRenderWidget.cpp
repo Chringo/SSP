@@ -54,39 +54,68 @@ void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 	std::vector<Container>* InstancePtr = nullptr;
 	std::vector<Resources::Model*>* modelPtr = DataHandler::GetInstance()->GetModels();
 	
-
-	for (size_t i = 0; i < modelPtr->size(); i++)
+	for (auto &entity : *m_ModelMap) {
+	
+		InstancePtr = &entity.second;
+		Resources::Model* renderModel = nullptr;
+		Resources::ResourceHandler::GetInstance()->GetModel(entity.first, renderModel);
+		if(renderModel == nullptr){
+			assert(renderModel != nullptr);
+			continue;
+			}
+		for (size_t j = 0; j < InstancePtr->size(); j++)
 		{
-			std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap->find(modelPtr->at(i)->GetId());
-			
-			if (got == m_ModelMap->end()) { // if does not exists in memory
-				continue;
-			}
-			else {
-				InstancePtr = &got->second;
-				for (size_t j = 0; j < InstancePtr->size(); j++)
-				{
-					if (InstancePtr->at(j).isDirty)
-					{
-						this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), InstancePtr->at(j).internalID, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
-						
-						Container* ptr = &InstancePtr->at(j);
-						SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
-						if (SelectionHandler::GetInstance()->HasSelection())
-						{
-							SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
-							SelectionHandler::GetInstance()->Update();
-						}
-					}
+			if (InstancePtr->at(j).isDirty)
+			{
+				this->m_Communicator->UpdateModel(renderModel->GetId(), InstancePtr->at(j).internalID, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
 
-					GraphicsHptr->RenderFromEditor(
-						modelPtr->at(i),
-						&InstancePtr->at(j).component
-					);
- 				}
+				Container* ptr = &InstancePtr->at(j);
+				SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
+				if (SelectionHandler::GetInstance()->HasSelection())
+				{
+					SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+					SelectionHandler::GetInstance()->Update();
+				}
 			}
+
+			GraphicsHptr->RenderFromEditor(
+				renderModel,
+				&InstancePtr->at(j).component
+			);
+
 		}
-	}
+	//for(size_t i = 0; i < modelPtr->size(); i++)
+	//{
+	//	std::unordered_map<unsigned int, std::vector<Container>>::iterator got = m_ModelMap->find(modelPtr->at(i)->GetId());
+	//	
+	//	if (got == m_ModelMap->end()) { // if does not exists in memory
+	//		continue;
+	//	}
+	//	else {
+	//		InstancePtr = &got->second;
+	//		for (size_t j = 0; j < InstancePtr->size(); j++)
+	//		{
+	//			if (InstancePtr->at(j).isDirty)
+	//			{
+	//				this->m_Communicator->UpdateModel(modelPtr->at(i)->GetId(), InstancePtr->at(j).internalID, InstancePtr->at(j).position, InstancePtr->at(j).rotation);
+	//				
+	//				Container* ptr = &InstancePtr->at(j);
+	//				SelectionHandler::GetInstance()->SetSelectedContainer(ptr);
+	//				if (SelectionHandler::GetInstance()->HasSelection())
+	//				{
+	//					SelectionHandler::GetInstance()->GetSelectionRenderComponents(axisOBBs, axisOBBpositions, axisColors, selectedObjectOBB, OBBColor);
+	//					SelectionHandler::GetInstance()->Update();
+	//				}
+	//			}
+	//
+	//			GraphicsHptr->RenderFromEditor(
+	//				modelPtr->at(i),
+	//				&InstancePtr->at(j).component
+	//			);
+ 	//		}
+	//	}
+	//	}
+	}}
 	for (size_t i = 0; i < ContainerType::NUM_PUZZLE_ELEMENTS; i++)
 	{
 		const std::vector<Container*>* cont = m_Communicator->GetCurrentLevel()->GetPuzzleElements(ContainerType(i));

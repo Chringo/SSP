@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     SSP_Editor w;
     w.show();
-	w.TestLib();
+	
 	
     return a.exec();
 }

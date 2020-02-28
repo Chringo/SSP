@@ -23,7 +23,7 @@
 	public:
 		SSP_Editor(QWidget *parent = Q_NULLPTR);
 		~SSP_Editor();
-		void TestLib();
+		void OpenBrowser();
 	protected:
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
@@ -32,6 +32,7 @@
 		virtual void mousePressEvent(QMouseEvent * evt);
 		virtual void mouseReleaseEvent(QMouseEvent * evt);
 	public slots:
+	void on_Browse_clicked();
 	void on_NewScene_clicked();
 	void on_LoadScene_clicked();
 	void on_SaveScene_clicked();
@@ -39,7 +40,7 @@
 
 
 	private:
-		ResourceBrowser	tlib;
+		ResourceBrowser	m_resBrowser;
 		Ui::SSP_EditorClass m_ui;
 		QFileSystemModel *m_model;
 		QModelIndex *m_item;
