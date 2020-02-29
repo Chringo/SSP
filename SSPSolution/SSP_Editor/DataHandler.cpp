@@ -70,11 +70,11 @@ DataHandler::DataHandler()
 
 DataHandler::~DataHandler()
 {
-	for (size_t i = 0; i < m_models.size(); i++)
-	{
-		delete m_models.at(i);
-		m_models.at(i) = nullptr;
-	};
+	//for (size_t i = 0; i < m_models.size(); i++)
+	//{
+	//	delete m_models.at(i);
+	//	m_models.at(i) = nullptr;
+	//};
 	for (size_t i = 0; i < m_materials.size(); i++)
 	{
 		delete m_materials.at(i);

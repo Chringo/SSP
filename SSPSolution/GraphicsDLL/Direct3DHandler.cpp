@@ -251,9 +251,6 @@ int Direct3DHandler::InitializeGridRasterizer()
 
 int Direct3DHandler::PresentScene()
 {
-	//RECT dirtyRectPrev, dirtyRectCurrent, dirtyRectCopy;
-	//IntersectRect(&dirtyRectCopy, &dirtyRectPrev, &dirtyRectCurrent);
-
 	this->m_swapChain->Present(0, 0);
 	return 0;
 }

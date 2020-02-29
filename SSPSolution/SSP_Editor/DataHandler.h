@@ -35,13 +35,15 @@ public:
 	Resources::Status AddMesh(Resources::Mesh* mesh);
 	Resources::Status AddMaterial(Resources::Material* material);
 	Resources::Status AddTexture(Resources::Texture* texture);
+	Resources::Status SetModelsData(std::vector<Resources::Model*>& allModels) { m_models = allModels; return Resources::Status::ST_OK;}
+	
 	bool IDExists(unsigned int& id); //function to check if the data is already loaded
 	static DataHandler* GetInstance();
 	~DataHandler();
 
 	std::vector<Resources::Animation*>* GetAnimations() { return &this->m_animations; };
 	std::vector<Resources::Skeleton*>* GetSkeletons() { return &this->m_skeletons; };
-	std::vector<Resources::Model*>* GetModels() { return &this->m_models; };
+	std::vector<Resources::Model*>* GetModels() {return &this->m_models; };
 	std::vector<Resources::Mesh*>*  GetMeshes() { return &this->m_meshes; };
 	std::vector<Resources::Material*>* GetMaterials() { return &this->m_materials; };
 	std::unordered_map<std::string, Resources::Texture*>* GetTextures(){ return &this->m_textures; };

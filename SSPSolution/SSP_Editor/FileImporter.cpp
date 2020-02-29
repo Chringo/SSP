@@ -22,8 +22,8 @@ Resources::Status FileImporter::Initialize()
 	auto resHandler = Resources::ResourceHandler::GetInstance();
 
 	resHandler->LoadAllAssetsFromBPF();
-
-	auto models = resHandler->GetModelHandler()->GetAllModels();
+	DataHandler::GetInstance()->SetModelsData(resHandler->GetModelHandler()->GetAllModels());
+	
 	return Resources::Status::ST_OK;
 }
 void FileImporter::handleMesh(char * m_bbf_object)
