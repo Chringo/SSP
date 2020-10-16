@@ -279,8 +279,10 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 	ConstantBufferHandler::GetInstance()->light.UpdateBuffer(&m_constBufferData);
 	if (level->numPointLights > 0)
 	{
-		if (m_lightData.dataPtr != nullptr)
+		if (m_lightData.dataPtr != nullptr) {
 			delete m_lightData.dataPtr;
+			m_lightData.dataPtr = nullptr;
+		}
 
 		m_lightData.ReleaseShadowMaps();
 		m_lightData.dataPtr = new LIGHTING::Point[level->numPointLights];

@@ -143,6 +143,26 @@ bool Ui::AssetTreeHandler::AddItem(AssetCategories type, QTreeWidgetItem * item)
 	return true;
 }
 
+bool Ui::AssetTreeHandler::AddModel(Resources::Model * model, int& index)
+{
+	
+
+	return AddItem(AssetCategories::GENERAL_ASSETS, std::to_string(model->GetId()), QVariant(index));
+}
+
+bool Ui::AssetTreeHandler::AddModels(std::vector<Resources::Model*>& models)
+{
+
+	for (int i = 0; i < models.size(); i++)
+	{
+		if (!this->AddModel(models[i], i)) {
+			_CrtDbgBreak();
+		}
+	}
+
+	return true;
+}
+
 void Ui::AssetTreeHandler::on_treeView_doubleClicked() 
 {
 	//Qt::ItemFlag::ItemIsDropEnabled

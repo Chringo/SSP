@@ -22,11 +22,13 @@ Resources::Status FileImporter::Initialize()
 	auto resHandler = Resources::ResourceHandler::GetInstance();
 
 	resHandler->LoadAllAssetsFromBPF();
-	DataHandler::GetInstance()->SetModelsData(resHandler->GetModelHandler()->GetAllModels());
-	
+	auto allModels = resHandler->GetModelHandler()->GetAllModels();
+	DataHandler::GetInstance()->SetModelsData(allModels);
+	Ui::AssetTreeHandler* uiTree = Ui::UiControlHandler::GetInstance()->GetAssetTreeController();
+	uiTree->AddModels(allModels);
 	return Resources::Status::ST_OK;
 }
-void FileImporter::handleMesh(char * m_bbf_object)
+void FileImporter::handleMesh(char * m_bbf_object) 
 {
 	/*create model type here and then when reading */
 	Resources::Status res;

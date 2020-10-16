@@ -51,6 +51,8 @@ namespace Ui {
 		bool AddItem(AssetCategories type, std::string name, QVariant itemData);
 		bool AddItem(AssetCategories type, std::string name, QVariant itemData, AssetSubCategories subType);
 		bool AddItem(AssetCategories type, QTreeWidgetItem* item);
+		bool AddModel(Resources::Model* model,int& index);
+		bool AddModels(std::vector<Resources::Model*>& models);
 		
 	public slots:
 		void on_treeView_doubleClicked();
