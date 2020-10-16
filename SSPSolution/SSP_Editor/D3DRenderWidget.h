@@ -21,8 +21,9 @@ public:
 	virtual void mousePressEvent(QMouseEvent * evt);
 	virtual void resizeEvent(QResizeEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent * evt);
+	
 protected:
-	virtual void paintEvent(QPaintEvent* evt);
+	virtual void paintEvent(QPaintEvent* evt) override;
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
@@ -42,12 +43,14 @@ private: //for deltaTime
 	__int64 m_frameTimeOld = 0;
 	double m_frameTime;
 public:
+	void RenderScene();
 	ID3D11Device* getDevice() { return this->m_Device; };
 	Communicator* getCommunicator() { return this->m_Communicator; };
+	const int GetFps() const {return m_fps;}
 private:
+	double getTime();
 	double getFrameTime();
 	void   startTimer();
-	double getTime();
 	void InitDosConsole() {
 		AllocConsole();
 		freopen("CONIN$", "rb" , stdin);

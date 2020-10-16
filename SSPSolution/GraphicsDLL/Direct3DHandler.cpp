@@ -124,8 +124,9 @@ int Direct3DHandler::Initialize(HWND* windowHandle, const DirectX::XMINT2& resol
 		swapChainDesc.SampleDesc.Quality = 0;
 
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
-		swapChainDesc.BufferCount = 1;
-		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapChainDesc.BufferCount =2; //1;
+		swapChainDesc.SwapEffect =	DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;//DXGI_SWAP_EFFECT_DISCARD;
+		
 		swapChainDesc.Flags = 0;
 
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc;
