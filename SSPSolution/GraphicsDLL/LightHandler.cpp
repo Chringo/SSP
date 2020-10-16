@@ -7,7 +7,8 @@ LIGHTING::LightHandler::LightHandler()
 LIGHTING::LightHandler::~LightHandler()
 {
 	ReleaseStructuredBuffer(); //Release all buffers
-	delete m_lightData.dataPtr; 
+	if(m_lightData.dataPtr != nullptr)
+		delete m_lightData.dataPtr; 
 }
 
 void LIGHTING::LightHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
