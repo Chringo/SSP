@@ -22,6 +22,7 @@ void ResourceLibExporter::Initialize(FileImporter * m_FileImporter, QProgressBar
 {
 	this->m_FileImporter = m_FileImporter;
 	this->m_ProgressBar = m_ProgressBar;
+	this->m_ProgressBar->hide();
 }
 
 void ResourceLibExporter::ExportBPF()

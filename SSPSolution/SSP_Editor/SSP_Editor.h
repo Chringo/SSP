@@ -25,12 +25,14 @@
 		~SSP_Editor();
 		void OpenBrowser();
 	protected:
+		bool eventFilter(QObject *target, QEvent *evt);
 		virtual void keyPressEvent(QKeyEvent * evt);
 		virtual void keyReleaseEvent(QKeyEvent *evt);
 		virtual void closeEvent(QCloseEvent * event);
 		virtual void resizeEvent(QResizeEvent *event);
 		virtual void mousePressEvent(QMouseEvent * evt);
 		virtual void mouseReleaseEvent(QMouseEvent * evt);
+		
 	public slots:
 	void on_Browse_clicked();
 	void on_NewScene_clicked();

@@ -8,8 +8,8 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model = new QFileSystemModel(this);
 	this->m_model->setRootPath("C:/");
 	this->m_model->setFilter(QDir::NoDotAndDotDot | QDir::Files);
-	setFocusPolicy(Qt::StrongFocus);
-
+	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+	
 	
 	Ui::UiControlHandler::GetInstance()->Initialize(&m_ui);
 	/*a list of filters for the treeView*/
@@ -22,7 +22,9 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	
 	/*Hiding the progressbar for the bpf exporter*/
 	m_ui.BPF_progressBar->hide();
-	
+	//m_ui.BPF_progressBar->show();
+	//m_ui.BPF_progressBar->setMaximum(10);
+	//m_ui.BPF_progressBar->setValue(5);
 	/*connecting the rest of the buttons to the functions*/
 	connect(m_ui.browseButton, SIGNAL(clicked(bool)), this, SLOT(on_Browse_clicked()));
 	connect(m_ui.actionNew_scene,  SIGNAL(triggered()), this, SLOT(on_NewScene_clicked()));
@@ -32,6 +34,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 
 	this->m_fileImporter    = new FileImporter(m_ui.assetTree);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
+	m_ui.RenderWidget->installEventFilter(this);
 	this->m_fileImporter->Initialize();
 	this->m_resourceLibExporter->Initialize(this->m_fileImporter, m_ui.BPF_progressBar);
 
@@ -42,6 +45,26 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->window()->setWindowTitle(title);
 }
 
+bool  SSP_Editor::eventFilter(QObject *target, QEvent *evt) {
+
+	if (evt->type() == QEvent::Paint)
+	{
+		////target->event(evt);
+		//std::cout << "its' happening" << std::endl;
+		////std::cout << evt << std::endl;
+		//m_D3DRenderWidget->RenderScene();
+		auto fps = "FPS: " + std::to_string(m_D3DRenderWidget->GetFps());
+		//std::cout << "FPS: " << fps << std::endl;
+		m_ui.FPS_Label->clear();
+		m_ui.FPS_Label->setText(QString::fromStdString(fps));
+		m_ui.FPS_Label->update();
+		return false;
+	}
+	return false;
+}
+// void SSP_Editor::paintEvent(QPaintEvent* evt) {
+//	std::cout << "its' happening" <<std::endl;
+//}
 void SSP_Editor::keyPressEvent(QKeyEvent * evt)
 {
 	this->m_D3DRenderWidget->keyPressEvent(evt);

@@ -125,7 +125,9 @@ QTreeView::item:hover {
     border: 1px solid #bfcde4;
 }
 
-
+#RenderWidget{
+background:  rgb(255, 170, 127);
+}
 
 #centralWidget{
 background:  rgb(68, 68, 68);
@@ -738,7 +740,7 @@ border: black;</string>
           <string notr="true">background-color: rgb(74, 74, 74);</string>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="Behaviour">
           <attribute name="title">
@@ -1216,7 +1218,7 @@ border: black;</string>
               <string notr="true">background-color: rgb(74, 74, 74);</string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="Behaviour_None">
               <layout class="QFormLayout" name="formLayout_6"/>
@@ -2831,48 +2833,10 @@ Header- color:rgb(48, 48, 48);
       </layout>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QWidget" name="RenderWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>1</width>
-        <height>1</height>
-       </size>
-      </property>
-      <property name="cursor">
-       <cursorShape>ArrowCursor</cursorShape>
-      </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="previewLabel">
+    <item row="3" column="1">
+     <widget class="QPushButton" name="browseButton">
       <property name="text">
-       <string>Preview</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="runLevelButton">
-      <property name="text">
-       <string>Run Level</string>
+       <string>Browse Resources</string>
       </property>
      </widget>
     </item>
@@ -2891,7 +2855,7 @@ Header- color:rgb(48, 48, 48);
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -2990,6 +2954,20 @@ Header- color:rgb(48, 48, 48);
       </widget>
      </widget>
     </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="previewLabel">
+      <property name="text">
+       <string>Preview</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="runLevelButton">
+      <property name="text">
+       <string>Run Level</string>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="2">
      <widget class="QProgressBar" name="BPF_progressBar">
       <property name="value">
@@ -2997,12 +2975,69 @@ Header- color:rgb(48, 48, 48);
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="browseButton">
-      <property name="text">
-       <string>Browse Resources</string>
+    <item row="2" column="2">
+     <widget class="QWidget" name="RenderWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>1</width>
+        <height>1</height>
+       </size>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <widget class="QFrame" name="renderFrameTest">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>30</y>
+         <width>271</width>
+         <height>171</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::WinPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>10</number>
+       </property>
+      </widget>
      </widget>
+    </item>
+    <item row="0" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QLabel" name="FPS_Label">
+        <property name="text">
+         <string>FPS:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
