@@ -413,7 +413,7 @@ int Player::Update(float dT, InputHandler* inputHandler)
 						this->m_aComp->currentState = AnimationStates::PLAYER_IDLE;
 					}
 
-					strength = 2; //weak as föök if the player tries to throw himself
+					//strength = 2; //weak as föök if the player tries to throw himself
 				}
 
 				else

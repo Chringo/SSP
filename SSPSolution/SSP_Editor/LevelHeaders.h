@@ -29,6 +29,7 @@ namespace LevelData {
 	struct ResourceHeader {
 		unsigned int id;
 		int resourceType;
+		//char name[128];
 	};
 
 	struct OldEntityHeader
@@ -151,7 +152,7 @@ namespace LevelData {
 		unsigned int numWheel			= 0;
 		unsigned int numPointLights		= 0;
 		float		 ambientColor[3]   = {1.0f,1.0f,1.0f};
-		float		 ambientIntensity = 0.2f; ;
+		float		 ambientIntensity = 1.0f; ;
 		int			 shadowCastIndexes[20];
 
 
@@ -186,7 +187,7 @@ namespace LevelData {
 			 ambientColor[0]    = 1.0f;
 			 ambientColor[1]    = 1.0f;
 			 ambientColor[2]    = 1.0f;
-			 ambientIntensity   = 0.2f;
+			 ambientIntensity   = 1.0f;
 
 			 resources		 = nullptr;
 			 entities		 = nullptr;

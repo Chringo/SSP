@@ -8,12 +8,15 @@ D3DRenderWidget::~D3DRenderWidget()
 	{
 		delete this->m_Communicator;
 	}
+	drawLoopTimer->stop();
+	delete drawLoopTimer;
 }
 
 void D3DRenderWidget::paintEvent(QPaintEvent * evt)
 {
-	RenderScene();
-	//std::cout<< "Original event tries to render" <<std::endl;
+
+	//RenderScene();
+	//std::cout<< "paint Event" <<std::endl;
 }
 
 void D3DRenderWidget::resizeEvent(QResizeEvent * event)
@@ -22,9 +25,6 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 	float h = (float)parent->frameGeometry().height();
 	float w = (float)parent->frameGeometry().width();
 
-	this->frameGeometry().setWidth(w);
-	this->frameGeometry().setHeight(h);
-	
 	if (h != 0)
 		aspect = w / h;
 	m_Communicator->ViewPortChanged(h, w);
@@ -32,39 +32,39 @@ void D3DRenderWidget::resizeEvent(QResizeEvent * event)
 
 void D3DRenderWidget::keyPressEvent(QKeyEvent * evt)
 {
-	EditorInputHandler*	EditorInputHptr = nullptr;
-	
-	//get the desired values from EditorCommunicator
-	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->detectInput(this->m_frameTime, evt);
+	//EditorInputHandler*	EditorInputHptr = nullptr;
+	//
+	////get the desired values from EditorCommunicator
+	//EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	//EditorInputHptr->detectInput(this->m_frameTime, evt);
 }
 
 void D3DRenderWidget::keyReleaseEvent(QKeyEvent * evt)
 {
-	EditorInputHandler*	EditorInputHptr = nullptr;
-
-	//get the desired values from EditorCommunicator
-	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	//EditorInputHptr->detectInput(this->m_frameTime, evt);
-	EditorInputHptr->keyReleased(evt);
+	//EditorInputHandler*	EditorInputHptr = nullptr;
+	//
+	////get the desired values from EditorCommunicator
+	//EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	////EditorInputHptr->detectInput(this->m_frameTime, evt);
+	//EditorInputHptr->keyReleased(evt);
 }
 
 void D3DRenderWidget::mousePressEvent(QMouseEvent * evt)
 {
-	EditorInputHandler*	EditorInputHptr = nullptr;
-
-	//get the desired values from EditorCommunicator
-	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->mouseButtonDown(evt);
+	//EditorInputHandler*	EditorInputHptr = nullptr;
+	//
+	////get the desired values from EditorCommunicator
+	//EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	//EditorInputHptr->mouseButtonDown(evt);
 }
 
 void D3DRenderWidget::mouseReleaseEvent(QMouseEvent * evt)
 {
-	EditorInputHandler*	EditorInputHptr = nullptr;
-
-	//get the desired values from EditorCommunicator
-	EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
-	EditorInputHptr->mouseButtonRelease(evt);
+	//EditorInputHandler*	EditorInputHptr = nullptr;
+	//
+	////get the desired values from EditorCommunicator
+	//EditorInputHptr = this->m_Communicator->GetEditorInputHandler();
+	//EditorInputHptr->mouseButtonRelease(evt);
 }
 
 void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* fileImporter)
@@ -88,7 +88,8 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 		DataHandler::GetInstance()->GetModels()
 	);
 	
-	
+	this->m_Communicator->GetEditorInputHandler()->frameGeometry().setWidth(w);
+	this->m_Communicator->GetEditorInputHandler()->frameGeometry().setHeight(h);
 
 	this->frameGeometry().setWidth(w);
 	this->frameGeometry().setHeight(h);
@@ -97,6 +98,13 @@ void D3DRenderWidget::Initialize(QWidget* parent, bool isPreview, FileImporter* 
 	this->m_fileImporter = fileImporter;
 	this->m_fileImporter->setDevice(this->m_Device);
 	DataHandler::GetInstance()->GetTextureHandler()->SetDevice(m_Device);
+
+	//Setup draw loop. 
+	drawLoopTimer =  new QTimer();
+	connect(drawLoopTimer, SIGNAL(timeout()), this, SLOT(RenderScene()));
+	drawLoopTimer->start(1000/ DRAW_FRAMERATE);
+
+
 	//this->resizeEvent(nullptr); // Update the camera projection matrix to fit the widget window
 }
 
@@ -112,12 +120,11 @@ D3DRenderWidget::D3DRenderWidget(QWidget* parent, FileImporter* fileImporter)
 	setStyleSheet("background:transparent");
 
 	setWindowFlags(Qt::FramelessWindowHint);
-	//setAttribute(Qt::WA_WState_Visible,false);
-	//this->setVisible(false);
-	//this->setUpdatesEnabled(false);
+
 	parent->setWindowOpacity(0.0f);
 	Initialize(parent, false, fileImporter);
-	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+	setFocusPolicy(Qt::FocusPolicy::NoFocus);
+	this->clearFocus();
 }
 
 void D3DRenderWidget::startTimer()
@@ -140,6 +147,8 @@ double D3DRenderWidget::getTime()
 
 void D3DRenderWidget::RenderScene()
 {
+	//std::cout <<"Render scene"<<std::endl;
+	
 	GraphicsHandler*	GraphicsHptr = nullptr;
 	EditorInputHandler*	EditorInputHptr = nullptr;
 	bool isPreview = false;
@@ -367,7 +376,7 @@ void D3DRenderWidget::RenderScene()
 
 
 	GraphicsHptr->renderFinalEditor();
-	this->update();
+	//this->update();
 
 
 

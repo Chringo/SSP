@@ -6,6 +6,7 @@ BrowserUI::BrowserUI(QWidget *parent) :
     m_ui(new Ui::BrowserUI)
 {
     m_ui->setupUi(this);
+
 }
 
 BrowserUI::~BrowserUI()
@@ -13,7 +14,5 @@ BrowserUI::~BrowserUI()
     delete m_ui;
 }
 
-void BrowserUI::ShowUi()
-{
 
-}
+

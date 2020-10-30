@@ -19,6 +19,7 @@
 #define GRAPHICSDLL_API __declspec(dllimport)
 #endif
 
+
 #define DEBUG_RENDERING
 
 const int ARRAY_INC = 5;

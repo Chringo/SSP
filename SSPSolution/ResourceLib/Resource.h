@@ -17,6 +17,7 @@ namespace Resources
 		{
 			unsigned int m_id;
 			ResourceType m_resType = RES_UNKOWN;
+			
 		};
 	
 	protected:
@@ -32,7 +33,7 @@ namespace Resources
 		DLL_OPERATION const ResourceType GetResourceType() const { return m_resourceData.m_resType; };
 
 		DLL_OPERATION const unsigned int GetId() const;
-
+		DLL_OPERATION const std::string GetName() const;
 		DLL_OPERATION virtual std::shared_ptr<char> GetDataAsBinary(size_t* size, bool* result = nullptr) = 0;
 
 	};

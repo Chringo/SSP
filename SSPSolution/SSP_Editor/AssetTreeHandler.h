@@ -40,10 +40,10 @@ namespace Ui {
 		};
 
 	private:
-		QTreeWidget* m_tree;
+		std::vector<QTreeWidget*> m_treeWidgets;
 		AssetTreeHandler();
 		void AddSubCategories(QTreeWidgetItem* topLevel);
-		bool IsValidItem();
+		bool IsValidItem(QTreeWidget * tree);
 
 	public:
 		AssetTreeHandler(QTreeWidget* tree);
@@ -53,7 +53,9 @@ namespace Ui {
 		bool AddItem(AssetCategories type, QTreeWidgetItem* item);
 		bool AddModel(Resources::Model* model,int& index);
 		bool AddModels(std::vector<Resources::Model*>& models);
-		
+
+		void AddTreeWidget(QTreeWidget* tree);//Adds a duplicate tree widget
+		//QTreeWidget* GetQTree() {return m_tree;}
 	public slots:
 		void on_treeView_doubleClicked();
 	

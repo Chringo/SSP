@@ -33,17 +33,17 @@ void Ui::AssetTreeHandler::AddSubCategories(QTreeWidgetItem * topLevel)
 	topLevel->insertChild(IRON, iron);
 }
 
-bool Ui::AssetTreeHandler::IsValidItem()
+bool Ui::AssetTreeHandler::IsValidItem(QTreeWidget * tree)
 {
-	if (m_tree->currentItem()->parent() == NULL) //If a category window is clicked
+	if (tree->currentItem()->parent() == NULL) //If a category window is clicked
 		return false;
-	if (m_tree->currentItem()->text(0) == QString("Bricks"))
+	if (tree->currentItem()->text(0) == QString("Bricks"))
 		return false;
-	if (m_tree->currentItem()->text(0) == QString("Stones"))
+	if (tree->currentItem()->text(0) == QString("Stones"))
 		return false;
-	if (m_tree->currentItem()->text(0) == QString("Plaster"))
+	if (tree->currentItem()->text(0) == QString("Plaster"))
 		return false;
-	if (m_tree->currentItem()->text(0) == QString("Iron"))
+	if (tree->currentItem()->text(0) == QString("Iron"))
 		return false;
 	return true;
 }
@@ -52,7 +52,9 @@ bool Ui::AssetTreeHandler::IsValidItem()
 Ui::AssetTreeHandler::AssetTreeHandler(QTreeWidget * tree)
 {
 	/*Defining m_tree and disabling sorting for manual sorting*/
-	this->m_tree = tree;
+	m_treeWidgets.push_back(tree);
+
+	auto* m_tree = m_treeWidgets.front();
 	m_tree->setSortingEnabled(false);
 
 
@@ -119,27 +121,39 @@ Ui::AssetTreeHandler::~AssetTreeHandler()
 
 bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData)
 {
-	QTreeWidgetItem *itm = new QTreeWidgetItem();
-	
-	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
-	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
-	m_tree->topLevelItem((int)type)->addChild(itm);
+	for (size_t i = 0; i < m_treeWidgets.size(); i++)
+	{
+		auto * m_tree = m_treeWidgets[i];
+		QTreeWidgetItem *itm = new QTreeWidgetItem();
+		
+		itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
+		itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+		m_tree->topLevelItem((int)type)->addChild(itm);
+	}
 	return true;
 }
 
 bool Ui::AssetTreeHandler::AddItem(AssetCategories type, std::string name, QVariant itemData, AssetSubCategories subType)
 {
-	QTreeWidgetItem *itm = new QTreeWidgetItem();
+	for (size_t i = 0; i < m_treeWidgets.size(); i++)
+	{
+		auto * m_tree = m_treeWidgets[i];
+		QTreeWidgetItem *itm = new QTreeWidgetItem();
 
-	itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
-	itm->setText(0, name.substr(0, name.rfind(".")).c_str());
-	m_tree->topLevelItem((int)type)->child((int)subType)->addChild(itm);
+		itm->setData(0, Qt::ItemDataRole::UserRole, itemData);
+		itm->setText(0, name.substr(0, name.rfind(".")).c_str());
+		m_tree->topLevelItem((int)type)->child((int)subType)->addChild(itm);
+	}
 	return true;
 }
 
 bool Ui::AssetTreeHandler::AddItem(AssetCategories type, QTreeWidgetItem * item)
 {
-	m_tree->topLevelItem((int)type)->addChild(item);
+	for (size_t i = 0; i < m_treeWidgets.size(); i++)
+	{
+		auto * m_tree = m_treeWidgets[i];
+		m_tree->topLevelItem((int)type)->addChild(item);
+	}
 	return true;
 }
 
@@ -163,11 +177,16 @@ bool Ui::AssetTreeHandler::AddModels(std::vector<Resources::Model*>& models)
 	return true;
 }
 
+void Ui::AssetTreeHandler::AddTreeWidget(QTreeWidget * tree)
+{
+}
+
 void Ui::AssetTreeHandler::on_treeView_doubleClicked() 
 {
 	//Qt::ItemFlag::ItemIsDropEnabled
 	
-	if (!this->IsValidItem()) 
+	auto * m_tree = m_treeWidgets.front();
+	if (!this->IsValidItem(m_tree))
 		return;		//If a category window is clicked
 
 	QModelIndex index = m_tree->currentIndex();

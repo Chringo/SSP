@@ -3,6 +3,7 @@
 
 #include "resourceBrowser_global.h"
 #include "browserUi.h"
+#include <qtreewidget.h>
 class RESOURCEBROWSERSHARED_EXPORT ResourceBrowser
 {
 private:
@@ -11,6 +12,8 @@ public:
     ResourceBrowser();
 
     void OpenBrowser();
+	
+	BrowserUI* GetUI() {return &m_browserUI;};
 };
 
 #endif // RESOURCEBROWSER_H

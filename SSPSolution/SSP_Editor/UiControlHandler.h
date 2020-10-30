@@ -2,6 +2,7 @@
 #define SSPEDITOR_UI_UICONTROLHANDLER_H
 #include "AttributesHandler.h"
 #include "AssetTreeHandler.h"
+#include "resourcebrowser.h"
 /*
 	Author: Martin Clementson
 
@@ -16,6 +17,7 @@ namespace Ui {
 		AttributesHandler* m_AttrHandler = nullptr;
 		AssetTreeHandler* m_AssetTree    = nullptr;
 		Ui::SSP_EditorClass* ui          = nullptr;
+		ResourceBrowser	m_resBrowser;
 	public:
 		static UiControlHandler* GetInstance();
 		int Initialize(Ui::SSP_EditorClass* ui);
@@ -23,7 +25,7 @@ namespace Ui {
 		AssetTreeHandler* GetAssetTreeController() { return m_AssetTree; };
 		AttributesHandler* GetAttributesHandler() { return m_AttrHandler; };
 		~UiControlHandler();
-
+		void OpenResourceBrowser();
 
 	private:
 		UiControlHandler();

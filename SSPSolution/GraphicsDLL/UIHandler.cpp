@@ -27,8 +27,8 @@ void UIHandler::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	this->m_spriteBatch = new DirectX::SpriteBatch(deviceContext);
+	//this->m_spriteFont = new DirectX::SpriteFont(device, L"../Assets/UIelements/myfile.spritefont");
 	this->m_spriteFont = new DirectX::SpriteFont(device, L"../Assets/UIelements/consolas.spritefont");
-	
 	this->m_nrOfTextures = 16;
 	for (unsigned int i = 0; i < this->m_nrOfTextures; i++)
 	{

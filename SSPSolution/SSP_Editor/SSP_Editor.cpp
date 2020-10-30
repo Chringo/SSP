@@ -1,6 +1,6 @@
 #include "SSP_Editor.h"
-
-SSP_Editor::SSP_Editor(QWidget *parent)
+static QVBoxLayout * mainLayout;
+SSP_Editor::SSP_Editor(QApplication* app,QWidget *parent)
 	: QMainWindow(parent)
 {
 	m_ui.setupUi(this);
@@ -10,7 +10,7 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 	this->m_model->setFilter(QDir::NoDotAndDotDot | QDir::Files);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	
-	
+	m_qApp = app;
 	Ui::UiControlHandler::GetInstance()->Initialize(&m_ui);
 	/*a list of filters for the treeView*/
 	QStringList filters;
@@ -34,19 +34,36 @@ SSP_Editor::SSP_Editor(QWidget *parent)
 
 	this->m_fileImporter    = new FileImporter(m_ui.assetTree);
 	this->m_D3DRenderWidget = new D3DRenderWidget(m_ui.RenderWidget, this->m_fileImporter);
-	m_ui.RenderWidget->installEventFilter(this);
+	//m_ui.RenderWidget->installEventFilter(this);
 	this->m_fileImporter->Initialize();
 	this->m_resourceLibExporter->Initialize(this->m_fileImporter, m_ui.BPF_progressBar);
+	
 
 	//COMMENT ME BACK TO RENDER TO 2nd WIDGET
 	//this->m_D3DRenderWidgetPreview = new D3DRenderWidget(m_ui.RenderWidget_2);
+	LevelHandler::GetInstance()->SetUI(&m_ui);
 	QString title = "Level: ";
 	title.append(QString::fromStdString(*LevelHandler::GetInstance()->GetCurrentLevel()->GetName()));
 	this->window()->setWindowTitle(title);
+
+	auto* inputHandler = m_D3DRenderWidget->getCommunicator()->GetEditorInputHandler();
+	inputHandler->setParent(m_ui.RenderWidget);
+	//m_D3DRenderWidget->setParent(inputHandler);
+	inputHandler->show();
+	//m_qApp->installEventFilter(inputHandler);
+	inputHandler->setFocus();
+
+
+
+	
+	//m_D3DRenderWidget->hide();//(false);
+	//m_D3DRenderWidget->
+	//this->installEventFilter();
+	
 }
 
 bool  SSP_Editor::eventFilter(QObject *target, QEvent *evt) {
-
+	
 	if (evt->type() == QEvent::Paint)
 	{
 		////target->event(evt);
@@ -67,6 +84,7 @@ bool  SSP_Editor::eventFilter(QObject *target, QEvent *evt) {
 //}
 void SSP_Editor::keyPressEvent(QKeyEvent * evt)
 {
+	std::cout << m_qApp->focusWidget()->objectName().toStdString() << std::endl;
 	this->m_D3DRenderWidget->keyPressEvent(evt);
 }
 void SSP_Editor::keyReleaseEvent(QKeyEvent *evt)
@@ -102,14 +120,16 @@ SSP_Editor::~SSP_Editor()
 
 }
 
-void SSP_Editor::OpenBrowser()
-{
-	m_resBrowser.OpenBrowser();
-}
+//void SSP_Editor::OpenBrowser()
+//{
+//	m_resBrowser.OpenBrowser();
+//}
 
 
 void SSP_Editor::on_Browse_clicked() {
-	this->OpenBrowser();
+
+	Ui::UiControlHandler::GetInstance()->OpenResourceBrowser();
+	//this->OpenBrowser();
 }
 void SSP_Editor::on_NewScene_clicked()
 {

@@ -241,6 +241,26 @@ release\moc_browserUi.cpp: C:\Qt\5.7\msvc2015_64\include\QtWidgets\QWidget \
 		C:\Qt\5.7\msvc2015_64\include\QtCore\qfiledevice.h \
 		C:\Qt\5.7\msvc2015_64\include\QtGui\qvector2d.h \
 		C:\Qt\5.7\msvc2015_64\include\QtGui\qtouchdevice.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreeview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractscrollarea.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qframe.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qabstractitemmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qitemselectionmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemdelegate.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyleoption.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractspinbox.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qvalidator.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qregularexpression.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qicon.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyle.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabbar.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabwidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qrubberband.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidgetitemiterator.h \
 		browserUi.h \
 		C:\Qt\5.7\msvc2015_64\bin\moc.exe
 	C:\Qt\5.7\msvc2015_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1900 -D_WIN32 -D_WIN64 -IC:/Qt/5.7/msvc2015_64/mkspecs/win32-msvc2015 -I"C:/Users/marti/OneDrive/Dokument/Stora spel/SSP/SSPSolution/ResourceBrowser" -IC:/Qt/5.7/msvc2015_64/include -IC:/Qt/5.7/msvc2015_64/include/QtWidgets -IC:/Qt/5.7/msvc2015_64/include/QtGui -IC:/Qt/5.7/msvc2015_64/include/QtANGLE -IC:/Qt/5.7/msvc2015_64/include/QtCore browserUi.h -o release\moc_browserUi.cpp
@@ -363,7 +383,46 @@ release\browserUi.obj: browserUi.cpp browserUi.h \
 		C:\Qt\5.7\msvc2015_64\include\QtCore\qfile.h \
 		C:\Qt\5.7\msvc2015_64\include\QtCore\qfiledevice.h \
 		C:\Qt\5.7\msvc2015_64\include\QtGui\qvector2d.h \
-		C:\Qt\5.7\msvc2015_64\include\QtGui\qtouchdevice.h
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qtouchdevice.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreeview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractscrollarea.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qframe.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qabstractitemmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qitemselectionmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemdelegate.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyleoption.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractspinbox.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qvalidator.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qregularexpression.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qicon.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyle.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabbar.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabwidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qrubberband.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidgetitemiterator.h \
+		ui_browserui.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\QVariant \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QAction \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qaction.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qactiongroup.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QApplication \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qapplication.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qcoreapplication.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qeventloop.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qdesktopwidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qguiapplication.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qinputmethod.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QButtonGroup \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qbuttongroup.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QHeaderView \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qheaderview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QLabel \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qlabel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\QTreeWidget
 
 release\resourceBrowser.obj: resourceBrowser.cpp resourceBrowser.h \
 		resourceBrowser_global.h \
@@ -464,7 +523,27 @@ release\resourceBrowser.obj: resourceBrowser.cpp resourceBrowser.h \
 		C:\Qt\5.7\msvc2015_64\include\QtCore\qfile.h \
 		C:\Qt\5.7\msvc2015_64\include\QtCore\qfiledevice.h \
 		C:\Qt\5.7\msvc2015_64\include\QtGui\qvector2d.h \
-		C:\Qt\5.7\msvc2015_64\include\QtGui\qtouchdevice.h
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qtouchdevice.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreeview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemview.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractscrollarea.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qframe.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qabstractitemmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qitemselectionmodel.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractitemdelegate.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyleoption.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractspinbox.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qvalidator.h \
+		C:\Qt\5.7\msvc2015_64\include\QtCore\qregularexpression.h \
+		C:\Qt\5.7\msvc2015_64\include\QtGui\qicon.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qabstractslider.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qstyle.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabbar.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtabwidget.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qrubberband.h \
+		C:\Qt\5.7\msvc2015_64\include\QtWidgets\qtreewidgetitemiterator.h
 
 release\moc_browserUi.obj: release\moc_browserUi.cpp 
 

@@ -29,6 +29,11 @@ const unsigned int Resources::Resource::GetId() const
 	return m_resourceData.m_id;
 }
 
+ const std::string Resources::Resource::GetName() const
+{
+	return "";//m_resourceData.m_name;
+}
+
 std::shared_ptr<char> Resources::Resource::GetDataAsBinary(size_t* size, bool* result)
 {
 	*size = sizeof(RawResourceData);

@@ -287,7 +287,7 @@ bool LIGHTING::LightHandler::LoadLevelLight(LevelData::Level * level)
 		m_lightData.ReleaseShadowMaps();
 		m_lightData.dataPtr = new LIGHTING::Point[level->numPointLights];
 	
-
+		m_lightData.numShadowLights = 0;
 		memcpy(m_lightData.shadowLightIndex, level->shadowCastIndexes, sizeof(int) * MAX_SHADOW_LIGHTS);
 
 		for (size_t i = 0; i < MAX_SHADOW_LIGHTS; i++)

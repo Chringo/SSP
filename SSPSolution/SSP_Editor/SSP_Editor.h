@@ -21,9 +21,9 @@
 
 	
 	public:
-		SSP_Editor(QWidget *parent = Q_NULLPTR);
+		SSP_Editor(QApplication* app,QWidget *parent = Q_NULLPTR);
 		~SSP_Editor();
-		void OpenBrowser();
+		//void OpenBrowser();
 	protected:
 		bool eventFilter(QObject *target, QEvent *evt);
 		virtual void keyPressEvent(QKeyEvent * evt);
@@ -32,6 +32,8 @@
 		virtual void resizeEvent(QResizeEvent *event);
 		virtual void mousePressEvent(QMouseEvent * evt);
 		virtual void mouseReleaseEvent(QMouseEvent * evt);
+
+
 		
 	public slots:
 	void on_Browse_clicked();
@@ -49,7 +51,7 @@
 		D3DRenderWidget* m_D3DRenderWidget;
 		FileImporter* m_fileImporter;
 		ResourceLibExporter* m_resourceLibExporter = ResourceLibExporter::GetInstance();
-	
+		QApplication* m_qApp;
 		D3DRenderWidget* m_D3DRenderWidgetPreview;
 		 QDateTime time;
 		QString lastSave = "None made";

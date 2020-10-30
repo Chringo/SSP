@@ -47,38 +47,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="browserUi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="resourceBrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_browserUi.cpp">
-      <Filter>Generated Files\Debug</Filter>
+    <ClCompile Include="browserui.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_browserUi.cpp">
-      <Filter>Generated Files\Release</Filter>
+    <ClCompile Include="debug\moc_browserUi.cpp">
+      <Filter>Generated Files\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="browserUi.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="resourceBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resourceBrowser_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ui_browserUi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="browserUi.ui">
+    <CustomBuild Include="browserui.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_browserUi.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
+    <CustomBuild Include="browserui.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

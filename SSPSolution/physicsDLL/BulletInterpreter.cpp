@@ -206,7 +206,7 @@ void BulletInterpreter::UpdateBulletEngine(const float& dt)
 	btScalar timeStep = dt;
 
 	#ifdef _DEBUG
-	maxSubSteps = 14;
+	//maxSubSteps = 14;
 	#endif
 
 

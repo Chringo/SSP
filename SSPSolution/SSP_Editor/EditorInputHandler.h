@@ -13,6 +13,7 @@
 #include "ui_SSP_Editor.h"
 #include "SelectionHandler.h"
 #include "LevelHandler.h"
+#include "qsizepolicy.h"
 
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
@@ -28,6 +29,7 @@ struct Mouse
 
 	bool rightHeld = false;
 	bool leftHeld = false;
+	bool wheelHeld = false;
 };
 
 
@@ -46,8 +48,9 @@ enum Bools {
 };
 
 
-class EditorInputHandler
+class EditorInputHandler: public QWidget
 {
+	Q_OBJECT
 private:
 	Mouse m_mouse;
 	int m_Width;
@@ -67,6 +70,12 @@ private:
 	void deleteModel();
 
 public:
+
+	virtual void keyPressEvent(QKeyEvent * evt);
+	virtual void keyReleaseEvent(QKeyEvent * evt);
+	virtual void mousePressEvent(QMouseEvent * evt);
+	virtual void mouseReleaseEvent(QMouseEvent * evt);
+	virtual void wheelEvent(QWheelEvent * evt);
 	void detectInput(double dT, QKeyEvent* key);
 	void SetMousePos(QPoint point) { this->m_point = point; };
 	void KeyboardMovement(double dT);
@@ -79,7 +88,7 @@ public:
 	void mouseButtonDown(QMouseEvent* evt);
 	void mouseButtonRelease(QMouseEvent * evt);
 
-
+	 bool eventFilter(QObject *watched, QEvent *event);
 
 	EditorInputHandler(
 		HINSTANCE handleInstance,

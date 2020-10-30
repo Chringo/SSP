@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1171</width>
-    <height>736</height>
+    <width>1250</width>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -227,7 +227,7 @@ border: black;</string>
           <item>
            <widget class="QLabel" name="nameLabel">
             <property name="text">
-             <string>Level Name</string>
+             <string>Name</string>
             </property>
            </widget>
           </item>
@@ -259,7 +259,7 @@ border: black;</string>
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -287,122 +287,7 @@ border: black;</string>
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>-10000.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="3">
-           <widget class="QDoubleSpinBox" name="zValue_scale">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>-10000.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QDoubleSpinBox" name="yValue_rot">
-            <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>-10000.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="scalelabel">
-            <property name="text">
-             <string>Scale</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="rotationlabel">
-            <property name="text">
-             <string>Rotation</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="3">
-           <widget class="QDoubleSpinBox" name="zValue_rot">
-            <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>-10000.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QDoubleSpinBox" name="zValue_translate">
-            <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>-10000.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="yValue_translate">
-            <property name="wrapping">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -437,7 +322,7 @@ border: black;</string>
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -462,7 +347,122 @@ border: black;</string>
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="rotationlabel">
+            <property name="text">
+             <string>Rotation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QDoubleSpinBox" name="zValue_scale">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QDoubleSpinBox" name="zValue_translate">
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="scalelabel">
+            <property name="text">
+             <string>Scale</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QDoubleSpinBox" name="yValue_rot">
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QDoubleSpinBox" name="zValue_rot">
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="yValue_translate">
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -740,20 +740,13 @@ border: black;</string>
           <string notr="true">background-color: rgb(74, 74, 74);</string>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="Behaviour">
           <attribute name="title">
            <string>Behaviour</string>
           </attribute>
           <layout class="QFormLayout" name="formLayout_3">
-           <item row="1" column="1">
-            <widget class="QLabel" name="BEHAVIOURTEXT">
-             <property name="text">
-              <string>Behaviour Type</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="1">
             <widget class="QComboBox" name="BehaviourDropDown">
              <property name="enabled">
@@ -1218,7 +1211,7 @@ border: black;</string>
               <string notr="true">background-color: rgb(74, 74, 74);</string>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="Behaviour_None">
               <layout class="QFormLayout" name="formLayout_6"/>
@@ -1271,7 +1264,7 @@ border: black;</string>
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
                  <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
+                  <enum>QAbstractSpinBox::UpDownArrows</enum>
                  </property>
                 </widget>
                </item>
@@ -1288,7 +1281,7 @@ border: black;</string>
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
                  <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
+                  <enum>QAbstractSpinBox::UpDownArrows</enum>
                  </property>
                 </widget>
                </item>
@@ -1327,17 +1320,17 @@ border: black;</string>
              </widget>
              <widget class="QWidget" name="Behaviour_Path">
               <layout class="QGridLayout" name="gridLayout_2">
-               <item row="1" column="0">
-                <widget class="QLabel" name="TIMETEXT">
-                 <property name="text">
-                  <string>Time (ms)</string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="PATTERNTEXT">
                  <property name="text">
                   <string>Pattern</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="TIMETEXT">
+                 <property name="text">
+                  <string>Time (ms)</string>
                  </property>
                 </widget>
                </item>
@@ -1378,10 +1371,33 @@ border: black;</string>
                  </item>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="SPEEDTEXT">
+               <item row="11" column="1" colspan="2">
+                <widget class="QCheckBox" name="TriggerPathCheckBox">
                  <property name="text">
-                  <string>Speed</string>
+                  <string>Not Triggered</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QDoubleSpinBox" name="TimeValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="2">
+                <widget class="QPushButton" name="DeleteButton">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(129, 129, 129);</string>
+                 </property>
+                 <property name="text">
+                  <string>DEL</string>
                  </property>
                 </widget>
                </item>
@@ -1395,18 +1411,15 @@ border: black;</string>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QDoubleSpinBox" name="SpeedValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
+               <item row="10" column="1">
+                <widget class="QLabel" name="TRIGGERTAGTEXTPATH">
+                 <property name="text">
+                  <string>Trigger Tag</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2">
-                <widget class="QDoubleSpinBox" name="TimeValue">
+               <item row="0" column="2">
+                <widget class="QDoubleSpinBox" name="SpeedValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
@@ -1594,23 +1607,6 @@ border: black;</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="2">
-                <widget class="QPushButton" name="DeleteButton">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(129, 129, 129);</string>
-                 </property>
-                 <property name="text">
-                  <string>DEL</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
-                <widget class="QLabel" name="TRIGGERTAGTEXTPATH">
-                 <property name="text">
-                  <string>Trigger Tag</string>
-                 </property>
-                </widget>
-               </item>
                <item row="10" column="2">
                 <widget class="QSpinBox" name="TriggerPathValue">
                  <property name="enabled">
@@ -1624,13 +1620,10 @@ border: black;</string>
                  </property>
                 </widget>
                </item>
-               <item row="11" column="1" colspan="2">
-                <widget class="QCheckBox" name="TriggerPathCheckBox">
+               <item row="0" column="0">
+                <widget class="QLabel" name="SPEEDTEXT">
                  <property name="text">
-                  <string>Not Triggered</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
+                  <string>Speed</string>
                  </property>
                 </widget>
                </item>
@@ -1942,6 +1935,13 @@ border: black;</string>
                </item>
               </layout>
              </widget>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="BEHAVIOURTEXT">
+             <property name="text">
+              <string>Behaviour Type</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -2357,20 +2357,20 @@ Header- color:rgb(48, 48, 48);
              </property>
             </spacer>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="3">
             <widget class="QPushButton" name="CheckPointADD">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(129, 129, 129);</string>
              </property>
              <property name="text">
               <string>Add CheckPoint</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Empty Space</string>
              </property>
             </widget>
            </item>
@@ -2381,6 +2381,13 @@ Header- color:rgb(48, 48, 48);
            <string>Lights</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Ambience</string>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="1" colspan="3">
             <widget class="QComboBox" name="LightDropDown">
              <property name="styleSheet">
@@ -2413,10 +2420,26 @@ Header- color:rgb(48, 48, 48);
              </item>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Light Type</string>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="Amb_Intensity">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(48, 48, 48);</string>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2" colspan="2">
+            <widget class="QSlider" name="Amb_Intensityslider">
+             <property name="maximum">
+              <number>255</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -2430,23 +2453,16 @@ Header- color:rgb(48, 48, 48);
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QSpinBox" name="Amb_Intensity">
+           <item row="0" column="2">
+            <widget class="QSpinBox" name="Amb_G">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(48, 48, 48);</string>
              </property>
              <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+              <enum>QAbstractSpinBox::UpDownArrows</enum>
              </property>
              <property name="maximum">
-              <number>250</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_16">
-             <property name="text">
-              <string>Ambience</string>
+              <number>255</number>
              </property>
             </widget>
            </item>
@@ -2457,23 +2473,20 @@ Header- color:rgb(48, 48, 48);
              </property>
             </widget>
            </item>
-           <item row="3" column="2" colspan="2">
-            <widget class="QSlider" name="Amb_Intensityslider">
-             <property name="maximum">
-              <number>250</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Light Type</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="2">
-            <widget class="QSpinBox" name="Amb_G">
+           <item row="0" column="3">
+            <widget class="QSpinBox" name="Amb_B">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(48, 48, 48);</string>
              </property>
              <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+              <enum>QAbstractSpinBox::UpDownArrows</enum>
              </property>
              <property name="maximum">
               <number>255</number>
@@ -2486,20 +2499,7 @@ Header- color:rgb(48, 48, 48);
               <string notr="true">background-color: rgb(48, 48, 48);</string>
              </property>
              <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
-             </property>
-             <property name="maximum">
-              <number>255</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QSpinBox" name="Amb_B">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(48, 48, 48);</string>
-             </property>
-             <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::NoButtons</enum>
+              <enum>QAbstractSpinBox::UpDownArrows</enum>
              </property>
              <property name="maximum">
               <number>255</number>
@@ -2513,48 +2513,23 @@ Header- color:rgb(48, 48, 48);
              </property>
              <widget class="QWidget" name="None"/>
              <widget class="QWidget" name="Point">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_9">
-               <item row="11" column="0" colspan="3">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>Intensity</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="2" colspan="3">
-                <widget class="QSlider" name="IntensitySlider">
-                 <property name="maximum">
-                  <number>250</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0" colspan="2">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>Falloff</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>R</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="R_Colorvalue">
+               <item row="8" column="3">
+                <widget class="QSpinBox" name="LinearValue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="frame">
+                  <bool>true</bool>
                  </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="maximum">
-                  <number>255</number>
+                  <number>100</number>
                  </property>
                 </widget>
                </item>
@@ -2578,18 +2553,42 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="14" column="3">
-                <spacer name="verticalSpacer_6">
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="G_Colorvalue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0" colspan="3">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Intensity</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QSlider" name="horizontalSlider">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>R</string>
                  </property>
-                </spacer>
+                </widget>
                </item>
                <item row="3" column="1">
                 <widget class="QSpinBox" name="B_Colorvalue">
@@ -2603,6 +2602,36 @@ Header- color:rgb(48, 48, 48);
                   <number>255</number>
                  </property>
                 </widget>
+               </item>
+               <item row="12" column="2" colspan="3">
+                <widget class="QSlider" name="IntensitySlider">
+                 <property name="maximum">
+                  <number>250</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>Falloff</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="3">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item row="10" column="3">
                 <spacer name="verticalSpacer_7">
@@ -2630,36 +2659,10 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QSpinBox" name="G_Colorvalue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                </widget>
-               </item>
                <item row="8" column="0" colspan="2">
                 <widget class="QLabel" name="label_13">
                  <property name="text">
                   <string>Linear</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3" colspan="2">
-                <widget class="QSlider" name="R_Slider">
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                 <property name="pageStep">
-                  <number>25</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
@@ -2686,34 +2689,8 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="8" column="4">
-                <widget class="QSlider" name="horizontalSlider">
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="3">
-                <widget class="QSpinBox" name="LinearValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="frame">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="3">
-                <widget class="QSpinBox" name="QuadValue">
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="R_Colorvalue">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
@@ -2721,14 +2698,17 @@ Header- color:rgb(48, 48, 48);
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="maximum">
-                  <number>100</number>
+                  <number>255</number>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
+               <item row="0" column="3" colspan="2">
+                <widget class="QCheckBox" name="ShadowCheckbox">
+                 <property name="layoutDirection">
+                  <enum>Qt::RightToLeft</enum>
+                 </property>
                  <property name="text">
-                  <string>Constant</string>
+                  <string>Cast Shadows</string>
                  </property>
                 </widget>
                </item>
@@ -2739,19 +2719,6 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="5" column="3">
-                <spacer name="verticalSpacer_8">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
                <item row="9" column="4">
                 <widget class="QSlider" name="horizontalSlider_2">
                  <property name="maximum">
@@ -2759,26 +2726,6 @@ Header- color:rgb(48, 48, 48);
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="3">
-                <widget class="QSpinBox" name="RadiusValue">
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(48, 48, 48);</string>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="maximum">
-                  <number>1000</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>G</string>
                  </property>
                 </widget>
                </item>
@@ -2795,13 +2742,16 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="7" column="4">
-                <widget class="QSlider" name="horizontalSlider_3">
-                 <property name="maximum">
-                  <number>100</number>
+               <item row="4" column="3">
+                <widget class="QSpinBox" name="RadiusValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
                  </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>1000</number>
                  </property>
                 </widget>
                </item>
@@ -2812,13 +2762,66 @@ Header- color:rgb(48, 48, 48);
                  </property>
                 </widget>
                </item>
-               <item row="0" column="3" colspan="2">
-                <widget class="QCheckBox" name="ShadowCheckbox">
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_9">
                  <property name="text">
-                  <string>Cast Shadows</string>
+                  <string>G</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Constant</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="3">
+                <widget class="QSpinBox" name="QuadValue">
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(48, 48, 48);</string>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="3">
+                <spacer name="verticalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="7" column="4">
+                <widget class="QSlider" name="horizontalSlider_3">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3" colspan="2">
+                <widget class="QSlider" name="R_Slider">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>25</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
@@ -2833,11 +2836,57 @@ Header- color:rgb(48, 48, 48);
       </layout>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="browseButton">
-      <property name="text">
-       <string>Browse Resources</string>
+    <item row="2" column="2">
+     <widget class="QWidget" name="RenderWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>1</width>
+        <height>1</height>
+       </size>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <widget class="QFrame" name="renderFrameTest">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>30</y>
+         <width>271</width>
+         <height>171</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::WinPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>10</number>
+       </property>
+      </widget>
      </widget>
     </item>
     <item row="2" column="1">
@@ -2954,17 +3003,10 @@ Header- color:rgb(48, 48, 48);
       </widget>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="previewLabel">
+    <item row="3" column="1">
+     <widget class="QPushButton" name="browseButton">
       <property name="text">
-       <string>Preview</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="runLevelButton">
-      <property name="text">
-       <string>Run Level</string>
+       <string>Browse Resources</string>
       </property>
      </widget>
     </item>
@@ -2975,57 +3017,18 @@ Header- color:rgb(48, 48, 48);
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QWidget" name="RenderWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="runLevelButton">
+      <property name="text">
+       <string>Run Level</string>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>1</width>
-        <height>1</height>
-       </size>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="previewLabel">
+      <property name="text">
+       <string>Preview</string>
       </property>
-      <property name="cursor">
-       <cursorShape>ArrowCursor</cursorShape>
-      </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <widget class="QFrame" name="renderFrameTest">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>30</y>
-         <width>271</width>
-         <height>171</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::WinPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="lineWidth">
-        <number>10</number>
-       </property>
-      </widget>
      </widget>
     </item>
     <item row="0" column="1">
@@ -3046,13 +3049,13 @@ Header- color:rgb(48, 48, 48);
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1171</width>
+     <width>1250</width>
      <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEditor">
     <property name="title">
-     <string>Editor</string>
+     <string>File</string>
     </property>
     <addaction name="actionNew_scene"/>
     <addaction name="separator"/>
